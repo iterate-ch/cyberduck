@@ -109,7 +109,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             bool included = !Transfer.isSkipped((Path) path) &&
                             Transfer.isSelected((Path) path) &&
-                            !_controller.Action.equals(TransferAction.ACTION_SKIP);
+                            !_controller.Action.equals(TransferAction.skip);
             if (included)
             {
                 return CheckState.Checked;

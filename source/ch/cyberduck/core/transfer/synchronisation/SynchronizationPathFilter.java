@@ -23,7 +23,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
-import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -32,7 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SynchronizationPathFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
@@ -52,7 +51,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     /**
      * Direction
      */
-    private TransferAction action = SyncTransfer.ACTION_MIRROR;
+    private TransferAction action = TransferAction.mirror;
 
     public SynchronizationPathFilter(final ComparisonService comparison,
                                      final TransferPathFilter downloadFilter,
@@ -83,7 +82,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             return file.attributes().isDirectory();
         }
         else if(compare.equals(Comparison.remote)) {
-            if(action.equals(SyncTransfer.ACTION_UPLOAD)) {
+            if(action.equals(TransferAction.upload)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skip file %s with comparison result %s because action is %s",
                             file, compare, action));
@@ -94,7 +93,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             return downloadFilter.accept(file, parent);
         }
         else if(compare.equals(Comparison.local)) {
-            if(action.equals(SyncTransfer.ACTION_DOWNLOAD)) {
+            if(action.equals(TransferAction.download)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skip file %s with comparison result %s because action is %s",
                             file, compare, action));

@@ -68,7 +68,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Path test = new Path("t", Path.FILE_TYPE);
         CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
                 new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
-        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, true, new DisabledTransferPrompt()));
+        assertEquals(TransferAction.overwrite, t.action(false, true, new DisabledTransferPrompt()));
     }
 
     @Test

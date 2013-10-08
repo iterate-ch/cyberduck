@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SingleTransferWorker extends Worker<Boolean> {
     private static final Logger log = Logger.getLogger(SingleTransferWorker.class);
@@ -129,7 +129,7 @@ public class SingleTransferWorker extends Worker<Boolean> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Selected transfer action %s", action));
             }
-            if(action.equals(TransferAction.ACTION_CANCEL)) {
+            if(action.equals(TransferAction.cancel)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Transfer %s canceled by user", this));
                 }

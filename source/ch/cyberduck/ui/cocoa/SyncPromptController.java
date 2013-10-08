@@ -72,9 +72,9 @@ public class SyncPromptController extends TransferPromptController {
     @Override
     protected TransferAction[] getTransferActions() {
         return new TransferAction[]{
-                SyncTransfer.ACTION_DOWNLOAD,
-                SyncTransfer.ACTION_UPLOAD,
-                SyncTransfer.ACTION_MIRROR
+                TransferAction.download,
+                TransferAction.upload,
+                TransferAction.mirror
         };
     }
 }

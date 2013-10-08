@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -96,42 +95,6 @@ public class SyncTransfer extends Transfer {
         return super.getTransferred() + download.getTransferred() + upload.getTransferred();
     }
 
-    public static final TransferAction ACTION_DOWNLOAD = new TransferAction("download") {
-        @Override
-        public String getTitle() {
-            return LocaleFactory.localizedString("Download");
-        }
-
-        @Override
-        public String getDescription() {
-            return LocaleFactory.localizedString("Download changed and missing files", "Transfer");
-        }
-    };
-
-    public static final TransferAction ACTION_UPLOAD = new TransferAction("upload") {
-        @Override
-        public String getTitle() {
-            return LocaleFactory.localizedString("Upload");
-        }
-
-        @Override
-        public String getDescription() {
-            return LocaleFactory.localizedString("Upload changed and missing files", "Transfer");
-        }
-    };
-
-    public static final TransferAction ACTION_MIRROR = new TransferAction("mirror") {
-        @Override
-        public String getTitle() {
-            return LocaleFactory.localizedString("Mirror");
-        }
-
-        @Override
-        public String getDescription() {
-            return LocaleFactory.localizedString("Download and Upload", "Transfer");
-        }
-    };
-
     @Override
     public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
@@ -140,8 +103,8 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison,
-                download.filter(TransferAction.ACTION_OVERWRITE),
-                upload.filter(TransferAction.ACTION_OVERWRITE),
+                download.filter(TransferAction.overwrite),
+                upload.filter(TransferAction.overwrite),
                 action
         );
     }

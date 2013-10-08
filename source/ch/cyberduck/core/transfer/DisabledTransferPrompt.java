@@ -27,7 +27,7 @@ public class DisabledTransferPrompt implements TransferPrompt {
 
     @Override
     public TransferAction prompt() {
-        return TransferAction.ACTION_CANCEL;
+        return TransferAction.cancel;
     }
 
     @Override

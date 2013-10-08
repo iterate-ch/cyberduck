@@ -96,7 +96,7 @@ public class UploadTransferTest extends AbstractTestCase {
         new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_OVERWRITE;
+                return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
@@ -141,7 +141,7 @@ public class UploadTransferTest extends AbstractTestCase {
         new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_OVERWRITE;
+                return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
@@ -253,7 +253,7 @@ public class UploadTransferTest extends AbstractTestCase {
         new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_RENAME;
+                return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback()).run();
     }

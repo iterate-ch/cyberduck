@@ -127,7 +127,7 @@ public abstract class TransferPromptController extends SheetController
             log.debug(String.format("Callback with return code %d", returncode));
         }
         if(returncode == CANCEL_OPTION) { // Abort
-            action = TransferAction.ACTION_CANCEL;
+            action = TransferAction.cancel;
         }
         Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
     }
@@ -439,12 +439,12 @@ public abstract class TransferPromptController extends SheetController
 
     protected TransferAction[] getTransferActions() {
         return new TransferAction[]{
-                TransferAction.ACTION_RESUME,
-                TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RENAME,
-                TransferAction.ACTION_RENAME_EXISTING,
-                TransferAction.ACTION_SKIP,
-                TransferAction.ACTION_COMPARISON
+                TransferAction.resume,
+                TransferAction.overwrite,
+                TransferAction.rename,
+                TransferAction.renameexisting,
+                TransferAction.skip,
+                TransferAction.comparison
         };
     }
 

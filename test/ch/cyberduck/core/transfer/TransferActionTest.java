@@ -5,13 +5,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferActionTest {
 
     @Test
     public void testForName() throws Exception {
-        assertEquals(TransferAction.ACTION_OVERWRITE.hashCode(),
-                TransferAction.forName(TransferAction.ACTION_OVERWRITE.name()).hashCode());
+        assertEquals(TransferAction.overwrite.hashCode(),
+                TransferAction.forName(TransferAction.overwrite.name()).hashCode());
     }
 }

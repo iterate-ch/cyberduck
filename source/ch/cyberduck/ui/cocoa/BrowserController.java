@@ -437,7 +437,7 @@ public class BrowserController extends WindowController
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt() {
-                                return TransferAction.ACTION_COMPARISON;
+                                return TransferAction.comparison;
                             }
 
                             @Override

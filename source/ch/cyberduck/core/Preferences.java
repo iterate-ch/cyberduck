@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
@@ -384,13 +383,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK.name());
-        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK.name());
+        defaults.put("queue.download.fileExists", TransferAction.callback.name());
+        defaults.put("queue.upload.fileExists", TransferAction.callback.name());
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
-        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK.name());
+        defaults.put("queue.download.reload.fileExists", TransferAction.callback.name());
+        defaults.put("queue.upload.reload.fileExists", TransferAction.callback.name());
 
         defaults.put("queue.upload.changePermissions", String.valueOf(false));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
@@ -480,11 +479,11 @@ public abstract class Preferences {
         /**
          * Default synchronize action selected in the sync dialog
          */
-        defaults.put("queue.prompt.sync.action.default", SyncTransfer.ACTION_UPLOAD.name());
-        defaults.put("queue.prompt.download.action.default", TransferAction.ACTION_OVERWRITE.name());
-        defaults.put("queue.prompt.upload.action.default", TransferAction.ACTION_OVERWRITE.name());
-        defaults.put("queue.prompt.copy.action.default", TransferAction.ACTION_OVERWRITE.name());
-        defaults.put("queue.prompt.move.action.default", TransferAction.ACTION_OVERWRITE.name());
+        defaults.put("queue.prompt.sync.action.default", TransferAction.mirror.name());
+        defaults.put("queue.prompt.download.action.default", TransferAction.overwrite.name());
+        defaults.put("queue.prompt.upload.action.default", TransferAction.overwrite.name());
+        defaults.put("queue.prompt.copy.action.default", TransferAction.overwrite.name());
+        defaults.put("queue.prompt.move.action.default", TransferAction.overwrite.name());
 
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));

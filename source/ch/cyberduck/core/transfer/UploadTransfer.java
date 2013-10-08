@@ -134,19 +134,19 @@ public class UploadTransfer extends Transfer {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
-        if(action.equals(TransferAction.ACTION_RESUME)) {
+        if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session);
         }
-        if(action.equals(TransferAction.ACTION_RENAME)) {
+        if(action.equals(TransferAction.rename)) {
             return new RenameFilter(resolver, session);
         }
-        if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
+        if(action.equals(TransferAction.renameexisting)) {
             return new RenameExistingFilter(resolver, session);
         }
-        if(action.equals(TransferAction.ACTION_SKIP)) {
+        if(action.equals(TransferAction.skip)) {
             return new SkipFilter(resolver, session);
         }
-        if(action.equals(TransferAction.ACTION_COMPARISON)) {
+        if(action.equals(TransferAction.comparison)) {
             return new CompareFilter(resolver, session);
         }
         return new OverwriteFilter(resolver, session);
@@ -161,7 +161,7 @@ public class UploadTransfer extends Transfer {
         final TransferAction action;
         if(resumeRequested) {
             // Force resume
-            action = TransferAction.ACTION_RESUME;
+            action = TransferAction.resume;
         }
         else if(reloadRequested) {
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.reload.fileExists"));
@@ -170,7 +170,7 @@ public class UploadTransfer extends Transfer {
             // Use default
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.fileExists"));
         }
-        if(action.equals(TransferAction.ACTION_CALLBACK)) {
+        if(action.equals(TransferAction.callback)) {
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
                     if(upload.attributes().isDirectory()) {
@@ -184,7 +184,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
-            return TransferAction.ACTION_OVERWRITE;
+            return TransferAction.overwrite;
         }
         return action;
     }

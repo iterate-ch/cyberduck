@@ -60,7 +60,7 @@ public abstract class TransferAction {
     /**
      * Overwrite any prior existing file
      */
-    public static final TransferAction ACTION_OVERWRITE = new TransferAction("overwrite") {
+    public static final TransferAction overwrite = new TransferAction("overwrite") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Overwrite");
@@ -75,7 +75,7 @@ public abstract class TransferAction {
     /**
      * Append to any existing file when writing
      */
-    public static final TransferAction ACTION_RESUME = new TransferAction("resume") {
+    public static final TransferAction resume = new TransferAction("resume") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Resume");
@@ -90,7 +90,7 @@ public abstract class TransferAction {
     /**
      * Create a new file with a similar name
      */
-    public static final TransferAction ACTION_RENAME = new TransferAction("similar") {
+    public static final TransferAction rename = new TransferAction("similar") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Rename");
@@ -105,7 +105,7 @@ public abstract class TransferAction {
     /**
      * Create a new file with a similar name
      */
-    public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction("rename") {
+    public static final TransferAction renameexisting = new TransferAction("rename") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Rename existing");
@@ -120,7 +120,7 @@ public abstract class TransferAction {
     /**
      * Do not transfer file
      */
-    public static final TransferAction ACTION_SKIP = new TransferAction("skip") {
+    public static final TransferAction skip = new TransferAction("skip") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Skip");
@@ -135,7 +135,7 @@ public abstract class TransferAction {
     /**
      * Prompt the user about existing files
      */
-    public static final TransferAction ACTION_CALLBACK = new TransferAction("ask") {
+    public static final TransferAction callback = new TransferAction("ask") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Prompt");
@@ -150,7 +150,7 @@ public abstract class TransferAction {
     /**
      * Automatically decide the transfer action using the comparision service for paths.
      */
-    public static final TransferAction ACTION_COMPARISON = new TransferAction("compare") {
+    public static final TransferAction comparison = new TransferAction("compare") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Compare");
@@ -162,7 +162,7 @@ public abstract class TransferAction {
         }
     };
 
-    public static final TransferAction ACTION_CANCEL = new TransferAction("cancel") {
+    public static final TransferAction cancel = new TransferAction("cancel") {
         @Override
         public String getTitle() {
             return LocaleFactory.localizedString("Cancel");
@@ -171,6 +171,51 @@ public abstract class TransferAction {
         @Override
         public String getDescription() {
             return StringUtils.EMPTY;
+        }
+    };
+
+    /**
+     * Synchronize action
+     */
+    public static final TransferAction download = new TransferAction("download") {
+        @Override
+        public String getTitle() {
+            return LocaleFactory.localizedString("Download");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Download changed and missing files", "Transfer");
+        }
+    };
+
+    /**
+     * Synchronize action
+     */
+    public static final TransferAction upload = new TransferAction("upload") {
+        @Override
+        public String getTitle() {
+            return LocaleFactory.localizedString("Upload");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Upload changed and missing files", "Transfer");
+        }
+    };
+
+    /**
+     * Synchronize action
+     */
+    public static final TransferAction mirror = new TransferAction("mirror") {
+        @Override
+        public String getTitle() {
+            return LocaleFactory.localizedString("Mirror");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Download and Upload", "Transfer");
         }
     };
 

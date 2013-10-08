@@ -143,7 +143,7 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
-        return TransferAction.ACTION_OVERWRITE;
+        return TransferAction.overwrite;
     }
 
     @Override

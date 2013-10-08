@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     if (result == DialogResult.Cancel)
                     {
-                        Action = TransferAction.ACTION_CANCEL;
+                        Action = TransferAction.cancel;
                     }
                 };
             _parent.Invoke(wireAction, true);
@@ -238,12 +238,12 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual void PopulateActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            actions.Add(TransferAction.ACTION_RESUME, TransferAction.ACTION_RESUME.getTitle());
-            actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getTitle());
-            actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getTitle());
-            actions.Add(TransferAction.ACTION_RENAME_EXISTING, TransferAction.ACTION_RENAME_EXISTING.getTitle());
-            actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getTitle());
-            actions.Add(TransferAction.ACTION_COMPARISON, TransferAction.ACTION_COMPARISON.getTitle());
+            actions.Add(TransferAction.resume, TransferAction.resume.getTitle());
+            actions.Add(TransferAction.overwrite, TransferAction.overwrite.getTitle());
+            actions.Add(TransferAction.rename, TransferAction.rename.getTitle());
+            actions.Add(TransferAction.renameexisting, TransferAction.renameexisting.getTitle());
+            actions.Add(TransferAction.skip, TransferAction.skip.getTitle());
+            actions.Add(TransferAction.comparison, TransferAction.comparison.getTitle());
 
             bool renameSupported = true;
             foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))

@@ -63,7 +63,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_OVERWRITE;
+                return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback()).run();
         assertTrue(t.isComplete());
@@ -132,7 +132,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_OVERWRITE;
+                return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
@@ -259,11 +259,11 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.callback, t.action(false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 prompt.set(true);
-                return TransferAction.ACTION_CALLBACK;
+                return TransferAction.callback;
             }
         }));
         assertTrue(prompt.get());
@@ -273,10 +273,10 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return false;
             }
         });
-        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.overwrite, t.action(false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
-                return TransferAction.ACTION_CALLBACK;
+                return TransferAction.callback;
             }
         }));
     }
@@ -297,11 +297,11 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.ACTION_CALLBACK, t.action(false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.callback, t.action(false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 prompt.set(true);
-                return TransferAction.ACTION_CALLBACK;
+                return TransferAction.callback;
             }
         }));
         assertTrue(prompt.get());
@@ -311,11 +311,11 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return false;
             }
         });
-        assertEquals(TransferAction.ACTION_OVERWRITE, t.action(false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.overwrite, t.action(false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
-                return TransferAction.ACTION_CALLBACK;
+                return TransferAction.callback;
             }
         }));
     }
@@ -324,7 +324,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     public void testActionResume() throws Exception {
         final Path root = new Path("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(new NullSession(new Host("t")), root);
-        assertEquals(TransferAction.ACTION_RESUME, t.action(true, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.resume, t.action(true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();

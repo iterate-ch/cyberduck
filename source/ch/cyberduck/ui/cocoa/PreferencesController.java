@@ -1480,13 +1480,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateDownloadCombobox.setAction(Foundation.selector("duplicateDownloadComboboxClicked:"));
         this.duplicateDownloadCombobox.removeAllItems();
         for(TransferAction action : new TransferAction[]{
-                TransferAction.ACTION_CALLBACK,
-                TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RESUME,
-                TransferAction.ACTION_RENAME,
-                TransferAction.ACTION_RENAME_EXISTING,
-                TransferAction.ACTION_COMPARISON,
-                TransferAction.ACTION_SKIP}) {
+                TransferAction.callback,
+                TransferAction.overwrite,
+                TransferAction.resume,
+                TransferAction.rename,
+                TransferAction.renameexisting,
+                TransferAction.comparison,
+                TransferAction.skip}) {
             this.duplicateDownloadCombobox.addItemWithTitle(action.getTitle());
             this.duplicateDownloadCombobox.lastItem().setRepresentedObject(action.name());
             this.duplicateDownloadCombobox.addItemWithTitle(action.getDescription());
@@ -1514,14 +1514,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateDownloadOverwriteButton.setAction(Foundation.selector("duplicateDownloadOverwriteButtonClicked:"));
         this.duplicateDownloadOverwriteButton.setState(
                 Preferences.instance().getProperty("queue.download.reload.fileExists").equals(
-                        TransferAction.ACTION_OVERWRITE.name()) ? NSCell.NSOnState : NSCell.NSOffState);
+                        TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void duplicateDownloadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.download.reload.fileExists", TransferAction.ACTION_OVERWRITE.name());
+            Preferences.instance().setProperty("queue.download.reload.fileExists", TransferAction.overwrite.name());
         }
         else {
             Preferences.instance().setProperty("queue.download.reload.fileExists",
@@ -1539,13 +1539,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateUploadCombobox.setAction(Foundation.selector("duplicateUploadComboboxClicked:"));
         this.duplicateUploadCombobox.removeAllItems();
         for(TransferAction action : new TransferAction[]{
-                TransferAction.ACTION_CALLBACK,
-                TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RESUME,
-                TransferAction.ACTION_RENAME,
-                TransferAction.ACTION_RENAME_EXISTING,
-                TransferAction.ACTION_COMPARISON,
-                TransferAction.ACTION_SKIP}) {
+                TransferAction.callback,
+                TransferAction.overwrite,
+                TransferAction.resume,
+                TransferAction.rename,
+                TransferAction.renameexisting,
+                TransferAction.comparison,
+                TransferAction.skip}) {
             this.duplicateUploadCombobox.addItemWithTitle(action.getTitle());
             this.duplicateUploadCombobox.lastItem().setRepresentedObject(action.name());
             this.duplicateUploadCombobox.addItemWithTitle(action.getDescription());
@@ -1573,14 +1573,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateUploadOverwriteButton.setAction(Foundation.selector("duplicateUploadOverwriteButtonClicked:"));
         this.duplicateUploadOverwriteButton.setState(
                 Preferences.instance().getProperty("queue.upload.reload.fileExists").equals(
-                        TransferAction.ACTION_OVERWRITE.name()) ? NSCell.NSOnState : NSCell.NSOffState);
+                        TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void duplicateUploadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.upload.reload.fileExists", TransferAction.ACTION_OVERWRITE.name());
+            Preferences.instance().setProperty("queue.upload.reload.fileExists", TransferAction.overwrite.name());
         }
         else {
             Preferences.instance().setProperty("queue.upload.reload.fileExists",

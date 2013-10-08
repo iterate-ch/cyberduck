@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public override TransferAction prompt()
         {
             TransferPromptModel = new SyncPromptModel(this, Transfer);
-            Action = TransferAction.ACTION_OVERWRITE;
+            Action = TransferAction.overwrite;
             return base.prompt();
         }
 
@@ -59,9 +59,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             TransferAction defaultAction = ((SyncTransfer) Transfer).getTransferAction();
 
-            actions.Add(SyncTransfer.ACTION_DOWNLOAD, SyncTransfer.ACTION_DOWNLOAD.getTitle());
-            actions.Add(SyncTransfer.ACTION_UPLOAD, SyncTransfer.ACTION_UPLOAD.getTitle());
-            actions.Add(SyncTransfer.ACTION_MIRROR, SyncTransfer.ACTION_MIRROR.getTitle());
+            actions.Add(TransferAction.download, TransferAction.download.getTitle());
+            actions.Add(TransferAction.upload, TransferAction.upload.getTitle());
+            actions.Add(TransferAction.mirror, TransferAction.mirror.getTitle());
             View.PopulateActions(actions);
 
             View.SelectedAction = defaultAction;

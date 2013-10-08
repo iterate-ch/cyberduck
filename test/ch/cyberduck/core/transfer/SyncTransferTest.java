@@ -86,7 +86,7 @@ public class SyncTransferTest extends AbstractTestCase {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         Transfer t = new SyncTransfer(new NullSession(new Host("t")), p);
-        final TransferPathFilter filter = t.filter(SyncTransfer.ACTION_DOWNLOAD);
+        final TransferPathFilter filter = t.filter(TransferAction.download);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
         test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         assertFalse(filter.accept(test, new TransferStatus().exists(true)));
@@ -97,7 +97,7 @@ public class SyncTransferTest extends AbstractTestCase {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         Transfer t = new SyncTransfer(new NullSession(new Host("t")), p);
-        final TransferPathFilter filter = t.filter(SyncTransfer.ACTION_UPLOAD);
+        final TransferPathFilter filter = t.filter(TransferAction.upload);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
         test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         assertTrue(filter.accept(test, new TransferStatus().exists(true)));
@@ -108,7 +108,7 @@ public class SyncTransferTest extends AbstractTestCase {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
         p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         Transfer t = new SyncTransfer(new NullSession(new Host("t")), p);
-        final TransferPathFilter filter = t.filter(SyncTransfer.ACTION_MIRROR);
+        final TransferPathFilter filter = t.filter(TransferAction.mirror);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
         test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         assertTrue(filter.accept(test, new TransferStatus().exists(true)));
@@ -133,9 +133,9 @@ public class SyncTransferTest extends AbstractTestCase {
         }, root);
         final AttributedList<Path> list = t.list(root, new TransferStatus().exists(true));
         assertEquals(1, list.size());
-        assertFalse(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(SyncTransfer.ACTION_UPLOAD).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(SyncTransfer.ACTION_MIRROR).accept(root, new TransferStatus().exists(true)));
+        assertFalse(t.filter(TransferAction.download).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.upload).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.mirror).accept(root, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -164,11 +164,11 @@ public class SyncTransferTest extends AbstractTestCase {
         }, root);
         final AttributedList<Path> list = t.list(root, new TransferStatus().exists(true));
         assertEquals(1, list.size());
-        assertTrue(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(SyncTransfer.ACTION_MIRROR).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(SyncTransfer.ACTION_DOWNLOAD).accept(a, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.download).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.mirror).accept(root, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.download).accept(a, new TransferStatus().exists(true)));
         // Because root is directory
-        assertTrue(t.filter(SyncTransfer.ACTION_UPLOAD).accept(root, new TransferStatus().exists(true)));
-        assertFalse(t.filter(SyncTransfer.ACTION_UPLOAD).accept(a, new TransferStatus().exists(true)));
+        assertTrue(t.filter(TransferAction.upload).accept(root, new TransferStatus().exists(true)));
+        assertFalse(t.filter(TransferAction.upload).accept(a, new TransferStatus().exists(true)));
     }
 }

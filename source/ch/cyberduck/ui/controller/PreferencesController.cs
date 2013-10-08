@@ -664,7 +664,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.DuplicateUploadOverwrite)
             {
                 Preferences.instance().setProperty("queue.upload.reload.fileExists",
-                                                   TransferAction.ACTION_OVERWRITE.toString());
+                                                   TransferAction.overwrite.toString());
             }
             else
             {
@@ -679,7 +679,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.DuplicateDownloadOverwrite)
             {
                 Preferences.instance().setProperty("queue.download.reload.fileExists",
-                                                   TransferAction.ACTION_OVERWRITE.toString());
+                                                   TransferAction.overwrite.toString());
             }
             else
             {
@@ -697,34 +697,34 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void duplicateComboboxClicked(String selected, String property)
         {
-            if (selected.Equals(TransferAction.ACTION_CALLBACK.getTitle()))
+            if (selected.Equals(TransferAction.callback.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_CALLBACK.toString());
+                Preferences.instance().setProperty(property, TransferAction.callback.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_OVERWRITE.getTitle()))
+            else if (selected.Equals(TransferAction.overwrite.getTitle()))
             {
                 Preferences.instance().setProperty(property,
-                                                   TransferAction.ACTION_OVERWRITE.toString());
+                                                   TransferAction.overwrite.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RESUME.getTitle()))
+            else if (selected.Equals(TransferAction.resume.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_RESUME.toString());
+                Preferences.instance().setProperty(property, TransferAction.resume.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RENAME.getTitle()))
+            else if (selected.Equals(TransferAction.rename.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME.toString());
+                Preferences.instance().setProperty(property, TransferAction.rename.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_RENAME_EXISTING.getTitle()))
+            else if (selected.Equals(TransferAction.renameexisting.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME_EXISTING.toString());
+                Preferences.instance().setProperty(property, TransferAction.renameexisting.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_COMPARISON.getTitle()))
+            else if (selected.Equals(TransferAction.comparison.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_COMPARISON.toString());
+                Preferences.instance().setProperty(property, TransferAction.comparison.toString());
             }
-            else if (selected.Equals(TransferAction.ACTION_SKIP.getTitle()))
+            else if (selected.Equals(TransferAction.skip.getTitle()))
             {
-                Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());
+                Preferences.instance().setProperty(property, TransferAction.skip.toString());
             }
         }
 
@@ -950,14 +950,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 "queue.download.reload.fileExists")
                                                          .
                                                           Equals(
-                                                              TransferAction.ACTION_OVERWRITE.toString())
+                                                              TransferAction.overwrite.toString())
                                                   ? true
                                                   : false;
             View.DuplicateUploadOverwrite = Preferences.instance().getProperty(
                 "queue.upload.reload.fileExists")
                                                        .
                                                         Equals(
-                                                            TransferAction.ACTION_OVERWRITE.toString())
+                                                            TransferAction.overwrite.toString())
                                                 ? true
                                                 : false;
             View.UploadWithTemporaryFilename = Preferences.instance().getBoolean("queue.upload.file.temporary");
@@ -1257,23 +1257,23 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDuplicateActions()
         {
             List<string> downloadActions = new List<string>();
-            downloadActions.Add(TransferAction.ACTION_CALLBACK.getTitle());
-            downloadActions.Add(TransferAction.ACTION_OVERWRITE.getTitle());
-            downloadActions.Add(TransferAction.ACTION_RESUME.getTitle());
-            downloadActions.Add(TransferAction.ACTION_RENAME.getTitle());
-            downloadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
-            downloadActions.Add(TransferAction.ACTION_COMPARISON.getTitle());
-            downloadActions.Add(TransferAction.ACTION_SKIP.getTitle());
+            downloadActions.Add(TransferAction.callback.getTitle());
+            downloadActions.Add(TransferAction.overwrite.getTitle());
+            downloadActions.Add(TransferAction.resume.getTitle());
+            downloadActions.Add(TransferAction.rename.getTitle());
+            downloadActions.Add(TransferAction.renameexisting.getTitle());
+            downloadActions.Add(TransferAction.comparison.getTitle());
+            downloadActions.Add(TransferAction.skip.getTitle());
             View.PopulateDuplicateDownloadActions(downloadActions);
 
             List<string> uploadActions = new List<string>();
-            uploadActions.Add(TransferAction.ACTION_CALLBACK.getTitle());
-            uploadActions.Add(TransferAction.ACTION_OVERWRITE.getTitle());
-            uploadActions.Add(TransferAction.ACTION_RESUME.getTitle());
-            uploadActions.Add(TransferAction.ACTION_RENAME.getTitle());
-            uploadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getTitle());
-            uploadActions.Add(TransferAction.ACTION_COMPARISON.getTitle());
-            uploadActions.Add(TransferAction.ACTION_SKIP.getTitle());
+            uploadActions.Add(TransferAction.callback.getTitle());
+            uploadActions.Add(TransferAction.overwrite.getTitle());
+            uploadActions.Add(TransferAction.resume.getTitle());
+            uploadActions.Add(TransferAction.rename.getTitle());
+            uploadActions.Add(TransferAction.renameexisting.getTitle());
+            uploadActions.Add(TransferAction.comparison.getTitle());
+            uploadActions.Add(TransferAction.skip.getTitle());
             View.PopulateDuplicateUploadActions(uploadActions);
         }
 
