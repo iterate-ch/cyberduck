@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.synchronisation;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
