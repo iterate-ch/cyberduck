@@ -120,6 +120,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
+    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+        //
+    }
+
+    @Override
     public void complete(final Path file, final TransferOptions options,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {

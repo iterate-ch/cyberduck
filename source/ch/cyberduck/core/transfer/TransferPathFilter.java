@@ -32,7 +32,7 @@ public interface TransferPathFilter {
      * @param parent Parent transfer status
      * @return True if file should be transferred
      */
-    boolean accept(Path file, final TransferStatus parent) throws BackgroundException;
+    boolean accept(Path file, TransferStatus parent) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.
@@ -41,7 +41,9 @@ public interface TransferPathFilter {
      * @param parent Parent transfer status
      * @return Transfer status
      */
-    TransferStatus prepare(Path file, final TransferStatus parent) throws BackgroundException;
+    TransferStatus prepare(Path file, TransferStatus parent) throws BackgroundException;
+
+    void apply(Path file, TransferStatus parent) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.

@@ -73,6 +73,8 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         p.setLocal(new NullLocal("/Downloads", "n"));
         f.prepare(p, new TransferStatus().exists(true));
+        assertFalse(c.get());
+        f.apply(p, new TransferStatus().exists(true));
         assertTrue(c.get());
     }
 
@@ -181,7 +183,8 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
         assertTrue(found.get());
         assertNull(status.getRenamed());
-        f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
+        assertFalse(moved.get());
+        f.apply(file, new TransferStatus().exists(true));
         assertTrue(moved.get());
     }
 }

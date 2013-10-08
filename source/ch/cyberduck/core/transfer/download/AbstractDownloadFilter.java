@@ -97,10 +97,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 // Read file size
                 status.setLength(file.attributes().getSize());
             }
-            // No icon update if disabled
-            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
-                icon.set(file.getLocal(), 0);
-            }
         }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
@@ -109,6 +105,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
         }
         return status;
+    }
+
+    @Override
+    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+        if(file.attributes().isFile()) {
+            // No icon update if disabled
+            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+                icon.set(file.getLocal(), 0);
+            }
+        }
     }
 
     /**

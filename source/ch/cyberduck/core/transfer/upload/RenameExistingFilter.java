@@ -62,14 +62,13 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
         if(!options.temporary || file.attributes().isDirectory()) {
             // Rename existing file before putting new file in place
             if(parent.isExists()) {
                 this.rename(file);
             }
         }
-        return super.prepare(file, parent);
     }
 
     private void rename(final Path file) throws BackgroundException {

@@ -176,7 +176,11 @@ public class SingleTransferWorker extends Worker<Boolean> {
                     log.info(String.format("Accepted file %s in transfer %s", file, this));
                 }
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
+                // Determine transfer status
                 final TransferStatus status = filter.prepare(file, parent);
+                // Apply filter
+                filter.apply(file, parent);
+                // Recursive
                 if(file.attributes().isDirectory()) {
                     // Call recursively for all children
                     final AttributedList<Path> children = transfer.list(file, parent);
@@ -250,6 +254,7 @@ public class SingleTransferWorker extends Worker<Boolean> {
                     log.warn(String.format("Ignore failure in completion filter for %s", file));
                 }
             }
+            // Recursive
             if(file.attributes().isDirectory()) {
                 for(Path f : cache.get(file.getReference())) {
                     // Recursive

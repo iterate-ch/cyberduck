@@ -83,6 +83,11 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
+    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+        //
+    }
+
+    @Override
     public void complete(final Path source, final TransferOptions options,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
