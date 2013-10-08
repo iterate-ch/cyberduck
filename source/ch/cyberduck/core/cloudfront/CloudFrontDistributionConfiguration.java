@@ -105,7 +105,7 @@ public class CloudFrontDistributionConfiguration
         };
     }
 
-    protected Jets3tProperties configure() {
+    private Jets3tProperties configure() {
         final Jets3tProperties configuration = new Jets3tProperties();
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
