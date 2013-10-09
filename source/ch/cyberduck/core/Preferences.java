@@ -485,8 +485,11 @@ public abstract class Preferences {
         defaults.put("queue.prompt.copy.action.default", TransferAction.overwrite.name());
         defaults.put("queue.prompt.move.action.default", TransferAction.overwrite.name());
 
-        defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
-        defaults.put("queue.logDrawer.size.height", String.valueOf(200));
+        defaults.put("queue.transcript.open", String.valueOf(false));
+        defaults.put("queue.transcript.size.height", String.valueOf(200));
+
+        defaults.put("queue.transcript.open", String.valueOf(false));
+        defaults.put("queue.transcript.size.height", String.valueOf(200));
 
         defaults.put("http.compression.enable", String.valueOf(true));
 

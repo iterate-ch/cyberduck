@@ -185,8 +185,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.PositionSizeRestoredEvent += delegate
                 {
-                    View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
-                    View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
+                    View.TranscriptVisible = Preferences.instance().getBoolean("queue.transcript.open");
+                    View.TranscriptHeight = Preferences.instance().getInteger("queue.transcript.size.height");
 
                     View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
                     View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
@@ -216,13 +216,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TranscriptHeightChangedEvent()
         {
-            Preferences.instance().setProperty("queue.logDrawer.size.height", View.TranscriptHeight);
+            Preferences.instance().setProperty("queue.transcript.size.height", View.TranscriptHeight);
         }
 
         private void View_ToggleTranscriptEvent()
         {
             View.TranscriptVisible = !View.TranscriptVisible;
-            Preferences.instance().setProperty("queue.logDrawer.isOpen", View.TranscriptVisible);
+            Preferences.instance().setProperty("queue.transcript.open", View.TranscriptVisible);
         }
 
         private bool View_ValidateShowEvent()
