@@ -34,6 +34,9 @@ import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.resources.NSImageIconCache;
@@ -117,6 +120,18 @@ public class AbstractTestCase {
         DisabledPasswordStore.register();
         TemporaryFileService.register();
         LaunchServicesFileDescriptor.register();
+        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
+            @Override
+            public LoginController create(final Controller c) {
+                return new DisabledLoginController();
+            }
+        });
+        HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
+            @Override
+            public HostKeyController create(final Controller c) {
+                return new DefaultHostKeyController();
+            }
+        });
     }
 
     @Before

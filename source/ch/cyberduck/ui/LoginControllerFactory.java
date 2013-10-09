@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public abstract class LoginControllerFactory extends Factory<LoginController> {
 
-    protected abstract LoginController create(Controller c);
+    public abstract LoginController create(Controller c);
 
     @Override
     protected LoginController create() {
