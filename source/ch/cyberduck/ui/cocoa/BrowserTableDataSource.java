@@ -59,6 +59,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -293,7 +294,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     controller.transfer(new CopyTransfer(pasteboard.getSession().getHost(),
                             controller.getSession().getHost(),
-                            files));
+                            files), new ArrayList<Path>(files.values()), false);
                 }
                 else {
                     // The file should be renamed

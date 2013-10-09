@@ -2837,7 +2837,7 @@ public class BrowserController extends WindowController
      * @param transfer Transfer Operation
      * @param browser  Transfer in browser window
      */
-    private void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
+    protected void transfer(final Transfer transfer, final List<Path> selected, boolean browser) {
         final TransferCallback callback = new TransferCallback() {
             @Override
             public void complete(final Transfer transfer) {
