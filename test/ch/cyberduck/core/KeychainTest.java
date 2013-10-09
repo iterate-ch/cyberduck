@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -31,7 +32,7 @@ public class KeychainTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTrustedThreaded() throws Exception {
+    public void testTrusted() throws Exception {
         final CertificateStore k = new Keychain();
         InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -39,10 +40,27 @@ public class KeychainTest extends AbstractTestCase {
         this.repeat(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                final boolean trusted = k.isTrusted("cyberduck.ch", Collections.<X509Certificate>singletonList(cert));
+                final boolean trusted = k.isTrusted("test.cyberduck.ch", Collections.<X509Certificate>singletonList(cert));
                 assertTrue(trusted);
                 return trusted;
             }
-        }, 10);
+        }, 1);
+    }
+
+    @Test
+    @Ignore
+    public void testTrustedHostnameMismatch() throws Exception {
+        final CertificateStore k = new Keychain();
+        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
+        this.repeat(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                final boolean trusted = k.isTrusted("s.test.cyberduck.ch", Collections.<X509Certificate>singletonList(cert));
+                assertTrue(trusted);
+                return trusted;
+            }
+        }, 1);
     }
 }
