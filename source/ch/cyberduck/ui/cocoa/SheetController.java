@@ -78,13 +78,6 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     /**
-     * @return The controller of this sheet parent window
-     */
-    protected WindowController getParentController() {
-        return parent;
-    }
-
-    /**
      * Translate return codes from sheet selection
      *
      * @param selected Button pressed
