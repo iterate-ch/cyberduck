@@ -38,7 +38,6 @@
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.0/bin/x86"/>
-    <property name="wyupdate.home" value="C:/workspace/wyupdate-2.6.18-r414"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
 
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
