@@ -73,6 +73,6 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertEquals(2, transfer.getSessions().size());
         assertEquals("ftp.heise.de", transfer.getSessions().get(0).getHost().getHostname());
         assertEquals("sudo.ch", transfer.getSessions().get(1).getHost().getHostname());
-        assertEquals("Copying 1301-130.zip to 1301-130.zip", transfer.getName());
+        assertEquals("1301-130.zip", transfer.getName());
     }
 }
