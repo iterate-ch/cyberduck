@@ -426,9 +426,9 @@ public class BrowserController extends WindowController
                 downloads.add(path);
             }
             if(downloads.size() > 0) {
-                final Transfer download = new DownloadTransfer(session, downloads);
+                final Transfer download = new DownloadTransfer(session.getHost(), downloads);
                 final TransferOptions options = new TransferOptions();
-                background(new TransferBackgroundAction(this, new TransferAdapter() {
+                background(new TransferBackgroundAction(this, session, new TransferAdapter() {
                     @Override
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
@@ -2305,7 +2305,7 @@ public class BrowserController extends WindowController
         this.checkOverwrite(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
-                transfer(new CopyTransfer(session, SessionFactory.createSession(session.getHost()), selected),
+                transfer(new CopyTransfer(session.getHost(), session.getHost(), selected),
                         new ArrayList<Path>(selected.values()), true);
             }
         });
@@ -2670,12 +2670,11 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             String folder;
             if((folder = sheet.filename()) != null) {
-                final Session session = this.getTransferSession();
                 final List<Path> selected = this.getSelectedPaths();
                 for(Path file : selected) {
                     file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
                 }
-                this.transfer(new DownloadTransfer(session, selected), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
             }
         }
         lastSelectedDownloadDirectory = sheet.filename();
@@ -2703,7 +2702,7 @@ public class BrowserController extends WindowController
             if((filename = sheet.filename()) != null) {
                 final Path selected = this.getSelectedPath();
                 selected.setLocal(LocalFactory.createLocal(filename));
-                this.transfer(new DownloadTransfer(this.getTransferSession(), selected), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
             }
         }
     }
@@ -2745,21 +2744,19 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                final Session session = getTransferSession(true);
                 selected.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
-                this.transfer(new SyncTransfer(session, selected));
+                this.transfer(new SyncTransfer(session.getHost(), selected));
             }
         }
     }
 
     @Action
     public void downloadButtonClicked(final ID sender) {
-        final Session session = this.getTransferSession();
         final List<Path> selected = this.getSelectedPaths();
         for(Path file : selected) {
             file.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), file.getName()));
         }
-        this.transfer(new DownloadTransfer(session, selected), Collections.<Path>emptyList());
+        this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
     }
 
     private static String lastSelectedUploadDirectory = null;
@@ -2811,40 +2808,16 @@ public class BrowserController extends WindowController
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             NSEnumerator iterator = selected.objectEnumerator();
-            final Session session = this.getTransferSession();
             final List<Path> roots = new Collection<Path>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 roots.add(new Path(destination, LocalFactory.createLocal(next.toString())));
             }
-            transfer(new UploadTransfer(session, roots));
+            transfer(new UploadTransfer(session.getHost(), roots));
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
-    }
-
-    /**
-     * @return The session to be used for file transfers. Null if not mounted
-     */
-    protected Session getTransferSession() {
-        return this.getTransferSession(false);
-    }
-
-    /**
-     * @param force Force to create a new session and not reuse the browser session
-     * @return The session to be used for file transfers. Null if not mounted
-     */
-    protected Session getTransferSession(boolean force) {
-        if(!this.isMounted()) {
-            return null;
-        }
-        if(!force) {
-            if(this.session.getMaxConnections() == 1) {
-                return this.session;
-            }
-        }
-        return SessionFactory.createSession(session.getHost());
     }
 
     protected void transfer(final Transfer transfer) {
@@ -2877,7 +2850,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferBackgroundAction(this, new TransferAdapter() {
+            this.background(new TransferBackgroundAction(this, session, new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
@@ -3132,13 +3105,12 @@ public class BrowserController extends WindowController
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 final Path workdir = this.workdir();
-                final Session session = this.getTransferSession();
                 final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     Path p = new Path(workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
-                this.transfer(new UploadTransfer(session, roots));
+                this.transfer(new UploadTransfer(session.getHost(), roots));
             }
         }
         return false;

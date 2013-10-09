@@ -689,7 +689,9 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
+        final Session session = SessionFactory.createSession(transfer.getHost());
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
+                session,
                 progress, progress, transfer, options) {
             @Override
             public void init() {
@@ -861,13 +863,12 @@ public final class TransferController extends WindowController implements NSTool
             if(log.isDebugEnabled()) {
                 log.debug("Paste download transfer from pasteboard");
             }
-            final Session session = SessionFactory.createSession(pasteboard.getSession().getHost());
             for(Path download : pasteboard) {
                 download.setLocal(LocalFactory.createLocal(
                         pasteboard.getSession().getHost().getDownloadFolder(),
                         download.getName()));
             }
-            this.add(new DownloadTransfer(session, pasteboard));
+            this.add(new DownloadTransfer(pasteboard.getSession().getHost(), pasteboard));
             pasteboard.clear();
         }
     }

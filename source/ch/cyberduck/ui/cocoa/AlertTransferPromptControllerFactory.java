@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -42,14 +43,14 @@ public final class AlertTransferPromptControllerFactory extends TransferPromptCo
     }
 
     @Override
-    public TransferPrompt create(final Controller c, final Transfer transfer) {
+    public TransferPrompt create(final Controller c, final Transfer transfer, final Session session) {
         switch(transfer.getType()) {
             case download:
-                return new DownloadPromptController((WindowController) c, (DownloadTransfer) transfer);
+                return new DownloadPromptController((WindowController) c, (DownloadTransfer) transfer, session);
             case upload:
-                return new UploadPromptController((WindowController) c, (UploadTransfer) transfer);
+                return new UploadPromptController((WindowController) c, (UploadTransfer) transfer, session);
             case sync:
-                return new SyncPromptController((WindowController) c, (SyncTransfer) transfer);
+                return new SyncPromptController((WindowController) c, (SyncTransfer) transfer, session);
         }
         return new DisabledTransferPrompt();
     }

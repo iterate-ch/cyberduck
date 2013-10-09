@@ -19,27 +19,19 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * @version $Id$
@@ -49,12 +41,11 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
-                new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
+                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
         t.addSize(4L);
         t.addTransferred(3L);
-        final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()),
-                new SFTPSession(new Host(new SFTPProtocol(), "t")));
+        final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.files, serialized.files);
@@ -66,61 +57,8 @@ public class CopyTransferTest extends AbstractTestCase {
     @Test
     public void testAction() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        CopyTransfer t = new CopyTransfer(new SFTPSession(new Host(new SFTPProtocol(), "t")),
-                new FTPSession(new Host(new FTPProtocol(), "t")), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
-        assertEquals(TransferAction.overwrite, t.action(false, true, new DisabledTransferPrompt()));
-    }
-
-    @Test
-    public void testDuplicate() throws Exception {
-        final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        )));
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-
-        final Path test = session.list(session.workdir(), new DisabledListProgressListener()).get(
-                new Path(session.workdir(), "test", Path.FILE_TYPE).getReference());
-        assertNotEquals(-1, test.attributes().getSize());
-
-        final Path copy = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final Transfer t = new CopyTransfer(session, session,
-                Collections.<Path, Path>singletonMap(test, copy));
-
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback()).run();
-        assertTrue(t.isComplete());
-        assertNotNull(t.getTimestamp());
-
-        session.close();
-    }
-
-    @Test
-    public void testCopyBetweenHosts() throws Exception {
-        final SFTPSession session = new SFTPSession(new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        )));
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-
-        final FTPSession destination = new FTPSession(new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
-        )));
-        destination.open(new DefaultHostKeyController());
-        destination.login(new DisabledPasswordStore(), new DisabledLoginController());
-
-        final Path test = session.list(session.workdir(), new DisabledListProgressListener()).get(
-                new Path(session.workdir(), "test", Path.FILE_TYPE).getReference());
-        assertNotEquals(-1, test.attributes().getSize());
-
-        final Path copy = new Path(destination.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final Transfer t = new CopyTransfer(session, destination,
-                Collections.<Path, Path>singletonMap(test, copy));
-
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback()).run();
-        assertTrue(t.isComplete());
-        assertNotNull(t.getTimestamp());
-
-        session.close();
-        destination.close();
+        CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
+                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+        assertEquals(TransferAction.overwrite, t.action(new SFTPSession(new Host(new SFTPProtocol(), "t")), false, true, new DisabledTransferPrompt()));
     }
 }

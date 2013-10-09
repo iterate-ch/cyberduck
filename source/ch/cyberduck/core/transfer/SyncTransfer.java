@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
@@ -55,22 +56,19 @@ public class SyncTransfer extends Transfer {
 
     private CachingComparisonService comparison;
 
-    public SyncTransfer(final Session session, final Path root) {
-        super(session, root, new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+    public SyncTransfer(final Host host, final Path root) {
+        super(host, root, new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
     }
 
-    public <T> SyncTransfer(final T dict, final Session s) {
-        super(dict, s, new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+    public <T> SyncTransfer(final T dict) {
+        super(dict, new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
     }
 
     private void init() {
-        comparison = new CachingComparisonService(new CombinedComparisionService(session, session.getHost().getTimezone()));
-        upload = new UploadTransfer(session, this.getRoots(), new NullPathFilter<Local>());
-        download = new DownloadTransfer(session, this.getRoots(), new NullPathFilter<Path>());
+        upload = new UploadTransfer(host, this.getRoots(), new NullPathFilter<Local>());
+        download = new DownloadTransfer(host, this.getRoots(), new NullPathFilter<Path>());
     }
 
     @Override
@@ -96,36 +94,36 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
-                comparison,
-                download.filter(TransferAction.overwrite),
-                upload.filter(TransferAction.overwrite),
+                comparison = new CachingComparisonService(new CombinedComparisionService(session, host.getTimezone())),
+                download.filter(session, TransferAction.overwrite),
+                upload.filter(session, TransferAction.overwrite),
                 action
         );
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<Path> children = new HashSet<Path>();
         if(session.getFeature(Find.class).find(directory)) {
-            children.addAll(download.list(directory, parent));
+            children.addAll(download.list(session, directory, parent));
         }
         if(directory.getLocal().exists()) {
-            children.addAll(upload.list(directory, parent));
+            children.addAll(upload.list(session, directory, parent));
         }
         return new AttributedList<Path>(children);
     }
 
     @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
+    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
@@ -134,16 +132,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file);
         if(compare.equals(Comparison.remote)) {
-            download.transfer(file, options, status);
+            download.transfer(session, file, options, status);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.transfer(file, options, status);
+            upload.transfer(session, file, options, status);
         }
     }
 

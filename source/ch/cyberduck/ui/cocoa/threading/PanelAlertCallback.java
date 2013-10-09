@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ReachabilityFactory;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
@@ -64,9 +63,7 @@ public class PanelAlertCallback implements AlertCallback {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.ALTERNATE_OPTION) {
-                        for(Session session : action.getSessions()) {
-                            ReachabilityFactory.get().diagnose(session.getHost());
-                        }
+                        ReachabilityFactory.get().diagnose(action.getSession().getHost());
                     }
                     if(returncode == SheetCallback.DEFAULT_OPTION) {
                         // Re-run the action with the previous lock used
@@ -76,7 +73,7 @@ public class PanelAlertCallback implements AlertCallback {
 
                 @Override
                 protected void help() {
-                    new DefaultProviderHelpService().help(action.getSessions().iterator().next().getHost().getProtocol());
+                    new DefaultProviderHelpService().help(action.getSession().getHost().getProtocol());
                 }
             };
             if(log.length() > 0) {

@@ -17,7 +17,7 @@ import ch.cyberduck.ui.LoginControllerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -28,7 +28,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
     public void factory() {
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
             @Override
-            protected LoginController create(final Controller c) {
+            public LoginController create(final Controller c) {
                 return null;
             }
 
@@ -53,7 +53,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testGetSessions() throws Exception {
-        assertFalse(new BrowserBackgroundAction(new AbstractController() {
+        assertNotNull(new BrowserBackgroundAction(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 throw new UnsupportedOperationException();
@@ -63,6 +63,6 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
             public Boolean run() throws BackgroundException {
                 return false;
             }
-        }.getSessions().isEmpty());
+        }.getSession());
     }
 }

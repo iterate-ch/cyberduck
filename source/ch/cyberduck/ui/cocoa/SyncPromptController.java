@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
@@ -34,9 +35,9 @@ public class SyncPromptController extends TransferPromptController {
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
-    public SyncPromptController(final WindowController parent, final SyncTransfer transfer) {
-        super(parent, transfer);
-        browserModel = new SyncPromptModel(this, transfer, cache);
+    public SyncPromptController(final WindowController parent, final SyncTransfer transfer, final Session session) {
+        super(parent, transfer, session);
+        browserModel = new SyncPromptModel(this, session, transfer, cache);
     }
 
     @Override

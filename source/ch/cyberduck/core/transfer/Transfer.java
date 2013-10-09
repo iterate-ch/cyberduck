@@ -22,15 +22,16 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.log4j.Logger;
 
@@ -98,7 +99,7 @@ public abstract class Transfer implements Serializable {
 
     }
 
-    protected Session<?> session;
+    protected Host host;
 
     /**
      * In Bytes per second
@@ -149,25 +150,30 @@ public abstract class Transfer implements Serializable {
      * Create a transfer with a single root which can
      * be a plain file or a directory
      *
+     * @param host Connection details
      * @param root File or directory
      */
-    public Transfer(final Session session, final Path root, final BandwidthThrottle bandwidth) {
-        this(session, new Collection<Path>(Collections.<Path>singletonList(root)), bandwidth);
+    public Transfer(final Host host, final Path root, final BandwidthThrottle bandwidth) {
+        this(host, new Collection<Path>(Collections.<Path>singletonList(root)), bandwidth);
     }
 
     /**
+     * @param host  Connection details
      * @param roots List of files to add to transfer
      */
-    public Transfer(final Session session, final List<Path> roots, final BandwidthThrottle bandwidth) {
-        this.session = session;
+    public Transfer(final Host host, final List<Path> roots, final BandwidthThrottle bandwidth) {
+        this.host = host;
         this.roots = roots;
         this.bandwidth = bandwidth;
     }
 
-    public <T> Transfer(final T serialized, final Session session, final BandwidthThrottle bandwidth) {
-        this.session = session;
+    public <T> Transfer(final T serialized, final BandwidthThrottle bandwidth) {
         this.bandwidth = bandwidth;
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Object hostObj = dict.objectForKey("Host");
+        if(hostObj != null) {
+            this.host = new Host(hostObj);
+        }
         final List rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
             roots = new ArrayList<Path>();
@@ -196,7 +202,7 @@ public abstract class Transfer implements Serializable {
 
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
-        dict.setObjectForKey(session.getHost(), "Host");
+        dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Roots");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
@@ -245,7 +251,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getRemote() {
-        return session.getFeature(UrlProvider.class).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
+        return new DefaultUrlProvider(host).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
     }
 
     public String getLocal() {
@@ -256,12 +262,8 @@ public abstract class Transfer implements Serializable {
         return roots;
     }
 
-    public Session<?> getSession() {
-        return session;
-    }
-
-    public List<Session<?>> getSessions() {
-        return new ArrayList<Session<?>>(Collections.singletonList(session));
+    public Host getHost() {
+        return host;
     }
 
     public String getName() {
@@ -277,36 +279,40 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param action Transfer action for duplicate files
+     * @param session Session
+     * @param action  Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public abstract TransferPathFilter filter(TransferAction action);
+    public abstract TransferPathFilter filter(Session<?> session, TransferAction action);
 
     /**
+     * @param session         Session
      * @param resumeRequested Requested resume
      * @param reloadRequested Requested overwrite
      * @param prompt          Callback
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(boolean resumeRequested, boolean reloadRequested,
+    public abstract TransferAction action(Session<?> session, boolean resumeRequested, boolean reloadRequested,
                                           TransferPrompt prompt) throws BackgroundException;
 
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
+     * @param session   Session
      * @param directory The directory to list the children
      * @return A list of child items
      */
-    public abstract AttributedList<Path> list(Path directory, TransferStatus parent) throws BackgroundException;
+    public abstract AttributedList<Path> list(Session<?> session, Path directory, TransferStatus parent) throws BackgroundException;
 
     /**
      * The actual transfer implementation
      *
+     * @param session Session
      * @param file    File
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    public abstract void transfer(Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
+    public abstract void transfer(Session<?> session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
 
     public void start() {
         state = State.running;
@@ -372,7 +378,7 @@ public abstract class Transfer implements Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Transfer{");
         sb.append("roots=").append(roots);
-        sb.append(", session=").append(session);
+        sb.append(", session=").append(host);
         sb.append(", state=").append(state);
         sb.append('}');
         return sb.toString();

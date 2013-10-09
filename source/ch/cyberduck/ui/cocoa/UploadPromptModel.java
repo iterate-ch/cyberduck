@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -32,8 +33,8 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
  */
 public class UploadPromptModel extends TransferPromptModel {
 
-    public UploadPromptModel(final TransferPromptController c, final Transfer transfer, final Cache cache) {
-        super(c, transfer, cache);
+    public UploadPromptModel(final TransferPromptController c, final Session session, final Transfer transfer, final Cache cache) {
+        super(c, session, transfer, cache);
     }
 
     @Override

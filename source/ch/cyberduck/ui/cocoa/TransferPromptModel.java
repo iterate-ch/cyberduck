@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,6 +51,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     private static Logger log = Logger.getLogger(TransferPromptModel.class);
 
     private TransferPromptController controller;
+
+    private Session session;
 
     private Transfer transfer;
 
@@ -83,8 +86,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(final TransferPromptController c, final Transfer transfer, final Cache cache) {
+    public TransferPromptModel(final TransferPromptController c, final Session session, final Transfer transfer, final Cache cache) {
         this.controller = c;
+        this.session = session;
         this.transfer = transfer;
         this.cache = cache;
         this.action = TransferAction.forName(Preferences.instance().getProperty(
@@ -130,8 +134,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory.getReference())) {
-            controller.background(new WorkerBackgroundAction(controller, transfer.getSession(),
-                    new TransferPromptListWorker(transfer, directory, status.get(directory)) {
+            controller.background(new WorkerBackgroundAction(controller, session,
+                    new TransferPromptListWorker(session, transfer, directory, status.get(directory)) {
                         @Override
                         public void cleanup(final AttributedList<Path> list) {
                             cache.put(directory.getReference(), list);
@@ -143,8 +147,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<Path, TransferStatus>>(controller, transfer.getSession(),
-                new TransferPromptFilterWorker(transfer, action, cache) {
+        controller.background(new WorkerBackgroundAction<Map<Path, TransferStatus>>(controller, session,
+                new TransferPromptFilterWorker(session, transfer, action, cache) {
                     @Override
                     public void cleanup(final Map<Path, TransferStatus> accepted) {
                         status = accepted;

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -35,8 +36,8 @@ public class SyncPromptModel extends TransferPromptModel {
 
     private SyncTransfer transfer;
 
-    public SyncPromptModel(final TransferPromptController c, final SyncTransfer transfer, final Cache cache) {
-        super(c, transfer, cache);
+    public SyncPromptModel(final TransferPromptController c, final Session session, final SyncTransfer transfer, final Cache cache) {
+        super(c, session, transfer, cache);
         this.transfer = transfer;
     }
 

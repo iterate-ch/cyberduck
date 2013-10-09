@@ -6,8 +6,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
@@ -36,10 +34,10 @@ public class UploadTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")), test);
+        Transfer t = new UploadTransfer(new Host("t"), test);
         t.addSize(4L);
         t.addTransferred(3L);
-        final UploadTransfer serialized = new UploadTransfer(t.serialize(SerializerFactory.get()), new SFTPSession(new Host(new SFTPProtocol(), "t")));
+        final UploadTransfer serialized = new UploadTransfer(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -60,8 +58,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")), root);
-        assertTrue(t.list(root, new TransferStatus().exists(true)).isEmpty());
+        Transfer t = new UploadTransfer(new Host("t"), root);
+        assertTrue(t.list(new NullSession(new Host("t")), root, new TransferStatus().exists(true)).isEmpty());
     }
 
     @Test
@@ -77,14 +75,9 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         });
         final Cache cache = new Cache(Integer.MAX_VALUE);
-        final Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
+        final Transfer t = new UploadTransfer(new Host("t"), root) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", Path.DIRECTORY_TYPE)));
-            }
-        }, root) {
-            @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -93,7 +86,13 @@ public class UploadTransferTest extends AbstractTestCase {
                 }
             }
         };
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
+        final NullSession session = new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", Path.DIRECTORY_TYPE)));
+            }
+        };
+        new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -132,13 +131,13 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         });
         final Cache cache = new Cache(Integer.MAX_VALUE);
-        final Transfer t = new UploadTransfer(new NullSession(new Host("t")), root) {
+        final Transfer t = new UploadTransfer(new Host("t"), root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //
             }
         };
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -172,8 +171,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")), root);
-        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(root, new TransferStatus().exists(true)));
+        Transfer t = new UploadTransfer(new Host("t"), root);
+        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(new NullSession(new Host("t")), root, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -194,7 +193,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
+        final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(root.getParent())) {
@@ -202,15 +201,16 @@ public class UploadTransferTest extends AbstractTestCase {
                 }
                 return AttributedList.emptyList();
             }
-        }, root) {
+        };
+        Transfer t = new UploadTransfer(new Host("t"), root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
             }
         };
         final TransferOptions options = new TransferOptions();
         options.resumeRequested = true;
-        new SingleTransferWorker(t, options, new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, t, options, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -238,19 +238,20 @@ public class UploadTransferTest extends AbstractTestCase {
                 };
             }
         };
-        Transfer t = new UploadTransfer(new NullSession(new Host("t")) {
+        final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 c.incrementAndGet();
                 return AttributedList.emptyList();
             }
-        }, root) {
+        };
+        Transfer t = new UploadTransfer(new Host("t"), root) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 //
             }
         };
-        new SingleTransferWorker(t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.rename;
@@ -271,10 +272,10 @@ public class UploadTransferTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/" + name);
         local.touch();
-        final Transfer transfer = new UploadTransfer(session, test);
+        final Transfer transfer = new UploadTransfer(host, test);
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -306,10 +307,10 @@ public class UploadTransferTest extends AbstractTestCase {
         final byte[] bytes = RandomStringUtils.random(1000).getBytes();
         IOUtils.write(bytes, out);
         IOUtils.closeQuietly(out);
-        final Transfer transfer = new UploadTransfer(session, test);
+        final Transfer transfer = new UploadTransfer(host, test);
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -334,7 +335,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final Path test = new Path(new Path("/", Path.DIRECTORY_TYPE),
                 new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         final AtomicBoolean moved = new AtomicBoolean();
-        final Session session = new NullSession(new Host("t")) {
+        final Host host = new Host("t");
+        final Session session = new NullSession(host) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
@@ -358,9 +360,9 @@ public class UploadTransferTest extends AbstractTestCase {
         final AtomicBoolean set = new AtomicBoolean();
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final Transfer transfer = new UploadTransfer(session, test) {
+        final Transfer transfer = new UploadTransfer(host, test) {
             @Override
-            public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 assertEquals(table.get(test).getRenamed(), file);
                 set.set(true);
             }
@@ -368,7 +370,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final OverwriteFilter filter = new OverwriteFilter(
                 new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session,
                 new UploadFilterOptions().withTemporary(true));
-        final SingleTransferWorker worker = new SingleTransferWorker(transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();

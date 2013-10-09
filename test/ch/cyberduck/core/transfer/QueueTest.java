@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testAddRemove() throws Exception {
         final Queue queue = new Queue();
-        final DownloadTransfer transfer = new DownloadTransfer(new NullSession(new Host("t")), new Path("/t", Path.DIRECTORY_TYPE));
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE));
         queue.add(transfer, new DisabledProgressListener());
         queue.remove(transfer);
     }
@@ -47,14 +46,14 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testConcurrent() throws Exception {
         final Queue queue = new Queue(1);
-        final DownloadTransfer transfer = new DownloadTransfer(new NullSession(new Host("t")), new Path("/t", Path.DIRECTORY_TYPE));
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE));
         queue.add(transfer, new DisabledProgressListener());
         final AtomicBoolean added = new AtomicBoolean();
         final CyclicBarrier wait = new CyclicBarrier(2);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                queue.add(new DownloadTransfer(new NullSession(new Host("t")), new Path("/t", Path.DIRECTORY_TYPE)), new DisabledProgressListener());
+                queue.add(new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE)), new DisabledProgressListener());
                 added.set(true);
                 try {
                     wait.await();

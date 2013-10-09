@@ -22,7 +22,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.ui.growl.Growl;
@@ -84,9 +83,7 @@ public final class Queue {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Queuing transfer %s", t));
             }
-            for(Session s : t.getSessions()) {
-                growl.notify("Transfer queued", s.getHost().getHostname());
-            }
+            growl.notify("Transfer queued", t.getHost().getHostname());
             while(running.size() >= size) {
                 // The maximum number of transfers is already reached
                 if(t.isCanceled()) {

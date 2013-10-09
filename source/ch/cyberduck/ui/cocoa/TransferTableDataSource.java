@@ -20,10 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.NullTransferFilter;
@@ -94,10 +93,8 @@ public class TransferTableDataSource extends ListDataSource {
                             return true;
                         }
                     }
-                    for(Session s : transfer.getSessions()) {
-                        if(s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
-                            return true;
-                        }
+                    if(transfer.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
+                        return true;
                     }
                     return false;
                 }
@@ -177,11 +174,11 @@ public class TransferTableDataSource extends ListDataSource {
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            final Session session = SessionFactory.createSession(pasteboard.getSession().getHost());
+            final Host host = pasteboard.getSession().getHost();
             for(Path download : pasteboard) {
-                download.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), download.getName()));
+                download.setLocal(LocalFactory.createLocal(host.getDownloadFolder(), download.getName()));
             }
-            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(session, pasteboard));
+            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(host, pasteboard));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);

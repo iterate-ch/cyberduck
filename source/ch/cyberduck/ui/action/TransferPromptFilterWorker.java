@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -36,18 +37,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>> {
 
     private Transfer transfer;
 
+    private Session session;
+
     private TransferAction action;
 
     private Cache cache;
 
-    public TransferPromptFilterWorker(final Transfer transfer, final TransferAction action,
+    public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
                                       final Cache cache) {
+        this.session = session;
         this.cache = cache;
         this.action = action;
         this.transfer = transfer;
@@ -59,7 +63,7 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
         for(Path file : transfer.getRoots()) {
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
-        final TransferPathFilter filter = transfer.filter(action);
+        final TransferPathFilter filter = transfer.filter(session, action);
         for(PathReference key : cache.keySet()) {
             final AttributedList<Path> list = cache.get(key);
             for(Path file : list) {

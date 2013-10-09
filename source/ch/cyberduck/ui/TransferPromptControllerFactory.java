@@ -19,6 +19,7 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
@@ -26,11 +27,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class TransferPromptControllerFactory extends Factory<TransferPrompt> {
 
-    public abstract TransferPrompt create(Controller c, Transfer transfer);
+    public abstract TransferPrompt create(Controller c, Transfer transfer, Session session);
 
     /**
      * Registered factories
@@ -42,11 +43,11 @@ public abstract class TransferPromptControllerFactory extends Factory<TransferPr
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static TransferPrompt get(final Controller c, final Transfer transfer) {
+    public static TransferPrompt get(final Controller c, final Transfer transfer, final Session session) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return factories.get(NATIVE_PLATFORM).create(c, transfer);
+        return factories.get(NATIVE_PLATFORM).create(c, transfer, session);
     }
 
     public static void addFactory(Platform p, TransferPromptControllerFactory f) {

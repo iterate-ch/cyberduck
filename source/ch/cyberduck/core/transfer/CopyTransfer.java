@@ -66,20 +66,20 @@ public class CopyTransfer extends Transfer {
     /**
      * @param files Source to destination mapping
      */
-    public CopyTransfer(final Session session, final Session destination, final Map<Path, Path> files) {
-        this(session, destination, new CopyRootPathsNormalizer().normalize(files),
+    public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files) {
+        this(host, target, new CopyRootPathsNormalizer().normalize(files),
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    private CopyTransfer(final Session session, final Session destination,
+    private CopyTransfer(final Host host, final Host target,
                          final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
-        super(session, new ArrayList<Path>(selected.keySet()), bandwidth);
-        this.destination = destination;
+        super(host, new ArrayList<Path>(selected.keySet()), bandwidth);
+        this.destination = SessionFactory.createSession(target);
         this.files = selected;
     }
 
-    public <T> CopyTransfer(T serialized, Session s) {
-        super(serialized, s, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+    public <T> CopyTransfer(final T serialized) {
+        super(serialized, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object hostObj = dict.objectForKey("Destination");
         if(hostObj != null) {
@@ -102,10 +102,19 @@ public class CopyTransfer extends Transfer {
         return Type.copy;
     }
 
+    public Session getDestination() {
+        return destination;
+    }
+
+    @Override
+    public String getLocal() {
+        return null;
+    }
+
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
-        dict.setObjectForKey(session.getHost(), "Host");
+        dict.setObjectForKey(host, "Host");
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
@@ -129,16 +138,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public List<Session<?>> getSessions() {
-        final ArrayList<Session<?>> sessions = new ArrayList<Session<?>>(super.getSessions());
-        if(destination != null) {
-            sessions.add(destination);
-        }
-        return sessions;
-    }
-
-    @Override
-    public TransferAction action(boolean resumeRequested, boolean reloadRequested,
+    public TransferAction action(final Session<?> session, boolean resumeRequested, boolean reloadRequested,
                                  final TransferPrompt prompt) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -147,7 +147,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -155,7 +155,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -177,7 +177,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
@@ -192,7 +192,7 @@ public class CopyTransfer extends Transfer {
                     addTransferred(source.attributes().getSize());
                 }
                 else {
-                    this.copy(source, copy, bandwidth, new AbstractStreamListener() {
+                    this.copy(session, source, destination, copy, bandwidth, new AbstractStreamListener() {
                         @Override
                         public void bytesSent(long bytes) {
                             addTransferred(bytes);
@@ -201,7 +201,7 @@ public class CopyTransfer extends Transfer {
                 }
             }
             else {
-                this.copy(source, copy, bandwidth, new AbstractStreamListener() {
+                this.copy(session, source, destination, copy, bandwidth, new AbstractStreamListener() {
                     @Override
                     public void bytesSent(long bytes) {
                         addTransferred(bytes);
@@ -227,14 +227,14 @@ public class CopyTransfer extends Transfer {
      * @param listener Callback
      * @param status   Transfer status
      */
-    public void copy(final Path file, final Path copy, final BandwidthThrottle throttle,
+    public void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy, final BandwidthThrottle throttle,
                      final StreamListener listener, final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
                 new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle),
-                        0, out = new ThrottledOutputStream(destination.getFeature(Write.class).write(copy, status), throttle),
+                        0, out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle),
                         listener);
             }
         }
@@ -245,10 +245,5 @@ public class CopyTransfer extends Transfer {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);
         }
-    }
-
-    @Override
-    public String getLocal() {
-        return null;
     }
 }

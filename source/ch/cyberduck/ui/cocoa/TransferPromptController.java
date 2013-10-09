@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -71,14 +72,17 @@ public abstract class TransferPromptController extends SheetController
 
     protected Transfer transfer;
 
+    private Session session;
+
     private TransferAction action;
 
     protected Cache cache
             = new Cache(Integer.MAX_VALUE);
 
-    public TransferPromptController(final WindowController parent, final Transfer transfer) {
+    public TransferPromptController(final WindowController parent, final Transfer transfer, final Session session) {
         super(parent);
         this.transfer = transfer;
+        this.session = session;
         this.action = TransferAction.forName(Preferences.instance().getProperty(
                 String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }
@@ -97,18 +101,14 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void awakeFromNib() {
-        for(Session s : transfer.getSessions()) {
-            s.addProgressListener(this);
-        }
+        session.addProgressListener(this);
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
         super.awakeFromNib();
     }
 
     @Override
     public void invalidate() {
-        for(Session s : transfer.getSessions()) {
-            s.removeProgressListener(this);
-        }
+        session.removeProgressListener(this);
         browserView.setDataSource(null);
         browserView.setDelegate(null);
         super.invalidate();
@@ -275,7 +275,7 @@ public abstract class TransferPromptController extends SheetController
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            transfer.getSession().getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(session.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     if(file.attributes().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);

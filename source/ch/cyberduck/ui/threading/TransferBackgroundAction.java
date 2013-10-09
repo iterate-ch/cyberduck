@@ -18,10 +18,15 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
+import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
@@ -29,9 +34,13 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.TransferPromptControllerFactory;
 import ch.cyberduck.ui.action.SingleTransferWorker;
+import ch.cyberduck.ui.growl.Growl;
+import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -65,27 +74,62 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private SingleTransferWorker worker;
 
+    private ConnectionService connection;
+
+    private Growl growl = GrowlFactory.get();
+
     public TransferBackgroundAction(final Controller controller,
+                                    final Session session,
                                     final TransferListener transferListener,
                                     final ProgressListener progressListener,
                                     final Transfer transfer, final TransferOptions options) {
-        this(controller, transferListener, progressListener, transfer, options,
-                TransferPromptControllerFactory.get(controller, transfer),
+        this(controller, session, transferListener, progressListener, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer, session),
                 TransferErrorCallbackControllerFactory.get(controller));
     }
 
     public TransferBackgroundAction(final Controller controller,
+                                    final Session session,
                                     final TransferListener transferListener,
                                     final ProgressListener progressListener,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
-        super(controller, transfer.getSessions(), Cache.empty(), progressListener);
-        this.worker = new SingleTransferWorker(transfer, options, prompt, error);
+        super(controller, session, Cache.empty(), progressListener);
+        this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
         this.transfer = transfer;
         this.options = options;
         this.listener = transferListener;
         this.meter = new TransferSpeedometer(transfer);
         this.timerPool = new ScheduledThreadPool();
+        this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
+                HostKeyControllerFactory.get(controller),
+                PasswordStoreFactory.get(), progressListener);
+    }
+
+    @Override
+    protected boolean connect(final Session session) throws BackgroundException {
+        if(super.connect(session)) {
+            if(transfer instanceof CopyTransfer) {
+                final Session target = ((CopyTransfer) transfer).getDestination();
+                if(connection.check(target, Cache.empty())) {
+                    // New connection opened
+                    growl.notify("Connection opened", session.getHost().getHostname());
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void close(final Session session) throws BackgroundException {
+        super.close(session);
+        if(transfer instanceof CopyTransfer) {
+            final Session target = ((CopyTransfer) transfer).getDestination();
+            super.close(target);
+        }
     }
 
     @Override
@@ -123,6 +167,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
         worker.cancel();
+        super.cancel();
     }
 
     @Override

@@ -82,31 +82,31 @@ public class SingleTransferWorker extends Worker<Boolean> {
      */
     private Cache cache = new Cache(Integer.MAX_VALUE);
 
-    public SingleTransferWorker(final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error) {
         this.transfer = transfer;
-        this.session = transfer.getSession();
+        this.session = session;
         this.prompt = prompt;
         this.error = error;
         this.options = options;
     }
 
-    public SingleTransferWorker(final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error,
                                 final Cache cache) {
         this.transfer = transfer;
-        this.session = transfer.getSession();
+        this.session = session;
         this.options = options;
         this.prompt = prompt;
         this.error = error;
         this.cache = cache;
     }
 
-    public SingleTransferWorker(final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error,
                                 final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
-        this.session = transfer.getSession();
+        this.session = session;
         this.options = options;
         this.prompt = prompt;
         this.error = error;
@@ -130,7 +130,7 @@ public class SingleTransferWorker extends Worker<Boolean> {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
             // Determine the filter to match files against
-            final TransferAction action = transfer.action(options.resumeRequested, options.reloadRequested, prompt);
+            final TransferAction action = transfer.action(session, options.resumeRequested, options.reloadRequested, prompt);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Selected transfer action %s", action));
             }
@@ -141,7 +141,7 @@ public class SingleTransferWorker extends Worker<Boolean> {
                 throw new ConnectionCanceledException();
             }
             // Determine transfer filter implementation from selected overwrite action
-            final TransferPathFilter filter = transfer.filter(action);
+            final TransferPathFilter filter = transfer.filter(session, action);
             // Reset the cached size of the transfer and progress value
             transfer.reset();
             // Calculate information about the files in advance to give progress information
@@ -192,7 +192,7 @@ public class SingleTransferWorker extends Worker<Boolean> {
                 // Recursive
                 if(file.attributes().isDirectory()) {
                     // Call recursively for all children
-                    final AttributedList<Path> children = transfer.list(file, parent);
+                    final AttributedList<Path> children = transfer.list(session, file, parent);
                     // Put into cache for later reference when transferring
                     cache.put(file.getReference(), children);
                     // Call recursively
@@ -235,10 +235,10 @@ public class SingleTransferWorker extends Worker<Boolean> {
             try {
                 if(status.isRename()) {
                     // Save with different name
-                    transfer.transfer(status.getRenamed(), options, status);
+                    transfer.transfer(session, status.getRenamed(), options, status);
                 }
                 else {
-                    transfer.transfer(file, options, status);
+                    transfer.transfer(session, file, options, status);
                 }
             }
             catch(ConnectionCanceledException e) {

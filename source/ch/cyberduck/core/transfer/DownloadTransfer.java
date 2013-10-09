@@ -55,30 +55,24 @@ public class DownloadTransfer extends Transfer {
     private Filter<Path> filter
             = new DownloadRegexFilter();
 
-    private Read reader;
-
-    public DownloadTransfer(final Session<?> session, final Path root) {
-        this(session, Collections.singletonList(root));
-        reader = session.getFeature(Read.class);
+    public DownloadTransfer(final Host host, final Path root) {
+        this(host, Collections.singletonList(root));
     }
 
-    public DownloadTransfer(final Session<?> session, final List<Path> roots, final Filter<Path> f) {
-        super(session, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+    public DownloadTransfer(final Host host, final List<Path> roots, final Filter<Path> f) {
+        super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-        reader = session.getFeature(Read.class);
         filter = f;
     }
 
-    public DownloadTransfer(final Session<?> session, final List<Path> roots) {
-        super(session, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+    public DownloadTransfer(final Host host, final List<Path> roots) {
+        super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-        reader = session.getFeature(Read.class);
     }
 
-    public <T> DownloadTransfer(final T dict, final Session<?> s) {
-        super(dict, s, new BandwidthThrottle(
+    public <T> DownloadTransfer(final T dict) {
+        super(dict, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-        reader = session.getFeature(Read.class);
     }
 
     @Override
@@ -87,7 +81,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -110,7 +104,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -134,7 +128,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested,
+    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -181,7 +175,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -201,7 +195,7 @@ public class DownloadTransfer extends Transfer {
                     file.getName()));
             local.getParent().mkdir();
             // Transfer
-            this.download(file, bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
+            this.download(session, file, bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
                 @Override
                 public void bytesReceived(long bytes) {
                     addTransferred(bytes);
@@ -216,13 +210,13 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    private void download(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+    private void download(final Session<?> session, final Path file, final BandwidthThrottle throttle, final StreamListener listener,
                           final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             OutputStream out = null;
             try {
-                in = reader.read(file, status);
+                in = session.getFeature(Read.class).read(file, status);
                 out = file.getLocal().getOutputStream(status.isAppend());
                 new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener);
             }

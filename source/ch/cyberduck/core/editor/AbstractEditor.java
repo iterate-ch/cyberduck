@@ -199,15 +199,15 @@ public abstract class AbstractEditor implements Editor {
             final TransferOptions options = new TransferOptions();
             options.quarantine = false;
             options.open = false;
-            final Transfer download = new DownloadTransfer(session, edited) {
+            final Transfer download = new DownloadTransfer(session.getHost(), edited) {
                 @Override
-                public TransferPathFilter filter(final TransferAction action) {
+                public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
                     final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
                     return new TrashFilter(resolver, session);
                 }
             };
             final SingleTransferWorker worker
-                    = new SingleTransferWorker(download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                    = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
             worker.run();
             if(download.isComplete()) {
                 // Save checksum before edit
@@ -230,15 +230,15 @@ public abstract class AbstractEditor implements Editor {
     private final class SaveBackgroundAction implements TransferCallable {
         @Override
         public Transfer call() throws BackgroundException {
-            final Transfer upload = new UploadTransfer(session, edited) {
+            final Transfer upload = new UploadTransfer(session.getHost(), edited) {
                 @Override
-                public TransferPathFilter filter(final TransferAction action) {
+                public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
                     final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
                     return new OverwriteFilter(resolver, session, new UploadFilterOptions().withTemporary(true));
                 }
             };
             final SingleTransferWorker worker
-                    = new SingleTransferWorker(upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                    = new SingleTransferWorker(session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
             worker.run();
             if(upload.isComplete()) {
                 // Update known remote file size

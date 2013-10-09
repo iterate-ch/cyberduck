@@ -42,13 +42,20 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private Transfer transfer;
 
+    private Session session;
+
+    private ProgressListener progressListener;
+
     public TransferCollectionBackgroundAction(final Controller controller,
+                                              final Session session,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, transferListener, progressListener, transfer, options);
+        super(controller, session, transferListener, progressListener, transfer, options);
         this.transfer = transfer;
+        this.session = session;
+        this.progressListener = progressListener;
     }
 
     @Override
@@ -69,10 +76,8 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
     @Override
     public Boolean run() throws BackgroundException {
         if(super.run()) {
-            for(Session s : transfer.getSessions()) {
-                // We have our own session independent of any browser.
-                s.close();
-            }
+            // We have our own session independent of any browser.
+            this.close(session);
             return true;
         }
         return false;

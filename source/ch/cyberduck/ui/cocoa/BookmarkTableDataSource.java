@@ -383,7 +383,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
             final List<Path> roots = new Collection<Path>();
-            Session session = null;
+            Host host = null;
             for(int i = 0; i < filesList.count().intValue(); i++) {
                 String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
                 if(filename.endsWith(".duck")) {
@@ -399,15 +399,15 @@ public class BookmarkTableDataSource extends ListDataSource {
                 else {
                     // The bookmark this file has been dropped onto
                     final Host h = source.get(row.intValue());
-                    if(null == session) {
-                        session = SessionFactory.createSession(h);
+                    if(null == host) {
+                        host = h;
                     }
                     // Upload to the remote host this bookmark points to
                     roots.add(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE), LocalFactory.createLocal(filename)));
                 }
             }
             if(!roots.isEmpty()) {
-                final Transfer t = new UploadTransfer(session, roots);
+                final Transfer t = new UploadTransfer(host, roots);
                 // If anything has been added to the queue, then process the queue
                 if(t.getRoots().size() > 0) {
                     TransferControllerFactory.get().start(t);

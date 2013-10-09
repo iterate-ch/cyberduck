@@ -147,9 +147,7 @@ public class MainController extends BundleController implements NSApplication.De
         else {
             final Host h = HostParser.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
-                final Session session = SessionFactory.createSession(h);
-                TransferControllerFactory.get().start(new DownloadTransfer(session,
-                        new Path(h.getDefaultPath(), Path.FILE_TYPE)));
+                TransferControllerFactory.get().start(new DownloadTransfer(h, new Path(h.getDefaultPath(), Path.FILE_TYPE)));
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {
@@ -744,13 +742,12 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     private void upload(final Host bookmark, final List<Local> files, final Path destination) {
-        final Session session = SessionFactory.createSession(bookmark);
         List<Path> roots = new ArrayList<Path>();
         for(Local file : files) {
             roots.add(new Path(destination, file));
         }
         final TransferController t = TransferControllerFactory.get();
-        t.start(new UploadTransfer(session, roots));
+        t.start(new UploadTransfer(bookmark, roots));
     }
 
     /**

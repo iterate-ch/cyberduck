@@ -268,13 +268,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final Session session = controller.getTransferSession();
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         Path p = new Path(destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
-                    controller.transfer(new UploadTransfer(session, roots));
+                    controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                     return true;
                 }
                 return false;
@@ -292,9 +291,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     for(Path file : pasteboard) {
                         files.put(file, new Path(destination, file.getName(), file.attributes().getType()));
                     }
-                    controller.transfer(new CopyTransfer(
-                            SessionFactory.createSession(pasteboard.getSession().getHost()),
-                            SessionFactory.createSession(controller.getSession().getHost()),
+                    controller.transfer(new CopyTransfer(pasteboard.getSession().getHost(),
+                            controller.getSession().getHost(),
                             files));
                 }
                 else {
@@ -538,8 +536,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             else {
-                final DownloadTransfer transfer = new DownloadTransfer(controller.getTransferSession(),
-                        pasteboard);
+                final DownloadTransfer transfer = new DownloadTransfer(controller.getSession().getHost(), pasteboard);
                 controller.transfer(transfer, Collections.<Path>emptyList());
             }
             pasteboard.clear();

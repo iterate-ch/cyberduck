@@ -19,13 +19,13 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
@@ -58,42 +58,24 @@ public class UploadTransfer extends Transfer {
 
     private Filter<Local> filter = new UploadRegexFilter();
 
-    private Upload writer;
-
-    private Attributes attributes;
-
-    private Find find;
-
-    public UploadTransfer(final Session<?> session, final Path root) {
-        this(session, Collections.singletonList(root));
-        writer = session.getFeature(Upload.class);
-        find = session.getFeature(Find.class);
-        attributes = new DefaultAttributesFeature(session);
+    public UploadTransfer(final Host host, final Path root) {
+        this(host, Collections.singletonList(root));
     }
 
-    public UploadTransfer(final Session<?> session, final List<Path> roots, final Filter<Local> f) {
+    public UploadTransfer(final Host session, final List<Path> roots, final Filter<Local> f) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         filter = f;
-        writer = session.getFeature(Upload.class);
-        find = session.getFeature(Find.class);
-        attributes = new DefaultAttributesFeature(session);
     }
 
-    public UploadTransfer(final Session<?> session, final List<Path> roots) {
+    public UploadTransfer(final Host session, final List<Path> roots) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-        writer = session.getFeature(Upload.class);
-        find = session.getFeature(Find.class);
-        attributes = new DefaultAttributesFeature(session);
     }
 
-    public <T> UploadTransfer(final T dict, final Session<?> s) {
-        super(dict, s, new BandwidthThrottle(
+    public <T> UploadTransfer(final T dict) {
+        super(dict, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-        writer = session.getFeature(Upload.class);
-        find = session.getFeature(Find.class);
-        attributes = new DefaultAttributesFeature(session);
     }
 
     @Override
@@ -102,7 +84,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -115,11 +97,12 @@ public class UploadTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list = new AttributedList<Path>();
+            final DefaultAttributesFeature feature = new DefaultAttributesFeature(session);
             for(Local local : directory.getLocal().list().filter(filter)) {
                 final Path file = new Path(directory, local);
                 if(parent.isExists()) {
-                    if(find.find(file)) {
-                        file.setAttributes(attributes.getAttributes(file));
+                    if(session.getFeature(Find.class).find(file)) {
+                        file.setAttributes(feature.getAttributes(file));
                     }
                 }
                 list.add(file);
@@ -129,7 +112,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -153,7 +136,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested,
+    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -171,10 +154,11 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.fileExists"));
         }
         if(action.equals(TransferAction.callback)) {
+            final Find find = session.getFeature(Find.class);
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
                     if(upload.attributes().isDirectory()) {
-                        if(this.list(upload, new TransferStatus().exists(true)).isEmpty()) {
+                        if(this.list(session, upload, new TransferStatus().exists(true)).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -190,7 +174,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -209,7 +193,7 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            writer.upload(file, bandwidth, new AbstractStreamListener() {
+            session.getFeature(Upload.class).upload(file, bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

@@ -21,13 +21,10 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
-
-import java.util.List;
 
 /**
  * @version $Id$
@@ -43,42 +40,8 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
     }
 
     public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
-                                      final AlertCallback alert) {
-        super(session, cache, alert, controller, controller,
-                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
                                       final ProgressListener listener) {
         super(session, cache, controller, listener, controller,
-                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
-                                      final AlertCallback alert, final ProgressListener listener) {
-        super(session, cache, alert, listener, controller,
-                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache) {
-        super(sessions, cache, controller, controller, controller,
-                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache,
-                                      final AlertCallback alert) {
-        super(sessions, cache, alert, controller, controller,
-                LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
-        this.controller = controller;
-    }
-
-    public ControllerBackgroundAction(final Controller controller, final List<Session<?>> sessions, final Cache cache,
-                                      final ProgressListener listener) {
-        super(sessions, cache, controller, listener, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller));
         this.controller = controller;
     }

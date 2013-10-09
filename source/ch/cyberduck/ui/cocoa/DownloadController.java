@@ -25,8 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -75,8 +73,7 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Host host = HostParser.parse(urlField.stringValue());
-            final Session session = SessionFactory.createSession(host);
-            final Transfer transfer = new DownloadTransfer(session,
+            final Transfer transfer = new DownloadTransfer(host,
                     new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()))
             );
             TransferControllerFactory.get().start(transfer);

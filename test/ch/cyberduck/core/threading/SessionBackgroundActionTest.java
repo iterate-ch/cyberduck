@@ -33,7 +33,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import org.junit.Test;
 
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +44,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionCanceled() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(Collections.emptyList(), Cache.empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(null, Cache.empty(), new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -76,7 +75,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(Collections.emptyList(), Cache.empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(null, Cache.empty(), new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);

@@ -18,9 +18,6 @@ package ch.cyberduck.core.serializer.impl;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -32,7 +29,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
@@ -51,30 +47,20 @@ public class TransferPlistReader extends PlistReader<Transfer> {
         }
     }
 
-    public Transfer deserialize(final NSDictionary dict, final Session s) {
+    @Override
+    public Transfer deserialize(final NSDictionary dict) {
         NSObject kindObj = dict.objectForKey("Kind");
         if(kindObj != null) {
             switch(Transfer.Type.values()[Integer.parseInt(kindObj.toString())]) {
                 case download:
-                    return new DownloadTransfer(dict, s);
+                    return new DownloadTransfer(dict);
                 case upload:
-                    return new UploadTransfer(dict, s);
+                    return new UploadTransfer(dict);
                 case sync:
-                    return new SyncTransfer(dict, s);
+                    return new SyncTransfer(dict);
                 case copy:
-                    return new CopyTransfer(dict, s);
+                    return new CopyTransfer(dict);
             }
-        }
-        log.error(String.format("Unknown transfer %s", kindObj));
-        return null;
-    }
-
-    @Override
-    public Transfer deserialize(final NSDictionary dict) {
-        NSObject hostObj = dict.objectForKey("Host");
-        if(hostObj != null) {
-            final Host host = new Host(Rococoa.cast(hostObj, NSDictionary.class));
-            return this.deserialize(dict, SessionFactory.createSession(host));
         }
         throw new IllegalArgumentException("Unknown transfer");
     }

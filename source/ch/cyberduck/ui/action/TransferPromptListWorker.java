@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -28,17 +29,19 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     private Path directory;
 
+    private Session session;
+
     private Transfer transfer;
 
     private TransferStatus status;
 
-    public TransferPromptListWorker(final Transfer transfer, final Path directory, final TransferStatus status) {
+    public TransferPromptListWorker(final Session session, final Transfer transfer, final Path directory, final TransferStatus status) {
         this.directory = directory;
         this.transfer = transfer;
         this.status = status;
@@ -46,7 +49,7 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run() throws BackgroundException {
-        return transfer.list(directory, status);
+        return transfer.list(session, directory, status);
     }
 
     @Override

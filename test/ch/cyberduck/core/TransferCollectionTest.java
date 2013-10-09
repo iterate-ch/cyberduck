@@ -31,7 +31,7 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertEquals(1, (c.get(0).getRoots().size()));
         assertTrue(c.get(0) instanceof CopyTransfer);
         assertEquals("/pub/hacks/listings/1301-046.zip", (c.get(0).getRoot()).getAbsolute());
-        assertEquals("ftp.heise.de", (c.get(0).getSessions()).get(0).getHost().getHostname());
+        assertEquals("ftp.heise.de", c.get(0).getHost().getHostname());
     }
 
     @Test
@@ -70,9 +70,8 @@ public class TransferCollectionTest extends AbstractTestCase {
         assertEquals(109648L, transfer.getSize());
         assertEquals(109648L, transfer.getTransferred());
         assertTrue(transfer instanceof CopyTransfer);
-        assertEquals(2, transfer.getSessions().size());
-        assertEquals("ftp.heise.de", transfer.getSessions().get(0).getHost().getHostname());
-        assertEquals("sudo.ch", transfer.getSessions().get(1).getHost().getHostname());
+        assertEquals("ftp.heise.de", transfer.getHost().getHostname());
+        assertEquals("sudo.ch", ((CopyTransfer) transfer).getDestination().getHost().getHostname());
         assertEquals("1301-130.zip", transfer.getName());
     }
 }
