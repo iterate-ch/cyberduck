@@ -54,8 +54,15 @@ public class S3ObjectListService implements ListService {
 
     private PathContainerService containerService = new PathContainerService();
 
+    private boolean versioning;
+
     public S3ObjectListService(final S3Session session) {
+        this(session, Preferences.instance().getBoolean("s3.revisions.enable"));
+    }
+
+    public S3ObjectListService(final S3Session session, final boolean versioning) {
         this.session = session;
+        this.versioning = versioning;
     }
 
     @Override
@@ -85,7 +92,7 @@ public class S3ObjectListService implements ListService {
             final Path container = containerService.getContainer(file);
             children.addAll(this.listObjects(container,
                     file, prefix, String.valueOf(Path.DELIMITER), listener));
-            if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+            if(versioning) {
                 if(new S3VersioningFeature(session).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;

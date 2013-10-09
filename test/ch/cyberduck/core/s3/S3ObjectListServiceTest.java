@@ -68,7 +68,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        final List<Path> list = new S3ObjectListService(session, false).list(new Path(container, "test", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
     }
