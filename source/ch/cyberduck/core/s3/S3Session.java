@@ -417,13 +417,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             }
         }
         if(type == DistributionConfiguration.class) {
-            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) cdn;
-            }
-            else {
-                // Amazon CloudFront custom origin
-                return super.getFeature(type);
-            }
+            return (T) cdn;
         }
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);

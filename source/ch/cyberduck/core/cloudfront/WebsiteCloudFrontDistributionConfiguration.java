@@ -33,6 +33,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jets3t.service.Constants;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Bucket;
@@ -68,9 +69,15 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             // Disable website configuration if bucket name is not DNS compatible
             return super.getMethods(container);
         }
-        //todo only website for non AWS
-        final List<Distribution.Method> methods = new ArrayList<Distribution.Method>(super.getMethods(container));
-        methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
+        final List<Distribution.Method> methods = new ArrayList<Distribution.Method>();
+        if(session.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            methods.addAll(super.getMethods(container));
+            methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
+        }
+        else {
+            // Only allow website confiugration for non AWS endpoints.
+            methods.add(Distribution.WEBSITE);
+        }
         return methods;
     }
 
