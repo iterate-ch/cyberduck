@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.WindowController;
@@ -30,9 +32,20 @@ import ch.cyberduck.ui.cocoa.application.NSCell;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class PanelTransferErrorCallback implements TransferErrorCallback {
+public class AlertTransferErrorCallback implements TransferErrorCallback {
+
+    public static void register() {
+        TransferErrorCallbackControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends TransferErrorCallbackControllerFactory {
+        @Override
+        public TransferErrorCallback create(final Controller c) {
+            return new AlertTransferErrorCallback((WindowController) c);
+        }
+    }
 
     private final WindowController controller;
 
@@ -40,7 +53,7 @@ public class PanelTransferErrorCallback implements TransferErrorCallback {
 
     private boolean option;
 
-    public PanelTransferErrorCallback(final WindowController controller) {
+    private AlertTransferErrorCallback(final WindowController controller) {
         this.controller = controller;
     }
 
@@ -60,7 +73,7 @@ public class PanelTransferErrorCallback implements TransferErrorCallback {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController controller = new AlertController(PanelTransferErrorCallback.this.controller, alert) {
+            final AlertController controller = new AlertController(AlertTransferErrorCallback.this.controller, alert) {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.DEFAULT_OPTION) {

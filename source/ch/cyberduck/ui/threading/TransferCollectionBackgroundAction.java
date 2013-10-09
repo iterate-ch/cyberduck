@@ -26,10 +26,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -48,10 +46,8 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final Transfer transfer,
-                                              final TransferPrompt prompt,
-                                              final TransferErrorCallback error,
                                               final TransferOptions options) {
-        super(controller, transferListener, progressListener, transfer, options, prompt, error);
+        super(controller, transferListener, progressListener, transfer, options);
         this.transfer = transfer;
     }
 

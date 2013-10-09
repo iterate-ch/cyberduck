@@ -68,7 +68,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.PanelTransferErrorCallback;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
@@ -2883,10 +2882,7 @@ public class BrowserController extends WindowController
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
                 }
-            }, this, transfer, new TransferOptions(),
-                    TransferPromptControllerFactory.create(BrowserController.this, transfer),
-                    new PanelTransferErrorCallback(this)
-            ) {
+            }, this, transfer, new TransferOptions()) {
                 @Override
                 public void finish() {
                     if(transfer.isComplete()) {

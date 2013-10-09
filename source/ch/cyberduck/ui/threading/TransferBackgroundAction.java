@@ -29,6 +29,8 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
+import ch.cyberduck.ui.TransferPromptControllerFactory;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +64,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     private TransferListener listener;
 
     private SingleTransferWorker worker;
+
+    public TransferBackgroundAction(final Controller controller,
+                                    final TransferListener transferListener,
+                                    final ProgressListener progressListener,
+                                    final Transfer transfer, final TransferOptions options) {
+        this(controller, transferListener, progressListener, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer),
+                TransferErrorCallbackControllerFactory.get(controller));
+    }
 
     public TransferBackgroundAction(final Controller controller,
                                     final TransferListener transferListener,

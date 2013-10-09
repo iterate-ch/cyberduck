@@ -44,6 +44,7 @@ import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
+import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.growl.GrowlNative;
 import ch.cyberduck.ui.growl.NotificationCenter;
 import ch.cyberduck.ui.resources.NSImageIconCache;
@@ -130,6 +131,8 @@ public final class MainApplication {
 
                 PromptLoginController.register();
                 AlertHostKeyController.register();
+                AlertTransferPromptControllerFactory.register();
+                AlertTransferErrorCallback.register();
 
                 if(Preferences.instance().getBoolean("rendezvous.enable")) {
                     RendezvousResponder.register();
