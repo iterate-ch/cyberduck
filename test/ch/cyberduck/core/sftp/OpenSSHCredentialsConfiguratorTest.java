@@ -24,6 +24,8 @@ import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.junit.Test;
 import org.spearce.jgit.transport.OpenSshConfig;
@@ -74,6 +76,6 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        assertNotNull(c.configure(new Host(null)));
+        assertNotNull(c.configure(new Host(ProtocolFactory.SFTP, null)));
     }
 }
