@@ -25,14 +25,39 @@ import static org.junit.Assert.*;
 public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTestCase {
 
     @Test
-    public void testGetMethods() throws Exception {
-        final S3Session s3 = new S3Session(new Host("s3"));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
-        assertTrue(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
-        assertFalse(new WebsiteCloudFrontDistributionConfiguration(s3).getMethods(new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+    public void testGetMethodsAWS() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol()));
+        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
+        assertTrue(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+        assertTrue(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+        assertTrue(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+        assertTrue(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+    }
+
+    @Test
+    public void testGetMethodsNonAWS() throws Exception {
+        final S3Session session = new S3Session(new Host("custom"));
+        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+        assertTrue(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+        assertFalse(configuration.getMethods(
+                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
     }
 
     @Test

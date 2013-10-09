@@ -146,6 +146,13 @@ public final class Host implements Serializable, Comparable<Host> {
 
     /**
      * @param protocol Scheme
+     */
+    public Host(final Protocol protocol) {
+        this(protocol, protocol.getDefaultHostname());
+    }
+
+    /**
+     * @param protocol Scheme
      * @param hostname The hostname of the server
      */
     public Host(final Protocol protocol, final String hostname) {
