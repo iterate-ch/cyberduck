@@ -125,11 +125,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class Factory : HostKeyControllerFactory
         {
-            protected override object create()
-            {
-                return null;
-            }
-
             public override ch.cyberduck.core.HostKeyController create(ch.cyberduck.ui.Controller c)
             {
                 return new HostKeyController(c as WindowController);
