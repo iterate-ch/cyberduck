@@ -20,12 +20,24 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class DisabledListProgressListener implements ListProgressListener {
+public class LimitedListProgressListener implements ListProgressListener {
+
+    private final Integer limit;
+
+    public LimitedListProgressListener() {
+        this(Preferences.instance().getInteger("browser.model.size.limit"));
+    }
+
+    public LimitedListProgressListener(final Integer limit) {
+        this.limit = limit;
+    }
 
     @Override
     public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
-        //
+        if(list.size() >= limit) {
+            throw new ConnectionCanceledException(String.format("List limited to %d files", limit));
+        }
     }
 }
