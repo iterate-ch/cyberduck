@@ -221,8 +221,6 @@ public abstract class Preferences {
          * Caching NS* proxy instances.
          */
         defaults.put("browser.model.cache.size", String.valueOf(200));
-        defaults.put("bookmark.model.cache.size", String.valueOf(100));
-        defaults.put("queue.model.cache.size", String.valueOf(50));
 
         defaults.put("info.toolbar.selected", String.valueOf(0));
         defaults.put("preferences.toolbar.selected", String.valueOf(0));
