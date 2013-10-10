@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +34,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class SessionListWorker extends Worker<AttributedList<Path>> {
+public class SessionListWorker extends Worker<AttributedList<Path>> implements ListProgressListener {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 
     private Session<?> session;
@@ -58,26 +59,31 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
             if(cache.isCached(directory.getReference())) {
                 return cache.get(directory.getReference());
             }
-            final AttributedList<Path> children = session.list(directory, new ListProgressListener() {
-                @Override
-                public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
-                    }
-                    if(isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    listener.chunk(list);
-                }
-            });
+            final AttributedList<Path> children = session.list(directory, this);
             cache.put(directory.getReference(), children);
             return children;
+        }
+        catch(ListCanceledException e) {
+            final AttributedList<Path> chunk = e.getChunk();
+            cache.put(directory.getReference(), chunk);
+            return chunk;
         }
         catch(BackgroundException e) {
             // Cache empty listing
             cache.put(directory.getReference(), AttributedList.<Path>emptyList());
             throw e;
         }
+    }
+
+    @Override
+    public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
+        }
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
+        listener.chunk(list);
     }
 
     @Override
