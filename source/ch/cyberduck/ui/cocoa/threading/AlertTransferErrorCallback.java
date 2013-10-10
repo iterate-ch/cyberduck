@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -44,6 +45,11 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
         @Override
         public TransferErrorCallback create(final Controller c) {
             return new AlertTransferErrorCallback((WindowController) c);
+        }
+
+        @Override
+        protected TransferErrorCallback create() {
+            throw new FactoryException();
         }
     }
 

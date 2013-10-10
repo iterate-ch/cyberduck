@@ -31,11 +31,6 @@ public abstract class TransferErrorCallbackControllerFactory extends Factory<Tra
 
     public abstract TransferErrorCallback create(Controller c);
 
-    @Override
-    protected TransferErrorCallback create() {
-        throw new FactoryException();
-    }
-
     /**
      * Registered factories
      */

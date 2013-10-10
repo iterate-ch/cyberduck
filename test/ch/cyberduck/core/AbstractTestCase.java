@@ -125,11 +125,21 @@ public class AbstractTestCase {
             public LoginController create(final Controller c) {
                 return new DisabledLoginController();
             }
+
+            @Override
+            protected LoginController create() {
+                return null;
+            }
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
             public HostKeyController create(final Controller c) {
                 return new DefaultHostKeyController();
+            }
+
+            @Override
+            protected HostKeyController create() {
+                return null;
             }
         });
     }

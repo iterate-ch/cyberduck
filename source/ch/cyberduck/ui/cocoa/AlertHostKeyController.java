@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -55,7 +56,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     private static class Factory extends HostKeyControllerFactory {
         @Override
         protected HostKeyController create() {
-            return null;
+            throw new FactoryException();
         }
 
         @Override
