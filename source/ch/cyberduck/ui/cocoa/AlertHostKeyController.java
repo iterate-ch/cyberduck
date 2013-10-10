@@ -54,6 +54,11 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
     private static class Factory extends HostKeyControllerFactory {
         @Override
+        protected HostKeyController create() {
+            return null;
+        }
+
+        @Override
         public HostKeyController create(final Controller c) {
             return new AlertHostKeyController((WindowController) c);
         }

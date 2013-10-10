@@ -33,11 +33,6 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
 
     public abstract LoginController create(Controller c);
 
-    @Override
-    protected LoginController create() {
-        throw new FactoryException();
-    }
-
     /**
      * Registered factories
      */

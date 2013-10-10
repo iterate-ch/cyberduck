@@ -248,6 +248,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class Factory : LoginControllerFactory
         {
+            protected override object create()
+            {
+                return new PromptLoginController(TransferController.Instance);
+            }
+
             protected override LoginController create(ch.cyberduck.ui.Controller c)
             {
                 return new PromptLoginController((WindowController) c);

@@ -39,11 +39,6 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
     private static final Map<Platform, HostKeyControllerFactory> factories
             = new HashMap<Platform, HostKeyControllerFactory>();
 
-    @Override
-    protected HostKeyController create() {
-        throw new FactoryException();
-    }
-
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.

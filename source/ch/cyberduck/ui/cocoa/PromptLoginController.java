@@ -51,6 +51,11 @@ public final class PromptLoginController implements LoginController {
 
     private static class Factory extends LoginControllerFactory {
         @Override
+        protected LoginController create() {
+            return null;
+        }
+
+        @Override
         public LoginController create(Controller c) {
             return new PromptLoginController((WindowController) c);
         }
