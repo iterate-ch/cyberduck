@@ -155,17 +155,23 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             final Find find = session.getFeature(Find.class);
+            final DefaultAttributesFeature attribute = new DefaultAttributesFeature(session);
+            boolean found = false;
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
+                    upload.setAttributes(attribute.getAttributes(upload));
                     if(upload.attributes().isDirectory()) {
                         if(this.list(session, upload, new TransferStatus().exists(true)).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    // Prompt user to choose a filter
-                    return prompt.prompt();
+                    found = true;
                 }
+            }
+            if(found) {
+                // Prompt user to choose a filter
+                return prompt.prompt();
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
             return TransferAction.overwrite;
