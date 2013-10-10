@@ -72,12 +72,17 @@ public final class WorkspaceIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final TransferStatus status) {
-        if(status.getLength() > 0) {
-            int fraction = (int) (status.getCurrent() / status.getLength() * 10);
-            return this.set(file, String.format("download%d.icns", ++fraction));
+        if(status.isComplete()) {
+            return this.remove(file);
         }
         else {
-            return this.set(file, String.format("download%d.icns", 0));
+            if(status.getLength() > 0) {
+                int fraction = (int) (status.getCurrent() / status.getLength() * 10);
+                return this.set(file, String.format("download%d.icns", ++fraction));
+            }
+            else {
+                return this.set(file, String.format("download%d.icns", 0));
+            }
         }
     }
 
