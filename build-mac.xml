@@ -318,7 +318,7 @@
             </fileset>
             <srcfile/>
         </apply>
-        <antcall target="verify-signature"/> 
+        <antcall target="verify-signature"/>
     </target>
 
     <target name="unlock-keychain">
@@ -457,7 +457,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="clean, revision">
+    <target name="release" depends="universal, clean, revision">
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
