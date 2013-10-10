@@ -49,10 +49,8 @@ public class UploadPromptModel extends TransferPromptModel {
                 if(file.getLocal().attributes().getSize() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
-                if(status.containsKey(file)) {
-                    if(status.get(file).getLength() > file.getLocal().attributes().getSize()) {
-                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                    }
+                if(file.attributes().getSize() > file.getLocal().attributes().getSize()) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
             }
             return null;
