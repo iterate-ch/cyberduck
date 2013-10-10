@@ -31,10 +31,20 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
             public LoginController create(final Controller c) {
                 return null;
             }
+
+            @Override
+            protected LoginController create() {
+                return null;
+            }
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
             public HostKeyController create(final Controller c) {
+                return null;
+            }
+
+            @Override
+            protected HostKeyController create() {
                 return null;
             }
         });
