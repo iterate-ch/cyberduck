@@ -231,9 +231,9 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Action
-    public void queueSizeStepperChanged(final ID sender) {
+    public void queueSizeStepperChanged(final NSStepper sender) {
         // Queue size propery is changed using key value observer
-        QueueFactory.get().resize(Preferences.instance().getInteger("queue.maxtransfers"));
+        QueueFactory.get().resize(sender.intValue());
     }
 
     @Outlet
