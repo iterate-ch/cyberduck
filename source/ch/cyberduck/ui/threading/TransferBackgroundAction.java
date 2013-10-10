@@ -95,15 +95,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, session, Cache.empty(), progressListener);
+        this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
+                HostKeyControllerFactory.get(controller),
+                PasswordStoreFactory.get(), progressListener);
         this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
         this.transfer = transfer;
         this.options = options;
         this.listener = transferListener;
         this.meter = new TransferSpeedometer(transfer);
         this.timerPool = new ScheduledThreadPool();
-        this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
-                HostKeyControllerFactory.get(controller),
-                PasswordStoreFactory.get(), progressListener);
     }
 
     @Override
