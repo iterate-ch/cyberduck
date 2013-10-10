@@ -3322,7 +3322,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
-                        new MountWorker(session, cache, new DisabledListProgressListener()) {
+                        new MountWorker(session, cache, new PromptLimitedListProgressListener(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 if(null == workdir) {

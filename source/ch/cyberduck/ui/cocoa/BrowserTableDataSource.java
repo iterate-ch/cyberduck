@@ -106,7 +106,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
             controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new SessionListWorker(controller.getSession(), cache, directory, new DisabledListProgressListener()) {
+                    new SessionListWorker(controller.getSession(), cache, directory, new PromptLimitedListProgressListener(controller)) {
                         @Override
                         public void cleanup(final AttributedList<Path> list) {
                             controller.reloadData(true, true);

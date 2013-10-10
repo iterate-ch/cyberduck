@@ -26,15 +26,17 @@ public class LimitedListProgressListener implements ListProgressListener {
 
     private Integer limit;
 
+    private Integer setting;
+
     public LimitedListProgressListener(final Integer limit) {
         this.limit = limit;
+        this.setting = limit;
     }
 
     @Override
     public void chunk(final AttributedList<Path> list) throws ListCanceledException {
         if(list.size() >= limit) {
-            // Disable
-            limit = Integer.MAX_VALUE;
+            limit += setting;
             throw new ListCanceledException(list);
         }
     }
