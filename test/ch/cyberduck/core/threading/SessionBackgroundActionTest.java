@@ -18,15 +18,7 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -61,6 +53,11 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             }
         }, new DisabledLoginController(), new DefaultHostKeyController()
         ) {
+            @Override
+            protected boolean connect(final Session session) throws BackgroundException {
+                assertNull(session);
+                return true;
+            }
 
             @Override
             public Object run() throws BackgroundException {
@@ -75,7 +72,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(null, Cache.empty(), new AlertCallback() {
+        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.empty(), new AlertCallback() {
             @Override
             public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -92,6 +89,11 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             }
         }, new DisabledLoginController(), new DefaultHostKeyController()
         ) {
+            @Override
+            protected boolean connect(final Session session) throws BackgroundException {
+                assertNotNull(session);
+                return true;
+            }
 
             @Override
             public Object run() throws BackgroundException {
