@@ -764,7 +764,6 @@ img/connection@2x.png -text svneol=unset#image/png
 img/delete.png -text svneol=unset#image/png
 img/delete.tiff -text svneol=unset#image/tiff
 img/delete@2x.png -text svneol=unset#image/png
-img/disktemplate.icns -text
 img/download.png -text svneol=unset#image/png
 img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
@@ -2093,6 +2092,7 @@ profiles/assets/Dump[!!-~]Truck.png -text svneol=unset#image/png
 profiles/assets/GreenQloud.tiff -text svneol=unset#image/tiff
 profiles/assets/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.tiff -text svneol=unset#image/tiff
 profiles/assets/Lunacloud.png -text svneol=unset#image/png
+profiles/assets/Template.tiff -text svneol=unset#image/tiff
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Azure.strings -text svneol=unset#text/utf-16
