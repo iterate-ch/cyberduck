@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
 
@@ -33,7 +33,7 @@ public abstract class TransferErrorCallbackControllerFactory extends Factory<Tra
 
     @Override
     protected TransferErrorCallback create() {
-        return null;
+        throw new FactoryException();
     }
 
     /**

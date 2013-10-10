@@ -35,7 +35,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
 
     @Override
     protected LoginController create() {
-        return null;
+        throw new FactoryException();
     }
 
     /**

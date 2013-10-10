@@ -41,7 +41,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
 
     @Override
     protected HostKeyController create() {
-        return null;
+        throw new FactoryException();
     }
 
     /**
