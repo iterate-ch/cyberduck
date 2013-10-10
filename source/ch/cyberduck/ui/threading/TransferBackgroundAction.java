@@ -21,6 +21,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,6 +39,8 @@ import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.TransferPromptControllerFactory;
+import ch.cyberduck.ui.action.AbstractTransferWorker;
+import ch.cyberduck.ui.action.ConcurrentTransferWorker;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
@@ -72,7 +75,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private TransferListener listener;
 
-    private SingleTransferWorker worker;
+    private AbstractTransferWorker worker;
 
     private ConnectionService connection;
 
@@ -98,7 +101,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
                 HostKeyControllerFactory.get(controller),
                 PasswordStoreFactory.get(), progressListener);
-        this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
+        if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
+            this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
+        }
+        else {
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, progressListener, controller);
+        }
         this.transfer = transfer;
         this.options = options;
         this.listener = transferListener;

@@ -365,6 +365,7 @@ public abstract class Preferences {
          * The maximum number of concurrent transfers
          */
         defaults.put("queue.maxtransfers", String.valueOf(5));
+        defaults.put("queue.session.pool.size", String.valueOf(1));
         /**
          * Warning when number of transfers in queue exceeds limit
          */
