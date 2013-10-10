@@ -12,8 +12,11 @@ extern "C" {
  * Method:    setProgress
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_setProgress
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_progress
   (JNIEnv *, jobject, jstring, jlong, jlong);
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_cancel
+  (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
 }

@@ -63,14 +63,17 @@ public final class FoundationProgressIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final TransferStatus status) {
-        this.setProgress(file.getAbsolute(), status.getCurrent(), status.getLength());
+        this.progress(file.getAbsolute(), status.getCurrent(), status.getLength());
         return delegate.set(file, status);
     }
 
     @Override
     public boolean remove(final Local file) {
+        this.cancel(file.getAbsolute());
         return delegate.remove(file);
     }
 
-    private native void setProgress(String file, long current, long size);
+    private native void progress(String file, long current, long size);
+
+    private native void cancel(String file);
 }

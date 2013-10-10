@@ -22,7 +22,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_setProgress(JNIEnv *env, jobject this, jstring file, jlong current, jlong size)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_progress(JNIEnv *env, jobject this, jstring file, jlong current, jlong size)
 {
     if(NSClassFromString(@"NSProgress")) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -42,6 +42,21 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
         [progress setTotalUnitCount:size];
         [progress setCompletedUnitCount:current];
         [progress publish];
+        // Sets the receiver as the current progress object of the current thread
         [progress becomeCurrentWithPendingUnitCount:size - current];
+    }
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_cancel(JNIEnv *env, jobject this, jstring file)
+{
+    if(NSClassFromString(@"NSProgress")) {
+        id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
+        if(nil == progress) {
+            return;
+        }
+        // Balance the most recent previous invocation of becomeCurrentWithPendingUnitCount: on the same thread by restoring the current progress object
+        [progress resignCurrent];
+        // Invoke cancelation handler
+        [progress cancel];
     }
 }
