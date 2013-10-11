@@ -2522,12 +2522,12 @@ public class BrowserController extends WindowController
 
     public void revertPaths(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this, session,
-                new RevertWorker(session, files)) {
+                new RevertWorker(session, files) {
             @Override
-            public void cleanup() {
+            public void cleanup(final Boolean result) {
                 reloadData(files, false);
             }
-        });
+        }));
     }
 
     /**
