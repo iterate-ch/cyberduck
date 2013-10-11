@@ -64,7 +64,7 @@ public class Cache {
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
     public Path lookup(final PathReference reference) {
-        for(AttributedList<Path> list : impl.values()) {
+        for(AttributedList<Path> list : impl.values().toArray(new AttributedList[impl.size()])) {
             final Path path = list.get(reference);
             if(null == path) {
                 continue;
