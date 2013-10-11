@@ -48,22 +48,29 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      */
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(file.getLocal().exists()) {
-            Local renamed = file.getLocal();
-            while(renamed.exists()) {
+        final TransferStatus status = super.prepare(file, parent);
+        final Local local = file.getLocal();
+        if(local.exists()) {
+            do {
                 String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                renamed = LocalFactory.createLocal(renamed.getParent().getAbsolute(), proposal);
+                status.setLocal(LocalFactory.createLocal(local.getParent().getAbsolute(), proposal));
             }
-            if(!renamed.equals(file.getLocal())) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Rename existing file %s to %s", file.getLocal(), renamed));
-                }
-                file.getLocal().rename(renamed);
-            }
+            while(status.getLocal().exists());
         }
-        return super.prepare(file, parent);
+        return status;
+    }
+
+    @Override
+    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
+        final Local local = file.getLocal();
+        if(local.exists()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Rename existing file %s to %s", local, status.getLocal()));
+            }
+            local.rename(status.getLocal());
+        }
     }
 }

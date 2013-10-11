@@ -8,14 +8,16 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -47,11 +49,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 };
             }
         };
-        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
+        final TransferStatus status = f.prepare(p, new TransferStatus());
+        assertNull(status.getLocal());
+        f.apply(p, new TransferStatus());
     }
 
     @Test
     public void testPrepareRename() throws Exception {
+        final AtomicBoolean r = new AtomicBoolean();
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("t", Path.FILE_TYPE) {
             final NullLocal local = new NullLocal(null, "t") {
@@ -63,6 +68,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 @Override
                 public void rename(final Local renamed) {
                     assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
+                    r.set(true);
                 }
             };
 
@@ -71,7 +77,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return local;
             }
         };
-        f.prepare(p, new ch.cyberduck.core.transfer.TransferStatus());
+        final TransferStatus status = f.prepare(p, new TransferStatus());
+        assertNotNull(status.getLocal());
+        assertFalse(r.get());
+        f.apply(p, status);
         assertEquals("t", p.getLocal().getName());
+        assertTrue(r.get());
     }
 }

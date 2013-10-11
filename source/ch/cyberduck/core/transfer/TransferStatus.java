@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
@@ -64,9 +65,14 @@ public final class TransferStatus {
     private AtomicBoolean canceled = new AtomicBoolean();
 
     /**
-     * Upload destination
+     * Upload target
      */
     private Path renamed;
+
+    /**
+     * Local target
+     */
+    private Local local;
 
     public boolean isComplete() {
         return current == length;
@@ -166,6 +172,14 @@ public final class TransferStatus {
 
     public void setRenamed(final Path renamed) {
         this.renamed = renamed;
+    }
+
+    public Local getLocal() {
+        return local;
+    }
+
+    public void setLocal(final Local local) {
+        this.local = local;
     }
 
     public TransferStatus rename(final Path renamed) {
