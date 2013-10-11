@@ -30,8 +30,6 @@ import org.apache.log4j.Logger;
 public final class FoundationProgressIconService implements IconService {
     private static final Logger log = Logger.getLogger(FoundationProgressIconService.class);
 
-    private IconService delegate = new WorkspaceIconService();
-
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {
             IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -58,19 +56,19 @@ public final class FoundationProgressIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final String image) {
-        return delegate.set(file, image);
+        return false;
     }
 
     @Override
     public boolean set(final Local file, final TransferStatus status) {
         this.progress(file.getAbsolute(), status.getCurrent(), status.getLength());
-        return delegate.set(file, status);
+        return true;
     }
 
     @Override
     public boolean remove(final Local file) {
         this.cancel(file.getAbsolute());
-        return delegate.remove(file);
+        return true;
     }
 
     private native void progress(String file, long current, long size);
