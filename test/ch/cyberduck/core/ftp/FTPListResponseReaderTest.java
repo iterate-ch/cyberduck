@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -46,7 +47,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
         final AttributedList<Path> list = new AttributedList<Path>();
-        new FTPListResponseReader().read(s, path, parser,
+        new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, parser,
                 Collections.singletonList(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD"));
     }
 
@@ -59,7 +60,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         assertEquals("/", path.getName());
         assertEquals("/", path.getAbsolute());
 
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, path, parser,
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, parser,
                 Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk"));
 
         assertFalse(list.isEmpty());
@@ -76,7 +77,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         Path path = new Path("/www", Path.DIRECTORY_TYPE);
         assertEquals("www", path.getName());
         assertEquals("/www", path.getAbsolute());
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, path, parser,
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, parser,
                 Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk"));
     }
 
@@ -84,7 +85,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testStickyBit() throws Exception {
         final FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, new Path("/", Path.DIRECTORY_TYPE), parser,
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), new Path("/", Path.DIRECTORY_TYPE), parser,
                 Collections.singletonList("-rwsrwSr-T 1 dkocher dkocher         0 Sep  6 22:27 t"));
         final Path parsed = list.get(new Path("/t", Path.FILE_TYPE).getReference());
         assertNotNull(parsed);
@@ -106,7 +107,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         };
 
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, path, parser, Arrays.asList(replies));
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, parser, Arrays.asList(replies));
         assertEquals(1, list.size());
         final Path parsed = list.get(0);
         assertEquals("unsorted", parsed.getName());
@@ -124,7 +125,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
                 "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
         };
 
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, path, new FTPParserSelector().getParser("NETWARE  Type : L8"),
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, new FTPParserSelector().getParser("NETWARE  Type : L8"),
                 Arrays.asList(replies));
         assertEquals(1, list.size());
         final Path parsed = list.get(0);

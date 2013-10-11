@@ -66,6 +66,7 @@ public class DAVListService implements ListService {
                 p.attributes().setChecksum(resource.getEtag());
                 p.attributes().setETag(resource.getEtag());
                 children.add(p);
+                listener.chunk(children);
             }
             return children;
         }

@@ -101,6 +101,7 @@ public class SFTPListService implements ListService {
                     }
                 }
                 children.add(file);
+                listener.chunk(children);
             }
             return children;
         }

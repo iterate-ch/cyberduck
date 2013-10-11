@@ -68,7 +68,7 @@ public class FTPStatListService implements ListService {
                         result.add(StringUtils.stripStart(line, null));
                     }
                 }
-                return new FTPListResponseReader().read(session, file, parser, result);
+                return new FTPListResponseReader().read(session, listener, file, parser, result);
             }
             else {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());

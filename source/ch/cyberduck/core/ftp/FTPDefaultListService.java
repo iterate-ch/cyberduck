@@ -61,7 +61,7 @@ public class FTPDefaultListService implements ListService {
                     return session.getClient().list(command.getCommand(), command.getArg());
                 }
             });
-            return new FTPListResponseReader().read(session, file, parser, list);
+            return new FTPListResponseReader().read(session, listener, file, parser, list);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
