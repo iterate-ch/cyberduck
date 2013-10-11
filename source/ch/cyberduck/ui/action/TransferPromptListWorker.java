@@ -41,10 +41,9 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     private TransferStatus status;
 
-    public TransferPromptListWorker(final Session session, final Transfer transfer, final Path directory, final TransferStatus status) {
+    public TransferPromptListWorker(final Session session, final Transfer transfer, final Path directory) {
         this.directory = directory;
         this.transfer = transfer;
-        this.status = status;
     }
 
     @Override

@@ -234,7 +234,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, Session session, Transfer transfer,
                                                      Path directory, Cache cache)
-                    : base(session, transfer, directory, model._status[directory])
+                    : base(session, transfer, directory
                 {
                     _model = model;
                     _directory = directory;
