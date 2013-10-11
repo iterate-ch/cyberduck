@@ -33,16 +33,15 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));
         private static readonly string UnknownString = LocaleFactory.localizedString("Unknown");
+        protected readonly Session Session;
 
         protected readonly Transfer Transfer;
         private readonly WindowController _parent;
-        protected readonly Session Session;
 
         protected internal TransferAction Action =
             TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
         protected TransferPromptModel TransferPromptModel;
-        //private StatusLabelProgressListener _progressListener;
 
         protected TransferPromptController(WindowController parent, Transfer transfer, Session session)
         {
@@ -81,14 +80,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             AsyncDelegate wireAction = delegate
                 {
-                    //TODO weg?
-                    /*
-                    _progressListener = new StatusLabelProgressListener(this);
-                    foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
-                    {
-                        s.addProgressListener(_progressListener);
-                    }*/
-
                     View.ToggleDetailsEvent += View_ToggleDetailsEvent;
                     View.DetailsVisible = Preferences.instance().getBoolean(
                         "transfer.toggle.details");
@@ -110,16 +101,18 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.ModelActiveGetter = TransferPromptModel.IsActive;
 
                     View.ItemsChanged += UpdateStatusLabel;
-                    View.SetModel(TransferPromptModel.GetEnumerator());
 
-                    //select first one if there is any
-                    IEnumerator<Path> en =
-                        TransferPromptModel.GetEnumerator().GetEnumerator();
-                    if (en.MoveNext())
-                    {
-                        View.SelectedPath = en.Current;
-                    }
-
+                    View.ViewShownEvent += delegate
+                        {
+                            View.SetModel(TransferPromptModel.ChildrenGetter(null));
+                            //select first one if there is any
+                            IEnumerator<Path> en =
+                                TransferPromptModel.ChildrenGetter(null).GetEnumerator();
+                            if (en.MoveNext())
+                            {
+                                View.SelectedPath = en.Current;
+                            }
+                        };
                     DialogResult result = View.ShowDialog(_parent.View);
 
                     if (result == DialogResult.Cancel)
@@ -134,18 +127,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public bool isSelected(Path p)
         {
             return TransferPromptModel.GetCheckState(p) == CheckState.Checked;
-        }
-
-        protected override void Invalidate()
-        {
-            //TODO wirklich weg?
-
-            /*
-            foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
-            {
-                s.removeProgressListener(_progressListener);
-            }*/
-            base.Invalidate();
         }
 
         public void UpdateStatusLabel()
@@ -192,8 +173,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     View.RemoteFileUrl =
                         ((UrlProvider) Session.getFeature(typeof (UrlProvider))).toUrl(selected)
-                                                                                 .find(DescriptiveUrl.Type.provider)
-                                                                                 .getUrl();
+                                                                                .find(DescriptiveUrl.Type.provider)
+                                                                                .getUrl();
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
@@ -238,7 +219,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReloadData()
         {
-            View.SetModel(TransferPromptModel.GetEnumerator());
+            View.SetModel(TransferPromptModel.ChildrenGetter(null));
             UpdateStatusLabel();
         }
 

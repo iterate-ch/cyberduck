@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Core.Local
         protected const int ErrorFileNotFound = 2;
         private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).FullName);
 
-        private Attributes info;
+        private LocalAttributes _info;
 
         public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
         {
@@ -86,13 +86,13 @@ namespace Ch.Cyberduck.Core.Local
             ;
         }
 
-        public override Attributes attributes()
+        public override LocalAttributes attributes()
         {
-            if (null == info)
+            if (null == _info)
             {
-                info = new FileInfoAttributes(getAbsolute());
+                _info = new FileInfoAttributes(getAbsolute());
             }
-            return info;
+            return _info;
         }
 
         /// <summary>

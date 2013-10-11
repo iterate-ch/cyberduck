@@ -140,11 +140,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return CheckState.Checked;
         }
 
-        public IEnumerable<Path> GetEnumerator()
-        {
-            return _roots;
-        }
-
         public CheckState SetCheckState(object p, CheckState newValue)
         {
             _selected.Add((Path) p, newValue);
@@ -234,7 +229,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, Session session, Transfer transfer,
                                                      Path directory, Cache cache)
-                    : base(session, transfer, directory
+                    : base(session, transfer, directory)
                 {
                     _model = model;
                     _directory = directory;
