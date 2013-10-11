@@ -16,11 +16,11 @@
 // yves@cyberduck.ch
 // 
 
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
 
@@ -102,6 +102,64 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 }
             }
             base.OnCellEditStarting(e);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            OLVListItem focused = FocusedItem as OLVListItem;
+            if (focused == null)
+            {
+                base.OnKeyDown(e);
+                return;
+            }
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    if (SelectedObjects.Count > 1)
+                    {
+                        foreach (var o in SelectedObjects)
+                        {
+                            Branch br = TreeModel.GetBranch(o);
+                            if (br.IsExpanded)
+                                Collapse(o);
+                        }
+                    }
+                    else
+                    {
+                        // If the branch is expanded, collapse it. If it's collapsed,
+                        // select the parent of the branch.
+                        Branch br = TreeModel.GetBranch(focused.RowObject);
+                        if (br.IsExpanded)
+                            Collapse(focused.RowObject);
+                        else
+                        {
+                            if (br.ParentBranch != null && br.ParentBranch.Model != null)
+                                SelectObject(br.ParentBranch.Model, true);
+                        }
+                    }
+                    e.Handled = true;
+                    break;
+
+                case Keys.Right:
+                    foreach (var o in SelectedObjects)
+                    {
+                        Branch br = TreeModel.GetBranch(o);
+                        if (br.IsExpanded)
+                        {
+                            List<Branch> filtered = br.FilteredChildBranches;
+                            if (filtered.Count > 0)
+                                SelectObject(filtered[0].Model, true);
+                        }
+                        else
+                        {
+                            if (br.CanExpand)
+                                Expand(o);
+                        }
+                    }
+                    e.Handled = true;
+                    break;
+            }
+            base.OnKeyDown(e);
         }
     }
 
