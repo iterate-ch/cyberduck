@@ -130,7 +130,7 @@ public class SyncTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root, new TransferStatus().exists(true));
+        final AttributedList<Path> list = t.list(session, root);
         assertEquals(1, list.size());
         assertFalse(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
@@ -162,7 +162,7 @@ public class SyncTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root, new TransferStatus().exists(true));
+        final AttributedList<Path> list = t.list(session, root);
         assertEquals(1, list.size());
         assertFalse(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
