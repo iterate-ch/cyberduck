@@ -21,12 +21,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms.Threading;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.threading;
 using org.apache.log4j;
@@ -159,13 +159,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (DialogResult.OK == result)
                     {
                         // Quit
-                        for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
+                        for (int i = 0; i < _instance.getActions().size(); i++)
                         {
-                            Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
-                            if (transfer.isRunning())
-                            {
-                                transfer.cancel();
-                            }
+                            ((BackgroundAction) _instance.getActions().get(i)).cancel();
                         }
                         return true;
                     }
@@ -518,9 +514,21 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (IProgressView progressView in View.SelectedTransfers)
             {
                 Transfer transfer = GetTransferFromView(progressView);
+                BackgroundActionRegistry registry = getActions();
                 if (transfer.isRunning())
                 {
-                    transfer.cancel();
+                    // Find matching background task
+                    for (int i = 0; i < registry.size(); i++)
+                    {
+                        if (registry.get(i) is TransferBackgroundAction)
+                        {
+                            TransferBackgroundAction t = (TransferBackgroundAction) registry.get(i);
+                            if (t.getTransfer().Equals(transfer))
+                            {
+                                t.cancel();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -629,10 +637,9 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                                             TransferCallback callback) :
                                                 base(
-                                                controller,
+                                                controller, SessionFactory.createSession(transfer.getHost()),
                                                 controller.GetController(transfer), controller.GetController(transfer),
-                                                transfer, new LazyTransferPrompt(controller, transfer),
-                                                new DialogTransferErrorCallback(controller), options)
+                                                transfer, options)
             {
                 _transfer = transfer;
                 _callback = callback;
@@ -670,23 +677,6 @@ namespace Ch.Cyberduck.Ui.Controller
                             _controller.View.Close();
                         }
                     }
-                }
-            }
-
-            private class LazyTransferPrompt : TransferPrompt
-            {
-                private readonly TransferController _controller;
-                private readonly Transfer _transfer;
-
-                public LazyTransferPrompt(TransferController controller, Transfer transfer)
-                {
-                    _transfer = transfer;
-                    _controller = controller;
-                }
-
-                public TransferAction prompt()
-                {
-                    return TransferPromptController.Create(_controller, _transfer).prompt();
                 }
             }
         }

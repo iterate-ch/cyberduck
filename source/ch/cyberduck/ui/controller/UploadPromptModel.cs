@@ -23,7 +23,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UploadPromptModel : TransferPromptModel
     {
-        public UploadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
+        public UploadPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+            : base(controller, session, transfer)
         {
         }
 

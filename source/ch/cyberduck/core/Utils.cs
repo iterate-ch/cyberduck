@@ -165,6 +165,25 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="javaMap"></param>
+        /// <returns></returns>
+        public static IDictionary<K, V> ConvertFromJavaMap<K, V>(Map javaMap)
+        {
+            IDictionary<K, V> result = new Dictionary<K, V>();
+            Iterator iterator = javaMap.entrySet().iterator();
+            while (iterator.hasNext())
+            {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                result.Add((K) entry.getKey(), (V) entry.getValue());
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Convert a generic IEnumerable to a java list
         /// </summary>
         /// <typeparam name="T"></typeparam>

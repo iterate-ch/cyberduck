@@ -34,6 +34,7 @@ using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using Ch.Cyberduck.core.editor;
 using Ch.Cyberduck.core.local;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -191,6 +192,8 @@ namespace Ch.Cyberduck.Ui.Controller
             GrowlImpl.Register();
             DefaultPathReferenceFactory.Register();
             PromptLoginController.Register();
+            DialogTransferPromptControllerFactory.Register();
+            DialogTransferErrorCallback.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
             if (Preferences.instance().getBoolean("rendezvous.enable"))

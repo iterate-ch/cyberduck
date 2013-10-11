@@ -26,7 +26,6 @@ using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using Ch.Cyberduck.Ui.Winforms.Threading;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
@@ -707,12 +706,12 @@ namespace Ch.Cyberduck.Ui.Controller
                             // The bookmark this file has been dropped onto
                             Host destination = (Host) e.DropTargetItem.RowObject;
                             IList<Path> roots = new List<Path>();
-                            Session session = null;
+                            Host host = null;
                             foreach (string upload in data.GetFileDropList())
                             {
-                                if (null == session)
+                                if (null == host)
                                 {
-                                    session = SessionFactory.createSession(destination);
+                                    host = destination;
                                 }
                                 // Upload to the remote host this bookmark points to
                                 roots.Add(new Path(new Path(destination.getDefaultPath(), AbstractPath.DIRECTORY_TYPE),
@@ -720,7 +719,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                             if (roots.Count > 0)
                             {
-                                UploadTransfer q = new UploadTransfer(session, Utils.ConvertToJavaList(roots));
+                                UploadTransfer q = new UploadTransfer(host, Utils.ConvertToJavaList(roots));
                                 // If anything has been added to the queue, then process the queue
                                 if (q.getRoots().size() > 0)
                                 {
@@ -1022,10 +1021,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Find source browser
                         if (controller.View.Browser.Equals(dropargs.SourceListView))
                         {
-                            controller.transfer(new CopyTransfer(
-                                                    SessionFactory.createSession(controller.Session.getHost()),
-                                                    SessionFactory.createSession(Session.getHost()),
-                                                    Utils.ConvertToJavaMap(files)));
+                            controller.transfer(new CopyTransfer(controller.Session.getHost(), Session.getHost(),
+                                                                 Utils.ConvertToJavaMap(files)),
+                                                new List<Path>(files.Values), false);
                             break;
                         }
                     }
@@ -1054,12 +1052,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_RevertFile()
         {
-            RevertPath(SelectedPath);
+            RevertPaths(SelectedPaths);
         }
 
-        private void RevertPath(Path selected)
+        private void RevertPaths(IList<Path> files)
         {
-            Background(new RevertPathAction(this, selected));
+            Background(new RevertAction(this, files));
         }
 
         private void View_ToggleBookmarks()
@@ -1476,12 +1474,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Download(IList<Path> downloads, Local downloadFolder)
         {
-            Session session = getTransferSession();
             foreach (Path selected in downloads)
             {
                 selected.setLocal(LocalFactory.createLocal(downloadFolder, selected.getName()));
             }
-            Transfer q = new DownloadTransfer(session, Utils.ConvertToJavaList(downloads));
+            Transfer q = new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(downloads));
             transfer(q, new List<Path>());
         }
 
@@ -1721,9 +1718,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    null);
             if (null != folder)
             {
-                Session session = getTransferSession(true);
                 selected.setLocal(LocalFactory.createLocal(folder));
-                transfer(new SyncTransfer(session, selected));
+                transfer(new SyncTransfer(_session.getHost(), selected));
             }
         }
 
@@ -1750,7 +1746,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 destination = destination.getParent();
             }
             List roots = Utils.ConvertToJavaList(paths, path => new Path(destination, LocalFactory.createLocal(path)));
-            transfer(new UploadTransfer(getTransferSession(), roots));
+            transfer(new UploadTransfer(_session.getHost(), roots));
         }
 
         private void View_DownloadTo()
@@ -1759,14 +1755,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   Environment.SpecialFolder.Desktop, null);
             if (null != folder)
             {
-                Session session = getTransferSession();
                 IList<Path> selected = SelectedPaths;
 
                 foreach (Path file in selected)
                 {
                     file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
                 }
-                transfer(new DownloadTransfer(session, Utils.ConvertToJavaList(selected)), new List<Path>());
+                transfer(new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(selected)), new List<Path>());
             }
         }
 
@@ -1782,7 +1777,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path selected = SelectedPath;
                 selected.setLocal(LocalFactory.createLocal(filename));
-                transfer(new DownloadTransfer(getTransferSession(), selected), new List<Path>());
+                transfer(new DownloadTransfer(_session.getHost(), selected), new List<Path>());
             }
         }
 
@@ -2020,7 +2015,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                UploadTransfer q = new UploadTransfer(getTransferSession(), Utils.ConvertToJavaList(roots));
+                UploadTransfer q = new UploadTransfer(_session.getHost(), Utils.ConvertToJavaList(roots));
                 if (q.getRoots().size() > 0)
                 {
                     transfer(q);
@@ -2312,39 +2307,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (browser)
             {
                 Background(new CallbackTransferBackgroundAction(callback, this,
-                                                                new ProgressTransferAdapter(this), this, this,
-                                                                transfer, new LazyTransferPrompt(this, transfer),
+                                                                new ProgressTransferAdapter(this), this,
+                                                                transfer,
                                                                 new TransferOptions()));
             }
             else
             {
                 TransferController.Instance.StartTransfer(transfer, new TransferOptions(), callback);
             }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns>The session to be used for file transfers. Null if not mounted</returns>
-        public Session getTransferSession()
-        {
-            return getTransferSession(false);
-        }
-
-        public Session getTransferSession(bool force)
-        {
-            if (!IsMounted())
-            {
-                return null;
-            }
-            if (!force)
-            {
-                if (_session.getMaxConnections() == 1)
-                {
-                    return _session;
-                }
-            }
-            return SessionFactory.createSession(_session.getHost());
         }
 
         /// <summary>
@@ -3022,7 +2992,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(_session, SessionFactory.createSession(_session.getHost()),
+                CopyTransfer copy = new CopyTransfer(_session.getHost(), _session.getHost(),
                                                      Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
@@ -3119,15 +3089,12 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly TransferCallback _callback;
             private readonly Transfer _transfer;
 
-            public CallbackTransferBackgroundAction(TransferCallback callback, WindowController controller,
+            public CallbackTransferBackgroundAction(TransferCallback callback, BrowserController controller,
                                                     TransferListener transferListener,
                                                     ProgressListener progressListener,
-                                                    TranscriptListener transcriptListener, Transfer transfer,
-                                                    TransferPrompt prompt, TransferOptions options)
-                : base(
-                    controller, transferListener, progressListener, transcriptListener, transfer, options, prompt,
-                    new DialogTransferErrorCallback(controller)
-                    )
+                                                    Transfer transfer,
+                                                    TransferOptions options)
+                : base(controller, controller._session, transferListener, progressListener, transfer, options)
             {
                 _callback = callback;
                 _transfer = transfer;
@@ -3283,23 +3250,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class LazyTransferPrompt : TransferPrompt
-        {
-            private readonly BrowserController _controller;
-            private readonly Transfer _transfer;
-
-            public LazyTransferPrompt(BrowserController controller, Transfer transfer)
-            {
-                _transfer = transfer;
-                _controller = controller;
-            }
-
-            public TransferAction prompt()
-            {
-                return TransferPromptController.Create(_controller, _transfer).prompt();
-            }
-        }
-
         private class MountAction : WorkerBackgroundAction
         {
             private readonly BrowserController _controller;
@@ -3443,31 +3393,29 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class RevertPathAction : BrowserControllerBackgroundAction
+        private class RevertAction : WorkerBackgroundAction
         {
-            private readonly Path _selected;
-
-            public RevertPathAction(BrowserController controller, Path selected)
-                : base(controller)
+            public RevertAction(BrowserController controller, IList<Path> files)
+                : base(controller, controller._session, new InnerRevertWorker(controller, files))
             {
-                _selected = selected;
             }
 
-            public override object run()
+            private class InnerRevertWorker : RevertWorker
             {
-                ((Versioning) BrowserController._session.getFeature(typeof (Versioning))).revert(_selected);
-                return true;
-            }
+                private readonly BrowserController _controller;
+                private readonly IList<Path> _files;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                BrowserController.RefreshParentPaths(new Collection<Path> {_selected});
-            }
+                public InnerRevertWorker(BrowserController controller, IList<Path> files)
+                    : base(controller._session, Utils.ConvertToJavaList(files))
+                {
+                    _controller = controller;
+                    _files = files;
+                }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Reverting {0}", "Status"), _selected.getName());
+                public override void cleanup(object result)
+                {
+                    _controller.RefreshParentPaths(_files);
+                }
             }
         }
 

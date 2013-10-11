@@ -24,7 +24,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptModel : TransferPromptModel
     {
-        public SyncPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
+        public SyncPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+            : base(controller, session, transfer)
         {
         }
 
@@ -40,12 +41,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isFile())
             {
-                if (Transfer.cache().lookup(path.getReference()) != null)
+                if (path.attributes().getSize() == 0)
                 {
-                    if (path.attributes().getSize() == 0)
-                    {
-                        return AlertIcon;
-                    }
+                    return AlertIcon;
                 }
                 if (path.getLocal().exists())
                 {
@@ -60,22 +58,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetCreateImage(Path path)
         {
-            if (!(Transfer.cache().lookup(path.getReference()) != null && path.getLocal().exists()))
+            if (!path.getLocal().exists())
             {
                 return IconCache.Instance.IconForName("plus");
+            }
+            if (_status.ContainsKey(path))
+            {
+                if (!_status[path].isExists())
+                {
+                    return IconCache.Instance.IconForName("plus");
+                }
             }
             return null;
         }
 
         public override object GetSyncGetter(Path path)
         {
-            if (path.attributes().isDirectory())
-            {
-                if (Transfer.cache().lookup(path.getReference()) != null && path.getLocal().exists())
-                {
-                    return null;
-                }
-            }
             Comparison compare = ((SyncTransfer) Transfer).compare(path);
             if (compare.equals(Comparison.remote))
             {

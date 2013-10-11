@@ -41,8 +41,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _action = rba;
             _controller.Invoke(delegate
                 {
-                    String provider =
-                        ((Session) rba.getSessions().iterator().next()).getHost().getProtocol().getProvider();
+                    String provider = rba.getSession().getHost().getProtocol().getProvider();
                     string footer = String.Format("{0}/{1}", Preferences.instance().getProperty("website.help"),
                                                   provider);
                     DialogResult result =

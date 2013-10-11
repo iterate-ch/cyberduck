@@ -26,7 +26,8 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (DownloadPromptModel).Name);
 
-        public DownloadPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
+        public DownloadPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+            : base(controller, session, transfer)
         {
             ;
         }

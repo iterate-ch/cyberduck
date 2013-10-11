@@ -2610,6 +2610,7 @@ source/ch/cyberduck/ui/winforms/CreateFilePromptForm.resx -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.resx -text
+source/ch/cyberduck/ui/winforms/DialogTransferPromptControllerFactory.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.resx -text

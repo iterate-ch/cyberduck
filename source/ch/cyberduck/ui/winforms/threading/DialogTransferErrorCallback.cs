@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.ui;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -79,8 +80,26 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             return false;
         }
 
+        public static void Register()
+        {
+            TransferErrorCallbackControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        }
+
+        private class Factory : TransferErrorCallbackControllerFactory
+        {
+            public override TransferErrorCallback create(ch.cyberduck.ui.Controller c)
+            {
+                return new DialogTransferErrorCallback((WindowController)c);
+            }
+
+            protected override object create()
+            {
+                throw new FactoryException();
+            }
+        }
+
         /// <summary>
-        /// Provides non-blocking, thread-safe access to a boolean valueB.
+        /// Provides non-blocking, thread-safe access to a boolean value.
         /// </summary>
         private class AtomicBoolean
         {

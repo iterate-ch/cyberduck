@@ -19,11 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
@@ -38,6 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected readonly Transfer Transfer;
         private readonly WindowController _parent;
+        protected readonly Session Session;
 
         protected internal TransferAction Action =
             TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
@@ -45,11 +44,12 @@ namespace Ch.Cyberduck.Ui.Controller
         protected TransferPromptModel TransferPromptModel;
         //private StatusLabelProgressListener _progressListener;
 
-        protected TransferPromptController(WindowController parent, Transfer transfer)
+        protected TransferPromptController(WindowController parent, Transfer transfer, Session session)
         {
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
             Transfer = transfer;
+            Session = session;
             View.Title = LocaleFactory.localizedString(TransferName);
 
             PopulateActions();
@@ -131,6 +131,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return Action;
         }
 
+        public bool isSelected(Path p)
+        {
+            return TransferPromptModel.GetCheckState(p) == CheckState.Checked;
+        }
+
         protected override void Invalidate()
         {
             //TODO wirklich weg?
@@ -186,9 +191,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                    .getModificationDate()));
                     }
                     View.RemoteFileUrl =
-                        ((UrlProvider)
-                         ((Session) Transfer.getSessions().iterator().next()).getFeature(typeof (UrlProvider))).toUrl(
-                             selected).find(DescriptiveUrl.Type.provider).getUrl();
+                        ((UrlProvider) Session.getFeature(typeof (UrlProvider))).toUrl(selected)
+                                                                                 .find(DescriptiveUrl.Type.provider)
+                                                                                 .getUrl();
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
@@ -224,8 +229,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return;
             }
-            Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
-            Action = selected;
+            Preferences.instance()
+                       .setProperty(String.Format("queue.prompt.{0}.action.default", Transfer.getType().name()),
+                                    selected.toString());
+            TransferPromptModel.SetAction(selected);
             ReloadData();
         }
 
@@ -235,7 +242,18 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateStatusLabel();
         }
 
-        protected virtual void PopulateActions()
+        private void PopulateActions()
+        {
+            View.PopulateActions(GetTransferActions());
+            TransferAction defaultAction =
+                TransferAction.forName(
+                    Preferences.instance()
+                               .getProperty(String.Format("queue.prompt.{0}.action.default", Transfer.getType().name())));
+            View.SelectedAction = defaultAction;
+            Action = defaultAction;
+        }
+
+        protected virtual IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
             actions.Add(TransferAction.resume, TransferAction.resume.getTitle());
@@ -244,45 +262,7 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.renameexisting, TransferAction.renameexisting.getTitle());
             actions.Add(TransferAction.skip, TransferAction.skip.getTitle());
             actions.Add(TransferAction.comparison, TransferAction.comparison.getTitle());
-
-            bool renameSupported = true;
-            foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
-            {
-                if (!((Move) s.getFeature(typeof (Move))).isSupported(Transfer.getRoot()))
-                {
-                    renameSupported = false;
-                    break;
-                }
-            }
-            View.PopulateActions(actions);
-
-            TransferAction defaultAction = TransferAction.forName(
-                Preferences.instance().getProperty("queue.prompt.action.default"));
-            View.SelectedAction = defaultAction;
-            Action = defaultAction;
-        }
-
-        public static TransferPromptController Create(WindowController parent, Transfer transfer)
-        {
-            // create the controller in the thread that has created the view of the TransferController (parent)
-            TransferPromptController promptController = null;
-
-            if (transfer is DownloadTransfer)
-            {
-                parent.Invoke(delegate { promptController = new DownloadPromptController(parent, transfer); }, true);
-                return promptController;
-            }
-            if (transfer is UploadTransfer)
-            {
-                parent.Invoke(delegate { promptController = new UploadPromptController(parent, transfer); }, true);
-                return promptController;
-            }
-            if (transfer is SyncTransfer)
-            {
-                parent.Invoke(delegate { promptController = new SyncPromptController(parent, transfer); }, true);
-                return promptController;
-            }
-            throw new ArgumentException(transfer.toString());
+            return actions;
         }
 
         public void RefreshObject(Path path)

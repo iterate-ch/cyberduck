@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptController : TransferPromptController
     {
-        public SyncPromptController(WindowController parent, Transfer transfer) : base(parent, transfer)
+        public SyncPromptController(WindowController parent, Transfer transfer, Session session) : base(parent, transfer, session)
         {
             ;
         }
@@ -36,35 +36,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override TransferAction prompt()
         {
-            TransferPromptModel = new SyncPromptModel(this, Transfer);
+            TransferPromptModel = new SyncPromptModel(this, Session, Transfer);
             Action = TransferAction.overwrite;
             return base.prompt();
         }
 
-        protected override void View_ChangedActionEvent()
-        {
-            TransferAction selected = View.SelectedAction;
-            if (Action.equals(selected))
-            {
-                return;
-            }
-            Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
-            ((SyncTransfer) Transfer).setTransferAction(selected);
-            ReloadData();
-        }
-
-        protected override void PopulateActions()
+        protected override IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-
-            TransferAction defaultAction = ((SyncTransfer) Transfer).getTransferAction();
-
-            actions.Add(TransferAction.download, TransferAction.download.getTitle());
-            actions.Add(TransferAction.upload, TransferAction.upload.getTitle());
-            actions.Add(TransferAction.mirror, TransferAction.mirror.getTitle());
-            View.PopulateActions(actions);
-
-            View.SelectedAction = defaultAction;
+            actions.Add(TransferAction.download, TransferAction.resume.getTitle());
+            actions.Add(TransferAction.upload, TransferAction.overwrite.getTitle());
+            actions.Add(TransferAction.mirror, TransferAction.rename.getTitle());
+            return actions;
         }
     }
 }

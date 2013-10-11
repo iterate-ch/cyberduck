@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
 
@@ -22,7 +23,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UploadPromptController : TransferPromptController
     {
-        public UploadPromptController(WindowController parent, Transfer transfer) : base(parent, transfer)
+        public UploadPromptController(WindowController parent, Transfer transfer, Session session)
+            : base(parent, transfer, session)
         {
         }
 
@@ -33,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override TransferAction prompt()
         {
-            TransferPromptModel = new UploadPromptModel(this, Transfer);
+            TransferPromptModel = new UploadPromptModel(this, Session, Transfer);
             return base.prompt();
         }
     }

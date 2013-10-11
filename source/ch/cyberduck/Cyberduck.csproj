@@ -269,6 +269,7 @@
     <Compile Include="ui\winforms\CreateSymlinkPromptForm.Designer.cs">
       <DependentUpon>CreateSymlinkPromptForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\winforms\DialogTransferPromptControllerFactory.cs" />
     <Compile Include="ui\winforms\GotoPromptForm.cs">
       <SubType>Form</SubType>
     </Compile>

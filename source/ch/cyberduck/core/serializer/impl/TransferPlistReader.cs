@@ -38,39 +38,30 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             XmlNode transferDict = dictNode.SelectSingleNode("dict");
             if (null != transferDict)
             {
-                Host host = new Host(transferDict);
-                Session s = SessionFactory.createSession(host);
-                return deserialize(dictNode, s);
-            }
-            throw new ArgumentException("Unknown transfer");
-        }
-
-        private Transfer deserialize(XmlNode dictNode, Session session)
-        {
-            XmlNode kindKeyNode = dictNode.SelectSingleNode("key[.='Kind']");
-            if (null != kindKeyNode)
-            {
-                int kind = int.Parse(kindKeyNode.NextSibling.InnerText);
-
-
-                Transfer.Type type = Transfer.Type.values()[kind];
-                if (type == Transfer.Type.download)
+                XmlNode kindKeyNode = dictNode.SelectSingleNode("key[.='Kind']");
+                if (null != kindKeyNode)
                 {
-                    return new DownloadTransfer(dictNode, session);
+                    int kind = int.Parse(kindKeyNode.NextSibling.InnerText);
+                    Transfer.Type type = Transfer.Type.values()[kind];
+                    if (type == Transfer.Type.download)
+                    {
+                        return new DownloadTransfer(dictNode);
+                    }
+                    if (type == Transfer.Type.upload)
+                    {
+                        return new UploadTransfer(dictNode);
+                    }
+                    if (type == Transfer.Type.sync)
+                    {
+                        return new SyncTransfer(dictNode);
+                    }
+                    if (type == Transfer.Type.copy)
+                    {
+                        return new CopyTransfer(dictNode);
+                    }
+                    Log.error("Unknown transfer:" + kind);
+                    throw new ArgumentException("Unknown transfer");
                 }
-                if (type == Transfer.Type.upload)
-                {
-                    return new UploadTransfer(dictNode, session);
-                }
-                if (type == Transfer.Type.sync)
-                {
-                    return new SyncTransfer(dictNode, session);
-                }
-                if (type == Transfer.Type.copy)
-                {
-                    return new CopyTransfer(dictNode, session);
-                }
-                Log.error("Unknown transfer:" + kind);
             }
             return null;
         }

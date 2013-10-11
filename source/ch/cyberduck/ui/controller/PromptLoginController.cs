@@ -253,7 +253,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return new PromptLoginController(TransferController.Instance);
             }
 
-            protected override LoginController create(ch.cyberduck.ui.Controller c)
+            public override LoginController create(ch.cyberduck.ui.Controller c)
             {
                 return new PromptLoginController((WindowController) c);
             }
