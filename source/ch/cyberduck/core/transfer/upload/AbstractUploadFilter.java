@@ -113,12 +113,23 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setRenamed(renamed);
                 temporary.put(file, renamed);
             }
+            else {
+                if(parent.isExists()) {
+                    if(find.find(file)) {
+                        // Read attributes from server
+                        status.setExists(true);
+                        file.setAttributes(attribute.getAttributes(file));
+                    }
+                }
+            }
         }
-        if(parent.isExists()) {
-            // Do not attempt to create a directory that already exists
-            if(find.find(file)) {
-                status.setExists(true);
-                file.setAttributes(attribute.getAttributes(file));
+        if(file.attributes().isDirectory()) {
+            if(parent.isExists()) {
+                // Do not attempt to create a directory that already exists
+                if(find.find(file)) {
+                    status.setExists(true);
+                    file.setAttributes(attribute.getAttributes(file));
+                }
             }
         }
         return status;
