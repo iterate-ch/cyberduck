@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -323,6 +324,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         }
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new DefaultAttributesFeature(this);
         }
         if(type == Home.class) {
             return (T) new DefaultHomeFinderService(this);

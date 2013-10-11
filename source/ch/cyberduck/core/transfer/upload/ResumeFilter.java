@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -49,7 +48,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         super(symlinkResolver, session, options);
         this.find = session.getFeature(Find.class);
         this.write = session.getFeature(Write.class);
-        this.attributes = new DefaultAttributesFeature(session);
+        this.attributes = session.getFeature(Attributes.class);
     }
 
     @Override

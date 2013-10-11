@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
@@ -97,7 +97,7 @@ public class UploadTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list = new AttributedList<Path>();
-            final DefaultAttributesFeature feature = new DefaultAttributesFeature(session);
+            final Attributes feature = session.getFeature(Attributes.class);
             for(Local local : directory.getLocal().list().filter(filter)) {
                 final Path file = new Path(directory, local);
                 if(parent.isExists()) {
@@ -155,7 +155,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             final Find find = session.getFeature(Find.class);
-            final DefaultAttributesFeature attribute = new DefaultAttributesFeature(session);
+            final Attributes attribute = session.getFeature(Attributes.class);
             boolean found = false;
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
