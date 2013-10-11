@@ -53,7 +53,7 @@ public class CompareFilter extends AbstractUploadFilter {
             switch(comparison) {
                 case local:
                 case equal:
-                    return super.accept(file, parent);
+                    return true;
                 case remote:
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));

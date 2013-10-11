@@ -58,7 +58,7 @@ public class CompareFilter extends AbstractDownloadFilter {
                     }
                     return false;
                 case remote:
-                    return super.accept(file, parent);
+                    return true;
             }
             log.warn(String.format("Invalid comparison result %s", comparison));
         }
