@@ -205,7 +205,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             final TransferStatus status = filter.prepare(file, parent);
                             table.put(file, status);
                             // Apply filter
-                            filter.apply(file, parent);
+                            filter.apply(file, status);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
                             // Add skipped bytes
