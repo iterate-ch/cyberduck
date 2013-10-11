@@ -26,7 +26,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
@@ -97,15 +96,8 @@ public class UploadTransfer extends Transfer {
         }
         else {
             final AttributedList<Path> list = new AttributedList<Path>();
-            final Attributes feature = session.getFeature(Attributes.class);
             for(Local local : directory.getLocal().list().filter(filter)) {
-                final Path file = new Path(directory, local);
-                if(parent.isExists()) {
-                    if(session.getFeature(Find.class).find(file)) {
-                        file.setAttributes(feature.getAttributes(file));
-                    }
-                }
-                list.add(file);
+                list.add(new Path(directory, local));
             }
             return list;
         }
@@ -155,23 +147,17 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             final Find find = session.getFeature(Find.class);
-            final Attributes attribute = session.getFeature(Attributes.class);
-            boolean found = false;
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
-                    upload.setAttributes(attribute.getAttributes(upload));
                     if(upload.attributes().isDirectory()) {
                         if(this.list(session, upload, new TransferStatus().exists(true)).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    found = true;
+                    // Prompt user to choose a filter
+                    return prompt.prompt();
                 }
-            }
-            if(found) {
-                // Prompt user to choose a filter
-                return prompt.prompt();
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
             return TransferAction.overwrite;

@@ -29,6 +29,7 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
@@ -60,10 +61,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private UploadFilterOptions options;
 
+    private Find find;
+
+    private Attributes attribute;
+
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
+        this.find = session.getFeature(Find.class);
+        this.attribute = session.getFeature(Attributes.class);
     }
 
     @Override
@@ -108,12 +115,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(parent.isExists()) {
-            // Parent directory exists. Check child.
-            if(file.attributes().isDirectory()) {
-                // Do not attempt to create a directory that already exists
-                if(session.getFeature(Find.class).find(file)) {
-                    status.setExists(true);
-                }
+            // Do not attempt to create a directory that already exists
+            if(find.find(file)) {
+                status.setExists(true);
+                file.setAttributes(attribute.getAttributes(file));
             }
         }
         return status;
