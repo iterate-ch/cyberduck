@@ -42,6 +42,7 @@ import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,9 +91,9 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    protected String getOrigin(final Path container, final Distribution.Method method) {
+    protected URI getOrigin(final Path container, final Distribution.Method method) {
         if(method.equals(Distribution.WEBSITE_CDN)) {
-            return this.getWebsiteHostname(container);
+            return URI.create(this.getWebsiteHostname(container));
         }
         return super.getOrigin(container, method);
     }
@@ -102,9 +103,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(method.equals(Distribution.WEBSITE)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
-                final Distribution distribution = new Distribution(this.getOrigin(container, method),
-                        method,
-                        configuration.isWebsiteConfigActive());
+                final Distribution distribution = new Distribution(this.getOrigin(container, method).getHost(),
+                        method, configuration.isWebsiteConfigActive());
                 distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
@@ -114,7 +114,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             }
             catch(ServiceException e) {
                 // Not found. Website configuration not enabled.
-                final Distribution distribution = new Distribution(this.getOrigin(container, method), method, false);
+                final Distribution distribution = new Distribution(
+                        this.getOrigin(container, method).getHost(), method, false);
                 distribution.setStatus(e.getErrorMessage());
                 distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
                 return distribution;

@@ -88,13 +88,13 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    protected String getOrigin(final Path container, final Distribution.Method method) {
+    protected URI getOrigin(final Path container, final Distribution.Method method) {
         try {
-            return new URI(origin.getWebURL()).getHost();
+            return new URI(origin.getWebURL());
         }
         catch(URISyntaxException e) {
             log.error(String.format("Failure parsing URI %s", origin.getWebURL()), e);
         }
-        return origin.getHostname();
+        return URI.create(origin.getHostname());
     }
 }
