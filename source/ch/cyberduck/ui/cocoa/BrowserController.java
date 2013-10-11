@@ -2830,6 +2830,7 @@ public class BrowserController extends WindowController
      * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
+        // Determine from current browser sesssion if new connection should be opened for transfers
         this.transfer(transfer, selected, session.getMaxConnections() == 1);
     }
 
