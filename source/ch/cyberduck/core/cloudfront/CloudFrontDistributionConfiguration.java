@@ -55,6 +55,7 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -182,8 +183,9 @@ public class CloudFrontDistributionConfiguration
      * @return Origin server hostname. This is not the same as the container for
      *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
-    protected String getOrigin(final Path container, final Distribution.Method method) {
-        return String.format("%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname());
+    protected URI getOrigin(final Path container, final Distribution.Method method) {
+        return URI.create(String.format("%s.%s", container.getName(),
+                session.getHost().getProtocol().getDefaultHostname()));
     }
 
     @Override
@@ -209,7 +211,8 @@ public class CloudFrontDistributionConfiguration
                         log.debug(String.format("List %s distributions", method));
                     }
                     if(method.equals(Distribution.STREAMING)) {
-                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(getOrigin(container, method))) {
+                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(
+                                getOrigin(container, method).getHost())) {
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
@@ -222,7 +225,8 @@ public class CloudFrontDistributionConfiguration
                     }
                     else if(method.equals(Distribution.DOWNLOAD)) {
                         // List distributions restricting to bucket name origin
-                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listDistributions(getOrigin(container, method))) {
+                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listDistributions(
+                                getOrigin(container, method).getHost())) {
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
@@ -238,7 +242,7 @@ public class CloudFrontDistributionConfiguration
                             for(Origin o : d.getConfig().getOrigins()) {
                                 // Listing all distributions and look for custom origin
                                 if(o instanceof CustomOrigin) {
-                                    if(o.getDomainName().equals(getOrigin(container, method))) {
+                                    if(o.getDomainName().equals(getOrigin(container, method).getHost())) {
                                         // We currently only support one distribution per bucket
                                         final Distribution distribution = convert(client, d, method);
                                         cache.put(container, distribution);
@@ -249,7 +253,7 @@ public class CloudFrontDistributionConfiguration
                         }
                     }
                     // Return disabled configuration
-                    return new Distribution(getOrigin(container, method), method);
+                    return new Distribution(getOrigin(container, method).getHost(), method);
                 }
                 catch(CloudFrontServiceException e) {
                     throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
@@ -274,7 +278,7 @@ public class CloudFrontDistributionConfiguration
                                         false, ProtocolFactory.S3_SSL.getDefaultHostname());
                             }
                             else {
-                                loggingTarget = getOrigin(container, distribution.getMethod());
+                                loggingTarget = getOrigin(container, distribution.getMethod()).getHost();
                             }
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
@@ -438,16 +442,16 @@ public class CloudFrontDistributionConfiguration
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
-        final String origin = this.getOrigin(container, distribution.getMethod());
+        final URI origin = this.getOrigin(container, distribution.getMethod());
         if(distribution.getMethod().equals(Distribution.STREAMING)) {
             final StreamingDistributionConfig config = new StreamingDistributionConfig(
-                    new S3Origin[]{new S3Origin(originId, origin, null)},
+                    new S3Origin[]{new S3Origin(originId, origin.getHost(), null)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
             return client.createDistribution(config);
         }
         if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new S3Origin(originId, origin, null)},
+                    new Origin[]{new S3Origin(originId, origin.getHost(), null)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
@@ -455,7 +459,8 @@ public class CloudFrontDistributionConfiguration
         if(distribution.getMethod().equals(Distribution.CUSTOM)
                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new CustomOrigin(originId, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER)},
+                    new Origin[]{new CustomOrigin(originId, origin.getHost(),
+                            CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER, -1 == origin.getPort() ? 80 : origin.getPort(), 443)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
@@ -476,7 +481,7 @@ public class CloudFrontDistributionConfiguration
                                       final Distribution distribution,
                                       final LoggingStatus logging)
             throws CloudFrontServiceException, IOException, ConnectionCanceledException {
-        final String origin = this.getOrigin(container, distribution.getMethod());
+        final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
@@ -486,14 +491,14 @@ public class CloudFrontDistributionConfiguration
         );
         if(distribution.getMethod().equals(Distribution.STREAMING)) {
             StreamingDistributionConfig config = new StreamingDistributionConfig(
-                    new Origin[]{new S3Origin(originId, origin, null)}, current.getReference(),
+                    new Origin[]{new S3Origin(originId, origin.getHost(), null)}, current.getReference(),
                     distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
             config.setEtag(current.getEtag());
             client.updateDistributionConfig(current.getId(), config);
         }
         else if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new S3Origin(originId, origin, null)},
+                    new Origin[]{new S3Origin(originId, origin.getHost(), null)},
                     current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             config.setEtag(current.getEtag());
@@ -502,7 +507,8 @@ public class CloudFrontDistributionConfiguration
         else if(distribution.getMethod().equals(Distribution.CUSTOM)
                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new CustomOrigin(originId, origin, this.getPolicy(distribution.getMethod()))},
+                    new Origin[]{new CustomOrigin(originId, origin.getHost(),
+                            this.getPolicy(distribution.getMethod()), -1 == origin.getPort() ? 80 : origin.getPort(), 443)},
                     current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             config.setEtag(current.getEtag());
