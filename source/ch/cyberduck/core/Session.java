@@ -325,7 +325,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
         }
-        if(type == Attributes.class) {
+        if(type == ch.cyberduck.core.features.Attributes.class) {
             return (T) new DefaultAttributesFeature(this);
         }
         if(type == Home.class) {
