@@ -1,13 +1,12 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -58,8 +57,8 @@ public class ResumeFilterTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal("~/Downloads", "a") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("a") {
                             @Override
                             public long getSize() {
                                 return 1L;

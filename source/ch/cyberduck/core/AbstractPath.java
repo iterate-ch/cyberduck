@@ -68,7 +68,9 @@ public abstract class AbstractPath {
     /**
      * @return Descriptive features for path
      */
-    public abstract Attributes attributes();
+    public Attributes attributes() {
+        return null;
+    }
 
     /**
      * Default implementation returning a reference to self. You can override this

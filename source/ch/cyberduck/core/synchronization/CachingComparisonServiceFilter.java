@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.synchronisation;
+package ch.cyberduck.core.synchronization;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -21,8 +21,6 @@ package ch.cyberduck.core.transfer.synchronisation;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonService;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
@@ -33,15 +31,15 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CachingComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(CachingComparisonService.class);
+public class CachingComparisonServiceFilter implements ComparePathFilter {
+    private static final Logger log = Logger.getLogger(CachingComparisonServiceFilter.class);
 
     private Map<Path, Comparison> cache = Collections.<Path, Comparison>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("transfer.cache.size")));
 
-    private ComparisonService delegate;
+    private ComparisionServiceFilter delegate;
 
-    public CachingComparisonService(final ComparisonService delegate) {
+    public CachingComparisonServiceFilter(final ComparisionServiceFilter delegate) {
         this.delegate = delegate;
     }
 

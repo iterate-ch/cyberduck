@@ -1,9 +1,9 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -21,11 +21,11 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class CombinedComparisionServiceTest extends AbstractTestCase {
+public class ComparisionServiceFilterTest extends AbstractTestCase {
 
     @Test
     public void testCompare() throws Exception {
-        ComparisonService s = new CombinedComparisionService(new FTPSession(new Host("t")) {
+        ComparisionServiceFilter s = new ComparisionServiceFilter(new FTPSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -44,8 +44,8 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "t") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("/t") {
                             @Override
                             public String getChecksum() {
                                 return "a";
@@ -75,8 +75,8 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "t") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("t") {
                             @Override
                             public String getChecksum() {
                                 return "a";

@@ -18,7 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -31,21 +31,17 @@ public class ChecksumComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
-    public Comparison compare(final Path file) throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare checksum for %s", file.getAbsolute()));
-        }
-        final PathAttributes attributes = file.attributes();
-        if(attributes.isDirectory()) {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
+        if(remote.isDirectory()) {
             return Comparison.notequal;
         }
         else {
-            if(null == attributes.getChecksum()) {
-                log.warn(String.format("No checksum available for comparison %s", file));
+            if(null == remote.getChecksum()) {
+                log.warn(String.format("No checksum available for comparison %s", remote));
                 return Comparison.notequal;
             }
             //fist make sure both files are larger than 0 bytes
-            if(attributes.getChecksum().equals(file.getLocal().attributes().getChecksum())) {
+            if(remote.getChecksum().equals(local.getChecksum())) {
                 return Comparison.equal;
             }
             return Comparison.notequal;

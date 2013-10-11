@@ -1,13 +1,12 @@
 package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
@@ -47,8 +46,8 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "a/b") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("/a/b") {
                             @Override
                             public boolean isSymbolicLink() {
                                 return true;
@@ -68,8 +67,8 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "a/b") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("/a/b") {
                             @Override
                             public boolean isSymbolicLink() {
                                 return true;

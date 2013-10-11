@@ -18,8 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -32,27 +31,25 @@ public class SizeComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(ComparisonService.class);
 
     @Override
-    public Comparison compare(final Path file) throws BackgroundException {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s", file));
+            log.debug(String.format("Compare size for %s", remote));
         }
-        final PathAttributes attributes = file.attributes();
-        if(attributes.isDirectory()) {
+        if(remote.isDirectory()) {
             return Comparison.notequal;
         }
         else {
             //fist make sure both files are larger than 0 bytes
-            final Local local = file.getLocal();
-            if(attributes.getSize() == 0 && local.attributes().getSize() == 0) {
+            if(remote.getSize() == 0 && local.getSize() == 0) {
                 return Comparison.equal;
             }
-            if(attributes.getSize() == 0) {
+            if(remote.getSize() == 0) {
                 return Comparison.local;
             }
-            if(local.attributes().getSize() == 0) {
+            if(local.getSize() == 0) {
                 return Comparison.remote;
             }
-            if(attributes.getSize() == local.attributes().getSize()) {
+            if(remote.getSize() == local.getSize()) {
                 return Comparison.equal;
             }
             // Different file size

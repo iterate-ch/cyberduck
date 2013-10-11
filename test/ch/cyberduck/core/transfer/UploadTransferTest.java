@@ -320,7 +320,7 @@ public class UploadTransferTest extends AbstractTestCase {
         worker.prepare(test, new TransferStatus().exists(true),
                 new ResumeFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
-        final TransferStatus expected = new TransferStatus();
+        final TransferStatus expected = new TransferStatus().exists(true);
         expected.setAppend(true);
         // Remote size
         expected.setCurrent(5L);

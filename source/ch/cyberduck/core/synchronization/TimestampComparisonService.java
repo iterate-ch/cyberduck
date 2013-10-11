@@ -18,7 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
@@ -26,14 +26,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
  * @version $Id$
  */
 public class TimestampComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(CombinedComparisionService.class);
+    private static final Logger log = Logger.getLogger(ComparisionServiceFilter.class);
 
     private CalendarService calendarService;
 
@@ -42,25 +41,24 @@ public class TimestampComparisonService implements ComparisonService {
     }
 
     @Override
-    public Comparison compare(final Path file) throws BackgroundException {
+    public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s", file));
+            log.debug(String.format("Compare timestamp for %s", remote));
         }
-        final PathAttributes attributes = file.attributes();
-        if(-1 == attributes.getModificationDate()) {
-            log.warn(String.format("No remote modification date available for comparison for %s", file));
+        if(-1 == remote.getModificationDate()) {
+            log.warn(String.format("No remote modification date available for comparison for %s", remote));
             return Comparison.local;
         }
-        if(-1 == file.getLocal().attributes().getModificationDate()) {
-            log.warn(String.format("No local modification date available for comparison for %s", file));
+        if(-1 == local.getModificationDate()) {
+            log.warn(String.format("No local modification date available for comparison for %s", remote));
             return Comparison.remote;
         }
-        final Calendar remote = calendarService.asDate(attributes.getModificationDate(), Instant.SECOND);
-        final Calendar local = calendarService.asDate(file.getLocal().attributes().getModificationDate(), Instant.SECOND);
-        if(local.before(remote)) {
+        if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).before(
+                calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {
             return Comparison.remote;
         }
-        if(local.after(remote)) {
+        if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).after(
+                calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {
             return Comparison.local;
         }
         // Same timestamp

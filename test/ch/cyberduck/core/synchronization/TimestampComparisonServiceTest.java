@@ -1,9 +1,7 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
@@ -23,91 +21,50 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
     public void testCompareEqual() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
-                            @Override
-                            public long getModificationDate() {
-                                return timestmap;
-                            }
-                        };
-                    }
-                };
-            }
+        assertEquals(Comparison.equal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         return timestmap;
+                                                     }
+                                                 }, new LocalAttributes("/t") {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         return timestmap;
+                                                     }
+                                                 }
+        ));
 
-            @Override
-            public PathAttributes attributes() {
-                return new PathAttributes(Path.FILE_TYPE) {
-                    @Override
-                    public long getModificationDate() {
-                        return timestmap;
-                    }
-                };
-            }
-        }));
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.DIRECTORY_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
-                            @Override
-                            public long getModificationDate() {
-                                return timestmap;
-                            }
-                        };
-                    }
-                };
-            }
-
-            @Override
-            public PathAttributes attributes() {
-                return new PathAttributes(Path.FILE_TYPE) {
-                    @Override
-                    public long getModificationDate() {
-                        return timestmap;
-                    }
-                };
-            }
-        }));
+        assertEquals(Comparison.equal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         return timestmap;
+                                                     }
+                                                 }, new LocalAttributes("/t") {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         return timestmap;
+                                                     }
+                                                 }
+        ));
     }
 
     @Test
     public void testCompareLocal() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
-                            @Override
-                            public long getModificationDate() {
-                                return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-                            }
-                        };
-                    }
-                };
-            }
-
-            @Override
-            public PathAttributes attributes() {
-                return new PathAttributes(Path.FILE_TYPE) {
-                    @Override
-                    public long getModificationDate() {
-                        final Calendar c = Calendar.getInstance(TimeZone.getDefault());
-                        c.set(Calendar.HOUR_OF_DAY, 0);
-                        return c.getTimeInMillis();
-                    }
-                };
-            }
-        }));
+        assertEquals(Comparison.local, s.compare(new PathAttributes(Path.FILE_TYPE) {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         final Calendar c = Calendar.getInstance(TimeZone.getDefault());
+                                                         c.set(Calendar.HOUR_OF_DAY, 0);
+                                                         return c.getTimeInMillis();
+                                                     }
+                                                 }, new LocalAttributes("/t") {
+                                                     @Override
+                                                     public long getModificationDate() {
+                                                         return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
+                                                     }
+                                                 }
+        ));
     }
 }

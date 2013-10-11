@@ -1,6 +1,14 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,7 +38,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public Attributes attributes() {
+                    public LocalAttributes attributes() {
                         return new LocalAttributes(this.getAbsolute()) {
                             @Override
                             public long getSize() {

@@ -71,7 +71,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public Attributes attributes() {
+    public LocalAttributes attributes() {
         return new LocalAttributes(this.getAbsolute());
     }
 

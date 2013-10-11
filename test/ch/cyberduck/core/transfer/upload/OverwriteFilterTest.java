@@ -1,6 +1,14 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
@@ -74,8 +82,8 @@ public class OverwriteFilterTest extends AbstractTestCase {
             public Local getLocal() {
                 return new NullLocal(null, "/t") {
                     @Override
-                    public Attributes attributes() {
-                        return new PathAttributes(Path.FILE_TYPE) {
+                    public LocalAttributes attributes() {
+                        return new LocalAttributes("/t") {
                             @Override
                             public long getSize() {
                                 return 1L;

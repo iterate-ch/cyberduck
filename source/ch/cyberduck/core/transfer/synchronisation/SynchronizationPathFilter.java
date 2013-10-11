@@ -21,8 +21,8 @@ package ch.cyberduck.core.transfer.synchronisation;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 public class SynchronizationPathFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
 
-    private ComparisonService comparison;
+    private ComparePathFilter comparison;
 
     /**
      * Download delegate filter
@@ -53,7 +53,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
      */
     private TransferAction action = TransferAction.mirror;
 
-    public SynchronizationPathFilter(final ComparisonService comparison,
+    public SynchronizationPathFilter(final ComparePathFilter comparison,
                                      final TransferPathFilter downloadFilter,
                                      final TransferPathFilter uploadFilter,
                                      final TransferAction action) {

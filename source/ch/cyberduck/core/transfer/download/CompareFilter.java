@@ -20,12 +20,10 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.CombinedComparisionService;
+import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
-import ch.cyberduck.core.transfer.synchronisation.CachingComparisonService;
 
 import org.apache.log4j.Logger;
 
@@ -37,13 +35,12 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     private Session<?> session;
 
-    private ComparisonService comparisonService;
+    private ComparisionServiceFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
         this.session = session;
-        this.comparisonService = new CachingComparisonService(
-                new CombinedComparisionService(session, session.getHost().getTimezone()));
+        this.comparisonService = new ComparisionServiceFilter(session, session.getHost().getTimezone());
     }
 
     @Override

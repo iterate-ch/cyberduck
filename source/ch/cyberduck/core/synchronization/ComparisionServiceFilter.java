@@ -20,9 +20,11 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 
 import java.util.TimeZone;
@@ -30,9 +32,11 @@ import java.util.TimeZone;
 /**
  * @version $Id$
  */
-public class CombinedComparisionService implements ComparisonService {
+public class ComparisionServiceFilter implements ComparePathFilter {
 
     private Find finder;
+
+    private Attributes attribute;
 
     private ComparisonService checksum;
 
@@ -40,40 +44,37 @@ public class CombinedComparisionService implements ComparisonService {
 
     private ComparisonService timestamp;
 
-    public CombinedComparisionService(final Session<?> session, final TimeZone tz) {
+    public ComparisionServiceFilter(final Session<?> session, final TimeZone tz) {
         this.finder = session.getFeature(Find.class);
+        this.attribute = session.getFeature(Attributes.class);
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
     }
 
-    /**
-     * @see Comparison#equal
-     * @see Comparison#remote
-     * @see Comparison#local
-     */
     @Override
     public Comparison compare(final Path file) throws BackgroundException {
         final Local local = file.getLocal();
         if(local.exists()) {
             if(finder.find(file)) {
+                final PathAttributes attributes = attribute.getAttributes(file);
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
-                    final Comparison comparison = checksum.compare(file);
+                    final Comparison comparison = checksum.compare(attributes, local.attributes());
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available
                         return comparison;
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                    final Comparison comparison = size.compare(file);
+                    final Comparison comparison = size.compare(attributes, local.attributes());
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available
                         return comparison;
                     }
                 }
                 // Default comparison is using timestamp of file.
-                final Comparison comparison = timestamp.compare(file);
+                final Comparison comparison = timestamp.compare(attributes, local.attributes());
                 if(!Comparison.notequal.equals(comparison)) {
                     // Decision is available
                     return comparison;
