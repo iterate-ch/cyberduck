@@ -108,13 +108,13 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
         final Comparison compare = comparison.compare(file);
         if(compare.equals(Comparison.remote)) {
-            downloadFilter.apply(file, parent);
+            downloadFilter.apply(file, status);
         }
         else if(compare.equals(Comparison.local)) {
-            uploadFilter.apply(file, parent);
+            uploadFilter.apply(file, status);
         }
     }
 

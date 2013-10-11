@@ -108,7 +108,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
             // No icon update if disabled
             if(Preferences.instance().getBoolean("queue.download.icon.update")) {

@@ -136,7 +136,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus parent) throws BackgroundException {
+    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
         //
     }
 

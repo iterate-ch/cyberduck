@@ -43,7 +43,7 @@ public interface TransferPathFilter {
      */
     TransferStatus prepare(Path file, TransferStatus parent) throws BackgroundException;
 
-    void apply(Path file, TransferStatus parent) throws BackgroundException;
+    void apply(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
