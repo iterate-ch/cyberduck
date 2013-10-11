@@ -8,7 +8,9 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -120,6 +122,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
                     };
                 }
+                if(type.equals(Attributes.class)) {
+                    return (T) new Attributes() {
+                        @Override
+                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                            return new PathAttributes(Path.FILE_TYPE);
+                        }
+                    };
+                }
                 return null;
             }
         };
@@ -172,6 +182,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public boolean isSupported(final Path file) {
                             return true;
+                        }
+                    };
+                }
+                if(type.equals(Attributes.class)) {
+                    return (T) new Attributes() {
+                        @Override
+                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                            return new PathAttributes(Path.DIRECTORY_TYPE);
                         }
                     };
                 }

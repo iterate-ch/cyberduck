@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
@@ -339,6 +340,14 @@ public class UploadTransferTest extends AbstractTestCase {
         final Session session = new NullSession(host) {
             @Override
             public <T> T getFeature(final Class<T> type) {
+                if(type.equals(Find.class)) {
+                    return (T) new Find() {
+                        @Override
+                        public boolean find(final Path f) throws BackgroundException {
+                            return true;
+                        }
+                    };
+                }
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
@@ -350,6 +359,14 @@ public class UploadTransferTest extends AbstractTestCase {
                         @Override
                         public boolean isSupported(final Path file) {
                             return true;
+                        }
+                    };
+                }
+                if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
+                    return (T) new ch.cyberduck.core.features.Attributes() {
+                        @Override
+                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                            return new PathAttributes(Path.FILE_TYPE);
                         }
                     };
                 }

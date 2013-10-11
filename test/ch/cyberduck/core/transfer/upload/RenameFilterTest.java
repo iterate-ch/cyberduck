@@ -5,7 +5,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
@@ -48,6 +50,14 @@ public class RenameFilterTest extends AbstractTestCase {
                                 return true;
                             }
                             return false;
+                        }
+                    };
+                }
+                if(type.equals(Attributes.class)) {
+                    return (T) new Attributes() {
+                        @Override
+                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                            return new PathAttributes(Path.FILE_TYPE);
                         }
                     };
                 }
