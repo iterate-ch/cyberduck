@@ -302,7 +302,7 @@ public abstract class Transfer implements Serializable {
      * @param directory The directory to list the children
      * @return A list of child items
      */
-    public abstract AttributedList<Path> list(Session<?> session, Path directory, TransferStatus parent) throws BackgroundException;
+    public abstract AttributedList<Path> list(Session<?> session, Path directory) throws BackgroundException;
 
     /**
      * The actual transfer implementation

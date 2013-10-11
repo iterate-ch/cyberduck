@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractTransferWorker extends Worker<Boolean> {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
@@ -213,7 +213,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             // Recursive
                             if(file.attributes().isDirectory()) {
                                 // Call recursively for all children
-                                final AttributedList<Path> children = transfer.list(session, file, parent);
+                                final AttributedList<Path> children = transfer.list(session, file);
                                 // Put into cache for later reference when transferring
                                 cache.put(file.getReference(), children);
                                 // Call recursively

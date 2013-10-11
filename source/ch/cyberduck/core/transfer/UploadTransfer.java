@@ -83,7 +83,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -150,7 +150,7 @@ public class UploadTransfer extends Transfer {
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
                     if(upload.attributes().isDirectory()) {
-                        if(this.list(session, upload, new TransferStatus().exists(true)).isEmpty()) {
+                        if(this.list(session, upload).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

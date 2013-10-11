@@ -49,7 +49,7 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run() throws BackgroundException {
-        return transfer.list(session, directory, status);
+        return transfer.list(session, directory);
     }
 
     @Override

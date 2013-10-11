@@ -114,16 +114,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<Path> children = new HashSet<Path>();
         if(session.getFeature(Find.class).find(directory)) {
-            children.addAll(download.list(session, directory, parent));
+            children.addAll(download.list(session, directory));
         }
         if(directory.getLocal().exists()) {
-            children.addAll(upload.list(session, directory, parent));
+            children.addAll(upload.list(session, directory));
         }
         return new AttributedList<Path>(children);
     }

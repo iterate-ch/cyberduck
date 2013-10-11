@@ -81,7 +81,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory, final TransferStatus parent) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
