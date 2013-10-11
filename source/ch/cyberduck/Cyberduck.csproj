@@ -186,6 +186,7 @@
   <ItemGroup>
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
+    <Compile Include="core\AtomicBoolean.cs" />
     <Compile Include="core\CrashReporter.cs" />
     <Compile Include="core\editor\EditorFactory.cs" />
     <Compile Include="core\editor\RegistryApplicationFinder.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="ui\winforms\CreateSymlinkPromptForm.Designer.cs">
       <DependentUpon>CreateSymlinkPromptForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\winforms\DialogLimitedListProgressListener.cs" />
     <Compile Include="ui\winforms\DialogTransferPromptControllerFactory.cs" />
     <Compile Include="ui\winforms\GotoPromptForm.cs">
       <SubType>Form</SubType>

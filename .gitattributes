@@ -2436,6 +2436,7 @@ source/ch/cyberduck/Cyberduck.csproj svneol=native#text/xml
 source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
+source/ch/cyberduck/core/AtomicBoolean.cs -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DefaultPathReferenceFactory.cs -text
@@ -2610,6 +2611,7 @@ source/ch/cyberduck/ui/winforms/CreateFilePromptForm.resx -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.resx -text
+source/ch/cyberduck/ui/winforms/DialogLimitedListProgressListener.cs -text
 source/ch/cyberduck/ui/winforms/DialogTransferPromptControllerFactory.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.cs -text

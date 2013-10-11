@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
@@ -3278,7 +3279,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Session _session;
 
                 public InnerMountWorker(BrowserController controller, Session session, Host host)
-                    : base(session, controller._cache, new DisabledListProgressListener())
+                    : base(session, controller._cache, new DialogLimitedListProgressListener(controller))
                 {
                     _controller = controller;
                     _session = session;

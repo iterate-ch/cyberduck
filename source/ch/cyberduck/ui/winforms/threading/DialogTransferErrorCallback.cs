@@ -17,7 +17,7 @@
 // 
 
 using System;
-using System.Threading;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
@@ -82,81 +82,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
 
         public static void Register()
         {
-            TransferErrorCallbackControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+            TransferErrorCallbackControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         private class Factory : TransferErrorCallbackControllerFactory
         {
             public override TransferErrorCallback create(ch.cyberduck.ui.Controller c)
             {
-                return new DialogTransferErrorCallback((WindowController)c);
+                return new DialogTransferErrorCallback((WindowController) c);
             }
 
             protected override object create()
             {
                 throw new FactoryException();
-            }
-        }
-
-        /// <summary>
-        /// Provides non-blocking, thread-safe access to a boolean value.
-        /// </summary>
-        private class AtomicBoolean
-        {
-            private const int VALUE_FALSE = 0;
-            private const int VALUE_TRUE = 1;
-
-            private int _currentValue;
-
-            public AtomicBoolean(bool initialValue)
-            {
-                _currentValue = BoolToInt(initialValue);
-            }
-
-            public bool Value
-            {
-                get
-                {
-                    return IntToBool(Interlocked.Add(
-                        ref _currentValue, 0));
-                }
-            }
-
-            private int BoolToInt(bool value)
-            {
-                return value ? VALUE_TRUE : VALUE_FALSE;
-            }
-
-            private bool IntToBool(int value)
-            {
-                return value == VALUE_TRUE;
-            }
-
-            /// <summary>
-            /// Sets the boolean value.
-            /// </summary>
-            /// <param name="newValue"></param>
-            /// <returns>The original value.</returns>
-            public bool SetValue(bool newValue)
-            {
-                return IntToBool(
-                    Interlocked.Exchange(ref _currentValue,
-                                         BoolToInt(newValue)));
-            }
-
-            /// <summary>
-            /// Compares with expected value and if same, assigns the new value.
-            /// </summary>
-            /// <param name="expectedValue"></param>
-            /// <param name="newValue"></param>
-            /// <returns>True if able to compare and set, otherwise false.</returns>
-            public bool CompareAndSet(bool expectedValue,
-                                      bool newValue)
-            {
-                int expectedVal = BoolToInt(expectedValue);
-                int newVal = BoolToInt(newValue);
-                return Interlocked.CompareExchange(
-                    ref _currentValue, newVal, expectedVal) == expectedVal;
             }
         }
     }

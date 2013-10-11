@@ -177,7 +177,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public InnerListWorker(BrowserController controller, Path directory, Cache cache)
                     : base(
                         controller.Session, cache, directory,
-                        new DisabledListProgressListener())
+                        new DialogLimitedListProgressListener(controller))
                 {
                     _controller = controller;
                 }
