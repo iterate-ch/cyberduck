@@ -27,3 +27,4 @@
 - [Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (#3790)
 - [Bugfix] Refresh list of thirdparty application bookmarks to import (#6141)
 - [Bugfix] PRET support not working anymore (#7427)
+- [Bugfix] Arrow keys should expand and collapse all selected folders (#7129)
