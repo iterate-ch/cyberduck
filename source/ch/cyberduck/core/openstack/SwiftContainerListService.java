@@ -73,7 +73,7 @@ public class SwiftContainerListService implements RootListService {
     @Override
     public List<Path> list(final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("List containers for %s", listener));
+            log.debug(String.format("List containers for %s", session));
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
