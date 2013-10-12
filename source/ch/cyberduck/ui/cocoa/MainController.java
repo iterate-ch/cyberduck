@@ -797,7 +797,7 @@ public class MainController extends BundleController implements NSApplication.De
             return;
         }
         for(BrowserController browser : getBrowsers()) {
-            if(browser.hasSession()) {
+            if(browser.getSession() != null) {
                 if(browser.getSession().getHost().equals(bookmark)) {
                     log.debug("Default bookmark already mounted");
                     return;
@@ -1440,7 +1440,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = MainController.getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(!controller.hasSession()) {
+                if(controller.getSession() == null) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
