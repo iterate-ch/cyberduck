@@ -184,8 +184,7 @@ public class CloudFrontDistributionConfiguration
      *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        return URI.create(String.format("%s.%s", container.getName(),
-                session.getHost().getProtocol().getDefaultHostname()));
+        return URI.create(String.format("http://%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname()));
     }
 
     @Override

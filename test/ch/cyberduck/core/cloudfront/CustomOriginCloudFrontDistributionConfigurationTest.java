@@ -37,9 +37,42 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(h);
-        assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM));
+        assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
         h.setWebURL(null);
-        assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM));
+        assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+        h.setWebURL("f");
+        assertEquals("f", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+    }
+
+    @Test
+    public void testGetOriginCustomHttpPort() throws Exception {
+        final Host h = new Host("m");
+        final Path container = new Path("/", Path.VOLUME_TYPE);
+        h.setWebURL("http://w.example.net:8080");
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final CustomOriginCloudFrontDistributionConfiguration configuration
+                = new CustomOriginCloudFrontDistributionConfiguration(h);
+        assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+        assertEquals(8080, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
+        h.setWebURL(null);
+        assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+        assertEquals(-1, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
+    }
+
+    @Test
+    public void testGetOriginCustomHttpsPort() throws Exception {
+        final Host h = new Host("m");
+        final Path container = new Path("/", Path.VOLUME_TYPE);
+        h.setWebURL("https://w.example.net:4444");
+        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
+        final CustomOriginCloudFrontDistributionConfiguration configuration
+                = new CustomOriginCloudFrontDistributionConfiguration(h);
+        assertEquals("w.example.net", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+        assertEquals("https", configuration.getOrigin(container, Distribution.CUSTOM).getScheme());
+        assertEquals(4444, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
+        h.setWebURL(null);
+        assertEquals("m", configuration.getOrigin(container, Distribution.CUSTOM).getHost());
+        assertEquals(-1, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
     }
 
     @Test

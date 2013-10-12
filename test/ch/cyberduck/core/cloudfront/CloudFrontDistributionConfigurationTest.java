@@ -57,7 +57,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final CloudFrontDistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
+                configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD).getHost());
     }
 
     @Test

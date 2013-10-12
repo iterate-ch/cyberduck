@@ -93,7 +93,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     @Override
     protected URI getOrigin(final Path container, final Distribution.Method method) {
         if(method.equals(Distribution.WEBSITE_CDN)) {
-            return URI.create(this.getWebsiteHostname(container));
+            return URI.create(String.format("http://%s", this.getWebsiteHostname(container)));
         }
         return super.getOrigin(container, method);
     }

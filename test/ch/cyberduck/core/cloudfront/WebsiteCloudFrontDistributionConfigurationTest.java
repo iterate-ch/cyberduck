@@ -87,16 +87,16 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
                 session
         );
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD));
+                configuration.getOrigin(new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD).getHost());
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.WEBSITE));
+                configuration.getOrigin(new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE), Distribution.WEBSITE).getHost());
         final Path container = new Path(new Path(null, "/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE);
         container.attributes().setRegion("US");
         assertEquals("bbb.s3-website-us-east-1.amazonaws.com",
-                configuration.getOrigin(container, Distribution.WEBSITE_CDN));
+                configuration.getOrigin(container, Distribution.WEBSITE_CDN).getHost());
         container.attributes().setRegion("us-west-2");
         assertEquals("bbb.s3-website-us-west-2.amazonaws.com",
-                configuration.getOrigin(container, Distribution.WEBSITE_CDN));
+                configuration.getOrigin(container, Distribution.WEBSITE_CDN).getHost());
     }
 
     @Test
