@@ -7,7 +7,10 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
+import ch.cyberduck.core.gstorage.GoogleStorageSession;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -68,6 +71,33 @@ public class S3DefaultDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        container.attributes().setRegion("US");
+        new S3DirectoryFeature(session).mkdir(container, null);
+        assertTrue(new S3FindFeature(session).find(container));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
+        assertFalse(new S3FindFeature(session).find(container));
+        session.close();
+    }
+
+    @Test
+    public void testDeleteContainerGoogle() throws Exception {
+        final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    return properties.getProperty("google.accesstoken");
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginController());
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session).mkdir(container, null);
