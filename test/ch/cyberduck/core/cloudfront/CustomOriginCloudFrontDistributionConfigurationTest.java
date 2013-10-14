@@ -1,6 +1,7 @@
 package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -85,25 +86,29 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final Path container = new Path("unknown.cyberduck.ch", Path.VOLUME_TYPE);
         final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
         assertNull(distribution.getId());
-        assertEquals("myhost.localdomain", distribution.getOrigin());
+        assertEquals("myhost.localdomain", distribution.getOrigin().getHost());
         assertEquals("Unknown", distribution.getStatus());
         assertEquals(null, distribution.getId());
     }
 
     @Test
     public void testRead() throws Exception {
-        final Host origin = new Host("test.cyberduck.ch");
+        final Host origin = new Host("myhost.localdomain");
+        origin.setWebURL("http://test.cyberduck.ch");
+        origin.setDefaultPath("public_html");
         origin.getCdnCredentials().setUsername(properties.getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
+        final Distribution distribution = configuration.read(new Path("/public_html", Path.DIRECTORY_TYPE), Distribution.CUSTOM, new DisabledLoginController());
         assertEquals("E230LC0UG2YLKV", distribution.getId());
+        assertEquals("http://test.cyberduck.ch/public_html", distribution.getOrigin().toString());
+        assertEquals("http://test.cyberduck.ch/f", configuration.toUrl(new Path("/public_html/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.origin).getUrl());
         assertEquals(Distribution.CUSTOM, distribution.getMethod());
-        assertEquals("http://d1f6cbdjcbzyiu.cloudfront.net", distribution.getUrl());
+        assertEquals("http://d1f6cbdjcbzyiu.cloudfront.net", distribution.getUrl().toString());
         assertEquals(null, distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
+        assertEquals("log.test.cyberduck.ch", distribution.getLoggingContainer());
     }
 
     @Test(expected = LoginCanceledException.class)

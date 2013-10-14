@@ -207,13 +207,13 @@ public class CloudFrontDistributionConfiguration
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("List %s distributions", method));
                     }
+                    final URI origin = getOrigin(container, method);
                     if(method.equals(Distribution.STREAMING)) {
-                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(
-                                getOrigin(container, method).getHost())) {
+                        for(org.jets3t.service.model.cloudfront.Distribution d : client.listStreamingDistributions(origin.getHost())) {
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
-                                    final Distribution distribution = convert(client, d, method);
+                                    final Distribution distribution = convert(client, d, container, method);
                                     cache.put(container, distribution);
                                     return distribution;
                                 }
@@ -223,11 +223,11 @@ public class CloudFrontDistributionConfiguration
                     else if(method.equals(Distribution.DOWNLOAD)) {
                         // List distributions restricting to bucket name origin
                         for(org.jets3t.service.model.cloudfront.Distribution d : client.listDistributions(
-                                getOrigin(container, method).getHost())) {
+                                origin.getHost())) {
                             for(Origin o : d.getConfig().getOrigins()) {
                                 if(o instanceof S3Origin) {
                                     // We currently only support one distribution per bucket
-                                    final Distribution distribution = convert(client, d, method);
+                                    final Distribution distribution = convert(client, d, container, method);
                                     cache.put(container, distribution);
                                     return distribution;
                                 }
@@ -239,9 +239,9 @@ public class CloudFrontDistributionConfiguration
                             for(Origin o : d.getConfig().getOrigins()) {
                                 // Listing all distributions and look for custom origin
                                 if(o instanceof CustomOrigin) {
-                                    if(o.getDomainName().equals(getOrigin(container, method).getHost())) {
+                                    if(o.getDomainName().equals(origin.getHost())) {
                                         // We currently only support one distribution per bucket
-                                        final Distribution distribution = convert(client, d, method);
+                                        final Distribution distribution = convert(client, d, container, method);
                                         cache.put(container, distribution);
                                         return distribution;
                                     }
@@ -250,7 +250,7 @@ public class CloudFrontDistributionConfiguration
                         }
                     }
                     // Return disabled configuration
-                    return new Distribution(getOrigin(container, method).getHost(), method);
+                    return new Distribution(origin, method, false);
                 }
                 catch(CloudFrontServiceException e) {
                     throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
@@ -270,6 +270,7 @@ public class CloudFrontDistributionConfiguration
                     if(distribution.isLogging()) {
                         if(getFeature(DistributionLogging.class, distribution.getMethod()) != null) {
                             if(StringUtils.isNotBlank(distribution.getLoggingContainer())) {
+                                // Make bucket name fully qualified
                                 final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                                         false, ProtocolFactory.S3_SSL.getDefaultHostname());
                                 if(log.isDebugEnabled()) {
@@ -522,7 +523,8 @@ public class CloudFrontDistributionConfiguration
 
     private Distribution convert(final CloudFrontService client,
                                  final org.jets3t.service.model.cloudfront.Distribution d,
-                                 Distribution.Method method) throws BackgroundException {
+                                 final Path container,
+                                 final Distribution.Method method) throws BackgroundException {
         // Retrieve distributions configuration to access current logging status settings.
         final DistributionConfig distributionConfig = this.getDistributionConfig(client, d);
         final String loggingTarget;
@@ -532,18 +534,15 @@ public class CloudFrontDistributionConfiguration
                     ProtocolFactory.S3_SSL.getDefaultHostname());
         }
         else {
+            // Make s3.amazonaws.com
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
                     ProtocolFactory.S3_SSL.getDefaultHostname());
         }
-        final Distribution distribution = new Distribution(d.getConfig().getOrigin().getDomainName(),
-                method,
-                d.getConfig().isEnabled()
-        );
+        final Distribution distribution = new Distribution(this.getOrigin(container, method), method, d.getConfig().isEnabled());
         distribution.setId(d.getId());
         distribution.setDeployed(d.isDeployed());
-        distribution.setUrl(String.format("%s://%s%s", method.getScheme(), d.getDomainName(), method.getContext()));
-        distribution.setSslUrl(method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM)
-                ? String.format("https://%s%s", d.getDomainName(), method.getContext()) : null);
+        distribution.setUrl(URI.create(String.format("%s://%s%s", method.getScheme(), d.getDomainName(), method.getContext())));
+        distribution.setSslUrl(method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM) ? URI.create(String.format("https://%s%s", d.getDomainName(), method.getContext())) : null);
         distribution.setReference(distributionConfig.getCallerReference());
         distribution.setEtag(distributionConfig.getEtag());
         distribution.setStatus(LocaleFactory.localizedString(d.getStatus(), "S3"));
@@ -567,9 +566,7 @@ public class CloudFrontDistributionConfiguration
      * @return Configuration
      */
     private DistributionConfig getDistributionConfig(final CloudFrontService client,
-                                                     final org.jets3t.service.model.cloudfront.Distribution distribution)
-            throws BackgroundException {
-
+                                                     final org.jets3t.service.model.cloudfront.Distribution distribution) throws BackgroundException {
         try {
             if(distribution.isStreamingDistribution()) {
                 return client.getStreamingDistributionConfig(distribution.getId());

@@ -2169,8 +2169,11 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             credentials);
                         }
                     }
-                    _view.DistributionOrigin = _distribution.getOrigin(_infoController.SelectedPath);
-
+                    DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
+                    if (!origin.equals(DescriptiveUrl.EMPTY))
+                    {
+                        _view.DistributionOrigin = origin;
+                    }
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
@@ -2731,7 +2734,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 DistributionConfiguration cdn =
                     (DistributionConfiguration)
                     session.getFeature(typeof (DistributionConfiguration));
-                Distribution configuration = new Distribution(null, _deliveryMethod, _distribution);
+                Distribution configuration = new Distribution(_deliveryMethod, _distribution);
                 configuration.setIndexDocument(_defaultRoot);
                 configuration.setLogging(_logging);
                 configuration.setLoggingContainer(_distributionLogging);

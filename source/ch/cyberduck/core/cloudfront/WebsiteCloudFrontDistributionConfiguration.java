@@ -103,21 +103,20 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         if(method.equals(Distribution.WEBSITE)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
-                final Distribution distribution = new Distribution(this.getOrigin(container, method).getHost(),
+                final Distribution distribution = new Distribution(this.getOrigin(container, method),
                         method, configuration.isWebsiteConfigActive());
                 distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
+                distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
                 distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
                 return distribution;
             }
             catch(ServiceException e) {
                 // Not found. Website configuration not enabled.
-                final Distribution distribution = new Distribution(
-                        this.getOrigin(container, method).getHost(), method, false);
+                final Distribution distribution = new Distribution(this.getOrigin(container, method), method, false);
                 distribution.setStatus(e.getErrorMessage());
-                distribution.setUrl(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container)));
+                distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 return distribution;
             }
         }

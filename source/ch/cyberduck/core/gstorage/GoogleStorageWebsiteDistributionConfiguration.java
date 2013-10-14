@@ -45,6 +45,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,20 +86,22 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        final Distribution distribution = new Distribution(
-                containerService.getContainer(file).getName(), Distribution.DOWNLOAD);
-        distribution.setUrl(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                "storage.googleapis.com"));
+        final Distribution distribution = new Distribution(URI.create(String.format("%s://%s.%s",
+                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
+                Distribution.DOWNLOAD, false);
+        distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
+                session.getHost().getProtocol().getDefaultHostname())));
         return new DistributionUrlProvider(distribution).toUrl(file);
     }
 
     @Override
     public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+        final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
             final Distribution distribution = new Distribution(
-                    String.format("%s.%s", container.getName(), "storage.googleapis.com"), method, configuration.isWebsiteConfigActive());
-            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), "storage.googleapis.com"));
+                    origin, method, configuration.isWebsiteConfigActive());
+            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname())));
             distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
             distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
             final DistributionLogging logging = this.getFeature(DistributionLogging.class, method);
@@ -111,14 +114,10 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             return distribution;
         }
         catch(ServiceException e) {
-            // Not found. Website configuration not enbabled.
-            final Distribution distribution = new Distribution(
-                    container.getName(),
-                    method,
-                    //Disabled
-                    false);
+            // Not found. Website configuration is disabled.
+            final Distribution distribution = new Distribution(origin, method, false);
             distribution.setStatus(e.getErrorMessage());
-            distribution.setUrl(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname())));
             return distribution;
         }
     }
@@ -136,8 +135,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 final DistributionLogging logging = this.getFeature(DistributionLogging.class, distribution.getMethod());
                 if(logging != null) {
                     new GoogleStorageLoggingFeature(session).setConfiguration(container, new LoggingConfiguration(
-                            distribution.isEnabled(), distribution.getLoggingContainer()
-                    ));
+                            distribution.isEnabled(), distribution.getLoggingContainer()));
                 }
             }
             else {

@@ -45,6 +45,7 @@ public class DescriptiveUrl {
          */
         http,
         cdn,
+        origin,
         cname,
         signed,
         torrent,

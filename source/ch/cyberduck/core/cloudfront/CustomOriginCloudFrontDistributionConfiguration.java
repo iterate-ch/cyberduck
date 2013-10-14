@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,7 +31,6 @@ import ch.cyberduck.core.s3.S3Session;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -42,6 +42,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
     private Host origin;
+
+    private PathContainerService containerService
+            = new PathContainerService();
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
@@ -89,12 +92,6 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        try {
-            return new URI(origin.getWebURL());
-        }
-        catch(URISyntaxException e) {
-            log.error(String.format("Failure parsing URI %s", origin.getWebURL()), e);
-        }
-        return URI.create(String.format("http://%s", origin.getHostname()));
+        return URI.create(String.format("%s/%s", origin.getWebURL(), origin.getDefaultPath()));
     }
 }

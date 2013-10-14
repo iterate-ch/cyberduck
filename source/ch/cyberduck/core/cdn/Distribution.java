@@ -21,9 +21,7 @@ package ch.cyberduck.core.cdn;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.URIEncoder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +58,7 @@ public class Distribution {
     /**
      * S3 bucket name or DNS
      */
-    private String origin;
+    private URI origin;
 
     /**
      * Deployment enabled
@@ -85,17 +83,17 @@ public class Distribution {
     /**
      * CDN URL
      */
-    private String url;
+    private URI url;
 
     /**
      * CDN SSL URL
      */
-    private String sslUrl;
+    private URI sslUrl;
 
     /**
      * CDN Streaming (iOS) URL
      */
-    private String streamingUrl;
+    private URI streamingUrl;
 
     /**
      * Deployment status description
@@ -249,20 +247,18 @@ public class Distribution {
     };
 
     /**
-     * @param origin Server to fetch original content
-     * @param method Protocol
-     */
-    public Distribution(final String origin, final Method method) {
-        this(origin, method, false);
-    }
-
-    /**
      * @param origin  Server
      * @param method  Kind of distribution
      * @param enabled Deployment Enabled
      */
-    public Distribution(final String origin, final Method method, final boolean enabled) {
+    public Distribution(final URI origin, final Method method, final boolean enabled) {
         this.origin = origin;
+        this.enabled = enabled;
+        this.deployed = enabled;
+        this.method = method;
+    }
+
+    public Distribution(final Method method, final boolean enabled) {
         this.enabled = enabled;
         this.deployed = enabled;
         this.method = method;
@@ -289,28 +285,8 @@ public class Distribution {
      *
      * @return DNS hostname of origin server
      */
-    public String getOrigin() {
+    public URI getOrigin() {
         return origin;
-    }
-
-    /**
-     * Origin server to fetch original content. S3 bucket or custom host.
-     *
-     * @param file File in origin container
-     * @return Origin URL of specific file.
-     */
-    public String getOrigin(final Path file) {
-        final StringBuilder url = new StringBuilder().append(String.format("%s://%s", method.getScheme(), origin));
-        if(this.getMethod().equals(CUSTOM)) {
-            url.append(Path.DELIMITER).append(URIEncoder.encode(file.getAbsolute()));
-        }
-        else {
-            final PathContainerService service = new PathContainerService();
-            if(!service.isContainer(file)) {
-                url.append(Path.DELIMITER).append(URIEncoder.encode(service.getKey(file)));
-            }
-        }
-        return URI.create(url.toString()).normalize().toString();
     }
 
     /**
@@ -359,7 +335,7 @@ public class Distribution {
         return loggingContainer;
     }
 
-    public void setUrl(final String url) {
+    public void setUrl(final URI url) {
         this.url = url;
     }
 
@@ -368,11 +344,11 @@ public class Distribution {
      *
      * @return Null if not available
      */
-    public String getUrl() {
+    public URI getUrl() {
         return url;
     }
 
-    public void setSslUrl(final String sslUrl) {
+    public void setSslUrl(final URI sslUrl) {
         this.sslUrl = sslUrl;
     }
 
@@ -381,15 +357,15 @@ public class Distribution {
      *
      * @return Null if not available
      */
-    public String getSslUrl() {
+    public URI getSslUrl() {
         return sslUrl;
     }
 
-    public void setStreamingUrl(final String streamingUrl) {
+    public void setStreamingUrl(final URI streamingUrl) {
         this.streamingUrl = streamingUrl;
     }
 
-    public String getStreamingUrl() {
+    public URI getStreamingUrl() {
         return streamingUrl;
     }
 

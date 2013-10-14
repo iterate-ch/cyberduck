@@ -19,6 +19,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -74,7 +75,8 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals("test.cyberduck.ch", test.getId());
         assertEquals(1, test.getContainers().size());
         assertEquals(".CDN_ACCESS_LOGS", test.getLoggingContainer());
-        assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin());
+        assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin().getHost());
+        assertEquals(URI.create("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), test.getOrigin());
     }
 
     @Test
@@ -88,7 +90,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         container.attributes().setRegion("ORD");
         new SwiftDirectoryFeature(session).mkdir(container, "ORD");
-        configuration.write(container, new Distribution(container.getName(), Distribution.DOWNLOAD, true), new DisabledLoginController());
+        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginController());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController()).isEnabled());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
         session.close();
@@ -124,9 +126,9 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertTrue(test.isDeployed());
         assertFalse(test.isLogging());
         assertEquals("test.cyberduck.ch", test.getId());
-        assertEquals("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com", test.getUrl());
-        assertEquals("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2", test.getSslUrl());
+        assertEquals(URI.create("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com"), test.getUrl());
+        assertEquals(URI.create("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2"), test.getSslUrl());
         assertEquals(1, test.getContainers().size());
-        assertEquals("region-a.geo-1.objects.hpcloudsvc.com", test.getOrigin());
+        assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), test.getOrigin());
     }
 }

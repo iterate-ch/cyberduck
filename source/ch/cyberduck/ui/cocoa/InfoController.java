@@ -2526,7 +2526,7 @@ public class InfoController extends ToolbarWindowController {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Distribution configuration = new Distribution(container.getName(), method, distributionEnableButton.state() == NSCell.NSOnState);
+                    final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
                     configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
                     configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
@@ -2560,7 +2560,7 @@ public class InfoController extends ToolbarWindowController {
             final List<Path> rootDocuments = new ArrayList<Path>();
             final Session<?> session = controller.getSession();
             this.background(new BrowserControllerBackgroundAction<Distribution>(controller) {
-                private Distribution distribution = new Distribution(container.getName(), method);
+                private Distribution distribution = new Distribution(method, false);
 
                 @Override
                 public Distribution run() throws BackgroundException {
@@ -2614,8 +2614,10 @@ public class InfoController extends ToolbarWindowController {
                                             distribution.getMethod().getScheme(), container.getName(), credentials)));
                         }
                     }
-                    distributionOriginField.setAttributedStringValue(
-                            HyperlinkAttributedStringFactory.create(distribution.getOrigin(file)));
+                    final DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
+                    if(!origin.equals(DescriptiveUrl.EMPTY)) {
+                        distributionOriginField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(origin));
+                    }
                     // Concatenate URLs
                     if(numberOfFiles() > 1) {
                         distributionUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
