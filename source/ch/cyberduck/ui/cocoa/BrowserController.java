@@ -2523,11 +2523,11 @@ public class BrowserController extends WindowController
     public void revertPaths(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this, session,
                 new RevertWorker(session, files) {
-            @Override
-            public void cleanup(final Boolean result) {
-                reloadData(files, false);
-            }
-        }));
+                    @Override
+                    public void cleanup(final Boolean result) {
+                        reloadData(files, false);
+                    }
+                }));
     }
 
     /**
@@ -2940,13 +2940,6 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @return true if a connection is being opened or is already initialized
-     */
-    public boolean hasSession() {
-        return session != null;
-    }
-
-    /**
      * @return This browser's session or null if not mounted
      */
     public Session<?> getSession() {
@@ -2961,7 +2954,7 @@ public class BrowserController extends WindowController
      * @return true if the remote file system has been mounted
      */
     public boolean isMounted() {
-        return this.hasSession() && this.workdir() != null;
+        return session != null && workdir != null;
     }
 
     /**
@@ -3458,7 +3451,7 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        if(this.hasSession()) {
+        if(session != null) {
             this.background(new BrowserControllerBackgroundAction<Void>(this) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
