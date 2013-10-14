@@ -86,8 +86,6 @@ public class Receipt extends AbstractLicense {
         }
     }
 
-    private Local file;
-
     private String guid;
 
     /**
@@ -95,7 +93,6 @@ public class Receipt extends AbstractLicense {
      */
     public Receipt(final Local file, final String guid) {
         super(file);
-        this.file = file;
         this.guid = guid;
     }
 
