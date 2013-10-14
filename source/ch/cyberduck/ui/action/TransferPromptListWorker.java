@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
@@ -38,8 +37,6 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
     private Session session;
 
     private Transfer transfer;
-
-    private TransferStatus status;
 
     public TransferPromptListWorker(final Session session, final Transfer transfer, final Path directory) {
         this.session = session;
