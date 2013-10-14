@@ -33,12 +33,9 @@ import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -58,9 +55,6 @@ public class SyncTransfer extends Transfer {
     private Transfer download;
 
     private CachingComparisonServiceFilter comparison;
-
-    private Map<Path, Comparison> cache = Collections.<Path, Comparison>synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final Path root) {
         super(host, root, new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
