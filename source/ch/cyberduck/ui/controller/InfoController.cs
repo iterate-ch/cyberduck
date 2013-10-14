@@ -2181,8 +2181,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         DescriptiveUrl url =
-                            new DistributionUrlProvider(_distribution).toUrl(_infoController.SelectedPath)
-                                                                      .find(DescriptiveUrl.Type.cdn);
+                            cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cdn);
                         if (!url.equals(DescriptiveUrl.EMPTY))
                         {
                             _view.DistributionUrl = url.getUrl();
@@ -2206,8 +2205,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _view.DistributionCname = string.Join(" ", cnames);
                         DescriptiveUrl url =
-                            new DistributionUrlProvider(_distribution).toUrl(_infoController.SelectedPath)
-                                                                      .find(DescriptiveUrl.Type.cname);
+                            cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
                         if (!url.equals(DescriptiveUrl.EMPTY))
                         {
                             // We only support one CNAME URL to be displayed

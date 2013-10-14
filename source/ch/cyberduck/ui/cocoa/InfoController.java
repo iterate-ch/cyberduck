@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
@@ -2624,7 +2623,7 @@ public class InfoController extends ToolbarWindowController {
                         distributionCnameUrlField.setStringValue("(" + LocaleFactory.localizedString("Multiple files") + ")");
                     }
                     else {
-                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cdn);
+                        final DescriptiveUrl url = cdn.toUrl(file).find(DescriptiveUrl.Type.cdn);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                             distributionUrlField.setToolTip(LocaleFactory.localizedString("CDN URL"));
@@ -2642,7 +2641,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(file).find(DescriptiveUrl.Type.cname);
+                        final DescriptiveUrl url = cdn.toUrl(file).find(DescriptiveUrl.Type.cname);
                         if(!url.equals(DescriptiveUrl.EMPTY)) {
                             // We only support one CNAME URL to be displayed
                             distributionCnameUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url.getUrl()));
