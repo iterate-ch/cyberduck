@@ -31,14 +31,17 @@ import org.bouncycastle.asn1.DERInteger;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.PKCS7SignedData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.util.Arrays;
@@ -177,7 +180,17 @@ public class ReceiptVerifier implements LicenseVerifier {
                 }
             }
         }
-        catch(Exception e) {
+        catch(IOException e) {
+            log.error("Receipt validation error", e);
+            // Shutdown if receipt is not valid
+            return false;
+        }
+        catch(GeneralSecurityException e) {
+            log.error("Receipt validation error", e);
+            // Shutdown if receipt is not valid
+            return false;
+        }
+        catch(CMSException e) {
             log.error("Receipt validation error", e);
             // Shutdown if receipt is not valid
             return false;
