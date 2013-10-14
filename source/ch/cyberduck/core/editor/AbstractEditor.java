@@ -42,8 +42,6 @@ import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.action.SingleTransferWorker;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,8 +54,6 @@ import java.util.concurrent.Callable;
  */
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = Logger.getLogger(AbstractEditor.class);
-
-    private Growl growl = GrowlFactory.get();
 
     /**
      * The file has been closed in the editor while the upload was in progress
