@@ -471,10 +471,9 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param nickname Custom name
      */
     public void setNickname(String nickname) {
-        if(this.getDefaultNickname().equals(nickname)) {
-            return;
+        if(!this.getDefaultNickname().equals(nickname)) {
+            this.nickname = nickname;
         }
-        this.nickname = nickname;
     }
 
     /**
@@ -639,7 +638,7 @@ public final class Host implements Serializable, Comparable<Host> {
         }
         final String regex = "^http(s)?://.*$";
         if(!webURL.matches(regex)) {
-            webURL = "http://" + webURL;
+            webURL = String.format("http://%s", webURL);
         }
         return webURL;
     }
@@ -661,9 +660,10 @@ public final class Host implements Serializable, Comparable<Host> {
     public void setWebURL(final String url) {
         if(this.getDefaultWebURL().equals(url)) {
             webURL = null;
-            return;
         }
-        webURL = url;
+        else {
+            webURL = url;
+        }
     }
 
     /**
