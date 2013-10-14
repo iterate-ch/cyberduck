@@ -33,13 +33,10 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private Session<?> session;
-
     private ComparisionServiceFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session);
-        this.session = session;
         this.comparisonService = new ComparisionServiceFilter(session, session.getHost().getTimezone());
     }
 
