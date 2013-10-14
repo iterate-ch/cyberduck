@@ -89,7 +89,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                 }
                 return false;
             }
-            // Ask the download delegate for inclusion
+            // Include for mirror and download. Ask the download delegate for inclusion
             return downloadFilter.accept(file, parent);
         }
         else if(compare.equals(Comparison.local)) {
@@ -100,7 +100,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                 }
                 return false;
             }
-            // Ask the upload delegate for inclusion
+            // Include for mirror and download. Ask the upload delegate for inclusion
             return uploadFilter.accept(file, parent);
         }
         // Not equal
