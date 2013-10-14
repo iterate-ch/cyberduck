@@ -2083,6 +2083,7 @@ profiles/GreenQloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Openstack[!!-~]Swift[!!-~](Keystone[!!-~]HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]UK.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/octet-stream
