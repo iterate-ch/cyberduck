@@ -29,6 +29,10 @@ import com.sun.jna.Native;
 public abstract class NSIndexSet extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
+    public static NSIndexSet indexSet() {
+        return CLASS.indexSet();
+    }
+
     public static NSIndexSet indexSetWithIndex(NSInteger value) {
         return CLASS.indexSetWithIndex(value);
     }
