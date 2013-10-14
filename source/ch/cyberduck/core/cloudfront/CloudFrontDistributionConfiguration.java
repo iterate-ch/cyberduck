@@ -90,9 +90,7 @@ public class CloudFrontDistributionConfiguration
     public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
         this.client = new CloudFrontService(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(),
-                        session.getHost().getCredentials().getPassword())
-                , ua.get(), null, this.configure()) {
+                new AWSCredentials(null, null), ua.get(), null, this.configure()) {
             @Override
             public ProviderCredentials getAWSCredentials() {
                 return new AWSCredentials(session.getHost().getCredentials().getUsername(),

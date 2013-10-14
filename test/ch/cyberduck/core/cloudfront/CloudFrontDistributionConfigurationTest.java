@@ -1,12 +1,6 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -111,6 +105,36 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
                 = new CloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
+    }
+
+    @Test
+    public void testReadLoginFailureFix() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
+        host.setCredentials(new Credentials(
+                properties.getProperty("s3.key"), null
+        ));
+        final S3Session session = new S3Session(host);
+        new LoginConnectionService(new DisabledLoginController() {
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword(properties.getProperty("s3.secret"));
+            }
+        }, new DefaultHostKeyController(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        assertTrue(session.isConnected());
+        assertNull(host.getCredentials().getPassword());
+        final DistributionConfiguration configuration
+                = new CloudFrontDistributionConfiguration(session);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final AtomicBoolean set = new AtomicBoolean();
+        configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController() {
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword(properties.getProperty("s3.secret"));
+                set.set(true);
+            }
+        });
+        assertTrue(set.get());
+        session.close();
     }
 
     @Test
