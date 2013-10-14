@@ -67,13 +67,16 @@ public abstract class LicenseFactory extends Factory<License> {
                 return open(key);
             }
             // No key found. Look for receipt
-            for(Local key : support.list().filter(new Filter<Local>() {
+            for(Local file : support.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(final Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                return new Receipt(key);
+                final ReceptVerifier verifier = new ReceptVerifier(file);
+                if(verifier.verify()) {
+                    return new Receipt(file, verifier.getGuid());
+                }
             }
         }
         log.info("No donation key found");
