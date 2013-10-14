@@ -45,16 +45,16 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class ReceptVerifier implements LicenseVerifier {
-    private static final Logger log = Logger.getLogger(ReceptVerifier.class);
+public class ReceiptVerifier implements LicenseVerifier {
+    private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
 
     private Local file;
 
     private String guid;
 
-    public ReceptVerifier(final Local file) {
+    public ReceiptVerifier(final Local file) {
         this.file = file;
     }
 

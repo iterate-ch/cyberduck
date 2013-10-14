@@ -73,7 +73,7 @@ public abstract class LicenseFactory extends Factory<License> {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                final ReceptVerifier verifier = new ReceptVerifier(file);
+                final ReceiptVerifier verifier = new ReceiptVerifier(file);
                 if(verifier.verify()) {
                     return new Receipt(file, verifier.getGuid());
                 }

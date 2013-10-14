@@ -46,7 +46,7 @@ public class Receipt extends AbstractLicense {
         @Override
         protected License open(final Local file) {
             // Verify immediately and exit if not a valid receipt
-            final ReceptVerifier verifier = new ReceptVerifier(file);
+            final ReceiptVerifier verifier = new ReceiptVerifier(file);
             if(verifier.verify()) {
                 // Set name
                 final Receipt receipt = new Receipt(file, verifier.getGuid());
