@@ -260,8 +260,8 @@ public class BookmarkTableDataSource extends ListDataSource {
             return dict;
         }
         if(identifier.equals(Column.status.name())) {
-            if(controller.hasSession()) {
-                final Session session = controller.getSession();
+            final Session session = controller.getSession();
+            if(session != null) {
                 if(host.equals(session.getHost())) {
                     switch(session.getState()) {
                         case open:
