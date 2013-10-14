@@ -271,18 +271,14 @@ public class CloudFrontDistributionConfiguration
                     LoggingStatus loggingStatus = null;
                     if(distribution.isLogging()) {
                         if(getFeature(DistributionLogging.class, distribution.getMethod()) != null) {
-                            final String loggingTarget;
                             if(StringUtils.isNotBlank(distribution.getLoggingContainer())) {
-                                loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
+                                final String loggingTarget = ServiceUtils.generateS3HostnameForBucket(distribution.getLoggingContainer(),
                                         false, ProtocolFactory.S3_SSL.getDefaultHostname());
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
+                                }
+                                loggingStatus = new LoggingStatus(loggingTarget, Preferences.instance().getProperty("cloudfront.logging.prefix"));
                             }
-                            else {
-                                loggingTarget = getOrigin(container, distribution.getMethod()).getHost();
-                            }
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
-                            }
-                            loggingStatus = new LoggingStatus(loggingTarget, Preferences.instance().getProperty("cloudfront.logging.prefix"));
                         }
                     }
                     final Distribution current = read(container, distribution.getMethod(), prompt);
