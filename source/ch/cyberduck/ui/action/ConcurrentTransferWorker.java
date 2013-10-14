@@ -59,8 +59,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private ConnectionService connect;
 
-    private Transfer transfer;
-
     private ObjectPool<Session> pool;
 
     private CompletionService<TransferStatus> completion;
