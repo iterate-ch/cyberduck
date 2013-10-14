@@ -29,6 +29,9 @@ public final class PathRelativizer {
     }
 
     public static String relativize(String root, final String path) {
+        if(StringUtils.isBlank(root)) {
+            return path;
+        }
         root = root + String.valueOf(Path.DELIMITER);
         if(StringUtils.contains(path, root)) {
             return path.substring(path.indexOf(root) + root.length());
