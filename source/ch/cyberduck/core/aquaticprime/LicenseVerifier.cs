@@ -71,12 +71,12 @@ namespace Ch.Cyberduck.Core.Aquaticprime
 
         public bool VerifyLicenseData(String licenseFile)
         {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.XmlResolver = null; // prevent doctype resolving
-            xmlDoc.Load(licenseFile);
-
             try
             {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.XmlResolver = null; // prevent doctype resolving
+                xmlDoc.Load(licenseFile);
+
                 SortedList<string, string> dict = CreateDictionaryForLicenseData(xmlDoc);
 
                 //retrieves Signature from SortedList, then removes it
@@ -107,12 +107,18 @@ namespace Ch.Cyberduck.Core.Aquaticprime
 
         public String GetValue(String licenseFile, String property)
         {
-            XmlDocument license = new XmlDocument {XmlResolver = null};
-            license.Load(licenseFile);
-            SortedList<string, string> data = CreateDictionaryForLicenseData(license);
-            string value;
-            data.TryGetValue(property, out value);
-            return value;
+            try 
+            {
+                XmlDocument license = new XmlDocument {XmlResolver = null};
+                license.Load(licenseFile);
+                SortedList<string, string> data = CreateDictionaryForLicenseData(license);
+                string value;
+                data.TryGetValue(property, out value);
+                return value;
+            }
+            catch
+                return null;
+            }
         }
 
         private static SortedList<string, string> CreateDictionaryForLicenseData(XmlDocument xmlDoc)
