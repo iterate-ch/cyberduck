@@ -20,6 +20,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 
 import org.junit.Test;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -84,7 +85,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         final Distribution website = configuration.read(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), Distribution.WEBSITE,
                 new DisabledLoginController());
         assertTrue(website.isEnabled());
-        assertEquals("http://test.cyberduck.ch.storage.googleapis.com", website.getUrl());
+        assertEquals(URI.create("http://test.cyberduck.ch.storage.googleapis.com"), website.getUrl());
         assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
     }
 
