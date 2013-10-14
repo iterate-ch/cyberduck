@@ -39,10 +39,6 @@ public abstract class AbstractLicense implements License {
         this.file = file;
     }
 
-    protected Local getFile() {
-        return file;
-    }
-
     @Override
     public String getName() {
         String to = this.getValue("Name");

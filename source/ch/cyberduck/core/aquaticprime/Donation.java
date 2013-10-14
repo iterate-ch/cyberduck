@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class Donation extends AbstractLicense {
+public class Donation extends AbstractLicense implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(Donation.class);
 
     public static void register() {
@@ -52,11 +52,14 @@ public class Donation extends AbstractLicense {
         Native.load("Prime");
     }
 
+    private Local file;
+
     /**
      * @param file The license key file.
      */
     public Donation(Local file) {
         super(file);
+        this.file = file;
     }
 
     /**
@@ -64,14 +67,14 @@ public class Donation extends AbstractLicense {
      */
     @Override
     public boolean verify() {
-        final boolean valid = this.verify(this.getFile().getAbsolute());
+        final boolean valid = this.verify(file.getAbsolute());
         if(valid) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Valid donation key in %s", this.getFile().getAbsolute()));
+                log.info(String.format("Valid donation key in %s", file));
             }
         }
         else {
-            log.warn(String.format("Not a valid donation key in %s", this.getFile().getAbsolute()));
+            log.warn(String.format("Not a valid donation key in %s", file));
         }
         return valid;
     }
@@ -80,7 +83,7 @@ public class Donation extends AbstractLicense {
 
     @Override
     public String getValue(String property) {
-        return this.getValue(this.getFile().getAbsolute(), property);
+        return this.getValue(file.getAbsolute(), property);
     }
 
     private native String getValue(String license, String property);
