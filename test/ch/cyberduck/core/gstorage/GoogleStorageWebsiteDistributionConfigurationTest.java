@@ -54,8 +54,9 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", Path.FILE_TYPE)).find(
-                DescriptiveUrl.Type.cdn
-        ).getUrl());
+                DescriptiveUrl.Type.origin).getUrl());
+        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", Path.FILE_TYPE)).find(
+                DescriptiveUrl.Type.cdn).getUrl());
     }
 
     @Test

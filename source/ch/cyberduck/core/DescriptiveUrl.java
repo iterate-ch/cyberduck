@@ -90,6 +90,9 @@ public class DescriptiveUrl {
             return false;
         }
         final DescriptiveUrl that = (DescriptiveUrl) o;
+        if(type != that.type) {
+            return false;
+        }
         if(url != null ? !url.equals(that.url) : that.url != null) {
             return false;
         }
@@ -98,7 +101,9 @@ public class DescriptiveUrl {
 
     @Override
     public int hashCode() {
-        return url != null ? url.hashCode() : 0;
+        int result = url != null ? url.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
     }
 
     @Override
