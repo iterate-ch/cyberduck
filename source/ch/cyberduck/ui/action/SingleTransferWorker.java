@@ -28,15 +28,12 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class SingleTransferWorker extends AbstractTransferWorker {
-    private static final Logger log = Logger.getLogger(SingleTransferWorker.class);
 
     private Session session;
 
