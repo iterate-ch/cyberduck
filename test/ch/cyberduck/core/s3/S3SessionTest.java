@@ -5,6 +5,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
@@ -78,6 +79,25 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+    }
+
+    @Test
+    public void testLoginFailureFix() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), "s"
+        ));
+        final AtomicBoolean p = new AtomicBoolean();
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController() {
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                p.set(true);
+                credentials.setPassword(properties.getProperty("s3.secret"));
+            }
+        });
+        assertTrue(p.get());
+        session.close();
     }
 
     @Test(expected = BackgroundException.class)

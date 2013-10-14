@@ -89,7 +89,17 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(final Jets3tProperties configuration) {
             super(host.getCredentials().isAnonymousLogin() ? null :
-                    new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()),
+                    new AWSCredentials(null, null) {
+                        @Override
+                        public String getAccessKey() {
+                            return host.getCredentials().getUsername();
+                        }
+
+                        @Override
+                        public String getSecretKey() {
+                            return host.getCredentials().getPassword();
+                        }
+                    },
                     new PreferencesUseragentProvider().get(), null, configuration);
         }
 
