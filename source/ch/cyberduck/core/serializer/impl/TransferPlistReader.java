@@ -28,13 +28,10 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class TransferPlistReader extends PlistReader<Transfer> {
-    private static Logger log = Logger.getLogger(TransferPlistReader.class);
 
     public static void register() {
         TransferReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
