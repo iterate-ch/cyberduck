@@ -79,4 +79,29 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Apply {0} filter", "Status"), StringUtils.uncapitalize(action.getTitle()));
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TransferPromptFilterWorker that = (TransferPromptFilterWorker) o;
+        if(cache != null ? !cache.equals(that.cache) : that.cache != null) {
+            return false;
+        }
+        if(transfer != null ? !transfer.equals(that.transfer) : that.transfer != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = transfer != null ? transfer.hashCode() : 0;
+        result = 31 * result + (cache != null ? cache.hashCode() : 0);
+        return result;
+    }
 }
