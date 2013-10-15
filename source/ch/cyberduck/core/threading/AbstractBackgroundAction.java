@@ -55,7 +55,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
             log.debug(String.format("Cancel background task %s", this));
         }
         state = State.canceled;
-        BackgroundActionListener[] l = listeners.toArray(
+        final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.cancel(this);
@@ -63,7 +63,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     /**
-     * To be overriden by a concrete subclass. Returns false by default for actions
+     * To be overridden by a concrete subclass. Returns false by default for actions
      * not connected to a graphical user interface
      *
      * @return True if the user canceled this action
@@ -84,7 +84,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
             log.debug(String.format("Prepare background task %s", this));
         }
         state = State.running;
-        BackgroundActionListener[] l = listeners.toArray(
+        final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.start(this);
@@ -97,7 +97,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
             log.debug(String.format("Finish background task %s", this));
         }
         state = State.stopped;
-        BackgroundActionListener[] l = listeners.toArray(
+        final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.stop(this);
@@ -118,7 +118,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     protected String toString(final List<Path> files) {
-        StringBuilder name = new StringBuilder();
+        final StringBuilder name = new StringBuilder();
         name.append(files.get(0).getName());
         if(files.size() > 1) {
             name.append("…");

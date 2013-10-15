@@ -130,7 +130,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * @return Greater than zero if a failed action should be repeated again
      */
     public int retry() {
-        if(failed && !this.isCanceled()) {
+        if(this.hasFailed() && !this.isCanceled()) {
             // Check for an exception we consider possibly temporary
             if(new NetworkFailureDiagnostics().isNetworkFailure(exception)) {
                 // The initial connection attempt does not count
@@ -149,7 +149,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * @return True if the the action had a permanent failures. Returns false if
-     *         there were only temporary exceptions and the action suceeded upon retry
+     *         there were only temporary exceptions and the action succeeded upon retry
      * @see #retry()
      */
     protected boolean hasFailed() {
@@ -212,7 +212,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         session.removeTranscriptListener(this);
         super.finish();
         // If there was any failure, display the summary now
-        if(failed && !this.isCanceled()) {
+        if(this.hasFailed() && !this.isCanceled()) {
             // Display alert if the action was not canceled intentionally
             alert.alert(this, exception, transcript);
         }
