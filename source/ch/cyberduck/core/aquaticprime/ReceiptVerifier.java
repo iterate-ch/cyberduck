@@ -190,6 +190,11 @@ public class ReceiptVerifier implements LicenseVerifier {
             // Shutdown if receipt is not valid
             return false;
         }
+        catch(SecurityException e) {
+            log.error("Receipt validation error", e);
+            // Shutdown if receipt is not valid
+            return false;
+        }
         catch(CMSException e) {
             log.error("Receipt validation error", e);
             // Shutdown if receipt is not valid
