@@ -1,4 +1,4 @@
-package ch.cyberduck.core.identity;
+package ch.cyberduck.core.iam;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;

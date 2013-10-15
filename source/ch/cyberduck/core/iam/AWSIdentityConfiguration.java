@@ -1,4 +1,4 @@
-package ch.cyberduck.core.identity;
+package ch.cyberduck.core.iam;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -20,6 +20,7 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.apache.log4j.Logger;
 

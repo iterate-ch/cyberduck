@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.identity.AWSIdentityConfiguration;
+import ch.cyberduck.core.iam.AWSIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.apache.commons.lang3.StringUtils;

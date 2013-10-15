@@ -1,4 +1,4 @@
-package ch.cyberduck.core.identity;
+package ch.cyberduck.core.iam;
 
 /*
  * Copyright (c) 2013 David Kocher. All rights reserved.
