@@ -47,7 +47,9 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     @Override
     public void cleanup() {
         super.cleanup();
-        worker.cleanup(result);
+        if(!worker.isCanceled()) {
+            worker.cleanup(result);
+        }
     }
 
     @Override
@@ -57,7 +59,32 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     }
 
     @Override
+    public boolean isCanceled() {
+        return worker.isCanceled();
+    }
+
+    @Override
     public String getActivity() {
         return worker.getActivity();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final WorkerBackgroundAction that = (WorkerBackgroundAction) o;
+        if(worker != null ? !worker.equals(that.worker) : that.worker != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return worker != null ? worker.hashCode() : 0;
     }
 }
