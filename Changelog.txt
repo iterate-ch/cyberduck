@@ -41,6 +41,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Remember browser column widths (Mac) (#6034)
 - [Bugfix] Refresh list of thirdparty application bookmarks to import (#6141)
 - [Bugfix] PRET support not working anymore (#7427)
+- [Bugfix] Quick Look does not display preview (#7231)
 
 4.3.1 [http://trac.cyberduck.ch/milestone/4.3.1]
 - [Bugfix] Modification date shown as 01.01.1970 (Windows) (#7177)
