@@ -97,6 +97,9 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     @Override
     public void delete(final String username, final LoginController prompt) throws BackgroundException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Delete user %s", username));
+        }
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -106,11 +109,17 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                             = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
 
                     for(AccessKeyMetadata key : keys.getAccessKeyMetadata()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Delete access key %s for user %s", key, username));
+                        }
                         client.deleteAccessKey(new DeleteAccessKeyRequest(key.getAccessKeyId()).withUserName(username));
                     }
 
                     final ListUserPoliciesResult policies = client.listUserPolicies(new ListUserPoliciesRequest(username));
                     for(String policy : policies.getPolicyNames()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Delete policy %s for user %s", policy, username));
+                        }
                         client.deleteUserPolicy(new DeleteUserPolicyRequest(username, policy));
                     }
                     client.deleteUser(new DeleteUserRequest(username));
@@ -140,6 +149,9 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     @Override
     public void create(final String username, final String policy, final LoginController prompt) throws BackgroundException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Create user %s with policy %s", username, policy));
+        }
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -148,11 +160,16 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                     final User user = client.createUser(new CreateUserRequest().withUserName(username)).getUser();
                     final CreateAccessKeyResult key = client.createAccessKey(
                             new CreateAccessKeyRequest().withUserName(user.getUserName()));
-
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Created access key %s for user %s", key, username));
+                    }
                     // Write policy document to get read access
                     client.putUserPolicy(new PutUserPolicyRequest(user.getUserName(), "Policy", policy));
                     // Map virtual user name to IAM access key
                     final String id = key.getAccessKey().getAccessKeyId();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Map user %s to access key %s", String.format("%s%s", prefix, username), id));
+                    }
                     Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
                     // Save secret
                     PasswordStoreFactory.get().addPassword(
