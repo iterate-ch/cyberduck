@@ -35,12 +35,19 @@ import java.net.URLEncoder;
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private static final Logger log = Logger.getLogger(QloudstatAnalyticsProvider.class);
 
-    private static final String uri
-            = Preferences.instance().getProperty("analytics.provider.qloudstat.setup");
+    private String target;
+
+    public QloudstatAnalyticsProvider() {
+        this(Preferences.instance().getProperty("analytics.provider.qloudstat.setup"));
+    }
+
+    public QloudstatAnalyticsProvider(final String target) {
+        this.target = target;
+    }
 
     @Override
     public String getName() {
-        return URI.create(uri).getHost();
+        return URI.create(target).getHost();
     }
 
     @Override
@@ -58,7 +65,11 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
         catch(UnsupportedEncodingException e) {
             return null;
         }
-        return String.format("%s?setup=%s", uri, encoded);
+        final String formatted = String.format("%s?setup=%s", target, encoded);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Setup URL %s", formatted));
+        }
+        return formatted;
     }
 
     private String encode(final String p) {
