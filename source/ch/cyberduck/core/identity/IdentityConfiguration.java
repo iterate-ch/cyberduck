@@ -38,7 +38,7 @@ public interface IdentityConfiguration {
      * Verify user exists and find access key and secret key in keychain
      *
      * @param username Username Username assigned such as iam.qloudstat
-     * @return Access credentials for user or null
+     * @return Access credentials for user or null if not found
      */
     Credentials getCredentials(String username);
 
