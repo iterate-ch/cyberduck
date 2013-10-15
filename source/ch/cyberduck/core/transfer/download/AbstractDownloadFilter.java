@@ -180,7 +180,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private void permissions(final Path file) {
         Permission permission = Permission.EMPTY;
-        if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
+        if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
             if(file.attributes().isFile()) {
                 permission = new Permission(
                         Preferences.instance().getInteger("queue.download.permissions.file.default"));

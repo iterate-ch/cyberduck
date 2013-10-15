@@ -289,7 +289,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("update.check.last", "0");
 
             defaults.put("queue.download.folder", DefaultDownloadPath);
-            defaults.put("queue.upload.permissions.useDefault", true.ToString());
+            defaults.put("queue.upload.permissions.default", true.ToString());
             defaults.put("queue.upload.permissions.change", true.ToString());
 
             defaults.put("queue.dock.badge", true.ToString());

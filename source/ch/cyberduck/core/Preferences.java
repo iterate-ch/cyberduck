@@ -371,10 +371,6 @@ public abstract class Preferences {
          */
         defaults.put("queue.size.warn", String.valueOf(50));
         /**
-         * Open completed downloads
-         */
-        defaults.put("queue.download.complete.open", String.valueOf(false));
-        /**
          * Bring transfer window to front
          */
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
@@ -392,7 +388,7 @@ public abstract class Preferences {
         defaults.put("queue.upload.reload.fileExists", TransferAction.callback.name());
 
         defaults.put("queue.upload.permissions.change", String.valueOf(false));
-        defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
+        defaults.put("queue.upload.permissions.default", String.valueOf(false));
         defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
 
@@ -417,7 +413,7 @@ public abstract class Preferences {
         defaults.put("queue.download.file.rename.format", "{0} ({1}){2}");
 
         defaults.put("queue.download.permissions.change", String.valueOf(true));
-        defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
+        defaults.put("queue.download.permissions.default", String.valueOf(false));
         defaults.put("queue.download.permissions.file.default", String.valueOf(644));
         defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
 
@@ -431,6 +427,10 @@ public abstract class Preferences {
 
         defaults.put("queue.download.quarantine", String.valueOf(true));
         defaults.put("queue.download.wherefrom", String.valueOf(true));
+        /**
+         * Open completed downloads
+         */
+        defaults.put("queue.download.complete.open", String.valueOf(false));
 
         defaults.put("queue.sync.compare.hash", String.valueOf(true));
         defaults.put("queue.sync.compare.size", String.valueOf(false));

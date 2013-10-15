@@ -199,7 +199,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private void permissions(final Path file, final UnixPermission feature) {
         final Permission permission;
-        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+        if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
             if(file.attributes().isFile()) {
                 permission = new Permission(
                         Preferences.instance().getInteger("queue.upload.permissions.file.default"));
@@ -226,7 +226,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private void acl(final Path file, final AclPermission feature) {
         final Permission permission;
-        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+        if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
             if(file.attributes().isFile()) {
                 permission = new Permission(
                         Preferences.instance().getInteger("queue.upload.permissions.file.default"));

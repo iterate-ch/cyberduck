@@ -490,7 +490,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodUploadUseDefaultChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.permissions.useDefault",
+            Preferences.instance().setProperty("queue.upload.permissions.default",
                                                View.ChmodUploadUseDefault);
             View.ChmodUploadDefaultEnabled = View.ChmodUploadUseDefault;
         }
@@ -540,7 +540,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodDownloadUseDefaultChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.permissions.useDefault",
+            Preferences.instance().setProperty("queue.download.permissions.default",
                                                View.ChmodDownloadUseDefault);
             View.ChmodDownloadDefaultEnabled = View.ChmodDownloadUseDefault;
         }
@@ -977,16 +977,16 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChmodDownload = Preferences.instance().getBoolean("queue.download.permissions.change");
             View.ChmodDownloadEnabled = View.ChmodDownload;
             View.ChmodDownloadUseDefault =
-                Preferences.instance().getBoolean("queue.download.permissions.useDefault");
+                Preferences.instance().getBoolean("queue.download.permissions.default");
             View.ChmodDownloadDefaultEnabled = View.ChmodDownloadUseDefault;
             View.ChmodDownloadType = ForFiles;
             View_ChmodDownloadTypeChangedEvent();
             View.ChmodUpload = Preferences.instance().getBoolean("queue.upload.permissions.change");
             View.ChmodUploadEnabled = View.ChmodUpload;
             View.ChmodUploadUseDefault =
-                Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
+                Preferences.instance().getBoolean("queue.upload.permissions.default");
             View.ChmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change") &&
-                                             Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
+                                             Preferences.instance().getBoolean("queue.upload.permissions.default");
             View.ChmodUploadType = ForFiles;
             View_ChmodUploadTypeChangedEvent();
 

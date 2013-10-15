@@ -220,7 +220,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
 
         boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.permissions.change")
-                && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
+                && Preferences.instance().getBoolean("queue.download.permissions.default");
         this.downerr.setEnabled(chmodDownloadDefaultEnabled);
         this.downerr.setTarget(this.id());
         this.downerr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
@@ -252,7 +252,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.dotherx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
 
         boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change")
-                && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
+                && Preferences.instance().getBoolean("queue.upload.permissions.default");
         this.uownerr.setEnabled(chmodUploadDefaultEnabled);
         this.uownerr.setTarget(this.id());
         this.uownerr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
@@ -665,14 +665,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadDefaultCheckbox = b;
         this.chmodUploadDefaultCheckbox.setTarget(this.id());
         this.chmodUploadDefaultCheckbox.setAction(Foundation.selector("chmodUploadDefaultCheckboxClicked:"));
-        this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
         this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
     public void chmodUploadDefaultCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.permissions.useDefault", enabled);
+        Preferences.instance().setProperty("queue.upload.permissions.default", enabled);
         this.uownerr.setEnabled(enabled);
         this.uownerw.setEnabled(enabled);
         this.uownerx.setEnabled(enabled);
@@ -692,14 +692,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadCustomCheckbox = b;
         this.chmodUploadCustomCheckbox.setTarget(this.id());
         this.chmodUploadCustomCheckbox.setAction(Foundation.selector("chmodUploadCustomCheckboxClicked:"));
-        this.chmodUploadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
         this.chmodUploadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
     public void chmodUploadCustomCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.permissions.useDefault", !enabled);
+        Preferences.instance().setProperty("queue.upload.permissions.default", !enabled);
         this.uownerr.setEnabled(!enabled);
         this.uownerw.setEnabled(!enabled);
         this.uownerx.setEnabled(!enabled);
@@ -747,14 +747,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadDefaultCheckbox = b;
         this.chmodDownloadDefaultCheckbox.setTarget(this.id());
         this.chmodDownloadDefaultCheckbox.setAction(Foundation.selector("chmodDownloadDefaultCheckboxClicked:"));
-        this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
         this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
     }
 
     @Action
     public void chmodDownloadDefaultCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.permissions.useDefault", enabled);
+        Preferences.instance().setProperty("queue.download.permissions.default", enabled);
         this.downerr.setEnabled(enabled);
         this.downerw.setEnabled(enabled);
         this.downerx.setEnabled(enabled);
@@ -774,14 +774,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadCustomCheckbox = b;
         this.chmodDownloadCustomCheckbox.setTarget(this.id());
         this.chmodDownloadCustomCheckbox.setAction(Foundation.selector("chmodDownloadCustomCheckboxClicked:"));
-        this.chmodDownloadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
         this.chmodDownloadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
     }
 
     @Action
     public void chmodDownloadCustomCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.permissions.useDefault", !enabled);
+        Preferences.instance().setProperty("queue.download.permissions.default", !enabled);
         this.downerr.setEnabled(!enabled);
         this.downerw.setEnabled(!enabled);
         this.downerx.setEnabled(!enabled);
