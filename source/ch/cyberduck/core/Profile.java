@@ -45,7 +45,7 @@ public final class Profile implements Protocol, Serializable {
      */
     private Protocol parent;
 
-    private Local disk;
+    private Local image;
 
     public <T> Profile(final T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
@@ -57,7 +57,7 @@ public final class Profile implements Protocol, Serializable {
         else {
             parent = ProtocolFactory.forName(protocol);
         }
-        disk = this.write(this.value("Disk"));
+        image = this.write(this.value("Disk"));
     }
 
     @Override
@@ -164,20 +164,20 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public String disk() {
-        if(null == disk) {
+        if(null == image) {
             return parent.disk();
         }
         // Temporary file
-        return disk.getAbsolute();
+        return image.getAbsolute();
     }
 
     @Override
     public String icon() {
-        if(null == disk) {
+        if(null == image) {
             return parent.icon();
         }
         // Temporary file
-        return disk.getAbsolute();
+        return image.getAbsolute();
     }
 
     @Override
@@ -318,5 +318,14 @@ public final class Profile implements Protocol, Serializable {
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Profile{");
+        sb.append("parent=").append(parent);
+        sb.append(", image=").append(image);
+        sb.append('}');
+        return sb.toString();
     }
 }
