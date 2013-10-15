@@ -117,7 +117,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     }
 
     @Override
-    public void addPassword(final String serviceName, String user, final String password) {
+    public void addPassword(final String serviceName, final String user, final String password) {
         this.addPasswordToKeychain(serviceName, user, password);
     }
 
