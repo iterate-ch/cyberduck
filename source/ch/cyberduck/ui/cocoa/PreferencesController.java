@@ -219,7 +219,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
         this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
 
-        boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.changePermissions")
+        boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.permissions.change")
                 && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
         this.downerr.setEnabled(chmodDownloadDefaultEnabled);
         this.downerr.setTarget(this.id());
@@ -251,7 +251,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.dotherx.setTarget(this.id());
         this.dotherx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
 
-        boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
+        boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change")
                 && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
         this.uownerr.setEnabled(chmodUploadDefaultEnabled);
         this.uownerr.setTarget(this.id());
@@ -637,13 +637,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadCheckbox = b;
         this.chmodUploadCheckbox.setTarget(this.id());
         this.chmodUploadCheckbox.setAction(Foundation.selector("chmodUploadCheckboxClicked:"));
-        this.chmodUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.changePermissions") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void chmodUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.changePermissions", enabled);
+        Preferences.instance().setProperty("queue.upload.permissions.change", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
         this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -666,7 +666,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadDefaultCheckbox.setTarget(this.id());
         this.chmodUploadDefaultCheckbox.setAction(Foundation.selector("chmodUploadDefaultCheckboxClicked:"));
         this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
+        this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
@@ -693,7 +693,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadCustomCheckbox.setTarget(this.id());
         this.chmodUploadCustomCheckbox.setAction(Foundation.selector("chmodUploadCustomCheckboxClicked:"));
         this.chmodUploadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodUploadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
+        this.chmodUploadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
@@ -719,13 +719,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadCheckbox = b;
         this.chmodDownloadCheckbox.setTarget(this.id());
         this.chmodDownloadCheckbox.setAction(Foundation.selector("chmodDownloadCheckboxClicked:"));
-        this.chmodDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.changePermissions") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void chmodDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.changePermissions", enabled);
+        Preferences.instance().setProperty("queue.download.permissions.change", enabled);
         this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
         this.chmodDownloadCustomCheckbox.setEnabled(enabled);
         boolean chmodDownloadDefaultChecked = this.chmodDownloadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -748,7 +748,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadDefaultCheckbox.setTarget(this.id());
         this.chmodDownloadDefaultCheckbox.setAction(Foundation.selector("chmodDownloadDefaultCheckboxClicked:"));
         this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
+        this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
     }
 
     @Action
@@ -775,7 +775,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadCustomCheckbox.setTarget(this.id());
         this.chmodDownloadCustomCheckbox.setAction(Foundation.selector("chmodDownloadCustomCheckboxClicked:"));
         this.chmodDownloadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodDownloadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
+        this.chmodDownloadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
     }
 
     @Action
@@ -992,13 +992,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.preserveModificationDownloadCheckbox = b;
         this.preserveModificationDownloadCheckbox.setTarget(this.id());
         this.preserveModificationDownloadCheckbox.setAction(Foundation.selector("preserveModificationDownloadCheckboxClicked:"));
-        this.preserveModificationDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.preserveDate") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.preserveModificationDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void preserveModificationDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.preserveDate", enabled);
+        Preferences.instance().setProperty("queue.download.timestamp.change", enabled);
     }
 
     @Outlet
@@ -1008,13 +1008,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.preserveModificationUploadCheckbox = b;
         this.preserveModificationUploadCheckbox.setTarget(this.id());
         this.preserveModificationUploadCheckbox.setAction(Foundation.selector("preserveModificationUploadCheckboxClicked:"));
-        this.preserveModificationUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.preserveDate") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.preserveModificationUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void preserveModificationUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.preserveDate", enabled);
+        Preferences.instance().setProperty("queue.upload.timestamp.change", enabled);
     }
 
     @Outlet

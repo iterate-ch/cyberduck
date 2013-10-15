@@ -21,15 +21,15 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Preferences;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class DownloadFilterOptions {
 
     public boolean permissions
-            = Preferences.instance().getBoolean("queue.download.changePermissions");
+            = Preferences.instance().getBoolean("queue.download.permissions.change");
 
     public boolean timestamp
-            = Preferences.instance().getBoolean("queue.download.preserveDate");
+            = Preferences.instance().getBoolean("queue.download.timestamp.change");
 
     public boolean wherefrom
             = Preferences.instance().getBoolean("queue.download.wherefrom");

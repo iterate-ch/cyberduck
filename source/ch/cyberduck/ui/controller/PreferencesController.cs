@@ -441,13 +441,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_PreserveModificationUploadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.preserveDate",
+            Preferences.instance().setProperty("queue.upload.timestamp.change",
                                                View.PreserveModificationUpload);
         }
 
         private void View_PreserveModificationDownloadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.preserveDate",
+            Preferences.instance().setProperty("queue.download.timestamp.change",
                                                View.PreserveModificationDownload);
         }
 
@@ -497,7 +497,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodUploadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.changePermissions", View.ChmodUpload);
+            Preferences.instance().setProperty("queue.upload.permissions.change", View.ChmodUpload);
             View.ChmodUploadEnabled = View.ChmodUpload;
         }
 
@@ -547,7 +547,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodDownloadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.changePermissions", View.ChmodDownload);
+            Preferences.instance().setProperty("queue.download.permissions.change", View.ChmodDownload);
             View.ChmodDownloadEnabled = View.ChmodDownload;
         }
 
@@ -974,18 +974,18 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - Permissions
 
             PopulateChmodTypes();
-            View.ChmodDownload = Preferences.instance().getBoolean("queue.download.changePermissions");
+            View.ChmodDownload = Preferences.instance().getBoolean("queue.download.permissions.change");
             View.ChmodDownloadEnabled = View.ChmodDownload;
             View.ChmodDownloadUseDefault =
                 Preferences.instance().getBoolean("queue.download.permissions.useDefault");
             View.ChmodDownloadDefaultEnabled = View.ChmodDownloadUseDefault;
             View.ChmodDownloadType = ForFiles;
             View_ChmodDownloadTypeChangedEvent();
-            View.ChmodUpload = Preferences.instance().getBoolean("queue.upload.changePermissions");
+            View.ChmodUpload = Preferences.instance().getBoolean("queue.upload.permissions.change");
             View.ChmodUploadEnabled = View.ChmodUpload;
             View.ChmodUploadUseDefault =
                 Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
-            View.ChmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.changePermissions") &&
+            View.ChmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change") &&
                                              Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
             View.ChmodUploadType = ForFiles;
             View_ChmodUploadTypeChangedEvent();
@@ -995,9 +995,9 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Transfers - Timestamps
 
             View.PreserveModificationDownload =
-                Preferences.instance().getBoolean("queue.download.preserveDate");
+                Preferences.instance().getBoolean("queue.download.timestamp.change");
             View.PreserveModificationUpload =
-                Preferences.instance().getBoolean("queue.upload.preserveDate");
+                Preferences.instance().getBoolean("queue.upload.timestamp.change");
 
             #endregion
 

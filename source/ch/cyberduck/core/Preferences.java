@@ -391,12 +391,12 @@ public abstract class Preferences {
         defaults.put("queue.download.reload.fileExists", TransferAction.callback.name());
         defaults.put("queue.upload.reload.fileExists", TransferAction.callback.name());
 
-        defaults.put("queue.upload.changePermissions", String.valueOf(false));
+        defaults.put("queue.upload.permissions.change", String.valueOf(false));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
 
-        defaults.put("queue.upload.preserveDate", String.valueOf(false));
+        defaults.put("queue.upload.timestamp.change", String.valueOf(false));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -416,12 +416,12 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.rename.format", "{0} ({1}){2}");
         defaults.put("queue.download.file.rename.format", "{0} ({1}){2}");
 
-        defaults.put("queue.download.changePermissions", String.valueOf(true));
+        defaults.put("queue.download.permissions.change", String.valueOf(true));
         defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.download.permissions.file.default", String.valueOf(644));
         defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
 
-        defaults.put("queue.download.preserveDate", String.valueOf(true));
+        defaults.put("queue.download.timestamp.change", String.valueOf(true));
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
