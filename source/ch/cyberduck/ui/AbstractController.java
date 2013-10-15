@@ -93,6 +93,7 @@ public abstract class AbstractController implements Controller {
             log.debug(String.format("Run action %s in background", action));
         }
         if(actions.contains(action)) {
+            log.warn(String.format("Skip duplicate background action %s found in registry", action));
             return null;
         }
         actions.add(action);
