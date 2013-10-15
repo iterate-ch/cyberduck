@@ -2586,6 +2586,9 @@ public class InfoController extends ToolbarWindowController {
 
                     distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
                     final List<Path> containers = distribution.getContainers();
+                    if(!containers.isEmpty()) {
+                        distributionLoggingPopup.removeAllItems();
+                    }
                     for(Path c : containers) {
                         // Populate with list of available logging targets
                         distributionLoggingPopup.addItemWithTitle(c.getName());
