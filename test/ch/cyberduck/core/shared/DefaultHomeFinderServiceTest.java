@@ -17,7 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultHomeFinderServiceTest extends AbstractTestCase {
 
@@ -56,5 +56,13 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals(new Path("/home/jenkins", Path.DIRECTORY_TYPE), new DefaultHomeFinderService(session).find());
         session.close();
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        assertEquals(new Path("/sandbox", Path.DIRECTORY_TYPE),
+                new DefaultHomeFinderService(null).find(new Path("/", Path.DIRECTORY_TYPE), "sandbox"));
+        assertEquals(new Path("/sandbox", Path.DIRECTORY_TYPE),
+                new DefaultHomeFinderService(null).find(new Path("/", Path.DIRECTORY_TYPE), "/sandbox"));
     }
 }

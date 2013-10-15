@@ -72,7 +72,7 @@ public class DefaultHomeFinderService implements Home {
             }
             else {
                 // Relative path
-                return new Path(workdir, PathNormalizer.normalize(path), Path.DIRECTORY_TYPE);
+                return new Path(workdir, PathNormalizer.normalize(path, false), Path.DIRECTORY_TYPE);
             }
         }
     }
