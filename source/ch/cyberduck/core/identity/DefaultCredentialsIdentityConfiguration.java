@@ -19,6 +19,10 @@ package ch.cyberduck.core.identity;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$
@@ -27,12 +31,24 @@ public class DefaultCredentialsIdentityConfiguration extends AbstractIdentityCon
 
     private Host host;
 
+    private PasswordStore store;
+
     public DefaultCredentialsIdentityConfiguration(final Host host) {
         this.host = host;
+        this.store = PasswordStoreFactory.get();
+    }
+
+    public DefaultCredentialsIdentityConfiguration(final Host host, final PasswordStore store) {
+        this.host = host;
+        this.store = store;
     }
 
     @Override
-    public Credentials getCredentials(final String username) {
-        return host.getCredentials();
+    public Credentials getCredentials(final String user) {
+        final String password = store.getPassword(host.getProtocol().getScheme(), host.getPort(), host.getHostname(), user);
+        if(StringUtils.isEmpty(password)) {
+            return null;
+        }
+        return new Credentials(user, password);
     }
 }
