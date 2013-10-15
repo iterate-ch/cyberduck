@@ -43,17 +43,17 @@ public class DAVListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
-                if(href.equals(file.getAbsolute())) {
+                if(href.equals(directory.getAbsolute())) {
                     continue;
                 }
-                final Path p = new Path(file, PathNormalizer.name(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final Path p = new Path(directory, PathNormalizer.name(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 if(resource.getModified() != null) {
                     p.attributes().setModificationDate(resource.getModified().getTime());
                 }
@@ -71,10 +71,10 @@ public class DAVListService implements ListService {
             return children;
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Listing directory failed", e, file);
+            throw new DAVExceptionMappingService().map("Listing directory failed", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new DefaultIOExceptionMappingService().map(e, directory);
         }
     }
 }

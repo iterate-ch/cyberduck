@@ -53,7 +53,7 @@ public class SwiftObjectListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             final int limit = Preferences.instance().getInteger("openstack.list.limit");
@@ -61,11 +61,11 @@ public class SwiftObjectListService implements ListService {
             List<StorageObject> list;
             do {
                 final PathContainerService containerService = new PathContainerService();
-                final Path container = containerService.getContainer(file);
+                final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
-                        containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
+                        containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final Path child = new Path(file, PathNormalizer.name(object.getName()),
+                    final Path child = new Path(directory, PathNormalizer.name(object.getName()),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     child.attributes().setOwner(child.attributes().getOwner());
                     child.attributes().setRegion(container.attributes().getRegion());
@@ -100,10 +100,10 @@ public class SwiftObjectListService implements ListService {
 
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Listing directory failed", e, file);
+            throw new SwiftExceptionMappingService().map("Listing directory failed", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new DefaultIOExceptionMappingService().map(e, directory);
         }
     }
 }

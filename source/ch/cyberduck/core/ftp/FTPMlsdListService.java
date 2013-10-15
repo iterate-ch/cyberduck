@@ -40,9 +40,9 @@ public class FTPMlsdListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            if(!session.getClient().changeWorkingDirectory(file.getAbsolute())) {
+            if(!session.getClient().changeWorkingDirectory(directory.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
@@ -50,16 +50,16 @@ public class FTPMlsdListService implements ListService {
                 // data connection in type ASCII or type EBCDIC.
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
-            final List<String> list = new FTPDataFallback(session).data(file, new DataConnectionAction<List<String>>() {
+            final List<String> list = new FTPDataFallback(session).data(directory, new DataConnectionAction<List<String>>() {
                 @Override
                 public List<String> execute() throws IOException {
                     return session.getClient().list(FTPCmd.MLSD);
                 }
             });
-            return new FTPMlsdListResponseReader().read(session, file, list);
+            return new FTPMlsdListResponseReader().read(session, directory, list);
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 }

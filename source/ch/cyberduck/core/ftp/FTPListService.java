@@ -117,11 +117,11 @@ public class FTPListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             if(implementations.containsKey(Command.stat)) {
                 try {
-                    return this.post(file, implementations.get(Command.stat).list(file, listener));
+                    return this.post(directory, implementations.get(Command.stat).list(directory, listener));
                 }
                 catch(FTPInvalidListException e) {
                     this.remove(Command.stat);
@@ -146,7 +146,7 @@ public class FTPListService implements ListService {
                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                 if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                     try {
-                        return this.post(file, implementations.get(Command.mlsd).list(file, listener));
+                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
                     }
                     catch(InteroperabilityException e) {
                         this.remove(Command.mlsd);
@@ -161,7 +161,7 @@ public class FTPListService implements ListService {
             }
             if(implementations.containsKey(Command.lista)) {
                 try {
-                    return this.post(file, implementations.get(Command.lista).list(file, listener));
+                    return this.post(directory, implementations.get(Command.lista).list(directory, listener));
                 }
                 catch(InteroperabilityException e) {
                     this.remove(Command.lista);
@@ -171,15 +171,15 @@ public class FTPListService implements ListService {
                 }
             }
             try {
-                return this.post(file, implementations.get(Command.list).list(file, listener));
+                return this.post(directory, implementations.get(Command.list).list(directory, listener));
             }
             catch(FTPInvalidListException f) {
                 // Empty directory listing
-                return this.post(file, f.getParsed());
+                return this.post(directory, f.getParsed());
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 

@@ -66,19 +66,19 @@ public class S3ObjectListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             // Keys can be listed by prefix. By choosing a common prefix
             // for the names of related keys and marking these keys with
             // a special character that delimits hierarchy, you can use the list
             // operation to select and browse keys hierarchically
             String prefix = StringUtils.EMPTY;
-            if(!containerService.isContainer(file)) {
+            if(!containerService.isContainer(directory)) {
                 // Restricts the response to only contain results that begin with the
                 // specified prefix. If you omit this optional argument, the value
                 // of Prefix for your query will be the empty string.
                 // In other words, the results will be not be restricted by prefix.
-                prefix = containerService.getKey(file);
+                prefix = containerService.getKey(directory);
                 if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
                     prefix += Path.DELIMITER;
                 }
@@ -89,9 +89,9 @@ public class S3ObjectListService implements ListService {
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> children = new AttributedList<Path>();
-            final Path container = containerService.getContainer(file);
+            final Path container = containerService.getContainer(directory);
             children.addAll(this.listObjects(container,
-                    file, prefix, String.valueOf(Path.DELIMITER), listener));
+                    directory, prefix, String.valueOf(Path.DELIMITER), listener));
             if(versioning) {
                 if(new S3VersioningFeature(session).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
@@ -101,7 +101,7 @@ public class S3ObjectListService implements ListService {
                                 container.getName(), prefix, String.valueOf(Path.DELIMITER),
                                 Preferences.instance().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
-                        children.addAll(this.listVersions(container, file,
+                        children.addAll(this.listVersions(container, directory,
                                 Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
@@ -113,10 +113,10 @@ public class S3ObjectListService implements ListService {
             return children;
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Listing directory failed", e, file);
+            throw new ServiceExceptionMappingService().map("Listing directory failed", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
+            throw new DefaultIOExceptionMappingService().map(e, directory);
         }
     }
 

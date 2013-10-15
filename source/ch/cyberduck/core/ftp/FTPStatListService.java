@@ -48,9 +48,9 @@ public class FTPStatListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final int response = session.getClient().stat(file.getAbsolute());
+            final int response = session.getClient().stat(directory.getAbsolute());
             if(FTPReply.isPositiveCompletion(response)) {
                 final String[] reply = session.getClient().getReplyStrings();
                 final List<String> result = new ArrayList<String>(reply.length);
@@ -68,14 +68,14 @@ public class FTPStatListService implements ListService {
                         result.add(StringUtils.stripStart(line, null));
                     }
                 }
-                return new FTPListResponseReader().read(session, listener, file, parser, result);
+                return new FTPListResponseReader().read(session, listener, directory, parser, result);
             }
             else {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, file);
+            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 }
