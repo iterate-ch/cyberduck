@@ -1461,13 +1461,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.openAfterDownloadCheckbox = b;
         this.openAfterDownloadCheckbox.setTarget(this.id());
         this.openAfterDownloadCheckbox.setAction(Foundation.selector("openAfterDownloadCheckboxClicked:"));
-        this.openAfterDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.openAfterDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.complete.open") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void openAfterDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.postProcessItemWhenComplete", enabled);
+        Preferences.instance().setProperty("queue.download.complete.open", enabled);
     }
 
     @Outlet

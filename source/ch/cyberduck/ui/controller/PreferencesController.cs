@@ -742,7 +742,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenAfterDownloadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.postProcessItemWhenComplete",
+            Preferences.instance().setProperty("queue.download.complete.open",
                                                View.OpenAfterDownload);
         }
 
@@ -941,7 +941,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RemoveFromTransfers =
                 Preferences.instance().getBoolean("queue.removeItemWhenComplete");
             View.OpenAfterDownload =
-                Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
+                Preferences.instance().getBoolean("queue.download.complete.open");
             View.DownloadFolder = Preferences.instance().getProperty("queue.download.folder");
             PopulateDuplicateActions();
             View.DuplicateDownloadAction = GetDuplicateAction("queue.download.fileExists");

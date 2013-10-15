@@ -373,7 +373,7 @@ public abstract class Preferences {
         /**
          * Open completed downloads
          */
-        defaults.put("queue.postProcessItemWhenComplete", String.valueOf(false));
+        defaults.put("queue.download.complete.open", String.valueOf(false));
         /**
          * Bring transfer window to front
          */

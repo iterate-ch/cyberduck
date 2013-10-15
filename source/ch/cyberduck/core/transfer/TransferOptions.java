@@ -42,7 +42,7 @@ public final class TransferOptions {
             Preferences.instance().getBoolean("queue.download.quarantine");
 
     public boolean open =
-            Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
+            Preferences.instance().getBoolean("queue.download.complete.open");
 
     public TransferOptions open(boolean e) {
         open = e;
