@@ -45,7 +45,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
-        assertEquals(new GoogleStorageProtocol(), configuration.getProtocol());
+        assertEquals(new GoogleStorageProtocol().getDefaultHostname(), configuration.getHostname());
     }
 
     @Test

@@ -122,38 +122,8 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
-    public Protocol getProtocol() {
-        return new AbstractProtocol() {
-            @Override
-            public String getDefaultHostname() {
-                return "cloudfront.amazonaws.com";
-            }
-
-            @Override
-            public String getIdentifier() {
-                return "cloudfront";
-            }
-
-            @Override
-            public Type getType() {
-                return Type.s3;
-            }
-
-            @Override
-            public String getDescription() {
-                return LocaleFactory.localizedString("Amazon CloudFront", "S3");
-            }
-
-            @Override
-            public Scheme getScheme() {
-                return Scheme.https;
-            }
-
-            @Override
-            public Session createSession(final Host host) {
-                throw new FactoryException(host.getHostname());
-            }
-        };
+    public String getHostname() {
+        return "cloudfront.amazonaws.com";
     }
 
     private static interface Authenticated<T> extends Callable<T> {

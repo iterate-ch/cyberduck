@@ -2070,7 +2070,7 @@ public class InfoController extends ToolbarWindowController {
                     encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol(),
+                                session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
                                         session.getHost().getProtocol().getScheme(),
                                         containerService.getContainer(getSelected()).getName(), credentials)
                         ));
@@ -2613,7 +2613,7 @@ public class InfoController extends ToolbarWindowController {
                         distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(credentials != null) {
                             distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getProtocol(),
+                                    HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getHostname(),
                                             distribution.getMethod().getScheme(), container.getName(), credentials)));
                         }
                     }

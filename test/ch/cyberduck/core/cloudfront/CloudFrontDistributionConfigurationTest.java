@@ -196,7 +196,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testProtocol() {
         assertEquals("cloudfront.amazonaws.com", new CloudFrontDistributionConfiguration(
                 new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
-        ).getProtocol().getDefaultHostname());
+        ).getHostname());
     }
 
     @Test

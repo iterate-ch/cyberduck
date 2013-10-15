@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
@@ -157,11 +156,6 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             return CustomOrigin.OriginProtocolPolicy.HTTP_ONLY;
         }
         return super.getPolicy(method);
-    }
-
-    @Override
-    public Protocol getProtocol() {
-        return session.getHost().getProtocol();
     }
 
     @Override

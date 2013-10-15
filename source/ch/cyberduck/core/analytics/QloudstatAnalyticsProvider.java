@@ -19,9 +19,7 @@ package ch.cyberduck.core.analytics;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.codec.binary.Base64;
@@ -46,14 +44,9 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     }
 
     @Override
-    public String getSetup(final Protocol protocol, final Scheme method, final String container,
-                           final Credentials credentials) {
-        if(!credentials.validate(protocol, new LoginOptions())) {
-            log.warn(String.format("No valid credentials for analytics setup in %s", container));
-            return null;
-        }
+    public String getSetup(final String hostname, final Scheme method, final String container, final Credentials credentials) {
         final String setup = String.format("provider=%s,protocol=%s,endpoint=%s,key=%s,secret=%s",
-                protocol.getDefaultHostname(),
+                hostname,
                 method.name(),
                 container,
                 credentials.getUsername(),

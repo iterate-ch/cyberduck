@@ -61,13 +61,6 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
     }
 
     @Test
-    public void testGetProtocol() throws Exception {
-        final WebsiteCloudFrontDistributionConfiguration configuration
-                = new WebsiteCloudFrontDistributionConfiguration(new S3Session(new Host(new S3Protocol(), "g")));
-        assertEquals(new S3Protocol(), configuration.getProtocol());
-    }
-
-    @Test
     public void testGetName() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(

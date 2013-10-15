@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
@@ -166,7 +165,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public Protocol getProtocol() {
-        return ProtocolFactory.GOOGLESTORAGE_SSL;
+    public String getHostname() {
+        return ProtocolFactory.GOOGLESTORAGE_SSL.getDefaultHostname();
     }
 }

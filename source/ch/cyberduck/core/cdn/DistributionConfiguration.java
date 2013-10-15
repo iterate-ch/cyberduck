@@ -21,7 +21,6 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -63,7 +62,7 @@ public interface DistributionConfiguration extends UrlProvider {
     /**
      * @return Hostname and port
      */
-    Protocol getProtocol();
+    String getHostname();
 
     /**
      * Marketing name for the distribution service

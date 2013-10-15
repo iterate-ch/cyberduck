@@ -19,7 +19,6 @@ package ch.cyberduck.core.analytics;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 /**
@@ -33,12 +32,12 @@ public interface AnalyticsProvider {
     String getName();
 
     /**
-     * @param protocol    Provider
+     * @param hostname    Provider
      * @param method      Distribution method
      * @param container   Container name
      * @param credentials Access keys
      * @return Setup URI
      */
-    String getSetup(Protocol protocol, Scheme method, String container,
+    String getSetup(String hostname, Scheme method, String container,
                     Credentials credentials);
 }

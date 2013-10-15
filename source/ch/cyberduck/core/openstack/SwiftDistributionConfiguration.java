@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -184,8 +183,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public Protocol getProtocol() {
-        return session.getHost().getProtocol();
+    public String getHostname() {
+        return session.getHost().getProtocol().getDefaultHostname();
     }
 
     @Override
