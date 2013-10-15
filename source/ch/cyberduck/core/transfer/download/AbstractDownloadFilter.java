@@ -60,9 +60,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private Session<?> session;
 
-    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    private DownloadFilterOptions options;
+
+    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
+        this.options = options;
+    }
+
+    public void setOptions(final DownloadFilterOptions options) {
+        this.options = options;
     }
 
     @Override
@@ -111,7 +118,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     public void apply(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
             // No icon update if disabled
-            if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+            if(options.icon) {
                 icon.set(file.getLocal(), new TransferStatus());
             }
         }
@@ -130,7 +137,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(status.isComplete()) {
             if(file.attributes().isFile()) {
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
-                if(Preferences.instance().getBoolean("queue.download.icon.update")) {
+                if(this.options.icon) {
                     icon.remove(file.getLocal());
                 }
                 final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
@@ -140,7 +147,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         quarantine.setQuarantine(file.getLocal(), new HostUrlProvider(false).get(session.getHost()),
                                 provider.getUrl());
                     }
-                    if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+                    if(this.options.wherefrom) {
                         // Set quarantine attributes
                         quarantine.setWhereFrom(file.getLocal(), provider.getUrl());
                     }
@@ -152,10 +159,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             launcher.bounce(file.getLocal());
         }
         if(!status.isCanceled()) {
-            if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
+            if(this.options.permissions) {
                 this.permissions(file);
             }
-            if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+            if(this.options.timestamp) {
                 this.timestamp(file);
             }
         }

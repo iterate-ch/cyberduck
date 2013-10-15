@@ -14,22 +14,26 @@ package ch.cyberduck.core.transfer.download;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.core.Preferences;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class OverwriteFilter extends AbstractDownloadFilter {
+public final class DownloadFilterOptions {
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
-    }
+    public boolean permissions
+            = Preferences.instance().getBoolean("queue.download.changePermissions");
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
-    }
+    public boolean timestamp
+            = Preferences.instance().getBoolean("queue.download.preserveDate");
+
+    public boolean wherefrom
+            = Preferences.instance().getBoolean("queue.download.wherefrom");
+
+    public boolean icon
+            = Preferences.instance().getBoolean("queue.download.icon.update");
 }

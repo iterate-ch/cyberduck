@@ -73,6 +73,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.attribute = session.getFeature(Attributes.class);
     }
 
+    public void setOptions(final UploadFilterOptions options) {
+        this.options = options;
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(!file.getLocal().exists()) {

@@ -32,7 +32,7 @@ public class TrashFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     public TrashFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
+        super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
     /**

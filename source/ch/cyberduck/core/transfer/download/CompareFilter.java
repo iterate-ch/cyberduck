@@ -36,7 +36,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     private ComparisionServiceFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
+        super(symlinkResolver, session, new DownloadFilterOptions());
         this.comparisonService = new ComparisionServiceFilter(session, session.getHost().getTimezone());
     }
 

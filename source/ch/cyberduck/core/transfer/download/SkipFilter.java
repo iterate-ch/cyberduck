@@ -32,7 +32,7 @@ public class SkipFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
     public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session);
+        super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
     @Override
