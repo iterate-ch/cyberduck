@@ -132,6 +132,18 @@ public abstract class TransferAction {
         }
     };
 
+    public static final TransferAction trash = new TransferAction("trash") {
+        @Override
+        public String getTitle() {
+            return LocaleFactory.localizedString("Trash");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Move files that already exist to the Trash", "Transfer");
+        }
+    };
+
     /**
      * Prompt the user about existing files
      */

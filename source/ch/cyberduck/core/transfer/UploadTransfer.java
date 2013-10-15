@@ -36,6 +36,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
+import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
@@ -104,7 +105,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
+    public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }

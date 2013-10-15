@@ -25,6 +25,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
+import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.download.SkipFilter;
+import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -104,7 +106,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
+    public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -120,6 +122,9 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.skip)) {
             return new SkipFilter(resolver, session);
+        }
+        if(action.equals(TransferAction.trash)) {
+            return new TrashFilter(resolver, session);
         }
         if(action.equals(TransferAction.comparison)) {
             return new CompareFilter(resolver, session);

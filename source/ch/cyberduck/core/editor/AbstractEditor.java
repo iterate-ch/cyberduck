@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -33,13 +32,9 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.download.TrashFilter;
-import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
-import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
-import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
@@ -197,9 +192,9 @@ public abstract class AbstractEditor implements Editor {
             options.open = false;
             final Transfer download = new DownloadTransfer(session.getHost(), edited) {
                 @Override
-                public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
-                    final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
-                    return new TrashFilter(resolver, session);
+                public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+                                             final TransferPrompt prompt) throws BackgroundException {
+                    return TransferAction.trash;
                 }
             };
             final SingleTransferWorker worker
@@ -228,9 +223,15 @@ public abstract class AbstractEditor implements Editor {
         public Transfer call() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session.getHost(), edited) {
                 @Override
-                public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
-                    final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
-                    return new OverwriteFilter(resolver, session, new UploadFilterOptions().withTemporary(true));
+                public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
+                    return TransferAction.overwrite;
+                }
+
+                @Override
+                public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
+                    final AbstractUploadFilter filter = super.filter(session, action);
+                    filter.setOptions(new UploadFilterOptions().withTemporary(true));
+                    return filter;
                 }
             };
             final SingleTransferWorker worker
