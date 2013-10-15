@@ -75,7 +75,6 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         assertEquals(URI.create("http://d8s2h7wj83mnt.cloudfront.net"), distribution.getUrl());
         assertEquals(null, distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
-        assertEquals("E1G1TCL9X2DSET", distribution.getEtag());
     }
 
     @Test
