@@ -31,7 +31,7 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.iam.AWSIdentityConfiguration;
+import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
@@ -337,7 +337,7 @@ public class CloudFrontDistributionConfiguration
             return (T) this;
         }
         if(type == IdentityConfiguration.class) {
-            return (T) new AWSIdentityConfiguration(session.getHost());
+            return (T) new AmazonIdentityConfiguration(session.getHost());
         }
         return null;
     }

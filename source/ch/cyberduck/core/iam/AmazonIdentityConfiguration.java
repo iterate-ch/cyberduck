@@ -34,8 +34,8 @@ import com.amazonaws.services.identitymanagement.model.*;
 /**
  * @version $Id$
  */
-public class AWSIdentityConfiguration implements IdentityConfiguration {
-    private static final Logger log = Logger.getLogger(AWSIdentityConfiguration.class);
+public class AmazonIdentityConfiguration implements IdentityConfiguration {
+    private static final Logger log = Logger.getLogger(AmazonIdentityConfiguration.class);
 
     private Host host;
 
@@ -48,7 +48,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
      */
     private static final String prefix = "iam.";
 
-    public AWSIdentityConfiguration(final Host host) {
+    public AmazonIdentityConfiguration(final Host host) {
         this.host = host;
         final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
         final ClientConfiguration configuration = new ClientConfiguration();

@@ -19,14 +19,14 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AWSIdentityConfigurationTest extends AbstractTestCase {
+public class AmazonIdentityConfigurationTest extends AbstractTestCase {
 
     @Test
     public void testCreateUser() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
-        final AWSIdentityConfiguration iam = new AWSIdentityConfiguration(host);
+        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
         try {
             iam.create(username, "{}", new DisabledLoginController());
@@ -57,6 +57,6 @@ public class AWSIdentityConfigurationTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
-        new AWSIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());
+        new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());
     }
 }

@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.iam.AWSIdentityConfiguration;
+import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.apache.commons.lang3.StringUtils;
@@ -423,7 +423,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == IdentityConfiguration.class) {
             // Only for AWS
             if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
-                return (T) new AWSIdentityConfiguration(host);
+                return (T) new AmazonIdentityConfiguration(host);
             }
         }
         if(type == DistributionConfiguration.class) {
