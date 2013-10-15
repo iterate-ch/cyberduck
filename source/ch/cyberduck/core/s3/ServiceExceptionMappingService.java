@@ -101,12 +101,12 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
             }
             return new AccessDeniedException(buffer.toString(), cause);
         }
-        if(HttpStatus.SC_NOT_FOUND == code) {
-            return new NotfoundException(buffer.toString(), cause);
-        }
         if(HttpStatus.SC_UNAUTHORIZED == code) {
             // Actually never returned by S3 but always 403
             return new LoginFailureException(buffer.toString(), cause);
+        }
+        if(HttpStatus.SC_NOT_FOUND == code) {
+            return new NotfoundException(buffer.toString(), cause);
         }
         return this.wrap(cause, buffer);
     }
