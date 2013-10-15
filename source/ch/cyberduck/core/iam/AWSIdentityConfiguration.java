@@ -139,6 +139,9 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     public Credentials getCredentials(final String username) {
         // Resolve access key id
         final String key = Preferences.instance().getProperty(String.format("%s%s", prefix, username));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Lookup access key for user %s with %s", username, key));
+        }
         if(null == key) {
             log.warn(String.format("No access key found for user %s", username));
             return null;
