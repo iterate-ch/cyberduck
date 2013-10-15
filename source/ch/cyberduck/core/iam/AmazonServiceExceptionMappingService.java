@@ -37,7 +37,6 @@ public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMap
     public BackgroundException map(final AmazonServiceException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        this.append(buffer, e.getErrorCode());
         if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
             return new InteroperabilityException(buffer.toString(), e);
         }
