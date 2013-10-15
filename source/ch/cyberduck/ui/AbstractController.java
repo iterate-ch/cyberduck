@@ -92,8 +92,11 @@ public abstract class AbstractController implements Controller {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run action %s in background", action));
         }
-        action.init();
+        if(actions.contains(action)) {
+            return null;
+        }
         actions.add(action);
+        action.init();
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action);
         try {
