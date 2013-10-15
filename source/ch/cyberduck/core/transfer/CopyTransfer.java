@@ -25,8 +25,8 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
@@ -192,7 +192,7 @@ public class CopyTransfer extends Transfer {
                     addTransferred(source.attributes().getSize());
                 }
                 else {
-                    this.copy(session, source, destination, copy, bandwidth, new AbstractStreamListener() {
+                    this.copy(session, source, destination, copy, bandwidth, new DisabledStreamListener() {
                         @Override
                         public void bytesSent(long bytes) {
                             addTransferred(bytes);
@@ -201,7 +201,7 @@ public class CopyTransfer extends Transfer {
                 }
             }
             else {
-                this.copy(session, source, destination, copy, bandwidth, new AbstractStreamListener() {
+                this.copy(session, source, destination, copy, bandwidth, new DisabledStreamListener() {
                     @Override
                     public void bytesSent(long bytes) {
                         addTransferred(bytes);

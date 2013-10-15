@@ -20,7 +20,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.io.AbstractStreamListener;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,7 +31,7 @@ import java.math.RoundingMode;
 /**
  * @version $Id$
  */
-public class IconUpdateSreamListener extends AbstractStreamListener {
+public class IconUpdateSreamListener extends DisabledStreamListener {
 
     private TransferStatus status;
 

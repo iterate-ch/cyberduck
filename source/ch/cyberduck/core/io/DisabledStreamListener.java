@@ -21,7 +21,7 @@ package ch.cyberduck.core.io;
 /**
  * @version $Id$
  */
-public class AbstractStreamListener implements StreamListener {
+public class DisabledStreamListener implements StreamListener {
 
     @Override
     public void bytesSent(long bytes) {

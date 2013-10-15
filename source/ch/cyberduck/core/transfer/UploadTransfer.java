@@ -31,8 +31,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.filter.UploadRegexFilter;
-import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
@@ -186,7 +186,7 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            session.getFeature(Upload.class).upload(file, bandwidth, new AbstractStreamListener() {
+            session.getFeature(Upload.class).upload(file, bandwidth, new DisabledStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

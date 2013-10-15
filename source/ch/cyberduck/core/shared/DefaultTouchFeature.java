@@ -24,8 +24,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,7 +49,7 @@ public class DefaultTouchFeature implements Touch {
         try {
             feature.upload(file,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new AbstractStreamListener(), status);
+                    new DisabledStreamListener(), status);
         }
         finally {
             temp.delete();

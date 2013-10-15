@@ -4,8 +4,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
-import ch.cyberduck.core.io.AbstractStreamListener;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -45,7 +45,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
-        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
@@ -87,7 +87,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
-        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
@@ -112,6 +112,6 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         test.getLocal().touch();
         final TransferStatus status = new TransferStatus();
-        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), status);
+        m.upload(test, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
     }
 }
