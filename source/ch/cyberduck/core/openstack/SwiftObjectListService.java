@@ -34,7 +34,6 @@ import org.w3c.util.DateParser;
 import org.w3c.util.InvalidDateException;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -74,13 +73,10 @@ public class SwiftObjectListService implements ListService {
                         child.attributes().setChecksum(object.getMd5sum());
                         child.attributes().setETag(object.getMd5sum());
                         try {
-                            final Date modified = DateParser.parse(object.getLastModified());
-                            if(null != modified) {
-                                child.attributes().setModificationDate(modified.getTime());
-                            }
+                            child.attributes().setModificationDate(DateParser.parse(object.getLastModified()).getTime());
                         }
                         catch(InvalidDateException e) {
-                            log.warn("Not ISO 8601 format:" + e.getMessage());
+                            log.warn(String.format("%s is not ISO 8601 format %s", object.getLastModified(), e.getMessage()));
                         }
                     }
                     if(child.attributes().isDirectory()) {

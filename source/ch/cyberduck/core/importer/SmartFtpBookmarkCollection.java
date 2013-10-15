@@ -132,7 +132,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                     current.setTimestamp(DateParser.parse(elementText));
                 }
                 catch(InvalidDateException e) {
-                    log.warn("Failed to parse timestamp:" + e.getMessage());
+                    log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));
                 }
             }
             else if(name.equals("User")) {
