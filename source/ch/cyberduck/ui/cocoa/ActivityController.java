@@ -47,6 +47,7 @@ import java.util.Map;
 public final class ActivityController extends WindowController {
     private static Logger log = Logger.getLogger(ActivityController.class);
 
+
     private BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
@@ -92,8 +93,8 @@ public final class ActivityController extends WindowController {
     private void init() {
         registry.addListener(backgroundActionListener);
         // Add already running background actions
-        final BackgroundAction[] actions = BackgroundActionRegistry.global().toArray(
-                new BackgroundAction[BackgroundActionRegistry.global().size()]);
+        final BackgroundAction[] actions = registry.toArray(
+                new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
             tasks.put(action, new TaskController(action));
         }
