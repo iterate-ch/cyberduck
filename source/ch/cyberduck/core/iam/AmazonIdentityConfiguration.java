@@ -160,7 +160,13 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             public Void call() throws BackgroundException {
                 try {
                     // Create new IAM credentials
-                    final User user = client.createUser(new CreateUserRequest().withUserName(username)).getUser();
+                    User user;
+                    try {
+                        user = client.createUser(new CreateUserRequest().withUserName(username)).getUser();
+                    }
+                    catch(EntityAlreadyExistsException e) {
+                        user = client.getUser(new GetUserRequest().withUserName(username)).getUser();
+                    }
                     final CreateAccessKeyResult key = client.createAccessKey(
                             new CreateAccessKeyRequest().withUserName(user.getUserName()));
                     if(log.isDebugEnabled()) {
