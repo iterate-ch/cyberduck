@@ -54,7 +54,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         super();
     }
 
-    public AbstractHostCollection(java.util.Collection<Host> c) {
+    public AbstractHostCollection(final java.util.Collection<Host> c) {
         super(c);
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     @Override
-    public boolean addAll(java.util.Collection<? extends Host> c) {
+    public boolean addAll(final java.util.Collection<? extends Host> c) {
         List<Host> temporary = new ArrayList<Host>();
         for(Host host : c) {
             if(temporary.contains(host)) {
@@ -97,7 +97,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     @Override
-    public void add(int row, Host host) {
+    public void add(final int row, final Host host) {
         if(this.contains(host)) {
             log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
             host.setUuid(null);
@@ -106,20 +106,20 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     @Override
-    public void collectionItemAdded(Host item) {
+    public void collectionItemAdded(final Host item) {
         this.sort();
         super.collectionItemAdded(item);
     }
 
     @Override
-    public void collectionItemRemoved(Host item) {
+    public void collectionItemRemoved(final Host item) {
         this.sort();
         super.collectionItemRemoved(item);
     }
 
     private Comparator<String> comparator = new NaturalOrderComparator();
 
-    public void sortByNickname() {
+    public synchronized void sortByNickname() {
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
@@ -128,7 +128,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         });
     }
 
-    public void sortByHostname() {
+    public synchronized void sortByHostname() {
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
@@ -137,7 +137,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         });
     }
 
-    public void sortByProtocol() {
+    public synchronized void sortByProtocol() {
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
@@ -146,7 +146,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         });
     }
 
-    public void sort(Comparator<Host> comparator) {
+    public synchronized void sort(final Comparator<Host> comparator) {
         Collections.sort(FolderBookmarkCollection.favoritesCollection(), comparator);
         // Save new index
         this.save();
