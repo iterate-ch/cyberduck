@@ -44,7 +44,9 @@ public class DefaultCredentialsIdentityConfiguration extends AbstractIdentityCon
     }
 
     @Override
-    public Credentials getCredentials(final String user) {
+    public Credentials getCredentials(final String username) {
+        // Ignore user but use username from host credentials
+        final String user = host.getCredentials().getUsername();
         final String password = store.getPassword(host.getProtocol().getScheme(), host.getPort(), host.getHostname(), user);
         if(StringUtils.isEmpty(password)) {
             return null;

@@ -18,8 +18,9 @@ public class DefaultCredentialsIdentityConfigurationTest extends AbstractTestCas
 
     @Test
     public void testGetUserCredentials() throws Exception {
+        final Host bookmark = new Host(new DAVProtocol(), "h", new Credentials("u", null));
         final DefaultCredentialsIdentityConfiguration configuration = new DefaultCredentialsIdentityConfiguration(
-                new Host(new DAVProtocol(), "h", new Credentials("u", null)),
+                bookmark,
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -30,6 +31,7 @@ public class DefaultCredentialsIdentityConfigurationTest extends AbstractTestCas
                     }
                 });
         assertEquals(new Credentials("u", "p"), configuration.getCredentials("u"));
-        assertEquals(null, configuration.getCredentials("b"));
+        bookmark.getCredentials().setUsername("a");
+        assertEquals(null, configuration.getCredentials("u"));
     }
 }
