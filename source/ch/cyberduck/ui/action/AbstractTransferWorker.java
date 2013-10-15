@@ -251,6 +251,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
      */
     public void transfer(final Path file, final TransferPathFilter filter,
                          final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         // Only transfer if accepted by filter and stored in table with transfer status
         if(table.containsKey(file)) {
             final TransferStatus status = table.get(file);
