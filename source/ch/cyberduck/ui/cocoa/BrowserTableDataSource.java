@@ -86,12 +86,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    /**
-     * Container for all paths currently being listed in the background
-     */
-    protected final List<Path> tasks
-            = Collections.synchronizedList(new ArrayList<Path>());
-
     protected BrowserController controller;
 
     protected Cache cache;
@@ -108,23 +102,19 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return The cached or newly fetched file listing of the directory
      */
     protected AttributedList<Path> list(final Path directory) {
-        if(!tasks.contains(directory)) {
-            if(!cache.isCached(directory.getReference())) {
-                tasks.add(directory);
-                // Reloading a working directory that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
-                controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                        new SessionListWorker(controller.getSession(), cache, directory, new PromptLimitedListProgressListener(controller)) {
-                            @Override
-                            public void cleanup(final AttributedList<Path> list) {
-                                tasks.remove(directory);
-                                if(tasks.isEmpty()) {
-                                    controller.reloadData(true, true);
-                                }
+        if(!cache.isCached(directory.getReference())) {
+            // Reloading a working directory that is not cached yet would cause the interface to freeze;
+            // Delay until path is cached in the background
+            controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
+                    new SessionListWorker(controller.getSession(), cache, directory, new PromptLimitedListProgressListener(controller)) {
+                        @Override
+                        public void cleanup(final AttributedList<Path> list) {
+                            if(controller.getActions().isEmpty()) {
+                                controller.reloadData(true, true);
                             }
-                        })
-                );
-            }
+                        }
+                    })
+            );
         }
         return this.get(directory);
     }

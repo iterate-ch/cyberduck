@@ -184,7 +184,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    _controller.ReloadData(true);
+                    if(_controller.getActions().isEmpty()) {
+                        _controller.ReloadData(true);
+                    }
                 }
             }
         }
