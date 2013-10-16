@@ -145,12 +145,12 @@ public class DownloadTransfer extends Transfer {
         }
         else if(reloadRequested) {
             action = TransferAction.forName(
-                    Preferences.instance().getProperty("queue.download.reload.fileExists"));
+                    Preferences.instance().getProperty("queue.download.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    Preferences.instance().getProperty("queue.download.fileExists")
+                    Preferences.instance().getProperty("queue.download.action")
             );
         }
         if(action.equals(TransferAction.callback)) {

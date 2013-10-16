@@ -663,14 +663,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.DuplicateUploadOverwrite)
             {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists",
+                Preferences.instance().setProperty("queue.upload.reload.action",
                                                    TransferAction.overwrite.toString());
             }
             else
             {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists",
+                Preferences.instance().setProperty("queue.upload.reload.action",
                                                    Preferences.instance().
-                                                               getProperty("queue.upload.fileExists"));
+                                                               getProperty("queue.upload.action"));
             }
         }
 
@@ -678,20 +678,20 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.DuplicateDownloadOverwrite)
             {
-                Preferences.instance().setProperty("queue.download.reload.fileExists",
+                Preferences.instance().setProperty("queue.download.reload.action",
                                                    TransferAction.overwrite.toString());
             }
             else
             {
-                Preferences.instance().setProperty("queue.download.reload.fileExists",
+                Preferences.instance().setProperty("queue.download.reload.action",
                                                    Preferences.instance().
-                                                               getProperty("queue.download.fileExists"));
+                                                               getProperty("queue.download.action"));
             }
         }
 
         private void View_DuplicateUploadActionChangedEvent()
         {
-            duplicateComboboxClicked(View.DuplicateUploadAction, "queue.upload.fileExists");
+            duplicateComboboxClicked(View.DuplicateUploadAction, "queue.upload.action");
             View_DuplicateUploadOverwriteChangedEvent();
         }
 
@@ -731,7 +731,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DuplicateDownloadActionChangedEvent()
         {
-            duplicateComboboxClicked(View.DuplicateDownloadAction, "queue.download.fileExists");
+            duplicateComboboxClicked(View.DuplicateDownloadAction, "queue.download.action");
             View_DuplicateDownloadOverwriteChangedEvent();
         }
 
@@ -944,17 +944,17 @@ namespace Ch.Cyberduck.Ui.Controller
                 Preferences.instance().getBoolean("queue.download.complete.open");
             View.DownloadFolder = Preferences.instance().getProperty("queue.download.folder");
             PopulateDuplicateActions();
-            View.DuplicateDownloadAction = GetDuplicateAction("queue.download.fileExists");
-            View.DuplicateUploadAction = GetDuplicateAction("queue.upload.fileExists");
+            View.DuplicateDownloadAction = GetDuplicateAction("queue.download.action");
+            View.DuplicateUploadAction = GetDuplicateAction("queue.upload.action");
             View.DuplicateDownloadOverwrite = Preferences.instance().getProperty(
-                "queue.download.reload.fileExists")
+                "queue.download.reload.action")
                                                          .
                                                           Equals(
                                                               TransferAction.overwrite.toString())
                                                   ? true
                                                   : false;
             View.DuplicateUploadOverwrite = Preferences.instance().getProperty(
-                "queue.upload.reload.fileExists")
+                "queue.upload.reload.action")
                                                        .
                                                         Equals(
                                                             TransferAction.overwrite.toString())

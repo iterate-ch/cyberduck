@@ -378,13 +378,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", TransferAction.callback.name());
-        defaults.put("queue.upload.fileExists", TransferAction.callback.name());
+        defaults.put("queue.download.action", TransferAction.callback.name());
+        defaults.put("queue.upload.action", TransferAction.callback.name());
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", TransferAction.callback.name());
-        defaults.put("queue.upload.reload.fileExists", TransferAction.callback.name());
+        defaults.put("queue.download.reload.action", TransferAction.callback.name());
+        defaults.put("queue.upload.reload.action", TransferAction.callback.name());
 
         defaults.put("queue.upload.permissions.change", String.valueOf(false));
         defaults.put("queue.upload.permissions.default", String.valueOf(false));

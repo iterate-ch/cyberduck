@@ -1495,12 +1495,12 @@ public class PreferencesController extends ToolbarWindowController {
             this.duplicateDownloadCombobox.lastItem().setEnabled(false);
         }
         this.duplicateDownloadCombobox.selectItemWithTitle(
-                TransferAction.forName(Preferences.instance().getProperty("queue.download.fileExists")).getTitle());
+                TransferAction.forName(Preferences.instance().getProperty("queue.download.action")).getTitle());
     }
 
     @Action
     public void duplicateDownloadComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("queue.download.fileExists",
+        Preferences.instance().setProperty("queue.download.action",
                 TransferAction.forName(sender.selectedItem().representedObject()).name());
         this.duplicateDownloadOverwriteButtonClicked(duplicateDownloadOverwriteButton);
     }
@@ -1513,7 +1513,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateDownloadOverwriteButton.setTarget(this.id());
         this.duplicateDownloadOverwriteButton.setAction(Foundation.selector("duplicateDownloadOverwriteButtonClicked:"));
         this.duplicateDownloadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.download.reload.fileExists").equals(
+                Preferences.instance().getProperty("queue.download.reload.action").equals(
                         TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
@@ -1521,11 +1521,11 @@ public class PreferencesController extends ToolbarWindowController {
     public void duplicateDownloadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.download.reload.fileExists", TransferAction.overwrite.name());
+            Preferences.instance().setProperty("queue.download.reload.action", TransferAction.overwrite.name());
         }
         else {
-            Preferences.instance().setProperty("queue.download.reload.fileExists",
-                    Preferences.instance().getProperty("queue.download.fileExists"));
+            Preferences.instance().setProperty("queue.download.reload.action",
+                    Preferences.instance().getProperty("queue.download.action"));
         }
     }
 
@@ -1554,12 +1554,12 @@ public class PreferencesController extends ToolbarWindowController {
             this.duplicateUploadCombobox.lastItem().setEnabled(false);
         }
         this.duplicateUploadCombobox.selectItemWithTitle(
-                TransferAction.forName(Preferences.instance().getProperty("queue.upload.fileExists")).getTitle());
+                TransferAction.forName(Preferences.instance().getProperty("queue.upload.action")).getTitle());
     }
 
     @Action
     public void duplicateUploadComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("queue.upload.fileExists",
+        Preferences.instance().setProperty("queue.upload.action",
                 TransferAction.forName(sender.selectedItem().representedObject()).name());
         this.duplicateUploadOverwriteButtonClicked(duplicateUploadOverwriteButton);
     }
@@ -1572,7 +1572,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateUploadOverwriteButton.setTarget(this.id());
         this.duplicateUploadOverwriteButton.setAction(Foundation.selector("duplicateUploadOverwriteButtonClicked:"));
         this.duplicateUploadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.upload.reload.fileExists").equals(
+                Preferences.instance().getProperty("queue.upload.reload.action").equals(
                         TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
@@ -1580,11 +1580,11 @@ public class PreferencesController extends ToolbarWindowController {
     public void duplicateUploadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.upload.reload.fileExists", TransferAction.overwrite.name());
+            Preferences.instance().setProperty("queue.upload.reload.action", TransferAction.overwrite.name());
         }
         else {
-            Preferences.instance().setProperty("queue.upload.reload.fileExists",
-                    Preferences.instance().getProperty("queue.upload.fileExists"));
+            Preferences.instance().setProperty("queue.upload.reload.action",
+                    Preferences.instance().getProperty("queue.upload.action"));
         }
     }
 

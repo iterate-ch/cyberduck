@@ -140,11 +140,11 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.resume;
         }
         else if(reloadRequested) {
-            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.reload.fileExists"));
+            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.reload.action"));
         }
         else {
             // Use default
-            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.fileExists"));
+            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
             final Find find = session.getFeature(Find.class);
