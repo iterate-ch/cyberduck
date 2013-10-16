@@ -182,6 +182,11 @@ public final class TransferStatus {
         this.local = local;
     }
 
+    public TransferStatus local(final Local local) {
+        this.local = local;
+        return this;
+    }
+
     public TransferStatus rename(final Path renamed) {
         this.renamed = renamed;
         return this;
