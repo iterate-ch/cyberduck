@@ -359,7 +359,6 @@ public abstract class Preferences {
         defaults.put("favorites.save", String.valueOf(true));
 
         defaults.put("queue.openByDefault", String.valueOf(false));
-        defaults.put("queue.save", String.valueOf(true));
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
         /**
          * The maximum number of concurrent transfers

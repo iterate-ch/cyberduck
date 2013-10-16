@@ -90,10 +90,8 @@ public final class TransferCollection extends Collection<Transfer> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save collection to %s", f));
         }
-        if(Preferences.instance().getBoolean("queue.save")) {
-            f.getParent().mkdir();
-            TransferWriterFactory.get().write(this, f);
-        }
+        f.getParent().mkdir();
+        TransferWriterFactory.get().write(this, f);
     }
 
     @Override
