@@ -117,6 +117,7 @@ namespace Ch.Cyberduck.Core.Aquaticprime
                 return value;
             }
             catch
+            {
                 return null;
             }
         }
