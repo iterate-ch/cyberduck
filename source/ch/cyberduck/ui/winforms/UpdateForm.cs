@@ -72,8 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             SetFeedUrl();
             if (!background)
             {
-                //TODO localize
-                UpdateStatusLabel("Looking for newer versions of Cyberduck.", false);
+                UpdateStatusLabel(LocaleFactory.localizedString("Checking for updates...", "Sparkle"), false);
                 tableLayoutPanel.RowStyles[7].SizeType = SizeType.AutoSize;
                 SetStatusChecking(true);
                 updater.ForceCheckForUpdate(true);
@@ -139,8 +138,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     }
 
                     laterButton.Visible = true;
-                    installButton.Text = LocaleFactory.localizedString("Install and Relaunch",
-                                                                "Sparkle");
+                    installButton.Text = LocaleFactory.localizedString("Install and Relaunch", "Sparkle");
                     if (Utils.IsVistaOrLater)
                     {
                         SetButtonShield(installButton, true);
