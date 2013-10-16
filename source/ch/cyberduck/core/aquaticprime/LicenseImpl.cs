@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,48 +17,50 @@
 // 
 
 using System;
-using Ch.Cyberduck.Core.Aquaticprime;
-using ch.cyberduck.core.local;
+using ch.cyberduck.core.aquaticprime;
 using org.apache.log4j;
 
-namespace ch.cyberduck.core.aquaticprime
+namespace Ch.Cyberduck.Core.Aquaticprime
 {
     internal class LicenseImpl : AbstractLicense
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LicenseImpl).FullName);
+        private readonly ch.cyberduck.core.Local _file;
 
-        public LicenseImpl(Local file) : base(file)
+        public LicenseImpl(ch.cyberduck.core.Local file)
+            : base(file)
         {
+            _file = file;
             ;
         }
 
         public override bool verify()
         {
-            bool valid = LicenseVerifier.Instance.VerifyLicenseData(getFile().getAbsolute());
+            bool valid = LicenseVerifier.Instance.VerifyLicenseData(_file.getAbsolute());
             if (valid)
             {
-                Log.info("Valid donation key:" + getFile().getAbsolute());
+                Log.info("Valid donation key:" + _file.getAbsolute());
             }
             else
             {
-                Log.warn("Not a valid donation key:" + getFile().getAbsolute());
+                Log.warn("Not a valid donation key:" + _file.getAbsolute());
             }
             return valid;
         }
 
         public override string getValue(string property)
         {
-            return LicenseVerifier.Instance.GetValue(getFile().getAbsolute(), property);
+            return LicenseVerifier.Instance.GetValue(_file.getAbsolute(), property);
         }
 
         public static void Register()
         {
-            LicenseFactory.addFactory(core.Factory.NATIVE_PLATFORM, new Factory());
+            LicenseFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         private class Factory : LicenseFactory
         {
-            protected override License open(Local l)
+            protected override License open(ch.cyberduck.core.Local l)
             {
                 return new LicenseImpl(l);
             }
