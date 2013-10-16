@@ -1413,13 +1413,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.bringQueueToFrontCheckbox = b;
         this.bringQueueToFrontCheckbox.setTarget(this.id());
         this.bringQueueToFrontCheckbox.setAction(Foundation.selector("bringQueueToFrontCheckboxClicked:"));
-        this.bringQueueToFrontCheckbox.setState(Preferences.instance().getBoolean("queue.orderFrontOnStart") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.bringQueueToFrontCheckbox.setState(Preferences.instance().getBoolean("queue.window.open.transfer.start") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void bringQueueToFrontCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.orderFrontOnStart", enabled);
+        Preferences.instance().setProperty("queue.window.open.transfer.start", enabled);
     }
 
     @Outlet
@@ -1429,13 +1429,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.bringQueueToBackCheckbox = b;
         this.bringQueueToBackCheckbox.setTarget(this.id());
         this.bringQueueToBackCheckbox.setAction(Foundation.selector("bringQueueToBackCheckboxClicked:"));
-        this.bringQueueToBackCheckbox.setState(Preferences.instance().getBoolean("queue.orderBackOnStop") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.bringQueueToBackCheckbox.setState(Preferences.instance().getBoolean("queue.window.open.transfer.stop") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void bringQueueToBackCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.orderBackOnStop", enabled);
+        Preferences.instance().setProperty("queue.window.open.transfer.stop", enabled);
     }
 
     @Outlet

@@ -880,7 +880,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("browser.openUntitled")) {
             MainController.newDocument();
         }
-        if(Preferences.instance().getBoolean("queue.openByDefault")) {
+        if(Preferences.instance().getBoolean("queue.window.open.default")) {
             this.showTransferQueueClicked(null);
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {

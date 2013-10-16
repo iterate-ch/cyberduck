@@ -145,7 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != _instance)
             {
                 //Saving state of transfer window
-                Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
+                Preferences.instance().setProperty("queue.window.open.default", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
                     DialogResult result = _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
@@ -649,7 +649,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void init()
             {
                 base.init();
-                if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
+                if (Preferences.instance().getBoolean("queue.window.open.transfer.start"))
                 {
                     _controller.View.Show();
                     _controller.View.BringToFront();
@@ -670,7 +670,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.cleanup();
                 if (_transfer.isComplete() && _transfer.isReset())
                 {
-                    if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
+                    if (Preferences.instance().getBoolean("queue.window.open.transfer.stop"))
                     {
                         if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
                         {

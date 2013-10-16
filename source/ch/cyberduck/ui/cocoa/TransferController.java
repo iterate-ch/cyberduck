@@ -696,7 +696,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void init() {
                 super.init();
-                if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
+                if(Preferences.instance().getBoolean("queue.window.open.transfer.start")) {
                     window.makeKeyAndOrderFront(null);
                 }
             }
@@ -713,7 +713,7 @@ public final class TransferController extends WindowController implements NSTool
             public void cleanup() {
                 super.cleanup();
                 if(transfer.isReset() && transfer.isComplete()) {
-                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                    if(Preferences.instance().getBoolean("queue.window.open.transfer.stop")) {
                         if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
                             window.close();
                         }

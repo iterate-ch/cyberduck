@@ -347,7 +347,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             UpdateController.Instance.CheckForUpdatesIfNecessary();
 
-            if (Preferences.instance().getBoolean("queue.openByDefault"))
+            if (Preferences.instance().getBoolean("queue.window.open.default"))
             {
                 TransferController.Instance.View.Show();
             }

@@ -754,12 +754,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TransfersToBackChangedEvent()
         {
-            Preferences.instance().setProperty("queue.orderBackOnStop", View.TransfersToBack);
+            Preferences.instance().setProperty("queue.window.open.transfer.stop", View.TransfersToBack);
         }
 
         private void View_TransfersToFrontChangedEvent()
         {
-            Preferences.instance().setProperty("queue.orderFrontOnStart", View.TransfersToFront);
+            Preferences.instance().setProperty("queue.window.open.transfer.start", View.TransfersToFront);
         }
 
         private void View_TransferModeChangedEvent()
@@ -936,8 +936,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.TransferMode = Preferences.instance().getInteger("connection.host.max") == 1
                                     ? UseBrowserSession
                                     : UseQueueSession;
-            View.TransfersToFront = Preferences.instance().getBoolean("queue.orderFrontOnStart");
-            View.TransfersToBack = Preferences.instance().getBoolean("queue.orderBackOnStop");
+            View.TransfersToFront = Preferences.instance().getBoolean("queue.window.open.transfer.start");
+            View.TransfersToBack = Preferences.instance().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers =
                 Preferences.instance().getBoolean("queue.removeItemWhenComplete");
             View.OpenAfterDownload =

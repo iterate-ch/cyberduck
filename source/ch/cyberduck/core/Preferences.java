@@ -358,7 +358,6 @@ public abstract class Preferences {
          */
         defaults.put("favorites.save", String.valueOf(true));
 
-        defaults.put("queue.openByDefault", String.valueOf(false));
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
         /**
          * The maximum number of concurrent transfers
@@ -372,8 +371,9 @@ public abstract class Preferences {
         /**
          * Bring transfer window to front
          */
-        defaults.put("queue.orderFrontOnStart", String.valueOf(true));
-        defaults.put("queue.orderBackOnStop", String.valueOf(false));
+        defaults.put("queue.window.open.default", String.valueOf(false));
+        defaults.put("queue.window.open.transfer.start", String.valueOf(true));
+        defaults.put("queue.window.open.transfer.stop", String.valueOf(false));
 
         /**
          * Action when duplicate file exists
