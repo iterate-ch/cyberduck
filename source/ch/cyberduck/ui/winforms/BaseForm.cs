@@ -277,26 +277,36 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public new DialogResult ShowDialog()
         {
-            return base.ShowDialog();
+            DialogResult result = base.ShowDialog();            
+            if (_releaseWhenClose)
+            {
+                base.Dispose();
+            }
+            return result;
         }
 
         public new DialogResult ShowDialog(IWin32Window owner)
         {
-            return base.ShowDialog(owner);
+            DialogResult result = base.ShowDialog(owner);
+            if (_releaseWhenClose)
+            {
+                base.Dispose();
+            }
+            return result;
         }
 
         public DialogResult ShowDialog(IView owner)
         {
             if (owner is Form)
             {
-                return base.ShowDialog(owner as Form);
+                DialogResult result = base.ShowDialog(owner as Form);
+                if (_releaseWhenClose)
+                {
+                    base.Dispose();                    
+                }
+                return result;
             }
             return ShowDialog();
-        }
-
-        public new void Dispose()
-        {
-            base.Dispose();
         }
 
         public DialogResult MessageBox(string title, string message, string content,

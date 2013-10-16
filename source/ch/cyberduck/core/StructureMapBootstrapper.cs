@@ -39,24 +39,20 @@ namespace Ch.Cyberduck.Core
                     x.For<IConnectionView>().Use<ConnectionForm>();
                     x.For<ITransferPromptView>().Use<TransferPromptForm>();
                     x.For<IErrorView>().Use<ErrorForm>();
-
-                    // Singletons
-                    x.For<INewFolderPromptView>().Singleton().Use<NewFolderPromptForm>();
-                    x.For<ICreateFilePromptView>().Singleton().Use<CreateFilePromptForm>();
-                    x.For<ICreateSymlinkPromptView>().Singleton().Use<CreateSymlinkPromptForm>();
-                    x.For<IGotoPromptView>().Singleton().Use<GotoPromptForm>();
-                    x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
-                    x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
-                    x.For<IDonationView>().Singleton().Use<DonationForm>();
-
-                    // might be a singleton
-                    x.For<IUpdateView>().Use<UpdateForm>();
-
-                    //x.For<ITransferView>().TheDefault.Is.Object(MockRepository.GenerateMock<ITransferView>()); 
-                    //x.For<IProgressView>().TheDefault.Is.Object(MockRepository.GenerateMock<IProgressView>()); 
-
+                    x.For<INewFolderPromptView>().Use<NewFolderPromptForm>();
+                    x.For<ICreateFilePromptView>().Use<CreateFilePromptForm>();
+                    x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
+                    x.For<IGotoPromptView>().Use<GotoPromptForm>();
+                    x.For<IDuplicateFilePromptView>().Use<DuplicateFilePromptForm>();
+                    x.For<IDonationView>().Use<DonationForm>();
                     x.For<ITransferView>().Use<TransferForm>();
                     x.For<IProgressView>().Use<TransferControl>();
+
+                    // Singletons
+                    x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
+                    
+                    // might be a singleton
+                    x.For<IUpdateView>().Use<UpdateForm>();
                 });
         }
 

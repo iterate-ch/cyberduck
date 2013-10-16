@@ -56,7 +56,6 @@ namespace Ch.Cyberduck.Ui.Controller
                             _filtered.add(bookmark);
                         }
                     }
-                    //todo hmm, wo wird dieser entfernt?
                     _filtered.addListener(new FilterBookmarkListener(_source));
                 }
                 return _filtered;
@@ -64,10 +63,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
             set
             {
-                _source.removeListener(_listener); //remove previous listener
+                if (null != value)
+                {
+                    _source.removeListener(_listener); //remove previous listener
+                    _source.addListener(_listener = new BookmarkListener(_controller));
+                }
+                else
+                {
+                    _source.removeListener(_listener); //remove previous listener
+                }
                 _source = value;
-                //todo listener muss beim schliessen von browserform auch entfernt werden
-                _source.addListener(_listener = new BookmarkListener(_controller));
                 Filter = null;
             }
         }

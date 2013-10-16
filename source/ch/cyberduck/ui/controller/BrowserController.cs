@@ -102,6 +102,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             _browserModel = new TreeBrowserModel(this, _cache);
             _bookmarkModel = new BookmarkModel(this, BookmarkCollection.defaultCollection());
+            View.ViewClosedEvent += delegate { _bookmarkModel.Source = null; };
 
             //default view is the bookmark view
             ToggleView(BrowserView.Bookmark);
@@ -112,7 +113,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.QuickConnect += View_QuickConnect;
             View.BrowserDoubleClicked += View_BrowserDoubleClicked;
-            View.ViewShownEvent += ViewViewShownEvent;
             View.BrowserSelectionChanged += View_BrowserSelectionChanged;
             View.PathSelectionChanged += View_PathSelectionChanged;
             View.EditEvent += View_EditEvent;
@@ -284,6 +284,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #endregion
 
             _bookmarkCollection.addListener(this);
+            View.ViewClosedEvent += delegate { _bookmarkCollection.removeListener(this); };
 
             PopulateQuickConnect();
             PopulateEncodings();
@@ -308,11 +309,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     //eagerly initialize the TransferController singleton
                     TransferController tc = TransferController.Instance;
                 };
-            BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
-            //todo eigene ListenerKlasse muss her
-            //hostCollection.addListener(this);
-            View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
-            View.SetBookmarkModel(bookmarkCollection, null);
+            View.SetBookmarkModel(_bookmarkCollection, null);
         }
 
         public BrowserController()
@@ -945,7 +942,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 foreach (Path sourcePath in args.SourceModels)
                 {
-                    //TODO mit dko verifizieren, vorher 'destination.getSession().equals(sourcePath.getSession())'
                     if (args.ListView == args.SourceListView)
                     {
                         // Use drag action from user
@@ -1285,13 +1281,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public override bool ViewShouldClose()
         {
             return Unmount();
-        }
-
-        protected override void Invalidate()
-        {
-            //TODO make sure that all listeners are removed
-            _bookmarkCollection.removeListener(this);
-            base.Invalidate();
         }
 
         private void View_OpenUrl()
@@ -2193,11 +2182,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void ViewViewShownEvent()
-        {
-            UpdateNavigationPaths();
-        }
-
         private void View_FolderUp()
         {
             Path previous = Workdir;
@@ -2478,44 +2462,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.HistoryBackEnabled = enabled && _navigation.getBack().size() > 1;
             View.HistoryForwardEnabled = enabled && _navigation.getForward().size() > 0;
             View.ParentPathEnabled = enabled && !Workdir.isRoot();
-        }
-
-        //TODO remove?
-        private void BrowserSwitch(List<Path> selected)
-        {
-            // Remove any custom file filter
-            SetPathFilter(null);
-
-            UpdateNavigationPaths();
-
-            // Mark the browser data source as dirty
-            ReloadData(selected);
-
-            // Change to the browser view
-            ToggleView(BrowserView.File);
-
-            View.FocusBrowser();
-        }
-
-        //TODO remove?
-        private void UpdateNavigationPaths()
-        {
-            List<string> paths = new List<string>();
-            if (!IsMounted())
-            {
-                View.PopulatePaths(new List<string>());
-            }
-            else
-            {
-                Path p = Workdir;
-                while (!p.getParent().equals(p))
-                {
-                    paths.Add(p.getAbsolute());
-                    p = p.getParent();
-                }
-                paths.Add(p.getAbsolute());
-                View.PopulatePaths(paths);
-            }
         }
 
         public void RefreshObject(Path path, bool preserveSelection)
@@ -3300,7 +3246,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.RefreshBookmark(_session.getHost());
                         if (_controller.IsMounted())
                         {
-                            _controller.ToggleView(BrowserView.File); //TODO ist neu noch anders -> selectBrowser
+                            _controller.ToggleView(BrowserView.File);
                             _controller.View.WindowTitle = _host.getNickname();
                             _controller.View.SecureConnection = _session is SSLSession;
                             _controller.View.CertBasedConnection = _session is SSLSession;

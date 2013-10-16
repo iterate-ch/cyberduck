@@ -65,6 +65,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
+        public override bool Singleton
+        {
+            get { return true; }
+        }
+
         public Host ConfiguredHost
         {
             get
@@ -122,8 +127,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 Controllers.Add(parent, c);
                 parent.View.ViewClosedEvent += delegate
                     {
-                        Controllers.Remove(parent);
-                        //todo c muss wohl auch noch abgeräumt werden
+                        Controllers.Remove(parent);                        
+                        c.View.Close();
                     };
             }
             return c;
