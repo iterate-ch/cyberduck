@@ -52,7 +52,9 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, files);
-        assertFalse(f.accept(source, new TransferStatus().exists(true)));
+        assertTrue(f.accept(source, new TransferStatus().exists(true)));
+        final TransferStatus status = f.prepare(source, new TransferStatus().exists(true));
+        assertTrue(status.isExists());
     }
 
     @Test

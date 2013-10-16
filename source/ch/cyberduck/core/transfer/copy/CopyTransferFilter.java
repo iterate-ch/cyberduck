@@ -45,6 +45,8 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     private Session<?> session;
 
+    private Find find;
+
     private final Map<Path, Path> files;
 
     private UploadFilterOptions options;
@@ -57,19 +59,11 @@ public class CopyTransferFilter implements TransferPathFilter {
         this.session = session;
         this.files = files;
         this.options = options;
+        this.find = session.getFeature(Find.class);
     }
 
     @Override
     public boolean accept(final Path source, final TransferStatus parent) throws BackgroundException {
-        if(source.attributes().isDirectory()) {
-            if(parent.isExists()) {
-                final Path destination = files.get(source);
-                // Do not attempt to create a directory that already exists
-                if(session.getFeature(Find.class).find(destination)) {
-                    return false;
-                }
-            }
-        }
         return true;
     }
 
@@ -78,6 +72,13 @@ public class CopyTransferFilter implements TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
             status.setLength(source.attributes().getSize());
+        }
+        if(parent.isExists()) {
+            // Do not attempt to create a directory that already exists
+            final Path destination = files.get(source);
+            if(find.find(destination)) {
+                status.setExists(true);
+            }
         }
         return status;
     }
