@@ -41,17 +41,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override TransferPrompt create(ch.cyberduck.ui.Controller controller, Transfer transfer, Session session)
         {
-            //TODO könnte bumm machen...vorher:
-            // create the controller in the thread that has created the view of the TransferController (parent)
-//            TransferPromptController promptController = null;
-
-//            if (transfer is DownloadTransfer)
-//          {
-//                parent.Invoke(delegate { promptController = new DownloadPromptController(parent, transfer); }, true);
-//                return promptController;
-//          }
-
-
             if (transfer.getType() == Transfer.Type.download)
             {
                 return new DownloadPromptController((WindowController) controller, transfer, session);
