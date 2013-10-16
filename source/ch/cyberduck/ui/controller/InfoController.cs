@@ -2169,10 +2169,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             credentials);
                         }
                     }
-                    DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
+                    DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
                     if (!origin.equals(DescriptiveUrl.EMPTY))
                     {
-                        _view.DistributionOrigin = origin;
+                        _view.DistributionOrigin = origin.getUrl();
                     }
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
