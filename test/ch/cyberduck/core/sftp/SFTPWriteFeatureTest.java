@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -79,7 +80,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final Path target = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SFTPTouchFeature(session).touch(target);
         assertTrue(new SFTPFindFeature(session).find(target));
-        final Path symlink = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final String name = UUID.randomUUID().toString();
+        final Path symlink = new Path(session.workdir(), name, Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
         assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
@@ -103,8 +105,9 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             IOUtils.closeQuietly(in);
             assertArrayEquals(new byte[0], buffer);
         }
-        assertFalse(new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener()).get(
-                symlink.getReference()).attributes().isSymbolicLink());
+        final AttributedList<Path> list = new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener());
+        assertTrue(list.contains(new Path(session.workdir(), name, Path.FILE_TYPE)));
+        assertFalse(list.contains(symlink));
         new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginController());
     }
 
