@@ -57,7 +57,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                 return this.createUnixFTPEntryParser(timezone);
             }
             else if(ukey.contains(FTPClientConfig.SYST_VMS)) {
-                throw new ParserInitializationException("\"" + system + "\" is not currently a supported system.");
+                throw new ParserInitializationException(String.format("\"%s\" is not currently a supported system.", system));
             }
             else if(ukey.contains(FTPClientConfig.SYST_NETWARE)) {
                 return this.createNetwareFTPEntryParser(timezone);
