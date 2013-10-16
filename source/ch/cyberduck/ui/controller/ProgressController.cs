@@ -147,28 +147,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 };
             invoke(new SimpleDefaultMainAction(this, d));
-            //UpdateOverallProgress();
+            UpdateOverallProgress();
         }
 
-/*         TODO wie zu implementieren?
         private void UpdateOverallProgress()
         {
             if (Utils.IsVistaOrLater)
             {
-                if (TransferCollection.defaultCollection().numberOfRunningTransfers() +
-                    TransferCollection.defaultCollection().numberOfQueuedTransfers() == 0)
-                {
-                    TransferController.Instance.View.UpdateOverallProgressState(0, 0);
-                }
-                else
-                {
-                    double progress = TransferCollection.defaultCollection().getDataTransferred();
-                    double maximum = TransferCollection.defaultCollection().getDataSize();
-                    TransferController.Instance.View.UpdateOverallProgressState(progress, maximum);
-                }
+                TransferProgress progress = TransferCollection.defaultCollection().getProgress();
+                TransferController.Instance.View.UpdateOverallProgressState(progress.getTransferred(), progress.getSize());
             }
         }
-   */
 
         private void Init()
         {

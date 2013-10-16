@@ -19,9 +19,14 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.formatter.SizeFormatter;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferProgress;
 
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -34,6 +39,11 @@ public final class TransferCollection extends Collection<Transfer> {
     private static final long serialVersionUID = -6879481152545265228L;
 
     private Local file;
+
+    /**
+     * Formatter for file size
+     */
+    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     protected TransferCollection(Local file) {
         this.file = file;
@@ -111,17 +121,32 @@ public final class TransferCollection extends Collection<Transfer> {
      * @return Number of transfers in collection that are running
      * @see ch.cyberduck.core.transfer.Transfer#isRunning()
      */
-    public int numberOfRunningTransfers() {
+    public synchronized int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
         for(Transfer t : this) {
-            if(null == t) {
-                continue;
-            }
             if(t.isRunning()) {
                 running++;
             }
         }
         return running;
+    }
+
+    public synchronized TransferProgress getProgress() {
+        long size = 0;
+        for(Transfer t : this) {
+            if(t.isRunning()) {
+                size += t.getSize();
+            }
+        }
+        long transferred = 0;
+        for(Transfer t : this) {
+            if(t.isRunning()) {
+                transferred += t.getTransferred();
+            }
+        }
+        return new TransferProgress(size, transferred, MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
+                sizeFormatter.format(transferred),
+                sizeFormatter.format(size)), -1d);
     }
 }
