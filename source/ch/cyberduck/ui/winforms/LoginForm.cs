@@ -35,7 +35,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                  "Credentials");
             labelMessageLink.Font = DefaultFontBold;
 
-            //todo localization
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 

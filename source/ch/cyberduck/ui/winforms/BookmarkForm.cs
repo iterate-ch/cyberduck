@@ -45,7 +45,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
 
-            //todo localization
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 
