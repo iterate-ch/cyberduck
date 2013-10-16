@@ -27,7 +27,7 @@ import java.io.IOException;
 import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVDirectoryFeature implements Directory {
 
@@ -35,6 +35,11 @@ public class DAVDirectoryFeature implements Directory {
 
     public DAVDirectoryFeature(final DAVSession session) {
         this.session = session;
+    }
+
+    @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null);
     }
 
     @Override

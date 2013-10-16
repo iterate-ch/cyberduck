@@ -37,6 +37,11 @@ public class SFTPDirectoryFeature implements Directory {
     }
 
     @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null);
+    }
+
+    @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             session.sftp().mkdir(file.getAbsolute(),

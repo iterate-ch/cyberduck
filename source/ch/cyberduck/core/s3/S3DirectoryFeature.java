@@ -41,6 +41,11 @@ public class S3DirectoryFeature implements Directory {
     }
 
     @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null);
+    }
+
+    @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {

@@ -213,7 +213,7 @@ public class CopyTransfer extends Transfer {
             if(!status.isExists()) {
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
-                destination.getFeature(Directory.class).mkdir(copy, null);
+                destination.getFeature(Directory.class).mkdir(copy);
             }
         }
     }

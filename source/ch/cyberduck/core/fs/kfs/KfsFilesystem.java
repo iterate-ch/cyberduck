@@ -440,7 +440,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         log.debug("kfsmkdir_f:" + path);
                         final Path directory = new Path(path, Path.DIRECTORY_TYPE);
                         final Directory feature = session.getFeature(Directory.class);
-                        feature.mkdir(directory, null);
+                        feature.mkdir(directory);
                         return true;
                     }
                 });

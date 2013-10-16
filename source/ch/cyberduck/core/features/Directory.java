@@ -21,9 +21,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Directory {
+
+    void mkdir(Path file) throws BackgroundException;
 
     /**
      * @param file   File

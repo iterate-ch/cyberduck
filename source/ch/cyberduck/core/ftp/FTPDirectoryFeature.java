@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.Directory;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPDirectoryFeature implements Directory {
 
@@ -32,6 +32,11 @@ public class FTPDirectoryFeature implements Directory {
 
     public FTPDirectoryFeature(final FTPSession session) {
         this.session = session;
+    }
+
+    @Override
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null);
     }
 
     @Override

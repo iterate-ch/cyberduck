@@ -109,7 +109,7 @@ public class FolderController extends FileController {
                     feature.mkdir(folder, regionPopup.selectedItem().representedObject());
                 }
                 else {
-                    feature.mkdir(folder, null);
+                    feature.mkdir(folder);
                 }
                 return folder;
             }
