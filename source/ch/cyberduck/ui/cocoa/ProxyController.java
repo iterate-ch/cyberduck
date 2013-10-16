@@ -54,11 +54,11 @@ public class ProxyController extends AbstractController {
         return proxy;
     }
 
-    public org.rococoa.ID id() {
+    public ID id() {
         return this.id(NSObject.class);
     }
 
-    protected org.rococoa.ID id(Class<? extends NSObject> type) {
+    protected ID id(Class<? extends NSObject> type) {
         if(null == id) {
             id = this.proxy(type).id();
         }
