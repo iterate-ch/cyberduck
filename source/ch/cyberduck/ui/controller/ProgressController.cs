@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -155,7 +156,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsVistaOrLater)
             {
                 TransferProgress progress = TransferCollection.defaultCollection().getProgress();
-                TransferController.Instance.View.UpdateOverallProgressState(progress.getTransferred(), progress.getSize());
+                TransferController.Instance.View.UpdateOverallProgressState(progress.getTransferred().longValue(),
+                                                                            progress.getSize().longValue());
             }
         }
 

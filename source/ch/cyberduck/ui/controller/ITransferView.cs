@@ -63,6 +63,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
         void TaskbarOverlayIcon(Icon icon, string text);
-        void UpdateOverallProgressState(double progress, double maximum);
+        void UpdateOverallProgressState(long progress, long maximum);
     }
 }

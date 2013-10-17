@@ -310,7 +310,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.SetTaskbarOverlayIcon(icon, text);
         }
 
-        public void UpdateOverallProgressState(double progress, double maximum)
+        public void UpdateOverallProgressState(long progress, long maximum)
         {
             if (Utils.IsWin7OrLater)
             {
