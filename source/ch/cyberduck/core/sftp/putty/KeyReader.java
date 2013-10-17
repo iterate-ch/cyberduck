@@ -1,4 +1,4 @@
-package org.kohsuke.putty;
+package ch.cyberduck.core.sftp.putty;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;

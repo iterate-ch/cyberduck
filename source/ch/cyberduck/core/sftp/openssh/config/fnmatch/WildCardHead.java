@@ -35,7 +35,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.fnmatch;
+package ch.cyberduck.core.sftp.openssh.config.fnmatch;
 
 final class WildCardHead extends AbstractHead {
 	WildCardHead(boolean star) {

@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.sftp.OpenSSHCredentialsConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 
 /**
  * @version $Id$

@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.kohsuke.putty.PuTTYKey;
+import ch.cyberduck.core.sftp.putty.PuTTYKey;
 
 import java.io.CharArrayWriter;
 import java.io.FileReader;

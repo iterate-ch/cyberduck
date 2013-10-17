@@ -2485,6 +2485,9 @@ source/ch/cyberduck/core/serializer/impl/PlistSerializer.cs -text
 source/ch/cyberduck/core/serializer/impl/PlistWriter.cs -text
 source/ch/cyberduck/core/serializer/impl/ProfilePlistReader.cs -text
 source/ch/cyberduck/core/serializer/impl/TransferPlistReader.cs -text
+source/ch/cyberduck/core/sftp/putty/DEREncoder.java -text
+source/ch/cyberduck/core/sftp/putty/KeyReader.java -text
+source/ch/cyberduck/core/sftp/putty/PuTTYKey.java -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509KeyManager.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
@@ -2698,9 +2701,6 @@ source/net/oofn/CTGradient.h -text
 source/net/oofn/CTGradient.m -text
 source/net/oofn/CTGradientView.h -text
 source/net/oofn/CTGradientView.m -text
-source/org/kohsuke/putty/DEREncoder.java -text
-source/org/kohsuke/putty/KeyReader.java -text
-source/org/kohsuke/putty/PuTTYKey.java -text
 sr.lproj/Alert.strings -text svneol=unset#text/utf-16
 sr.lproj/Archive.strings -text svneol=unset#text/utf-16
 sr.lproj/Azure.strings -text svneol=unset#text/utf-16
@@ -2815,6 +2815,7 @@ test/ch/cyberduck/core/local/LocalImplTest.cs -text svneol=unset#application/oct
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text
 test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
 test/ch/cyberduck/core/sftp/openssh/config -text
+test/ch/cyberduck/core/sftp/putty/PuTTYKeyTest.java -text
 test/ch/cyberduck/core/ssl/HostnameVerifierTest.cs -text
 test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer -text
 test/ch/cyberduck/core/transfer/TransferCollectionCopyFormat.plist -text
@@ -2823,7 +2824,6 @@ test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatInvalid.plist -text
 test/ch/cyberduck/core/transfer/TransferCollectionEmpty.plist -text
 test/ch/cyberduck/ui/controller/KeychainTest.cs -text
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
-test/org/kohsuke/putty/PuTTYKeyTest.java -text
 th.lproj/Alert.strings -text svneol=unset#text/utf-16
 th.lproj/Archive.strings -text svneol=unset#text/utf-16
 th.lproj/Azure.strings -text svneol=unset#text/utf-16

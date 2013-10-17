@@ -1,4 +1,4 @@
-package org.kohsuke.putty;
+package ch.cyberduck.core.sftp.putty;
 
 import ch.ethz.ssh2.crypto.Base64;
 

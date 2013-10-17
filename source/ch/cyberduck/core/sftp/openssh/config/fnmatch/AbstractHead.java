@@ -35,31 +35,42 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.errors;
+package ch.cyberduck.core.sftp.openssh.config.fnmatch;
 
-/**
- * Thrown when a pattern contains a character group which is open to the right
- * side or a character class which is open to the right side.
- */
-public class NoClosingBracketException extends InvalidPatternException {
-    private static final long serialVersionUID = 2130098378147938384L;
+import java.util.List;
 
-    /**
-     * @param indexOfOpeningBracket the position of the [ character which has no ] character.
-     * @param openingBracket        the unclosed bracket.
-     * @param closingBracket        the missing closing bracket.
-     * @param pattern               the invalid pattern.
-     */
-    public NoClosingBracketException(final int indexOfOpeningBracket,
-                                     final String openingBracket, final String closingBracket,
-                                     final String pattern) {
-        super(createMessage(indexOfOpeningBracket, openingBracket,
-                closingBracket), pattern);
+abstract class AbstractHead implements Head {
+    private List<Head> newHeads = null;
+
+    private final boolean star;
+
+    protected abstract boolean matches(char c);
+
+    AbstractHead(boolean star) {
+        this.star = star;
     }
 
-    private static String createMessage(final int indexOfOpeningBracket,
-                                        final String openingBracket, final String closingBracket) {
-        return String.format("No closing %s found for %s at index %s.",
-                closingBracket, openingBracket, indexOfOpeningBracket);
+    /**
+     * @param newHeads a list of {@link Head}s which will not be modified.
+     */
+    public final void setNewHeads(List<Head> newHeads) {
+        if(this.newHeads != null) {
+            throw new IllegalStateException("Property is already non null");
+        }
+        this.newHeads = newHeads;
+    }
+
+    @Override
+    public List<Head> getNextHeads(char c) {
+        if(matches(c)) {
+            return newHeads;
+        }
+        else {
+            return FileNameMatcher.EMPTY_HEAD_LIST;
+        }
+    }
+
+    boolean isStar() {
+        return star;
     }
 }

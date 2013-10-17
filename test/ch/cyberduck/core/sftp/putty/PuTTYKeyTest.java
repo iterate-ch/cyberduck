@@ -1,4 +1,6 @@
-package org.kohsuke.putty;
+package ch.cyberduck.core.sftp.putty;
+
+import ch.cyberduck.core.sftp.putty.PuTTYKey;
 
 import org.junit.Test;
 

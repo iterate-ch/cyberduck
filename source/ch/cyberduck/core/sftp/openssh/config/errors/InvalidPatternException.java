@@ -35,18 +35,29 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.fnmatch;
+package ch.cyberduck.core.sftp.openssh.config.errors;
 
-final class RestrictedWildCardHead extends AbstractHead {
-	private final char excludedCharacter;
+/**
+ * Thrown when a pattern passed in an argument was wrong.
+ */
+public class InvalidPatternException extends Exception {
+    private static final long serialVersionUID = -5885204905360199860L;
 
-	RestrictedWildCardHead(final char excludedCharacter, final boolean star) {
-		super(star);
-		this.excludedCharacter = excludedCharacter;
-	}
+    private final String pattern;
 
-	@Override
-	protected final boolean matches(final char c) {
-		return c != excludedCharacter;
-	}
+    /**
+     * @param message explains what was wrong with the pattern.
+     * @param pattern the invalid pattern.
+     */
+    public InvalidPatternException(String message, String pattern) {
+        super(message);
+        this.pattern = pattern;
+    }
+
+    /**
+     * @return the invalid pattern.
+     */
+    public String getPattern() {
+        return pattern;
+    }
 }

@@ -1,4 +1,4 @@
-package org.kohsuke.putty;
+package ch.cyberduck.core.sftp.putty;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -155,8 +155,6 @@
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/core/**/*.class"/>
                 <include name="org/w3c/**/*.class"/>
-                <include name="org/kohsuke/putty/**/*.class"/>
-                <include name="org/spearce/jgit/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="mime.types"/>

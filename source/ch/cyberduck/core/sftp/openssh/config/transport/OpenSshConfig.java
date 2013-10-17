@@ -35,11 +35,11 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.transport;
+package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import org.apache.log4j.Logger;
-import org.spearce.jgit.errors.InvalidPatternException;
-import org.spearce.jgit.fnmatch.FileNameMatcher;
+import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
+import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
 import java.io.BufferedReader;
 import java.io.File;

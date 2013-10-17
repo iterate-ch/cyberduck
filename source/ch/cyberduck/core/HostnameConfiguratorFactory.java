@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.sftp.OpenSSHHostnameConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 /**
  * @version $Id$

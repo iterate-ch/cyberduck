@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sftp;
+package ch.cyberduck.core.sftp.openssh;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -24,11 +24,11 @@ import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
-import org.spearce.jgit.transport.OpenSshConfig;
+import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import java.io.File;
 

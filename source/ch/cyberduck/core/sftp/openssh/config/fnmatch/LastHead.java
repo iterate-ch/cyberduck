@@ -35,42 +35,23 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.fnmatch;
+package ch.cyberduck.core.sftp.openssh.config.fnmatch;
 
 import java.util.List;
 
-abstract class AbstractHead implements Head {
-    private List<Head> newHeads = null;
-
-    private final boolean star;
-
-    protected abstract boolean matches(char c);
-
-    AbstractHead(boolean star) {
-        this.star = star;
-    }
+final class LastHead implements Head {
+    static final Head INSTANCE = new LastHead();
 
     /**
-     * @param newHeads a list of {@link Head}s which will not be modified.
+     * Don't call this constructor, use {@link #INSTANCE}
      */
-    public final void setNewHeads(List<Head> newHeads) {
-        if(this.newHeads != null) {
-            throw new IllegalStateException("Property is already non null");
-        }
-        this.newHeads = newHeads;
+    private LastHead() {
+        // defined because of javadoc and visibility modifier.
     }
 
     @Override
     public List<Head> getNextHeads(char c) {
-        if(matches(c)) {
-            return newHeads;
-        }
-        else {
-            return FileNameMatcher.EMPTY_HEAD_LIST;
-        }
+        return FileNameMatcher.EMPTY_HEAD_LIST;
     }
 
-    boolean isStar() {
-        return star;
-    }
 }

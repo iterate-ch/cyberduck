@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 import org.apache.log4j.Logger;
 

@@ -35,10 +35,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.fnmatch;
+package ch.cyberduck.core.sftp.openssh.config.fnmatch;
 
-import org.spearce.jgit.errors.InvalidPatternException;
-import org.spearce.jgit.errors.NoClosingBracketException;
+import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
+import ch.cyberduck.core.sftp.openssh.config.errors.NoClosingBracketException;
 
 import java.util.ArrayList;
 import java.util.Collections;

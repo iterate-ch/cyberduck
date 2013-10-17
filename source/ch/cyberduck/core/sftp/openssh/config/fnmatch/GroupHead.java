@@ -35,9 +35,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.spearce.jgit.fnmatch;
+package ch.cyberduck.core.sftp.openssh.config.fnmatch;
 
-import org.spearce.jgit.errors.InvalidPatternException;
+import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 
 import java.util.ArrayList;
 import java.util.List;
