@@ -11,7 +11,7 @@
     <key>Name</key>
    	<string>Cloud Files</string>
 	<key>Description</key>
-	<string>Rackspace Cloud Files</string>
+	<string>Rackspace Cloud Files (US)</string>
 	<key>Default Hostname</key>
 	<string>identity.api.rackspacecloud.com</string>
 	<key>Default Port</key>
