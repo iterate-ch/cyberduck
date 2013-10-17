@@ -53,7 +53,6 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             assertEquals("DFW", p.attributes().getRegion());
