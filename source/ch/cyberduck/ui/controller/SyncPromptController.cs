@@ -24,21 +24,15 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptController : TransferPromptController
     {
-        public SyncPromptController(WindowController parent, Transfer transfer, Session session) : base(parent, transfer, session)
+        public SyncPromptController(WindowController parent, Transfer transfer, Session session)
+            : base(parent, transfer, session)
         {
-            ;
+            TransferPromptModel = new SyncPromptModel(this, Session, Transfer);
         }
 
         protected override string TransferName
         {
             get { return "Synchronize"; }
-        }
-
-        public override TransferAction prompt()
-        {
-            TransferPromptModel = new SyncPromptModel(this, Session, Transfer);
-            Action = TransferAction.overwrite;
-            return base.prompt();
         }
 
         protected override IDictionary<TransferAction, string> GetTransferActions()

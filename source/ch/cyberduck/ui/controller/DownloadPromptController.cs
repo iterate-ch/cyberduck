@@ -26,18 +26,12 @@ namespace Ch.Cyberduck.Ui.Controller
         public DownloadPromptController(WindowController parent, Transfer transfer, Session session)
             : base(parent, transfer, session)
         {
-            ;
+            TransferPromptModel = new DownloadPromptModel(this, Session, Transfer);
         }
 
         protected override string TransferName
         {
             get { return "Download"; }
-        }
-
-        public override TransferAction prompt()
-        {
-            TransferPromptModel = new DownloadPromptModel(this, Session, Transfer);
-            return base.prompt();
         }
     }
 }

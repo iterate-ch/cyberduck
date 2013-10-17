@@ -56,12 +56,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected abstract string TransferName { get; }
 
-        public void message(string msg)
+        public override void message(string msg)
         {
             Invoke(delegate { View.StatusLabel = msg; });
         }
 
-        public void log(bool request, string message)
+        public override void log(bool request, string message)
         {
             //
         }

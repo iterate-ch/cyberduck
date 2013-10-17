@@ -133,9 +133,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         View.ProgressIndeterminate = true;
                     }
+                    UpdateOverallProgress();
                 };
             invoke(new SimpleDefaultMainAction(this, d));
-            UpdateOverallProgress();
         }
 
         private void UpdateOverallProgress()
