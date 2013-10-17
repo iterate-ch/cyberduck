@@ -96,9 +96,12 @@ namespace Ch.Cyberduck.Ui.Controller
             DateTime modificationDate = (DateTime) value;
             if (modificationDate != DateTime.MinValue)
             {
-                return UserDateFormatterFactory.get()
-                                               .getShortFormat(modificationDate.Ticks/TimeSpan.TicksPerMillisecond,
-                                                               Preferences.instance().getBoolean("browser.date.natural"));
+                return
+                    UserDateFormatterFactory.get()
+                                            .getShortFormat(
+                                                UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(
+                                                    modificationDate),
+                                                Preferences.instance().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }
@@ -175,16 +178,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
 
                 public InnerListWorker(BrowserController controller, Path directory, Cache cache)
-                    : base(
-                        controller.Session, cache, directory,
-                        new DialogLimitedListProgressListener(controller))
+                    : base(controller.Session, cache, directory, new DialogLimitedListProgressListener(controller))
                 {
                     _controller = controller;
                 }
 
                 public override void cleanup(object result)
                 {
-                    if(_controller.getActions().isEmpty()) {
+                    if (_controller.getActions().isEmpty())
+                    {
                         _controller.ReloadData(true);
                     }
                 }

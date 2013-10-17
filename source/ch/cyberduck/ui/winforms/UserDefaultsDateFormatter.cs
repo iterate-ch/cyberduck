@@ -22,7 +22,7 @@ using ch.cyberduck.core.date;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal class UserDefaultsDateFormatter : AbstractUserDateFormatter
+    public class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
         public override string getLongFormat(long millis, bool natural)
         {
@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 return LocaleFactory.localizedString("Unknown");
             }
-            return GetLongFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));
+            return GetLongFormat(ConvertJavaMillisecondsToDateTime(millis));
         }
 
         /// <summary>
@@ -45,12 +45,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                 return LocaleFactory.localizedString("Unknown");
             }
 
-            return GetShortFormat(new DateTime(millis*TimeSpan.TicksPerMillisecond));
+            return GetShortFormat(ConvertJavaMillisecondsToDateTime(millis));
         }
 
-        public override string getMediumFormat(long milliseconds, bool natural)
+        public override string getMediumFormat(long millis, bool natural)
         {
-            return getLongFormat(milliseconds, natural);
+            return getLongFormat(millis, natural);
         }
 
         public static string GetShortFormat(DateTime d)
@@ -71,16 +71,20 @@ namespace Ch.Cyberduck.Ui.Winforms
         public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*
-                                                       TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*TimeSpan.TicksPerMillisecond)).ToLocalTime();
             return dt;
+        }
+
+        public static long ConvertDateTimeToJavaMilliseconds(DateTime dateTime)
+        {
+            TimeSpan timeSpan = dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            return timeSpan.Ticks/TimeSpan.TicksPerMillisecond;
         }
 
         public static long ConvertJavaMillisecondsToDotNetMillis(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*
-                                                       TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*TimeSpan.TicksPerMillisecond)).ToLocalTime();
             return dt.Ticks/TimeSpan.TicksPerMillisecond;
         }
 

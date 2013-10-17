@@ -22,7 +22,6 @@ using System.Globalization;
 using System.Text;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
@@ -53,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Init();
         }
 
-        public void message(string message)
+        public override void message(string message)
         {
             _messageText = message;
             StringBuilder b = new StringBuilder();
@@ -63,11 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Date timestamp = _transfer.getTimestamp();
                 if (null != timestamp)
                 {
-                    _messageText =
-                        UserDateFormatterFactory.get()
-                                                .getLongFormat(
-                                                    UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                        timestamp.getTime()), false);
+                    _messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
                 }
             }
             if (null != _messageText)
@@ -100,20 +95,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                            _sizeFormatter.format(_transfer.getTransferred()),
                                            _sizeFormatter.format(_transfer.getSize())));
                     View.StatusText =
-                        LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
-                                                                                        ? String.Format("{0} complete",
-                                                                                                        CultureInfo
-                                                                                                            .CurrentCulture
-                                                                                                            .TextInfo
-                                                                                                            .ToTitleCase
-                                                                                                            (
-                                                                                                                _transfer
-                                                                                                                    .getType
-                                                                                                                    ()
-                                                                                                                    .name
-                                                                                                                    ()))
-                                                                                        : "Transfer incomplete",
-                                                                                    "Status"), "Status");
+                        LocaleFactory.localizedString(
+                            LocaleFactory.localizedString(
+                                _transfer.isComplete()
+                                    ? String.Format("{0} complete",
+                                                    CultureInfo.CurrentCulture.TextInfo.ToTitleCase(
+                                                        _transfer.getType().name()))
+                                    : "Transfer incomplete", "Status"), "Status");
                     View.TransferStatus = t.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
                 };
             invoke(new SimpleDefaultMainAction(this, d));
@@ -133,8 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (size > int.MaxValue)
                         {
                             View.ProgressMaximum = int.MaxValue;
-                            View.ProgressValue =
-                                Convert.ToInt32(int.MaxValue*transferred/size);
+                            View.ProgressValue = Convert.ToInt32(int.MaxValue*transferred/size);
                         }
                         else
                         {
@@ -171,18 +158,13 @@ namespace Ch.Cyberduck.Ui.Controller
             SetMessageText();
             SetRootPaths();
             SetTransferStatus();
-            View.StatusText = LocaleFactory.localizedString(LocaleFactory.localizedString(_transfer.isComplete()
-                                                                                              ? String.Format(
-                                                                                                  "{0} complete",
-                                                                                                  CultureInfo
-                                                                                                      .CurrentCulture
-                                                                                                      .TextInfo
-                                                                                                      .ToTitleCase(
-                                                                                                          _transfer
-                                                                                                              .getType()
-                                                                                                              .name()))
-                                                                                              : "Transfer incomplete",
-                                                                                          "Status"), "Status");
+            View.StatusText =
+                LocaleFactory.localizedString(
+                    LocaleFactory.localizedString(
+                        _transfer.isComplete()
+                            ? String.Format("{0} complete",
+                                            CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_transfer.getType().name()))
+                            : "Transfer incomplete", "Status"), "Status");
         }
 
         private void Progress(String message)
