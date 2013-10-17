@@ -255,7 +255,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getLocal() {
-        return this.getRoot().getLocal().toURL();
+        return this.getRoot().getLocal().getAbbreviatedPath();
     }
 
     public List<Path> getRoots() {
