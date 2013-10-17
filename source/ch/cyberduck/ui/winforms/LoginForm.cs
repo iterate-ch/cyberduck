@@ -62,26 +62,30 @@ namespace Ch.Cyberduck.Ui.Winforms
                 labelMessageLink.Visible = false;
                 tableLayoutPanel1.Controls.Remove(labelMessageLink);
                 tableLayoutPanel1.Controls.Remove(labelMessageLabel);
-
-                tableLayoutPanel1.Controls.Add(labelMessageLink, 1, 0);
-                labelMessageLink.Visible = true;
-                labelMessageLink.Text = value;
-
                 if (value.StartsWith(Scheme.http.name()))
                 {
                     try
                     {
                         new Uri(value);
+                        tableLayoutPanel1.Controls.Add(labelMessageLink, 1, 0);
+                        labelMessageLink.Visible = true;
+                        labelMessageLink.Text = value;
                         tableLayoutPanel1.SetColumnSpan(labelMessageLink, 4);
                     }
                     catch (UriFormatException)
                     {
+                        tableLayoutPanel1.Controls.Add(labelMessageLabel, 1, 0);
                         tableLayoutPanel1.SetColumnSpan(labelMessageLabel, 4);
+                        labelMessageLabel.Visible = true;
+                        labelMessageLabel.Text = value;
                     }
                 }
                 else
                 {
+                    tableLayoutPanel1.Controls.Add(labelMessageLabel, 1, 0);
                     tableLayoutPanel1.SetColumnSpan(labelMessageLabel, 4);
+                    labelMessageLabel.Visible = true;
+                    labelMessageLabel.Text = value;
                 }
             }
         }
