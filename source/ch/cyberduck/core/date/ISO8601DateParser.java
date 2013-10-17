@@ -1,8 +1,22 @@
-// DateParser.java
-// $Id$
-// (c) COPYRIGHT MIT, INRIA and Keio, 2000.
-// Please first read the full copyright statement in file COPYRIGHT.html
-package org.w3c.util;
+package ch.cyberduck.core.date;
+
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
+ */
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,15 +31,14 @@ import java.util.TimeZone;
  *
  * @author Benoï¿½t Mahï¿½ (bmahe@w3.org)
  * @author Yves Lafon (ylafon@w3.org)
- * @version $Revision$
  */
-public final class DateParser {
+public final class ISO8601DateParser {
 
-    private DateParser() {
+    public ISO8601DateParser() {
         //
     }
 
-    private static boolean check(StringTokenizer st, String token)
+    private boolean check(StringTokenizer st, String token)
             throws InvalidDateException {
         try {
             if(st.nextToken().equals(token)) {
@@ -40,8 +53,7 @@ public final class DateParser {
         }
     }
 
-    private static Calendar getCalendar(String isodate)
-            throws InvalidDateException {
+    private Calendar getCalendar(String isodate) throws InvalidDateException {
         // YYYY-MM-DDThh:mm:ss.sTZD
         StringTokenizer st = new StringTokenizer(isodate, "-T:.+Z", true);
 
@@ -180,47 +192,11 @@ public final class DateParser {
     /**
      * Parse the given string in ISO 8601 format and build a Date object.
      *
-     * @param isodate the date in ISO 8601 format
+     * @param iso the date in ISO 8601 format
      * @return a Date instance
      * @throws InvalidDateException if the date is not valid
      */
-    public static Date parse(String isodate)
-            throws InvalidDateException {
-        Calendar calendar = getCalendar(isodate);
-        return calendar.getTime();
-    }
-
-    private static String twoDigit(int i) {
-        if(i >= 0 && i < 10) {
-            return "0" + String.valueOf(i);
-        }
-        return String.valueOf(i);
-    }
-
-    /**
-     * Generate a ISO 8601 date
-     *
-     * @param date a Date instance
-     * @return a string representing the date in the ISO 8601 format
-     */
-    public static String getIsoDate(Date date) {
-        Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        calendar.setTime(date);
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(calendar.get(Calendar.YEAR));
-        buffer.append("-");
-        buffer.append(twoDigit(calendar.get(Calendar.MONTH) + 1));
-        buffer.append("-");
-        buffer.append(twoDigit(calendar.get(Calendar.DAY_OF_MONTH)));
-        buffer.append("T");
-        buffer.append(twoDigit(calendar.get(Calendar.HOUR_OF_DAY)));
-        buffer.append(":");
-        buffer.append(twoDigit(calendar.get(Calendar.MINUTE)));
-        buffer.append(":");
-        buffer.append(twoDigit(calendar.get(Calendar.SECOND)));
-        buffer.append(".");
-        buffer.append(twoDigit(calendar.get(Calendar.MILLISECOND) / 10));
-        buffer.append("Z");
-        return buffer.toString();
+    public Date parse(final String iso) throws InvalidDateException {
+        return this.getCalendar(iso).getTime();
     }
 }

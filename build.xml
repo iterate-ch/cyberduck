@@ -154,7 +154,6 @@
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/core/**/*.class"/>
-                <include name="org/w3c/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="mime.types"/>

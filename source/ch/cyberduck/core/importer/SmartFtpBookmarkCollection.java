@@ -28,8 +28,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.log4j.Logger;
-import org.w3c.util.DateParser;
-import org.w3c.util.InvalidDateException;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 
 /**
  * @version $Id$
@@ -129,7 +129,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
             }
             else if(name.equals("LastConnect")) {
                 try {
-                    current.setTimestamp(DateParser.parse(elementText));
+                    current.setTimestamp(new ISO8601DateParser().parse(elementText));
                 }
                 catch(InvalidDateException e) {
                     log.warn(String.format("Failed to parse timestamp from %s %s", elementText, e.getMessage()));

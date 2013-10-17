@@ -30,8 +30,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.w3c.util.DateParser;
-import org.w3c.util.InvalidDateException;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,8 +47,11 @@ public class SwiftObjectListService implements ListService {
 
     private SwiftSession session;
 
+    private ISO8601DateParser dateParser;
+
     public SwiftObjectListService(final SwiftSession session) {
         this.session = session;
+        this.dateParser = new ISO8601DateParser();
     }
 
     @Override
@@ -73,7 +76,7 @@ public class SwiftObjectListService implements ListService {
                         child.attributes().setChecksum(object.getMd5sum());
                         child.attributes().setETag(object.getMd5sum());
                         try {
-                            child.attributes().setModificationDate(DateParser.parse(object.getLastModified()).getTime());
+                            child.attributes().setModificationDate(dateParser.parse(object.getLastModified()).getTime());
                         }
                         catch(InvalidDateException e) {
                             log.warn(String.format("%s is not ISO 8601 format %s", object.getLastModified(), e.getMessage()));
