@@ -103,6 +103,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                         _transfer.getType().name()))
                                     : "Transfer incomplete", "Status"), "Status");
                     View.TransferStatus = t.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
+                    UpdateOverallProgress();
                 };
             invoke(new SimpleDefaultMainAction(this, d));
         }
@@ -143,8 +144,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsVistaOrLater)
             {
                 TransferProgress progress = TransferCollection.defaultCollection().getProgress();
-                TransferController.Instance.View.UpdateOverallProgressState(progress.getTransferred().longValue(),
-                                                                            progress.getSize().longValue());
+                TransferController.Instance.View.UpdateOverallProgressState(
+                    TransferCollection.defaultCollection().numberOfRunningTransfers() == 0
+                        ? 0
+                        : progress.getTransferred().longValue(), progress.getSize().longValue());
             }
         }
 
