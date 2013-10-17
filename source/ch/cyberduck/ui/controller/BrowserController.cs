@@ -407,16 +407,16 @@ namespace Ch.Cyberduck.Ui.Controller
             Invoke(mainAction);
         }
 
-        public void message(string msg)
+        public override void message(string msg)
         {
-            string label = null;
+            string label;
             if (Utils.IsNotBlank(msg))
             {
                 label = msg;
             }
             else
             {
-                if (View.CurrentView == BrowserView.Bookmark)
+                if (View.CurrentView == BrowserView.Bookmark || View.CurrentView == BrowserView.History || View.CurrentView == BrowserView.Bonjour)
                 {
                     label = String.Format("{0} {1}", View.NumberOfBookmarks, LocaleFactory.localizedString("Bookmarks"));
                 }
@@ -436,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Invoke(updateLabel);
         }
 
-        public void log(bool request, string transcript)
+        public override void log(bool request, string transcript)
         {
             if (View.LogDrawerVisible)
             {

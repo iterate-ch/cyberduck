@@ -2524,6 +2524,7 @@ source/ch/cyberduck/ui/comparator/SizeComparator.java -text
 source/ch/cyberduck/ui/comparator/TimestampComparator.java -text
 source/ch/cyberduck/ui/controller/ActivityController.cs -text
 source/ch/cyberduck/ui/controller/AsyncController.cs -text
+source/ch/cyberduck/ui/controller/BaseController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkModel.cs -text
 source/ch/cyberduck/ui/controller/BrowserController.cs -text

@@ -46,8 +46,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             SetStyle(
-                ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint |
-                ControlStyles.OptimizedDoubleBuffer, true);
+                ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer,
+                true);
 
 
             // not checking if there are any subscribers might result in 'Object reference not set to an instance...'
@@ -149,51 +149,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
-        public DialogResult MessageBox(string title, string message, string content,
-                                       string expandedInfo,
-                                       string help,
-                                       string verificationText,
-                                       DialogResponseHandler handler)
+        public DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
+                                       string verificationText, DialogResponseHandler handler)
         {
-            //BringToFront();
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate =
-                delegate(string url) { Utils.StartProcess(url); };
-            DialogResult result = dialog.MessageBox(this,
-                                                    title,
-                                                    message,
-                                                    content,
-                                                    expandedInfo,
-                                                    FormatHelp(help),
-                                                    verificationText,
-                                                    TaskDialogButtons.OK, SysIcons.Information, SysIcons.Information);
-            handler(-1, dialog.VerificationChecked);
-            return result;
+            return Utils.MessageBox(this, title, message, content, expandedInfo, help, verificationText, handler);
         }
 
-        public DialogResult CommandBox(string title, string mainInstruction, string content,
-                                       string expandedInfo,
-                                       string help,
-                                       string verificationText, string commandButtons, bool showCancelButton,
-                                       SysIcons mainIcon,
-                                       SysIcons footerIcon, DialogResponseHandler handler)
+        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
+                                       string help, string verificationText, string commandButtons,
+                                       bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
+                                       DialogResponseHandler handler)
         {
-            //BringToFront();
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate =
-                delegate(string url) { Utils.StartProcess(url); };
-            DialogResult result = dialog.ShowCommandBox(this, title,
-                                                        mainInstruction,
-                                                        content,
-                                                        expandedInfo,
-                                                        FormatHelp(help),
-                                                        verificationText,
-                                                        commandButtons,
-                                                        showCancelButton,
-                                                        mainIcon,
-                                                        footerIcon);
-            handler(dialog.CommandButtonResult, dialog.VerificationChecked);
-            return result;
+            return Utils.CommandBox(this, title, mainInstruction, content, expandedInfo, help, verificationText,
+                                    commandButtons, showCancelButton, mainIcon, footerIcon, handler);
         }
 
         public event VoidHandler PositionSizeRestoredEvent;
@@ -277,7 +245,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public new DialogResult ShowDialog()
         {
-            DialogResult result = base.ShowDialog();            
+            DialogResult result = base.ShowDialog();
             if (_releaseWhenClose)
             {
                 base.Dispose();
@@ -302,33 +270,19 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DialogResult result = base.ShowDialog(owner as Form);
                 if (_releaseWhenClose)
                 {
-                    base.Dispose();                    
+                    base.Dispose();
                 }
                 return result;
             }
             return ShowDialog();
         }
 
-        public DialogResult MessageBox(string title, string message, string content,
-                                       TaskDialogButtons buttons,
+        public DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
                                        SysIcons icons)
         {
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
-            return dialog.MessageBox(this,
-                                     title,
-                                     message,
-                                     content,
-                                     buttons, icons);
-        }
-
-        private string FormatHelp(string help)
-        {
-            if (String.IsNullOrEmpty(help))
-            {
-                return null;
-            }
-            return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
+            return dialog.MessageBox(this, title, message, content, buttons, icons);
         }
 
         private void OnApplicationIdle(object sender, EventArgs e)
@@ -458,12 +412,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             foreach (var o in RecurseObjects(this))
             {
-                if (o is Label ||
-                    o is CheckBox ||
-                    o is GroupBox ||
-                    o is Button ||
-                    o is TabPage ||
-                    o is RadioButton ||
+                if (o is Label || o is CheckBox || o is GroupBox || o is Button || o is TabPage || o is RadioButton ||
                     o is Form)
                 {
                     Control c = (Control) o;
@@ -490,9 +439,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             //Use reflection to get access to the form components collection which is defined private in
             //each form designer class. The MainMenu items are members of this collection for example.
-            FieldInfo fieldInfo = GetType().GetField("components",
-                                                     BindingFlags.Instance |
-                                                     BindingFlags.NonPublic);
+            FieldInfo fieldInfo = GetType().GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
             IContainer comp = (IContainer) fieldInfo.GetValue(this);
             if (null != comp)
             {

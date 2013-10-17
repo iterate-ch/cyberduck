@@ -228,6 +228,7 @@
     <Compile Include="core\Utils.cs" />
     <Compile Include="core\VirtualFileDataObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ui\controller\BaseController.cs" />
     <Compile Include="ui\controller\ICreateSymlinkPromptView.cs" />
     <Compile Include="ui\controller\CreateSymlinkController.cs" />
     <Compile Include="ui\controller\GotoController.cs" />

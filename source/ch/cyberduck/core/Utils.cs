@@ -23,6 +23,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Microsoft.Win32;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
@@ -30,6 +33,7 @@ using java.nio.charset;
 using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
+using Application = ch.cyberduck.core.local.Application;
 using Collection = java.util.Collection;
 
 namespace Ch.Cyberduck.Core
@@ -547,6 +551,67 @@ namespace Ch.Cyberduck.Core
                 Log.error(String.Format("Error while StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
             }
             return false;
+        }
+
+        public static DialogResult CommandBox(IWin32Window owner, string title, string mainInstruction, string content,
+                                              string expandedInfo, string help, string verificationText,
+                                              string commandButtons, bool showCancelButton, SysIcons mainIcon,
+                                              SysIcons footerIcon, DialogResponseHandler handler)
+        {
+            TaskDialog dialog = new TaskDialog();
+            dialog.HelpDelegate = delegate(string url) { StartProcess(url); };
+            DialogResult result = dialog.ShowCommandBox(owner, title, mainInstruction, content, expandedInfo,
+                                                        FormatHelp(help), verificationText, commandButtons,
+                                                        showCancelButton, mainIcon, footerIcon);
+            handler(dialog.CommandButtonResult, dialog.VerificationChecked);
+            return result;
+        }
+
+        public static DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
+                                              string help, string verificationText, string commandButtons,
+                                              bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
+                                              DialogResponseHandler handler)
+        {
+            return CommandBox(null, title, mainInstruction, content, expandedInfo, help, verificationText,
+                              commandButtons, showCancelButton, mainIcon, footerIcon, handler);
+        }
+
+        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
+                                              bool showCancelButton, string verificationText, SysIcons mainIcon,
+                                              DialogResponseHandler handler)
+        {
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
+                              handler);
+        }
+
+        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
+                                              bool showCancelButton, string verificationText, SysIcons mainIcon,
+                                              string help, DialogResponseHandler handler)
+        {
+            return CommandBox(title, message, detail, null, help, verificationText, commandButtons, showCancelButton,
+                              mainIcon, SysIcons.Information, handler);
+        }
+
+        public static DialogResult MessageBox(IWin32Window owner, string title, string message, string content,
+                                              string expandedInfo, string help, string verificationText,
+                                              DialogResponseHandler handler)
+        {
+            TaskDialog dialog = new TaskDialog();
+            dialog.HelpDelegate = delegate(string url) { StartProcess(url); };
+            DialogResult result = dialog.MessageBox(owner, title, message, content, expandedInfo, FormatHelp(help),
+                                                    verificationText, TaskDialogButtons.OK, SysIcons.Information,
+                                                    SysIcons.Information);
+            handler(-1, dialog.VerificationChecked);
+            return result;
+        }
+
+        private static string FormatHelp(string help)
+        {
+            if (String.IsNullOrEmpty(help))
+            {
+                return null;
+            }
+            return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
         }
     }
 }
