@@ -121,7 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public void log(bool request, string transcript)
+        public override void log(bool request, string transcript)
         {
             if (View.TranscriptVisible)
             {
