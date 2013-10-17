@@ -23,6 +23,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.threading;
 using java.lang;
+using org.apache.log4j;
 using Exception = System.Exception;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -32,6 +33,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public delegate void AsyncDelegate();
 
         public delegate void SyncDelegate();
+
+        private static readonly Logger Log = Logger.getLogger(typeof (AsyncController).Name);
 
         protected AsyncController() : base(new ExceptionHandler())
         {
@@ -115,6 +118,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 //happens because there is no synchronization between the lifecycle of a form and callbacks of background threads.
                 //catch silently                
+            }
+            catch (Exception e)
+            {
+                Log.error("Unhandled exception during invoke", e);
             }
         }
     }
