@@ -244,7 +244,7 @@ public abstract class Preferences {
         defaults.put("browser.hidden.regex", "\\..*");
 
         defaults.put("browser.openUntitled", String.valueOf(true));
-        defaults.put("browser.defaultBookmark", LocaleFactory.localizedString("None"));
+        defaults.put("browser.defaultBookmark", null);
 
         /**
          * Confirm closing the browsing connection
