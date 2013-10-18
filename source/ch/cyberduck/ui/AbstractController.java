@@ -79,6 +79,14 @@ public abstract class AbstractController implements Controller {
     }
 
     /**
+     * @return true if there is any network activity running in the background
+     */
+    public boolean isActivityRunning() {
+        final BackgroundAction current = this.getActions().getCurrent();
+        return null != current;
+    }
+
+    /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      * Will return immediatly but not run the runnable before the lock of the runnable is acquired.

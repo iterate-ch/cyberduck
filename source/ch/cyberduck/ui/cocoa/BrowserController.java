@@ -3216,14 +3216,6 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @return true if there is any network activity running in the background
-     */
-    public boolean isActivityRunning() {
-        final BackgroundAction current = this.getActions().getCurrent();
-        return null != current;
-    }
-
-    /**
      * Accessor to the working directory
      *
      * @return The current working directory or null if no file system is mounted
