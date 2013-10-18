@@ -40,6 +40,9 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
      */
     private ReentrantLock locked = new ReentrantLock();
 
+    private Set<CollectionListener<E>> listeners
+            = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
+
     /**
      *
      */
@@ -80,9 +83,6 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
         return -1;
     }
-
-    private Set<CollectionListener<E>> listeners
-            = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
 
     public void addListener(CollectionListener<E> listener) {
         listeners.add(listener);
