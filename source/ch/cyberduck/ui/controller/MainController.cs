@@ -389,11 +389,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (Preferences.instance().getBoolean("browser.openUntitled"))
                         {
-                            _bc.Invoke(delegate
-                                {
-                                    BrowserController bc = NewBrowser();
-                                    OpenDefaultBookmark(bc);
-                                });
+                            if(Preferences.instance().getProperty("browser.defaultBookmark") != null) {
+                                _bc.Invoke(delegate
+                                    {
+                                        BrowserController bc = NewBrowser();
+                                        OpenDefaultBookmark(bc);
+                                    });
+                            }
                         }
                     });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
