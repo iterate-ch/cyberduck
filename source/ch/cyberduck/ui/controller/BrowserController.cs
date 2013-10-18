@@ -1331,7 +1331,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Disconnect()
         {
-            if (IsActivityRunning())
+            if (isActivityRunning())
             {
                 // Remove all pending actions)
                 foreach (BackgroundAction action in getActions().toArray(new BackgroundAction[getActions().size()]))
@@ -1443,7 +1443,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateTextEncoding()
         {
-            return IsMounted() && !IsActivityRunning();
+            return IsMounted() && !isActivityRunning();
         }
 
         private void View_ToggleLogDrawer()
