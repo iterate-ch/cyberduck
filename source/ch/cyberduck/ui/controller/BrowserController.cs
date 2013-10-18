@@ -76,7 +76,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private Comparator _comparator = new NullComparator();
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
-        private ConnectionListener _listener;
         private PathPasteboard _pasteboard;
 
         /**
@@ -88,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
          */
         private Session _session;
         private bool _showHiddenFiles;
-        private String dropFolder; // holds the drop folder of the current drag operation
+        private String _dropFolder; // holds the drop folder of the current drag operation
 
         /**
          * Navigation history
@@ -850,7 +849,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 Invoke(delegate
                                     {
-                                        dropFolder =
+                                        _dropFolder =
                                             System.IO.Path
                                                   .
                                                    GetDirectoryName
@@ -894,7 +893,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     .
                                                     createLocal
                                                     (
-                                                        dropFolder,
+                                                        _dropFolder,
                                                         filename);
                                             HostWriterFactory
                                                 .get()
@@ -1911,7 +1910,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         delegate(object sender,
                                  FileSystemEventArgs args)
                             {
-                                dropFolder =
+                                _dropFolder =
                                     System.IO.Path.
                                            GetDirectoryName(
                                                args.FullPath);
@@ -1921,7 +1920,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                             Download(SelectedPaths,
                                                      LocalFactory.
                                                          createLocal(
-                                                             dropFolder));
+                                                             _dropFolder));
                                         });
                             }
                                                                        )
@@ -1951,9 +1950,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         File.Delete(tmpFile);
                     }
-                    if (null != dropFolder)
+                    if (null != _dropFolder)
                     {
-                        string tmpDestFile = System.IO.Path.Combine(dropFolder, System.IO.Path.GetFileName(tmpFile));
+                        string tmpDestFile = System.IO.Path.Combine(_dropFolder, System.IO.Path.GetFileName(tmpFile));
                         if (File.Exists(tmpDestFile))
                         {
                             File.Delete(tmpDestFile);
