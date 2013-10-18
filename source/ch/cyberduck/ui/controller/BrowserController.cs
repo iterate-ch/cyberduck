@@ -1893,17 +1893,24 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (string tmpFile in data.GetFileDropList())
                 {
-                    if (File.Exists(tmpFile))
+                    try
                     {
-                        File.Delete(tmpFile);
-                    }
-                    if (null != _dropFolder)
-                    {
-                        string tmpDestFile = System.IO.Path.Combine(_dropFolder, System.IO.Path.GetFileName(tmpFile));
-                        if (File.Exists(tmpDestFile))
+                        if (File.Exists(tmpFile))
                         {
-                            File.Delete(tmpDestFile);
+                            File.Delete(tmpFile);
                         }
+                        if (null != _dropFolder)
+                        {
+                            string tmpDestFile = System.IO.Path.Combine(_dropFolder, System.IO.Path.GetFileName(tmpFile));
+                            if (File.Exists(tmpDestFile))
+                            {
+                                File.Delete(tmpDestFile);
+                            }
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        Log.error("Could not remove temporary files.", e);
                     }
                 }
             }
