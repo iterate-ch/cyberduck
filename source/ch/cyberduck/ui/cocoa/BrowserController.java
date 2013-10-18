@@ -2923,7 +2923,7 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
+                if(Preferences.instance().getBoolean("browser.disconnect.bookmarks.show")) {
                     selectBookmarks();
                 }
                 else {
@@ -3332,7 +3332,7 @@ public class BrowserController extends WindowController
                                     selectBrowser(Preferences.instance().getInteger("browser.view"));
                                     // Set the window title
                                     window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
-                                    if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                                    if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
                                     securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
@@ -3394,7 +3394,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Unmount session %s", session));
         }
         if(this.isConnected() || this.isActivityRunning()) {
-            if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+            if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
                         MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
@@ -3410,7 +3410,7 @@ public class BrowserController extends WindowController
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
                             // Never show again.
-                            Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                            Preferences.instance().setProperty("browser.disconnect.confirm", false);
                         }
                         callback.callback(returncode);
                     }

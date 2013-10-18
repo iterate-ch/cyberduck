@@ -782,7 +782,7 @@ public class MainController extends BundleController implements NSApplication.De
     @Override
     public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
         log.debug("applicationShouldOpenUntitledFile");
-        return Preferences.instance().getBoolean("browser.openUntitled");
+        return Preferences.instance().getBoolean("browser.open.untitled");
     }
 
     /**
@@ -798,7 +798,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Mounts the default bookmark if any
      */
     private void openDefaultBookmark(BrowserController controller) {
-        String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
+        String defaultBookmark = Preferences.instance().getProperty("browser.open.bookmark.default");
         if(null == defaultBookmark) {
             log.info("No default bookmark configured");
             return; //No default bookmark given
@@ -889,7 +889,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.info(String.format("Current locale:%s", java.util.Locale.getDefault()));
             log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
         }
-        if(Preferences.instance().getBoolean("browser.openUntitled")) {
+        if(Preferences.instance().getBoolean("browser.open.untitled")) {
             MainController.newDocument();
         }
         if(Preferences.instance().getBoolean("queue.window.open.default")) {
@@ -928,8 +928,8 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             public void cleanup() {
-                if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    if(Preferences.instance().getProperty("browser.defaultBookmark") != null) {
+                if(Preferences.instance().getBoolean("browser.open.untitled")) {
+                    if(Preferences.instance().getProperty("browser.open.bookmark.default") != null) {
                         openDefaultBookmark(MainController.newDocument());
                     }
                 }
@@ -1226,7 +1226,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
             if(browser.isConnected()) {
-                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
                     final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Quit"),
                             LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
                             LocaleFactory.localizedString("Quit Anyway"), //default
@@ -1238,7 +1238,7 @@ public class MainController extends BundleController implements NSApplication.De
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                        Preferences.instance().setProperty("browser.disconnect.confirm", false);
                     }
                     if(choice == SheetCallback.CANCEL_OPTION) {
                         // Cancel. Quit has been interrupted. Delete any saved sessions so far.

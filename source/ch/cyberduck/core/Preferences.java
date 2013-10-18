@@ -243,14 +243,14 @@ public abstract class Preferences {
 
         defaults.put("browser.hidden.regex", "\\..*");
 
-        defaults.put("browser.openUntitled", String.valueOf(true));
-        defaults.put("browser.defaultBookmark", null);
+        defaults.put("browser.open.untitled", String.valueOf(true));
+        defaults.put("browser.open.bookmark.default", null);
 
         /**
          * Confirm closing the browsing connection
          */
-        defaults.put("browser.confirmDisconnect", String.valueOf(false));
-        defaults.put("browser.disconnect.showBookmarks", String.valueOf(false));
+        defaults.put("browser.disconnect.confirm", String.valueOf(false));
+        defaults.put("browser.disconnect.bookmarks.show", String.valueOf(false));
 
         /**
          * Display only one info panel and change information according to selection in browser

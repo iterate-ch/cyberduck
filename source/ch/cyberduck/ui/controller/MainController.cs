@@ -386,9 +386,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     bookmarksSemaphore.Signal();
                 }, delegate
                     {
-                        if (Preferences.instance().getBoolean("browser.openUntitled"))
+                        if (Preferences.instance().getBoolean("browser.open.untitled"))
                         {
-                            if(Preferences.instance().getProperty("browser.defaultBookmark") != null) {
+                            if(Preferences.instance().getProperty("browser.open.bookmark.default") != null) {
                                 _bc.Invoke(delegate
                                     {
                                         BrowserController bc = NewBrowser();
@@ -581,7 +581,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="controller"></param>
         public static void OpenDefaultBookmark(BrowserController controller)
         {
-            String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
+            String defaultBookmark = Preferences.instance().getProperty("browser.open.bookmark.default");
             if (null == defaultBookmark)
             {
                 return; //No default bookmark given
@@ -692,7 +692,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (controller.IsConnected())
                 {
-                    if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
+                    if (Preferences.instance().getBoolean("browser.disconnect.confirm"))
                     {
                         controller.CommandBox(LocaleFactory.localizedString("Quit"),
                                               LocaleFactory.localizedString(
@@ -707,7 +707,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       {
                                                           // Never show again.
                                                           Preferences.instance()
-                                                                     .setProperty("browser.confirmDisconnect", false);
+                                                                     .setProperty("browser.disconnect.confirm", false);
                                                       }
                                                       switch (option)
                                                       {

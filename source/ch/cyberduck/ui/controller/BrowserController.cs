@@ -1341,7 +1341,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             CallbackDelegate run = delegate
                 {
-                    if (Preferences.instance().getBoolean("browser.disconnect.showBookmarks"))
+                    if (Preferences.instance().getBoolean("browser.disconnect.bookmarks.show"))
                     {
                         ToggleView(BrowserView.Bookmark);
                     }
@@ -2547,7 +2547,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsConnected() || isActivityRunning())
             {
-                if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
+                if (Preferences.instance().getBoolean("browser.disconnect.confirm"))
                 {
                     DialogResult result = CommandBox(LocaleFactory.localizedString("Disconnect"),
                                                      String.Format(
@@ -2563,7 +2563,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                              {
                                                                  // Never show again.
                                                                  Preferences.instance()
-                                                                            .setProperty("browser.confirmDisconnect",
+                                                                            .setProperty("browser.disconnect.confirm",
                                                                                          false);
                                                              }
                                                              switch (option)

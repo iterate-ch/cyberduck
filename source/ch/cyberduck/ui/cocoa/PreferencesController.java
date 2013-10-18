@@ -440,13 +440,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.openUntitledBrowserCheckbox = b;
         this.openUntitledBrowserCheckbox.setTarget(this.id());
         this.openUntitledBrowserCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
-        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.open.untitled") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void openUntitledBrowserCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.openUntitled", enabled);
+        Preferences.instance().setProperty("browser.open.untitled", enabled);
     }
 
     @Outlet
@@ -489,7 +489,7 @@ public class PreferencesController extends ToolbarWindowController {
                     String selected = defaultBookmarkCombobox.selectedItem().representedObject();
                     if(StringUtils.isNotEmpty(selected)) {
                         if(selected.equals(bookmark.getUuid())) {
-                            Preferences.instance().deleteProperty("browser.defaultBookmark");
+                            Preferences.instance().deleteProperty("browser.open.bookmark.default");
                         }
                     }
                     NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
@@ -514,7 +514,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.defaultBookmarkCombobox.lastItem().setImage(
                     IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().icon(), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
-            if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.defaultBookmark"))) {
+            if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.open.bookmark.default"))) {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
             }
         }
@@ -528,9 +528,9 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultBookmarkComboboxClicked(NSPopUpButton sender) {
         final String selected = sender.selectedItem().representedObject();
         if(null == selected) {
-            Preferences.instance().deleteProperty("browser.defaultBookmark");
+            Preferences.instance().deleteProperty("browser.open.bookmark.default");
         }
-        Preferences.instance().setProperty("browser.defaultBookmark", selected);
+        Preferences.instance().setProperty("browser.open.bookmark.default", selected);
     }
 
     @Outlet
@@ -1641,13 +1641,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.confirmDisconnectCheckbox = b;
         this.confirmDisconnectCheckbox.setTarget(this.id());
         this.confirmDisconnectCheckbox.setAction(Foundation.selector("confirmDisconnectCheckboxClicked:"));
-        this.confirmDisconnectCheckbox.setState(Preferences.instance().getBoolean("browser.confirmDisconnect") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.confirmDisconnectCheckbox.setState(Preferences.instance().getBoolean("browser.disconnect.confirm") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void confirmDisconnectCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.confirmDisconnect", enabled);
+        Preferences.instance().setProperty("browser.disconnect.confirm", enabled);
     }
 
     @Outlet
