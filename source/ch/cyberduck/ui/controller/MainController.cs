@@ -362,9 +362,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         foreach (Host host in
                             _sessions)
                         {
-                            BrowserController bc = NewBrowser();
                             Host h = host;
-                            bc.Invoke(delegate { bc.Mount(h); });
+                            _bc.Invoke(delegate
+                                {
+                                    BrowserController bc = NewBrowser();
+                                    bc.Mount(h);
+                                });
                         }
                         _sessions.clear();
                     });
@@ -386,8 +389,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (Preferences.instance().getBoolean("browser.openUntitled"))
                         {
-                            BrowserController bc = NewBrowser();
-                            bc.Invoke(delegate { OpenDefaultBookmark(bc); });
+                            _bc.Invoke(delegate
+                                {
+                                    BrowserController bc = NewBrowser();
+                                    OpenDefaultBookmark(bc);
+                                });
                         }
                     });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
