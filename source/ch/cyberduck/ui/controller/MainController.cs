@@ -386,11 +386,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (Preferences.instance().getBoolean("browser.openUntitled"))
                         {
-                            if (Browsers.Count == 0)
-                            {
-                                BrowserController bc = NewBrowser();
-                                bc.Invoke(delegate { OpenDefaultBookmark(bc); });
-                            }
+                            BrowserController bc = NewBrowser();
+                            bc.Invoke(delegate { OpenDefaultBookmark(bc); });
                         }
                     });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
