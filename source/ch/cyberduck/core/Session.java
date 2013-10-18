@@ -48,6 +48,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     protected Host host;
 
     protected C client;
+
     private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
 
