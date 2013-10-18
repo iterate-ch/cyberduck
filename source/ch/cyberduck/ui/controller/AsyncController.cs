@@ -122,6 +122,7 @@ namespace Ch.Cyberduck.Ui.Controller
             catch (Exception e)
             {
                 Log.error("Unhandled exception during invoke", e);
+                throw e;
             }
         }
     }
