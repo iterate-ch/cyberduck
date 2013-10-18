@@ -986,6 +986,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             IActiveMenu menu = ActiveMenu.GetInstance(this);
             ActiveButton button = new ActiveButton();
+            button.Font = new Font(base.Font.FontFamily, 7.5F, FontStyle.Bold);
+            button.ForeColor = Color.White;
+            button.BackColor = Color.Firebrick;
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatStyle = FlatStyle.Flat;
+
             button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
             button.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
             menu.Items.Add(button);
