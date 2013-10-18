@@ -75,8 +75,6 @@
 		47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADA0F0A473D0075CBA9 /* EMKeychainItem.m */; };
 		47462ADF0F0A473D0075CBA9 /* EMKeychainProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 47462ADB0F0A473D0075CBA9 /* EMKeychainProxy.h */; };
 		47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */; };
-		47472EF3177F78880090A595 /* HP Cloud Object Storage.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
-		47472EF4177F788C0090A595 /* Rackspace UK.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */; };
 		47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		475286C210D2CC660029363C /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 475286B510D2CC660029363C /* CDBookmarkCell.h */; };
@@ -384,8 +382,6 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
-				47472EF3177F78880090A595 /* HP Cloud Object Storage.cyberduckprofile in CopyFiles */,
-				47472EF4177F788C0090A595 /* Rackspace UK.cyberduckprofile in CopyFiles */,
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
