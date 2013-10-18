@@ -230,8 +230,9 @@ namespace Ch.Cyberduck.Ui.Controller
             appender.setMaxFileSize("1MB");
             appender.setMaxBackupIndex(0);
             root.addAppender(appender);
-
-            root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+            root.setLevel(Debugger.IsAttached
+                              ? Level.DEBUG
+                              : Level.toLevel(Preferences.instance().getProperty("logging")));
         }
 
         /// <summary>
