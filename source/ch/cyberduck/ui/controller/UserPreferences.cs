@@ -238,8 +238,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
-            defaults.put("application.profiles.path", "");
-
+            defaults.put("application.profiles.path", "profiles"); // relative to .exe
+            defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
 
             defaults.put("update.feed.release", "https://version.cyberduck.ch/changelog.wys");
             defaults.put("update.feed.beta", "https://version.cyberduck.ch/beta/changelog.wys");
@@ -283,8 +283,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
-            defaults.put("application.receipt.path", RoamingApplicationDataPath);
-            defaults.put("application.bookmarks.path", "bookmarks");
+            defaults.put("application.receipt.path", RoamingApplicationDataPath);            
 
             defaults.put("update.check.last", "0");
 

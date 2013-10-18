@@ -213,6 +213,7 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
   File /r "${BASEDIR}\bookmarks"
+  File /r "${BASEDIR}\profiles"
   File "${BASEDIR}\License.txt"
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"

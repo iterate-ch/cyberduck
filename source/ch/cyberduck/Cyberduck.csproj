@@ -669,7 +669,11 @@
     <ItemGroup>
       <DefaultBookmarks Include="..\..\..\bookmarks\*.duck" />
     </ItemGroup>
+    <ItemGroup>
+      <DefaultProfiles Include="..\..\..\profiles\Rackspace US.cyberduckprofile" />
+    </ItemGroup>
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
+    <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
