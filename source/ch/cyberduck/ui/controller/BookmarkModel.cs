@@ -66,13 +66,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (null != value)
                 {
                     _source.removeListener(_listener); //remove previous listener
+                    _source = value;
                     _source.addListener(_listener = new BookmarkListener(_controller));
                 }
                 else
                 {
                     _source.removeListener(_listener); //remove previous listener
-                }
-                _source = value;
+                    _source = value;
+                }                
                 Filter = null;
             }
         }
