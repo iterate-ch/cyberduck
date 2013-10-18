@@ -42,6 +42,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         @Override
         public void collectionItemAdded(final Host bookmark) {
             bookmark.setWorkdir(null);
+            super.collectionItemAdded(bookmark);
         }
     };
 
