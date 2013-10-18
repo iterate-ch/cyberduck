@@ -54,8 +54,10 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
 
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
-        final boolean connected = super.connect(session);
-        if(connected) {
+        final boolean opened = super.connect(session);
+        if(opened) {
+            // Only notify bookmarks when connection opened.
+
             final Host bookmark = session.getHost();
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
@@ -66,6 +68,6 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
                 BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
             }
         }
-        return connected;
+        return opened;
     }
 }
