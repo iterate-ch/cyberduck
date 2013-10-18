@@ -43,7 +43,7 @@ import java.util.Map;
 public class CopyTransferFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
-    private Session<?> session;
+    private Session<?> destination;
 
     private Find find;
 
@@ -51,15 +51,15 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     private UploadFilterOptions options;
 
-    public CopyTransferFilter(final Session session, final Map<Path, Path> files) {
-        this(session, files, new UploadFilterOptions());
+    public CopyTransferFilter(final Session destination, final Map<Path, Path> files) {
+        this(destination, files, new UploadFilterOptions());
     }
 
-    public CopyTransferFilter(final Session<?> session, final Map<Path, Path> files, final UploadFilterOptions options) {
-        this.session = session;
+    public CopyTransferFilter(final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options) {
+        this.destination = destination;
         this.files = files;
         this.options = options;
-        this.find = session.getFeature(Find.class);
+        this.find = destination.getFeature(Find.class);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(this.options.permissions) {
-                final UnixPermission unix = session.getFeature(UnixPermission.class);
+                final UnixPermission unix = destination.getFeature(UnixPermission.class);
                 if(unix != null) {
                     Permission permission = source.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
@@ -105,7 +105,7 @@ public class CopyTransferFilter implements TransferPathFilter {
                 }
             }
             if(this.options.timestamp) {
-                final Timestamp timestamp = session.getFeature(Timestamp.class);
+                final Timestamp timestamp = destination.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                             source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
