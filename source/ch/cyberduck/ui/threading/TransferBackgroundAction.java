@@ -116,19 +116,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     @Override
     protected boolean connect(final Session session) throws BackgroundException {
-        if(super.connect(session)) {
-            if(transfer instanceof CopyTransfer) {
-                final Session target = ((CopyTransfer) transfer).getDestination();
-                if(connection.check(target, Cache.empty())) {
-                    // New connection opened
-                    growl.notify("Connection opened", session.getHost().getHostname());
-                    return true;
-                }
-                return false;
+        final boolean opened = super.connect(session);
+        if(transfer instanceof CopyTransfer) {
+            final Session target = ((CopyTransfer) transfer).getDestination();
+            if(connection.check(target, Cache.empty())) {
+                // New connection opened
+                growl.notify("Connection opened", session.getHost().getHostname());
             }
-            return true;
         }
-        return false;
+        return opened;
     }
 
     @Override
