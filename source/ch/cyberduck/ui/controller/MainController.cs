@@ -359,8 +359,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
                     {
-                        foreach (Host host in
-                            _sessions)
+                        foreach (Host host in _sessions)
                         {
                             Host h = host;
                             _bc.Invoke(delegate

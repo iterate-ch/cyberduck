@@ -221,8 +221,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultEncryptionChangedEvent()
         {
-            Preferences.instance().setProperty("s3.encryption.algorithm",
-                                               NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
+            Preferences.instance()
+                       .setProperty("s3.encryption.algorithm",
+                                    NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
         }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
@@ -341,14 +342,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultUploadThrottleChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.bandwidth.bytes",
-                                               View.DefaultUploadThrottle);
+            Preferences.instance().setProperty("queue.upload.bandwidth.bytes", View.DefaultUploadThrottle);
         }
 
         private void View_DefaultDownloadThrottleChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.bandwidth.bytes",
-                                               View.DefaultDownloadThrottle);
+            Preferences.instance().setProperty("queue.download.bandwidth.bytes", View.DefaultDownloadThrottle);
         }
 
         private void View_DefaultBucketLocationChangedEvent()
@@ -441,14 +440,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_PreserveModificationUploadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.timestamp.change",
-                                               View.PreserveModificationUpload);
+            Preferences.instance().setProperty("queue.upload.timestamp.change", View.PreserveModificationUpload);
         }
 
         private void View_PreserveModificationDownloadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.timestamp.change",
-                                               View.PreserveModificationDownload);
+            Preferences.instance().setProperty("queue.download.timestamp.change", View.PreserveModificationDownload);
         }
 
         private void View_ChmodUploadTypeChangedEvent()
@@ -456,15 +453,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodUploadType))
             {
-                p =
-                    new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodUploadType))
             {
-                p =
-                    new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -490,8 +483,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodUploadUseDefaultChangedEvent()
         {
-            Preferences.instance().setProperty("queue.upload.permissions.default",
-                                               View.ChmodUploadUseDefault);
+            Preferences.instance().setProperty("queue.upload.permissions.default", View.ChmodUploadUseDefault);
             View.ChmodUploadDefaultEnabled = View.ChmodUploadUseDefault;
         }
 
@@ -506,15 +498,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission p = null;
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
-                p =
-                    new Permission(
-                        Preferences.instance().getInteger("queue.download.permissions.file.default"));
+                p = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
             }
             if (ForFolders.Equals(View.ChmodDownloadType))
             {
-                p =
-                    new Permission(
-                        Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+                p = new Permission(Preferences.instance().getInteger("queue.download.permissions.folder.default"));
             }
             if (null == p)
             {
@@ -540,8 +528,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChmodDownloadUseDefaultChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.permissions.default",
-                                               View.ChmodDownloadUseDefault);
+            Preferences.instance().setProperty("queue.download.permissions.default", View.ChmodDownloadUseDefault);
             View.ChmodDownloadDefaultEnabled = View.ChmodDownloadUseDefault;
         }
 
@@ -595,13 +582,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission permission = new Permission(u, g, o);
             if (ForFiles.Equals(View.ChmodUploadType))
             {
-                Preferences.instance().setProperty("queue.upload.permissions.file.default",
-                                                   permission.getMode());
+                Preferences.instance().setProperty("queue.upload.permissions.file.default", permission.getMode());
             }
             if (ForFolders.Equals(View.ChmodUploadType))
             {
-                Preferences.instance().setProperty("queue.upload.permissions.folder.default",
-                                                   permission.getMode());
+                Preferences.instance().setProperty("queue.upload.permissions.folder.default", permission.getMode());
             }
         }
 
@@ -649,13 +634,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Permission permission = new Permission(u, g, o);
             if (ForFiles.Equals(View.ChmodDownloadType))
             {
-                Preferences.instance().setProperty("queue.download.permissions.file.default",
-                                                   permission.getMode());
+                Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getMode());
             }
             if (ForFolders.Equals(View.ChmodDownloadType))
             {
-                Preferences.instance().setProperty("queue.download.permissions.folder.default",
-                                                   permission.getMode());
+                Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getMode());
             }
         }
 
@@ -663,14 +646,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.DuplicateUploadOverwrite)
             {
-                Preferences.instance().setProperty("queue.upload.reload.action",
-                                                   TransferAction.overwrite.toString());
+                Preferences.instance().setProperty("queue.upload.reload.action", TransferAction.overwrite.toString());
             }
             else
             {
-                Preferences.instance().setProperty("queue.upload.reload.action",
-                                                   Preferences.instance().
-                                                               getProperty("queue.upload.action"));
+                Preferences.instance()
+                           .setProperty("queue.upload.reload.action",
+                                        Preferences.instance().getProperty("queue.upload.action"));
             }
         }
 
@@ -678,14 +660,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.DuplicateDownloadOverwrite)
             {
-                Preferences.instance().setProperty("queue.download.reload.action",
-                                                   TransferAction.overwrite.toString());
+                Preferences.instance().setProperty("queue.download.reload.action", TransferAction.overwrite.toString());
             }
             else
             {
-                Preferences.instance().setProperty("queue.download.reload.action",
-                                                   Preferences.instance().
-                                                               getProperty("queue.download.action"));
+                Preferences.instance()
+                           .setProperty("queue.download.reload.action",
+                                        Preferences.instance().getProperty("queue.download.action"));
             }
         }
 
@@ -703,8 +684,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else if (selected.Equals(TransferAction.overwrite.getTitle()))
             {
-                Preferences.instance().setProperty(property,
-                                                   TransferAction.overwrite.toString());
+                Preferences.instance().setProperty(property, TransferAction.overwrite.toString());
             }
             else if (selected.Equals(TransferAction.resume.getTitle()))
             {
@@ -742,14 +722,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenAfterDownloadChangedEvent()
         {
-            Preferences.instance().setProperty("queue.download.complete.open",
-                                               View.OpenAfterDownload);
+            Preferences.instance().setProperty("queue.download.complete.open", View.OpenAfterDownload);
         }
 
         private void View_RemoveFromTransfersChangedEvent()
         {
-            Preferences.instance().setProperty("queue.removeItemWhenComplete",
-                                               View.RemoveFromTransfers);
+            Preferences.instance().setProperty("queue.removeItemWhenComplete", View.RemoveFromTransfers);
         }
 
         private void View_TransfersToBackChangedEvent()
@@ -795,16 +773,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_AlternatingRowBackgroundChangedEvent()
         {
-            Preferences.instance().setProperty("browser.alternatingRows",
-                                               View.AlternatingRowBackground);
+            Preferences.instance().setProperty("browser.alternatingRows", View.AlternatingRowBackground);
             //todo
             //BrowserController.updateBrowserTableAttributes();
         }
 
         private void View_InfoWindowShowsCurrentSelectionChangedEvent()
         {
-            Preferences.instance().setProperty("browser.info.inspector",
-                                               View.InfoWindowShowsCurrentSelection);
+            Preferences.instance().setProperty("browser.info.inspector", View.InfoWindowShowsCurrentSelection);
         }
 
         private void View_DoubleClickEditorChangedEvent()
@@ -831,8 +807,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ConfirmDisconnectChangedEvent()
         {
-            Preferences.instance().setProperty("browser.confirmDisconnect",
-                                               View.ConfirmDisconnect);
+            Preferences.instance().setProperty("browser.confirmDisconnect", View.ConfirmDisconnect);
         }
 
         private void View_UseKeychainChangedEvent()
@@ -848,8 +823,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                Preferences.instance().setProperty("browser.defaultBookmark",
-                                                   View.DefaultBookmark.getNickname());
+                Preferences.instance().setProperty("browser.defaultBookmark", View.DefaultBookmark.getNickname());
             }
         }
 
@@ -910,19 +884,16 @@ namespace Ch.Cyberduck.Ui.Controller
             BookmarkCollection.defaultCollection().addListener(this);
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
             SelectDefaultBookmark(Preferences.instance().getProperty("browser.defaultBookmark"));
-            View.ConfirmDisconnect =
-                Preferences.instance().getBoolean("browser.confirmDisconnect");
+            View.ConfirmDisconnect = Preferences.instance().getBoolean("browser.confirmDisconnect");
             View.UseKeychain = Preferences.instance().getBoolean("connection.login.useKeychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
                 ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-            View.InfoWindowShowsCurrentSelection =
-                Preferences.instance().getBoolean("browser.info.inspector");
+            View.InfoWindowShowsCurrentSelection = Preferences.instance().getBoolean("browser.info.inspector");
             View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
             View.DoubleClickEditor = Preferences.instance().getBoolean("browser.doubleclick.edit");
             View.ReturnKeyRenames = Preferences.instance().getBoolean("browser.enterkey.rename");
-            View.AlternatingRowBackground =
-                Preferences.instance().getBoolean("browser.alternatingRows");
+            View.AlternatingRowBackground = Preferences.instance().getBoolean("browser.alternatingRows");
             View.VerticalLines = Preferences.instance().getBoolean("browser.verticalLines");
             View.HorizontalLines = Preferences.instance().getBoolean("browser.horizontalLines");
             PopulateEncodings();
@@ -938,28 +909,24 @@ namespace Ch.Cyberduck.Ui.Controller
                                     : UseQueueSession;
             View.TransfersToFront = Preferences.instance().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = Preferences.instance().getBoolean("queue.window.open.transfer.stop");
-            View.RemoveFromTransfers =
-                Preferences.instance().getBoolean("queue.removeItemWhenComplete");
-            View.OpenAfterDownload =
-                Preferences.instance().getBoolean("queue.download.complete.open");
+            View.RemoveFromTransfers = Preferences.instance().getBoolean("queue.removeItemWhenComplete");
+            View.OpenAfterDownload = Preferences.instance().getBoolean("queue.download.complete.open");
             View.DownloadFolder = Preferences.instance().getProperty("queue.download.folder");
             PopulateDuplicateActions();
             View.DuplicateDownloadAction = GetDuplicateAction("queue.download.action");
             View.DuplicateUploadAction = GetDuplicateAction("queue.upload.action");
-            View.DuplicateDownloadOverwrite = Preferences.instance().getProperty(
-                "queue.download.reload.action")
-                                                         .
-                                                          Equals(
-                                                              TransferAction.overwrite.toString())
-                                                  ? true
-                                                  : false;
-            View.DuplicateUploadOverwrite = Preferences.instance().getProperty(
-                "queue.upload.reload.action")
-                                                       .
-                                                        Equals(
-                                                            TransferAction.overwrite.toString())
-                                                ? true
-                                                : false;
+            View.DuplicateDownloadOverwrite =
+                Preferences.instance()
+                           .getProperty("queue.download.reload.action")
+                           .Equals(TransferAction.overwrite.toString())
+                    ? true
+                    : false;
+            View.DuplicateUploadOverwrite =
+                Preferences.instance()
+                           .getProperty("queue.upload.reload.action")
+                           .Equals(TransferAction.overwrite.toString())
+                    ? true
+                    : false;
             View.UploadWithTemporaryFilename = Preferences.instance().getBoolean("queue.upload.file.temporary");
 
             #endregion
@@ -976,15 +943,13 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateChmodTypes();
             View.ChmodDownload = Preferences.instance().getBoolean("queue.download.permissions.change");
             View.ChmodDownloadEnabled = View.ChmodDownload;
-            View.ChmodDownloadUseDefault =
-                Preferences.instance().getBoolean("queue.download.permissions.default");
+            View.ChmodDownloadUseDefault = Preferences.instance().getBoolean("queue.download.permissions.default");
             View.ChmodDownloadDefaultEnabled = View.ChmodDownloadUseDefault;
             View.ChmodDownloadType = ForFiles;
             View_ChmodDownloadTypeChangedEvent();
             View.ChmodUpload = Preferences.instance().getBoolean("queue.upload.permissions.change");
             View.ChmodUploadEnabled = View.ChmodUpload;
-            View.ChmodUploadUseDefault =
-                Preferences.instance().getBoolean("queue.upload.permissions.default");
+            View.ChmodUploadUseDefault = Preferences.instance().getBoolean("queue.upload.permissions.default");
             View.ChmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change") &&
                                              Preferences.instance().getBoolean("queue.upload.permissions.default");
             View.ChmodUploadType = ForFiles;
@@ -994,10 +959,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Transfers - Timestamps
 
-            View.PreserveModificationDownload =
-                Preferences.instance().getBoolean("queue.download.timestamp.change");
-            View.PreserveModificationUpload =
-                Preferences.instance().getBoolean("queue.upload.timestamp.change");
+            View.PreserveModificationDownload = Preferences.instance().getBoolean("queue.download.timestamp.change");
+            View.PreserveModificationUpload = Preferences.instance().getBoolean("queue.upload.timestamp.change");
 
             #endregion
 
@@ -1015,10 +978,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             PopulateDefaultDownloadThrottleList();
             PopulateDefaultUploadThrottleList();
-            View.DefaultDownloadThrottle =
-                Preferences.instance().getFloat("queue.download.bandwidth.bytes");
-            View.DefaultUploadThrottle =
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes");
+            View.DefaultDownloadThrottle = Preferences.instance().getFloat("queue.download.bandwidth.bytes");
+            View.DefaultUploadThrottle = Preferences.instance().getFloat("queue.upload.bandwidth.bytes");
             View.Retries = Preferences.instance().getInteger("connection.retry");
             View.RetryDelay = Preferences.instance().getInteger("connection.retry.delay");
             View.ConnectionTimeout = Preferences.instance().getInteger("connection.timeout.seconds");
@@ -1041,8 +1002,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Google Docs
 
             PopulateDocumentExportFormats();
-            View.DocumentExportFormat =
-                Preferences.instance().getProperty("google.docs.export.document");
+            View.DocumentExportFormat = Preferences.instance().getProperty("google.docs.export.document");
             PopulatePresentationExportFormats();
             View.PresentationExportFormat = Preferences.instance().getProperty("google.docs.export.presentation");
             PopulateSpreadsheetExportFormats();
@@ -1093,15 +1053,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateFeeds()
         {
             IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
-            feeds.Add(new KeyValuePair<string, string>(
-                          "release",
-                          LocaleFactory.localizedString("Release")));
-            feeds.Add(new KeyValuePair<string, string>(
-                          "beta",
-                          LocaleFactory.localizedString("Beta")));
-            feeds.Add(new KeyValuePair<string, string>(
-                          "nightly",
-                          LocaleFactory.localizedString("Snapshot Builds")));
+            feeds.Add(new KeyValuePair<string, string>("release", LocaleFactory.localizedString("Release")));
+            feeds.Add(new KeyValuePair<string, string>("beta", LocaleFactory.localizedString("Beta")));
+            feeds.Add(new KeyValuePair<string, string>("nightly", LocaleFactory.localizedString("Snapshot Builds")));
             View.PopulateUpdateFeeds(feeds);
         }
 
@@ -1167,15 +1121,15 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (
-                String option in
-                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
-                                                                                        StringSplitOptions.
-                                                                                            RemoveEmptyEntries))
+            foreach (String option in
+                Preferences.instance()
+                           .getProperty("queue.bandwidth.options")
+                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get().format(
-                                                             Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.get()
+                                                                              .format(Convert.ToInt32(option.Trim())) +
+                                                          "/s")));
             }
             View.PopulateDefaultUploadThrottleList(list);
         }
@@ -1185,15 +1139,15 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (
-                String option in
-                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
-                                                                                        StringSplitOptions.
-                                                                                            RemoveEmptyEntries))
+            foreach (String option in
+                Preferences.instance()
+                           .getProperty("queue.bandwidth.options")
+                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get().format(
-                                                             Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.get()
+                                                                              .format(Convert.ToInt32(option.Trim())) +
+                                                          "/s")));
             }
             View.PopulateDefaultDownloadThrottleList(list);
         }
@@ -1217,8 +1171,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
                                                                 LocaleFactory.localizedString(
-                                                                    S3Object.STORAGE_CLASS_STANDARD,
-                                                                    "S3")));
+                                                                    S3Object.STORAGE_CLASS_STANDARD, "S3")));
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
                                                                 LocaleFactory.localizedString(
                                                                     LocaleFactory.localizedString(
@@ -1316,8 +1269,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAndSelectEditor()
         {
-            List<KeyValueIconTriple<Application, string>> editors =
-                new List<KeyValueIconTriple<Application, string>>();
+            List<KeyValueIconTriple<Application, string>> editors = new List<KeyValueIconTriple<Application, string>>();
 
             Application defaultEditor = EditorFactory.instance().getDefaultEditor();
             String defaultEditorLocation = null;
@@ -1332,8 +1284,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (ApplicationFinderFactory.get().isInstalled(editor))
                 {
-                    editors.Add(new KeyValueIconTriple<Application, string>(editor, editor.getName(),
-                                                                            editor.getName()));
+                    editors.Add(new KeyValueIconTriple<Application, string>(editor, editor.getName(), editor.getName()));
                     if (defaultEditorLocation != null && editor.getIdentifier().Equals(defaultEditorLocation))
                     {
                         defaultEditorAdded = true;
@@ -1345,8 +1296,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (defaultEditor != null && ApplicationFinderFactory.get().isInstalled(defaultEditor))
                 {
                     editors.Insert(0,
-                                   new KeyValueIconTriple<Application, string>(defaultEditor,
-                                                                               defaultEditor.getName(),
+                                   new KeyValueIconTriple<Application, string>(defaultEditor, defaultEditor.getName(),
                                                                                defaultEditor.getName()));
                 }
             }
