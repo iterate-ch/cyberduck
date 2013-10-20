@@ -1,8 +1,10 @@
 package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostReaderFactory;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.local.FinderLocal;
@@ -22,14 +24,18 @@ public class HostPlistReaderTest extends AbstractTestCase {
     public void testDeserializeDeprecatedProtocol() throws Exception {
         assertNull(HostReaderFactory.get().read(LocalFactory.createLocal("test")));
         assertEquals(new FTPProtocol(), new HostPlistReader().read(
-                LocalFactory.createLocal("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")).getProtocol());
+                LocalFactory.createLocal(
+                        "test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")).getProtocol());
     }
 
     @Test
     public void testRead() throws Exception {
-        PlistReader reader = new HostPlistReader();
-        final Serializable read = reader.read(new FinderLocal("bookmarks/s3.amazonaws.com – S3.duck"));
+        HostPlistReader reader = new HostPlistReader();
+        final Host read = reader.read(new FinderLocal(
+                "test/ch/cyberduck/core/serializer/impl/s3.amazonaws.com – S3.duck"));
         assertNotNull(read);
+        assertEquals("Amazon Simple Storage Service & CloudFront CDN", read.getComment());
+        assertEquals(ProtocolFactory.S3_SSL, read.getProtocol());
     }
 
     @Test
