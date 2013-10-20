@@ -38,14 +38,14 @@ public final class ISO8601DateParser {
         //
     }
 
-    private boolean check(StringTokenizer st, String token)
+    private boolean check(final StringTokenizer st, final String token)
             throws InvalidDateException {
         try {
             if(st.nextToken().equals(token)) {
                 return true;
             }
             else {
-                throw new InvalidDateException("Missing [" + token + "]");
+                throw new InvalidDateException(String.format("Missing [%s]", token));
             }
         }
         catch(NoSuchElementException ex) {
@@ -53,7 +53,7 @@ public final class ISO8601DateParser {
         }
     }
 
-    private Calendar getCalendar(String isodate) throws InvalidDateException {
+    private Calendar getCalendar(final String isodate) throws InvalidDateException {
         // YYYY-MM-DDThh:mm:ss.sTZD
         StringTokenizer st = new StringTokenizer(isodate, "-T:.+Z", true);
 
@@ -146,7 +146,7 @@ public final class ISO8601DateParser {
                     }
                 }
                 else {
-                    throw new InvalidDateException("No secondes specified");
+                    throw new InvalidDateException("No seconds specified");
                 }
             }
             else {
@@ -181,10 +181,7 @@ public final class ISO8601DateParser {
             }
         }
         catch(NumberFormatException ex) {
-            final InvalidDateException failure = new InvalidDateException("[" + ex.getMessage() +
-                    "] is not an integer");
-            failure.initCause(ex);
-            throw failure;
+            throw new InvalidDateException(String.format("[%s] is not an integer", ex.getMessage()), ex);
         }
         return calendar;
     }
