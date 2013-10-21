@@ -4,7 +4,6 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.openstack.CloudfilesProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
@@ -50,7 +49,6 @@ public class ProtocolFactoryTest extends AbstractTestCase {
 
     @Test
     public void testDeprecated() throws Exception {
-        assertEquals(new CloudfilesProtocol(), ProtocolFactory.forName("cf"));
+        assertEquals(new SwiftProtocol(), ProtocolFactory.forName("cf"));
     }
-
 }

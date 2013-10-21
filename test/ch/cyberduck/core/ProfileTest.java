@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.openstack.CloudfilesProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 
@@ -42,7 +41,7 @@ public class ProfileTest extends AbstractTestCase {
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertEquals("swift", profile.getIdentifier());
-        assertNotSame(new CloudfilesProtocol().getDefaultHostname(), profile.getDefaultHostname());
+        assertNotSame("identity.api.rackspacecloud.com", profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
         assertNotNull(profile.disk());
         assertEquals(profile.disk(), profile.disk());

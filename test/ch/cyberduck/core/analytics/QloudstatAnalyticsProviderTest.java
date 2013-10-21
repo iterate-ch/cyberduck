@@ -6,7 +6,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
-import ch.cyberduck.core.openstack.CloudfilesProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -36,7 +35,7 @@ public class QloudstatAnalyticsProviderTest extends AbstractTestCase {
     public void testGetSetupRackspace() {
         QloudstatAnalyticsProvider q = new QloudstatAnalyticsProvider();
         Assert.assertEquals("https://qloudstat.com/configuration/add?setup=cHJvdmlkZXI9aWRlbnRpdHkuYXBpLnJhY2tzcGFjZWNsb3VkLmNvbSxwcm90b2NvbD1odHRwLGVuZHBvaW50PXRlc3QuY3liZXJkdWNrLmNoLGtleT1xbG91ZHN0YXQsc2VjcmV0PXNlY3JldA%3D%3D",
-                q.getSetup(new CloudfilesProtocol().getDefaultHostname(), Scheme.http, "test.cyberduck.ch", new Credentials("qloudstat", "secret")));
+                q.getSetup("identity.api.rackspacecloud.com", Scheme.http, "test.cyberduck.ch", new Credentials("qloudstat", "secret")));
     }
 
     @Test

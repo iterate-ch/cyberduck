@@ -24,7 +24,6 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
-import ch.cyberduck.core.openstack.CloudfilesProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -50,7 +49,6 @@ public final class ProtocolFactory {
     public static final Protocol S3_SSL = new S3Protocol();
     public static final Protocol WEBDAV = new DAVProtocol();
     public static final Protocol WEBDAV_SSL = new DAVSSLProtocol();
-    public static final Protocol CLOUDFILES = new CloudfilesProtocol();
     public static final Protocol SWIFT = new SwiftProtocol();
     public static final Protocol GOOGLESTORAGE_SSL = new GoogleStorageProtocol();
 
@@ -72,27 +70,26 @@ public final class ProtocolFactory {
         register(WEBDAV);
         register(WEBDAV_SSL);
         register(SWIFT);
-        register(CLOUDFILES);
         register(S3_SSL);
         register(GOOGLESTORAGE_SSL);
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
-            for(Local profile : bundled.list().filter(new Filter<Local>() {
+            for(Local f : bundled.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(final Local file) {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                final Profile protocol = ProfileReaderFactory.get().read(profile);
-                if(null == protocol) {
+                final Profile profile = ProfileReaderFactory.get().read(f);
+                if(null == profile.getProtocol()) {
                     continue;
                 }
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Adding bundled protocol %s", protocol));
+                    log.info(String.format("Adding bundled protocol %s", profile));
                 }
                 // Replace previous possibly disable protocol in Preferences
-                register(protocol);
+                register(profile);
             }
         }
         // Load thirdparty protocols
@@ -157,6 +154,13 @@ public final class ProtocolFactory {
         for(Protocol protocol : getKnownProtocols()) {
             if(String.valueOf(protocol.hashCode()).equals(identifier)) {
                 return protocol;
+            }
+        }
+        for(Protocol protocol : getKnownProtocols()) {
+            for(String scheme: protocol.getSchemes()) {
+                if(scheme.equals(identifier)) {
+                    return protocol;
+                }
             }
         }
         log.warn(String.format("Unknown protocol with identifier %s", identifier));
