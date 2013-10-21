@@ -1,6 +1,19 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -14,6 +27,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -64,6 +78,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = InteroperabilityException.class)
+    @Ignore
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
@@ -259,5 +274,17 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.getFeature(Copy.class));
         assertNotNull(session.getFeature(Headers.class));
         assertNotNull(session.getFeature(DistributionConfiguration.class));
+    }
+
+    @Test
+    public void testpixi() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        session.close();
     }
 }
