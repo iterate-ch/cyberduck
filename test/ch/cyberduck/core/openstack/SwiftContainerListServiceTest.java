@@ -35,6 +35,8 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD");
+        assertTrue(list.contains(container));
+        container.attributes().setRegion("ORD1");
         assertFalse(list.contains(container));
     }
 }
