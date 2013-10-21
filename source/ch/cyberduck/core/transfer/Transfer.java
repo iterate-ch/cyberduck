@@ -125,10 +125,6 @@ public abstract class Transfer implements Serializable {
 
     private enum State {
         running,
-        /**
-         * The transfer has been canceled and should not continue any further processing
-         */
-        canceled,
         stopped
     }
 
@@ -137,13 +133,6 @@ public abstract class Transfer implements Serializable {
      */
     public boolean isRunning() {
         return state == State.running;
-    }
-
-    /**
-     * @return True if in <code>canceled</code> state
-     */
-    public boolean isCanceled() {
-        return state == State.canceled;
     }
 
     /**

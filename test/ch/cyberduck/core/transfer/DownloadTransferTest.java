@@ -339,7 +339,6 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path parent = new Path("t", Path.FILE_TYPE);
         Transfer t = new DownloadTransfer(new Host("t"), parent);
         assertFalse(t.isRunning());
-        assertFalse(t.isCanceled());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());
     }

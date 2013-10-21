@@ -85,11 +85,7 @@ public final class Queue {
             }
             growl.notify("Transfer queued", t.getHost().getHostname());
             while(running.size() >= size) {
-                // The maximum number of transfers is already reached
-                if(t.isCanceled()) {
-                    break;
-                }
-                // Wait for transfer slot.
+                // The maximum number of transfers is already reached. Wait for transfer slot.
                 try {
                     overflow.put(t);
                 }
