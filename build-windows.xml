@@ -226,6 +226,8 @@
             <replacefilter token="_VERSION_" value="${updaterversion}"/>
             <replacefilter token="_CHANGES_" value="${changes}"/>
             <replacefilter token="_BUILDPATH_" value="${buildpath}"/>
+            <!-- folders need to be referenced absolutely -->
+            <replacefilter token="_BUILDPATHABS_" value="${absbuild}/${buildpath}"/>
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
