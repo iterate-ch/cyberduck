@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Protocol</key>
-	<string>cf</string>
+	<string>swift</string>
 	<key>Vendor</key>
 	<string>rackspace</string>
     <key>Type</key>
