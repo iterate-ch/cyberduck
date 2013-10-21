@@ -47,6 +47,7 @@ public class SwiftCopyFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("ORD");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new SwiftTouchFeature(session).touch(test);
         final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);

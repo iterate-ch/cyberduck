@@ -62,6 +62,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         Thread.sleep(2000L);
