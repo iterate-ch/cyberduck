@@ -18,7 +18,17 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -80,18 +90,17 @@ public class SwiftUrlProvider implements UrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
-                list.add(this.createTempUrl(file, 60 * 60));
+                list.add(this.createTempUrl(region, file, 60 * 60));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.createTempUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+                list.add(this.createTempUrl(region, file, Preferences.instance().getInteger("s3.url.expire.seconds")));
                 // Week
-                list.add(this.createTempUrl(file, 7 * 24 * 60 * 60));
+                list.add(this.createTempUrl(region, file, 7 * 24 * 60 * 60));
             }
         }
         return list;
     }
 
-    protected DescriptiveUrl createTempUrl(final Path file, final int seconds) {
-        final Region region = session.getRegion(containerService.getContainer(file));
+    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final int seconds) {
         final String path = String.format("%s/%s/%s",
                 region.getStorageUrl().getPath(),
                 containerService.getContainer(file).getName(),
