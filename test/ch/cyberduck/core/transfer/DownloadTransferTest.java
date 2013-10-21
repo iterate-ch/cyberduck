@@ -83,7 +83,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return children;
             }
         };
-        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(session, root));
+        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(session, root, new DisabledListProgressListener()));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return AttributedList.emptyList();
             }
         };
-        assertTrue(t.list(session, root).isEmpty());
+        assertTrue(t.list(session, root, new DisabledListProgressListener()).isEmpty());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final AttributedList<Path> list = t.list(session, parent);
+        final AttributedList<Path> list = t.list(session, parent, new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertFalse(list.contains(new Path("/t/.DS_Store", Path.FILE_TYPE)));
         assertTrue(list.contains(new Path("/t/t", Path.FILE_TYPE)));

@@ -18,8 +18,10 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -84,7 +86,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -151,7 +153,7 @@ public class UploadTransfer extends Transfer {
             for(Path upload : this.getRoots()) {
                 if(find.find(upload)) {
                     if(upload.attributes().isDirectory()) {
-                        if(this.list(session, upload).isEmpty()) {
+                        if(this.list(session, upload, new DisabledListProgressListener()).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

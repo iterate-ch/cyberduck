@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
@@ -108,16 +109,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<Path> children = new HashSet<Path>();
         if(session.getFeature(Find.class).find(directory)) {
-            children.addAll(download.list(session, directory));
+            children.addAll(download.list(session, directory, listener));
         }
         if(directory.getLocal().exists()) {
-            children.addAll(upload.list(session, directory));
+            children.addAll(upload.list(session, directory, listener));
         }
         return new AttributedList<Path>(children);
     }

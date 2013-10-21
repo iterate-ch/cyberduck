@@ -23,6 +23,7 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
@@ -289,9 +290,10 @@ public abstract class Transfer implements Serializable {
      *
      * @param session   Session
      * @param directory The directory to list the children
+     * @param listener  Listener
      * @return A list of child items
      */
-    public abstract AttributedList<Path> list(Session<?> session, Path directory) throws BackgroundException;
+    public abstract AttributedList<Path> list(Session<?> session, Path directory, ListProgressListener listener) throws BackgroundException;
 
     /**
      * The actual transfer implementation

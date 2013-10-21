@@ -17,7 +17,17 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -83,7 +93,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory) throws BackgroundException {
+    public AttributedList<Path> list(final Session<?> session, final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
@@ -95,7 +105,7 @@ public class DownloadTransfer extends Transfer {
             return AttributedList.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
+            final AttributedList<Path> list = session.list(directory, listener);
             for(Path download : list) {
                 // Change download path relative to parent local folder
                 download.setLocal(LocalFactory.createLocal(directory.getLocal(), download.getName()));

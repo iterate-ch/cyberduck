@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -213,7 +215,14 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             // Recursive
                             if(file.attributes().isDirectory()) {
                                 // Call recursively for all children
-                                final AttributedList<Path> children = transfer.list(session, file);
+                                final AttributedList<Path> children = transfer.list(session, file, new ListProgressListener() {
+                                    @Override
+                                    public void chunk(AttributedList<Path> list) throws ConnectionCanceledException {
+                                        if(isCanceled()) {
+                                            throw new ListCanceledException(list);
+                                        }
+                                    }
+                                });
                                 // Put into cache for later reference when transferring
                                 cache.put(file.getReference(), children);
                                 // Call recursively

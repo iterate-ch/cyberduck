@@ -19,10 +19,13 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 
 import java.text.MessageFormat;
@@ -46,7 +49,14 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run() throws BackgroundException {
-        return transfer.list(session, directory);
+        return transfer.list(session, directory, new ListProgressListener() {
+            @Override
+            public void chunk(AttributedList<Path> list) throws ConnectionCanceledException {
+                if(isCanceled()) {
+                    throw new ListCanceledException(list);
+                }
+            }
+        });
     }
 
     @Override

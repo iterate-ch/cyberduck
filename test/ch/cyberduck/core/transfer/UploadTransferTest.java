@@ -60,7 +60,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new UploadTransfer(new Host("t"), root);
-        assertTrue(t.list(new NullSession(new Host("t")), root).isEmpty());
+        assertTrue(t.list(new NullSession(new Host("t")), root, new DisabledListProgressListener()).isEmpty());
     }
 
     @Test
@@ -173,7 +173,8 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new UploadTransfer(new Host("t"), root);
-        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(new NullSession(new Host("t")), root));
+        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(new NullSession(new Host("t")), root,
+                new DisabledListProgressListener()));
     }
 
     @Test

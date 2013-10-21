@@ -20,7 +20,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.DisabledListProgressListener;import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -130,7 +130,7 @@ public class SyncTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root);
+        final AttributedList<Path> list = t.list(session, root, new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertFalse(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
@@ -162,7 +162,7 @@ public class SyncTransferTest extends AbstractTestCase {
             }
         };
         Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root);
+        final AttributedList<Path> list = t.list(session, root, new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertFalse(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
