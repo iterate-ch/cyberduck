@@ -17,15 +17,24 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
 
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -40,6 +49,7 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
         assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f", new SwiftUrlProvider(session).toUrl(new Path(container, "f", Path.FILE_TYPE)).find(
                 DescriptiveUrl.Type.provider).getUrl());
         session.close();
@@ -85,10 +95,16 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new SwiftTouchFeature(session).touch(file);
-        assertTrue(provider.toUrl(file).find(DescriptiveUrl.Type.signed).getUrl().startsWith(
-                "https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + file.getName()));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
+        for(String region : new SwiftLocationFeature(session).getLocations()) {
+            container.attributes().setRegion(region);
+            new SwiftTouchFeature(session).touch(file);
+            final DescriptiveUrlBag list = provider.toUrl(file);
+            assertNotNull(list.find(DescriptiveUrl.Type.signed));
+            if(session.accounts.get(session.getRegion(container)).getTempUrlKey() != null) {
+                assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
+            }
+            new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
+        }
         session.close();
     }
 }
