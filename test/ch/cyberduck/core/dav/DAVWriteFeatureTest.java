@@ -16,6 +16,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -50,6 +51,45 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
         assertEquals(content.length, new DAVWriteFeature(session).append(test, new DefaultAttributesFeature(session)).size, 0L);
+        {
+            final byte[] buffer = new byte[content.length];
+            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
+            assertArrayEquals(content, buffer);
+        }
+        {
+            final byte[] buffer = new byte[content.length - 1];
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            final byte[] reference = new byte[content.length - 1];
+            System.arraycopy(content, 1, reference, 0, content.length - 1);
+            assertArrayEquals(reference, buffer);
+        }
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
+    }
+
+    @Test
+    @Ignore
+    public void testReadWritePixi() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "pulangyuta.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        host.setDefaultPath("/w/webdav/");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = "test".getBytes("UTF-8");
+        status.setLength(content.length);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final OutputStream out = new DAVWriteFeature(session).write(test, status);
+        assertNotNull(out);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        assertTrue(session.getFeature(Find.class).find(test));
+        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
+        assertEquals(content.length, new DAVWriteFeature(session, false).append(test, new DefaultAttributesFeature(session)).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);

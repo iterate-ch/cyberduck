@@ -44,8 +44,18 @@ public class DAVWriteFeature implements Write {
 
     private DAVSession session;
 
+    /**
+     * Use Expect directive
+     */
+    private boolean expect;
+
     public DAVWriteFeature(final DAVSession session) {
+        this(session, Preferences.instance().getBoolean("webdav.expect-continue"));
+    }
+
+    public DAVWriteFeature(DAVSession session, boolean expect) {
         this.session = session;
+        this.expect = expect;
     }
 
     @Override
@@ -56,7 +66,7 @@ public class DAVWriteFeature implements Write {
                     status.getCurrent(), status.getLength() - 1, status.getLength())
             );
         }
-        if(Preferences.instance().getBoolean("webdav.expect-continue")) {
+        if(expect) {
             headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
         }
         return this.write(file, headers, status);

@@ -277,7 +277,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testpixi() throws Exception {
+    public void testPixi() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
@@ -285,6 +285,20 @@ public class DAVSessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
+        session.close();
+    }
+
+    @Test
+    public void testPixig2() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "pulangyuta.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        host.setDefaultPath("/w/webdav/");
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        assertFalse(session.list(new Path("/w/webdav/", Path.DIRECTORY_TYPE), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 }
