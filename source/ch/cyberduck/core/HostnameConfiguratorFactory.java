@@ -33,7 +33,7 @@ public final class HostnameConfiguratorFactory {
      * @param protocol Protocol
      * @return Configurator for default settings
      */
-    public static ch.cyberduck.core.HostnameConfigurator get(final Protocol protocol) {
+    public static HostnameConfigurator get(final Protocol protocol) {
         if(protocol.getType() == Protocol.Type.ssh) {
             return new OpenSSHHostnameConfigurator();
         }
