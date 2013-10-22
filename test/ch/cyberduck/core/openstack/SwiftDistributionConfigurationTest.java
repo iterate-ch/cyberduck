@@ -105,9 +105,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
             }
         };
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
-        host.setCredentials(new Credentials(
-                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
-        ));
+        host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());

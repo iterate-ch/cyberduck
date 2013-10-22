@@ -1,6 +1,17 @@
 package ch.cyberduck.core.cloudfront;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -58,9 +69,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testReadDownload() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -80,9 +89,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testReadStreaming() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -110,9 +117,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     @Test
     public void testReadLoginFailureFix() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), null
-        ));
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginController() {
             @Override
@@ -141,9 +146,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testWriteExists() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -168,9 +171,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testWriteNew() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(new Credentials(
-                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-        ));
+        host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
