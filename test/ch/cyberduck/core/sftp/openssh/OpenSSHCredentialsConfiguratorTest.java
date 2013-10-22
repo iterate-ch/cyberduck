@@ -26,9 +26,9 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.junit.Test;
-import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import java.io.File;
 
@@ -46,7 +46,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
         Credentials credentials = new DefaultCredentials("user", " ");
         credentials.setIdentity(new NullLocal(null, "t"));
-        c.configure(new Host(new SFTPProtocol(), "t", credentials));
+        assertSame(credentials, c.configure(new Host(new SFTPProtocol(), "t", credentials)));
         assertEquals("t", credentials.getIdentity().getName());
     }
 
@@ -55,7 +55,9 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
                         new File(LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config").getAbsolute())));
-        final Credentials credentials = c.configure(new Host("alias"));
+        final Host host = new Host("alias");
+        final Credentials credentials = c.configure(host);
+        assertSame(host.getCredentials(), credentials);
         assertNotNull(credentials.getIdentity());
         assertEquals(LocalFactory.createLocal("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
