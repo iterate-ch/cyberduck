@@ -18,7 +18,16 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.ui.growl.Growl;
@@ -46,7 +55,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    private StringBuilder transcript;
+    private StringBuilder transcript
+            = new StringBuilder();
 
     /**
      * The number of times this action has been run
