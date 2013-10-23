@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
@@ -230,7 +231,8 @@ public abstract class AbstractEditor implements Editor {
                 @Override
                 public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
                     final AbstractUploadFilter filter = super.filter(session, action);
-                    filter.setOptions(new UploadFilterOptions().withTemporary(true));
+                    filter.setOptions(new UploadFilterOptions().withTemporary(
+                            Preferences.instance().getBoolean("editor.upload.temporary")));
                     return filter;
                 }
             };
