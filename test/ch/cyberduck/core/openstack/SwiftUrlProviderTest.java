@@ -50,8 +50,8 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f", new SwiftUrlProvider(session).toUrl(new Path(container, "f", Path.FILE_TYPE)).find(
-                DescriptiveUrl.Type.provider).getUrl());
+        assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
+                new SwiftUrlProvider(session).toUrl(new Path(container, "f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
         session.close();
     }
 

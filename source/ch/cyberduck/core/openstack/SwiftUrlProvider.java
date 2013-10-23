@@ -101,10 +101,8 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     protected DescriptiveUrl createTempUrl(final Region region, final Path file, final int seconds) {
-        final String path = String.format("%s/%s/%s",
-                region.getStorageUrl().getPath(),
-                containerService.getContainer(file).getName(),
-                containerService.getKey(file));
+        final String path = region.getStorageUrl(
+                containerService.getContainer(file).getName(), containerService.getKey(file)).getPath();
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         final String signature;
