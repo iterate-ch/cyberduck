@@ -21,6 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
 
@@ -62,6 +63,10 @@ public final class FoundationProgressIconService implements IconService {
     @Override
     public boolean set(final Local file, final TransferStatus status) {
         this.progress(file.getAbsolute(), status.getCurrent(), status.getLength());
+        synchronized(NSWorkspace.class) {
+            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+            workspace.noteFileSystemChanged(file.getAbsolute());
+        }
         return true;
     }
 
