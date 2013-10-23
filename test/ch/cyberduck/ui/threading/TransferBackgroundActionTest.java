@@ -40,31 +40,35 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferBackgroundActionTest extends AbstractTestCase {
 
     @Test
     public void testDuplicate() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
-        ) {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch") {
             @Override
-            public void setPassword(final String pass) {
-                //
+            public Credentials getCredentials() {
+                return new Credentials(
+                        properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+                ) {
+                    @Override
+                    public void setPassword(final String pass) {
+                        //
+                    }
+                };
             }
-        });
-        final SFTPSession session = new SFTPSession(host);
-
+        };
         final Path test = new Path("/home/jenkins/transfer/test", Path.FILE_TYPE);
         test.attributes().setSize(5L);
 
         final Path copy = new Path(new Path("/home/jenkins/transfer", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final Transfer t = new CopyTransfer(session.getHost(), session.getHost(), Collections.<Path, Path>singletonMap(test, copy));
+        final CopyTransfer t = new CopyTransfer(host, host, Collections.<Path, Path>singletonMap(test, copy));
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -72,15 +76,19 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 runnable.run();
             }
         };
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, new TransferListener() {
+        final AtomicBoolean start = new AtomicBoolean();
+        final AtomicBoolean stop = new AtomicBoolean();
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SFTPSession(host), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
+                start.set(true);
             }
 
             @Override
             public void stop(final Transfer transfer) {
                 assertEquals(t, transfer);
+                stop.set(true);
             }
 
             @Override
@@ -88,7 +96,12 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 //
             }
         }, controller, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+        action.prepare();
         action.call();
+        assertTrue(t.getDestination().isConnected());
+        action.finish();
+        assertTrue(start.get());
+        assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
     }
@@ -116,15 +129,19 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 runnable.run();
             }
         };
+        final AtomicBoolean start = new AtomicBoolean();
+        final AtomicBoolean stop = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
+                start.set(true);
             }
 
             @Override
             public void stop(final Transfer transfer) {
                 assertEquals(t, transfer);
+                stop.set(true);
             }
 
             @Override
@@ -132,7 +149,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 //
             }
         }, controller, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+        action.prepare();
         action.call();
+        action.finish();
+        assertTrue(start.get());
+        assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
     }
