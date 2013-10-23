@@ -132,7 +132,7 @@ public abstract class Archive {
                 }
             }
         }
-        log.fatal("Unknown archive:" + name);
+        log.fatal(String.format("Unknown archive %s", name));
         return null;
     }
 
@@ -178,7 +178,7 @@ public abstract class Archive {
                     Path.FILE_TYPE);
         }
         return new Path(files.get(0).getParent(),
-                LocaleFactory.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
+                String.format("%s.%s", LocaleFactory.localizedString("Archive", "Archive"), this.getIdentifier()),
                 Path.FILE_TYPE);
     }
 
@@ -190,7 +190,7 @@ public abstract class Archive {
         final List<Path> expanded = new ArrayList<Path>();
         for(Path file : files) {
             expanded.add(new Path(file.getParent(),
-                    StringUtils.remove(file.getName(), "." + this.getIdentifier()), Path.FILE_TYPE));
+                    StringUtils.remove(file.getName(), String.format(".%s", this.getIdentifier())), Path.FILE_TYPE));
         }
         return expanded;
     }
