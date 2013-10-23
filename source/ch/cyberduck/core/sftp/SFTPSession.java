@@ -23,7 +23,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 import org.apache.log4j.Logger;
@@ -117,7 +128,7 @@ public class SFTPSession extends Session<Connection> {
                 final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
                 prompt.prompt(host.getProtocol(), additional,
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials") + ".", new LoginOptions());
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
                 if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
                 }
