@@ -94,8 +94,8 @@ public class BackgroundException extends Exception {
     public String getDetail() {
         final StringBuilder buffer = new StringBuilder();
         final StringAppender appender = new StringAppender();
-        appender.append(buffer, message);
         appender.append(buffer, detail);
+        appender.append(buffer, this.getHelp());
         return buffer.toString();
     }
 
