@@ -14,6 +14,7 @@
 - [Feature] Preview file status in overwrite prompt when choosing transfer action
 - [Feature] Option to continue or cancel on failure transferring multiple files
 - [Feature] Enable website configuration for buckets (GreenQloud)
+- [Feature] Option to change default port for custom origin (CloudFront) (#5460)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)

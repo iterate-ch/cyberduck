@@ -414,7 +414,7 @@ public class CloudFrontDistributionConfiguration
             return client.createDistribution(config);
         }
         if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-            DistributionConfig config = new DistributionConfig(
+            final DistributionConfig config = new DistributionConfig(
                     new Origin[]{new S3Origin(originId, origin.getHost(), null)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
@@ -422,9 +422,18 @@ public class CloudFrontDistributionConfiguration
         }
         if(distribution.getMethod().equals(Distribution.CUSTOM)
                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-            DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new CustomOrigin(originId, origin.getHost(),
-                            CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER, -1 == origin.getPort() ? 80 : origin.getPort(), 443)},
+            int httpPort = 80;
+            int httpsPort = 443;
+            if(origin.getPort() != -1) {
+                if(origin.getScheme().equals(Scheme.http.name())) {
+                    httpPort = origin.getPort();
+                }
+                if(origin.getScheme().equals(Scheme.https.name())) {
+                    httpsPort = origin.getPort();
+                }
+            }
+            final DistributionConfig config = new DistributionConfig(
+                    new Origin[]{new CustomOrigin(originId, origin.getHost(), this.getPolicy(distribution.getMethod()), httpPort, httpsPort)},
                     reference, distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             return client.createDistribution(config);
@@ -454,14 +463,14 @@ public class CloudFrontDistributionConfiguration
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
         if(distribution.getMethod().equals(Distribution.STREAMING)) {
-            StreamingDistributionConfig config = new StreamingDistributionConfig(
+            final StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new Origin[]{new S3Origin(originId, origin.getHost(), null)}, current.getReference(),
                     distribution.getCNAMEs(), null, distribution.isEnabled(), logging, null);
             config.setEtag(current.getEtag());
             client.updateDistributionConfig(current.getId(), config);
         }
         else if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-            DistributionConfig config = new DistributionConfig(
+            final DistributionConfig config = new DistributionConfig(
                     new Origin[]{new S3Origin(originId, origin.getHost(), null)},
                     current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
@@ -470,9 +479,18 @@ public class CloudFrontDistributionConfiguration
         }
         else if(distribution.getMethod().equals(Distribution.CUSTOM)
                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-            DistributionConfig config = new DistributionConfig(
-                    new Origin[]{new CustomOrigin(originId, origin.getHost(),
-                            this.getPolicy(distribution.getMethod()), -1 == origin.getPort() ? 80 : origin.getPort(), 443)},
+            int httpPort = 80;
+            int httpsPort = 443;
+            if(origin.getPort() != -1) {
+                if(origin.getScheme().equals(Scheme.http.name())) {
+                    httpPort = origin.getPort();
+                }
+                if(origin.getScheme().equals(Scheme.https.name())) {
+                    httpsPort = origin.getPort();
+                }
+            }
+            final DistributionConfig config = new DistributionConfig(
+                    new Origin[]{new CustomOrigin(originId, origin.getHost(), this.getPolicy(distribution.getMethod()), httpPort, httpsPort)},
                     current.getReference(), distribution.getCNAMEs(), null, distribution.isEnabled(), logging,
                     distribution.getIndexDocument(), cacheBehavior, new CacheBehavior[]{});
             config.setEtag(current.getEtag());
