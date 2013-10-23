@@ -26,14 +26,14 @@ public class BackgroundExceptionTest extends AbstractTestCase {
     public void testGetMessageIO() throws Exception {
         final BackgroundException e = new BackgroundException(new IOException("m"));
         assertNull(e.getMessage());
-        assertEquals("m", e.getDetail());
+        assertEquals("m.", e.getDetail());
     }
 
     @Test
     public void testIOMessage() throws Exception {
         final BackgroundException e = new BackgroundException(new SocketException("s"));
         e.setMessage("m.");
-        assertEquals("s", e.getDetail());
+        assertEquals("m. s.", e.getDetail());
         assertEquals("m. s", e.toString());
     }
 

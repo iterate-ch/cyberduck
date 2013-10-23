@@ -19,6 +19,7 @@ package ch.cyberduck.core.exception;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.StringAppender;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -91,10 +92,11 @@ public class BackgroundException extends Exception {
      * @return Detailed message from the underlying cause.
      */
     public String getDetail() {
-        if(StringUtils.isBlank(this.getHelp())) {
-            return detail;
-        }
-        return String.format("%s %s.", detail, this.getHelp());
+        final StringBuilder buffer = new StringBuilder();
+        final StringAppender appender = new StringAppender();
+        appender.append(buffer, message);
+        appender.append(buffer, detail);
+        return buffer.toString();
     }
 
     @Override
