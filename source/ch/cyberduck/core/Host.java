@@ -33,7 +33,7 @@ import java.util.UUID;
 /**
  * @version $Id$
  */
-public final class Host implements Serializable, Comparable<Host> {
+public class Host implements Serializable, Comparable<Host> {
     private static final Logger log = Logger.getLogger(Host.class);
 
     /**
