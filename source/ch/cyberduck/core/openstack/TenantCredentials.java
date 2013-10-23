@@ -24,7 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 /**
  * @version $Id$
  */
-public class TenantCredentials extends Credentials {
+public final class TenantCredentials extends Credentials {
 
     @Override
     public String getUsernamePlaceholder() {
