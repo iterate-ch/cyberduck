@@ -283,6 +283,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
         session.close();
@@ -296,9 +297,9 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/w/webdav/");
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
-        assertFalse(session.list(new Path("/w/webdav/", Path.DIRECTORY_TYPE), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 }
