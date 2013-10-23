@@ -32,7 +32,7 @@ public final class FoundationProgressIconService implements IconService {
     private static final Logger log = Logger.getLogger(FoundationProgressIconService.class);
 
     public static void register() {
-        if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {
+        if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
             IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
         }
         else {
