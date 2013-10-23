@@ -18,13 +18,33 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +52,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -51,6 +72,9 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
+
+    private final ThreadFactory threadFactory
+            = new NamedThreadFactory("account");
 
     public SwiftSession(Host h) {
         super(h);
@@ -99,13 +123,23 @@ public class SwiftSession extends HttpSession<Client> {
     public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
-            for(Region region : client.getRegions()) {
-                final AccountInfo info = client.getAccountInfo(region);
-                accounts.put(region, info);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+            threadFactory.newThread(new Runnable() {
+                @Override
+                public void run() {
+                    for(Region region : client.getRegions()) {
+                        try {
+                            final AccountInfo info = client.getAccountInfo(region);
+                            accounts.put(region, info);
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                            }
+                        }
+                        catch(IOException e) {
+                            log.warn(String.format("Failure loading account info for region %s", region));
+                        }
+                    }
                 }
-            }
+            }).start();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
