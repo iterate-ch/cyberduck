@@ -31,7 +31,7 @@ public class NotificationCenter implements Growl {
     private static final Logger log = Logger.getLogger(NotificationCenter.class);
 
     public static void register() {
-        if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {
+        if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
             GrowlFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
         }
         else {
