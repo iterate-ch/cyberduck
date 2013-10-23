@@ -42,12 +42,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
             [progress setCancellable:NO];
             // Sets the receiver as the current progress object of the current thread.
             [progress becomeCurrentWithPendingUnitCount:size];
+            [progress publish];
         }
         else {
             [progress setTotalUnitCount:[[NSNumber numberWithFloat:size] integerValue]];
             [progress setCompletedUnitCount:[[NSNumber numberWithFloat:current] integerValue]];
         }
-        [progress publish];
     }
 }
 
