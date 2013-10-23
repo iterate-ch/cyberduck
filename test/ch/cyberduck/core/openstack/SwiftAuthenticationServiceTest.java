@@ -81,9 +81,9 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     @Test
     public void testGetDefault2EmptyTenant() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
-        final Credentials credentials = new Credentials("u", "P");
+        final Host host = new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P"));
         assertEquals(Client.AuthVersion.v20,
-                s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", credentials),
+                s.getRequest(host,
                         new DisabledLoginController() {
                             @Override
                             public void prompt(final Protocol protocol, final Credentials credentials,
@@ -91,7 +91,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                                 credentials.setUsername("");
                             }
                         }).getVersion());
-        assertEquals(":u", credentials.getUsername());
+        assertEquals(":u", host.getCredentials().getUsername());
     }
 
     @Test
