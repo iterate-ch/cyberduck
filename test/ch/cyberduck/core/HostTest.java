@@ -24,8 +24,7 @@ import ch.cyberduck.core.serializer.Serializer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -61,5 +60,58 @@ public class HostTest extends AbstractTestCase {
         assertTrue("~/Desktop".equals(host.getDownloadFolder().getAbbreviatedPath()) || "~/Downloads".equals(host.getDownloadFolder().getAbbreviatedPath()));
         host.setDownloadFolder(LocalFactory.createLocal("/t"));
         assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
+    }
+
+    @Test
+    public void testCreate1() {
+        final Credentials credentials = new Credentials("u", "p");
+        final Host bookmark = new Host(ProtocolFactory.SFTP, "h", 555, "/h", credentials);
+        assertNotSame(credentials, bookmark.getCredentials());
+        assertEquals(555, bookmark.getPort());
+        assertEquals(Scheme.sftp, bookmark.getProtocol().getScheme());
+        assertEquals("/h", bookmark.getDefaultPath());
+        assertEquals("u", bookmark.getCredentials().getUsername());
+        assertEquals("p", bookmark.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testCreate2() {
+        final Credentials credentials = new Credentials("u", "p");
+        final Host bookmark = new Host(ProtocolFactory.SFTP, "h", credentials);
+        assertNotSame(credentials, bookmark.getCredentials());
+        assertEquals(22, bookmark.getPort());
+        assertEquals(Scheme.sftp, bookmark.getProtocol().getScheme());
+        assertNull(bookmark.getDefaultPath());
+        assertEquals("u", bookmark.getCredentials().getUsername());
+        assertEquals("p", bookmark.getCredentials().getPassword());
+    }
+
+    @Test
+    public void testConfigure() {
+        final Credentials credentials = new Credentials("u", "p");
+        final Host bookmark = new Host(ProtocolFactory.SFTP, "h", credentials);
+        bookmark.configure(new HostnameConfigurator() {
+                               @Override
+                               public String getHostname(String alias) {
+                                   return "c";
+                               }
+
+                               @Override
+                               public int getPort(String alias) {
+                                   return 444;
+                               }
+                           }, new CredentialsConfigurator() {
+                               @Override
+                               public Credentials configure(Host host) {
+                                   final Credentials c = host.getCredentials();
+                                   c.setUsername("uu");
+                                   return c;
+                               }
+                           }
+        );
+        assertEquals(444, bookmark.getPort());
+        // Hostname should not be changed
+        assertEquals("h", bookmark.getHostname());
+        assertEquals("uu", bookmark.getCredentials().getUsername());
     }
 }

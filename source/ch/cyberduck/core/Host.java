@@ -61,7 +61,7 @@ public final class Host implements Serializable, Comparable<Host> {
     /**
      * The credentials to authenticate with for the CDN
      */
-    private Credentials cdnCredentials = new DistributionCredentials();
+    private Credentials cloudfront = new DistributionCredentials();
 
     /**
      * Unique identifier
@@ -165,8 +165,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param credentials Login credentials
      */
     public Host(final Protocol protocol, final String hostname, final Credentials credentials) {
-        this(protocol, hostname, protocol.getDefaultPort());
-        this.credentials = credentials;
+        this(protocol, hostname, protocol.getDefaultPort(), credentials);
     }
 
     /**
@@ -191,7 +190,6 @@ public final class Host implements Serializable, Comparable<Host> {
         this.defaultpath = defaultpath;
     }
 
-
     /**
      * @param protocol    Scheme
      * @param hostname    The hostname of the server
@@ -202,7 +200,34 @@ public final class Host implements Serializable, Comparable<Host> {
         this.protocol = protocol;
         this.hostname = hostname;
         this.port = port;
-        this.credentials = credentials;
+        this.credentials.setUsername(credentials.getUsername());
+        this.credentials.setPassword(credentials.getPassword());
+    }
+
+    /**
+     * @param protocol Scheme
+     * @param hostname The hostname of the server
+     * @param port     Port number
+     */
+    public Host(final Protocol protocol, final String hostname, final int port, final String defaultpath, final Credentials credentials) {
+        this.protocol = protocol;
+        this.hostname = hostname;
+        this.port = port;
+        this.defaultpath = defaultpath;
+        this.credentials.setUsername(credentials.getUsername());
+        this.credentials.setPassword(credentials.getPassword());
+    }
+
+    /**
+     * Auto configuration
+     */
+    protected void configure() {
+        this.configure(HostnameConfiguratorFactory.get(protocol), CredentialsConfiguratorFactory.get(protocol));
+    }
+
+    protected void configure(final HostnameConfigurator hostname, final CredentialsConfigurator credentials) {
+        this.setPort(hostname.getPort(this.hostname));
+        this.setCredentials(credentials.configure(this));
     }
 
     /**
@@ -248,7 +273,7 @@ public final class Host implements Serializable, Comparable<Host> {
         }
         Object cdnCredentialsObj = dict.stringForKey("CDN Credentials");
         if(cdnCredentialsObj != null) {
-            cdnCredentials.setUsername(cdnCredentialsObj.toString());
+            cloudfront.setUsername(cdnCredentialsObj.toString());
         }
         Object keyObj = dict.stringForKey("Private Key File");
         if(keyObj != null) {
@@ -402,10 +427,8 @@ public final class Host implements Serializable, Comparable<Host> {
         credentials.setPassword(password);
     }
 
-    public void setCredentials(Credentials credentials) {
-        if(null != credentials) {
-            this.credentials = credentials;
-        }
+    private void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
     public Credentials getCredentials() {
@@ -416,7 +439,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @return Credentials to modify CDN configuration
      */
     public Credentials getCdnCredentials() {
-        return cdnCredentials;
+        return cloudfront;
     }
 
     /**
@@ -424,8 +447,7 @@ public final class Host implements Serializable, Comparable<Host> {
      */
     public void setProtocol(final Protocol protocol) {
         this.protocol = protocol;
-        this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
-        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(this));
+        this.configure();
     }
 
     public Protocol getProtocol() {
@@ -497,8 +519,7 @@ public final class Host implements Serializable, Comparable<Host> {
         else {
             this.hostname = protocol.getDefaultHostname();
         }
-        this.setPort(HostnameConfiguratorFactory.get(protocol).getPort(hostname));
-        this.setCredentials(CredentialsConfiguratorFactory.get(protocol).configure(this));
+        this.configure();
     }
 
     /**

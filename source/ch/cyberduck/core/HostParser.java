@@ -122,8 +122,8 @@ public final class HostParser {
                 log.error(e.getMessage(), e);
             }
         }
-        final Host h = new Host(protocol, hostname, port, path);
-        h.setCredentials(username, password);
+        final Host h = new Host(protocol, hostname, port, path, new Credentials(username, password));
+        h.configure();
         return h;
     }
 }
