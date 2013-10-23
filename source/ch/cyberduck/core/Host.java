@@ -202,6 +202,7 @@ public final class Host implements Serializable, Comparable<Host> {
         this.port = port;
         this.credentials.setUsername(credentials.getUsername());
         this.credentials.setPassword(credentials.getPassword());
+        this.credentials.setIdentity(credentials.getIdentity());
     }
 
     /**
@@ -216,6 +217,7 @@ public final class Host implements Serializable, Comparable<Host> {
         this.defaultpath = defaultpath;
         this.credentials.setUsername(credentials.getUsername());
         this.credentials.setPassword(credentials.getPassword());
+        this.credentials.setIdentity(credentials.getIdentity());
     }
 
     /**
@@ -226,7 +228,11 @@ public final class Host implements Serializable, Comparable<Host> {
     }
 
     protected void configure(final HostnameConfigurator hostname, final CredentialsConfigurator credentials) {
-        this.setPort(hostname.getPort(this.hostname));
+        final int port = hostname.getPort(this.hostname);
+        if(port != -1) {
+            // External configuration found
+            this.setPort(port);
+        }
         this.setCredentials(credentials.configure(this));
     }
 
@@ -526,12 +532,7 @@ public final class Host implements Serializable, Comparable<Host> {
      * @param port The port number to connect to or -1 to use the default port for this protocol
      */
     public void setPort(final int port) {
-        if(-1 == port) {
-            this.port = protocol.getDefaultPort();
-        }
-        else {
-            this.port = port;
-        }
+        this.port = -1 == port ? protocol.getDefaultPort() : port;
     }
 
     /**

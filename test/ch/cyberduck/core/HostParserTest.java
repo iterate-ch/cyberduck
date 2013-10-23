@@ -25,7 +25,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "sftp://user:pass@hostname/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new SFTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -36,7 +36,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "ftp://user:pass@hostname/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new FTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -71,9 +71,9 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "sftp://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new SFTPProtocol()));
-            assertTrue(h.getPort() == 999);
+            assertEquals(999, h.getPort());
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -83,9 +83,9 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "ftp://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new FTPProtocol()));
-            assertTrue(h.getPort() == 999);
+            assertEquals(999, h.getPort());
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -95,9 +95,9 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "ftps://user:pass@hostname:999/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new FTPTLSProtocol()));
-            assertTrue(h.getPort() == 999);
+            assertEquals(999, h.getPort());
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNotNull(h.getCredentials().getPassword());
@@ -111,7 +111,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "sftp://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new SFTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -121,7 +121,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "ftp://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new FTPProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -131,7 +131,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "ftps://user@hostname/path/to/file";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(new FTPTLSProtocol()));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -156,7 +156,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "user@hostname";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(
                     ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
@@ -170,7 +170,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "user@name@hostname";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(
                     ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
@@ -180,7 +180,7 @@ public class HostParserTest extends AbstractTestCase {
         {
             String url = "user@name:password@hostname";
             Host h = HostParser.parse(url);
-            assertTrue(h.getHostname().equals("hostname"));
+            assertEquals("hostname", h.getHostname());
             assertTrue(h.getProtocol().equals(
                     ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());

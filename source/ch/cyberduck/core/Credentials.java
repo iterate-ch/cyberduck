@@ -58,7 +58,7 @@ public class Credentials {
      * @param user     Login with this username
      * @param password Passphrase
      */
-    public Credentials(String user, String password) {
+    public Credentials(final String user, final String password) {
         this(user, password, Preferences.instance().getBoolean("connection.login.useKeychain"));
     }
 
@@ -67,7 +67,7 @@ public class Credentials {
      * @param password The password to use or null if anonymous
      * @param save     if the credential should be added to the keychain upon successful login
      */
-    public Credentials(String user, String password, boolean save) {
+    public Credentials(final String user, final String password, final boolean save) {
         this.keychained = save;
         this.user = user;
         this.password = password;
@@ -80,7 +80,7 @@ public class Credentials {
         return user;
     }
 
-    public void setUsername(String user) {
+    public void setUsername(final String user) {
         this.user = user;
     }
 
@@ -96,8 +96,8 @@ public class Credentials {
         return password;
     }
 
-    public void setPassword(String pass) {
-        this.password = pass;
+    public void setPassword(final String password) {
+        this.password = password;
     }
 
     /**
@@ -106,7 +106,7 @@ public class Credentials {
      * @param saved If true, the password of the login is added to the keychain uppon
      *              successfull login
      */
-    public void setSaved(boolean saved) {
+    public void setSaved(final boolean saved) {
         this.keychained = saved;
     }
 
@@ -147,7 +147,7 @@ public class Credentials {
      *
      * @param file Private key file
      */
-    public void setIdentity(Local file) {
+    public void setIdentity(final Local file) {
         this.identity = file;
     }
 
