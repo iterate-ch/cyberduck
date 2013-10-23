@@ -24,6 +24,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display download progress in Finder and Dock (Mac)
 - [Feature] Enable website configuration for buckets (GreenQloud)
 - [Feature] Option to change default port for custom origin (CloudFront) (#5460)
+- [Feature] Upload with temporary name when saving from external editor
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
