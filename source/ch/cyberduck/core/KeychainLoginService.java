@@ -33,7 +33,11 @@ public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
     private LoginController controller;
+
     private HostPasswordStore keychain;
+
+    private StringAppender appender
+            = new StringAppender();
 
     public KeychainLoginService(final LoginController prompt, final HostPasswordStore keychain) {
         this.controller = prompt;
@@ -51,7 +55,9 @@ public class KeychainLoginService implements LoginService {
     public void login(final Session session, final Cache cache, final ProgressListener listener) throws BackgroundException {
         final Host bookmark = session.getHost();
         this.validate(bookmark,
-                MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), bookmark.getHostname()));
+                MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
+                new LoginOptions(bookmark.getProtocol()));
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
@@ -94,11 +100,7 @@ public class KeychainLoginService implements LoginService {
         }
     }
 
-    public void validate(final Host bookmark, final String title) throws LoginCanceledException {
-        this.validate(bookmark, title, new LoginOptions(bookmark.getProtocol()));
-    }
-
-    public void validate(final Host bookmark, final String title, final LoginOptions options) throws LoginCanceledException {
+    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -110,8 +112,12 @@ public class KeychainLoginService implements LoginService {
                     final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
                         if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                            final StringBuilder reason = new StringBuilder();
+                            appender.append(reason, message);
+                            appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                             controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                                    title, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+                                    LocaleFactory.localizedString("Login", "Login"),
+                                    reason.toString(),
                                     options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
@@ -124,17 +130,23 @@ public class KeychainLoginService implements LoginService {
                 }
                 else {
                     if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                        final StringBuilder reason = new StringBuilder();
+                        appender.append(reason, message);
+                        appender.append(reason, LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
                         controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                                title,
-                                LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"), options);
+                                LocaleFactory.localizedString("Login", "Login"),
+                                reason.toString(), options);
                     }
                     // We decide later if the key is encrypted and a password must be known to decrypt.
                 }
             }
             else {
+                final StringBuilder reason = new StringBuilder();
+                appender.append(reason, message);
+                appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
-                        title,
-                        LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"), options);
+                        LocaleFactory.localizedString("Login", "Login"),
+                        reason.toString(), options);
             }
         }
     }
