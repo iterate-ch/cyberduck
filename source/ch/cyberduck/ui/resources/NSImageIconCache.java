@@ -245,7 +245,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         }
         final NSImage copy = NSImage.imageWithData(icon.TIFFRepresentation());
         copy.setSize(new NSSize(width, height));
-        copy.setName(name + "-" + width);
+        copy.setName(String.format("%s-%d", name, width));
         return copy;
     }
 }
