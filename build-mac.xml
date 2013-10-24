@@ -291,25 +291,55 @@
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
             </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="--identifier net.java.openjdk.jre --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${app.runtime}" erroronmissingdir="false">
                 <include name="**/*.dylib"/>
             </fileset>
-            <fileset dir="${app.spotlight}">
-                <include name="*"/>
+            <fileset dir="${app.java}">
+                <include name="*.jre"/>
             </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${app.spotlight}">
+                <include name="*.mdimporter"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${app.frameworks}">
-                <include name="*.framework/Versions/A"/>
+                <include name="Growl.framework/Versions/A"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${app.frameworks}">
+                <include name="Sparkle.framework/Versions/A"/>
             </fileset>
             <srcfile/>
         </apply>
         <apply executable="/usr/bin/codesign" failonerror="false"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${build.deploy}">
                 <include name="${app.name}.app"/>
             </fileset>
