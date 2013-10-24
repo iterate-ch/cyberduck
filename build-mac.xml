@@ -288,19 +288,10 @@
 
     <target name="codesign" depends="unlock-keychain,compile-codesign-requirement">
         <echo message="Code signing ${app.bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
-        <apply executable="/usr/bin/codesign" failonerror="false"
-               type="both"
-               parallel="false" spawn="false" force="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
-            <fileset dir="${build.deploy}">
-                <include name="${app.name}.app"/>
-            </fileset>
-            <srcfile/>
-        </apply>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
             </fileset>
@@ -311,8 +302,14 @@
                 <include name="*"/>
             </fileset>
             <fileset dir="${app.frameworks}">
-                <include name="*"/>
+                <include name="*.framework/Versions/A"/>
             </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="false"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${build.deploy}">
                 <include name="${app.name}.app"/>
             </fileset>
