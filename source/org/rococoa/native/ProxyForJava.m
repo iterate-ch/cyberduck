@@ -40,7 +40,7 @@ id proxyForJavaObject(void* methodInvokedCallback, void* methodSignatureCallback
 
 // Passes a given invocation to the real object the proxy represents.
 - (void)forwardInvocation:(NSInvocation *) anInvocation {
-	// calls back to Java on methodInvokedCallback,
+	// calls back to Java on methodInvokedCallback, 
 	SEL selector = [anInvocation selector];
 	NSString* selectorName = NSStringFromSelector(selector);
 	// NSLog(@"forwardInvocation for %@", selectorName);
@@ -59,6 +59,9 @@ id proxyForJavaObject(void* methodInvokedCallback, void* methodSignatureCallback
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
 	NSString* selectorName = NSStringFromSelector(aSelector);
 	// NSLog(@"methodSignatureForSelector %@", selectorName);
+	if (aSelector == @selector(hash) || aSelector == @selector(isEqual:)) {
+		return [super methodSignatureForSelector: aSelector];
+	}
 	const char* methodSignature = methodSignatureCallback([ProxyForJava cstringPtrForSelector:(CFStringRef) selectorName]);
 	if (NULL == methodSignature) {
 		// No method with signature of selector implemented
@@ -76,40 +79,6 @@ id proxyForJavaObject(void* methodInvokedCallback, void* methodSignatureCallback
 		return NULL;
 	}
 	return selectorNameChar;
-}
-
-- (NSUInteger)hash {
-	SEL selector = @selector(hashCode);
-	NSMethodSignature *signature = [self methodSignatureForSelector:selector];
-	if(nil == signature) {
-		return [super hash];
-	}
-	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-	[self forwardInvocation:invocation];
-	NSUInteger result;
-	[invocation getReturnValue:&result];
-	return result;
-}
-
-- (BOOL)isEqual:(id)object {
-	SEL selector = @selector(equals:);
-	NSMethodSignature *signature = [self methodSignatureForSelector:selector];
-	if(nil == signature) {
-		return [super isEqual:object];
-	}
-	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-	[self forwardInvocation:invocation];
-	BOOL result;
-	[invocation getReturnValue:&result];
-	return result;
-}
-
-- (BOOL)isKindOfClass:(Class)aClass {
-	return NO;
-}
-
-- (BOOL) isMemberOfClass: (Class)aClass {
-	return NO;
 }
 
 @end
