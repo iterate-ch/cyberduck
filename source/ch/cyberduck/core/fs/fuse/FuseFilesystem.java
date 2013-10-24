@@ -19,7 +19,16 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -33,7 +42,18 @@ import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -446,7 +466,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     if(!session.getFeature(Move.class).isSupported(file)) {
                         return false;
                     }
-                    session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE));
+                    session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE), false);
                     return true;
                 }
             });

@@ -22,15 +22,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Move {
 
     /**
      * @param file    Origin
-     * @param renamed New location
+     * @param renamed Target
+     * @param exists  True if the target file exists
      */
-    void move(Path file, Path renamed) throws BackgroundException;
+    void move(Path file, Path renamed, boolean exists) throws BackgroundException;
 
     boolean isSupported(Path file);
 }

@@ -41,7 +41,7 @@ public class S3MoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
             if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
@@ -59,7 +59,7 @@ public class S3MoveFeature implements Move {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()));
+                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()), false);
                 }
             }
         }

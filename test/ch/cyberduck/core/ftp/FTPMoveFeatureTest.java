@@ -53,7 +53,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new FTPMoveFeature(session).move(test, target);
+        new FTPMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
@@ -72,7 +72,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new DefaultTouchFeature(session).touch(test);
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(target);
-        new FTPMoveFeature(session).move(test, target);
+        new FTPMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
@@ -88,7 +88,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new FTPMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new FTPMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), false);
         session.close();
     }
 }

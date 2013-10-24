@@ -41,7 +41,7 @@ public class DAVMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
             session.getClient().move(new DAVPathEncoder().encode(file),
                     new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl());

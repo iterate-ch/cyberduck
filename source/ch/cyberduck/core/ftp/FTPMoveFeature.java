@@ -18,16 +18,23 @@ package ch.cyberduck.core.ftp;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
+import java.util.Collections;
 
 /**
  * @version $Id$
  */
 public class FTPMoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(FTPMoveFeature.class);
 
     private FTPSession session;
 
@@ -41,8 +48,17 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
+            if(exists) {
+                final Delete delete = session.getFeature(Delete.class);
+                try {
+                    delete.delete(Collections.singletonList(renamed), new DisabledLoginController());
+                }
+                catch(NotfoundException e) {
+                    log.warn(String.format("Failure deleting file %s %s", renamed, e));
+                }
+            }
             if(!session.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }

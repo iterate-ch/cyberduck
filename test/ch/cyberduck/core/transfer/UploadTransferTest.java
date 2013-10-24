@@ -352,7 +352,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
                             assertEquals(test, renamed);
                             moved.set(true);
                         }

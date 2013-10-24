@@ -19,7 +19,16 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -391,7 +400,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         if(!session.getFeature(Move.class).isSupported(file)) {
                             return false;
                         }
-                        session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE));
+                        session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE), false);
                         return true;
                     }
                 });

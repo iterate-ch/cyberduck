@@ -84,7 +84,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", file, renamed));
             }
-            move.move(file, renamed);
+            move.move(file, renamed, false);
         }
     }
 

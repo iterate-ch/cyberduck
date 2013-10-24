@@ -46,7 +46,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
                             assertNotSame(file.getName(), renamed.getName());
                             c.set(true);
                         }
@@ -104,7 +104,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed) throws BackgroundException {
+                        public void move(final Path f, final Path renamed, boolean exists) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
                                 assertEquals(file, f);
                             }
@@ -173,7 +173,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed) throws BackgroundException {
+                        public void move(final Path f, final Path renamed, boolean exists) throws BackgroundException {
                             assertFalse(moved.get());
                             assertEquals(file, f);
                             moved.set(true);

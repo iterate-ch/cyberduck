@@ -56,7 +56,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         target.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, target);
+        new SwiftMoveFeature(session).move(test, target, false);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
@@ -79,7 +79,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         target.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(target);
-        new SwiftMoveFeature(session).move(test, target);
+        new SwiftMoveFeature(session).move(test, target, false);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
@@ -98,7 +98,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         test.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), false);
     }
 
     @Test

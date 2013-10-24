@@ -44,7 +44,7 @@ public abstract class MoveWorker extends Worker<Boolean> {
     public Boolean run() throws BackgroundException {
         final Move feature = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
-            feature.move(entry.getKey(), entry.getValue());
+            feature.move(entry.getKey(), entry.getValue(), false);
         }
         return true;
     }

@@ -47,7 +47,7 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
             if(file.attributes().isFile()) {
                 new SwiftCopyFeature(session).copy(file, renamed);
@@ -56,7 +56,7 @@ public class SwiftMoveFeature implements Move {
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()));
+                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()), false);
                 }
                 try {
                     session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
