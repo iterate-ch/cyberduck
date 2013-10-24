@@ -133,15 +133,12 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             image = NSImage.imageWithContentsOfFile(name);
         }
         else {
-            image = NSImage.imageNamed(String.format("%s-%d", name, width));
+            image = NSImage.imageNamed(String.format("%d-%s", width, name));
             if(null == image) {
                 image = NSImage.imageNamed(name);
             }
             else {
                 return image;
-            }
-            if(null == image) {
-                image = NSImage.imageWithContentsOfFile(String.format("img/%s", name));
             }
         }
         if(null == image) {
@@ -244,8 +241,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             return icon;
         }
         final NSImage copy = NSImage.imageWithData(icon.TIFFRepresentation());
+        // Cache sized image
+        copy.setName(String.format("%d-%s", width, name));
         copy.setSize(new NSSize(width, height));
-        copy.setName(String.format("%s-%d", name, width));
         return copy;
     }
 }

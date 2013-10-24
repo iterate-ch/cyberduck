@@ -20,7 +20,6 @@ package ch.cyberduck.ui.resources;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -35,36 +34,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class NSImageIconCacheTest extends AbstractTestCase {
-
-    @Test
-    public void testFileIcon() throws Exception {
-        {
-            final NSImage icon = new NSImageIconCache().fileIcon(new Path("/b", Path.DIRECTORY_TYPE), 16);
-            assertNotNull(icon);
-            assertTrue(icon.isValid());
-            assertFalse(icon.isTemplate());
-            assertEquals(16, icon.size().width.intValue());
-            assertEquals(16, icon.size().height.intValue());
-            assertEquals(1, icon.representations().count().intValue());
-        }
-        {
-            final NSImage icon = new NSImageIconCache().fileIcon(new Path("/b", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE), 16);
-            assertNotNull(icon);
-            assertTrue(icon.isValid());
-            assertFalse(icon.isTemplate());
-            assertEquals(16, icon.size().width.intValue());
-            assertEquals(16, icon.size().height.intValue());
-            assertEquals(1, icon.representations().count().intValue());
-        }
-        {
-            final NSImage icon = new NSImageIconCache().fileIcon(new Path("/b", Path.FILE_TYPE), 16);
-            assertNotNull(icon);
-            assertTrue(icon.isValid());
-            assertFalse(icon.isTemplate());
-            assertEquals(16, icon.size().width.intValue());
-            assertEquals(16, icon.size().height.intValue());
-        }
-    }
 
     @Test
     public void testFolderIcon16() throws Exception {
@@ -177,16 +146,16 @@ public class NSImageIconCacheTest extends AbstractTestCase {
     @Test
     public void testCacheTiff() throws Exception {
         final NSImageIconCache cache = new NSImageIconCache();
-        final NSImage icon32 = cache.fileIcon(new FinderLocal("test/ch/cyberduck/ui/resources/ftp.tiff"), 32);
+        final NSImage icon32 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 32);
         assertNotNull(icon32);
         assertEquals(32, icon32.size().width.intValue());
         assertEquals(32, icon32.size().height.intValue());
-        final NSImage icon16 = cache.fileIcon(new FinderLocal("test/ch/cyberduck/ui/resources/ftp.tiff"), 16);
+        final NSImage icon16 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 16);
         assertNotNull(icon16);
         assertNotSame(icon16, icon32);
         assertEquals(16, icon16.size().width.intValue());
         assertEquals(16, icon16.size().height.intValue());
-        final NSImage icon64 = cache.fileIcon(new FinderLocal("test/ch/cyberduck/ui/resources/ftp.tiff"), 64);
+        final NSImage icon64 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 64);
         assertNotNull(icon64);
         assertNotSame(icon16, icon64);
         assertNotSame(icon32, icon64);
@@ -233,7 +202,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
                 = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
-        assertNotNull(icon);
+        assertNull(icon);
 //        assertEquals(icon, cache.iconNamed("notfound.tiff"));
         assertTrue(f.touch());
         icon = cache.fileIcon(f, 16);
