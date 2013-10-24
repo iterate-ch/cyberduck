@@ -31,8 +31,14 @@ import ch.cyberduck.core.UrlProvider;
 
 import org.junit.Test;
 
+import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import ch.iterate.openstack.swift.model.AccountInfo;
+import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.*;
 
@@ -106,5 +112,19 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
             new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
         }
         session.close();
+    }
+
+    @Test
+    public void testTempUrl() throws Exception {
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
+        ));
+        final Region region = new Region("DFW", URI.create("http://s"), URI.create("http://m"));
+        Map accounts = new HashMap();
+        accounts.put(region, new AccountInfo(1L, 1, "k"));
+        final Path container = new Path("test w.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        assertNotEquals(DescriptiveUrl.EMPTY, new SwiftUrlProvider(session, accounts).createTempUrl(region,
+                file, 300));
     }
 }
