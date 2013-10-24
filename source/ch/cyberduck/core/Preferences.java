@@ -215,7 +215,7 @@ public abstract class Preferences {
          */
         defaults.put("browser.cache.size", String.valueOf(1000));
         defaults.put("transfer.cache.size", String.valueOf(50));
-        defaults.put("icon.cache.size", String.valueOf(50));
+        defaults.put("icon.cache.size", String.valueOf(200));
 
         /**
          * Caching NS* proxy instances.
