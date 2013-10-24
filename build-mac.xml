@@ -336,6 +336,10 @@
         <exec executable="/usr/bin/codesign" failonerror="true">
             <arg line="-d -r- --deep-verify ${app.bundle}"/>
         </exec>
+        <echo message="Print system policy verification for ${app.bundle}..."/>
+        <exec executable="/usr/sbin/spctl" failonerror="true">
+            <arg line="-v --assess --type execute ${app.bundle}"/>
+        </exec>
     </target>
 
     <target name="tar">
@@ -391,7 +395,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.ch/nightly/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
@@ -427,7 +431,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.ch/beta/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
@@ -463,7 +467,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.ch/changelog.html"/>
         </antcall>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
