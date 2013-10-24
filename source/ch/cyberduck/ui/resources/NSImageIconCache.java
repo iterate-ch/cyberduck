@@ -26,11 +26,15 @@ import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -54,8 +58,46 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private static final Local FOLDER_PATH
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
 
+    /**
+     * Cache limited to n entries
+     */
+    private Map<String, NSImage> cache;
+
     protected NSImageIconCache() {
-        //
+        if(0 == Preferences.instance().getInteger("icon.cache.size")) {
+            cache = new HashMap<String, NSImage>() {
+                @Override
+                public NSImage put(String key, NSImage value) {
+                    return value;
+                }
+            };
+        }
+        else {
+            cache = new LRUMap(Preferences.instance().getInteger("icon.cache.size")) {
+                @Override
+                protected boolean removeLRU(LinkEntry entry) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Removing from cache:" + entry);
+                    }
+                    return true;
+                }
+            };
+        }
+    }
+
+    private NSImage put(final String name, final NSImage image, final Integer size) {
+        cache.put(String.format("%d-%s", size, name), image);
+        return image;
+    }
+
+    private NSImage load(final String name, final Integer size) {
+        if(!cache.containsKey(String.format("%d-%s", size, name))) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No cached image for %s", name));
+            }
+            return null;
+        }
+        return cache.get(String.format("%d-%s", size, name));
     }
 
     /**
@@ -65,8 +107,12 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage documentIcon(final String extension, final Integer size) {
-        NSImage image = NSWorkspace.sharedWorkspace().iconForFileType(extension);
-        image = this.convert(extension, image, size);
+        NSImage image = this.load(extension, size);
+        if(null == image) {
+            image = NSWorkspace.sharedWorkspace().iconForFileType(extension);
+            image = this.convert(extension, image, size);
+            this.put(extension, image, size);
+        }
         return image;
     }
 
@@ -76,6 +122,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         NSImage icon = this.iconNamed(name, size);
         if(null == icon) {
             icon = this.badge(badge, this.documentIcon(extension, size));
+            this.put(name, icon, size);
         }
         return icon;
     }
@@ -92,9 +139,12 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     @Override
     public NSImage folderIcon(final Integer size, final NSImage badge) {
         final String name = String.format("NSFolder-%s", badge.name());
-        NSImage folder;
-        folder = this.convert(name, this.fileIcon(FOLDER_PATH, null), size);
-        folder = this.badge(badge, folder);
+        NSImage folder = this.load(name, size);
+        if(null == folder) {
+            folder = this.convert(name, this.fileIcon(FOLDER_PATH, null), size);
+            folder = this.badge(badge, folder);
+            this.put(name, folder, size);
+        }
         return folder;
     }
 
@@ -128,24 +178,28 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {
-        NSImage image;
-        if(name.startsWith("/")) {
-            image = NSImage.imageWithContentsOfFile(name);
-        }
-        else {
-            image = NSImage.imageNamed(String.format("%d-%s", width, name));
-            if(null == image) {
-                image = NSImage.imageNamed(name);
+        NSImage image = this.load(name, width);
+        if(null == image) {
+            if(name.startsWith("/")) {
+                image = NSImage.imageWithContentsOfFile(name);
             }
             else {
-                return image;
+                image = NSImage.imageNamed(String.format("%d-%s", width, name));
+                if(null == image) {
+                    image = NSImage.imageNamed(name);
+                }
+                else {
+                    return image;
+                }
             }
-        }
-        if(null == image) {
-            log.warn(String.format("No icon named %s", name));
-        }
-        else {
-            image = this.convert(name, image, width, height);
+            if(null == image) {
+                log.warn(String.format("No icon named %s", name));
+                this.put(name, null, width);
+            }
+            else {
+                image = this.convert(name, image, width, height);
+                this.put(name, image, width);
+            }
         }
         return image;
     }
@@ -159,8 +213,12 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     public NSImage fileIcon(final Local item, final Integer size) {
         NSImage icon = null;
         if(item.exists()) {
-            icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
-            icon = this.convert(item.getName(), icon, size);
+            icon = this.load(item.getAbsolute(), size);
+            if(null == icon) {
+                icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
+                icon = this.convert(item.getName(), icon, size);
+                this.put(item.getAbsolute(), icon, size);
+            }
         }
         if(null == icon) {
             return this.iconNamed("notfound.tiff", size);
@@ -175,13 +233,16 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage applicationIcon(final Application app, final Integer size) {
-        NSImage icon;
-        icon = NSWorkspace.sharedWorkspace().iconForFile(
-                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier()));
+        NSImage icon = this.load(app.getIdentifier(), size);
+        if(null == icon) {
+            icon = NSWorkspace.sharedWorkspace().iconForFile(
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier()));
+            icon = this.convert(app.getIdentifier(), icon, size);
+            this.put(app.getIdentifier(), icon, size);
+        }
         if(null == icon) {
             return this.iconNamed("notfound.tiff", size);
         }
-        icon = this.convert(app.getIdentifier(), icon, size);
         return icon;
     }
 
