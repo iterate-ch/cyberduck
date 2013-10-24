@@ -454,7 +454,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="universal, clean, revision">
+    <target name="release" depends="clean, revision">
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
