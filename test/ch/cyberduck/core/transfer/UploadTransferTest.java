@@ -100,12 +100,11 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
-            public void transfer(final Path file, final TransferPathFilter filter,
-                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
+                super.transfer(file, filter);
                 assertFalse(cache.containsKey(child.getReference()));
             }
         }.run();
@@ -145,12 +144,11 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
-            public void transfer(final Path file, final TransferPathFilter filter,
-                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
+                super.transfer(file, filter);
                 assertFalse(cache.containsKey(child.getReference()));
             }
         }.run();
@@ -398,7 +396,7 @@ public class UploadTransferTest extends AbstractTestCase {
         worker.prepare(test, new TransferStatus().exists(true), filter);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRenamed());
-        worker.transfer(test, filter, new TransferOptions(), new DisabledTransferErrorCallback());
+        worker.transfer(test, filter);
         assertTrue(set.get());
         assertTrue(moved.get());
     }

@@ -158,7 +158,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                 this.complete();
                 // Transfer all files sequentially
                 for(Path next : transfer.getRoots()) {
-                    this.transfer(next, filter, options, error);
+                    this.transfer(next, filter);
                 }
                 this.complete();
             }
@@ -201,8 +201,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
                         final Session<?> session = borrow();
+                        session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                         try {
-                            session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, parent);
                             table.put(file, status);
@@ -235,6 +235,20 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             }
                             return status;
                         }
+                        catch(ConnectionCanceledException e) {
+                            throw e;
+                        }
+                        catch(BackgroundException e) {
+                            // Prompt to continue or abort
+                            if(error.prompt(e)) {
+                                // Continue
+                                log.warn(String.format("Ignore transfer failure %s", e));
+                                return null;
+                            }
+                            else {
+                                throw new ConnectionCanceledException(e);
+                            }
+                        }
                         finally {
                             release(session);
                         }
@@ -253,13 +267,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
     }
 
     /**
-     * @param file    File
-     * @param filter  Filter to apply to exclude files from transfer
-     * @param options Quarantine option
-     * @param error   Error callback prompt
+     * @param file   File
+     * @param filter Filter to apply to exclude files from transfer
      */
-    public void transfer(final Path file, final TransferPathFilter filter,
-                         final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+    public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -291,14 +302,14 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
                             else {
-                                throw e;
+                                throw new ConnectionCanceledException(e);
                             }
                         }
                         // Recursive
                         if(file.attributes().isDirectory()) {
                             for(Path f : cache.get(file.getReference())) {
                                 // Recursive
-                                transfer(f, filter, options, error);
+                                transfer(f, filter);
                             }
                             cache.remove(file.getReference());
                         }

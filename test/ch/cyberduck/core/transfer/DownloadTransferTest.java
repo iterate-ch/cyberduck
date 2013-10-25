@@ -137,12 +137,11 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
-            public void transfer(final Path file, final TransferPathFilter filter,
-                                 final TransferOptions options, final TransferErrorCallback error) throws BackgroundException {
+            public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, filter, options, new DisabledTransferErrorCallback());
+                super.transfer(file, filter);
                 if(file.equals(root)) {
                     assertFalse(cache.containsKey(root.getReference()));
                 }
