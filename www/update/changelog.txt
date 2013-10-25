@@ -1,3 +1,6 @@
+4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
+- [Bugfix] Temporary URL for containers with whitespace (OpenStack)
+
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
 - [Feature] Resumable multipart uploads (S3) (#6208)

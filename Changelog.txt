@@ -3,6 +3,10 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
+- [Bugfix] Code signing requirements for embedded bundles
+- [Bugfix] Temporary URL for containers with whitespace (OpenStack)
+
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
 - [Feature] No Java installation requirement (Mac)
