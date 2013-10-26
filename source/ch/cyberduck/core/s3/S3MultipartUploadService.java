@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -91,7 +92,7 @@ public class S3MultipartUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
@@ -142,7 +143,7 @@ public class S3MultipartUploadService implements Upload {
                     final long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
-                        final Future<MultipartPart> multipartPartFuture = this.submitPart(file, throttle, listener,
+                        final Future<MultipartPart> multipartPartFuture = this.submitPart(file, local, throttle, listener,
                                 status, multipart, partNumber, marker, length);
                         parts.add(multipartPartFuture);
                     }
@@ -227,6 +228,7 @@ public class S3MultipartUploadService implements Upload {
     }
 
     private Future<MultipartPart> submitPart(final Path file,
+                                             final Local local,
                                              final BandwidthThrottle throttle, final StreamListener listener,
                                              final TransferStatus status, final MultipartUpload multipart,
                                              final int partNumber, final long offset, final long length) throws BackgroundException {
@@ -243,7 +245,7 @@ public class S3MultipartUploadService implements Upload {
                 InputStream in = null;
                 ResponseOutputStream<StorageObject> out = null;
                 try {
-                    in = file.getLocal().getInputStream();
+                    in = local.getInputStream();
                     out = new S3SingleUploadService(session).write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                 }

@@ -44,10 +44,9 @@ public class DefaultTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         temp.touch();
-        file.setLocal(temp);
         final TransferStatus status = new TransferStatus();
         try {
-            feature.upload(file,
+            feature.upload(file, temp,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new DisabledStreamListener(), status);
         }

@@ -1,7 +1,7 @@
-package ch.cyberduck.core.shared;
+package ch.cyberduck.core.http;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,17 +14,14 @@ package ch.cyberduck.core.shared;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -32,28 +29,29 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class DefaultUploadFeature implements Upload {
+public class HttpUploadFeature implements Upload {
+    private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private Write writer;
+    private AbstractHttpWriteFeature writer;
 
-    public DefaultUploadFeature(final Session<?> session) {
-        this.writer = session.getFeature(Write.class);
+    public HttpUploadFeature(final AbstractHttpWriteFeature<?> writer) {
+        this.writer = writer;
     }
 
     @Override
-    public void upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public void upload(final Path file, Local local, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
-            OutputStream out = null;
+            ResponseOutputStream<?> out = null;
             try {
                 in = local.getInputStream();
                 out = writer.write(file, status);
@@ -62,6 +60,10 @@ public class DefaultUploadFeature implements Upload {
             finally {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
+            }
+            final Object response = out.getResponse();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received response %s", response));
             }
         }
         catch(IOException e) {

@@ -22,18 +22,20 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.model.StorageObject;
 
-import java.io.OutputStream;
 import java.util.Collections;
 
 /**
  * @version $Id$
  */
-public class S3WriteFeature implements Write {
+public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
 
     private S3Session session;
 
@@ -42,7 +44,7 @@ public class S3WriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3SingleUploadService service = new S3SingleUploadService(session);
         return service.write(file, service.createObjectDetails(file), status.getLength(),
                 Collections.<String, String>emptyMap());

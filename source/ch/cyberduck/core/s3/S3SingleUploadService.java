@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -65,7 +66,7 @@ public class S3SingleUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         ResponseOutputStream<StorageObject> out = null;
@@ -85,7 +86,7 @@ public class S3SingleUploadService implements Upload {
                 in = file.getLocal().getInputStream();
             }
             else {
-                in = new DigestInputStream(file.getLocal().getInputStream(), digest);
+                in = new DigestInputStream(local.getInputStream(), digest);
             }
             final StorageObject object = this.createObjectDetails(file);
             out = this.write(file, object, status.getLength(), Collections.<String, String>emptyMap());

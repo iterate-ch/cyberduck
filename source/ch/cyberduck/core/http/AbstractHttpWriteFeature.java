@@ -1,7 +1,7 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.http;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,22 +14,19 @@ package ch.cyberduck.core.features;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface Upload {
+public abstract class AbstractHttpWriteFeature<T> implements Write {
 
-    void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                final TransferStatus status) throws BackgroundException;
+    @Override
+    public abstract ResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
 }

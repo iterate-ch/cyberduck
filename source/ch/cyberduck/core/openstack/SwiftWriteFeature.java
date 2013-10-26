@@ -25,7 +25,9 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +35,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -41,7 +42,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 /**
  * @version $Id$
  */
-public class SwiftWriteFeature implements Write {
+public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private PathContainerService containerService = new PathContainerService();
@@ -53,7 +54,7 @@ public class SwiftWriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("openstack.metadata.default")) {

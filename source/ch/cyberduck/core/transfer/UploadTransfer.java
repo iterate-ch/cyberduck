@@ -188,7 +188,7 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            session.getFeature(Upload.class).upload(file, bandwidth, new DisabledStreamListener() {
+            session.getFeature(Upload.class).upload(file, file.getLocal(), bandwidth, new DisabledStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);

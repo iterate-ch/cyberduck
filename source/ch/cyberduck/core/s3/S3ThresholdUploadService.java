@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,13 +39,13 @@ public class S3ThresholdUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final BandwidthThrottle throttle, final StreamListener listener,
+    public void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
-            new S3MultipartUploadService(session).upload(file, throttle, listener, status);
+            new S3MultipartUploadService(session).upload(file, local, throttle, listener, status);
         }
         else {
-            new S3SingleUploadService(session).upload(file, throttle, listener, status);
+            new S3SingleUploadService(session).upload(file, local, throttle, listener, status);
         }
     }
 }

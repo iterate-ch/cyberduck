@@ -23,6 +23,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,7 +41,7 @@ import com.github.sardine.impl.SardineException;
 /**
  * @version $Id$
  */
-public class DAVWriteFeature implements Write {
+public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements Write {
 
     private DAVSession session;
 

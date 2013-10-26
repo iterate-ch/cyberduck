@@ -28,6 +28,8 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -333,5 +335,13 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             log.error("Error waiting for output stream");
             throw new BackgroundException(e);
         }
+    }
+
+    @Override
+    public <T> T getFeature(Class<T> type) {
+        if(type == Upload.class) {
+            return (T) new HttpUploadFeature((AbstractHttpWriteFeature<?>) this.getFeature(Write.class));
+        }
+        return super.getFeature(type);
     }
 }
