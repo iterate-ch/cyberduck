@@ -531,7 +531,7 @@ public class BrowserController extends WindowController
         window.setMovableByWindowBackground(true);
         window.setDelegate(this.id());
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
-        window.setMinSize(new NSSize(400d, 200d));
+        window.setContentMinSize(new NSSize(400d, 200d));
         super.setWindow(window);
     }
 
@@ -559,6 +559,10 @@ public class BrowserController extends WindowController
         transcript.clear();
     }
 
+    public NSSize drawerWillResizeContents_toSize(final NSDrawer sender, final NSSize contentSize) {
+        return contentSize;
+    }
+
     public void setLogDrawer(NSDrawer drawer) {
         this.logDrawer = drawer;
         this.transcript = new TranscriptController() {
@@ -568,22 +572,7 @@ public class BrowserController extends WindowController
             }
         };
         this.logDrawer.setContentView(this.transcript.getLogView());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerWillOpen:"),
-                NSDrawer.DrawerWillOpenNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerDidOpen:"),
-                NSDrawer.DrawerDidOpenNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerWillClose:"),
-                NSDrawer.DrawerWillCloseNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerDidClose:"),
-                NSDrawer.DrawerDidCloseNotification,
-                this.logDrawer);
+        this.logDrawer.setDelegate(this.id());
     }
 
     public TranscriptController getTranscript() {

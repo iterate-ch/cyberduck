@@ -18,7 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -554,13 +566,9 @@ public class BookmarkController extends WindowController {
     }
 
     @Override
-    protected double getMaxWindowHeight() {
-        return window.frame().size.height.doubleValue();
-    }
-
-    @Override
-    protected double getMaxWindowWidth() {
-        return 600;
+    public void setWindow(NSWindow window) {
+        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        super.setWindow(window);
     }
 
     @Outlet

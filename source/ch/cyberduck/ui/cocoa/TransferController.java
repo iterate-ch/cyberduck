@@ -293,6 +293,10 @@ public final class TransferController extends WindowController implements NSTool
         transcript.clear();
     }
 
+    public NSSize drawerWillResizeContents_toSize(final NSDrawer sender, final NSSize contentSize) {
+        return contentSize;
+    }
+
     public void setLogDrawer(NSDrawer drawer) {
         this.logDrawer = drawer;
         this.transcript = new TranscriptController() {
@@ -302,22 +306,7 @@ public final class TransferController extends WindowController implements NSTool
             }
         };
         this.logDrawer.setContentView(this.transcript.getLogView());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerWillOpen:"),
-                NSDrawer.DrawerWillOpenNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerDidOpen:"),
-                NSDrawer.DrawerDidOpenNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerWillClose:"),
-                NSDrawer.DrawerWillCloseNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("drawerDidClose:"),
-                NSDrawer.DrawerDidCloseNotification,
-                this.logDrawer);
+        this.logDrawer.setDelegate(this.id());
     }
 
     public void toggleLogDrawer(final ID sender) {

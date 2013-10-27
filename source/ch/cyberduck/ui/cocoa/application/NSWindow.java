@@ -1261,14 +1261,18 @@ public abstract class NSWindow extends NSResponder {
      * Conversion Error : NSSize
      */
     public abstract void setMaxSize(NSSize size);
+
     /**
      * <i>native declaration : :485</i><br>
      * Conversion Error : NSSize
      */
+    public abstract void setContentMinSize(NSSize size);
+
     /**
      * <i>native declaration : :486</i><br>
      * Conversion Error : NSSize
      */
+    public abstract void setContentMaxSize(NSSize size);
     /**
      * <i>native declaration : :487</i><br>
      * Conversion Error : NSSize

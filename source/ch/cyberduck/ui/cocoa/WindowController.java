@@ -23,7 +23,17 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
+import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
+import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -37,7 +47,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Collections;
@@ -91,8 +100,6 @@ public abstract class WindowController extends BundleController implements NSWin
     public void setWindow(final NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(!this.isSingleton());
-//        window.setMinSize(new NSSize(this.getMinWindowWidth(), this.getMinWindowHeight()));
-        this.window.setMaxSize(new NSSize(this.getMaxWindowWidth(), this.getMaxWindowHeight()));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("windowWillClose:"),
                 NSWindow.WindowWillCloseNotification,
@@ -101,14 +108,6 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public NSWindow window() {
         return this.window;
-    }
-
-    protected double getMaxWindowHeight() {
-        return this.window().maxSize().height.doubleValue();
-    }
-
-    protected double getMaxWindowWidth() {
-        return this.window().maxSize().width.doubleValue();
     }
 
     /**

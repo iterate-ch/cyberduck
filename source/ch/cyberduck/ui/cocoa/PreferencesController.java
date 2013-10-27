@@ -19,7 +19,18 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
@@ -49,6 +60,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
@@ -204,12 +216,8 @@ public class PreferencesController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
         window.setFrameAutosaveName("Preferences");
+        window.setContentMaxSize(new NSSize(800, window.frame().size.height.doubleValue()));
         super.setWindow(window);
-    }
-
-    @Override
-    protected double getMaxWindowWidth() {
-        return 800;
     }
 
     @Override
