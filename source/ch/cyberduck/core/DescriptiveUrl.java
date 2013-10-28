@@ -49,7 +49,8 @@ public class DescriptiveUrl {
         cname,
         signed,
         torrent,
-        authenticated
+        authenticated,
+        analytics
     }
 
     public DescriptiveUrl(final URI url) {
