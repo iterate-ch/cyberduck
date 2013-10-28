@@ -76,4 +76,27 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         assertFalse(r.contains(action));
         assertNull(r.getCurrent());
     }
+
+    @Test
+    public void testAddSecondaryThread() throws Exception {
+        final BackgroundActionRegistry r = new BackgroundActionRegistry();
+        final CountDownLatch lock = new CountDownLatch(1);
+        final AbstractBackgroundAction action = new AbstractBackgroundAction() {
+            @Override
+            public Object run() throws BackgroundException {
+                return null;
+            }
+        };
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                r.add(action);
+                lock.countDown();
+            }
+        }).start();
+        lock.await();
+        assertTrue(r.size() == 1);
+        r.remove(action);
+        assertTrue(r.isEmpty());
+    }
 }
