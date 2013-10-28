@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -50,10 +51,15 @@ public class DefaultFindFeature implements Find {
             return true;
         }
         try {
+            final AttributedList<Path> list;
             if(!cache.containsKey(file.getParent().getReference())) {
-                cache.put(file.getParent().getReference(), session.list(file.getParent(), new DisabledListProgressListener()));
+                list = session.list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent().getReference(), list);
             }
-            return cache.get(file.getParent().getReference()).contains(file.getReference());
+            else {
+                list = cache.get(file.getParent().getReference());
+            }
+            return list.contains(file.getReference());
         }
         catch(NotfoundException e) {
             return false;
