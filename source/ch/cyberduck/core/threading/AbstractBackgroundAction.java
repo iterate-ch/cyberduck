@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +36,9 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
     private State state;
+
+    protected final Set<BackgroundActionListener> listeners
+            = new HashSet<BackgroundActionListener>();
 
     @Override
     public void init() {
@@ -125,9 +127,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         }
         return name.toString();
     }
-
-    protected Set<BackgroundActionListener> listeners
-            = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 
     @Override
     public void addListener(final BackgroundActionListener listener) {
