@@ -37,7 +37,12 @@ public class Cache {
     private final Map<PathReference, AttributedList<Path>> impl;
 
     public static Cache empty() {
-        return new Cache(1);
+        return new Cache(0) {
+            @Override
+            public AttributedList<Path> put(PathReference reference, AttributedList<Path> children) {
+                return AttributedList.emptyList();
+            }
+        };
     }
 
     public Cache() {
@@ -48,6 +53,9 @@ public class Cache {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
             impl = new LinkedHashMap<PathReference, AttributedList<Path>>();
+        }
+        else if(size == 0) {
+            impl = Collections.emptyMap();
         }
         else {
             // Will inflate to the given size

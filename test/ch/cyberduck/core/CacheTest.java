@@ -88,4 +88,13 @@ public class CacheTest extends AbstractTestCase {
         final Path file = new Path("name", Path.FILE_TYPE);
         assertEquals(AttributedList.<Path>emptyList(), cache.get(file.getReference()));
     }
+
+    @Test
+    public void testDisabledCache() throws Exception {
+        Cache cache = Cache.empty();
+        final Path file = new Path("name", Path.FILE_TYPE);
+        cache.put(file.getReference(), AttributedList.<Path>emptyList());
+        assertFalse(cache.containsKey(file.getReference()));
+        assertEquals(0, cache.keySet().size());
+    }
 }
