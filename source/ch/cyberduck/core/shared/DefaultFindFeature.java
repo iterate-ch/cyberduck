@@ -39,7 +39,7 @@ public class DefaultFindFeature implements Find {
         this(session, Cache.empty());
     }
 
-    public DefaultFindFeature(Session session, Cache cache) {
+    public DefaultFindFeature(final Session session, final Cache cache) {
         this.session = session;
         this.cache = cache;
     }
