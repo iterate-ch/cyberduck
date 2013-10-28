@@ -538,13 +538,6 @@ public class BrowserController extends WindowController
     @Outlet
     private NSDrawer logDrawer;
 
-    public void drawerWillOpen(NSNotification notification) {
-        logDrawer.setContentSize(new NSSize(
-                logDrawer.contentSize().width.doubleValue(),
-                Preferences.instance().getDouble("browser.transcript.size.height")
-        ));
-    }
-
     public void drawerDidOpen(NSNotification notification) {
         Preferences.instance().setProperty("browser.transcript.open", true);
     }

@@ -273,12 +273,6 @@ public final class TransferController extends WindowController implements NSTool
 
     private NSDrawer logDrawer;
 
-    public void drawerWillOpen(NSNotification notification) {
-        logDrawer.setContentSize(new NSSize(logDrawer.contentSize().width.doubleValue(),
-                Preferences.instance().getDouble("queue.transcript.size.height")
-        ));
-    }
-
     public void drawerDidOpen(NSNotification notification) {
         Preferences.instance().setProperty("queue.transcript.open", true);
     }
