@@ -6,6 +6,7 @@ Changelog. Last modified: $Date$
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
 - [Bugfix] Code signing requirements for embedded bundles
 - [Bugfix] Temporary URL for containers with whitespace (OpenStack)
+- [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements

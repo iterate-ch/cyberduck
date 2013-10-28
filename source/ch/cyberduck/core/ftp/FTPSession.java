@@ -17,7 +17,18 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -129,7 +140,9 @@ public class FTPSession extends SSLSession<FTPClient> {
      */
     protected boolean isTLSSupported() throws BackgroundException {
         try {
-            return client.hasFeature("AUTH", "TLS") && client.hasFeature("PBSZ") && client.hasFeature("PROT");
+            return client.hasFeature("AUTH", "TLS")
+                    && client.hasFeature("PBSZ")
+                    && client.hasFeature("PROT");
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
@@ -173,6 +186,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public boolean alert() throws BackgroundException {
         if(super.alert()) {
+            // Only alert if no option to switch to TLS later is possible
             return !this.isTLSSupported();
         }
         return false;
@@ -181,9 +195,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
-            if(!host.getCredentials().isAnonymousLogin()
-                    && !host.getProtocol().isSecure()
-                    && this.isTLSSupported()) {
+            if(super.alert() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.
                 try {
                     prompt.warn(host.getProtocol(),
@@ -192,7 +204,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                                     ProtocolFactory.FTP_TLS.getName()),
                             LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Change", "Credentials"),
-                            "connection.unsecure." + host.getHostname());
+                            String.format("connection.unsecure.%s", host.getHostname()));
                     // Continue choosen. Login using plain FTP.
                 }
                 catch(LoginCanceledException e) {
