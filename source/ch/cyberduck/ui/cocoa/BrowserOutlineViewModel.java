@@ -39,6 +39,9 @@ import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @version $Id$
  */
@@ -222,6 +225,10 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items,
                                                        final NSPasteboard pboard) {
-        return super.writeItemsToPasteBoard(outlineView, items, pboard);
+        final List<Path> selected = new ArrayList<Path>();
+        for(int i = 0; i < items.count().intValue(); i++) {
+            selected.add(cache.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i)))));
+        }
+        return super.writeItemsToPasteBoard(outlineView, selected, pboard);
     }
 }

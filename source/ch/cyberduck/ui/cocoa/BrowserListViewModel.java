@@ -29,12 +29,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,9 +66,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                             final NSTableColumn column, final NSInteger row) {
         if(controller.isMounted()) {
             final List<Path> children = this.get(this.controller.workdir());
-            if(row.intValue() < children.size()) {
-                return super.objectValueForItem(children.get(row.intValue()), column.identifier());
-            }
+            return super.objectValueForItem(children.get(row.intValue()), column.identifier());
         }
         return null;
     }
@@ -134,10 +132,11 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
             final AttributedList<Path> children = this.get(this.controller.workdir());
+            final List<Path> selected = new ArrayList<Path>();
             for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
-                items.addObject(NSString.stringWithString(children.get(index.intValue()).getAbsolute()));
+                selected.add(children.get(index.intValue()));
             }
-            return super.writeItemsToPasteBoard(view, items, pboard);
+            return super.writeItemsToPasteBoard(view, selected, pboard);
         }
         return false;
     }

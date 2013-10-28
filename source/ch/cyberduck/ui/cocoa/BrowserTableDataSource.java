@@ -18,7 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -230,7 +242,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @see NSDraggingSource
      */
     @Override
-    public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
+    public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Request dragging source operation mask for %s", local));
         }
@@ -248,7 +260,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @param info        Dragging pasteboard
      * @return True if accepted
      */
-    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
+    public boolean acceptDrop(final NSTableView view, final Path destination, final NSDraggingInfo info) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Accept drop for destination %s", destination));
         }
@@ -405,7 +417,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    private void setDropRowAndDropOperation(NSTableView view, Path destination, NSInteger row) {
+    private void setDropRowAndDropOperation(final NSTableView view, final Path destination, final NSInteger row) {
         if(destination.equals(controller.workdir())) {
             log.debug("setDropRowAndDropOperation:-1");
             // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
@@ -418,36 +430,35 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
     }
 
-    public boolean writeItemsToPasteBoard(NSTableView view, NSArray items, NSPasteboard pboard) {
+    public boolean writeItemsToPasteBoard(final NSTableView view, final List<Path> selected, final NSPasteboard pboard) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write items to pasteboard %s", pboard));
         }
         if(controller.isMounted()) {
-            if(items.count().intValue() > 0) {
+            if(selected.size() > 0) {
                 // The fileTypes argument is the list of fileTypes being promised.
                 // The array elements can consist of file extensions and HFS types encoded
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 final NSMutableArray fileTypes = NSMutableArray.array();
                 final PathPasteboard pasteboard = controller.getPasteboard();
-                for(int i = 0; i < items.count().intValue(); i++) {
-                    final Path path = cache.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
-                    if(path.attributes().isFile()) {
-                        if(StringUtils.isNotEmpty(path.getExtension())) {
-                            fileTypes.addObject(NSString.stringWithString(path.getExtension()));
+                for(final Path f : selected) {
+                    if(f.attributes().isFile()) {
+                        if(StringUtils.isNotEmpty(f.getExtension())) {
+                            fileTypes.addObject(NSString.stringWithString(f.getExtension()));
                         }
                         else {
                             fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
                         }
                     }
-                    else if(path.attributes().isDirectory()) {
+                    else if(f.attributes().isDirectory()) {
                         fileTypes.addObject(NSString.stringWithString("'fldr'")); //NSFileTypeForHFSTypeCode('fldr')
                     }
                     else {
                         fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
                     }
                     // Writing data for private use when the item gets dragged to the transfer queue.
-                    pasteboard.add(path);
+                    pasteboard.add(f);
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
@@ -463,7 +474,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     @Override
-    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+    public void draggedImage_beganAt(final NSImage image, final NSPoint point) {
         if(log.isTraceEnabled()) {
             log.trace("draggedImage_beganAt:" + point);
         }
@@ -473,7 +484,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
      */
     @Override
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
+    public void draggedImage_endedAt_operation(final NSImage image, final NSPoint point, final NSUInteger operation) {
         if(log.isTraceEnabled()) {
             log.trace("draggedImage_endedAt_operation:" + operation);
         }
@@ -485,7 +496,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     @Override
-    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+    public void draggedImage_movedTo(final NSImage image, final NSPoint point) {
         if(log.isTraceEnabled()) {
             log.trace("draggedImage_movedTo:" + point);
         }
