@@ -19,7 +19,20 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -306,6 +319,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
+        configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         return configuration;
     }
 
