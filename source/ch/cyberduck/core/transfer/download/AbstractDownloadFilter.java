@@ -169,8 +169,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     private void timestamp(final Path file) {
-        if(file.attributes().getModificationDate() != -1) {
-            long timestamp = file.attributes().getModificationDate();
+        long timestamp = file.attributes().getModificationDate();
+        if(timestamp != -1) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
             }
