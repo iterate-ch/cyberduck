@@ -244,7 +244,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param help  Help URL
      * @return Button selection
      */
-    protected int alert(final NSAlert alert, String help) {
+    protected int alert(final NSAlert alert, final String help) {
         final int[] response = new int[1];
         this.alert(alert, new SheetCallback() {
             @Override

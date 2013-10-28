@@ -19,10 +19,10 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface ProviderHelpService {
-    void help(final Protocol provider);
+    void help(Protocol provider);
 
     void help(Scheme scheme);
 }
