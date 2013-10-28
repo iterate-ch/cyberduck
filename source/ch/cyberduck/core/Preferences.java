@@ -488,9 +488,6 @@ public abstract class Preferences {
         defaults.put("queue.transcript.open", String.valueOf(false));
         defaults.put("queue.transcript.size.height", String.valueOf(200));
 
-        defaults.put("queue.transcript.open", String.valueOf(false));
-        defaults.put("queue.transcript.size.height", String.valueOf(200));
-
         defaults.put("http.compression.enable", String.valueOf(true));
 
         /**
