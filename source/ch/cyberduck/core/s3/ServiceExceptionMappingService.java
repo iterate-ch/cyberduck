@@ -77,6 +77,12 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
         if(HttpStatus.SC_BAD_REQUEST == code) {
             return new InteroperabilityException(buffer.toString(), cause);
         }
+        if(HttpStatus.SC_NOT_IMPLEMENTED == code) {
+            return new InteroperabilityException(buffer.toString(), cause);
+        }
+        if(HttpStatus.SC_SERVICE_UNAVAILABLE == code) {
+            return new InteroperabilityException(buffer.toString(), cause);
+        }
         if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
             return new InteroperabilityException(buffer.toString(), cause);
         }

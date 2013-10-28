@@ -58,6 +58,9 @@ public class SwiftExceptionMappingService extends AbstractIOExceptionMappingServ
         if(e.getHttpStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
             return new InteroperabilityException(buffer.toString(), e);
         }
+        if(e.getHttpStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }
