@@ -215,6 +215,9 @@ public abstract class AbstractEditor implements Editor {
                     throw new DefaultIOExceptionMappingService().map(e);
                 }
             }
+            else {
+                log.warn(String.format("Skip opening file %s with incomplete transfer %s", edited, download));
+            }
             return download;
         }
     }

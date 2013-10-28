@@ -368,9 +368,11 @@ public abstract class Transfer implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Transfer{");
-        sb.append("roots=").append(roots);
-        sb.append(", session=").append(host);
+        sb.append("transferred=").append(transferred);
+        sb.append(", size=").append(size);
+        sb.append(", roots=").append(roots);
         sb.append(", state=").append(state);
+        sb.append(", host=").append(host);
         sb.append('}');
         return sb.toString();
     }
