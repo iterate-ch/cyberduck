@@ -66,7 +66,7 @@ public abstract class AbstractController implements Controller {
     /**
      * List of pending background tasks or this browser
      */
-    private BackgroundActionRegistry actions
+    private BackgroundActionRegistry registry
             = new BackgroundActionRegistry();
 
     /**
@@ -75,7 +75,7 @@ public abstract class AbstractController implements Controller {
      * @return List of tasks.
      */
     public BackgroundActionRegistry getActions() {
-        return actions;
+        return registry;
     }
 
     /**
@@ -100,11 +100,11 @@ public abstract class AbstractController implements Controller {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run action %s in background", action));
         }
-        if(actions.contains(action)) {
+        if(registry.contains(action)) {
             log.warn(String.format("Skip duplicate background action %s found in registry", action));
             return null;
         }
-        actions.add(action);
+        registry.add(action);
         action.init();
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action);
@@ -167,7 +167,7 @@ public abstract class AbstractController implements Controller {
                     action.finish();
                 }
                 finally {
-                    actions.remove(action);
+                    registry.remove(action);
                 }
                 // Invoke the cleanup on the main thread to let the action synchronize the user interface
                 invoke(new ControllerMainAction(AbstractController.this) {
