@@ -35,5 +35,9 @@ public interface Read {
      */
     InputStream read(Path file, TransferStatus status) throws BackgroundException;
 
+    /**
+     * @param file File
+     * @return True if read with offset is supported
+     */
     boolean append(final Path file);
 }
