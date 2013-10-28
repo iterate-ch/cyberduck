@@ -29,6 +29,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.net.URI;
+
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
  *
@@ -41,16 +43,30 @@ public final class HyperlinkAttributedStringFactory {
     }
 
     public static NSAttributedString create(final DescriptiveUrl url) {
-        return create(url.getUrl());
+        if(null == url.getUrl()) {
+            return NSAttributedString.attributedString(StringUtils.EMPTY);
+        }
+        return create(URI.create(url.getUrl()));
     }
 
     /**
      * @param url URL
      * @return Clickable and underlined string to put into textfield.
      */
-    public static NSAttributedString create(final String url) {
-        return create(NSMutableAttributedString.create(url,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), url);
+    public static NSAttributedString create(final URI url) {
+        if(null == url) {
+            return NSAttributedString.attributedString(StringUtils.EMPTY);
+        }
+        return create(url.toString(), url);
+    }
+
+
+    public static NSAttributedString create(final String title, final URI url) {
+        if(null == url) {
+            return NSAttributedString.attributedString(title);
+        }
+        return create(NSMutableAttributedString.create(title,
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), url.toString());
     }
 
     /**
@@ -58,7 +74,7 @@ public final class HyperlinkAttributedStringFactory {
      * @param hyperlink URL
      * @return Clickable and underlined string to put into textfield.
      */
-    public static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
+    private static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
         if(StringUtils.isNotEmpty(hyperlink)) {
             final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
             value.beginEditing();

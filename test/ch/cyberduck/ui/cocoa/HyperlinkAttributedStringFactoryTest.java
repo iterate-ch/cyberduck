@@ -5,6 +5,8 @@ import ch.cyberduck.core.DescriptiveUrl;
 
 import org.junit.Test;
 
+import java.net.URI;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -15,7 +17,7 @@ public class HyperlinkAttributedStringFactoryTest extends AbstractTestCase {
     @Test
     public void testCreate() throws Exception {
         assertEquals("", HyperlinkAttributedStringFactory.create((DescriptiveUrl.EMPTY)).string());
-        assertEquals("", HyperlinkAttributedStringFactory.create((String) null).string());
-        assertEquals("ftp://localhost/d", HyperlinkAttributedStringFactory.create("ftp://localhost/d").string());
+        assertEquals("", HyperlinkAttributedStringFactory.create((URI) null).string());
+        assertEquals("ftp://localhost/d", HyperlinkAttributedStringFactory.create(URI.create("ftp://localhost/d")).string());
     }
 }
