@@ -214,7 +214,8 @@ public abstract class Preferences {
          * Maximum number of directory listings to cache using a most recently used implementation
          */
         defaults.put("browser.cache.size", String.valueOf(1000));
-        defaults.put("transfer.cache.size", String.valueOf(50));
+        defaults.put("transfer.cache.size", String.valueOf(100));
+        defaults.put("attributes.cache.size", String.valueOf(100));
         defaults.put("icon.cache.size", String.valueOf(200));
 
         /**

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -35,7 +36,8 @@ public class DefaultAttributesFeature implements Attributes {
 
     private Session session;
 
-    private Cache cache = new Cache(100);
+    private Cache cache = new Cache(
+            Preferences.instance().getInteger("attributes.cache.size"));
 
     public DefaultAttributesFeature(final Session session) {
         this.session = session;
