@@ -85,12 +85,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final List<Path> selected = this.getSelected();
-        if(0 == index.intValue()) {
-            this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
-        }
-        else {
-            this.clearShortcut(item);
-        }
         if(selected.isEmpty() || this.getURLs(selected.iterator().next()).isEmpty()) {
             item.setTitle(LocaleFactory.localizedString("None"));
             item.setEnabled(false);
@@ -109,6 +103,12 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 final DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
                 item.setRepresentedObject(url.getUrl());
                 item.setTitle(url.getHelp());
+                if(url.getType().equals(DescriptiveUrl.Type.provider)) {
+                    this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
+                }
+                else {
+                    this.clearShortcut(item);
+                }
             }
             else {
                 // Dummy menu item to preview URL only
