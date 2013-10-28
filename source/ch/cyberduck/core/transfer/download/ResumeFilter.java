@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,11 +33,11 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private Session<?> session;
+    private Read read;
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
-        this.session = session;
+        this.read = session.getFeature(Read.class);
     }
 
     @Override
@@ -59,12 +60,13 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, parent);
-        if(session.getFeature(Read.class).append(file)) {
+        if(read.append(file)) {
             if(file.attributes().isFile()) {
-                if(file.getLocal().exists()) {
-                    if(file.getLocal().attributes().getSize() > 0) {
+                final Local local = file.getLocal();
+                if(local.exists()) {
+                    if(local.attributes().getSize() > 0) {
                         status.setAppend(true);
-                        status.setCurrent(file.getLocal().attributes().getSize());
+                        status.setCurrent(local.attributes().getSize());
                     }
                 }
             }
