@@ -199,10 +199,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToolbarS3Image =
                     IconCache.Instance.GetProtocolImages(32).Images[ProtocolFactory.S3_SSL.getProvider()];
             }
-
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
-
             if (anonymous)
             {
                 // Anonymous never has the right to update permissions
@@ -210,9 +208,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarPermissionsEnabled = session.getFeature(typeof (UnixPermission)) != null;
+                View.ToolbarPermissionsEnabled = session.getFeature(typeof (AclPermission)) != null || session.getFeature(typeof (UnixPermission)) != null;
             }
-
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
@@ -234,7 +231,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         ProtocolFactory.S3_SSL.getProvider()];
                 }
             }
-
             if (anonymous)
             {
                 View.ToolbarS3Enabled = false;
