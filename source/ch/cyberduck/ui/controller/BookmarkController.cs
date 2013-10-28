@@ -494,16 +494,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.HostFieldEnabled = _host.getProtocol().isHostnameConfigurable();
             View.Nickname = _host.getNickname();
             View.DownloadFolder = _host.getDownloadFolder().getAbsolute();
-            string url;
-            if (Utils.IsNotBlank(_host.getDefaultPath()))
-            {
-                url = new HostUrlProvider().get(_host) + PathNormalizer.normalize(_host.getDefaultPath());
-            }
-            else
-            {
-                url = new HostUrlProvider().get(_host);
-            }
-            View.URL = url;
+            View.URL = new HostUrlProvider(true, true).get(_host);
             View.Port = _host.getPort().ToString();
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.Path = _host.getDefaultPath();

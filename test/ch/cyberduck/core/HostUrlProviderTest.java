@@ -14,9 +14,15 @@ public class HostUrlProviderTest extends AbstractTestCase {
     @Test
     public void testToUrl() {
         assertEquals("sftp://user@localhost", new HostUrlProvider().get(new Host(new SFTPProtocol(), "localhost", new Credentials("user", "p"))));
-        assertEquals("sftp://localhost", new HostUrlProvider(false).get(new Host(new SFTPProtocol(), "localhost", new Credentials("user", "p"))));
+        assertEquals("sftp://localhost", new HostUrlProvider(false, false).get(new Host(new SFTPProtocol(), "localhost", new Credentials("user", "p"))));
         assertEquals("sftp://localhost:222",
-                new HostUrlProvider(false).get(new Host(new SFTPProtocol(), "localhost", 222)));
+                new HostUrlProvider(false, false).get(new Host(new SFTPProtocol(), "localhost", 222)));
     }
 
+    @Test
+    public void testPath() {
+        final Host h = new Host(new SFTPProtocol(), "localhost", new Credentials("user", "p"));
+        h.setDefaultPath("p");
+        assertEquals("sftp://user@localhost/p", new HostUrlProvider(true, true).get(h));
+    }
 }

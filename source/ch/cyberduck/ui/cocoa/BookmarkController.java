@@ -26,7 +26,6 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
@@ -53,6 +52,7 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -742,14 +742,8 @@ public class BookmarkController extends WindowController {
         hostField.setEnabled(host.getProtocol().isHostnameConfigurable());
         hostField.cell().setPlaceholderString(host.getProtocol().getDefaultHostname());
         this.updateField(nicknameField, host.getNickname());
-        final String url;
-        if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            url = new HostUrlProvider().get(host) + PathNormalizer.normalize(host.getDefaultPath());
-        }
-        else {
-            url = new HostUrlProvider().get(host);
-        }
-        urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
+        urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(URI.create(
+                new HostUrlProvider(true, true).get(host))));
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isPortConfigurable());
         this.updateField(pathField, host.getDefaultPath());

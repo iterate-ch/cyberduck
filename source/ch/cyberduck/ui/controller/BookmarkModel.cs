@@ -101,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetUrl(object host)
         {
             Host h = (Host) host;
-            return new HostUrlProvider().get(h) + PathNormalizer.normalize(h.getDefaultPath());
+            return new HostUrlProvider(true, true).get(h);
         }
 
         public object GetNotes(object host)
