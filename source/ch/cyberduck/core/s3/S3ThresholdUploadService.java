@@ -22,15 +22,19 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class S3ThresholdUploadService implements Upload {
+    private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
     private S3Session session;
 
@@ -42,10 +46,19 @@ public class S3ThresholdUploadService implements Upload {
     public void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
-            new S3MultipartUploadService(session).upload(file, local, throttle, listener, status);
+            final S3MultipartUploadService service = new S3MultipartUploadService(session);
+            try {
+                service.upload(file, local, throttle, listener, status);
+            }
+            catch(InteroperabilityException e) {
+                log.warn(String.format("Failure using multiparat upload %s. Fallback to single upload.", e.getMessage()));
+                final S3SingleUploadService single = new S3SingleUploadService(session);
+                single.upload(file, local, throttle, listener, status);
+            }
         }
         else {
-            new S3SingleUploadService(session).upload(file, local, throttle, listener, status);
+            final S3SingleUploadService single = new S3SingleUploadService(session);
+            single.upload(file, local, throttle, listener, status);
         }
     }
 }
