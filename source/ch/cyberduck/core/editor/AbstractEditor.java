@@ -160,6 +160,10 @@ public abstract class AbstractEditor implements Editor {
     public void save() {
         // If checksum still the same no need for save
         final String current = local.attributes().getChecksum();
+        if(null == current) {
+            log.warn(String.format("Ignore save with unknown checksum for %s", local));
+            return;
+        }
         if(checksum.equals(current)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("File %s not modified with checkum %s", local, current));
