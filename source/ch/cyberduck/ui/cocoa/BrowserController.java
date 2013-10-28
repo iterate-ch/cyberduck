@@ -542,11 +542,6 @@ public class BrowserController extends WindowController
         Preferences.instance().setProperty("browser.transcript.open", true);
     }
 
-    public void drawerWillClose(NSNotification notification) {
-        Preferences.instance().setProperty("browser.transcript.size.height",
-                logDrawer.contentSize().height.intValue());
-    }
-
     public void drawerDidClose(NSNotification notification) {
         Preferences.instance().setProperty("browser.transcript.open", false);
         transcript.clear();
