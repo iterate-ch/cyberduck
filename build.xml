@@ -192,6 +192,7 @@
 
     <target name="test-compile" depends="build">
         <javac debug="${debug}"
+               includeantruntime="false"
                encoding="utf-8"
                source="1.6"
                target="1.6"
