@@ -49,6 +49,8 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.net.URI;
+
 /**
  * @version $Id$
  */
@@ -545,10 +547,13 @@ public class ConnectionController extends SheetController {
     private void updateURLLabel() {
         if(StringUtils.isNotBlank(hostField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            final String url = protocol.getScheme() + "://" + usernameField.stringValue()
-                    + "@" + hostField.stringValue() + ":" + portField.intValue()
-                    + PathNormalizer.normalize(pathField.stringValue());
-            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
+            final String url = String.format("%s://%s@%s:%d%s",
+                    protocol.getScheme(),
+                    usernameField.stringValue(),
+                    hostField.stringValue(),
+                    portField.intValue(),
+                    PathNormalizer.normalize(pathField.stringValue()));
+            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(URI.create(url)));
         }
         else {
             urlLabel.setStringValue(StringUtils.EMPTY);
