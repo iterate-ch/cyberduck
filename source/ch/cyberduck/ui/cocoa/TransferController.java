@@ -69,6 +69,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -523,9 +524,9 @@ public final class TransferController extends WindowController implements NSTool
             // Draw text fields at the bottom
             if(transfer.getRoots().size() == 1) {
                 urlField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(transfer.getRemote()));
+                        HyperlinkAttributedStringFactory.create(URI.create(transfer.getRemote())));
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(transfer.getLocal()));
+                        HyperlinkAttributedStringFactory.create(transfer.getLocal(), LocalFactory.createLocal(transfer.getLocal())));
             }
             else {
                 urlField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(

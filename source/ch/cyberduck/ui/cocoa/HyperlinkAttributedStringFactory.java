@@ -19,12 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -60,37 +62,42 @@ public final class HyperlinkAttributedStringFactory {
         return create(url.toString(), url);
     }
 
+    public static NSAttributedString create(final String title, final Local file) {
+        if(null == file) {
+            return NSAttributedString.attributedString(title);
+        }
+        return create(NSMutableAttributedString.create(title,
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.fileURLWithPath(file.getAbsolute()));
+    }
 
     public static NSAttributedString create(final String title, final URI url) {
         if(null == url) {
             return NSAttributedString.attributedString(title);
         }
         return create(NSMutableAttributedString.create(title,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), url.toString());
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.URLWithString(url.toString()));
     }
 
     /**
      * @param value     Existing attributes
      * @param hyperlink URL
-     * @return Clickable and underlined string to put into textfield.
+     * @return Clickable and underlined string to put into text field.
      */
-    private static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
-        if(StringUtils.isNotEmpty(hyperlink)) {
-            final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
-            value.beginEditing();
-            value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
-                    hyperlink, range);
-            // make the text appear in blue
-            value.addAttributeInRange(NSMutableAttributedString.ForegroundColorAttributeName,
-                    NSColor.blueColor(), range);
-            // system font
-            value.addAttributeInRange(NSMutableAttributedString.FontAttributeName,
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), range);
-            // next make the text appear with an underline
-            value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
-                    NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
-            value.endEditing();
-        }
+    private static NSAttributedString create(final NSMutableAttributedString value, final NSURL hyperlink) {
+        final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
+        value.beginEditing();
+        value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
+                hyperlink, range);
+        // make the text appear in blue
+        value.addAttributeInRange(NSMutableAttributedString.ForegroundColorAttributeName,
+                NSColor.blueColor(), range);
+        // system font
+        value.addAttributeInRange(NSMutableAttributedString.FontAttributeName,
+                NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), range);
+        // next make the text appear with an underline
+        value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
+                NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
+        value.endEditing();
         return value;
     }
 }
