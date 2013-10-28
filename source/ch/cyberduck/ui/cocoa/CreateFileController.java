@@ -70,6 +70,7 @@ public class CreateFileController extends FileController {
                 final Touch feature = session.getFeature(Touch.class);
                 feature.touch(file);
                 if(edit) {
+                    file.attributes().setSize(0L);
                     Editor editor = EditorFactory.instance().create(c, session, file);
                     editor.open();
                 }

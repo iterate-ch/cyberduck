@@ -72,6 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 feature.touch(_file);
                 if (_edit)
                 {
+                    _file.attributes().setSize(0L);
                     Editor editor = EditorFactory.instance()
                                                  .create(BrowserController, BrowserController.Session, _file);
                     editor.open();
