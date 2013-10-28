@@ -213,8 +213,7 @@ public final class PromptLoginController implements LoginController {
                 if(reason.startsWith(Scheme.http.name())) {
                     try {
                         // For OAuth2
-                        final URI uri = new URI(reason);
-                        this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
+                        this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new URI(reason)));
                         this.textField.setAllowsEditingTextAttributes(true);
                         this.textField.setSelectable(true);
                     }
