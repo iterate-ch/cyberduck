@@ -19,6 +19,7 @@ package ch.cyberduck.core.analytics;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Scheme;
 
 /**
@@ -38,6 +39,6 @@ public interface AnalyticsProvider {
      * @param credentials Access keys
      * @return Setup URI
      */
-    String getSetup(String hostname, Scheme method, String container,
-                    Credentials credentials);
+    DescriptiveUrl getSetup(String hostname, Scheme method, String container,
+                            Credentials credentials);
 }

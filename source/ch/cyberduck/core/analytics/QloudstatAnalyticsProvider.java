@@ -19,6 +19,7 @@ package ch.cyberduck.core.analytics;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 
@@ -51,7 +52,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     }
 
     @Override
-    public String getSetup(final String hostname, final Scheme method, final String container, final Credentials credentials) {
+    public DescriptiveUrl getSetup(final String hostname, final Scheme method, final String container, final Credentials credentials) {
         final String setup = String.format("provider=%s,protocol=%s,endpoint=%s,key=%s,secret=%s",
                 hostname,
                 method.name(),
@@ -69,7 +70,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
         if(log.isInfoEnabled()) {
             log.info(String.format("Setup URL %s", formatted));
         }
-        return formatted;
+        return new DescriptiveUrl(URI.create(formatted), DescriptiveUrl.Type.analytics);
     }
 
     private String encode(final String p) {
