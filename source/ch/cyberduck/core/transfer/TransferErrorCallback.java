@@ -21,7 +21,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface TransferErrorCallback {
 
@@ -29,5 +29,5 @@ public interface TransferErrorCallback {
      * @param failure Failure transferring file
      * @return True to continue regardless of the failure
      */
-    boolean prompt(BackgroundException failure);
+    boolean prompt(BackgroundException failure) throws BackgroundException;
 }

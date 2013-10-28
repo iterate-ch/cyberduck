@@ -21,12 +21,12 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DisabledTransferErrorCallback implements TransferErrorCallback {
 
     @Override
-    public boolean prompt(final BackgroundException failure) {
-        return false;
+    public boolean prompt(final BackgroundException failure) throws BackgroundException {
+        throw failure;
     }
 }
