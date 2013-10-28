@@ -1,6 +1,17 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -11,8 +22,7 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -47,12 +57,15 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         };
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final DefaultAttributesFeature f = new DefaultAttributesFeature(session);
-        final Attributes attributes = f.getAttributes(new Path(session.workdir(), "test", Path.FILE_TYPE));
+        final Cache cache = new Cache(1);
+        final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
+        final Path file = new Path(session.workdir(), "test", Path.FILE_TYPE);
+        final Attributes attributes = f.getAttributes(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test cache
-        assertEquals(0L, f.getAttributes(new Path(session.workdir(), "test", Path.FILE_TYPE)).getSize());
+        assertEquals(0L, f.getAttributes(file).getSize());
+        assertTrue(cache.containsKey(file.getParent().getReference()));
     }
 }

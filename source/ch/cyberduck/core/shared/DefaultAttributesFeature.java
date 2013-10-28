@@ -36,11 +36,16 @@ public class DefaultAttributesFeature implements Attributes {
 
     private Session session;
 
-    private Cache cache = new Cache(
-            Preferences.instance().getInteger("attributes.cache.size"));
+    private Cache cache;
 
     public DefaultAttributesFeature(final Session session) {
+        this(session, new Cache(
+                Preferences.instance().getInteger("attributes.cache.size")));
+    }
+
+    public DefaultAttributesFeature(final Session session, final Cache cache) {
         this.session = session;
+        this.cache = cache;
     }
 
     @Override
