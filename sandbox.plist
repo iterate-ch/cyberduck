@@ -6,14 +6,6 @@
         <true/>
         <key>com.apple.security.files.bookmarks.app-scope</key>
         <true/>
-        <key>com.apple.security.temporary-exception.files.home-relative-path.read-only</key>
-        <array>
-            <string>/.ssh/</string>
-        </array>
-        <key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
-       	<array>
-       		<string>/.ssh/known_hosts</string>
-       	</array>
         <key>com.apple.security.network.server</key>
         <!-- The ability to open a socket for listening. Used for Active (PORT) FTP data connections -->
         <true/>
