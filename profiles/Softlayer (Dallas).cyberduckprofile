@@ -7,7 +7,7 @@
         <key>Vendor</key>
         <string>softlayer</string>
         <key>Description</key>
-        <string>Softlayer Object Storage</string>
+        <string>Softlayer Object Storage (Dallas)</string>
         <key>Default Hostname</key>
         <string>dal05.objectstorage.softlayer.net</string>
         <key>Default Port</key>
