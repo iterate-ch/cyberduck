@@ -6,11 +6,17 @@
         <string>swift</string>
         <key>Vendor</key>
         <string>cyberduck</string>
-        <key>Scheme</key>
-        <string>http</string>
         <key>Description</key>
-        <string>Openstack Swift (HTTP)</string>
+        <string>OpenStack Swift (Swauth)</string>
+        <key>Scheme</key>
+        <string>https</string>
         <key>Default Port</key>
-        <string>80</string>
+        <string>443</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <true/>
+        <key>Context</key>
+        <string>/auth/v1.0</string>
     </dict>
 </plist>
