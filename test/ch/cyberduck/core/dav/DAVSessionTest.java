@@ -277,6 +277,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testPixi() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -290,6 +291,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testPixig2() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "pulangyuta.pixi.me", new Credentials(
                 "webdav", "webdav"
