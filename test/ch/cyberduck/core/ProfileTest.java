@@ -25,7 +25,28 @@ public class ProfileTest extends AbstractTestCase {
         assertNotSame(new S3Protocol().getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(new S3Protocol().getScheme(), profile.getScheme());
         assertEquals("eucalyptus", profile.getProvider());
+    }
 
+    @Test
+    public void testEqualsDifferentScheme() throws Exception {
+        final Profile https = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
+        );
+        final Profile http = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
+        );
+        assertNotEquals(https, http);
+    }
+
+    @Test
+    public void testEqualsContexts() throws Exception {
+        final Profile keystone = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Openstack Swift (Keystone).cyberduckprofile")
+        );
+        final Profile swauth = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
+        );
+        assertNotEquals(keystone, swauth);
     }
 
     @Test
