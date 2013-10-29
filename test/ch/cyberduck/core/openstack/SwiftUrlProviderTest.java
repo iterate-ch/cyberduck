@@ -106,8 +106,10 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
             new SwiftTouchFeature(session).touch(file);
             final DescriptiveUrlBag list = provider.toUrl(file);
             assertNotNull(list.find(DescriptiveUrl.Type.signed));
-            if(session.accounts.get(session.getRegion(container)).getTempUrlKey() != null) {
-                assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
+            if(session.accounts.containsKey(session.getRegion(container))) {
+                if(session.accounts.get(session.getRegion(container)).getTempUrlKey() != null) {
+                    assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
+                }
             }
             new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
         }
@@ -119,12 +121,14 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
         ));
-        final Region region = new Region("DFW", URI.create("http://s"), URI.create("http://m"));
+        final Region region = new Region("DFW", URI.create("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), URI.create("http://m"));
         Map accounts = new HashMap();
         accounts.put(region, new AccountInfo(1L, 1, "k"));
         final Path container = new Path("test w.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        assertNotEquals(DescriptiveUrl.EMPTY, new SwiftUrlProvider(session, accounts).createTempUrl(region,
-                file, 300));
+        final Path file = new Path(container, "key", Path.FILE_TYPE);
+        final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
+        assertNotEquals(DescriptiveUrl.EMPTY, provider.createTempUrl(region, file, 300));
+        assertTrue(provider.createTempUrl(region, file, 300).getUrl().startsWith(
+                "https://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/"));
     }
 }
