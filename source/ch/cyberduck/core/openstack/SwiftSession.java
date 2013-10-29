@@ -123,23 +123,6 @@ public class SwiftSession extends HttpSession<Client> {
     public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
-            threadFactory.newThread(new Runnable() {
-                @Override
-                public void run() {
-                    for(Region region : client.getRegions()) {
-                        try {
-                            final AccountInfo info = client.getAccountInfo(region);
-                            accounts.put(region, info);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                            }
-                        }
-                        catch(IOException e) {
-                            log.warn(String.format("Failure loading account info for region %s", region));
-                        }
-                    }
-                }
-            }).start();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
