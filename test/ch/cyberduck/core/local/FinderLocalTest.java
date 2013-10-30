@@ -19,7 +19,7 @@ public class FinderLocalTest extends AbstractTestCase {
     @Test
     public void testEqual() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         l.touch();
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
@@ -47,7 +47,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testTrash() throws Exception {
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.touch();
         assertTrue(l.exists());
         l.trash();
@@ -87,7 +87,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testTouch() {
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
         l.touch();
         assertTrue(l.exists());
         l.touch();
@@ -97,7 +97,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testMkdir() {
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
         l.mkdir();
         assertTrue(l.exists());
         l.mkdir();
@@ -105,9 +105,16 @@ public class FinderLocalTest extends AbstractTestCase {
         l.delete();
     }
 
-
     @Test
     public void testToUrl() throws Exception {
         assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
+    }
+
+    @Test
+    public void testBookmark() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "/p/", UUID.randomUUID().toString());
+        assertNull(l.getBookmark());
+        l.touch();
+        assertNotNull(l.getBookmark());
     }
 }
