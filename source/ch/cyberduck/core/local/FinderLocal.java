@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
@@ -43,6 +44,10 @@ import java.io.File;
  */
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
+
+    public static void register() {
+        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
 
     static {
         Native.load("Local");
@@ -73,14 +78,19 @@ public class FinderLocal extends Local {
         protected Local create(final File path) {
             return new FinderLocal(path);
         }
+
+        @Override
+        protected <T> Local create(final T serialized) {
+            return new FinderLocal(serialized);
+        }
     }
 
     public FinderLocal(final Local parent, final String name) {
-        this(parent.getAbsolute() + "/" + name);
+        super(String.format("%s/%s", parent.getAbsolute(), name));
     }
 
     public FinderLocal(final String parent, final String name) {
-        this(parent + "/" + name);
+        super(String.format("%s/%s", parent, name));
     }
 
     public FinderLocal(final File path) {
@@ -88,11 +98,31 @@ public class FinderLocal extends Local {
     }
 
     public FinderLocal(final String path) {
-        super(resolveAlias(stringByExpandingTildeInPath(path)));
+        super(path);
     }
 
-    public static void register() {
-        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    public <T> FinderLocal(final T serialized) {
+        super(serialized);
+    }
+
+    @Override
+    protected void setPath(String name) {
+        final String expanded = resolveAlias(stringByExpandingTildeInPath(name));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Expanded %s to %s", name, expanded));
+        }
+        super.setPath(expanded);
+
+    }
+
+    @Override
+    public <T> T serialize(Serializer dict) {
+        dict.setStringForKey(this.getAbbreviatedPath(), "Path");
+        final String bookmark = this.getBookmark();
+        if(bookmark != null) {
+            dict.setStringForKey(bookmark, "Bookmark");
+        }
+        return dict.getSerialized();
     }
 
     /**

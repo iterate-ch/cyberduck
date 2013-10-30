@@ -281,9 +281,14 @@ public class Host implements Serializable, Comparable<Host> {
         if(cdnCredentialsObj != null) {
             cloudfront.setUsername(cdnCredentialsObj.toString());
         }
-        Object keyObj = dict.stringForKey("Private Key File");
+        // Legacy
+        String keyObjDeprecated = dict.stringForKey("Private Key File");
+        if(keyObjDeprecated != null) {
+            credentials.setIdentity(LocalFactory.createLocal(keyObjDeprecated));
+        }
+        Object keyObj = dict.objectForKey("Private Key File");
         if(keyObj != null) {
-            this.getCredentials().setIdentity(LocalFactory.createLocal(keyObj.toString()));
+            credentials.setIdentity(LocalFactory.createLocal(keyObj));
         }
         Object portObj = dict.stringForKey("Port");
         if(portObj != null) {
@@ -368,7 +373,7 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(this.getEncoding(), "Encoding");
         }
         if(null != this.getCredentials().getIdentity()) {
-            dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
+            dict.setObjectForKey(this.getCredentials().getIdentity(), "Private Key File");
         }
         if(this.getProtocol().getType() == Protocol.Type.ftp) {
             if(null != this.getFTPConnectMode()) {

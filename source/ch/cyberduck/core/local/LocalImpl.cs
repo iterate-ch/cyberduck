@@ -35,28 +35,19 @@ namespace Ch.Cyberduck.Core.Local
 
         private LocalAttributes _info;
 
-        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
-        {
-        }
+        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name)) {}
 
         public LocalImpl(ch.cyberduck.core.Local parent, string name)
-            : base(parent.getAbsolute() + '\\' + name)
-        {
-            ;
-        }
+            : base(parent.getAbsolute() + '\\' + name) {}
 
         public LocalImpl(string path)
             : base(Path.Combine(FilenameUtils.getPrefix(path),
                                 MakeValidPath(FilenameUtils.getPath(path))) +
-                   MakeValidFilename(FilenameUtils.getName(path)))
-        {
-            ;
-        }
+                   MakeValidFilename(FilenameUtils.getName(path)))  {}
 
-        public LocalImpl(File path) : base(path)
-        {
-            ;
-        }
+        public LocalImpl(File path) : base(path) {}
+
+        public LocalImpl(Object serialized) : base(serialized) {}
 
 
         public override char getDelimiter()

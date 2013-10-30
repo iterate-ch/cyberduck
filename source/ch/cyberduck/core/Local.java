@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -39,18 +41,34 @@ import com.ibm.icu.text.Normalizer;
 /**
  * @version $Id$
  */
-public abstract class Local extends AbstractPath {
+public abstract class Local extends AbstractPath implements Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
     /**
      * Absolute path in local file system
      */
-    private String path;
+    protected String path;
 
     /**
      * @param name Absolute path
      */
     public Local(final String name) {
+        this.setPath(name);
+    }
+
+    /**
+     * @param path File reference
+     */
+    public Local(final File path) {
+        this.setPath(path.getAbsolutePath());
+    }
+
+    public <T> Local(final T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        this.setPath(dict.stringForKey("Path"));
+    }
+
+    protected void setPath(String name) {
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
                 // Canonical decomposition followed by canonical composition (default)
@@ -68,11 +86,10 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    /**
-     * @param path File reference
-     */
-    public Local(final File path) {
-        this(path.getAbsolutePath());
+    @Override
+    public <T> T serialize(Serializer dict) {
+        dict.setStringForKey(this.getAbsolute(), "Path");
+        return dict.getSerialized();
     }
 
     @Override
@@ -164,6 +181,9 @@ public abstract class Local extends AbstractPath {
         return path;
     }
 
+    /**
+     * @return Security scoped bookmark outside of sandbox to store in preferences
+     */
     public String getBookmark() {
         return this.getAbsolute();
     }
@@ -295,11 +315,6 @@ public abstract class Local extends AbstractPath {
         return false;
     }
 
-    @Override
-    public String toString() {
-        return this.getAbsolute();
-    }
-
     public String toURL() {
         return String.format("file:%s", this.getAbsolute());
     }
@@ -339,5 +354,13 @@ public abstract class Local extends AbstractPath {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Local{");
+        sb.append("path='").append(path).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
