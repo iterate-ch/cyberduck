@@ -4,9 +4,11 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
+
 - [Bugfix] Code signing requirements for embedded bundles
 - [Bugfix] Temporary URL for containers with whitespace (OpenStack)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
+- [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
@@ -31,7 +33,6 @@ Changelog. Last modified: $Date$
 - [Feature] Option to change default port for custom origin (CloudFront) (#5460)
 - [Feature] Upload with temporary name when saving from external editor
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
-- [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
 - [Bugfix] Save workspace does not work for multiple browser sessions to the same server (#7213)
