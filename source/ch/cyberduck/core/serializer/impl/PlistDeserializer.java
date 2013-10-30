@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.List;
  * @version $Id$
  */
 public class PlistDeserializer implements Deserializer<NSDictionary> {
+    private static final Logger log = Logger.getLogger(PlistDeserializer.class);
 
     public static void register() {
         DeserializerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -89,7 +91,8 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(dict.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
             return dict;
         }
-        return NSDictionary.dictionaryWithObjectsForKeys(NSArray.array(), NSArray.array());
+        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        return null;
     }
 
     @Override
@@ -100,11 +103,15 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         }
         final List<NSDictionary> list = new ArrayList<NSDictionary>();
         final NSArray array = Rococoa.cast(value, NSArray.class);
-        final NSEnumerator enumerator = array.objectEnumerator();
-        NSObject next;
-        while((next = enumerator.nextObject()) != null) {
-            list.add(Rococoa.cast(next, NSDictionary.class));
+        if(array.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+            final NSEnumerator enumerator = array.objectEnumerator();
+            NSObject next;
+            while((next = enumerator.nextObject()) != null) {
+                list.add(Rococoa.cast(next, NSDictionary.class));
+            }
+            return list;
         }
-        return list;
+        log.warn(String.format("Unexpected value type for serialized key %s", key));
+        return null;
     }
 }
