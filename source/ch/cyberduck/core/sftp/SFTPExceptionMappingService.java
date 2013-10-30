@@ -43,7 +43,8 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
             return this.wrap(new SocketException(), buffer);
         }
         if(e instanceof SFTPException) {
-            final int code = ((SFTPException) e).getServerErrorCode();
+            final SFTPException failure = (SFTPException) e;
+            final int code = failure.getServerErrorCode();
             if(code == ErrorCodes.SSH_FX_NO_SUCH_FILE) {
                 return new NotfoundException(buffer.toString(), e);
             }

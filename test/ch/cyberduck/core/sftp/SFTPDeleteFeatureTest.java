@@ -30,7 +30,8 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @version $Id$
@@ -45,7 +46,16 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "t", Path.FILE_TYPE);
+        try {
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        }
+        catch(NotfoundException e) {
+            assertEquals("Cannot delete t (/home/jenkins/t).",
+                    e.getMessage());
+            assertEquals("No such file (SSH_FX_NO_SUCH_FILE: A reference was made to a file which does not exist.).",
+                    e.getDetail());
+            throw e;
+        }
     }
 }
