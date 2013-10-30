@@ -29,6 +29,7 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE)));
+        session.close();
     }
 
     @Test
@@ -40,5 +41,6 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertTrue(new SFTPFindFeature(session).find(session.workdir()));
+        session.close();
     }
 }
