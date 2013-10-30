@@ -13,14 +13,15 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPFindFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFindNotFound() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
@@ -28,5 +29,16 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testFindDirectory() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertTrue(new SFTPFindFeature(session).find(session.workdir()));
     }
 }
