@@ -388,7 +388,7 @@ public class FinderLocal extends Local {
     public String toString() {
         final StringBuilder sb = new StringBuilder("FinderLocal{");
         sb.append("bookmark=").append(bookmark);
-        sb.append(", hostname='").append(path).append('\'');
+        sb.append(", path='").append(path).append('\'');
         sb.append('}');
         return sb.toString();
     }
