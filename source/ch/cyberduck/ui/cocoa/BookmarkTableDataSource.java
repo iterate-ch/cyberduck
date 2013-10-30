@@ -251,9 +251,9 @@ public class BookmarkTableDataSource extends ListDataSource {
                     Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(Column.bookmark.name())) {
-            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
+            final NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
             dict.setObjectForKey(new HostUrlProvider(true, true).get(host), "URL");
-            String comment = this.getSource().getComment(host);
+            final String comment = this.getSource().getComment(host);
             if(StringUtils.isNotBlank(comment)) {
                 dict.setObjectForKey(comment, "Comment");
             }
