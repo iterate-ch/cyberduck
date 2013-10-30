@@ -46,7 +46,7 @@ public class Cache {
     }
 
     public Cache() {
-        impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(Preferences.instance().getInteger("browser.cache.size")));
+        this(Preferences.instance().getInteger("browser.cache.size"));
     }
 
     public Cache(int size) {
