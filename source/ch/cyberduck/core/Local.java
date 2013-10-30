@@ -50,17 +50,21 @@ public abstract class Local extends AbstractPath {
      * @param name Absolute path
      */
     public Local(final String name) {
-        String normalized = name;
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
-            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+            if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
                 // Canonical decomposition followed by canonical composition (default)
-                normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
+                path = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Normalized local path %s to %s", name, normalized));
+                    log.debug(String.format("Normalized local path %s to %s", name, path));
                 }
             }
+            else {
+                path = name;
+            }
         }
-        path = normalized;
+        else {
+            path = name;
+        }
     }
 
     /**
@@ -157,6 +161,10 @@ public abstract class Local extends AbstractPath {
     @Override
     public String getAbsolute() {
         return new File(path).getAbsolutePath();
+    }
+
+    public String getBookmark() {
+        return this.getAbsolute();
     }
 
     /**
