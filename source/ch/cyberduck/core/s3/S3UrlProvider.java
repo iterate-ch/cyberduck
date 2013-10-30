@@ -17,7 +17,18 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +73,7 @@ public class S3UrlProvider implements UrlProvider {
             // Publicly accessible URL of given object
             list.add(this.createBucketUrl(file, session.getHost().getProtocol().getScheme()));
             list.add(this.createBucketUrl(file, Scheme.http));
-            if(session.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(session.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 if(!session.getHost().getCredentials().isAnonymousLogin()) {
                     list.add(this.createSignedUrl(file, 60 * 60));
                     // Default signed URL expiring in 24 hours.

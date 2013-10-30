@@ -373,7 +373,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3MultipleDeleteFeature(this);
             }
             return (T) new S3DefaultDeleteFeature(this);
@@ -389,54 +389,54 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Location.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LocationFeature(this);
             }
         }
         if(type == AnalyticsProvider.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new QloudstatAnalyticsProvider();
             }
             return null;
         }
         if(type == Versioning.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3VersioningFeature(this);
             }
             return null;
         }
         if(type == Logging.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LoggingFeature(this);
             }
             return null;
         }
         if(type == Lifecycle.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LifecycleConfiguration(this);
             }
         }
         if(type == Encryption.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3EncryptionFeature(this);
             }
             return null;
         }
         if(type == Redundancy.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3StorageClassFeature(this);
             }
             return null;
         }
         if(type == IdentityConfiguration.class) {
             // Only for AWS
-            if(this.getHost().getHostname().equals(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new AmazonIdentityConfiguration(host);
             }
         }
