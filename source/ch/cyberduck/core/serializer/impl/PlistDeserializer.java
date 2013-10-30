@@ -85,7 +85,11 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         if(null == value) {
             return null;
         }
-        return Rococoa.cast(value, NSDictionary.class);
+        final NSDictionary dict = Rococoa.cast(value, NSDictionary.class);
+        if(dict.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
+            return dict;
+        }
+        return NSDictionary.dictionaryWithObjectsForKeys(NSArray.array(), NSArray.array());
     }
 
     @Override
