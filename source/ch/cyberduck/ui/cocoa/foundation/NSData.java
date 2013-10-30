@@ -30,7 +30,13 @@ public abstract class NSData extends NSObject {
         return CLASS.dataWithContentsOfURL(url);
     }
 
+    public static NSData dataWithBase64EncodedString(String base64String) {
+        return CLASS.alloc().initWithBase64EncodedString_options(base64String, 0);
+    }
+
     public interface _Class extends ObjCClass {
+        NSData alloc();
+
         /**
          * Original signature : <code>data()</code><br>
          * <i>from NSDataCreation native declaration : :53</i>
@@ -222,5 +228,10 @@ public abstract class NSData extends NSObject {
      * <i>from NSDataCreation native declaration : :78</i>
      */
     public abstract NSData initWithData(NSData data);
+
+    public abstract NSData initWithBase64EncodedString_options(String base64String, int options);
+
+    public abstract String base64EncodedStringWithOptions(int options);
+
 }
 

@@ -19,25 +19,37 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @version $Id$
@@ -85,6 +97,11 @@ public class FinderLocal extends Local {
         }
     }
 
+    /**
+     * Application scoped bookmark to access outside of sandbox
+     */
+    private NSURL bookmark;
+
     public FinderLocal(final Local parent, final String name) {
         super(String.format("%s/%s", parent.getAbsolute(), name));
     }
@@ -103,6 +120,17 @@ public class FinderLocal extends Local {
 
     public <T> FinderLocal(final T serialized) {
         super(serialized);
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final String data = dict.stringForKey("Bookmark");
+        if(data != null) {
+            final NSURL resolved = NSURL.URLByResolvingBookmarkData(NSData.dataWithBase64EncodedString(data));
+            if(resolved != null) {
+                bookmark = resolved;
+            }
+            else {
+                log.warn(String.format("Failure resolving bookmark %s", data));
+            }
+        }
     }
 
     @Override
@@ -149,6 +177,60 @@ public class FinderLocal extends Local {
             }
         }
         return super.getVolume();
+    }
+
+    @Override
+    public String getBookmark() {
+        if(this.exists()) {
+            final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+                    NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
+            if(null == data) {
+                log.warn(String.format("Failure getting bookmark data for file %s", this));
+                return null;
+            }
+            return data.base64EncodedStringWithOptions(0);
+        }
+        return null;
+    }
+
+    @Override
+    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+        if(null == bookmark) {
+            log.warn(String.format("No security scoped bookmark for %s", this));
+            return super.getOutputStream(append);
+        }
+        bookmark.startAccessingSecurityScopedResource();
+        return new ProxyOutputStream(new FileOutputStream(new File(bookmark.path()), append)) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                }
+                finally {
+                    bookmark.stopAccessingSecurityScopedResource();
+                }
+            }
+        };
+    }
+
+    @Override
+    public InputStream getInputStream() throws FileNotFoundException {
+        if(null == bookmark) {
+            log.warn(String.format("No security scoped bookmark for %s", this));
+            return super.getInputStream();
+        }
+        bookmark.startAccessingSecurityScopedResource();
+        return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(bookmark.path()))) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                }
+                finally {
+                    bookmark.stopAccessingSecurityScopedResource();
+                }
+            }
+        };
     }
 
     @Override
@@ -300,5 +382,14 @@ public class FinderLocal extends Local {
             return Preferences.instance().getProperty("local.user.home") + StringUtils.substring(path, 1);
         }
         return path;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FinderLocal{");
+        sb.append("bookmark=").append(bookmark);
+        sb.append(", hostname='").append(path).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

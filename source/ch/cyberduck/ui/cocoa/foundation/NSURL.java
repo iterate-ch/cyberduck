@@ -22,6 +22,8 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSNumber;
 
+import com.sun.jna.ptr.PointerByReference;
+
 /// <i>native declaration : :15</i>
 public abstract class NSURL extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSURL", _Class.class);
@@ -32,6 +34,11 @@ public abstract class NSURL extends NSObject {
 
     public static NSURL fileURLWithPath(String URLString) {
         return CLASS.fileURLWithPath(URLString);
+    }
+
+    public static NSURL URLByResolvingBookmarkData(NSData bookmark) {
+        return CLASS.URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(bookmark,
+                NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope, null, false, null);
     }
 
     public interface _Class extends ObjCClass {
@@ -59,6 +66,25 @@ public abstract class NSURL extends NSObject {
          * <i>native declaration : :35</i>
          */
         NSURL URLWithString_relativeToURL(String URLString, NSURL baseURL);
+
+        /**
+         * Returns a new URL made by resolving bookmark data.
+         *
+         * @param bookmarkData The bookmark data the URL is derived from.
+         * @param options      Options taken into account when resolving the bookmark data.
+         *                     To resolve a security-scoped bookmark to support App Sandbox, you must include (by way of bitwise OR operators
+         *                     with any other options in this parameter) the NSURLBookmarkResolutionWithSecurityScope option.
+         * @param relativeURL  The base URL that the bookmark data is relative to.
+         *                     To resolve an app-scoped bookmark, use a value of nil.
+         *                     To resolve a document-scoped bookmark, use the absolute path (despite this parameter’s name) to the document from which you retrieved the bookmark.
+         * @param isStale      On return, if YES, the bookmark data is stale. Your app should create a new bookmark using the returned URL
+         *                     and use it in place of any stored copies of the existing bookmark.
+         * @param error        The error that occurred in the case that the URL cannot be created.
+         * @return A new URL made by resolving bookmarkData.
+         */
+        NSURL URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(
+                NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, PointerByReference error);
+
     }
 
     /**
@@ -205,6 +231,26 @@ public abstract class NSURL extends NSObject {
     public abstract NSURL standardizedURL();
 
     /**
+     * File reference URLs use a URL path syntax that identifies a file system object by reference, not by path. This form of
+     * file URL remains valid when the file system path of the URL’s underlying resource changes.
+     * <p/>
+     * If the original URL is a file path URL, this method converts it to a file reference URL. If the original URL is a file
+     * reference URL, the returned URL is identical. If the original URL is not a file URL, this method returns nil.
+     * <p/>
+     * File reference URLs cannot be created to file system objects which do not exist or are not reachable.
+     * <p/>
+     * In some areas of the file system hierarchy, file reference URLs cannot be generated to the leaf node of the URL path.
+     *
+     * @return Returns a new file reference URL that points to the same resource as the original URL.
+     */
+    public abstract NSURL fileReferenceURL();
+
+    /**
+     * @return Returns whether the URL is a file reference URL.
+     */
+    public abstract boolean isFileReferenceURL();
+
+    /**
      * Original signature : <code>NSData* resourceDataUsingCache(BOOL)</code><br>
      * Blocks to load the data if necessary.  If shouldUseCache is YES, then if an equivalent URL has already been loaded and cached, its resource data will be returned immediately.  If shouldUseCache is NO, a new load will be started<br>
      * <i>from NSURLLoading native declaration : :84</i>
@@ -228,4 +274,61 @@ public abstract class NSURL extends NSObject {
      * <i>from NSURLLoading native declaration : :89</i>
      */
     public abstract boolean setResourceData(NSData data);
+
+    /**
+     * In an app that has adopted App Sandbox, makes the resource pointed to by a security-scoped URL available to the app.
+     *
+     * @return YES if the request to access the resource succeeded; otherwise, NO.
+     */
+    public abstract boolean startAccessingSecurityScopedResource();
+
+    /**
+     * In an app that adopts App Sandbox, revokes access to the resource pointed to by a security-scoped URL.
+     */
+    public abstract void stopAccessingSecurityScopedResource();
+
+    /**
+     * This method returns bookmark data that can later be resolved into a URL object for a file even if the user moves
+     * or renames it (if the volume format on which the file resides supports doing so).
+     *
+     * @param options     Options taken into account when creating the bookmark for the URL. To create a security-scoped
+     *                    bookmark to support App Sandbox, include the NSURLBookmarkCreationWithSecurityScope flag.
+     * @param keys        An array of names of URL resource properties.
+     * @param relativeURL The URL that the bookmark data will be relative to.
+     *                    To create an app-scoped bookmark, use a value of nil.
+     *                    To create a document-scoped bookmark, use the absolute path (despite this parameter’s name) to the document file that is to own the new security-scoped bookmark.
+     * @param error       The error that occurred in the case that the bookmark data cannot be created.
+     * @return Returns a bookmark for the URL, created with specified options and resource values
+     */
+    public abstract NSData bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+            int options, NSArray keys, NSURL relativeURL, PointerByReference error);
+
+    public static interface NSURLBookmarkCreationOptions {
+        /**
+         * Specifies that you want to create a security-scoped bookmark that, when resolved, provides a security-scoped URL allowing
+         * read/write access to a file-system resource; for use in an app that adopts App Sandbox. For more information, see App
+         * Sandbox Design Guide. Note that this flag cannot be used in conjunction with either NSURLBookmarkCreationMinimalBookmark
+         * or NSURLBookmarkCreationSuitableForBookmarkFile.
+         * <p/>
+         * Available in OS X v10.7 and later.
+         */
+        public static final int NSURLBookmarkCreationWithSecurityScope = (1 << 11);
+
+        /**
+         * When combined with the NSURLBookmarkCreationWithSecurityScope option, specifies that you want to create a security-scoped
+         * bookmark that, when resolved, provides a security-scoped URL allowing read-only access to a file-system resource;
+         * for use in an app that adopts App Sandbox. For more information, see App Sandbox Design Guide.
+         * <p/>
+         * Available in OS X v10.7 and later.
+         */
+        public static final int NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess = (1 << 12);
+    }
+
+    public static interface NSURLBookmarkResolutionOptions {
+        /**
+         * Specifies that the security scope, applied to the bookmark when it was created, should be used during resolution of the bookmark data.
+         * Available in OS X v10.7 and later.
+         */
+        public static final int NSURLBookmarkResolutionWithSecurityScope = (1 << 10);
+    }
 }
