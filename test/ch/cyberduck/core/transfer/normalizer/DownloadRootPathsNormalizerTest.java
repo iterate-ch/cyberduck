@@ -1,9 +1,9 @@
 package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
         final Path fa = new Path("/f/a", Path.FILE_TYPE);
         list.add(fa);
         {
-            Local local = new NullLocal(null, fa.getName()) {
+            Local local = new NullLocal("/", fa.getName()) {
                 @Override
                 public boolean exists() {
                     return false;
@@ -46,7 +46,7 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
         final Path ga = new Path("/g/a", Path.FILE_TYPE);
         list.add(ga);
         {
-            Local local = new NullLocal(null, ga.getName()) {
+            Local local = new NullLocal("/", ga.getName()) {
                 @Override
                 public boolean exists() {
                     return false;
@@ -56,7 +56,7 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
         }
         final List<Path> normalized = n.normalize(list);
         assertEquals(2, normalized.size());
-        assertEquals(new NullLocal(null, "/a"), normalized.get(0).getLocal());
-        assertEquals(new NullLocal(null, "/a-1"), normalized.get(1).getLocal());
+        assertEquals(new NullLocal("/", "a"), normalized.get(0).getLocal());
+        assertEquals(new NullLocal("/", "a-1"), normalized.get(1).getLocal());
     }
 }
