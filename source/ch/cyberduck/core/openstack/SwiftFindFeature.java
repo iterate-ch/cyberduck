@@ -58,13 +58,9 @@ public class SwiftFindFeature implements Find {
                     throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
                 }
             }
-            try {
-                new SwiftMetadataFeature(session).getMetadata(file);
-                return true;
-            }
-            catch(NotfoundException e) {
-                return false;
-            }
+            final SwiftMetadataFeature feature = new SwiftMetadataFeature(session);
+            feature.getMetadata(file);
+            return true;
         }
         catch(NotfoundException e) {
             return false;
