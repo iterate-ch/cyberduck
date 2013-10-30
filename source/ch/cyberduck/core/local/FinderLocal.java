@@ -44,26 +44,6 @@ import java.io.File;
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
-    public FinderLocal(final Local parent, final String name) {
-        this(parent.getAbsolute() + "/" + name);
-    }
-
-    public FinderLocal(final String parent, final String name) {
-        this(parent + "/" + name);
-    }
-
-    public FinderLocal(final File path) {
-        super(path);
-    }
-
-    public FinderLocal(final String path) {
-        super(resolveAlias(stringByExpandingTildeInPath(path)));
-    }
-
-    public static void register() {
-        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
     static {
         Native.load("Local");
     }
@@ -93,6 +73,26 @@ public class FinderLocal extends Local {
         protected Local create(final File path) {
             return new FinderLocal(path);
         }
+    }
+
+    public FinderLocal(final Local parent, final String name) {
+        this(parent.getAbsolute() + "/" + name);
+    }
+
+    public FinderLocal(final String parent, final String name) {
+        this(parent + "/" + name);
+    }
+
+    public FinderLocal(final File path) {
+        super(path);
+    }
+
+    public FinderLocal(final String path) {
+        super(resolveAlias(stringByExpandingTildeInPath(path)));
+    }
+
+    public static void register() {
+        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
     /**
