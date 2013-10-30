@@ -215,7 +215,6 @@ public abstract class Preferences {
          */
         defaults.put("browser.cache.size", String.valueOf(1000));
         defaults.put("transfer.cache.size", String.valueOf(100));
-        defaults.put("attributes.cache.size", String.valueOf(100));
         defaults.put("icon.cache.size", String.valueOf(200));
 
         /**
