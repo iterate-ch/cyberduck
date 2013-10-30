@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (Log.isDebugEnabled())
             {
-                Log.debug(String.Format("Prompt for transfer action of {0}", Transfer.getName()));
+                Log.debug(String.Format("Prompt for transfer action of {0}", Transfer));
             }
             for (int i = 0; i < Transfer.getRoots().size(); i++)
             {
