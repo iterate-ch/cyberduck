@@ -39,6 +39,28 @@ public class HostPlistReaderTest extends AbstractTestCase {
     }
 
     @Test
+    public void testReadPrivateKey() throws Exception {
+        HostPlistReader reader = new HostPlistReader();
+        final Host read = reader.read(new FinderLocal(
+                "test/ch/cyberduck/core/serializer/impl/Private Key Legacy.duck"));
+        assertNotNull(read);
+        assertEquals(ProtocolFactory.SFTP, read.getProtocol());
+        assertNotNull(read.getCredentials().getIdentity());
+        assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
+    }
+
+    @Test
+    public void testReadPrivateKeyBookmark() throws Exception {
+        HostPlistReader reader = new HostPlistReader();
+        final Host read = reader.read(new FinderLocal(
+                "test/ch/cyberduck/core/serializer/impl/Private Key.duck"));
+        assertNotNull(read);
+        assertEquals(ProtocolFactory.SFTP, read.getProtocol());
+        assertNotNull(read.getCredentials().getIdentity());
+        assertEquals("~/.ssh/key.pem", read.getCredentials().getIdentity().getAbbreviatedPath());
+    }
+
+    @Test
     public void testReadNotFound() throws Exception {
         PlistReader reader = new HostPlistReader();
         final Serializable read = reader.read(new FinderLocal("notfound.duck"));

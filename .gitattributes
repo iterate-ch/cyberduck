@@ -2819,6 +2819,8 @@ test/ch/cyberduck/core/importer/org.mozdev.fireftp/fjpxtvk8.default/fireFTPsites
 test/ch/cyberduck/core/local/LocalImplTest.cs -text svneol=unset#application/octet-stream
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text
 test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
+test/ch/cyberduck/core/serializer/impl/Private[!!-~]Key[!!-~]Legacy.duck -text
+test/ch/cyberduck/core/serializer/impl/Private[!!-~]Key.duck -text
 test/ch/cyberduck/core/serializer/impl/s3.amazonaws.com[!!-~]–[!!-~]S3.duck -text
 test/ch/cyberduck/core/sftp/openssh/config -text
 test/ch/cyberduck/core/sftp/putty/PuTTYKeyTest.java -text
