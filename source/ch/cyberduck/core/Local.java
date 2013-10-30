@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -160,7 +161,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public String getAbsolute() {
-        return new File(path).getAbsolutePath();
+        return path;
     }
 
     public String getBookmark() {
@@ -199,7 +200,7 @@ public abstract class Local extends AbstractPath {
      */
     @Override
     public String getName() {
-        return new File(path).getName();
+        return FilenameUtils.getName(path);
     }
 
     public Local getVolume() {
