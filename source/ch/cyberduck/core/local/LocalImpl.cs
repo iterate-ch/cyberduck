@@ -71,14 +71,19 @@ namespace Ch.Cyberduck.Core.Local
 
         public override bool exists()
         {
-            if (System.IO.File.Exists(getAbsolute()))
+            string path = getAbsolute();
+            if (System.IO.File.Exists(path))
             {
-                Log.debug(string.Format("File {0} exists", getAbsolute()));
+                Log.debug(string.Format("File {0} exists", path));
                 return true;
             }
-            Log.debug(getAbsolute() + " is a non-existing file or a folder");
-
-            return Directory.Exists(getAbsolute());
+            Log.warn(path + " is a non-existing file");
+            bool directory = Directory.Exists(path);
+            if(directory) {
+                return true;
+            }
+            Log.warn(path + " is a non-existing folder");
+            return false;
         }
 
         public override void writeUnixPermission(Permission p)
