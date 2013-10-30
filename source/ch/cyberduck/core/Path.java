@@ -133,8 +133,8 @@ public class Path extends AbstractPath implements Serializable {
 
     /**
      * @param parent     Parent path reference
-     * @param name
-     * @param attributes
+     * @param name       Filename
+     * @param attributes Attributes
      */
     public Path(final Path parent, final String name, final PathAttributes attributes) {
         this._setPath(parent, name);
@@ -143,9 +143,9 @@ public class Path extends AbstractPath implements Serializable {
 
     /**
      * @param parent     Parent path reference
-     * @param name
-     * @param attributes
-     * @param file
+     * @param name       Filename
+     * @param attributes Attributes
+     * @param file       The associated local file
      */
     public Path(final Path parent, final String name, final PathAttributes attributes, final Local file) {
         this._setPath(parent, name);
