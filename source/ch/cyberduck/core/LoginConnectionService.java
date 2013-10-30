@@ -40,6 +40,7 @@ public class LoginConnectionService implements ConnectionService {
     private Resolver resolver;
 
     private LoginService login;
+
     private Proxy proxy;
 
     public LoginConnectionService(final LoginController prompt,
