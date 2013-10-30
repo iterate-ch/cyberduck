@@ -109,7 +109,7 @@ public class UploadTransfer extends Transfer {
     @Override
     public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s", action.toString()));
+            log.debug(String.format("Filter transfer with action %s", action));
         }
         final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
         if(action.equals(TransferAction.resume)) {

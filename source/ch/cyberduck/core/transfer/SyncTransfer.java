@@ -97,7 +97,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s", action.toString()));
+            log.debug(String.format("Filter transfer with action %s", action));
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
