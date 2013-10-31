@@ -36,7 +36,6 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using Ch.Cyberduck.core.editor;
 using Ch.Cyberduck.core.local;
 using Microsoft.VisualBasic.ApplicationServices;
 using ch.cyberduck.core;
@@ -388,7 +387,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (Preferences.instance().getBoolean("browser.open.untitled"))
                         {
-                            if(Preferences.instance().getProperty("browser.open.bookmark.default") != null) {
+                            if (Preferences.instance().getProperty("browser.open.bookmark.default") != null)
+                            {
                                 _bc.Invoke(delegate
                                     {
                                         BrowserController bc = NewBrowser();

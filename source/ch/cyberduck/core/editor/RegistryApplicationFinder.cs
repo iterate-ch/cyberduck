@@ -22,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
 using Microsoft.Win32;
 using ch.cyberduck.core;
@@ -30,7 +29,7 @@ using ch.cyberduck.core.local;
 using java.util;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.core.editor
+namespace Ch.Cyberduck.Core.Editor
 {
     internal class RegistryApplicationFinder : ApplicationFinder
     {
@@ -89,8 +88,7 @@ namespace Ch.Cyberduck.core.editor
                 {
                     using (
                         RegistryKey muiCache =
-                            Registry.CurrentUser.OpenSubKey(
-                                "Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"))
+                            Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"))
                     {
                         if (null != muiCache)
                         {
@@ -114,10 +112,8 @@ namespace Ch.Cyberduck.core.editor
                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
                                                                                    new Application(
                                                                                        application.ToLower(),
-                                                                                       LocalFactory
-                                                                                           .createLocal(
-                                                                                               application)
-                                                                                           .getName())));
+                                                                                       LocalFactory.createLocal(
+                                                                                           application).getName())));
                 }
             }
             Application result;
@@ -172,7 +168,10 @@ namespace Ch.Cyberduck.core.editor
                                 }
                             }
                         }
-                        defaultApplicationCache.Add(extension, getDescription(exe));
+                        if (null != exe)
+                        {
+                            defaultApplicationCache.Add(extension, getDescription(exe));
+                        }
                     }
                 }
                 catch (Exception)
@@ -241,10 +240,8 @@ namespace Ch.Cyberduck.core.editor
         }
 
         [DllImport("shlwapi.dll")]
-        private static extern int AssocCreate(
-            Guid clsid,
-            ref Guid riid,
-            [MarshalAs(UnmanagedType.Interface)] out object ppv);
+        private static extern int AssocCreate(Guid clsid, ref Guid riid,
+                                              [MarshalAs(UnmanagedType.Interface)] out object ppv);
 
         public static void Register()
         {
@@ -264,22 +261,15 @@ namespace Ch.Cyberduck.core.editor
             try
             {
                 object obj;
-                AssocCreate(
-                    CLSID_QueryAssociations,
-                    ref IID_IQueryAssociations,
-                    out obj);
+                AssocCreate(CLSID_QueryAssociations, ref IID_IQueryAssociations, out obj);
                 IQueryAssociations qa = (IQueryAssociations) obj;
-                qa.Init(
-                    ASSOCF.INIT_DEFAULTTOSTAR, extension,
-                    UIntPtr.Zero, IntPtr.Zero);
+                qa.Init(ASSOCF.INIT_DEFAULTTOSTAR, extension, UIntPtr.Zero, IntPtr.Zero);
 
                 int size = 0;
-                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND,
-                             "edit", null, ref size);
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, "edit", null, ref size);
 
                 StringBuilder sb = new StringBuilder(size);
-                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND,
-                             "edit", sb, ref size);
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, "edit", sb, ref size);
 
                 string cmd = sb.ToString();
                 if (Utils.IsBlank(cmd))
@@ -393,31 +383,18 @@ namespace Ch.Cyberduck.core.editor
         [Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IQueryAssociations
         {
-            void Init(
-                [In] ASSOCF flags,
-                [In, MarshalAs(UnmanagedType.LPWStr)] string pszAssoc,
-                [In] UIntPtr hkProgid,
-                [In] IntPtr hwnd);
+            void Init([In] ASSOCF flags, [In, MarshalAs(UnmanagedType.LPWStr)] string pszAssoc, [In] UIntPtr hkProgid,
+                      [In] IntPtr hwnd);
 
-            void GetString(
-                [In] ASSOCF flags,
-                [In] ASSOCSTR str,
-                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszOut,
-                [In, Out] ref int pcchOut);
+            void GetString([In] ASSOCF flags, [In] ASSOCSTR str, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                           [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszOut, [In, Out] ref int pcchOut);
 
-            void GetKey(
-                [In] ASSOCF flags,
-                [In] ASSOCKEY str,
-                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                [Out] out UIntPtr phkeyOut);
+            void GetKey([In] ASSOCF flags, [In] ASSOCKEY str, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                        [Out] out UIntPtr phkeyOut);
 
-            void GetData(
-                [In] ASSOCF flags,
-                [In] ASSOCDATA data,
-                [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] out byte[] pvOut,
-                [In, Out] ref int pcbOut);
+            void GetData([In] ASSOCF flags, [In] ASSOCDATA data, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
+                         [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] out byte[] pvOut,
+                         [In, Out] ref int pcbOut);
 
             void GetEnum(); // not used actually
         }
