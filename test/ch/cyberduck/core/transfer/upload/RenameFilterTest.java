@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -51,6 +52,11 @@ public class RenameFilterTest extends AbstractTestCase {
                             }
                             return false;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Attributes.class)) {
@@ -58,6 +64,11 @@ public class RenameFilterTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.FILE_TYPE);
+                        }
+
+                        @Override
+                        public Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -61,5 +60,10 @@ public class DefaultAttributesFeature implements Attributes {
             return list.get(file.getReference()).attributes();
         }
         throw new NotfoundException();
+    }
+
+    public Attributes withCache(final Cache cache) {
+        this.cache = cache;
+        return this;
     }
 }

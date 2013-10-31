@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -60,5 +61,10 @@ public class DAVFindFeature implements Find {
         catch(NotfoundException e) {
             return false;
         }
+    }
+
+    @Override
+    public Find withCache(Cache cache) {
+        return this;
     }
 }

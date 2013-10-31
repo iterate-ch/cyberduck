@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -99,6 +100,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                             }
                             return false;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Move.class)) {
@@ -127,6 +133,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.FILE_TYPE);
+                        }
+
+                        @Override
+                        public Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }
@@ -168,6 +179,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                             }
                             return false;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Move.class)) {
@@ -190,6 +206,11 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.DIRECTORY_TYPE);
+                        }
+
+                        @Override
+                        public Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }

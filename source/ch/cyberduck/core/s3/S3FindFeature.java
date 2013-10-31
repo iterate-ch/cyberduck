@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,5 +34,10 @@ public class S3FindFeature implements Find {
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
         }
+    }
+
+    @Override
+    public Find withCache(Cache cache) {
+        return this;
     }
 }

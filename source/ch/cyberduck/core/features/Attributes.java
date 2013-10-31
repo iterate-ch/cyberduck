@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,5 +27,16 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface Attributes {
+
+    /**
+     * Find file attributes
+     *
+     * @param file File
+     */
     PathAttributes find(Path file) throws BackgroundException;
+
+    /**
+     * Decorate with cache
+     */
+    Attributes withCache(Cache cache);
 }

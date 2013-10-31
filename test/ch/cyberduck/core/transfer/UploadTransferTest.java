@@ -345,6 +345,11 @@ public class UploadTransferTest extends AbstractTestCase {
                         public boolean find(final Path f) throws BackgroundException {
                             return true;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Move.class)) {
@@ -366,6 +371,11 @@ public class UploadTransferTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.FILE_TYPE);
+                        }
+
+                        @Override
+                        public ch.cyberduck.core.features.Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }

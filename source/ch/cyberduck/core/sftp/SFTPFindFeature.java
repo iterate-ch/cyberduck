@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,6 +43,8 @@ public class SFTPFindFeature implements Find {
     public boolean find(final Path file) throws BackgroundException {
         try {
             try {
+                // The SSH_FXP_REALPATH request can be used to have the server
+                // canonicalize any given path name to an absolute path.
                 return session.sftp().canonicalPath(file.getAbsolute()) != null;
             }
             catch(SFTPException e) {
@@ -52,7 +55,13 @@ public class SFTPFindFeature implements Find {
             }
         }
         catch(NotfoundException e) {
+            // We expect SSH_FXP_STATUS if the file is not found
             return false;
         }
+    }
+
+    @Override
+    public Find withCache(Cache cache) {
+        return this;
     }
 }

@@ -65,4 +65,10 @@ public class DefaultFindFeature implements Find {
             return false;
         }
     }
+
+    @Override
+    public Find withCache(Cache cache) {
+        this.cache = cache;
+        return this;
+    }
 }

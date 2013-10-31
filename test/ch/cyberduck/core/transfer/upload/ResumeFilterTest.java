@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -72,6 +73,11 @@ public class ResumeFilterTest extends AbstractTestCase {
                         @Override
                         public boolean find(final Path file) throws BackgroundException {
                             return true;
+                        }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }

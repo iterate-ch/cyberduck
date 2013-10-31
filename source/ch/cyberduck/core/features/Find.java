@@ -17,6 +17,7 @@ package ch.cyberduck.core.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -29,4 +30,9 @@ public interface Find {
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      */
     boolean find(Path file) throws BackgroundException;
+
+    /**
+     * Decorate with cache
+     */
+    Find withCache(Cache cache);
 }

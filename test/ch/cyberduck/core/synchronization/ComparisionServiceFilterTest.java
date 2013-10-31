@@ -1,6 +1,7 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
@@ -40,6 +41,11 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                             found.set(true);
                             return true;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type == Attributes.class) {
@@ -53,6 +59,11 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                                     return "a";
                                 }
                             };
+                        }
+
+                        @Override
+                        public Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }
@@ -98,6 +109,11 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                             found.set(true);
                             return true;
                         }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
+                        }
                     };
                 }
                 if(type == Attributes.class) {
@@ -123,6 +139,11 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                                     return c.getTimeInMillis();
                                 }
                             };
+                        }
+
+                        @Override
+                        public Attributes withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }

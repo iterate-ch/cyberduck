@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -46,6 +47,11 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                         @Override
                         public boolean find(final Path file) throws BackgroundException {
                             return true;
+                        }
+
+                        @Override
+                        public Find withCache(Cache cache) {
+                            return this;
                         }
                     };
                 }
