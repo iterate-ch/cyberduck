@@ -29,6 +29,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
@@ -537,22 +538,29 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                for (int i = 0;
-                     i < ((UrlProvider) _session.getFeature(typeof (UrlProvider))).toUrl(SelectedPath).size();
-                     i++)
+                UrlProvider urlProvider = ((UrlProvider) _session.getFeature(typeof (UrlProvider)));
+                for (int i = 0; i < urlProvider.toUrl(SelectedPath).size(); i++)
                 {
-                    DescriptiveUrl descUrl =
-                        (DescriptiveUrl)
-                        ((UrlProvider) _session.getFeature(typeof (UrlProvider))).toUrl(SelectedPath).toArray()[i];
+                    DescriptiveUrl descUrl = (DescriptiveUrl) urlProvider.toUrl(SelectedPath).toArray()[i];
                     KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
                         descUrl.getHelp(), new List<string>());
                     items.Add(entry);
-
                     foreach (Path path in selected)
                     {
-                        entry.Value.Add(
-                            ((DescriptiveUrl)
-                             ((UrlProvider) _session.getFeature(typeof (UrlProvider))).toUrl(path).toArray()[i]).getUrl());
+                        entry.Value.Add(((DescriptiveUrl) urlProvider.toUrl(path).toArray()[i]).getUrl());
+                    }
+                }
+                UrlProvider distributionConfiguration =
+                    ((UrlProvider) _session.getFeature(typeof (DistributionConfiguration)));
+                for (int i = 0; i < distributionConfiguration.toUrl(SelectedPath).size(); i++)
+                {
+                    DescriptiveUrl descUrl = (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
+                    KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
+                        descUrl.getHelp(), new List<string>());
+                    items.Add(entry);
+                    foreach (Path path in selected)
+                    {
+                        entry.Value.Add(((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
                     }
                 }
             }
