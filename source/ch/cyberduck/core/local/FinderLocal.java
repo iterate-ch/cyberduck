@@ -134,17 +134,19 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    protected void setPath(String name) {
+    protected void setPath(final String name) {
         final String expanded = resolveAlias(stringByExpandingTildeInPath(name));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Expanded %s to %s", name, expanded));
+            if(!StringUtils.equals(expanded, name)) {
+                log.debug(String.format("Expanded %s to %s", name, expanded));
+            }
         }
         super.setPath(expanded);
 
     }
 
     @Override
-    public <T> T serialize(Serializer dict) {
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
         final String bookmark = this.getBookmark();
         if(bookmark != null) {

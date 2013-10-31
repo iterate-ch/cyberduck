@@ -68,7 +68,7 @@ public abstract class Local extends AbstractPath implements Serializable {
         this.setPath(dict.stringForKey("Path"));
     }
 
-    protected void setPath(String name) {
+    protected void setPath(final String name) {
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
                 // Canonical decomposition followed by canonical composition (default)
@@ -87,7 +87,7 @@ public abstract class Local extends AbstractPath implements Serializable {
     }
 
     @Override
-    public <T> T serialize(Serializer dict) {
+    public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Path");
         return dict.getSerialized();
     }
