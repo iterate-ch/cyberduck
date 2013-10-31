@@ -69,7 +69,7 @@ public class Path extends AbstractPath implements Serializable {
         if(localObjDeprecated != null) {
             this.local = LocalFactory.createLocal(localObjDeprecated);
         }
-        final Object localObj = dict.objectForKey("Local");
+        final Object localObj = dict.objectForKey("Local Dictionary");
         if(localObj != null) {
             this.local = LocalFactory.createLocal(localObj);
         }
@@ -90,7 +90,8 @@ public class Path extends AbstractPath implements Serializable {
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
-            dict.setObjectForKey(local, "Local");
+            dict.setStringForKey(local.getAbsolute(), "Local");
+            dict.setObjectForKey(local, "Local Dictionary");
         }
         if(symlink != null) {
             dict.setObjectForKey(symlink, "Symbolic Link");

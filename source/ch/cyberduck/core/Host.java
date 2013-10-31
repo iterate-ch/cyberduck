@@ -286,7 +286,7 @@ public class Host implements Serializable, Comparable<Host> {
         if(keyObjDeprecated != null) {
             credentials.setIdentity(LocalFactory.createLocal(keyObjDeprecated));
         }
-        Object keyObj = dict.objectForKey("Private Key File");
+        Object keyObj = dict.objectForKey("Private Key File Dictionary");
         if(keyObj != null) {
             credentials.setIdentity(LocalFactory.createLocal(keyObj));
         }
@@ -373,7 +373,8 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(this.getEncoding(), "Encoding");
         }
         if(null != this.getCredentials().getIdentity()) {
-            dict.setObjectForKey(this.getCredentials().getIdentity(), "Private Key File");
+            dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
+            dict.setObjectForKey(this.getCredentials().getIdentity(), "Private Key File Dictionary");
         }
         if(this.getProtocol().getType() == Protocol.Type.ftp) {
             if(null != this.getFTPConnectMode()) {
