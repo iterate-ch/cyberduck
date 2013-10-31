@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +45,10 @@ public class SwiftLocationFeature implements Location {
     public Set<String> getLocations() {
         final Set<String> regions = new HashSet<String>();
         for(Region region : session.getClient().getRegions()) {
+            if(StringUtils.isBlank(region.getRegionId())) {
+                // v1 authentication contexts do not have region support
+                continue;
+            }
             regions.add(region.getRegionId());
         }
         return regions;

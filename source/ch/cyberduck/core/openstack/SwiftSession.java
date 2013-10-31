@@ -46,6 +46,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
@@ -102,7 +103,7 @@ public class SwiftSession extends HttpSession<Client> {
             return null;
         }
         for(Region region : client.getRegions()) {
-            if(null == region.getRegionId()) {
+            if(StringUtils.isBlank(region.getRegionId())) {
                 continue;
             }
             if(region.getRegionId().equals(location)) {
