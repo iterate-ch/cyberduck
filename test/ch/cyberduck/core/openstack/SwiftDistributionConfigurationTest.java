@@ -76,7 +76,8 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals(1, test.getContainers().size());
         assertEquals(".CDN_ACCESS_LOGS", test.getLoggingContainer());
         assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin().getHost());
-        assertEquals(URI.create("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), test.getOrigin());
+        assertEquals(URI.create("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch"),
+                test.getOrigin());
     }
 
     @Test
@@ -127,6 +128,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals(URI.create("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com"), test.getUrl());
         assertEquals(URI.create("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2"), test.getSslUrl());
         assertEquals(1, test.getContainers().size());
-        assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), test.getOrigin());
+        assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch"),
+                test.getOrigin());
     }
 }

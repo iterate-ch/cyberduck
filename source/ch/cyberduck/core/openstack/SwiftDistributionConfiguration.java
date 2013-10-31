@@ -111,7 +111,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
                         container.getName());
-                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(),
+                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(container.getName()),
                         method, info.isEnabled());
                 distribution.setId(info.getName());
                 distribution.setStatus(info.isEnabled() ? LocaleFactory.localizedString("CDN Enabled", "Mosso") : LocaleFactory.localizedString("CDN Disabled", "Mosso"));
@@ -140,7 +140,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
                 }
-                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(), method, false);
+                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(container.getName()), method, false);
                 distribution.setStatus(LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 return distribution;
             }
