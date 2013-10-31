@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -65,12 +66,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private Attributes attribute;
 
+    private Cache cache
+            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.find = session.getFeature(Find.class);
-        this.attribute = session.getFeature(Attributes.class);
+        this.find = session.getFeature(Find.class).withCache(cache);
+        this.attribute = session.getFeature(Attributes.class).withCache(cache);
     }
 
     public void setOptions(final UploadFilterOptions options) {
