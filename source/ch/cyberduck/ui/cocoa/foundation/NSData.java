@@ -31,7 +31,7 @@ public abstract class NSData extends NSObject {
     }
 
     public static NSData dataWithBase64EncodedString(String base64String) {
-        return CLASS.alloc().initWithBase64EncodedString_options(base64String, 0);
+        return CLASS.dataWithBase64EncodedString(base64String);
     }
 
     public interface _Class extends ObjCClass {
@@ -90,6 +90,11 @@ public abstract class NSData extends NSObject {
          * <i>from NSDataCreation native declaration : :65</i>
          */
         NSData dataWithContentsOfMappedFile(String path);
+
+        /**
+         * NSData+Base64
+         */
+        NSData dataWithBase64EncodedString(String string);
 
         /**
          * Original signature : <code>dataWithData(NSData*)</code><br>
@@ -229,9 +234,10 @@ public abstract class NSData extends NSObject {
      */
     public abstract NSData initWithData(NSData data);
 
-    public abstract NSData initWithBase64EncodedString_options(String base64String, int options);
-
-    public abstract String base64EncodedStringWithOptions(int options);
+    /**
+     * NSData+Base64
+     */
+    public abstract String base64EncodedString();
 
 }
 

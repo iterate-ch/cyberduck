@@ -52,6 +52,10 @@
 		4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
+		473A701A182259350055C76C /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7017182259350055C76C /* base64.m */; };
+		473A701B182259350055C76C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
+		473A701C182259350055C76C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
+		473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
 		474163C306C4F64100AC0BD2 /* Main.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A706C4F64100AC0BD2 /* Main.nib */; };
@@ -706,6 +710,9 @@
 		4739EFA20856990000405FD3 /* libGrowl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libGrowl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
+		473A7018182259350055C76C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		473A7019182259350055C76C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
 		474163B006C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = en; path = en.lproj/License.txt; sourceTree = "<group>"; };
@@ -1621,6 +1628,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */,
 				477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */,
 				4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */,
 				4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */,
@@ -1804,6 +1812,16 @@
 			path = aquaticprime;
 			sourceTree = "<group>";
 		};
+		473A7016182259350055C76C /* base64 */ = {
+			isa = PBXGroup;
+			children = (
+				473A7017182259350055C76C /* base64.m */,
+				473A7018182259350055C76C /* NSData+Base64.h */,
+				473A7019182259350055C76C /* NSData+Base64.m */,
+			);
+			path = base64;
+			sourceTree = "<group>";
+		};
 		474152D706C4F08A00AC0BD2 /* source */ = {
 			isa = PBXGroup;
 			children = (
@@ -1836,6 +1854,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				473A7016182259350055C76C /* base64 */,
 				47C88FED17269A54001A746A /* IOKitSleepPreventer.h */,
 				47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */,
 				47EA2444162B5C44002E23E2 /* urlhandler */,
@@ -2257,6 +2276,7 @@
 			files = (
 				477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */,
 				477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */,
+				473A701B182259350055C76C /* NSData+Base64.h in Headers */,
 				477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */,
 				477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */,
 				477A110E0FD08E8E00BAD4AD /* QLPreviewPanel.h in Headers */,
@@ -2949,6 +2969,7 @@
 			files = (
 				477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */,
 				477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */,
+				473A701C182259350055C76C /* NSData+Base64.m in Sources */,
 				477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */,
 				477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */,
 				477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */,
@@ -2957,6 +2978,7 @@
 				475286CA10D2CC660029363C /* CDBookmarkCell.m in Sources */,
 				475286CB10D2CC660029363C /* CDControllerCell.m in Sources */,
 				475286CC10D2CC660029363C /* CDListView.m in Sources */,
+				473A701A182259350055C76C /* base64.m in Sources */,
 				475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */,
 				475286CE10D2CC660029363C /* CDOutlineView.m in Sources */,
 				47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */,
@@ -4480,7 +4502,7 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -4741,7 +4763,7 @@
 				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = NO;

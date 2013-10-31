@@ -188,8 +188,13 @@ public class FinderLocal extends Local {
                 log.warn(String.format("Failure getting bookmark data for file %s", this));
                 return null;
             }
-            return data.base64EncodedStringWithOptions(0);
+            final String encoded = data.base64EncodedString();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
+            }
+            return encoded;
         }
+        log.warn(String.format("Skip creating bookmark for file not found %s", this));
         return null;
     }
 
