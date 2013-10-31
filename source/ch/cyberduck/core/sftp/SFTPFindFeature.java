@@ -18,41 +18,26 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-
-import java.io.IOException;
-
-import ch.ethz.ssh2.SFTPException;
 
 /**
  * @version $Id$
  */
 public class SFTPFindFeature implements Find {
 
-    private SFTPSession session;
+    private SFTPAttributesFeature attributes;
 
     public SFTPFindFeature(final SFTPSession session) {
-        this.session = session;
+        this.attributes = new SFTPAttributesFeature(session);
     }
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            try {
-                // The SSH_FXP_REALPATH request can be used to have the server
-                // canonicalize any given path name to an absolute path.
-                return session.sftp().canonicalPath(file.getAbsolute()) != null;
-            }
-            catch(SFTPException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            return attributes.find(file) != null;
         }
         catch(NotfoundException e) {
             // We expect SSH_FXP_STATUS if the file is not found
