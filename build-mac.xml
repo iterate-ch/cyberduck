@@ -72,8 +72,8 @@
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
-    <property name="build.sdk.version" value="macosx10.7"/>
-    <property name="build.xcodeoptions" value=""/>
+    <property name="build.sdk.version" value="macosx10.9"/>
+    <property name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
 
     <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
     <property name="build.lipo.arch.remove" value=""/>
@@ -419,7 +419,6 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
@@ -455,7 +454,6 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
@@ -491,7 +489,6 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
         </antcall>
