@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
@@ -115,6 +116,36 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
         }
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testWriteNotFound() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        f.getPermission(test);
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testReadNotFound() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
+        f.setPermission(test, Acl.EMPTY);
     }
 
     @Test
