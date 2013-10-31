@@ -259,7 +259,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             if(item.attributes().isDirectory()) {
                 return this.folderIcon(size, badge);
             }
-            return this.documentIcon(item.getExtension(), size, badge);
+            return this.documentIcon(StringUtils.lowerCase(item.getExtension()), size, badge);
         }
         if(item.attributes().isFile()) {
             if(StringUtils.isEmpty(item.getExtension())) {
@@ -267,7 +267,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
                     return this.iconNamed("executable.tiff", size);
                 }
             }
-            return this.documentIcon(item.getExtension(), size);
+            return this.documentIcon(StringUtils.lowerCase(item.getExtension()), size);
         }
         if(item.attributes().isDirectory()) {
             if(!item.attributes().getPermission().isExecutable()) {
