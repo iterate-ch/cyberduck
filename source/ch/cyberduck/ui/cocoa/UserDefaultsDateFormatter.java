@@ -26,8 +26,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 
-import org.rococoa.Foundation;
-
 /**
  * @version $Id$
  */
@@ -81,9 +79,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
         longDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateNaturalFormatter.setLocale(locale());
-        if(longDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            longDateNaturalFormatter.setDoesRelativeDateFormatting(true);
-        }
+        longDateNaturalFormatter.setDoesRelativeDateFormatting(true);
     }
 
     private static final NSDateFormatter shortDateNaturalFormatter = NSDateFormatter.dateFormatter();
@@ -92,9 +88,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
         shortDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateNaturalFormatter.setLocale(locale());
-        if(shortDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            shortDateNaturalFormatter.setDoesRelativeDateFormatting(true);
-        }
+        shortDateNaturalFormatter.setDoesRelativeDateFormatting(true);
     }
 
     private static final NSDateFormatter mediumDateNaturalFormatter = NSDateFormatter.dateFormatter();
@@ -103,9 +97,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
         mediumDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateNaturalFormatter.setLocale(locale());
-        if(mediumDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            mediumDateNaturalFormatter.setDoesRelativeDateFormatting(true);
-        }
+        mediumDateNaturalFormatter.setDoesRelativeDateFormatting(true);
     }
 
     /**
