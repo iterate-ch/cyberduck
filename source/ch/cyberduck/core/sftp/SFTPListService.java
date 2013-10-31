@@ -21,7 +21,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.SFTPv3DirectoryEntry;
-import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
  * @version $Id$
@@ -41,8 +40,11 @@ public class SFTPListService implements ListService {
 
     private SFTPSession session;
 
+    private SFTPAttributesFeature feature;
+
     public SFTPListService(final SFTPSession session) {
         this.session = session;
+        this.feature = new SFTPAttributesFeature(session);
     }
 
     @Override
@@ -53,29 +55,9 @@ public class SFTPListService implements ListService {
                 if(f.filename.equals(".") || f.filename.equals("..")) {
                     continue;
                 }
-                final SFTPv3FileAttributes attributes = f.attributes;
-                final Path file = new Path(directory, f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                if(null != attributes.size) {
-                    if(file.attributes().isFile()) {
-                        file.attributes().setSize(attributes.size);
-                    }
-                }
-                if(null != attributes.permissions) {
-                    file.attributes().setPermission(new Permission(Integer.toString(attributes.permissions, 8)));
-                }
-                if(null != attributes.uid) {
-                    file.attributes().setOwner(attributes.uid.toString());
-                }
-                if(null != attributes.gid) {
-                    file.attributes().setGroup(attributes.gid.toString());
-                }
-                if(null != attributes.mtime) {
-                    file.attributes().setModificationDate(attributes.mtime * 1000L);
-                }
-                if(null != attributes.atime) {
-                    file.attributes().setAccessedDate(attributes.atime * 1000L);
-                }
-                if(attributes.isSymlink()) {
+                final PathAttributes attributes = feature.convert(f.attributes);
+                final Path file = new Path(directory, f.filename, attributes);
+                if(attributes.isSymbolicLink()) {
                     try {
                         final String target = session.sftp().readLink(file.getAbsolute());
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
@@ -85,10 +67,10 @@ public class SFTPListService implements ListService {
                             file.setSymlinkTarget(new Path(directory, target, Path.FILE_TYPE));
                         }
                         if(session.sftp().stat(file.getSymlinkTarget().getAbsolute()).isDirectory()) {
-                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                         }
                         else {
-                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
                     }
                     catch(SFTPException e) {

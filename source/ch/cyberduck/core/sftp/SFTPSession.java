@@ -262,6 +262,9 @@ public class SFTPSession extends Session<Connection> {
         if(type == Find.class) {
             return (T) new SFTPFindFeature(this);
         }
+        if(type == ch.cyberduck.core.features.Attributes.class) {
+            return (T) new SFTPAttributesFeature(this);
+        }
         return super.getFeature(type);
     }
 }

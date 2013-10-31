@@ -17,7 +17,16 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
