@@ -35,20 +35,28 @@ namespace Ch.Cyberduck.Core.Local
 
         private LocalAttributes _info;
 
-        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name)) {}
+        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
+        {
+        }
 
-        public LocalImpl(ch.cyberduck.core.Local parent, string name)
-            : base(parent.getAbsolute() + '\\' + name) {}
+        public LocalImpl(ch.cyberduck.core.Local parent, string name) : base(parent.getAbsolute() + '\\' + name)
+        {
+        }
 
         public LocalImpl(string path)
-            : base(Path.Combine(FilenameUtils.getPrefix(path),
-                                MakeValidPath(FilenameUtils.getPath(path))) +
-                   MakeValidFilename(FilenameUtils.getName(path)))  {}
+            : base(
+                Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
+                MakeValidFilename(FilenameUtils.getName(path)))
+        {
+        }
 
-        public LocalImpl(File path) : base(path) {}
+        public LocalImpl(File path) : base(path)
+        {
+        }
 
-        public LocalImpl(Object serialized) : base(serialized) {}
-
+        public LocalImpl(Object serialized) : base(serialized)
+        {
+        }
 
         public override char getDelimiter()
         {
@@ -70,7 +78,8 @@ namespace Ch.Cyberduck.Core.Local
             }
             Log.warn(path + " is a non-existing file");
             bool directory = Directory.Exists(path);
-            if(directory) {
+            if (directory)
+            {
                 return true;
             }
             Log.warn(path + " is a non-existing folder");
@@ -177,6 +186,11 @@ namespace Ch.Cyberduck.Core.Local
                 return new LocalImpl(path);
             }
 
+            protected override ch.cyberduck.core.Local create(object obj)
+            {
+                return new LocalImpl(obj);
+            }
+
             protected override object create()
             {
                 return new LocalImpl(Environment.GetEnvironmentVariable("HOME"));
@@ -185,8 +199,7 @@ namespace Ch.Cyberduck.Core.Local
 
         private class FileInfoAttributes : LocalAttributes
         {
-            public FileInfoAttributes(String path)
-                : base(path)
+            public FileInfoAttributes(String path) : base(path)
             {
             }
 
