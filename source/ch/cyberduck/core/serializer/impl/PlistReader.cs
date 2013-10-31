@@ -26,12 +26,12 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
     {
         public Collection readCollection(ch.cyberduck.core.Local file)
         {
-            XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
-            PlistDocument.Load(file.getAbsolute());
+            XmlDocument plistDocument = new XmlDocument {XmlResolver = null};
+            plistDocument.Load(file.getAbsolute());
 
             Collection resultCollection = new Collection();
 
-            XmlNodeList dictNodes = PlistDocument.SelectNodes("/plist/array/dict");
+            XmlNodeList dictNodes = plistDocument.SelectNodes("/plist/array/dict");
             foreach (XmlNode node in dictNodes)
             {
                 resultCollection.add(deserialize(node));
@@ -41,10 +41,10 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 
         public Serializable read(ch.cyberduck.core.Local file)
         {
-            XmlDocument PlistDocument = new XmlDocument {XmlResolver = null};
-            PlistDocument.Load(file.getAbsolute());
+            XmlDocument plistDocument = new XmlDocument {XmlResolver = null};
+            plistDocument.Load(file.getAbsolute());
 
-            XmlNode dictNode = PlistDocument.SelectSingleNode("/plist/dict");
+            XmlNode dictNode = plistDocument.SelectSingleNode("/plist/dict");
             return deserialize(dictNode);
         }
 
