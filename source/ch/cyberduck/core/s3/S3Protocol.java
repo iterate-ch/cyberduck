@@ -80,9 +80,7 @@ public final class S3Protocol extends AbstractProtocol {
                 "ap-southeast-1",
                 "ap-southeast-2",
                 "ap-northeast-1",
-                "sa-east-1",
-                "s3-us-gov-west-1",
-                "s3-fips-us-gov-west-1"
+                "sa-east-1"
         ));
     }
 
