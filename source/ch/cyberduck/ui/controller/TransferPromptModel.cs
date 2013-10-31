@@ -142,7 +142,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public CheckState SetCheckState(object p, CheckState newValue)
         {
-            _selected.Add((Path) p, newValue);
+            _selected[(Path) p] = newValue;
             return newValue;
         }
 
@@ -195,8 +195,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
                                                        Session session, Transfer transfer, TransferAction action,
-                                                       Cache cache)
-                    : base(session, transfer, action, cache)
+                                                       Cache cache) : base(session, transfer, action, cache)
                 {
                     _model = model;
                     _controller = controller;
@@ -228,8 +227,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, Session session, Transfer transfer,
-                                                     Path directory, Cache cache)
-                    : base(session, transfer, directory)
+                                                     Path directory, Cache cache) : base(session, transfer, directory)
                 {
                     _model = model;
                     _directory = directory;
