@@ -1519,7 +1519,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!http.Equals(DescriptiveUrl.EMPTY))
                 {
                     View.WebUrl = http.getUrl();
-                    View.WebUrlTooltip = http.getUrl();
+                    View.WebUrlTooltip = LocaleFactory.localizedString("Open in Web Browser");
                 }
                 else
                 {
