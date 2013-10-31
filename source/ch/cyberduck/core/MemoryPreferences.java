@@ -67,7 +67,7 @@ public class MemoryPreferences extends Preferences {
         defaults.put("application.bookmarks.path", System.getProperty("java.io.tmpdir"));
         defaults.put("queue.download.folder", "~/Downloads");
         defaults.put("application.name", "Cyberduck");
-        defaults.put("application.version", "snapshot");
+        defaults.put("application.version", "0");
         super.setDefaults();
         defaults.put("local.normalize.unicode", String.valueOf(false));
     }
