@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
 
 import org.junit.Test;
 
@@ -37,35 +38,25 @@ import static org.junit.Assert.*;
 public class S3BucketCreateServiceTest extends AbstractTestCase {
 
     @Test
-    public void testCreateLocationUS() throws Exception {
+    public void testCreate() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
-        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
-        new S3BucketCreateService(session).create(bucket, "US");
-        assertTrue(new S3FindFeature(session).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
-        assertFalse(new S3FindFeature(session).find(bucket));
-        session.close();
-    }
-
-    @Test
-    public void testCreateLocationAsia() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-                        )));
-        assertNotNull(session.open(new DefaultHostKeyController()));
-        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
-        new S3BucketCreateService(session).create(bucket, "ap-northeast-1");
-        bucket.attributes().setRegion("ap-northeast-1");
-        assertTrue(new S3FindFeature(session).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
-        assertFalse(new S3FindFeature(session).find(bucket));
+        final S3FindFeature find = new S3FindFeature(session);
+        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
+        final S3BucketCreateService create = new S3BucketCreateService(session);
+        for(String region : ProtocolFactory.S3_SSL.getRegions()) {
+            System.out.println(region);
+            final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+            create.create(bucket, region);
+            bucket.attributes().setRegion(region);
+            assertTrue(find.find(bucket));
+            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
+            assertFalse(find.find(bucket));
+        }
         session.close();
     }
 }
