@@ -1829,17 +1829,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_NewFolder()
         {
             Location feature = (Location) _session.getFeature(typeof (Location));
-            IList<String> regions = new List<string>();
-            if (Workdir.isRoot() && feature != null)
-            {
-                Iterator iterator = feature.getLocations().iterator();
-                while (iterator.hasNext())
-                {
-                    String region = (String) iterator.next();
-                    regions.Add(region);
-                }
-            }
-            FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this, regions);
+            FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this,
+                                                       feature != null
+                                                           ? (IList<string>)
+                                                             Utils.ConvertFromJavaList<String>(feature.getLocations())
+                                                           : new List<string>());
             fc.Show();
         }
 
