@@ -26,5 +26,5 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface Attributes {
-    PathAttributes getAttributes(Path file) throws BackgroundException;
+    PathAttributes find(Path file) throws BackgroundException;
 }

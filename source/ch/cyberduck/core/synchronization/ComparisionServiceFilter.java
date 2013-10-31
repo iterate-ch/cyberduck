@@ -57,7 +57,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
         final Local local = file.getLocal();
         if(local.exists()) {
             if(finder.find(file)) {
-                final PathAttributes attributes = attribute.getAttributes(file);
+                final PathAttributes attributes = attribute.find(file);
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
                     final Comparison comparison = checksum.compare(attributes, local.attributes());

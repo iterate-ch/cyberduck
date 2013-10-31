@@ -125,7 +125,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Attributes.class)) {
                     return (T) new Attributes() {
                         @Override
-                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                        public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.FILE_TYPE);
                         }
                     };
@@ -188,7 +188,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Attributes.class)) {
                     return (T) new Attributes() {
                         @Override
-                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                        public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.DIRECTORY_TYPE);
                         }
                     };

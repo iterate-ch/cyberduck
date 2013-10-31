@@ -364,7 +364,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
                     return (T) new ch.cyberduck.core.features.Attributes() {
                         @Override
-                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                        public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes(Path.FILE_TYPE);
                         }
                     };

@@ -37,7 +37,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new DefaultAttributesFeature(session).getAttributes(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new DefaultAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE));
     }
 
     @Test
@@ -60,12 +60,12 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         final Cache cache = new Cache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
         final Path file = new Path(session.workdir(), "test", Path.FILE_TYPE);
-        final Attributes attributes = f.getAttributes(file);
+        final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test cache
-        assertEquals(0L, f.getAttributes(file).getSize());
+        assertEquals(0L, f.find(file).getSize());
         assertTrue(cache.containsKey(file.getParent().getReference()));
     }
 }

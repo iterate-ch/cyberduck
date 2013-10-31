@@ -56,7 +56,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
                 if(find.find(file)) {
-                    final long remote = attributes.getAttributes(file).getSize();
+                    final long remote = attributes.find(file).getSize();
                     if(remote >= file.getLocal().attributes().getSize()) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Skip file %s with remote size %d", file, remote));

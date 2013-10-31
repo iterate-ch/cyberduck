@@ -45,7 +45,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 if(type == Attributes.class) {
                     return (T) new Attributes() {
                         @Override
-                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                        public PathAttributes find(final Path file) throws BackgroundException {
                             attr.set(true);
                             return new PathAttributes(Path.FILE_TYPE) {
                                 @Override
@@ -103,7 +103,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 if(type == Attributes.class) {
                     return (T) new Attributes() {
                         @Override
-                        public PathAttributes getAttributes(final Path file) throws BackgroundException {
+                        public PathAttributes find(final Path file) throws BackgroundException {
                             attr.set(true);
                             return new PathAttributes(Path.FILE_TYPE) {
                                 @Override

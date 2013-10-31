@@ -88,7 +88,7 @@ public class FTPWriteFeature implements Write {
     @Override
     public Append append(final Path file, final Attributes feature) throws BackgroundException {
         if(new DefaultFindFeature(session).find(file)) {
-            return new Append(feature.getAttributes(file).getSize());
+            return new Append(feature.find(file).getSize());
         }
         return new Append();
     }
