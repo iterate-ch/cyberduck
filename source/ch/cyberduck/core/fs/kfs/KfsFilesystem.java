@@ -49,6 +49,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +59,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
 
 /**
  * @version $Id$
@@ -330,7 +330,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         };
         delegate.readlink = new KfsLibrary.kfsreadlink_f() {
             @Override
-            public boolean apply(final String path, PointerByReference value, Pointer context) {
+            public boolean apply(final String path, ObjCObjectByReference value, Pointer context) {
                 log.debug("kfsreadlink_f:" + path);
                 // Not supported
                 return false;

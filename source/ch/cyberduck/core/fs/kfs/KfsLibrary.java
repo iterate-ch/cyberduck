@@ -19,6 +19,8 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCObjectByReference;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -35,7 +37,6 @@ import com.sun.jna.Structure;
 import com.sun.jna.Union;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
-import com.sun.jna.ptr.PointerByReference;
 
 /**
  * @version $Id$
@@ -2307,7 +2308,7 @@ public interface KfsLibrary extends Library {
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/sys/types.h</i>
      */
     public interface kfsreadlink_f extends Callback {
-        boolean apply(String path, PointerByReference value, Pointer context);
+        boolean apply(String path, ObjCObjectByReference value, Pointer context);
     }
 
     /**
@@ -2571,10 +2572,10 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int execv(const char*, const char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:435</i><br>
      *
-     * @deprecated use the safer methods {@link #execv(java.lang.String, java.lang.String[])} and {@link #execv(com.sun.jna.Pointer, com.sun.jna.ptr.PointerByReference)} instead
+     * @deprecated use the safer methods {@link #execv(java.lang.String, java.lang.String[])} and {@link #execv(com.sun.jna.Pointer, ObjCObjectByReference)} instead
      */
     @Deprecated
-    int execv(Pointer charPtr1, PointerByReference charPtrPtr1);
+    int execv(Pointer charPtr1, ObjCObjectByReference charPtrPtr1);
 
     /**
      * Original signature : <code>int execv(const char*, const char**)</code><br>
@@ -2586,10 +2587,10 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int execve(const char*, const char**, const char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:436</i><br>
      *
-     * @deprecated use the safer methods {@link #execve(java.lang.String, java.lang.String[], java.lang.String[])} and {@link #execve(com.sun.jna.Pointer, com.sun.jna.ptr.PointerByReference, com.sun.jna.ptr.PointerByReference)} instead
+     * @deprecated use the safer methods {@link #execve(java.lang.String, java.lang.String[], java.lang.String[])} and {@link #execve(com.sun.jna.Pointer, com.sun.jna.ptr.ObjCObjectByReference, com.sun.jna.ptr.ObjCObjectByReference)} instead
      */
     @Deprecated
-    int execve(Pointer charPtr1, PointerByReference charPtrPtr1, PointerByReference charPtrPtr2);
+    int execve(Pointer charPtr1, ObjCObjectByReference charPtrPtr1, ObjCObjectByReference charPtrPtr2);
 
     /**
      * Original signature : <code>int execve(const char*, const char**, const char**)</code><br>
@@ -2601,10 +2602,10 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int execvp(const char*, const char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:437</i><br>
      *
-     * @deprecated use the safer methods {@link #execvp(java.lang.String, java.lang.String[])} and {@link #execvp(com.sun.jna.Pointer, com.sun.jna.ptr.PointerByReference)} instead
+     * @deprecated use the safer methods {@link #execvp(java.lang.String, java.lang.String[])} and {@link #execvp(com.sun.jna.Pointer, com.sun.jna.ptr.ObjCObjectByReference)} instead
      */
     @Deprecated
-    int execvp(Pointer charPtr1, PointerByReference charPtrPtr1);
+    int execvp(Pointer charPtr1, ObjCObjectByReference charPtrPtr1);
 
     /**
      * Original signature : <code>int execvp(const char*, const char**)</code><br>
@@ -3200,10 +3201,10 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int execvP(const char*, const char*, const char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:310</i><br>
      *
-     * @deprecated use the safer methods {@link #execvP(java.lang.String, java.lang.String, java.lang.String[])} and {@link #execvP(com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.PointerByReference)} instead
+     * @deprecated use the safer methods {@link #execvP(java.lang.String, java.lang.String, java.lang.String[])} and {@link #execvP(com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.ObjCObjectByReference)} instead
      */
     @Deprecated
-    int execvP(Pointer charPtr1, Pointer charPtr2, PointerByReference charPtrPtr1);
+    int execvP(Pointer charPtr1, Pointer charPtr2, ObjCObjectByReference charPtrPtr1);
 
     /**
      * Original signature : <code>int execvP(const char*, const char*, const char**)</code><br>
@@ -3503,31 +3504,31 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int rcmd(char**, int, const char*, const char*, const char*, int*)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:337</i><br>
      *
-     * @deprecated use the safer methods {@link #rcmd(com.sun.jna.ptr.PointerByReference, int, java.lang.String, java.lang.String, java.lang.String, java.nio.IntBuffer)} and {@link #rcmd(com.sun.jna.ptr.PointerByReference, int, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.IntByReference)} instead
+     * @deprecated use the safer methods {@link #rcmd(com.sun.jna.ptr.ObjCObjectByReference, int, java.lang.String, java.lang.String, java.lang.String, java.nio.IntBuffer)} and {@link #rcmd(com.sun.jna.ptr.ObjCObjectByReference, int, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.IntByReference)} instead
      */
     @Deprecated
-    int rcmd(PointerByReference charPtrPtr1, int int1, Pointer charPtr1, Pointer charPtr2, Pointer charPtr3, IntByReference intPtr1);
+    int rcmd(ObjCObjectByReference charPtrPtr1, int int1, Pointer charPtr1, Pointer charPtr2, Pointer charPtr3, IntByReference intPtr1);
 
     /**
      * Original signature : <code>int rcmd(char**, int, const char*, const char*, const char*, int*)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:337</i>
      */
-    int rcmd(PointerByReference charPtrPtr1, int int1, String charPtr1, String charPtr2, String charPtr3, IntBuffer intPtr1);
+    int rcmd(ObjCObjectByReference charPtrPtr1, int int1, String charPtr1, String charPtr2, String charPtr3, IntBuffer intPtr1);
 
     /**
      * Original signature : <code>int rcmd_af(char**, int, const char*, const char*, const char*, int*, int)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:338</i><br>
      *
-     * @deprecated use the safer methods {@link #rcmd_af(com.sun.jna.ptr.PointerByReference, int, java.lang.String, java.lang.String, java.lang.String, java.nio.IntBuffer, int)} and {@link #rcmd_af(com.sun.jna.ptr.PointerByReference, int, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.IntByReference, int)} instead
+     * @deprecated use the safer methods {@link #rcmd_af(com.sun.jna.ptr.ObjCObjectByReference, int, java.lang.String, java.lang.String, java.lang.String, java.nio.IntBuffer, int)} and {@link #rcmd_af(com.sun.jna.ptr.ObjCObjectByReference, int, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.Pointer, com.sun.jna.ptr.IntByReference, int)} instead
      */
     @Deprecated
-    int rcmd_af(PointerByReference charPtrPtr1, int int1, Pointer charPtr1, Pointer charPtr2, Pointer charPtr3, IntByReference intPtr1, int int2);
+    int rcmd_af(ObjCObjectByReference charPtrPtr1, int int1, Pointer charPtr1, Pointer charPtr2, Pointer charPtr3, IntByReference intPtr1, int int2);
 
     /**
      * Original signature : <code>int rcmd_af(char**, int, const char*, const char*, const char*, int*, int)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:338</i>
      */
-    int rcmd_af(PointerByReference charPtrPtr1, int int1, String charPtr1, String charPtr2, String charPtr3, IntBuffer intPtr1, int int2);
+    int rcmd_af(ObjCObjectByReference charPtrPtr1, int int1, String charPtr1, String charPtr2, String charPtr3, IntBuffer intPtr1, int int2);
 
     /**
      * Original signature : <code>int reboot(int)</code><br>
@@ -3731,7 +3732,7 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int strtofflags(char**, unsigned long*, unsigned long*)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:362</i>
      */
-    int strtofflags(PointerByReference charPtrPtr1, NativeLongByReference uPtr1, NativeLongByReference uPtr2);
+    int strtofflags(ObjCObjectByReference charPtrPtr1, NativeLongByReference uPtr1, NativeLongByReference uPtr2);
 
     /**
      * Original signature : <code>int swapon(const char*)</code><br>
@@ -3800,16 +3801,16 @@ public interface KfsLibrary extends Library {
      * Original signature : <code>int getsubopt(char**, const char**, char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:371</i><br>
      *
-     * @deprecated use the safer methods {@link #getsubopt(com.sun.jna.ptr.PointerByReference, java.lang.String[], com.sun.jna.ptr.PointerByReference)} and {@link #getsubopt(com.sun.jna.ptr.PointerByReference, com.sun.jna.ptr.PointerByReference, com.sun.jna.ptr.PointerByReference)} instead
+     * @deprecated use the safer methods {@link #getsubopt(com.sun.jna.ptr.ObjCObjectByReference, java.lang.String[], com.sun.jna.ptr.ObjCObjectByReference)} and {@link #getsubopt(com.sun.jna.ptr.ObjCObjectByReference, com.sun.jna.ptr.ObjCObjectByReference, com.sun.jna.ptr.ObjCObjectByReference)} instead
      */
     @Deprecated
-    int getsubopt(PointerByReference charPtrPtr1, PointerByReference charPtrPtr2, PointerByReference charPtrPtr3);
+    int getsubopt(ObjCObjectByReference charPtrPtr1, ObjCObjectByReference charPtrPtr2, ObjCObjectByReference charPtrPtr3);
 
     /**
      * Original signature : <code>int getsubopt(char**, const char**, char**)</code><br>
      * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/unistd.h:371</i>
      */
-    int getsubopt(PointerByReference charPtrPtr1, String charPtrPtr2[], PointerByReference charPtrPtr3);
+    int getsubopt(ObjCObjectByReference charPtrPtr1, String charPtrPtr2[], ObjCObjectByReference charPtrPtr3);
 
     /**
      * Original signature : <code>int getattrlist(const char*, void*, void*, size_t, unsigned long)</code><br>

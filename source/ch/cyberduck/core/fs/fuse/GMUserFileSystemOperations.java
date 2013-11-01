@@ -24,12 +24,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCObjectByReference;
 
 import com.sun.jna.IntegerType;
-import com.sun.jna.ptr.PointerByReference;
 
 /**
- * @version $Id:$
+ * @version $Id$
  * @category
  * @discussion The core set of file system operations the delegate must implement.
  * Unless otherwise noted, they typically should behave like the NSFileManager
@@ -59,7 +59,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result An array of NSString or nil on error.
     */
-    NSArray contentsOfDirectoryAtPath_error(String path, PointerByReference error);
+    NSArray contentsOfDirectoryAtPath_error(String path, ObjCObjectByReference error);
 
 
     /*!
@@ -92,7 +92,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result A dictionary of attributes or nil on error.
     */
-    NSDictionary attributesOfItemAtPath_userData_error(String path, ID userData, PointerByReference error);
+    NSDictionary attributesOfItemAtPath_userData_error(String path, ID userData, ObjCObjectByReference error);
 
     /*!
     * @abstract Returns file system attributes.
@@ -110,7 +110,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result A dictionary of attributes for the file system.
     */
-    NSDictionary attributesOfFileSystemForPath_error(String path, PointerByReference error);
+    NSDictionary attributesOfFileSystemForPath_error(String path, ObjCObjectByReference error);
 
     /*!
     * @abstract Set attributes at the specified path.
@@ -139,7 +139,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the attributes are successfully set.
     */
-    boolean setAttributes_ofItemAtPath_userData_error(NSDictionary attributes, String path, ID userData, PointerByReference error);
+    boolean setAttributes_ofItemAtPath_userData_error(NSDictionary attributes, String path, ID userData, ObjCObjectByReference error);
 
 // mark File Contents
 
@@ -167,7 +167,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the file was opened successfully.
     */
-    boolean openFileAtPath_mode_userData_error(String path, int mode, ID userData, PointerByReference error);
+    boolean openFileAtPath_mode_userData_error(String path, int mode, ID userData, ObjCObjectByReference error);
 
     /*!
     * @abstract Called when an opened file is closed.
@@ -194,7 +194,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result The number of bytes read or -1 on error.
     */
-    int readFileAtPath_userData_buffer_size_offset_error(String path, ID userData, byte[] buffer, IntegerType size, IntegerType offset, PointerByReference error);
+    int readFileAtPath_userData_buffer_size_offset_error(String path, ID userData, byte[] buffer, IntegerType size, IntegerType offset, ObjCObjectByReference error);
 
     /*!
     * @abstract Writes data to the open file at the specified path.
@@ -211,7 +211,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result The number of bytes written or -1 on error.
     */
-    int writeFileAtPath_userData_buffer_size_offset_error(String path, ID userData, byte[] buffer, IntegerType size, IntegerType offset, PointerByReference error);
+    int writeFileAtPath_userData_buffer_size_offset_error(String path, ID userData, byte[] buffer, IntegerType size, IntegerType offset, ObjCObjectByReference error);
 
     /*!
     * @abstract Atomically exchanges data between files.
@@ -222,7 +222,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if data was exchanged successfully.
     */
-    boolean exchangeDataOfItemAtPath_withItemAtPath_error(String path, String other, PointerByReference error);
+    boolean exchangeDataOfItemAtPath_withItemAtPath_error(String path, String other, ObjCObjectByReference error);
 
 // mark Creating an Item
 
@@ -235,7 +235,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the directory was successfully created.
     */
-    boolean createDirectoryAtPath_attributes_error(String path, NSDictionary attributes, PointerByReference error);
+    boolean createDirectoryAtPath_attributes_error(String path, NSDictionary attributes, ObjCObjectByReference error);
 
     /*!
     * @abstract Creates and opens a file at the specified path.
@@ -250,7 +250,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the directory was successfully created.
     */
-    boolean createFileAtPath_attributes_userData_error(String path, NSDictionary attributes, ID userData, PointerByReference error);
+    boolean createFileAtPath_attributes_userData_error(String path, NSDictionary attributes, ID userData, ObjCObjectByReference error);
 
 // mark Moving an Item
 
@@ -265,7 +265,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the move was successful.
     */
-    boolean moveItemAtPath_toPath_error(String source, String destination, PointerByReference error);
+    boolean moveItemAtPath_toPath_error(String source, String destination, ObjCObjectByReference error);
 
 // mark Removing an Item
 
@@ -279,7 +279,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the directory was successfully removed.
     */
-    boolean removeDirectoryAtPath_error(String path, PointerByReference error);
+    boolean removeDirectoryAtPath_error(String path, ObjCObjectByReference error);
 
     /*!
     * @abstract Removes the item at the given path.
@@ -291,7 +291,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the item was successfully removed.
     */
-    boolean removeItemAtPath_error(String path, PointerByReference error);
+    boolean removeItemAtPath_error(String path, ObjCObjectByReference error);
 
 // mark Linking an Item
 
@@ -303,7 +303,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the hard link was successfully created.
     */
-    boolean linkItemAtPath_toPath_error(String path, String otherPath, PointerByReference error);
+    boolean linkItemAtPath_toPath_error(String path, String otherPath, ObjCObjectByReference error);
 
 // mark Symbolic Links
 
@@ -315,7 +315,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the symbolic link was successfully created.
     */
-    boolean createSymbolicLinkAtPath_withDestinationPath_error(String path, String otherPath, PointerByReference error);
+    boolean createSymbolicLinkAtPath_withDestinationPath_error(String path, String otherPath, ObjCObjectByReference error);
 
     /*!
     * @abstract Reads the destination of a symbolic link.
@@ -324,7 +324,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result The destination path of the symbolic link or nil on error.
     */
-    String destinationOfSymbolicLinkAtPath_error(String path, PointerByReference error);
+    String destinationOfSymbolicLinkAtPath_error(String path, ObjCObjectByReference error);
 
 // mark Extended Attributes
 
@@ -337,7 +337,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result An NSArray of extended attribute names or nil on error.
     */
-    NSArray extendedAttributesOfItemAtPath_error(String path, PointerByReference error);
+    NSArray extendedAttributesOfItemAtPath_error(String path, ObjCObjectByReference error);
 
     /*!
     * @abstract Returns the contents of the extended attribute at the specified path.
@@ -348,7 +348,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result The data corresponding to the attribute or nil on error.
     */
-    NSData valueOfExtendedAttribute_ofItemAtPath_position_error(String name, String path, IntegerType position, PointerByReference error);
+    NSData valueOfExtendedAttribute_ofItemAtPath_position_error(String name, String path, IntegerType position, ObjCObjectByReference error);
 
     /*!
     * @abstract Writes the contents of the extended attribute at the specified path.
@@ -361,7 +361,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the attribute was successfully written.
     */
-    boolean setExtendedAttribute_ofItemAtPath_value_position_options_error(String name, String path, NSData value, IntegerType position, int options, PointerByReference error);
+    boolean setExtendedAttribute_ofItemAtPath_value_position_options_error(String name, String path, NSData value, IntegerType position, int options, ObjCObjectByReference error);
 
     /*!
     * @abstract Removes the extended attribute at the specified path.
@@ -371,7 +371,7 @@ public interface GMUserFileSystemOperations {
     * @param error Should be filled with a POSIX error in case of failure.
     * @result YES if the attribute was successfully removed.
     */
-    boolean removeExtendedAttribute_ofItemAtPath_error(String name, String path, PointerByReference error);
+    boolean removeExtendedAttribute_ofItemAtPath_error(String name, String path, ObjCObjectByReference error);
 
 // mark Additional Item Attribute Keys
 
