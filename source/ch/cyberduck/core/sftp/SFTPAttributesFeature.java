@@ -25,18 +25,15 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 
 import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.SFTPv3FileAttributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(SFTPAttributesFeature.class);
 
     private SFTPSession session;
 
