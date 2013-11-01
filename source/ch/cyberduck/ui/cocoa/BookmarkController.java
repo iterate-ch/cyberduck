@@ -502,9 +502,10 @@ public class BookmarkController extends WindowController {
             }
         }
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
-        item.setTitle(host.getDownloadFolder().getDisplayName());
-        item.setRepresentedObject(host.getDownloadFolder().getAbsolute());
-        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(host.getDownloadFolder(), 16));
+        final Local folder = host.getDownloadFolder();
+        item.setTitle(folder.getDisplayName());
+        item.setRepresentedObject(folder.getAbsolute());
+        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(folder, 16));
         downloadPathPopup.selectItem(item);
         downloadPathPanel = null;
         this.itemChanged();
@@ -614,7 +615,8 @@ public class BookmarkController extends WindowController {
             NSEnumerator enumerator = selected.objectEnumerator();
             NSObject next;
             while(((next = enumerator.nextObject()) != null)) {
-                host.getCredentials().setIdentity(LocalFactory.createLocal(next.toString()));
+                final Local key = LocalFactory.createLocal(next.toString());
+                host.getCredentials().setIdentity(key);
             }
         }
         if(returncode == NSPanel.NSCancelButton) {
