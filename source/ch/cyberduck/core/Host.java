@@ -395,6 +395,7 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(String.valueOf(this.getMaxConnections()), "Maximum Connections");
         }
         if(!this.isDefaultDownloadFolder()) {
+            dict.setStringForKey(this.getDownloadFolder().getAbbreviatedPath(), "Download Folder");
             dict.setObjectForKey(this.getDownloadFolder(), "Download Folder Dictionary");
         }
         if(null != this.getTimezone()) {
@@ -619,7 +620,9 @@ public class Host implements Serializable, Comparable<Host> {
      */
     public Local getDownloadFolder() {
         if(null == downloadFolder) {
-            return LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
+            final Local folder = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
+            folder.setBookmark(Preferences.instance().getProperty("queue.download.folder.bookmark"));
+            return folder;
         }
         return downloadFolder;
     }
