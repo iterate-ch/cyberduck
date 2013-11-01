@@ -23,11 +23,11 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.sftp.putty.PuTTYKey;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.sftp.putty.PuTTYKey;
 
 import java.io.CharArrayWriter;
 import java.io.FileReader;
@@ -64,7 +64,9 @@ public class SFTPPublicKeyAuthentication {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             prompt.prompt(host.getProtocol(), host.getCredentials(),
                                     LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)", LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"), identity),
+                                    String.format("%s (%s)",
+                                            LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                            identity.getAbbreviatedPath()),
                                     new LoginOptions(host.getProtocol()));
                         }
                     }
@@ -74,7 +76,9 @@ public class SFTPPublicKeyAuthentication {
                     catch(PEMDecryptException e) {
                         prompt.prompt(host.getProtocol(), host.getCredentials(),
                                 LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
-                                String.format("%s (%s)", LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"), identity), new LoginOptions(host.getProtocol()));
+                                String.format("%s (%s)",
+                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                        identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
                         return this.authenticate(host, prompt);
                     }
                 }
@@ -84,7 +88,9 @@ public class SFTPPublicKeyAuthentication {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             prompt.prompt(host.getProtocol(), host.getCredentials(),
                                     LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)", LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"), identity), new LoginOptions(host.getProtocol()));
+                                    String.format("%s (%s)",
+                                            LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                            identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
                         }
                     }
                     try {
@@ -93,7 +99,9 @@ public class SFTPPublicKeyAuthentication {
                     catch(PEMDecryptException e) {
                         prompt.prompt(host.getProtocol(), host.getCredentials(),
                                 LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
-                                String.format("%s (%s)", LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"), identity), new LoginOptions(host.getProtocol()));
+                                String.format("%s (%s)",
+                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                        identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
                         return this.authenticate(host, prompt);
                     }
                 }
