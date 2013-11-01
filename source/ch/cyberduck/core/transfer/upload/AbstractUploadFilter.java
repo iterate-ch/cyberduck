@@ -145,6 +145,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
+            if(file.attributes().isFile()) {
+                if(this.options.temporary) {
+                    final Move move = session.getFeature(Move.class);
+                    move.move(temporary.get(file), file, status.isExists());
+                    temporary.remove(file);
+                }
+            }
             if(this.options.permissions) {
                 final UnixPermission unix = session.getFeature(UnixPermission.class);
                 if(unix != null) {
@@ -166,13 +173,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                             file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
                     this.timestamp(file, timestamp);
 
-                }
-            }
-            if(file.attributes().isFile()) {
-                if(this.options.temporary) {
-                    final Move move = session.getFeature(Move.class);
-                    move.move(temporary.get(file), file, status.isExists());
-                    temporary.remove(file);
                 }
             }
         }
