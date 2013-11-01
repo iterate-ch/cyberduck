@@ -211,7 +211,9 @@ public abstract class AbstractEditor implements Editor {
                 final Permission permissions = local.attributes().getPermission();
                 // Update local permissions to make sure the file is readable and writable for editing.
                 permissions.setUser(permissions.getUser().or(Permission.Action.read).or(Permission.Action.write));
-                local.writeUnixPermission(permissions);
+                if(!permissions.equals(local.attributes().getPermission())) {
+                    local.writeUnixPermission(permissions);
+                }
                 try {
                     edit();
                 }
