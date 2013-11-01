@@ -10,6 +10,8 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * @version $Id$
  */
@@ -36,7 +38,7 @@ public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
             @Override
             public Local call() throws Exception {
                 final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                l.touch();
+                assertTrue(l.touch());
                 q.setQuarantine(l,
                         "http://cyberduck.ch", "http://cyberduck.ch");
                 l.delete();
@@ -53,7 +55,7 @@ public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
             @Override
             public Local call() throws Exception {
                 final NullLocal l = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                l.touch();
+                assertTrue(l.touch());
                 q.setWhereFrom(l,
                         "http://cyberduck.ch");
                 l.delete();

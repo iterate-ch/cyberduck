@@ -27,8 +27,10 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import static org.junit.Assert.assertTrue;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
 
@@ -50,7 +52,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
             @Override
             public Void call() throws Exception {
                 final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                file.touch();
+                assertTrue(file.touch());
                 file.delete(true);
                 ApplicationLauncherFactory.get().open(file);
                 return null;
@@ -71,7 +73,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
             @Override
             public Void call() throws Exception {
                 final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                file.touch();
+                assertTrue(file.touch());
                 file.delete(true);
                 ApplicationLauncherFactory.get().bounce(file);
                 return null;
