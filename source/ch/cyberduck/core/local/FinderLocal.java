@@ -100,7 +100,7 @@ public class FinderLocal extends Local {
     /**
      * Application scoped bookmark to access outside of sandbox
      */
-    private NSURL bookmark;
+    private String bookmark;
 
     public FinderLocal(final Local parent, final String name) {
         super(String.format("%s/%s", parent.getAbsolute(), name));
@@ -123,13 +123,7 @@ public class FinderLocal extends Local {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String data = dict.stringForKey("Bookmark");
         if(data != null) {
-            final NSURL resolved = NSURL.URLByResolvingBookmarkData(NSData.dataWithBase64EncodedString(data));
-            if(resolved != null) {
-                bookmark = resolved;
-            }
-            else {
-                log.warn(String.format("Failure resolving bookmark %s", data));
-            }
+            this.bookmark = data;
         }
     }
 
@@ -183,21 +177,35 @@ public class FinderLocal extends Local {
 
     @Override
     public String getBookmark() {
-        if(this.exists()) {
-            final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                    NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
-            if(null == data) {
-                log.warn(String.format("Failure getting bookmark data for file %s", this));
-                return null;
+        if(null == bookmark) {
+            if(this.exists()) {
+                // Create new security scoped bookmark
+                bookmark = createBookmark();
             }
-            final String encoded = data.base64EncodedString();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
+            else {
+                log.warn(String.format("Skip creating bookmark for file not found %s", this));
             }
-            return encoded;
         }
-        log.warn(String.format("Skip creating bookmark for file not found %s", this));
-        return null;
+        return bookmark;
+    }
+
+    private String createBookmark() {
+        final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
+        if(null == data) {
+            log.warn(String.format("Failure getting bookmark data for file %s", this));
+            return null;
+        }
+        final String encoded = data.base64EncodedString();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
+        }
+        return encoded;
+    }
+
+    @Override
+    public void setBookmark(final String data) {
+        this.bookmark = data;
     }
 
     @Override
@@ -206,18 +214,27 @@ public class FinderLocal extends Local {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getOutputStream(append);
         }
-        bookmark.startAccessingSecurityScopedResource();
-        return new ProxyOutputStream(new FileOutputStream(new File(bookmark.path()), append)) {
+        final NSURL resolved = this.resolve(bookmark);
+        if(null == resolved) {
+            log.warn(String.format("Failure resolving bookmark %s", bookmark));
+            return super.getOutputStream(append);
+        }
+        resolved.startAccessingSecurityScopedResource();
+        return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
             @Override
             public void close() throws IOException {
                 try {
                     super.close();
                 }
                 finally {
-                    bookmark.stopAccessingSecurityScopedResource();
+                    resolved.stopAccessingSecurityScopedResource();
                 }
             }
         };
+    }
+
+    private NSURL resolve(final String data) {
+        return NSURL.URLByResolvingBookmarkData(NSData.dataWithBase64EncodedString(data));
     }
 
     @Override
@@ -226,15 +243,20 @@ public class FinderLocal extends Local {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getInputStream();
         }
-        bookmark.startAccessingSecurityScopedResource();
-        return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(bookmark.path()))) {
+        final NSURL resolved = this.resolve(bookmark);
+        if(null == resolved) {
+            log.warn(String.format("Failure resolving bookmark %s", bookmark));
+            return super.getInputStream();
+        }
+        resolved.startAccessingSecurityScopedResource();
+        return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
             @Override
             public void close() throws IOException {
                 try {
                     super.close();
                 }
                 finally {
-                    bookmark.stopAccessingSecurityScopedResource();
+                    resolved.stopAccessingSecurityScopedResource();
                 }
             }
         };
