@@ -87,7 +87,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testTouch() {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "p", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.touch();
         assertTrue(l.exists());
         l.touch();
@@ -97,7 +97,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testMkdir() {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "p", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.mkdir();
         assertTrue(l.exists());
         l.mkdir();
@@ -112,7 +112,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testBookmark() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "p", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
         assertTrue(l.touch());
         assertNotNull(l.getBookmark());
@@ -122,7 +122,7 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testBookmarkSaved() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir") + "p", UUID.randomUUID().toString());
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
         l.setBookmark("a");
         assertEquals("a", l.getBookmark());
