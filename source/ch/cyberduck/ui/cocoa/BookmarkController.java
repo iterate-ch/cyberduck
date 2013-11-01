@@ -488,7 +488,8 @@ public class BookmarkController extends WindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            host.setDownloadFolder(LocalFactory.createLocal(sender.representedObject()));
+            final Local folder = LocalFactory.createLocal(sender.representedObject());
+            host.setDownloadFolder(folder);
             this.itemChanged();
         }
     }
@@ -500,10 +501,11 @@ public class BookmarkController extends WindowController {
                 host.setDownloadFolder(LocalFactory.createLocal(selected.lastObject().toString()));
             }
         }
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(host.getDownloadFolder().getDisplayName());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(host.getDownloadFolder().getAbsolute());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().fileIcon(host.getDownloadFolder(), 16));
-        downloadPathPopup.selectItemAtIndex(new NSInteger(0));
+        final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
+        item.setTitle(host.getDownloadFolder().getDisplayName());
+        item.setRepresentedObject(host.getDownloadFolder().getAbsolute());
+        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(host.getDownloadFolder(), 16));
+        downloadPathPopup.selectItem(item);
         downloadPathPanel = null;
         this.itemChanged();
     }
