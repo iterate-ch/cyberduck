@@ -239,10 +239,9 @@ public abstract class AbstractEditor implements Editor {
 
                 @Override
                 public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
-                    final AbstractUploadFilter filter = super.filter(session, action);
-                    filter.setOptions(new UploadFilterOptions().withTemporary(
-                            Preferences.instance().getBoolean("editor.upload.temporary")));
-                    return filter;
+                    return super.filter(session, action).withOptions(new UploadFilterOptions()
+                            .withTemporary(Preferences.instance().getBoolean("editor.upload.temporary"))
+                            .withPermission(Preferences.instance().getBoolean("editor.upload.permissions.change")));
                 }
             };
             final SingleTransferWorker worker

@@ -341,6 +341,7 @@ public abstract class Preferences {
 
         defaults.put("editor.odb.enable", String.valueOf(false));
         defaults.put("editor.upload.temporary", String.valueOf(true));
+        defaults.put("editor.upload.permissions.change", String.valueOf(true));
 
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
