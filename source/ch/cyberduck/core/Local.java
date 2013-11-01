@@ -188,6 +188,10 @@ public abstract class Local extends AbstractPath implements Serializable {
         return this.getAbsolute();
     }
 
+    public void setBookmark(final String data) {
+        //
+    }
+
     /**
      * @return A shortened path representation.
      */
