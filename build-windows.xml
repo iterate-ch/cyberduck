@@ -127,6 +127,7 @@
     </target>
 
     <target name="release" depends="clean, package-release">
+        <antcall target="confirm"/>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -146,6 +147,7 @@
     </target>
 
     <target name="nightly" depends="clean, package-nightly">
+        <antcall target="confirm"/>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -165,6 +167,7 @@
     </target>
 
     <target name="beta" depends="clean, package-beta">
+        <antcall target="confirm"/>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -278,6 +281,7 @@
             <arg value="-add=${absbuild}/updater.xml"/>
         </exec>
 
+        <antcall target="confirm"/>
         <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/update"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"

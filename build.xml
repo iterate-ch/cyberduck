@@ -95,6 +95,14 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
+    <target name="confirm">
+        <input message="Press key to continue..." validargs="y,n" addproperty="build.push"/>
+        <condition property="build.abort">
+            <equals arg1="n" arg2="${build.push}"/>
+        </condition>
+        <fail if="build.abort"/>
+    </target>
+
     <target name="timestamp">
         <tstamp>
             <format property="touch.time"

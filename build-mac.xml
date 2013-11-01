@@ -295,7 +295,7 @@
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg line="--identifier ch.sudo.cyberduck --force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
             </fileset>
@@ -428,6 +428,7 @@
             <param name="url.changelog" value="https://version.cyberduck.ch/nightly/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
+        <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -463,6 +464,7 @@
             <param name="url.changelog" value="https://version.cyberduck.ch/beta/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
+        <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -544,6 +546,7 @@
         <antcall target="zip">
             <param name="zip.filename" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"/>
         </antcall>
+        <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -574,13 +577,5 @@
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
         </scp>
-    </target>
-
-    <target name="confirm">
-        <input message="Press enter to push build" validargs="y,n" addproperty="build.push"/>
-        <condition property="build.abort">
-            <equals arg1="n" arg2="${build.push}"/>
-        </condition>
-        <fail if="build.abort"/>
     </target>
 </project>
