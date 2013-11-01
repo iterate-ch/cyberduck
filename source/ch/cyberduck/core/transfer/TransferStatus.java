@@ -74,7 +74,7 @@ public final class TransferStatus {
      */
     private Local local;
 
-    public boolean isComplete() {
+    public synchronized boolean isComplete() {
         return current == length;
     }
 
@@ -102,7 +102,7 @@ public final class TransferStatus {
     /**
      * @param current The already transferred bytes
      */
-    public void setCurrent(final long current) {
+    public synchronized void setCurrent(final long current) {
         this.current = current;
         if(log.isInfoEnabled()) {
             log.info(String.format("Transferred bytes set to %d bytes", current));
