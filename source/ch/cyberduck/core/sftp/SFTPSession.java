@@ -124,36 +124,36 @@ public class SFTPSession extends Session<Connection> {
                 log.info("Login successful");
             }
             // Check if authentication is partial
-            if(client.isAuthenticationPartialSuccess()) {
-                final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
-                prompt.prompt(host.getProtocol(), additional,
-                        LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
-                if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
+            if(!client.isAuthenticationComplete()) {
+                if(client.isAuthenticationPartialSuccess()) {
+                    final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
+                    prompt.prompt(host.getProtocol(), additional,
+                            LocaleFactory.localizedString("Partial authentication success", "Credentials"),
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
+                    if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
+                        throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                    }
+                }
+                else {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
                 }
             }
-            if(client.isAuthenticationComplete()) {
-                try {
-                    sftp = new SFTPv3Client(client, new PacketListener() {
-                        @Override
-                        public void read(final String packet) {
-                            SFTPSession.this.log(false, packet);
-                        }
+            try {
+                sftp = new SFTPv3Client(client, new PacketListener() {
+                    @Override
+                    public void read(final String packet) {
+                        SFTPSession.this.log(false, packet);
+                    }
 
-                        @Override
-                        public void write(final String packet) {
-                            SFTPSession.this.log(true, packet);
-                        }
-                    });
-                    sftp.setCharset(this.getEncoding());
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
+                    @Override
+                    public void write(final String packet) {
+                        SFTPSession.this.log(true, packet);
+                    }
+                });
+                sftp.setCharset(this.getEncoding());
             }
-            else {
-                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
         catch(IOException e) {
