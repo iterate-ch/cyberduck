@@ -1127,8 +1127,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.downloadPathPopup.lastItem().setImage(
                 IconCacheFactory.<NSImage>get().fileIcon(f, 16)
         );
-        this.downloadPathPopup.lastItem().setRepresentedObject(
-                f.getAbsolute());
+        this.downloadPathPopup.lastItem().setRepresentedObject(f.getAbbreviatedPath());
         if(DEFAULT_DOWNLOAD_FOLDER.equals(f)) {
             this.downloadPathPopup.selectItem(this.downloadPathPopup.lastItem());
         }
@@ -1148,8 +1147,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("queue.download.folder", LocalFactory.createLocal(
-                    sender.representedObject()).getAbbreviatedPath());
+            Preferences.instance().setProperty("queue.download.folder", sender.representedObject());
         }
     }
 
@@ -1158,15 +1156,17 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                Preferences.instance().setProperty("queue.download.folder",
-                        LocalFactory.createLocal(filename).getAbbreviatedPath());
+                final Local folder = LocalFactory.createLocal(filename);
+                Preferences.instance().setProperty("queue.download.folder", folder.getAbbreviatedPath());
+                Preferences.instance().setProperty("queue.download.folder.bookmark", folder.getBookmark());
             }
         }
-        Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(custom.getDisplayName());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(custom.getAbsolute());
-        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCacheFactory.<NSImage>get().fileIcon(custom, 16));
-        downloadPathPopup.selectItemAtIndex(new NSInteger(0));
+        final Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
+        final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
+        item.setTitle(custom.getDisplayName());
+        item.setRepresentedObject(custom.getAbsolute());
+        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(custom, 16));
+        downloadPathPopup.selectItem(item);
         downloadPathPanel = null;
     }
 

@@ -425,6 +425,9 @@ public abstract class Preferences {
         defaults.put("queue.download.skip.regex",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs");
 
+        // Security scoped bookmark
+        defaults.put("queue.download.folder.bookmark", StringUtils.EMPTY);
+
         defaults.put("queue.download.quarantine", String.valueOf(true));
         defaults.put("queue.download.wherefrom", String.valueOf(true));
         /**
