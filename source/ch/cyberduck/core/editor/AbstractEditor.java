@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
@@ -38,12 +39,13 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.action.SingleTransferWorker;
+import ch.cyberduck.ui.action.Worker;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -95,12 +97,12 @@ public abstract class AbstractEditor implements Editor {
     /**
      * @param background Download transfer
      */
-    protected abstract void open(TransferCallable background);
+    protected abstract void open(Worker background);
 
     /**
      * @param background Upload transfer
      */
-    protected abstract void save(TransferCallable background);
+    protected abstract void save(Worker background);
 
     public Path getEdited() {
         return edited;
@@ -141,7 +143,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final TransferCallable background = new EditBackgroundAction();
+        final Worker background = new EditBackgroundAction();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", local.getAbsolute()));
         }
@@ -175,7 +177,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final TransferCallable background = new SaveBackgroundAction();
+            final Worker background = new SaveBackgroundAction();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local.getAbsolute()));
             }
@@ -183,14 +185,9 @@ public abstract class AbstractEditor implements Editor {
         }
     }
 
-    public static interface TransferCallable extends Callable<Transfer> {
+    private final class EditBackgroundAction extends Worker {
         @Override
-        Transfer call() throws BackgroundException;
-    }
-
-    private final class EditBackgroundAction implements TransferCallable {
-        @Override
-        public Transfer call() throws BackgroundException {
+        public Transfer run() throws BackgroundException {
             // Delete any existing file which might be used by a watch editor already
             final TransferOptions options = new TransferOptions();
             options.quarantine = false;
@@ -226,11 +223,42 @@ public abstract class AbstractEditor implements Editor {
             }
             return download;
         }
+
+        @Override
+        public String getActivity() {
+            return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
+                    edited.getName());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            AbstractEditor that = (AbstractEditor) o;
+            if(edited != null ? !edited.equals(that.edited) : that.edited != null) {
+                return false;
+            }
+            if(session != null ? !session.equals(that.session) : that.session != null) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = edited != null ? edited.hashCode() : 0;
+            result = 31 * result + (session != null ? session.hashCode() : 0);
+            return result;
+        }
     }
 
-    private final class SaveBackgroundAction implements TransferCallable {
+    private final class SaveBackgroundAction extends Worker {
         @Override
-        public Transfer call() throws BackgroundException {
+        public Transfer run() throws BackgroundException {
             final Transfer upload = new UploadTransfer(session.getHost(), edited) {
                 @Override
                 public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
@@ -256,6 +284,37 @@ public abstract class AbstractEditor implements Editor {
                 setModified(false);
             }
             return upload;
+        }
+
+        @Override
+        public String getActivity() {
+            return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
+                    edited.getName());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            AbstractEditor that = (AbstractEditor) o;
+            if(edited != null ? !edited.equals(that.edited) : that.edited != null) {
+                return false;
+            }
+            if(session != null ? !session.equals(that.session) : that.session != null) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = edited != null ? edited.hashCode() : 0;
+            result = 31 * result + (session != null ? session.hashCode() : 0);
+            return result;
         }
     }
 }

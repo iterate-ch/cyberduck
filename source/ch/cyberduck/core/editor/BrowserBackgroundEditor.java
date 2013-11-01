@@ -18,18 +18,14 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.action.Worker;
+import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.log4j.Logger;
-
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -55,45 +51,21 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final TransferCallable download) {
+    public void open(final Worker download) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open %s in %s", local.getAbsolute(), this.getApplication()));
         }
-        controller.background(new BrowserBackgroundAction(controller, session, Cache.empty()) {
-            @Override
-            public Boolean run() throws BackgroundException {
-                download.call();
-                return true;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                        edited.getName());
-            }
-        });
+        controller.background(new WorkerBackgroundAction(controller, session, download));
     }
 
     /**
      * Upload the edited file to the server
      */
     @Override
-    public void save(final TransferCallable upload) {
+    public void save(final Worker upload) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local.getAbsolute()));
         }
-        controller.background(new BrowserBackgroundAction(controller, session, Cache.empty()) {
-            @Override
-            public Boolean run() throws BackgroundException {
-                upload.call();
-                return true;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                        edited.getName());
-            }
-        });
+        controller.background(new WorkerBackgroundAction(controller, session, upload));
     }
 }
