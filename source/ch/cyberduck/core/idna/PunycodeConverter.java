@@ -49,8 +49,10 @@ public class PunycodeConverter {
                 // and do not use STD3 ASCII rules If unassigned code points are found
                 // the operation fails with ParseException
                 final String idn = IDNA.convertIDNToASCII(hostname, IDNA.DEFAULT).toString();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("IDN hostname for %s is %s", hostname, idn));
+                if(log.isDebugEnabled()) {
+                    if(!StringUtils.equals(hostname, idn)) {
+                        log.debug(String.format("IDN hostname for %s is %s", hostname, idn));
+                    }
                 }
                 if(StringUtils.isNotEmpty(idn)) {
                     return idn;
