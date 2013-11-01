@@ -323,9 +323,14 @@ public class Host implements Serializable, Comparable<Host> {
         if(connObj != null) {
             this.setMaxConnections(Integer.valueOf(connObj.toString()));
         }
-        Object downloadObj = dict.stringForKey("Download Folder");
+        // Legacy
+        Object downloadObjDeprecated = dict.stringForKey("Download Folder");
+        if(downloadObjDeprecated != null) {
+            this.setDownloadFolder(LocalFactory.createLocal(downloadObjDeprecated.toString()));
+        }
+        Object downloadObj = dict.objectForKey("Download Folder Dictionary");
         if(downloadObj != null) {
-            this.setDownloadFolder(LocalFactory.createLocal(downloadObj.toString()));
+            this.setDownloadFolder(LocalFactory.createLocal(downloadObj));
         }
         Object timezoneObj = dict.stringForKey("Timezone");
         if(timezoneObj != null) {
@@ -390,7 +395,7 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(String.valueOf(this.getMaxConnections()), "Maximum Connections");
         }
         if(!this.isDefaultDownloadFolder()) {
-            dict.setStringForKey(this.getDownloadFolder().getAbbreviatedPath(), "Download Folder");
+            dict.setObjectForKey(this.getDownloadFolder(), "Download Folder Dictionary");
         }
         if(null != this.getTimezone()) {
             dict.setStringForKey(this.getTimezone().getID(), "Timezone");
