@@ -35,9 +35,9 @@ public abstract class NSURL extends NSObject {
         return CLASS.fileURLWithPath(URLString);
     }
 
-    public static NSURL URLByResolvingBookmarkData(NSData bookmark) {
+    public static NSURL URLByResolvingBookmarkData(NSData bookmark, ObjCObjectByReference error) {
         return CLASS.URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(bookmark,
-                NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope, null, false, null);
+                NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope, null, false, error);
     }
 
     public interface _Class extends ObjCClass {
