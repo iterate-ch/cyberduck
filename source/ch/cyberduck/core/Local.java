@@ -22,6 +22,7 @@ import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -178,7 +179,7 @@ public abstract class Local extends AbstractPath implements Serializable {
 
     @Override
     public String getAbsolute() {
-        return new File(path).getAbsolutePath();
+        return path;
     }
 
     /**
@@ -224,7 +225,7 @@ public abstract class Local extends AbstractPath implements Serializable {
      */
     @Override
     public String getName() {
-        return new File(path).getName();
+        return FilenameUtils.getName(path);
     }
 
     public Local getVolume() {
