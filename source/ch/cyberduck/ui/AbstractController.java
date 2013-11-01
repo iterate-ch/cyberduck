@@ -147,6 +147,10 @@ public abstract class AbstractController implements Controller {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Acquired lock for background runnable %s", action));
             }
+            if(action.isCanceled()) {
+                // Canceled action yields no result
+                return null;
+            }
             try {
                 action.prepare();
                 // Execute the action of the runnable
