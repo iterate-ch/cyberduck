@@ -5,10 +5,14 @@ Changelog. Last modified: $Date$
 
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
 
-- [Bugfix] Code signing requirements for embedded bundles
+- [Bugfix] Code signing requirements for embedded bundles (Mac)
 - [Bugfix] Temporary URL for containers with whitespace (OpenStack)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
+- [Bugfix] Partial authentication failure (SFTP) (#7536)
+- [Bugfix] In Info panel ACL tab is disabled (S3, Windows) (#7506)
+- [Bugfix] Interoperability with WinSSHD (SFTP) (#7522)
+- [Bugfix] Softlayer connection profiles (Openstack Swift) (#7522)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
