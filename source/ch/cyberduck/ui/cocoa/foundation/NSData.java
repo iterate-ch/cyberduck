@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :27</i>
@@ -65,13 +66,13 @@ public abstract class NSData extends NSObject {
          * Original signature : <code>dataWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>
          * <i>from NSDataCreation native declaration : :60</i>
          */
-        NSData dataWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+        NSData dataWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, ObjCObjectByReference errorPtr);
 
         /**
          * Original signature : <code>dataWithContentsOfURL(NSURL*, NSUInteger, NSError**)</code><br>
          * <i>from NSDataCreation native declaration : :61</i>
          */
-        NSData dataWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+        NSData dataWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, ObjCObjectByReference errorPtr);
 
         /**
          * Original signature : <code>dataWithContentsOfFile(NSString*)</code><br>
@@ -172,13 +173,13 @@ public abstract class NSData extends NSObject {
      * Original signature : <code>BOOL writeToFile(NSString*, NSUInteger, NSError**)</code><br>
      * <i>from NSExtendedData native declaration : :45</i>
      */
-    public abstract boolean writeToFile_options_error(String path, int writeOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+    public abstract boolean writeToFile_options_error(String path, int writeOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>BOOL writeToURL(NSURL*, NSUInteger, NSError**)</code><br>
      * <i>from NSExtendedData native declaration : :46</i>
      */
-    public abstract boolean writeToURL_options_error(NSURL url, int writeOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+    public abstract boolean writeToURL_options_error(NSURL url, int writeOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>initWithBytes(const void*, NSUInteger)</code><br>
@@ -202,13 +203,13 @@ public abstract class NSData extends NSObject {
      * Original signature : <code>initWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>
      * <i>from NSDataCreation native declaration : :72</i>
      */
-    public abstract NSData initWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+    public abstract NSData initWithContentsOfFile_options_error(com.sun.jna.Pointer path, int readOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>initWithContentsOfURL(NSURL*, NSUInteger, NSError**)</code><br>
      * <i>from NSDataCreation native declaration : :73</i>
      */
-    public abstract NSData initWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, com.sun.jna.ptr.PointerByReference errorPtr);
+    public abstract NSData initWithContentsOfURL_options_error(com.sun.jna.Pointer url, int readOptionsMask, ObjCObjectByReference errorPtr);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*)</code><br>

@@ -20,9 +20,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSNumber;
-
-import com.sun.jna.ptr.PointerByReference;
 
 /// <i>native declaration : :15</i>
 public abstract class NSURL extends NSObject {
@@ -83,7 +82,7 @@ public abstract class NSURL extends NSObject {
          * @return A new URL made by resolving bookmarkData.
          */
         NSURL URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error(
-                NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, PointerByReference error);
+                NSData bookmarkData, int options, NSURL relativeURL, boolean isStale, ObjCObjectByReference error);
 
     }
 
@@ -301,7 +300,7 @@ public abstract class NSURL extends NSObject {
      * @return Returns a bookmark for the URL, created with specified options and resource values
      */
     public abstract NSData bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-            int options, NSArray keys, NSURL relativeURL, PointerByReference error);
+            int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
 
     public static interface NSURLBookmarkCreationOptions {
         /**

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -158,7 +159,7 @@ public abstract class NSArray extends NSObject {
      * Original signature : <code>void getObjects(id*)</code><br>
      * <i>from NSExtendedArray native declaration : :31</i>
      */
-    public abstract void getObjects(com.sun.jna.ptr.PointerByReference objects);
+    public abstract void getObjects(ObjCObjectByReference objects);
     /**
      * <i>from NSExtendedArray native declaration : :32</i><br>
      * Conversion Error : /// Original signature : <code>void getObjects(id*, null)</code><br>
@@ -264,7 +265,7 @@ public abstract class NSArray extends NSObject {
      * Original signature : <code>id initWithObjects(const id*, NSUInteger)</code><br>
      * <i>from NSArrayCreation native declaration : :66</i>
      */
-    public abstract NSArray initWithObjects_count(com.sun.jna.ptr.PointerByReference objects, NSUInteger cnt);
+    public abstract NSArray initWithObjects_count(ObjCObjectByReference objects, NSUInteger cnt);
 
     /**
      * Original signature : <code>id initWithObjects(id, null)</code><br>

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 
 /// <i>native declaration : :12</i>
 public abstract class NSBundle extends NSObject {
@@ -138,13 +139,13 @@ public abstract class NSBundle extends NSObject {
      * Original signature : <code>BOOL preflightAndReturnError(NSError**)</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract boolean preflightAndReturnError(com.sun.jna.ptr.PointerByReference error1);
+    public abstract boolean preflightAndReturnError(ObjCObjectByReference error1);
 
     /**
      * Original signature : <code>BOOL loadAndReturnError(NSError**)</code><br>
      * <i>native declaration : :42</i>
      */
-    public abstract boolean loadAndReturnError(com.sun.jna.ptr.PointerByReference error1);
+    public abstract boolean loadAndReturnError(ObjCObjectByReference error1);
 
     /**
      * Original signature : <code>String* bundlePath)</code><br>

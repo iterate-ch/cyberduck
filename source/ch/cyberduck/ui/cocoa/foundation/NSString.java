@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 
 import org.rococoa.Foundation;
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -130,25 +131,25 @@ public abstract class NSString extends NSObject implements NSCopying {
          * Original signature : <code>stringWithContentsOfURL(NSURL*, NSStringEncoding, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :281</i>
          */
-        NSString stringWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, ObjCObjectByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfFile(NSString*, NSStringEncoding, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :282</i>
          */
-        NSString stringWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, ObjCObjectByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfURL(NSURL*, NSStringEncoding*, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :288</i>
          */
-        NSString stringWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, ObjCObjectByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :289</i>
          */
-        NSString stringWithContentsOfFile_usedEncoding_error(NSString path, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfFile_usedEncoding_error(NSString path, java.nio.IntBuffer enc, ObjCObjectByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfFile(NSString*)</code><br>
@@ -686,39 +687,39 @@ public abstract class NSString extends NSObject implements NSCopying {
      * Original signature : <code>initWithContentsOfURL(NSURL*, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :279</i>
      */
-    public abstract NSString initWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, ObjCObjectByReference error);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :280</i>
      */
-    public abstract NSString initWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, ObjCObjectByReference error);
 
     /**
      * These try to determine the encoding, and return the encoding which was used.  Note that these methods might get "smarter" in subsequent releases of the system, and use additional techniques for recognizing encodings. If nil is returned, the optional error return indicates problem that was encountered (for instance, file system or encoding errors).<br>
      * Original signature : <code>initWithContentsOfURL(NSURL*, NSStringEncoding*, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :286</i>
      */
-    public abstract NSString initWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, ObjCObjectByReference error);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :287</i>
      */
-    public abstract NSString initWithContentsOfFile_usedEncoding_error(NSString path, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfFile_usedEncoding_error(NSString path, java.nio.IntBuffer enc, ObjCObjectByReference error);
 
     /**
      * Write to specified url or path using the specified encoding.  The optional error return is to indicate file system or encoding errors.<br>
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :293</i>
      */
-    public abstract boolean writeToURL_atomically_encoding_error(NSURL url, boolean useAuxiliaryFile, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean writeToURL_atomically_encoding_error(NSURL url, boolean useAuxiliaryFile, NSUInteger enc, ObjCObjectByReference error);
 
     /**
      * Original signature : <code>BOOL writeToFile(NSString*, BOOL, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :294</i>
      */
-    public abstract boolean writeToFile_atomically_encoding_error(NSString path, boolean useAuxiliaryFile, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean writeToFile_atomically_encoding_error(NSString path, boolean useAuxiliaryFile, NSUInteger enc, ObjCObjectByReference error);
 
     /**
      * Original signature : <code>propertyList()</code><br>

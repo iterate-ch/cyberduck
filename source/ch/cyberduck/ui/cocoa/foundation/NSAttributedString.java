@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ObjCClass;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -224,70 +225,70 @@ public abstract class NSAttributedString extends NSObject {
      * Original signature : <code>initWithURL(NSURL*, NSDictionary*, NSDictionary**, NSError**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :201</i>
      */
-    public abstract NSAttributedString initWithURL_options_documentAttributes_error(com.sun.jna.Pointer url, NSDictionary options, com.sun.jna.ptr.PointerByReference dict, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSAttributedString initWithURL_options_documentAttributes_error(com.sun.jna.Pointer url, NSDictionary options, ObjCObjectByReference dict, ObjCObjectByReference error);
 
     /**
      * Original signature : <code>initWithData(NSData*, NSDictionary*, NSDictionary**, NSError**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :202</i>
      */
-    public abstract NSAttributedString initWithData_options_documentAttributes_error(com.sun.jna.Pointer data, NSDictionary options, com.sun.jna.ptr.PointerByReference dict, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSAttributedString initWithData_options_documentAttributes_error(com.sun.jna.Pointer data, NSDictionary options, ObjCObjectByReference dict, ObjCObjectByReference error);
 
     /**
      * These two superseded methods are similar to the first listed above except that they lack the options dictionary and error return arguments.  They will always attempt to determine the format from the document.<br>
      * Original signature : <code>initWithPath(String*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :207</i>
      */
-    public abstract NSAttributedString initWithPath_documentAttributes(String path, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithPath_documentAttributes(String path, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithURL(NSURL*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :208</i>
      */
-    public abstract NSAttributedString initWithURL_documentAttributes(com.sun.jna.Pointer url, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithURL_documentAttributes(com.sun.jna.Pointer url, ObjCObjectByReference dict);
 
     /**
      * The following methods should now be considered as conveniences for various common document types.<br>
      * Original signature : <code>initWithRTF(NSData*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :212</i>
      */
-    public abstract NSAttributedString initWithRTF_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithRTF_documentAttributes(com.sun.jna.Pointer data, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithRTFD(NSData*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :213</i>
      */
-    public abstract NSAttributedString initWithRTFD_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithRTFD_documentAttributes(com.sun.jna.Pointer data, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithHTML(NSData*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :214</i>
      */
-    public abstract NSAttributedString initWithHTML_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithHTML_documentAttributes(com.sun.jna.Pointer data, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithHTML(NSData*, NSURL*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :215</i>
      */
-    public abstract NSAttributedString initWithHTML_baseURL_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.Pointer base, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithHTML_baseURL_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.Pointer base, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithDocFormat(NSData*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :217</i>
      */
-    public abstract NSAttributedString initWithDocFormat_documentAttributes(com.sun.jna.Pointer data, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithDocFormat_documentAttributes(com.sun.jna.Pointer data, ObjCObjectByReference dict);
 
     /**
      * Original signature : <code>initWithHTML(NSData*, NSDictionary*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :218</i>
      */
-    public abstract NSAttributedString initWithHTML_options_documentAttributes(com.sun.jna.Pointer data, NSDictionary options, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithHTML_options_documentAttributes(com.sun.jna.Pointer data, NSDictionary options, ObjCObjectByReference dict);
 
     /**
      * A separate method is available for initializing from an RTFD file wrapper.  No options apply in this case.<br>
      * Original signature : <code>initWithRTFDFileWrapper(NSFileWrapper*, NSDictionary**)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :223</i>
      */
-    public abstract NSAttributedString initWithRTFDFileWrapper_documentAttributes(com.sun.jna.Pointer wrapper, com.sun.jna.ptr.PointerByReference dict);
+    public abstract NSAttributedString initWithRTFDFileWrapper_documentAttributes(com.sun.jna.Pointer wrapper, ObjCObjectByReference dict);
     /**
      * <i>from NSAttributedStringKitAdditions native declaration : :230</i><br>
      * Conversion Error : /**<br>

@@ -43,6 +43,8 @@ import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
+import org.rococoa.cocoa.foundation.NSError;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -180,7 +182,7 @@ public class FinderLocal extends Local {
         if(null == bookmark) {
             if(this.exists()) {
                 // Create new security scoped bookmark
-                bookmark = createBookmark();
+                bookmark = this.createBookmark();
             }
             else {
                 log.warn(String.format("Skip creating bookmark for file not found %s", this));
@@ -190,10 +192,12 @@ public class FinderLocal extends Local {
     }
 
     private String createBookmark() {
+        final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, null);
+                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
         if(null == data) {
-            log.warn(String.format("Failure getting bookmark data for file %s", this));
+            NSError f = error.getValueAs(NSError.class);
+            log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
             return null;
         }
         final String encoded = data.base64EncodedString();
@@ -266,9 +270,11 @@ public class FinderLocal extends Local {
     public AttributedList<Local> list() {
         if(Preferences.instance().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
-            final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
+            final ObjCObjectByReference error = new ObjCObjectByReference();
+            final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
-                log.error(String.format("Error listing children for folder %s", this));
+                final NSError f = error.getValueAs(NSError.class);
+                log.error(String.format("Error listing children for folder %s %s", this, f));
                 return children;
             }
             final NSEnumerator i = files.objectEnumerator();
@@ -319,13 +325,15 @@ public class FinderLocal extends Local {
     @Override
     public void writeUnixPermission(final Permission permission) {
         synchronized(workspace) {
+            final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
                             NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                    this.getAbsolute(), null);
+                    this.getAbsolute(), error);
             if(!success) {
-                log.error(String.format("File attribute changed failed for file %s", this));
+                final NSError f = error.getValueAs(NSError.class);
+                log.error(String.format("File attribute changed failed for file %s %s", this, f));
             }
         }
     }
@@ -340,13 +348,15 @@ public class FinderLocal extends Local {
     @Override
     public void writeTimestamp(final long created, final long modified, final long accessed) {
         synchronized(workspace) {
+            final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
                             NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                    getAbsolute(), null);
+                    getAbsolute(), error);
             if(!success) {
-                log.error(String.format("File attribute changed failed for file %s", this));
+                final NSError f = error.getValueAs(NSError.class);
+                log.error(String.format("File attribute changed failed for file %s %s", this, f));
             }
         }
     }

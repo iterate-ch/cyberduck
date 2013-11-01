@@ -27,7 +27,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSError;
 
 /**
  * Extending attributes with <code>NSFileManager</code>.
@@ -45,11 +47,17 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @return Null if no such file.
      */
     private NSDictionary getNativeAttributes() {
+        final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
         // if the link points to a nonexistent file, this method returns null. If flag is false,
         // the attributes of the symbolic link are returned.
-        return NSFileManager.defaultManager().attributesOfItemAtPath_error(
-                path, null);
+        final NSDictionary dict = NSFileManager.defaultManager().attributesOfItemAtPath_error(
+                path, error);
+        if(null == dict) {
+            final NSError f = error.getValueAs(NSError.class);
+            log.error(String.format("failure reading attributes for %s %s", path, f));
+        }
+        return dict;
     }
 
     /**
@@ -146,7 +154,13 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public boolean isSymbolicLink() {
-        return NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(path, null) != null;
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        final String target = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(path, error);
+        if(null == target) {
+            final NSError f = error.getValueAs(NSError.class);
+            log.warn(String.format("File reading symbolic target for file %s %s", this, f));
+        }
+        return target != null;
     }
 
     /**
