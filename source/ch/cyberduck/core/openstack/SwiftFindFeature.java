@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -31,9 +30,6 @@ import ch.cyberduck.core.features.Find;
 public class SwiftFindFeature implements Find {
 
     private SwiftMetadataFeature feature;
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     public SwiftFindFeature(final SwiftSession session) {
         this.feature = new SwiftMetadataFeature(session);
