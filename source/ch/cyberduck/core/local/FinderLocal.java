@@ -196,7 +196,7 @@ public class FinderLocal extends Local {
         final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
                 NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
         if(null == data) {
-            NSError f = error.getValueAs(NSError.class);
+            final NSError f = error.getValueAs(NSError.class);
             log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
             return null;
         }
