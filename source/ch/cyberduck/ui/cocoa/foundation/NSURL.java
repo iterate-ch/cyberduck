@@ -304,6 +304,11 @@ public abstract class NSURL extends NSObject {
 
     public static interface NSURLBookmarkCreationOptions {
         /**
+         * Specifies that the bookmark data should include properties required to create Finder alias files
+         */
+        public static final int NSURLBookmarkCreationSuitableForBookmarkFile = (1 << 10);
+
+        /**
          * Specifies that you want to create a security-scoped bookmark that, when resolved, provides a security-scoped URL allowing
          * read/write access to a file-system resource; for use in an app that adopts App Sandbox. For more information, see App
          * Sandbox Design Guide. Note that this flag cannot be used in conjunction with either NSURLBookmarkCreationMinimalBookmark
