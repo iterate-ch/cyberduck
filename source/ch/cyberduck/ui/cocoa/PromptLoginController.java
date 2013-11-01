@@ -29,6 +29,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
@@ -218,11 +219,11 @@ public final class PromptLoginController implements LoginController {
                         this.textField.setSelectable(true);
                     }
                     catch(URISyntaxException e) {
-                        this.updateField(this.textField, LocaleFactory.localizedString(reason, "Credentials"));
+                        this.updateField(this.textField, new StringAppender().append(new StringBuilder(), reason).toString());
                     }
                 }
                 else {
-                    this.updateField(this.textField, LocaleFactory.localizedString(reason, "Credentials"));
+                    this.updateField(this.textField, new StringAppender().append(new StringBuilder(), reason).toString());
                 }
             }
 
