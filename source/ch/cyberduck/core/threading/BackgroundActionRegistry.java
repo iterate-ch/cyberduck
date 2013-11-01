@@ -64,7 +64,12 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
 
     @Override
     public void cancel(final BackgroundAction action) {
-        current = null;
+        if(action.isRunning()) {
+            log.debug(String.format("Skip removing action %s currently running", action));
+        }
+        else {
+            this.remove(action);
+        }
     }
 
     @Override
@@ -87,6 +92,9 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
 
     @Override
     public boolean remove(final Object action) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Remove action %s", action));
+        }
         if(super.remove(action)) {
             ((BackgroundAction) action).removeListener(this);
         }
