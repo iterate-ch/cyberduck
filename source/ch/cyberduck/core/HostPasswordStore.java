@@ -45,14 +45,15 @@ public abstract class HostPasswordStore implements PasswordStore {
         }
         String p;
         if(credentials.isPublicKeyAuthentication()) {
-            p = this.getPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath());
+            final Local key = credentials.getIdentity();
+            p = this.getPassword(host.getHostname(), key.getAbbreviatedPath());
             if(null == p) {
                 // Interoperability with OpenSSH (ssh, ssh-agent, ssh-add)
-                p = this.getPassword("SSH", credentials.getIdentity().getAbsolute());
+                p = this.getPassword("SSH", key.getAbsolute());
             }
             if(null == p) {
                 // Backward compatibility
-                p = this.getPassword("SSHKeychain", credentials.getIdentity().getAbbreviatedPath());
+                p = this.getPassword("SSHKeychain", key.getAbbreviatedPath());
             }
         }
         else {
