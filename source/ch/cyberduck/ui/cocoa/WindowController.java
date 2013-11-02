@@ -107,7 +107,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     public NSWindow window() {
-        return this.window;
+        return window;
     }
 
     /**
