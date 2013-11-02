@@ -48,18 +48,18 @@ public final class HyperlinkAttributedStringFactory {
         if(url.equals(DescriptiveUrl.EMPTY)) {
             return NSAttributedString.attributedString(StringUtils.EMPTY);
         }
-        return create(URI.create(url.getUrl()));
+        return create(url.getUrl());
     }
 
     /**
      * @param url URL
      * @return Clickable and underlined string to put into textfield.
      */
-    public static NSAttributedString create(final URI url) {
+    public static NSAttributedString create(final String url) {
         if(null == url) {
             return NSAttributedString.attributedString(StringUtils.EMPTY);
         }
-        return create(url.toString(), url);
+        return create(url, url);
     }
 
     public static NSAttributedString create(final String title, final Local file) {
@@ -70,12 +70,12 @@ public final class HyperlinkAttributedStringFactory {
                 BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.fileURLWithPath(file.getAbsolute()));
     }
 
-    public static NSAttributedString create(final String title, final URI url) {
+    public static NSAttributedString create(final String title, final String url) {
         if(null == url) {
             return NSAttributedString.attributedString(title);
         }
         return create(NSMutableAttributedString.create(title,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.URLWithString(url.toString()));
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.URLWithString(url));
     }
 
     /**

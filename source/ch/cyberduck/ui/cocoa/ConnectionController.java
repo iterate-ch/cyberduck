@@ -553,7 +553,7 @@ public class ConnectionController extends SheetController {
                     hostField.stringValue(),
                     portField.intValue(),
                     PathNormalizer.normalize(pathField.stringValue()));
-            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(URI.create(url)));
+            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         }
         else {
             urlLabel.setStringValue(StringUtils.EMPTY);

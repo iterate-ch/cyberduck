@@ -746,8 +746,7 @@ public class BookmarkController extends WindowController {
         hostField.setEnabled(host.getProtocol().isHostnameConfigurable());
         hostField.cell().setPlaceholderString(host.getProtocol().getDefaultHostname());
         this.updateField(nicknameField, host.getNickname());
-        urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(URI.create(
-                new HostUrlProvider(true, true).get(host))));
+        urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider(true, true).get(host)));
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isPortConfigurable());
         this.updateField(pathField, host.getDefaultPath());

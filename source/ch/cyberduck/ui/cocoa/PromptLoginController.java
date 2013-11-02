@@ -212,15 +212,10 @@ public final class PromptLoginController implements LoginController {
                 this.textField = textField;
                 this.textField.setSelectable(true);
                 if(reason.startsWith(Scheme.http.name())) {
-                    try {
-                        // For OAuth2
-                        this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new URI(reason)));
-                        this.textField.setAllowsEditingTextAttributes(true);
-                        this.textField.setSelectable(true);
-                    }
-                    catch(URISyntaxException e) {
-                        this.updateField(this.textField, new StringAppender().append(new StringBuilder(), reason).toString());
-                    }
+                    // For OAuth2
+                    this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
+                    this.textField.setAllowsEditingTextAttributes(true);
+                    this.textField.setSelectable(true);
                 }
                 else {
                     this.updateField(this.textField, new StringAppender().append(new StringBuilder(), reason).toString());
