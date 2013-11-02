@@ -96,6 +96,9 @@ public class SFTPSession extends Session<Connection> {
             }, timeout, timeout);
             return connection;
         }
+        catch(IllegalStateException e) {
+            throw new ConnectionCanceledException(e);
+        }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
@@ -155,6 +158,9 @@ public class SFTPSession extends Session<Connection> {
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
+        }
+        catch(IllegalStateException e) {
+            throw new ConnectionCanceledException(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
