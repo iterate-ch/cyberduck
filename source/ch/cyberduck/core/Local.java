@@ -193,6 +193,11 @@ public abstract class Local extends AbstractPath implements Serializable {
         //
     }
 
+    public Local withBookmark(final String data) {
+        this.setBookmark(data);
+        return this;
+    }
+
     /**
      * @return A shortened path representation.
      */

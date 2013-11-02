@@ -620,9 +620,8 @@ public class Host implements Serializable, Comparable<Host> {
      */
     public Local getDownloadFolder() {
         if(null == downloadFolder) {
-            final Local folder = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
-            folder.setBookmark(Preferences.instance().getProperty("queue.download.folder.bookmark"));
-            return folder;
+            return LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder")).withBookmark(
+                    Preferences.instance().getProperty("queue.download.folder.bookmark"));
         }
         return downloadFolder;
     }
