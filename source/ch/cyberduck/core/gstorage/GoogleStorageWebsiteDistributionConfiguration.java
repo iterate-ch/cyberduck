@@ -86,21 +86,21 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final Distribution distribution = new Distribution(URI.create(String.format("%s://%s.%s",
-                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), session.getHost().getProtocol().getDefaultHostname())),
+                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), this.getHostname())),
                 Distribution.DOWNLOAD, false);
         distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                session.getHost().getProtocol().getDefaultHostname())));
+                this.getHostname())));
         return new DistributionUrlProvider(distribution).toUrl(file);
     }
 
     @Override
     public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
-        final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname()));
+        final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname()));
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
             final Distribution distribution = new Distribution(
                     origin, method, configuration.isWebsiteConfigActive());
-            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname())));
+            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
             distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
             distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
             final DistributionLogging logging = this.getFeature(DistributionLogging.class, method);
@@ -116,7 +116,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             // Not found. Website configuration is disabled.
             final Distribution distribution = new Distribution(origin, method, false);
             distribution.setStatus(e.getErrorMessage());
-            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), session.getHost().getProtocol().getDefaultHostname())));
+            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
             return distribution;
         }
     }
