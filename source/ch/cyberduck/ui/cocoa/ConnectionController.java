@@ -35,7 +35,6 @@ import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -46,10 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import java.net.URI;
 
 /**
  * @version $Id$
@@ -456,12 +452,10 @@ public class ConnectionController extends SheetController {
 
     public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID contextInfo) {
         if(NSPanel.NSOKButton == returncode) {
-            NSArray selected = window.filenames();
-            final NSEnumerator enumerator = selected.objectEnumerator();
-            NSObject next;
-            while(null != (next = enumerator.nextObject())) {
+            final NSObject selected = window.filenames().lastObject();
+            if(selected != null) {
                 pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        LocalFactory.createLocal(Rococoa.cast(next, NSString.class).toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                        LocalFactory.createLocal(selected.toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
                 pkLabel.setTextColor(NSColor.textColor());
             }
             passField.setEnabled(false);

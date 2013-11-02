@@ -44,9 +44,7 @@ import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
 import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -56,9 +54,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * @version $Id$
@@ -308,20 +303,18 @@ public final class PromptLoginController implements LoginController {
                     publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
                     publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                             null, this.window(), this.id(),
-                            Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
+                            Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
                 }
                 else {
-                    this.pkSelectionPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
+                    this.publicKeyPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
                 }
             }
 
-            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+            public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
                 if(returncode == NSPanel.NSOKButton) {
-                    NSArray selected = sheet.filenames();
-                    final NSEnumerator enumerator = selected.objectEnumerator();
-                    NSObject next;
-                    while((next = enumerator.nextObject()) != null) {
-                        credentials.setIdentity(LocalFactory.createLocal(next.toString()));
+                    final NSObject selected = publicKeyPanel.filenames().lastObject();
+                    if(selected != null) {
+                        credentials.setIdentity(LocalFactory.createLocal(selected.toString()));
                     }
                 }
                 if(returncode == NSPanel.NSCancelButton) {

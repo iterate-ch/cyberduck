@@ -37,7 +37,6 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -52,7 +51,6 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -496,9 +494,9 @@ public class BookmarkController extends WindowController {
 
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            if((selected.lastObject()) != null) {
-                host.setDownloadFolder(LocalFactory.createLocal(selected.lastObject().toString()));
+            final NSObject selected = sheet.filenames().lastObject();
+            if(selected != null) {
+                host.setDownloadFolder(LocalFactory.createLocal(selected.toString()));
             }
         }
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
@@ -602,20 +600,18 @@ public class BookmarkController extends WindowController {
             publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
             publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(), null, this.window(), this.id(),
-                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
+                    Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            this.pkSelectionPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
+            this.publicKeyPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
         }
     }
 
-    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+    public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == NSPanel.NSOKButton) {
-            NSArray selected = sheet.filenames();
-            NSEnumerator enumerator = selected.objectEnumerator();
-            NSObject next;
-            while(((next = enumerator.nextObject()) != null)) {
-                final Local key = LocalFactory.createLocal(next.toString());
+            final NSObject selected = publicKeyPanel.filenames().lastObject();
+            if(selected != null) {
+                final Local key = LocalFactory.createLocal(selected.toString());
                 host.getCredentials().setIdentity(key);
             }
         }

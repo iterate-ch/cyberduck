@@ -34,8 +34,6 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
@@ -121,11 +119,9 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             };
             sheet.beginSheet();
             if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
-                NSArray selected = panel.filenames();
-                final NSEnumerator enumerator = selected.objectEnumerator();
-                NSObject next;
-                while((next = enumerator.nextObject()) != null) {
-                    final Local f = LocalFactory.createLocal(next.toString());
+                final NSObject selected = panel.filenames().lastObject();
+                if(selected != null) {
+                    final Local f = LocalFactory.createLocal(selected.toString());
                     Preferences.instance().setProperty("ssh.knownhosts", f.getAbbreviatedPath());
                     Preferences.instance().setProperty("ssh.knownhosts.bookmark", f.getBookmark());
                     setDatabase(f);
