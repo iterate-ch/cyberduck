@@ -45,7 +45,7 @@ public final class HyperlinkAttributedStringFactory {
     }
 
     public static NSAttributedString create(final DescriptiveUrl url) {
-        if(null == url.getUrl()) {
+        if(url.equals(DescriptiveUrl.EMPTY)) {
             return NSAttributedString.attributedString(StringUtils.EMPTY);
         }
         return create(URI.create(url.getUrl()));
