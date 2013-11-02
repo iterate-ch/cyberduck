@@ -794,6 +794,12 @@ public abstract class Preferences {
         defaults.put("bookmark.icon.size", String.valueOf(64));
 
         /**
+         * Location of the openssh known_hosts file
+         */
+        defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
+        defaults.put("ssh.knownhosts.bookmark", StringUtils.EMPTY);
+
+        /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
         defaults.put("ssh.transfer", Scheme.sftp.name()); //
