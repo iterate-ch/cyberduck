@@ -46,6 +46,10 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
     }
 
     public MemoryHostKeyVerifier(final Local file) {
+        this.setDatabase(file);
+    }
+
+    protected void setDatabase(Local file) {
         if(!file.exists()) {
             file.touch();
         }
