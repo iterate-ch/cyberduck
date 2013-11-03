@@ -1,0 +1,89 @@
+package ch.cyberduck.core.openstack;
+
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Test;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
+
+/**
+ * @version $Id:$
+ */
+public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
+
+    @Test
+    public void testUpload() throws Exception {
+        for(Host host : Arrays.asList(
+                new Host(new SwiftProtocol() {
+                    @Override
+                    public String getContext() {
+                        return "/v2.0/tokens";
+                    }
+                }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+                        properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                )),
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")))
+        )
+                ) {
+
+            final SwiftSession session = new SwiftSession(host);
+            session.open(new DefaultHostKeyController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+
+            final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+            container.attributes().setRegion(session.getRegion(container).getRegionId());
+            final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+
+            final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+            final String random = RandomStringUtils.random(10000);
+            final byte[] content = random.getBytes();
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(random, out);
+            IOUtils.closeQuietly(out);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+
+            final SwiftLargeObjectUploadFeature upload
+                    = new SwiftLargeObjectUploadFeature(session, (long) content.length, false, ".segments-test/");
+
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+
+            assertTrue(new SwiftFindFeature(session).find(test));
+            final byte[] buffer = new byte[content.length];
+            final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
+            IOUtils.readFully(in, buffer);
+            IOUtils.closeQuietly(in);
+            assertArrayEquals(content, buffer);
+            final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+            assertFalse(metadata.isEmpty());
+            assertEquals("text/plain", metadata.get("Content-Type"));
+            final List<Path> segments = new SwiftSegmentService(session).list(test);
+            assertFalse(segments.isEmpty());
+            assertEquals(2, segments.size());
+            new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+            session.close();
+        }
+    }
+}
