@@ -1883,7 +1883,7 @@ lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
 lib/slf4j-api-1.7.1.jar -text
 lib/slf4j-log4j12-1.7.1.jar -text
-lib/swift-2.0.jar -text svneol=unset#application/zip
+lib/swift-2.1.jar -text svneol=unset#application/zip
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
 lv.lproj/Archive.strings -text svneol=unset#text/utf-16
 lv.lproj/Azure.strings -text svneol=unset#text/utf-16
