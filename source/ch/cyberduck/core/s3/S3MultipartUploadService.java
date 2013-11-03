@@ -71,11 +71,10 @@ public class S3MultipartUploadService implements Upload {
     private PathContainerService containerService = new PathContainerService();
 
     /**
-     * At any point, at most
-     * <tt>nThreads</tt> threads will be active processing tasks.
+     * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
      */
     private ThreadPool pool = new ThreadPool(
-            Preferences.instance().getInteger("s3.upload.multipart.concurency"));
+            Preferences.instance().getInteger("s3.upload.multipart.concurency"), "multipart");
 
     /**
      * A split smaller than 5M is not allowed

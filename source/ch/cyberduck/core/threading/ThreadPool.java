@@ -56,7 +56,11 @@ public class ThreadPool {
      * @param size Number of concurrent threads
      */
     public ThreadPool(int size) {
-        threadFactory = new NamedThreadFactory("background");
+        this(size, "background");
+    }
+
+    public ThreadPool(int size, final String prefix) {
+        threadFactory = new NamedThreadFactory(prefix);
         pool = Executors.newFixedThreadPool(size, threadFactory);
     }
 

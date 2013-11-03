@@ -52,7 +52,7 @@ public final class FileWatcher implements FileWatcherCallback {
 
     public FileWatcher() {
         monitor = WatchService.newWatchService();
-        pool = new ThreadPool(1);
+        pool = new ThreadPool(1, "watcher");
     }
 
     public CountDownLatch register(final Local file) {
