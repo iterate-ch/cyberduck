@@ -56,12 +56,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background task %s", this));
         }
-        state = State.canceled;
         final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.cancel(this);
         }
+        state = State.canceled;
     }
 
     /**
@@ -85,12 +85,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
-        state = State.running;
         final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.start(this);
         }
+        state = State.running;
     }
 
     @Override
@@ -98,12 +98,12 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background task %s", this));
         }
-        state = State.stopped;
         final BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(BackgroundActionListener listener : l) {
             listener.stop(this);
         }
+        state = State.stopped;
     }
 
     @Override
