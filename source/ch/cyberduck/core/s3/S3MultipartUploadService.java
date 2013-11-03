@@ -118,7 +118,7 @@ public class S3MultipartUploadService implements Upload {
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
                 long remaining = status.getLength();
-                long marker = 0;
+                long offset = 0;
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     boolean skip = false;
                     if(status.isAppend()) {
@@ -136,15 +136,15 @@ public class S3MultipartUploadService implements Upload {
                         }
                     }
                     // Last part can be less than 5 MB. Adjust part size.
-                    final long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                    final Long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
                         final Future<MultipartPart> multipartPartFuture = this.submitPart(file, local, throttle, listener,
-                                status, multipart, partNumber, marker, length);
+                                status, multipart, partNumber, offset, length);
                         parts.add(multipartPartFuture);
                     }
                     remaining -= length;
-                    marker += length;
+                    offset += length;
                 }
                 for(Future<MultipartPart> future : parts) {
                     try {
