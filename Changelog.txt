@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] In Info panel ACL tab is disabled (S3, Windows) (#7506)
 - [Bugfix] Interoperability with WinSSHD (SFTP) (#7522)
 - [Bugfix] Softlayer connection profiles (Openstack Swift) (#7522)
+- [Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in Preferences (SFTP, Mac)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
