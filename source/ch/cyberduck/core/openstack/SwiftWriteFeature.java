@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
@@ -53,8 +54,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
         this.session = session;
     }
 
-    @Override
-    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<String> write(final Region region, final String container, final String name,
+                                              final Long length) throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("openstack.metadata.default")) {
@@ -66,8 +67,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
                 continue;
             }
             int split = m.indexOf('=');
-            String name = m.substring(0, split);
-            if(StringUtils.isBlank(name)) {
+            String key = m.substring(0, split);
+            if(StringUtils.isBlank(key)) {
                 log.warn(String.format("Missing key in %s", m));
                 continue;
             }
@@ -76,7 +77,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
                 log.warn(String.format("Missing value in %s", m));
                 continue;
             }
-            metadata.put(name, value);
+            metadata.put(key, value);
         }
         // Submit store run to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
@@ -87,25 +88,31 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
             @Override
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().storeObject(
-                            session.getRegion(containerService.getContainer(file)), containerService.getContainer(file).getName(),
-                            containerService.getKey(file), entity,
-                            metadata, null);
+                    return session.getClient().storeObject(region, container, name,
+                            entity, metadata, null);
                 }
                 catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Upload failed", e, file);
+                    throw new SwiftExceptionMappingService().map("Upload failed", e);
                 }
                 catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+                    throw new DefaultIOExceptionMappingService().map("Upload failed", e);
                 }
             }
 
             @Override
             public long getContentLength() {
-                return status.getLength();
+                return length;
             }
         };
-        return session.write(file, command);
+        return session.write(name, command);
+    }
+
+    @Override
+    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+        return write(session.getRegion(containerService.getContainer(file)),
+                containerService.getContainer(file).getName(),
+                containerService.getKey(file),
+                status.getLength());
     }
 
     /**
