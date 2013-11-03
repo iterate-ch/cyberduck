@@ -25,25 +25,36 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDelete() throws Exception {
-        final SwiftSession session = new SwiftSession(
+        for(Host host : Arrays.asList(
+                new Host(new SwiftProtocol() {
+                    @Override
+                    public String getContext() {
+                        return "/v2.0/tokens";
+                    }
+                }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+                        properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+                )),
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
-                        )));
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path dfw = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        dfw.attributes().setRegion("DFW");
-        final Path test1 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final Path test2 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SwiftTouchFeature(session).touch(test1);
-        new SwiftTouchFeature(session).touch(test2);
-        assertTrue(new SwiftFindFeature(session).find(test1));
-        assertTrue(new SwiftFindFeature(session).find(test2));
-        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController());
-        assertFalse(new SwiftFindFeature(session).find(test1));
-        assertFalse(new SwiftFindFeature(session).find(test2));
-        session.close();
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))))
+                ) {
+
+
+            final SwiftSession session = new SwiftSession(host);
+            session.open(new DefaultHostKeyController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+            final Path dfw = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+            final Path test1 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
+            final Path test2 = new Path(dfw, UUID.randomUUID().toString(), Path.FILE_TYPE);
+            new SwiftTouchFeature(session).touch(test1);
+            new SwiftTouchFeature(session).touch(test2);
+            assertTrue(new SwiftFindFeature(session).find(test1));
+            assertTrue(new SwiftFindFeature(session).find(test2));
+            new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController());
+            assertFalse(new SwiftFindFeature(session).find(test1));
+            assertFalse(new SwiftFindFeature(session).find(test2));
+            session.close();
+        }
     }
 
     @Test(expected = NotfoundException.class)
