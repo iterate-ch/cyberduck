@@ -49,7 +49,6 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);
         for(String region : ProtocolFactory.S3_SSL.getRegions()) {
-            System.out.println(region);
             final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
             create.create(bucket, region);
             bucket.attributes().setRegion(region);
