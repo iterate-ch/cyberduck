@@ -112,12 +112,9 @@ public class S3MultipartUploadService implements Upload {
                             multipart.getObjectKey(), multipart.getUploadId()));
                 }
             }
-            final List<MultipartPart> completed;
+            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             if(status.isAppend()) {
-                completed = this.list(multipart);
-            }
-            else {
-                completed = new ArrayList<MultipartPart>();
+                completed.addAll(this.list(multipart));
             }
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
