@@ -26,12 +26,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.date.ISO8601DateParser;
-import ch.cyberduck.core.date.InvalidDateException;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,11 +47,11 @@ public class SwiftObjectListService implements ListService {
 
     private SwiftSession session;
 
-    private ISO8601DateParser dateParser;
+    private ISO8601DateParser dateParser
+            = new ISO8601DateParser();
 
     public SwiftObjectListService(final SwiftSession session) {
         this.session = session;
-        this.dateParser = new ISO8601DateParser();
     }
 
     @Override
