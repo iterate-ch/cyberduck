@@ -47,6 +47,9 @@ public class SwiftObjectListService implements ListService {
 
     private SwiftSession session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     private ISO8601DateParser dateParser
             = new ISO8601DateParser();
 
@@ -62,7 +65,6 @@ public class SwiftObjectListService implements ListService {
             String marker = null;
             List<StorageObject> list;
             do {
-                final PathContainerService containerService = new PathContainerService();
                 final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
                         containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);

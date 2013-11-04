@@ -35,6 +35,9 @@ public class SwiftCopyFeature implements Copy {
 
     private SwiftSession session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public SwiftCopyFeature(final SwiftSession session) {
         this.session = session;
     }
@@ -42,7 +45,6 @@ public class SwiftCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            final PathContainerService containerService = new PathContainerService();
             if(source.attributes().isFile()) {
                 session.getClient().copyObject(session.getRegion(containerService.getContainer(source)),
                         containerService.getContainer(source).getName(), containerService.getKey(source),

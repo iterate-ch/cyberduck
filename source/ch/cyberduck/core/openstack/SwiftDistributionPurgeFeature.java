@@ -38,6 +38,9 @@ public class SwiftDistributionPurgeFeature implements Purge {
 
     private SwiftSession session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public SwiftDistributionPurgeFeature(final SwiftSession session) {
         this.session = session;
     }
@@ -45,7 +48,6 @@ public class SwiftDistributionPurgeFeature implements Purge {
     @Override
     public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginController prompt) throws BackgroundException {
         try {
-            final PathContainerService containerService = new PathContainerService();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
                     session.getClient().purgeCDNContainer(session.getRegion(containerService.getContainer(file)),
