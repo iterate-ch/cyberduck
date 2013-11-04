@@ -242,7 +242,8 @@ public class FinderLocal extends Local {
         final NSData bookmark = NSData.dataWithBase64EncodedString(data);
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
         if(null == resolved) {
-            log.error(String.format("Error resolving bookmark %s to URL %s", bookmark, error));
+            final NSError f = error.getValueAs(NSError.class);
+            log.error(String.format("Error resolving bookmark %s to URL %s", bookmark, f));
         }
         return resolved;
     }
