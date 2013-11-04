@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 
@@ -145,6 +146,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Write.class) {
             return (T) new SwiftWriteFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new SwiftThresholdUploadService(this);
         }
         if(type == Directory.class) {
             return (T) new SwiftDirectoryFeature(this);

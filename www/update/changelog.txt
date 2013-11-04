@@ -1,5 +1,6 @@
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
-- [Bugfix] Temporary URL for containers with whitespace (OpenStack)
+- [Feature] Large (5GB) object uploads (#6056)
+- [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Partial authentication failure (SFTP) (#7536)
 - [Bugfix] In Info panel ACL tab is disabled (S3, Windows) (#7506)

@@ -4,9 +4,9 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
-
+- [Feature] Large (5GB) object uploads (#6056)
 - [Bugfix] Code signing requirements for embedded bundles (Mac)
-- [Bugfix] Temporary URL for containers with whitespace (OpenStack)
+- [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Sandboxing denies access to SSH keys (Mac) (#7208)
 - [Bugfix] Partial authentication failure (SFTP) (#7536)
@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Interoperability with WinSSHD (SFTP) (#7522)
 - [Bugfix] Softlayer connection profiles (Openstack Swift) (#7522)
 - [Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in Preferences (SFTP, Mac)
+- [Bugfix] Missing CDN URLs (Openstack Swift, Windows) (#7532)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
