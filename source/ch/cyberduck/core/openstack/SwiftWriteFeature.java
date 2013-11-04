@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import ch.iterate.openstack.swift.exception.GenericException;
-import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
@@ -46,7 +45,8 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
     private SwiftSession session;
 
@@ -54,8 +54,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
         this.session = session;
     }
 
-    public ResponseOutputStream<String> write(final Region region, final String container, final String name,
-                                              final Long length) throws BackgroundException {
+    public ResponseOutputStream<String> write(final Path file, final Long length) throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("openstack.metadata.default")) {
@@ -88,7 +87,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
             @Override
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().storeObject(region, container, name,
+                    return session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                            containerService.getContainer(file).getName(), containerService.getKey(file),
                             entity, metadata, null);
                 }
                 catch(GenericException e) {
@@ -104,15 +104,12 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
                 return length;
             }
         };
-        return session.write(name, command);
+        return session.write(file, command);
     }
 
     @Override
     public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return write(session.getRegion(containerService.getContainer(file)),
-                containerService.getContainer(file).getName(),
-                containerService.getKey(file),
-                status.getLength());
+        return this.write(file, status.getLength());
     }
 
     @Override

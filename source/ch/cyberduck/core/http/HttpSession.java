@@ -264,16 +264,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
      */
     public <T> ResponseOutputStream<T> write(final Path file, final DelayedHttpEntityCallable<T> command)
             throws BackgroundException {
-        return write(file.getName(), command);
-    }
-
-    /**
-     * @param command Callable writing entity to stream and returning checksum
-     * @param <T>     Type of returned checksum
-     * @return Outputstream to write entity into.
-     */
-    public <T> ResponseOutputStream<T> write(final String filename, final DelayedHttpEntityCallable<T> command)
-            throws BackgroundException {
         /**
          * Signal on enter streaming
          */
@@ -287,7 +277,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     return command.getContentLength();
                 }
             };
-            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mapping.getMime(filename)));
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mapping.getMime(file.getName())));
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {

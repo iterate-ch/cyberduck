@@ -118,7 +118,6 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                        final TransferStatus status) throws BackgroundException {
 
         final Region region = session.getRegion(containerService.getContainer(file));
-        final String container = containerService.getContainer(file).getName();
         final String name = containerService.getKey(file);
 
         final String segmentBase = String.format("%s%s/%d/%d", prefix, file.getName(),
@@ -135,7 +134,8 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         long offset = 0;
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             // Segment name with left padded segment number
-            final String segmentName = String.format("%s/%08d", segmentBase, segmentNumber);
+            final Path segment = new Path(containerService.getContainer(file),
+                    String.format("%s/%08d", segmentBase, segmentNumber), Path.FILE_TYPE);
             boolean skip = false;
             for(Path existingSegment : existingSegments) {
                 if(existingSegment.getName().endsWith(String.format("%08d", segmentNumber))) {
@@ -144,12 +144,12 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             }
             final Long length = Math.min(segmentSize, remaining);
             if(!skip) {
-                final Future<StorageObject> futureSegment = this.submitSegment(region, container, segmentName, local,
+                final Future<StorageObject> futureSegment = this.submitSegment(segment, local,
                         throttle, listener, status, offset, length);
                 futureSegments.add(futureSegment);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
-                            segmentName, length, offset));
+                            segment, length, offset));
                 }
             }
             offset += length;
@@ -183,17 +183,17 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         try {
             if(dynamic) {
                 // Dynamic Large Object. Manifest is just a zero-byte file with an extra X-Object-Manifest header
-                session.getClient().createDLOManifestObject(region, container, mapping.getMime(file.getName()),
-                        name, segmentBase);
+                session.getClient().createDLOManifestObject(region, containerService.getContainer(file).getName(),
+                        mapping.getMime(file.getName()), name, segmentBase);
             }
             else {
                 // Static Large Object.
-                final String manifest = segmentService.manifest(container, completedSegments);
+                final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completedSegments);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
                 }
-                session.getClient().createSLOManifestObject(region, container, mapping.getMime(file.getName()),
-                        name, manifest, Collections.<String, String>emptyMap());
+                session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
+                        mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap());
             }
         }
         catch(GenericException e) {
@@ -204,8 +204,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         }
     }
 
-    private Future<StorageObject> submitSegment(final Region region, final String container,
-                                                final String name, final Local local,
+    private Future<StorageObject> submitSegment(final Path segment, final Local local,
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus status, final Long offset, final Long length) {
         return pool.execute(new Callable<StorageObject>() {
@@ -216,7 +215,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                 String etag;
                 try {
                     in = local.getInputStream();
-                    out = new SwiftWriteFeature(session).write(region, container, name, length);
+                    out = new SwiftWriteFeature(session).write(segment, length);
                     new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                 }
                 catch(IOException e) {
@@ -228,7 +227,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                 }
                 etag = out.getResponse();
                 // Maybe we should check the md5sum at some point...
-                final StorageObject stored = new StorageObject(name);
+                final StorageObject stored = new StorageObject(containerService.getKey(segment));
                 stored.setMd5sum(etag);
                 stored.setSize(length);
                 return stored;
