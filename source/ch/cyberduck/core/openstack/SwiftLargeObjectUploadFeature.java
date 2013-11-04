@@ -38,8 +38,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -190,7 +188,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             }
             else {
                 // Static Large Object.
-                final String manifest = this.makeSLOManifest(container, completedSegments);
+                final String manifest = segmentService.manifest(container, completedSegments);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
                 }
@@ -236,27 +234,5 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                 return stored;
             }
         });
-    }
-
-    /**
-     * Create the appropriate manifest structure for a static large object.
-     * The number of object segments is limited to a configurable amount, default 1000. Each segment,
-     * except for the final one, must be at least 1 megabyte (configurable).
-     *
-     * @param objects Ordered list of segments
-     * @return ETag returned by the simple upload total size of segment uploaded path of segment
-     */
-    private String makeSLOManifest(final String container, final List<StorageObject> objects) {
-        JSONArray manifestSLO = new JSONArray();
-        for(StorageObject s : objects) {
-            JSONObject segmentJSON = new JSONObject();
-            // this is the container and object name in the format {container-name}/{object-name}
-            segmentJSON.put("path", String.format("/%s/%s", container, s.getName()));
-            // MD5 checksum of the content of the segment object
-            segmentJSON.put("etag", s.getMd5sum());
-            segmentJSON.put("size_bytes", s.getSize());
-            manifestSLO.add(segmentJSON);
-        }
-        return manifestSLO.toJSONString();
     }
 }
