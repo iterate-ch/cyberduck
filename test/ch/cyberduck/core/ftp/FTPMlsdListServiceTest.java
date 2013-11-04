@@ -17,9 +17,20 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -44,6 +55,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testList() throws Exception {
         final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
