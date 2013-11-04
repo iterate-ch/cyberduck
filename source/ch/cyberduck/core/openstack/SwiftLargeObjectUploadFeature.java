@@ -111,6 +111,10 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                     new Path(containerService.getContainer(file),
                             segmentService.basename(file, status.getLength()), Path.DIRECTORY_TYPE), new DisabledListProgressListener()));
         }
+        // Get the results of the uploads in the order they were submitted
+        // this is important for building the manifest, and is not a problem in terms of performance
+        // because we should only continue when all segments have uploaded successfully
+        final List<StorageObject> completedSegments = new ArrayList<StorageObject>();
         // Submit file segments for concurrent upload
         final List<Future<StorageObject>> futureSegments = new ArrayList<Future<StorageObject>>();
         long remaining = status.getLength();
@@ -126,6 +130,10 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Skip segment %s", existingSegment));
                     }
+                    final StorageObject stored = new StorageObject(containerService.getKey(segment));
+                    stored.setMd5sum(existingSegment.attributes().getChecksum());
+                    stored.setSize(existingSegment.attributes().getSize());
+                    completedSegments.add(stored);
                     skip = true;
                 }
             }
@@ -142,10 +150,6 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             offset += length;
             remaining -= length;
         }
-        // Get the results of the uploads in the order they were submitted
-        // this is important for building the manifest, and is not a problem in terms of performance
-        // because we should only continue when all segments have uploaded successfully
-        final List<StorageObject> completedSegments = new ArrayList<StorageObject>();
         try {
             for(Future<StorageObject> futureSegment : futureSegments) {
                 completedSegments.add(futureSegment.get());
@@ -192,7 +196,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             public StorageObject call() throws BackgroundException {
                 InputStream in = null;
                 ResponseOutputStream<String> out = null;
-                String etag;
+                final String etag;
                 try {
                     in = local.getInputStream();
                     out = new SwiftWriteFeature(session).write(segment, length);
@@ -206,7 +210,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                     IOUtils.closeQuietly(out);
                 }
                 etag = out.getResponse();
-                // Maybe we should check the md5sum at some point...
+                // Maybe we should check the md5sum at some point
                 final StorageObject stored = new StorageObject(containerService.getKey(segment));
                 stored.setMd5sum(etag);
                 stored.setSize(length);
