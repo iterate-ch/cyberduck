@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -36,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -50,8 +52,19 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
 
     private SwiftSession session;
 
+    private SwiftSegmentService segmentService;
+
+    private SwiftObjectListService listService;
+
     public SwiftWriteFeature(final SwiftSession session) {
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session));
+    }
+
+    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+                             final SwiftSegmentService segmentService) {
         this.session = session;
+        this.listService = listService;
+        this.segmentService = segmentService;
     }
 
     public ResponseOutputStream<String> write(final Path file, final Long length) throws BackgroundException {
@@ -114,6 +127,19 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
 
     @Override
     public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
+        if(status.getLength() > Preferences.instance().getLong("openstack.upload.largeobject.threshold")) {
+            Long size = 0L;
+            final List<Path> segments = listService.list(
+                    new Path(containerService.getContainer(file), segmentService.basename(file, status.getLength()), Path.DIRECTORY_TYPE),
+                    new DisabledListProgressListener());
+            if(segments.isEmpty()) {
+                return new Append();
+            }
+            for(Path segment : segments) {
+                size += segment.attributes().getSize();
+            }
+            return new Append(size);
+        }
         return new Append();
     }
 }
