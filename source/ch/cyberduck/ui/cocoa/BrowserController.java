@@ -1540,6 +1540,8 @@ public class BrowserController extends WindowController
                 IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                 selected);
         table.sizeToFit();
+        table.setAutosaveName("browser.autosave");
+        table.setAutosaveTableColumns(true);
         this.reloadData(false);
     }
 
