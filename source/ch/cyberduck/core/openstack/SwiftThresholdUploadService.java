@@ -37,21 +37,28 @@ public class SwiftThresholdUploadService implements Upload {
 
     private Long threshold;
 
+    /**
+     * Segment size
+     */
+    private Long segment;
+
     public SwiftThresholdUploadService(final SwiftSession session) {
-        this(session, Preferences.instance().getLong("openstack.upload.largeobject.threshold"));
+        this(session, Preferences.instance().getLong("openstack.upload.largeobject.threshold"),
+                Preferences.instance().getLong("openstack.upload.largeobject.size"));
     }
 
-    public SwiftThresholdUploadService(SwiftSession session, Long threshold) {
+    public SwiftThresholdUploadService(final SwiftSession session, final Long threshold, final Long segment) {
         this.session = session;
         this.threshold = threshold;
+        this.segment = segment;
     }
 
     @Override
-    public void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         final Upload feature;
         if(status.getLength() > threshold) {
-            feature = new SwiftLargeObjectUploadFeature(session, threshold);
+            feature = new SwiftLargeObjectUploadFeature(session, segment);
         }
         else {
             feature = new DefaultUploadFeature(session);

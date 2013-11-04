@@ -621,6 +621,7 @@ public abstract class Preferences {
          */
         defaults.put("openstack.upload.largeobject.static", String.valueOf(true)); // Defaults to Static Large Object (SLO)
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L - 32768)); // 2GB
+        defaults.put("openstack.upload.largeobject.size", String.valueOf(5L * 1024L * 1024L));
 
         //doc	Microsoft Word
         //html	HTML Format
