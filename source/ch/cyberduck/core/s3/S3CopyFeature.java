@@ -33,6 +33,9 @@ public class S3CopyFeature implements Copy {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public S3CopyFeature(final S3Session session) {
         this.session = session;
     }
@@ -54,7 +57,6 @@ public class S3CopyFeature implements Copy {
     protected void copy(final Path source, final Path copy, final String storageClass, final String encryptionAlgorithm,
                         final Acl acl) throws BackgroundException {
         if(source.attributes().isFile()) {
-            final PathContainerService containerService = new PathContainerService();
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);

@@ -44,6 +44,9 @@ public class S3VersioningFeature implements Versioning {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public S3VersioningFeature(final S3Session session) {
         this.session = session;
     }
@@ -140,7 +143,6 @@ public class S3VersioningFeature implements Versioning {
     public void revert(final Path file) throws BackgroundException {
         if(file.attributes().isFile()) {
             try {
-                final PathContainerService containerService = new PathContainerService();
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
