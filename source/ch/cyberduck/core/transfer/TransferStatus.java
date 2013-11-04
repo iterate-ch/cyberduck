@@ -193,6 +193,9 @@ public final class TransferStatus {
     }
 
     public boolean isRename() {
+        if(this.isAppend()) {
+            return false;
+        }
         return renamed != null;
     }
 

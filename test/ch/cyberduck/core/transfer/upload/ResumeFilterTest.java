@@ -95,12 +95,14 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareFalse() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
         assertFalse(status.isAppend());
+        assertTrue(status.isRename());
     }
 
     @Test
@@ -112,23 +114,26 @@ public class ResumeFilterTest extends AbstractTestCase {
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
-        });
+        }, new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE) {
         };
         t.setLocal(new NullLocal(null, "t"));
         final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
+        assertFalse(status.isRename());
         assertEquals(7L, status.getCurrent());
     }
 
     @Test
     public void testPrepare0() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE);
         t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(0L);
         final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
         assertFalse(status.isAppend());
+        assertTrue(status.isRename());
         assertEquals(0L, status.getCurrent());
     }
 }
