@@ -20,10 +20,10 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -52,12 +52,18 @@ public class SwiftSegmentService {
     private ISO8601DateParser dateParser
             = new ISO8601DateParser();
 
-    public SwiftSegmentService(SwiftSession session) {
-        this.session = session;
+    /**
+     * Segement files prefix
+     */
+    private String prefix;
+
+    public SwiftSegmentService(final SwiftSession session) {
+        this(session, Preferences.instance().getProperty("openstack.upload.largeobject.segments.prefix"));
     }
 
-    public SwiftSegmentService(PathContainerService containerService, Delete delete) {
-        this.containerService = containerService;
+    public SwiftSegmentService(final SwiftSession session, final String prefix) {
+        this.session = session;
+        this.prefix = prefix;
     }
 
     public List<Path> list(final Path file) throws BackgroundException {
@@ -95,6 +101,9 @@ public class SwiftSegmentService {
         }
     }
 
+    public String basename(final Path file, final Long size) {
+        return String.format("%s%s/%d/%d", prefix, file.getName(), System.currentTimeMillis() / 1000L, size);
+    }
 
     /**
      * Create the appropriate manifest structure for a static large object (SLO).

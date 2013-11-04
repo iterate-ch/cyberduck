@@ -74,31 +74,18 @@ public class SwiftLargeObjectUploadFeature implements Upload {
     private MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    /**
-     * Segement files prefix
-     */
-    private String prefix;
-
     private Long segmentSize;
 
     private SwiftSegmentService segmentService;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, segmentSize,
-                Preferences.instance().getProperty("openstack.upload.largeobject.segments.prefix"));
-    }
-
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize,
-                                         final String prefix) {
-        this(session, new SwiftSegmentService(session), segmentSize, prefix);
+        this(session, new SwiftSegmentService(session), segmentSize);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
                                          final SwiftSegmentService segmentService,
-                                         final Long segmentSize,
-                                         final String prefix) {
+                                         final Long segmentSize) {
         this.session = session;
-        this.prefix = prefix;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
     }
@@ -112,8 +99,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         final Region region = session.getRegion(containerService.getContainer(file));
         final String name = containerService.getKey(file);
 
-        final String segmentBase = String.format("%s%s/%d/%d", prefix, file.getName(),
-                System.currentTimeMillis() / 1000L, status.getLength());
+        final String basename = segmentService.basename(file, status.getLength());
 
         // Get a list of the existing file segments if necessary (for deletion later)
         final List<Path> existingSegments = new ArrayList<Path>();
@@ -127,7 +113,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             // Segment name with left padded segment number
             final Path segment = new Path(containerService.getContainer(file),
-                    String.format("%s/%08d", segmentBase, segmentNumber), Path.FILE_TYPE);
+                    String.format("%s/%08d", basename, segmentNumber), Path.FILE_TYPE);
             boolean skip = false;
             for(Path existingSegment : existingSegments) {
                 if(existingSegment.getName().endsWith(String.format("%08d", segmentNumber))) {
