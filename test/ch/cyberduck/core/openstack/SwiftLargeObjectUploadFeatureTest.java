@@ -13,7 +13,6 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -22,12 +21,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
@@ -57,16 +57,20 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
             final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
 
             final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-            final String random = RandomStringUtils.random(10000);
-            final byte[] content = random.getBytes();
+
+            // Each segment, except the last, must be larger than 1048576 bytes.
+            //2MB + 1
+            final byte[] content = new byte[1048576 + 1048576 + 1];
+            new Random().nextBytes(content);
+
             final OutputStream out = local.getOutputStream(false);
-            IOUtils.write(random, out);
+            IOUtils.write(content, out);
             IOUtils.closeQuietly(out);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
 
             final SwiftLargeObjectUploadFeature upload
-                    = new SwiftLargeObjectUploadFeature(session, (long) content.length, false, ".segments-test/");
+                    = new SwiftLargeObjectUploadFeature(session, (long) (content.length / 2), false, ".segments-test/");
 
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
 
@@ -81,7 +85,10 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
             assertEquals("text/plain", metadata.get("Content-Type"));
             final List<Path> segments = new SwiftSegmentService(session).list(test);
             assertFalse(segments.isEmpty());
-            assertEquals(2, segments.size());
+            assertEquals(3, segments.size());
+            assertEquals(1048576L, segments.get(0).attributes().getSize());
+            assertEquals(1048576L, segments.get(1).attributes().getSize());
+            assertEquals(1L, segments.get(2).attributes().getSize());
             new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
             session.close();
         }
