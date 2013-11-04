@@ -75,7 +75,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                final Write.Append append = write.append(file, attributes);
+                final Write.Append append = write.append(file, status, attributes);
                 if(append.append) {
                     // Append to existing file
                     status.setAppend(true);

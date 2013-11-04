@@ -47,7 +47,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, new DefaultAttributesFeature(session)).size, 0L);
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status, new DefaultAttributesFeature(session)).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
@@ -89,9 +89,9 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals(false, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
         assertEquals(true, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", Path.FILE_TYPE), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), "test", Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
 
     }
 }

@@ -115,12 +115,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
                 status.getLength());
     }
 
-    /**
-     * @param file File
-     * @return No Content-Range support
-     */
     @Override
-    public Append append(final Path file, final Attributes feature) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
         return new Append();
     }
 }

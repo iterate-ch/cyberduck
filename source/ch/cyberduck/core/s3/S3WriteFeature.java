@@ -54,8 +54,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Attributes feature) throws BackgroundException {
-        if(file.getLocal().attributes().getSize() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
+    public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
+        if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
             final S3MultipartUploadService multipart = new S3MultipartUploadService(session);
             final MultipartUpload upload = multipart.find(file);
             if(upload != null) {
