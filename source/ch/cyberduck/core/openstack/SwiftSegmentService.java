@@ -20,6 +20,8 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -35,7 +37,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftSegmentService {
     private static final Logger log = Logger.getLogger(SwiftSegmentService.class);
@@ -44,6 +46,9 @@ public class SwiftSegmentService {
 
     private PathContainerService containerService
             = new PathContainerService();
+
+    private ISO8601DateParser dateParser
+            = new ISO8601DateParser();
 
     public SwiftSegmentService(SwiftSession session) {
         this.session = session;
@@ -64,8 +69,19 @@ public class SwiftSegmentService {
                 return Collections.emptyList();
             }
             final List<Path> objects = new ArrayList<Path>();
-            for(StorageObject s : segments.get(container.getName())) {
-                objects.add(new Path(container, s.getName(), Path.FILE_TYPE));
+            if(segments.containsKey(container.getName())) {
+                for(StorageObject s : segments.get(container.getName())) {
+                    final Path segment = new Path(container, s.getName(), Path.FILE_TYPE);
+                    segment.attributes().setSize(s.getSize());
+                    try {
+                        segment.attributes().setModificationDate(dateParser.parse(s.getLastModified()).getTime());
+                    }
+                    catch(InvalidDateException e) {
+                        log.warn(String.format("%s is not ISO 8601 format %s", s.getLastModified(), e.getMessage()));
+                    }
+                    segment.attributes().setChecksum(s.getMd5sum());
+                    objects.add(segment);
+                }
             }
             return objects;
         }
