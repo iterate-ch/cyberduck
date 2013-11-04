@@ -75,11 +75,6 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             = new MappingMimeTypeService();
 
     /**
-     * Dynamic Large Object (DLO) or Static Large Object (SLO)
-     */
-    private boolean dynamic;
-
-    /**
      * Segement files prefix
      */
     private String prefix;
@@ -90,22 +85,19 @@ public class SwiftLargeObjectUploadFeature implements Upload {
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
         this(session, segmentSize,
-                !Preferences.instance().getBoolean("openstack.upload.largeobject.static"),
                 Preferences.instance().getProperty("openstack.upload.largeobject.segments.prefix"));
     }
 
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize, final Boolean dynamic,
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize,
                                          final String prefix) {
-        this(session, new SwiftSegmentService(session),
-                segmentSize, dynamic, prefix);
+        this(session, new SwiftSegmentService(session), segmentSize, prefix);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
                                          final SwiftSegmentService segmentService,
-                                         final Long segmentSize, final Boolean dynamic,
+                                         final Long segmentSize,
                                          final String prefix) {
         this.session = session;
-        this.dynamic = dynamic;
         this.prefix = prefix;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
@@ -181,20 +173,13 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
         try {
-            if(dynamic) {
-                // Dynamic Large Object. Manifest is just a zero-byte file with an extra X-Object-Manifest header
-                session.getClient().createDLOManifestObject(region, containerService.getContainer(file).getName(),
-                        mapping.getMime(file.getName()), name, segmentBase);
+            // Static Large Object.
+            final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completedSegments);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
-            else {
-                // Static Large Object.
-                final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completedSegments);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
-                }
-                session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
-                        mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap());
-            }
+            session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
+                    mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap());
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Upload failed", e);

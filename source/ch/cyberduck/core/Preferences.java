@@ -616,10 +616,6 @@ public abstract class Preferences {
 
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
-        /**
-         * Dynamic Large Object (DLO) or Static Large Object (SLO)
-         */
-        defaults.put("openstack.upload.largeobject.static", String.valueOf(true)); // Defaults to Static Large Object (SLO)
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L - 32768)); // 2GB
         defaults.put("openstack.upload.largeobject.size", String.valueOf(5L * 1024L * 1024L));
 
