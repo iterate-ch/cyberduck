@@ -51,7 +51,7 @@ public class S3ThresholdUploadService implements Upload {
                 service.upload(file, local, throttle, listener, status);
             }
             catch(InteroperabilityException e) {
-                log.warn(String.format("Failure using multiparat upload %s. Fallback to single upload.", e.getMessage()));
+                log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
                 final S3SingleUploadService single = new S3SingleUploadService(session);
                 single.upload(file, local, throttle, listener, status);
             }
