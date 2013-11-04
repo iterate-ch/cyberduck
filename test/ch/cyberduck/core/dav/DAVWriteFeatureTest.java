@@ -137,11 +137,12 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals(false, new DAVWriteFeature(session).append(
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        assertFalse(feature.append(
                 new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        assertEquals(true, new DAVWriteFeature(session).append(test, new TransferStatus(), new DefaultAttributesFeature(session)).append);
+        assertTrue(feature.append(test, new TransferStatus(), new DefaultAttributesFeature(session)).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }
