@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
@@ -78,16 +79,20 @@ public class SwiftLargeObjectUploadFeature implements Upload {
 
     private SwiftSegmentService segmentService;
 
+    private SwiftObjectListService listService;
+
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftSegmentService(session), segmentSize);
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), segmentSize);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
+                                         final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
                                          final Long segmentSize) {
         this.session = session;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
+        this.listService = listService;
     }
 
     @Override
@@ -99,12 +104,12 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         final Region region = session.getRegion(containerService.getContainer(file));
         final String name = containerService.getKey(file);
 
-        final String basename = segmentService.basename(file, status.getLength());
-
-        // Get a list of the existing file segments if necessary (for deletion later)
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
-            existingSegments.addAll(segmentService.list(file));
+            // Get a lexicographically ordered list of the existing file segments
+            existingSegments.addAll(listService.list(
+                    new Path(containerService.getContainer(file),
+                            segmentService.basename(file, status.getLength()), Path.DIRECTORY_TYPE), new DisabledListProgressListener()));
         }
         // Submit file segments for concurrent upload
         final List<Future<StorageObject>> futureSegments = new ArrayList<Future<StorageObject>>();
@@ -113,10 +118,14 @@ public class SwiftLargeObjectUploadFeature implements Upload {
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             // Segment name with left padded segment number
             final Path segment = new Path(containerService.getContainer(file),
-                    String.format("%s/%08d", basename, segmentNumber), Path.FILE_TYPE);
+                    segmentService.name(file, status.getLength(), segmentNumber), Path.FILE_TYPE);
             boolean skip = false;
-            for(Path existingSegment : existingSegments) {
-                if(existingSegment.getName().endsWith(String.format("%08d", segmentNumber))) {
+            if(segmentNumber - 1 < existingSegments.size()) {
+                final Path existingSegment = existingSegments.get(segmentNumber - 1);
+                if(containerService.getKey(existingSegment).equals(segmentService.name(file, status.getLength(), segmentNumber))) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip segment %s", existingSegment));
+                    }
                     skip = true;
                 }
             }

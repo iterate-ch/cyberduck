@@ -105,6 +105,10 @@ public class SwiftSegmentService {
         return String.format("%s%s/%d", prefix, file.getName(), size);
     }
 
+    public String name(final Path file, final Long size, int segmentNumber) {
+        return String.format("%s/%08d", this.basename(file, size), segmentNumber);
+    }
+
     /**
      * Create the appropriate manifest structure for a static large object (SLO).
      * The number of object segments is limited to a configurable amount, default 1000. Each segment,
@@ -126,4 +130,5 @@ public class SwiftSegmentService {
         }
         return manifestSLO.toJSONString();
     }
+
 }
