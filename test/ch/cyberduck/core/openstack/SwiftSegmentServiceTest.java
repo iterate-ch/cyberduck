@@ -56,4 +56,17 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         final String manifest = service.manifest(container.getName(), Arrays.asList(a, b));
         assertEquals("[{\"size_bytes\":1,\"etag\":\"m1\",\"path\":\"\\/test.cyberduck.ch\\/a\"},{\"size_bytes\":1,\"etag\":\"m2\",\"path\":\"\\/test.cyberduck.ch\\/b\"}]", manifest);
     }
+
+    @Test
+    public void testBasename() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final String name = UUID.randomUUID().toString();
+        assertEquals(".prefix/" + name + "/3", service.basename(new Path(container, name, Path.FILE_TYPE), 3L));
+    }
 }
