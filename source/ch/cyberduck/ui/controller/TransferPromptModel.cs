@@ -205,7 +205,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     IDictionary<Path, TransferStatus> map = Utils.ConvertFromJavaMap<Path, TransferStatus>((Map) result);
                     _model._status = map;
-                    _controller.ReloadData();
+                    _controller.ReloadData(_model._roots);
                 }
             }
         }

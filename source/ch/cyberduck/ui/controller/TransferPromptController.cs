@@ -81,8 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate wireAction = delegate
                 {
                     View.ToggleDetailsEvent += View_ToggleDetailsEvent;
-                    View.DetailsVisible = Preferences.instance().getBoolean(
-                        "transfer.toggle.details");
+                    View.DetailsVisible = Preferences.instance().getBoolean("transfer.toggle.details");
 
                     View.ChangedActionEvent += View_ChangedActionEvent;
                     View.ChangedSelectionEvent += View_ChangedSelectionEvent;
@@ -106,8 +105,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             View.SetModel(TransferPromptModel.ChildrenGetter(null));
                             //select first one if there is any
-                            IEnumerator<Path> en =
-                                TransferPromptModel.ChildrenGetter(null).GetEnumerator();
+                            IEnumerator<Path> en = TransferPromptModel.ChildrenGetter(null).GetEnumerator();
                             if (en.MoveNext())
                             {
                                 View.SelectedPath = en.Current;
@@ -165,11 +163,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         View.LocalFileModificationDate =
                             UserDateFormatterFactory.get()
-                                                    .getLongFormat(UserDefaultsDateFormatter
-                                                                       .ConvertJavaMillisecondsToDotNetMillis(
-                                                                           selected.getLocal()
-                                                                                   .attributes()
-                                                                                   .getModificationDate()));
+                                                    .getLongFormat(
+                                                        UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
+                                                            selected.getLocal().attributes().getModificationDate()));
                     }
                     View.RemoteFileUrl =
                         ((UrlProvider) Session.getFeature(typeof (UrlProvider))).toUrl(selected)
@@ -190,8 +186,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.RemoteFileModificationDate =
-                            UserDateFormatterFactory.get().getLongFormat(
-                                selected.attributes().getModificationDate());
+                            UserDateFormatterFactory.get().getLongFormat(selected.attributes().getModificationDate());
                     }
                 }
                 else
@@ -220,6 +215,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public void ReloadData()
         {
             View.SetModel(TransferPromptModel.ChildrenGetter(null));
+            UpdateStatusLabel();
+        }
+
+        public void ReloadData(List<Path> roots)
+        {
+            foreach (Path p in roots)
+            {
+                View.RefreshBrowserObject(p);
+            }
             UpdateStatusLabel();
         }
 
