@@ -18,34 +18,17 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferPrompt;
-import ch.cyberduck.core.transfer.DownloadTransfer;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.action.Worker;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -78,13 +61,13 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Store checksum of downloaded file to detect modifications
      */
-    private String checksum
+    protected String checksum
             = StringUtils.EMPTY;
 
     /**
      * Session for transfers
      */
-    protected Session session;
+    protected Session<?> session;
 
     public AbstractEditor(final Application application, final Session session, final Path file) {
         this.application = application;
@@ -143,11 +126,11 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Worker background = new EditBackgroundAction();
+        final Worker worker = new EditBackgroundAction(this);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", local.getAbsolute()));
         }
-        this.open(background);
+        this.open(worker);
     }
 
     /**
@@ -177,144 +160,40 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker background = new SaveBackgroundAction();
+            final Worker worker = new SaveBackgroundAction(this);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local.getAbsolute()));
             }
-            this.save(background);
+            this.save(worker);
         }
     }
 
-    private final class EditBackgroundAction extends Worker {
-        @Override
-        public Transfer run() throws BackgroundException {
-            // Delete any existing file which might be used by a watch editor already
-            final TransferOptions options = new TransferOptions();
-            options.quarantine = false;
-            options.open = false;
-            final Transfer download = new DownloadTransfer(session.getHost(), edited) {
-                @Override
-                public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
-                                             final TransferPrompt prompt) throws BackgroundException {
-                    return TransferAction.trash;
-                }
-            };
-            final SingleTransferWorker worker
-                    = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
-            worker.run();
-            if(download.isComplete()) {
-                // Save checksum before edit
-                checksum = local.attributes().getChecksum();
-                final Permission permissions = local.attributes().getPermission();
-                // Update local permissions to make sure the file is readable and writable for editing.
-                permissions.setUser(permissions.getUser().or(Permission.Action.read).or(Permission.Action.write));
-                if(!permissions.equals(local.attributes().getPermission())) {
-                    local.writeUnixPermission(permissions);
-                }
-                try {
-                    edit();
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-            }
-            else {
-                log.warn(String.format("Skip opening file %s with incomplete transfer %s", edited, download));
-            }
-            return download;
-        }
-
-        @Override
-        public String getActivity() {
-            return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                    edited.getName());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if(this == o) {
-                return true;
-            }
-            if(o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            AbstractEditor that = (AbstractEditor) o;
-            if(edited != null ? !edited.equals(that.edited) : that.edited != null) {
-                return false;
-            }
-            if(session != null ? !session.equals(that.session) : that.session != null) {
-                return false;
-            }
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
             return true;
         }
-
-        @Override
-        public int hashCode() {
-            int result = edited != null ? edited.hashCode() : 0;
-            result = 31 * result + (session != null ? session.hashCode() : 0);
-            return result;
+        if(o == null || getClass() != o.getClass()) {
+            return false;
         }
+        AbstractEditor that = (AbstractEditor) o;
+        if(application != null ? !application.equals(that.application) : that.application != null) {
+            return false;
+        }
+        if(local != null ? !local.equals(that.local) : that.local != null) {
+            return false;
+        }
+        if(session != null ? !session.equals(that.session) : that.session != null) {
+            return false;
+        }
+        return true;
     }
 
-    private final class SaveBackgroundAction extends Worker {
-        @Override
-        public Transfer run() throws BackgroundException {
-            final Transfer upload = new UploadTransfer(session.getHost(), edited) {
-                @Override
-                public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt) throws BackgroundException {
-                    return TransferAction.overwrite;
-                }
-
-                @Override
-                public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
-                    return super.filter(session, action).withOptions(new UploadFilterOptions()
-                            .withTemporary(Preferences.instance().getBoolean("editor.upload.temporary"))
-                            .withPermission(Preferences.instance().getBoolean("editor.upload.permissions.change")));
-                }
-            };
-            final SingleTransferWorker worker
-                    = new SingleTransferWorker(session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
-            worker.run();
-            if(upload.isComplete()) {
-                // Update known remote file size
-                edited.attributes().setSize(upload.getTransferred());
-                if(isClosed()) {
-                    delete();
-                }
-                setModified(false);
-            }
-            return upload;
-        }
-
-        @Override
-        public String getActivity() {
-            return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                    edited.getName());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if(this == o) {
-                return true;
-            }
-            if(o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            AbstractEditor that = (AbstractEditor) o;
-            if(edited != null ? !edited.equals(that.edited) : that.edited != null) {
-                return false;
-            }
-            if(session != null ? !session.equals(that.session) : that.session != null) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = edited != null ? edited.hashCode() : 0;
-            result = 31 * result + (session != null ? session.hashCode() : 0);
-            return result;
-        }
+    @Override
+    public int hashCode() {
+        int result = local != null ? local.hashCode() : 0;
+        result = 31 * result + (application != null ? application.hashCode() : 0);
+        result = 31 * result + (session != null ? session.hashCode() : 0);
+        return result;
     }
 }
