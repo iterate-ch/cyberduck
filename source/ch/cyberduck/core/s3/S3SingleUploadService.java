@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -52,9 +51,6 @@ public class S3SingleUploadService implements Upload {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
     private S3Session session;
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     public S3SingleUploadService(final S3Session session) {
         this.session = session;
