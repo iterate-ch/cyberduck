@@ -48,15 +48,14 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(super.accept(file, parent)) {
             if(file.attributes().isFile()) {
                 if(parent.isExists()) {
-                    if(find.find(file)) {
-                        final long remote = attribute.find(file).getSize();
-                        if(remote >= file.getLocal().attributes().getSize()) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with remote size %d", file, remote));
-                            }
-                            // No need to resume completed transfers
-                            return false;
+                    final long local = file.getLocal().attributes().getSize();
+                    final Write.Append append = write.append(file, local, cache);
+                    if(append.append & append.size >= local) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Skip file %s with remote size %d", file, append.size));
                         }
+                        // No need to resume completed transfers
+                        return false;
                     }
                 }
             }
@@ -70,7 +69,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                final Write.Append append = write.append(file, status, cache);
+                final Write.Append append = write.append(file, status.getLength(), cache);
                 if(append.append) {
                     // Append to existing file
                     status.setAppend(true);

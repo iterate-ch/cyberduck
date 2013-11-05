@@ -50,7 +50,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new SwiftWriteFeature(session).append(test, status, Cache.empty()).size, 0L);
+        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -65,6 +65,6 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), new TransferStatus(), null).append);
+        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, null).append);
     }
 }

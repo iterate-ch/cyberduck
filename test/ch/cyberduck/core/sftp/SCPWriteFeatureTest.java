@@ -54,6 +54,6 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new SCPWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), new TransferStatus(), null).append);
+        assertFalse(new SCPWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, null).append);
     }
 }

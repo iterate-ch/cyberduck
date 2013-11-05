@@ -104,7 +104,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status, final Cache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
         if(new DAVFindFeature(session).withCache(cache).find(file)) {
             return new Append(new DefaultAttributesFeature(session).withCache(cache).find(file).getSize());
         }

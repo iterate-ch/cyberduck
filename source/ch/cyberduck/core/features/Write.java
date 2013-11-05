@@ -40,14 +40,21 @@ public interface Write {
      * Determine if a file exists and we can append to it.
      *
      * @param file   File
-     * @param status Transfer Status
+     * @param length Transfer Status
      * @param cache  Cache
      * @return True if can append to existing file
      */
-    Append append(Path file, TransferStatus status, Cache cache) throws BackgroundException;
+    Append append(Path file, Long length, Cache cache) throws BackgroundException;
 
     public static final class Append {
+        /**
+         * Append to file
+         */
         public boolean append;
+
+        /**
+         * Remote file size
+         */
         public Long size = 0L;
 
         public Append() {

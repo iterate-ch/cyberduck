@@ -57,7 +57,7 @@ public class SCPWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status, final Cache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
         return new Append();
     }
 }
