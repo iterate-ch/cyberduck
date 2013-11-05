@@ -35,8 +35,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.MultipartUploadChunk;
-import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
 import org.jets3t.service.model.MultipartPart;
@@ -68,7 +66,10 @@ public class S3MultipartUploadService implements Upload {
 
     private S3Session session;
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
+
+    private S3MultipartService multipartService;
 
     /**
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
@@ -87,6 +88,7 @@ public class S3MultipartUploadService implements Upload {
 
     public S3MultipartUploadService(final S3Session session, final Long partsize) {
         this.session = session;
+        this.multipartService = new S3MultipartService(session);
         this.partsize = partsize;
     }
 
@@ -96,7 +98,7 @@ public class S3MultipartUploadService implements Upload {
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
-                multipart = this.find(file);
+                multipart = multipartService.find(file);
             }
             if(null == multipart) {
                 if(log.isInfoEnabled()) {
@@ -113,7 +115,7 @@ public class S3MultipartUploadService implements Upload {
             }
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             if(status.isAppend()) {
-                completed.addAll(this.list(multipart));
+                completed.addAll(multipartService.list(multipart));
             }
             try {
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
@@ -179,48 +181,6 @@ public class S3MultipartUploadService implements Upload {
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Upload failed", e, file);
         }
-    }
-
-    protected List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
-        }
-        // This operation lists the parts that have been uploaded for a specific multipart upload.
-        try {
-            return session.getClient().multipartListParts(multipart);
-        }
-        catch(S3ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload failed", e);
-        }
-    }
-
-    public MultipartUpload find(final Path file) throws BackgroundException {
-        // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
-        // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
-        // not yet been completed or aborted.
-        String nextUploadIdMarker = null;
-        String nextKeyMarker = null;
-        do {
-            final MultipartUploadChunk chunk;
-            try {
-                chunk = session.getClient().multipartListUploadsChunked(
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        null, nextKeyMarker, nextUploadIdMarker, null, true);
-            }
-            catch(S3ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Upload failed", e, file);
-            }
-            for(MultipartUpload upload : chunk.getUploads()) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
-                }
-                return upload;
-            }
-            nextKeyMarker = chunk.getPriorLastKey();
-            nextUploadIdMarker = chunk.getPriorLastIdMarker();
-        }
-        while(nextUploadIdMarker != null);
-        return null;
     }
 
     private Future<MultipartPart> submitPart(final Path file,
