@@ -64,7 +64,21 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAppend() throws Exception {
-        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, null).append);
+    public void testAppendBelowLimit() throws Exception {
+        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
+        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768 - 1, Cache.empty()).append);
+    }
+
+    @Test
+    public void testAppendNoSegmentFound() throws Exception {
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        assertFalse(new SwiftWriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768, Cache.empty()).append);
     }
 }

@@ -127,7 +127,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(length > Preferences.instance().getLong("openstack.upload.largeobject.threshold")) {
+        if(length >= Preferences.instance().getLong("openstack.upload.largeobject.threshold")) {
             Long size = 0L;
             final List<Path> segments = listService.list(
                     new Path(containerService.getContainer(file), segmentService.basename(file, length), Path.DIRECTORY_TYPE),
