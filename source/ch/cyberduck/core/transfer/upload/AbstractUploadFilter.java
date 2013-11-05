@@ -124,9 +124,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(parent.isExists()) {
-            // Do not attempt to create a directory that already exists
             if(find.find(file)) {
                 status.setExists(true);
+                // Read remote attributes
                 file.setAttributes(attribute.find(file));
             }
         }
