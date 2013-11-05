@@ -149,7 +149,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 }
             }
             catch(InterruptedException e) {
-                throw new BackgroundException(e.getMessage(), e);
+                throw new ConnectionCanceledException(e);
             }
             catch(ExecutionException e) {
                 final Throwable cause = e.getCause();
