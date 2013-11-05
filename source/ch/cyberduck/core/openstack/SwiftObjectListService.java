@@ -72,7 +72,6 @@ public class SwiftObjectListService implements ListService {
                     final Path child = new Path(directory, PathNormalizer.name(object.getName()),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     child.attributes().setOwner(child.attributes().getOwner());
-                    child.attributes().setRegion(container.attributes().getRegion());
                     if(child.attributes().isFile()) {
                         child.attributes().setSize(object.getSize());
                         child.attributes().setChecksum(object.getMd5sum());

@@ -55,7 +55,6 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
-            assertEquals("DFW", p.attributes().getRegion());
             if(p.attributes().isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
@@ -98,16 +97,13 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
         final Path base = new Path(container, basename, Path.FILE_TYPE);
-        base.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(base);
         final Path child = new Path(container, childname, Path.FILE_TYPE);
-        child.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(child);
         final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         assertTrue(list.contains(base));
         assertEquals(Path.FILE_TYPE, list.get(base.getReference()).attributes().getType());
         final Path placeholder = new Path(container, basename, Path.DIRECTORY_TYPE);
-        placeholder.attributes().setRegion("DFW");
         assertTrue(list.contains(placeholder));
         assertEquals(Path.DIRECTORY_TYPE, list.get(placeholder.getReference()).attributes().getType());
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
