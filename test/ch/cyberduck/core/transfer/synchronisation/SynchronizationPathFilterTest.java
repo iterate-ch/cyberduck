@@ -9,7 +9,10 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
+import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
@@ -72,5 +75,20 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session),
                 TransferAction.upload);
         assertTrue(upload.accept(test, new TransferStatus().exists(true)));
+    }
+
+    @Test
+    public void testAcceptDirectory() throws Exception {
+        Session session = new NullSession(new Host("t"));
+        final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparePathFilter() {
+            @Override
+            public Comparison compare(Path file) throws BackgroundException {
+                return Comparison.equal;
+            }
+        }, new OverwriteFilter(new DownloadSymlinkResolver(Collections.<Path>emptyList()), session),
+                new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<Path>emptyList()), session),
+                TransferAction.mirror
+        );
+        assertTrue(mirror.accept(new Path("/p", Path.DIRECTORY_TYPE), new TransferStatus().exists(true)));
     }
 }

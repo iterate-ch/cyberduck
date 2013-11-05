@@ -72,7 +72,8 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.local)) {
             return uploadFilter.prepare(file, parent);
         }
-        throw new BackgroundException(String.format("Invalid comparison %s", compare));
+        // Directory with equal comparison
+        return new TransferStatus().exists(true);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.equal)) {
             return file.attributes().isDirectory();
         }
-        else if(compare.equals(Comparison.remote)) {
+        if(compare.equals(Comparison.remote)) {
             if(action.equals(TransferAction.upload)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skip file %s with comparison result %s because action is %s",
@@ -92,7 +93,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             // Include for mirror and download. Ask the download delegate for inclusion
             return downloadFilter.accept(file, parent);
         }
-        else if(compare.equals(Comparison.local)) {
+        if(compare.equals(Comparison.local)) {
             if(action.equals(TransferAction.download)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skip file %s with comparison result %s because action is %s",
@@ -103,8 +104,9 @@ public class SynchronizationPathFilter implements TransferPathFilter {
             // Include for mirror and download. Ask the upload delegate for inclusion
             return uploadFilter.accept(file, parent);
         }
+        log.warn(String.format("Invalid comparison %s", compare));
         // Not equal
-        throw new BackgroundException(String.format("Invalid comparison %s", compare));
+        return false;
     }
 
     @Override
@@ -116,6 +118,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         else if(compare.equals(Comparison.local)) {
             uploadFilter.apply(file, status);
         }
+        // Ignore equal compare result
     }
 
     @Override
