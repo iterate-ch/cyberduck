@@ -47,7 +47,6 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
-        test.attributes().setRegion("DFW");
         final OutputStream out = new SwiftWriteFeature(session).write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
