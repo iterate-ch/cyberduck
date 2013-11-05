@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
@@ -43,7 +44,7 @@ public class GoogleStorageBucketCreateService {
     public void create(final Path bucket, final String location) throws BackgroundException {
         // Create bucket
         if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-            throw new BackgroundException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
+            throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
         }
         AccessControlList acl;
         if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
