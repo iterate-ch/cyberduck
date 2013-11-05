@@ -59,7 +59,7 @@ public class DefaultAttributesFeature implements Attributes {
         if(list.contains(file.getReference())) {
             return list.get(file.getReference()).attributes();
         }
-        throw new NotfoundException();
+        throw new NotfoundException(file.getAbsolute());
     }
 
     public Attributes withCache(final Cache cache) {
