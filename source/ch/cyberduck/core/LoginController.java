@@ -50,4 +50,11 @@ public interface LoginController {
     void prompt(Protocol protocol, Credentials credentials,
                 String title, String reason,
                 LoginOptions options) throws LoginCanceledException;
+
+    /**
+     * Prompt to open file for reading.
+     *
+     * @return Selected file or null
+     */
+    Local select() throws LoginCanceledException;
 }

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
@@ -41,9 +42,9 @@ import ch.cyberduck.ui.cocoa.application.NSControl;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -53,7 +54,6 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.ID;
 
 /**
  * @version $Id$
@@ -290,34 +290,17 @@ public final class PromptLoginController implements LoginController {
                 this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
             }
 
-            private NSOpenPanel publicKeyPanel;
-
             @Action
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
-                    publicKeyPanel = NSOpenPanel.openPanel();
-                    publicKeyPanel.setCanChooseDirectories(false);
-                    publicKeyPanel.setCanChooseFiles(true);
-                    publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-                    publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-                    publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
-                            null, this.window(), this.id(),
-                            Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
-                }
-                else {
-                    this.publicKeyPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
-                }
-            }
-
-            public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-                if(returncode == NSPanel.NSOKButton) {
-                    final NSObject selected = publicKeyPanel.filenames().lastObject();
-                    if(selected != null) {
-                        credentials.setIdentity(LocalFactory.createLocal(selected.toString()));
+                    try {
+                        credentials.setIdentity(LocalFactory.createLocal(select().toString()));
+                    }
+                    catch(LoginCanceledException e) {
+                        credentials.setIdentity(null);
                     }
                 }
-                if(returncode == NSPanel.NSCancelButton) {
+                else {
                     credentials.setIdentity(null);
                 }
                 update();
@@ -374,5 +357,41 @@ public final class PromptLoginController implements LoginController {
         if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
+    }
+
+    private NSOpenPanel publicKeyPanel;
+
+    public Local select() throws LoginCanceledException {
+        final SheetController sheet = new SheetController(parent) {
+            @Override
+            public void callback(int returncode) {
+                //
+            }
+
+            @Override
+            protected void beginSheetImpl() {
+                publicKeyPanel = NSOpenPanel.openPanel();
+                publicKeyPanel.setCanChooseDirectories(false);
+                publicKeyPanel.setCanChooseFiles(true);
+                publicKeyPanel.setAllowsMultipleSelection(false);
+                publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+                publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
+                publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
+                        null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
+            }
+
+            @Override
+            public NSWindow window() {
+                return publicKeyPanel;
+            }
+        };
+        sheet.beginSheet();
+        if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
+            final NSObject selected = publicKeyPanel.filenames().lastObject();
+            if(selected != null) {
+                return LocalFactory.createLocal(selected.toString());
+            }
+        }
+        throw new LoginCanceledException();
     }
 }

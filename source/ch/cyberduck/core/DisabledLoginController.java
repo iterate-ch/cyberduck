@@ -39,4 +39,9 @@ public class DisabledLoginController implements LoginController {
                        final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
+
+    @Override
+    public Local select() throws LoginCanceledException {
+        throw new LoginCanceledException();
+    }
 }

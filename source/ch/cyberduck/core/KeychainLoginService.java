@@ -104,18 +104,24 @@ public class KeychainLoginService implements LoginService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
-        if(!bookmark.getCredentials().validate(bookmark.getProtocol(), options)
-                || bookmark.getCredentials().isPublicKeyAuthentication()) {
+        final Credentials credentials = bookmark.getCredentials();
+        if(credentials.isPublicKeyAuthentication()) {
+            if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
+                credentials.setIdentity(controller.select());
+            }
+        }
+        if(!credentials.validate(bookmark.getProtocol(), options)
+                || credentials.isPublicKeyAuthentication()) {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
-            if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
-                        if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                        if(!credentials.isPublicKeyAuthentication()) {
                             final StringBuilder reason = new StringBuilder();
                             appender.append(reason, message);
                             appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                            controller.prompt(bookmark.getProtocol(), credentials,
                                     LocaleFactory.localizedString("Login", "Login"),
                                     reason.toString(),
                                     options);
@@ -123,17 +129,17 @@ public class KeychainLoginService implements LoginService {
                         // We decide later if the key is encrypted and a password must be known to decrypt.
                     }
                     else {
-                        bookmark.getCredentials().setPassword(password);
+                        credentials.setPassword(password);
                         // No need to reinsert found password to the keychain.
-                        bookmark.getCredentials().setSaved(false);
+                        credentials.setSaved(false);
                     }
                 }
                 else {
-                    if(!bookmark.getCredentials().isPublicKeyAuthentication()) {
+                    if(!credentials.isPublicKeyAuthentication()) {
                         final StringBuilder reason = new StringBuilder();
                         appender.append(reason, message);
                         appender.append(reason, LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                        controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                        controller.prompt(bookmark.getProtocol(), credentials,
                                 LocaleFactory.localizedString("Login", "Login"),
                                 reason.toString(), options);
                     }
@@ -144,7 +150,7 @@ public class KeychainLoginService implements LoginService {
                 final StringBuilder reason = new StringBuilder();
                 appender.append(reason, message);
                 appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                controller.prompt(bookmark.getProtocol(), bookmark.getCredentials(),
+                controller.prompt(bookmark.getProtocol(), credentials,
                         LocaleFactory.localizedString("Login", "Login"),
                         reason.toString(), options);
             }
