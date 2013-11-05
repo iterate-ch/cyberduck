@@ -38,9 +38,9 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            actions.Add(TransferAction.download, TransferAction.resume.getTitle());
-            actions.Add(TransferAction.upload, TransferAction.overwrite.getTitle());
-            actions.Add(TransferAction.mirror, TransferAction.rename.getTitle());
+            actions.Add(TransferAction.download, TransferAction.download.getTitle());
+            actions.Add(TransferAction.upload, TransferAction.upload.getTitle());
+            actions.Add(TransferAction.mirror, TransferAction.mirror.getTitle());
             return actions;
         }
     }
