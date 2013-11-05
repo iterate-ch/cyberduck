@@ -47,8 +47,7 @@ public abstract class Worker<T> {
     }
 
     public T run() throws BackgroundException {
-        // Not abstract (IKVM)
-        throw new BackgroundException("Not supported");
+        return null;
     }
 
     public void cleanup(T result) {
