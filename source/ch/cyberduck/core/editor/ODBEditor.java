@@ -40,12 +40,9 @@ public class ODBEditor extends BrowserBackgroundEditor {
         Native.load("ODBEdit");
     }
 
-    private Session<?> session;
-
     public ODBEditor(final Controller controller, final Session session,
-                     final Application application, final Path path) {
-        super(controller, session, application, path);
-        this.session = session;
+                     final Application application, final Path file) {
+        super(controller, session, application, file);
     }
 
     /**
@@ -53,10 +50,9 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     @Override
     public void edit() throws IOException {
-        final Path file = this.getEdited();
         // Important, should always be run on the main thread; otherwise applescript crashes
         final UrlProvider provider = session.getFeature(UrlProvider.class);
-        if(!this.edit(local.getAbsolute(), provider.toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
+        if(!this.edit(local.getAbsolute(), provider.toUrl(edited).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
             throw new IOException(String.format("Edit failed for %s", local));
         }
     }
