@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 
@@ -41,10 +40,6 @@ public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAct
         super(session, cache, new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
                 new DefaultHostKeyController());
         this.cache = cache;
-    }
-
-    public T run() throws BackgroundException {
-        throw new BackgroundException("Not supported");
     }
 
     @Override
