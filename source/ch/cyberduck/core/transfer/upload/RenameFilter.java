@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -34,15 +33,12 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    private Find find;
-
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
     public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.find = session.getFeature(Find.class);
     }
 
     @Override

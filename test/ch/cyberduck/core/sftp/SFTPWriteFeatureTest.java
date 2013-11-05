@@ -2,6 +2,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -10,7 +11,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -48,7 +48,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status, new DefaultAttributesFeature(session)).size, 0L);
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status, Cache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus());
@@ -133,8 +133,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), Cache.empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), "test", Path.FILE_TYPE), new TransferStatus(), Cache.empty()).append);
     }
 }

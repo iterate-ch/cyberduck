@@ -18,13 +18,13 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -126,7 +126,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status, final Cache cache) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("openstack.upload.largeobject.threshold")) {
             Long size = 0L;
             final List<Path> segments = listService.list(

@@ -20,8 +20,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -36,38 +34,35 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     private Write write;
 
-    private Find find;
-
-    private Attributes attributes;
-
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.find = session.getFeature(Find.class);
         this.write = session.getFeature(Write.class);
-        this.attributes = session.getFeature(Attributes.class);
     }
 
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(parent.isExists()) {
-                if(find.find(file)) {
-                    final long remote = attributes.find(file).getSize();
-                    if(remote >= file.getLocal().attributes().getSize()) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Skip file %s with remote size %d", file, remote));
+        if(super.accept(file, parent)) {
+            if(file.attributes().isFile()) {
+                if(parent.isExists()) {
+                    if(find.find(file)) {
+                        final long remote = attribute.find(file).getSize();
+                        if(remote >= file.getLocal().attributes().getSize()) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip file %s with remote size %d", file, remote));
+                            }
+                            // No need to resume completed transfers
+                            return false;
                         }
-                        // No need to resume completed transfers
-                        return false;
                     }
                 }
             }
+            return true;
         }
-        return super.accept(file, parent);
+        return false;
     }
 
     @Override
@@ -75,7 +70,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, parent);
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
-                final Write.Append append = write.append(file, status, attributes);
+                final Write.Append append = write.append(file, status, cache);
                 if(append.append) {
                     // Append to existing file
                     status.setAppend(true);

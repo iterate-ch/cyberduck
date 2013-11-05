@@ -1,6 +1,7 @@
 package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -14,7 +15,6 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,7 +57,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
                 local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session).append(test, status, new DefaultAttributesFeature(session)).size, 0L);
+        assertEquals(content.length, new DAVWriteFeature(session).append(test, status, Cache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
@@ -96,7 +96,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session, false).append(test, status, new DefaultAttributesFeature(session)).size, 0L);
+        assertEquals(content.length, new DAVWriteFeature(session, false).append(test, status, Cache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
@@ -139,10 +139,10 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         assertFalse(feature.append(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
+                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), Cache.empty()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        assertTrue(feature.append(test, new TransferStatus(), new DefaultAttributesFeature(session)).append);
+        assertTrue(feature.append(test, new TransferStatus(), Cache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

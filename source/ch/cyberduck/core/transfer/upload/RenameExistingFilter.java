@@ -23,7 +23,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,8 +40,6 @@ import java.text.MessageFormat;
 public class RenameExistingFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
-    private Find find;
-
     private Move move;
 
     private UploadFilterOptions options;
@@ -53,7 +50,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.find = session.getFeature(Find.class);
         this.move = session.getFeature(Move.class);
         this.options = options;
     }

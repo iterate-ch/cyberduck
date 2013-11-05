@@ -1,6 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -10,7 +11,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -47,7 +47,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, status, new DefaultAttributesFeature(session)).size, 0L);
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status, Cache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
@@ -89,9 +89,9 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals(false, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), new TransferStatus(), Cache.empty()).append);
         assertEquals(true, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", Path.FILE_TYPE), new TransferStatus(), new DefaultAttributesFeature(session)).append);
+                new Path(session.workdir(), "test", Path.FILE_TYPE), new TransferStatus(), Cache.empty()).append);
 
     }
 }

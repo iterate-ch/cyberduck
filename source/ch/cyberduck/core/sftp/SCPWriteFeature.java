@@ -17,11 +17,11 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -57,7 +57,7 @@ public class SCPWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status, final Cache cache) throws BackgroundException {
         return new Append();
     }
 }

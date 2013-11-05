@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,11 +37,14 @@ public interface Write {
     OutputStream write(Path file, TransferStatus status) throws BackgroundException;
 
     /**
-     * @param file    File
-     * @param status  Transfer Status
-     * @param feature Size feature  @return True if can append to existing file
+     * Determine if a file exists and we can append to it.
+     *
+     * @param file   File
+     * @param status Transfer Status
+     * @param cache  Cache
+     * @return True if can append to existing file
      */
-    Append append(Path file, TransferStatus status, Attributes feature) throws BackgroundException;
+    Append append(Path file, TransferStatus status, Cache cache) throws BackgroundException;
 
     public static final class Append {
         public boolean append;

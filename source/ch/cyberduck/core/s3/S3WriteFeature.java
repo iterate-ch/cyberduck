@@ -17,12 +17,12 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -130,7 +130,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final TransferStatus status, final Attributes feature) throws BackgroundException {
+    public Append append(final Path file, final TransferStatus status, final Cache cache) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
             final S3MultipartUploadService multipart = new S3MultipartUploadService(session);
             final MultipartUpload upload = multipart.find(file);

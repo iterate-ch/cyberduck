@@ -62,11 +62,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private UploadFilterOptions options;
 
-    private Find find;
+    protected Find find;
 
-    private Attributes attribute;
+    protected Attributes attribute;
 
-    private Cache cache
+    protected Cache cache
             = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
 
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
