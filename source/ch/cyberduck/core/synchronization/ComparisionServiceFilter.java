@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -45,8 +46,12 @@ public class ComparisionServiceFilter implements ComparePathFilter {
     private ComparisonService timestamp;
 
     public ComparisionServiceFilter(final Session<?> session, final TimeZone tz) {
-        this.finder = session.getFeature(Find.class);
-        this.attribute = session.getFeature(Attributes.class);
+        this(session, Cache.empty(), tz);
+    }
+
+    public ComparisionServiceFilter(final Session<?> session, final Cache cache, final TimeZone tz) {
+        this.finder = session.getFeature(Find.class).withCache(cache);
+        this.attribute = session.getFeature(Attributes.class).withCache(cache);
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();

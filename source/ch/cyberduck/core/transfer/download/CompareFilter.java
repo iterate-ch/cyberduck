@@ -17,7 +17,9 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
@@ -35,9 +37,12 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     private ComparisionServiceFilter comparisonService;
 
+    protected Cache cache
+            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+
     public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
-        this.comparisonService = new ComparisionServiceFilter(session, session.getHost().getTimezone());
+        this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
     @Override
