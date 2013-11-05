@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
@@ -10,16 +11,18 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3WriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppendBelowLimit() throws Exception {
-        assertFalse(new S3WriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, null).append);
+        assertFalse(new S3WriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
     }
 
     @Test
@@ -31,7 +34,7 @@ public class S3WriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        assertFalse(new S3WriteFeature(session).append(new Path(container, "/p", Path.FILE_TYPE), 10L * 1024L * 1024L, null).append);
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 10L * 1024L * 1024L, Cache.empty()).append);
         session.close();
     }
 }
