@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Interoperability with WinSSHD (SFTP) (#7522)
 - [Bugfix] Softlayer connection profiles (Openstack Swift) (#7522)
 - [Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in Preferences (SFTP, Mac)
+- [Bugfix] Prompt for private key file if sandboxing denies access and store security scoped bookmark in bookmark (SFTP, Mac)
 - [Bugfix] Missing CDN URLs (Openstack Swift, Windows) (#7532)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
