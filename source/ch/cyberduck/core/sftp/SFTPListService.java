@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -74,7 +75,11 @@ public class SFTPListService implements ListService {
                         }
                     }
                     catch(SFTPException e) {
-                        if(new SFTPExceptionMappingService().map(e) instanceof NotfoundException) {
+                        final BackgroundException reason = new SFTPExceptionMappingService().map(e);
+                        if(reason instanceof NotfoundException) {
+                            log.warn(String.format("Cannot find symbolic link target of %s", file));
+                        }
+                        else if(reason instanceof AccessDeniedException) {
                             log.warn(String.format("Cannot read symbolic link target of %s", file));
                         }
                         else {
