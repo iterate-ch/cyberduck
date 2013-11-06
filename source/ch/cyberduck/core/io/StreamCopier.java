@@ -50,19 +50,6 @@ public final class StreamCopier {
      * @param offset   Skip bytes from input
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
-     */
-    public void transfer(final InputStream in, final long offset, final OutputStream out,
-                         final StreamListener listener) throws IOException, ConnectionCanceledException {
-        this.transfer(in, offset, out, listener, -1);
-    }
-
-    /**
-     * Updates the current number of bytes transferred in the status reference.
-     *
-     * @param in       The stream to read from
-     * @param offset   Skip bytes from input
-     * @param out      The stream to write to
-     * @param listener The stream listener to notify about bytes received and sent
      * @param limit    Transfer only up to this length
      */
     public void transfer(final InputStream in, final long offset, final OutputStream out,

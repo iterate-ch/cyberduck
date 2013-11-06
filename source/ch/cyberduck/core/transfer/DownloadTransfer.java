@@ -17,17 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -233,7 +223,7 @@ public class DownloadTransfer extends Transfer {
             try {
                 in = session.getFeature(Read.class).read(file, status);
                 out = file.getLocal().getOutputStream(status.isAppend());
-                new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener);
+                new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, status.getLength());
             }
             finally {
                 IOUtils.closeQuietly(in);
