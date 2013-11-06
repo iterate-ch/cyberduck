@@ -42,7 +42,6 @@ import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.growl.GrowlNative;
@@ -123,12 +122,8 @@ public final class MainApplication {
                 WorkspaceApplicationBadgeLabeler.register();
                 IOKitSleepPreventer.register();
                 TemporaryFileService.register();
-
                 MultipleEditorFactory.register();
-
-                DeprecatedQuickLook.register();
                 QuartzQuickLook.register();
-
                 PromptLoginController.register();
                 AlertHostKeyController.register();
                 AlertTransferPromptControllerFactory.register();

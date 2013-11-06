@@ -34,9 +34,7 @@ import java.util.List;
 public final class QuartzQuickLook implements QuickLook {
 
     public static void register() {
-        if(!Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
-            QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
-        }
+        QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
     }
 
     private static class Factory extends QuickLookFactory {
