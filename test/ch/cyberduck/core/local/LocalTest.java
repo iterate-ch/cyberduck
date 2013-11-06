@@ -5,7 +5,7 @@ import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -17,5 +17,18 @@ public class LocalTest extends AbstractTestCase {
         assertFalse(new Local("profiles") {
 
         }.list().isEmpty());
+    }
+
+    private final class TestLocal extends Local {
+        private TestLocal(final String name) {
+            super(name);
+        }
+    }
+
+    @Test
+    public void testEqual() throws Exception {
+        assertEquals(new TestLocal("/p/1"), new TestLocal("/p/1"));
+        assertNotEquals(new TestLocal("/p/1"), new TestLocal("/p/2"));
+        assertEquals(new TestLocal("/p/1"), new TestLocal("/P/1"));
     }
 }

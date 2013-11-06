@@ -304,25 +304,29 @@ public abstract class Local extends AbstractPath implements Serializable {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return this.getAbsolute().hashCode();
-    }
-
     /**
      * Compares the two files using their path with a string comparision ignoring case.
      * Implementations should override this depending on the case sensitivity of the file system.
      */
     @Override
-    public boolean equals(Object o) {
-        if(null == o) {
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        if(o instanceof Local) {
-            Local other = (Local) o;
-            return this.getAbsolute().equalsIgnoreCase(other.getAbsolute());
+        final Local local = (Local) o;
+        if(path != null ? !path.equalsIgnoreCase(local.path) : local.path != null) {
+            return false;
         }
-        return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return path != null ? path.hashCode() : 0;
     }
 
     public String toURL() {
