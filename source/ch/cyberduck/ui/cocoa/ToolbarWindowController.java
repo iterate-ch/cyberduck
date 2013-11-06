@@ -98,7 +98,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbar.setSizeMode(this.getToolbarSize());
         toolbar.setDisplayMode(this.getToolbarMode());
         toolbar.setDelegate(this.id());
-        this.window().setToolbar(toolbar);
+        window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
         this.setSelectedTab(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
@@ -230,19 +230,17 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     /**
-     *
+     * Resize window frame to fit the content view of the currently selected tab.
      */
     private void resize() {
-        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
-
-        double height = this.getMinWindowHeight();
-
-        NSRect frameRect = new NSRect(
+        final NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        final double height = this.getMinWindowHeight();
+        final NSRect frameRect = new NSRect(
                 new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
                 new NSSize(windowFrame.size.width.doubleValue(), height)
         );
-        this.window().setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, this.window().styleMask()),
-                true, this.window().isVisible());
+        window.setFrame_display_animate(NSWindow.frameRectForContentRect_styleMask(frameRect, window.styleMask()),
+                true, window.isVisible());
     }
 
     public NSSize windowWillResize_toSize(NSWindow window, NSSize newSize) {
@@ -251,15 +249,15 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     private double toolbarHeightForWindow(NSWindow window) {
-        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
-        return windowFrame.size.height.doubleValue() - this.window().contentView().frame().size.height.doubleValue();
+        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
+        return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
     }
 
     @Override
     public void tabView_didSelectTabViewItem(NSTabView view, NSTabViewItem item) {
         this.setTitle(this.getTitle(item));
         this.resize();
-        Preferences.instance().setProperty(this.getToolbarName() + ".selected", view.indexOfTabViewItem(item));
+        Preferences.instance().setProperty(String.format("%s.selected", this.getToolbarName()), view.indexOfTabViewItem(item));
     }
 
     protected void setTitle(final String title) {
@@ -270,7 +268,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         NSRect contentRect = this.getContentRect();
         //Border top + toolbar
         return contentRect.size.height.doubleValue()
-                + 40 + this.toolbarHeightForWindow(this.window());
+                + 40 + this.toolbarHeightForWindow(window);
     }
 
     protected double getMinWindowWidth() {
@@ -278,6 +276,9 @@ public abstract class ToolbarWindowController extends WindowController implement
         return contentRect.size.width.doubleValue();
     }
 
+    /**
+     * @return Minimum size to fit content view of currently selected tab.
+     */
     private NSRect getContentRect() {
         NSRect contentRect = new NSRect(0, 0);
         final NSView view = tabView.selectedTabViewItem().view();
