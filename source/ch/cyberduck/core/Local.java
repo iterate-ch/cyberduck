@@ -313,14 +313,13 @@ public abstract class Local extends AbstractPath implements Serializable {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof Local)) {
             return false;
         }
         final Local local = (Local) o;
         if(path != null ? !path.equalsIgnoreCase(local.path) : local.path != null) {
             return false;
         }
-
         return true;
     }
 
