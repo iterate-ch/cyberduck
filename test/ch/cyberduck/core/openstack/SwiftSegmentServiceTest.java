@@ -66,7 +66,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final String name = UUID.randomUUID().toString();
+        final String name = UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString();
         assertEquals(".prefix/" + name + "/3", service.basename(new Path(container, name, Path.FILE_TYPE), 3L));
     }
 }
