@@ -17,16 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -188,7 +179,8 @@ public class UploadTransfer extends Transfer {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            session.getFeature(Upload.class).upload(file, file.getLocal(), bandwidth, new DisabledStreamListener() {
+            final Upload upload = session.getFeature(Upload.class);
+            upload.upload(file, file.getLocal(), bandwidth, new DisabledStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     addTransferred(bytes);
