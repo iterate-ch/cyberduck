@@ -318,7 +318,7 @@ public class FinderLocal extends Local {
 
     @Override
     public FinderLocalAttributes attributes() {
-        return new FinderLocalAttributes(this.getAbsolute());
+        return new FinderLocalAttributes(this);
     }
 
     @Override

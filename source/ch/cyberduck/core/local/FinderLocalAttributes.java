@@ -39,14 +39,19 @@ import org.rococoa.cocoa.foundation.NSError;
 public class FinderLocalAttributes extends LocalAttributes {
     private static final Logger log = Logger.getLogger(FinderLocalAttributes.class);
 
-    public FinderLocalAttributes(final String path) {
-        super(path);
+    private FinderLocal local;
+
+    public FinderLocalAttributes(final FinderLocal local) {
+        super(local.getAbsolute());
     }
 
     /**
      * @return Null if no such file.
      */
     private NSDictionary getNativeAttributes() {
+        if((!local.exists())) {
+            return null;
+        }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
         // if the link points to a nonexistent file, this method returns null. If flag is false,
