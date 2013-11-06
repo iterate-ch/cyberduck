@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -177,7 +176,8 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path source, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path source,
+                         final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
@@ -192,21 +192,11 @@ public class CopyTransfer extends Transfer {
                     addTransferred(source.attributes().getSize());
                 }
                 else {
-                    this.copy(session, source, destination, copy, bandwidth, new DisabledStreamListener() {
-                        @Override
-                        public void bytesSent(long bytes) {
-                            addTransferred(bytes);
-                        }
-                    }, status);
+                    this.copy(session, source, destination, copy, bandwidth, status);
                 }
             }
             else {
-                this.copy(session, source, destination, copy, bandwidth, new DisabledStreamListener() {
-                    @Override
-                    public void bytesSent(long bytes) {
-                        addTransferred(bytes);
-                    }
-                }, status);
+                this.copy(session, source, destination, copy, bandwidth, status);
             }
         }
         else {
@@ -224,18 +214,22 @@ public class CopyTransfer extends Transfer {
      *
      * @param copy     Destination
      * @param throttle The bandwidth limit
-     * @param listener Callback
      * @param status   Transfer status
      */
     public void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy, final BandwidthThrottle throttle,
-                     final StreamListener listener, final TransferStatus status) throws BackgroundException {
+                     final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
         try {
             if(file.attributes().isFile()) {
                 new StreamCopier(status).transfer(in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle),
                         0, out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle),
-                        listener, status.getLength());
+                        new DisabledStreamListener() {
+                            @Override
+                            public void bytesSent(long bytes) {
+                                addTransferred(bytes);
+                            }
+                        }, status.getLength());
             }
         }
         catch(IOException e) {
