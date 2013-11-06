@@ -19,12 +19,9 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
@@ -38,12 +35,8 @@ import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -200,7 +193,8 @@ public class DownloadTransfer extends Transfer {
                     file.getName()));
             local.getParent().mkdir();
             // Transfer
-            this.download(session, file, bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
+            final Download upload = session.getFeature(Download.class);
+            upload.download(file, file.getLocal(), bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
                 @Override
                 public void bytesReceived(long bytes) {
                     addTransferred(bytes);
@@ -215,23 +209,4 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    private void download(final Session<?> session, final Path file, final BandwidthThrottle throttle, final StreamListener listener,
-                          final TransferStatus status) throws BackgroundException {
-        try {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = session.getFeature(Read.class).read(file, status);
-                out = file.getLocal().getOutputStream(status.isAppend());
-                new StreamCopier(status).transfer(new ThrottledInputStream(in, throttle), 0, out, listener, status.getLength());
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
-        }
-    }
 }

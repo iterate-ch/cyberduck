@@ -21,10 +21,12 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -315,6 +317,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
+        }
+        if(type == Download.class) {
+            return (T) new DefaultDownloadFeature(this);
         }
         if(type == DistributionConfiguration.class) {
             // Use login context of current session
