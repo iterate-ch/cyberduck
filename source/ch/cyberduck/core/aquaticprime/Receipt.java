@@ -50,6 +50,9 @@ public class Receipt extends AbstractLicense {
             if(verifier.verify()) {
                 // Set name
                 final Receipt receipt = new Receipt(file, verifier.getGuid());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Valid receipt %s in %s", receipt, file));
+                }
                 // Copy to Application Support for users switching versions
                 final Local support = LocalFactory.createLocal(
                         Preferences.instance().getProperty("application.support.path"));
@@ -57,6 +60,7 @@ public class Receipt extends AbstractLicense {
                 return receipt;
             }
             else {
+                log.error(String.format("Invalid receipt found in %s", file));
                 System.exit(APPSTORE_VALIDATION_FAILURE);
             }
             return null;
@@ -64,9 +68,9 @@ public class Receipt extends AbstractLicense {
 
         @Override
         protected License open() {
-            Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
-            if(receipt.exists()) {
-                for(Local key : receipt.list().filter(new Filter<Local>() {
+            final Local folder = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
+            if(folder.exists()) {
+                for(Local key : folder.list().filter(new Filter<Local>() {
                     @Override
                     public boolean accept(final Local file) {
                         return "receipt".equals(file.getName());
@@ -75,7 +79,7 @@ public class Receipt extends AbstractLicense {
                     return open(key);
                 }
             }
-            log.info("No receipt found");
+            log.error(String.format("No receipt found in %s", folder));
             System.exit(APPSTORE_VALIDATION_FAILURE);
             return LicenseFactory.EMPTY_LICENSE;
         }
@@ -120,5 +124,13 @@ public class Receipt extends AbstractLicense {
     @Override
     public String getName() {
         return guid;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Receipt{");
+        sb.append("guid='").append(guid).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
