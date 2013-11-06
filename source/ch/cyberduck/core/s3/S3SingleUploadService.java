@@ -17,50 +17,46 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.http.HttpUploadFeature;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 
 /**
  * @version $Id$
  */
-public class S3SingleUploadService implements Upload {
+public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
     private S3Session session;
 
     public S3SingleUploadService(final S3Session session) {
+        super(new S3WriteFeature(session));
         this.session = session;
     }
 
     @Override
-    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        ResponseOutputStream<StorageObject> out = null;
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+        if(null == digest) {
+            log.warn("MD5 calculation disabled");
+            return in;
+        }
+        else {
+            return new DigestInputStream(in, digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() {
         MessageDigest digest = null;
         if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             // Content-MD5 not set. Need to verify ourselves instad of S3
@@ -71,32 +67,11 @@ public class S3SingleUploadService implements Upload {
                 log.error(e.getMessage());
             }
         }
-        try {
-            if(null == digest) {
-                log.warn("MD5 calculation disabled");
-                in = file.getLocal().getInputStream();
-            }
-            else {
-                in = new DigestInputStream(local.getInputStream(), digest);
-            }
-            final S3WriteFeature write = new S3WriteFeature(session);
-            final StorageObject object = write.createObjectDetails(file);
-            out = write.write(file, object, status.getLength(), Collections.<String, String>emptyMap());
-            try {
-                new StreamCopier(status).transfer(in, 0, new ThrottledOutputStream(out, throttle), listener);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
-            }
-        }
-        catch(FileNotFoundException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-        final StorageObject part = out.getResponse();
+        return digest;
+    }
+
+    @Override
+    protected void post(final MessageDigest digest, final StorageObject part) throws BackgroundException {
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
             final String hexMD5 = ServiceUtils.toHex(digest.digest());
@@ -104,7 +79,7 @@ public class S3SingleUploadService implements Upload {
                 session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+                throw new ServiceExceptionMappingService().map("Upload failed", e);
             }
         }
     }

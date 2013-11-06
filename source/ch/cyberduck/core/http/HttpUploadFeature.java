@@ -35,9 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class HttpUploadFeature implements Upload {
+public class HttpUploadFeature<Output, Digest> implements Upload {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
     private AbstractHttpWriteFeature writer;
@@ -51,9 +51,10 @@ public class HttpUploadFeature implements Upload {
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
-            ResponseOutputStream<?> out = null;
+            ResponseOutputStream<Output> out = null;
+            final Digest digest = this.digest();
             try {
-                in = local.getInputStream();
+                in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
                 new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener);
             }
@@ -61,13 +62,25 @@ public class HttpUploadFeature implements Upload {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
             }
-            final Object response = out.getResponse();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received response %s", response));
-            }
+            final Output response = out.getResponse();
+            this.post(digest, response);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+        }
+    }
+
+    protected InputStream decorate(final InputStream in, final Digest digest) throws IOException {
+        return in;
+    }
+
+    protected Digest digest() {
+        return null;
+    }
+
+    protected void post(final Digest pre, final Output response) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Received response %s", response));
         }
     }
 }
