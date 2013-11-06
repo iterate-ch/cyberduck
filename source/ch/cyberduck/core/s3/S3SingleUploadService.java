@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.log4j.Logger;
@@ -79,7 +80,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
                 session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Upload failed", e);
+                throw new ChecksumException("Upload failed", e.getMessage());
             }
         }
     }

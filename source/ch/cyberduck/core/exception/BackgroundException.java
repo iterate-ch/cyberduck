@@ -37,7 +37,7 @@ public class BackgroundException extends Exception {
     private String detail;
 
     public BackgroundException() {
-        this(null, null);
+        this(null, null, null);
     }
 
     public BackgroundException(final Throwable cause) {
@@ -45,7 +45,11 @@ public class BackgroundException extends Exception {
     }
 
     public BackgroundException(final String detail) {
-        this(detail, null);
+        this(null, detail, null);
+    }
+
+    public BackgroundException(final String message, final String detail) {
+        this(message, detail, null);
     }
 
     public BackgroundException(final String detail, final Throwable cause) {
