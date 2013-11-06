@@ -23,22 +23,11 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
-import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
-import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -100,10 +89,7 @@ public abstract class WindowController extends BundleController implements NSWin
     public void setWindow(final NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(!this.isSingleton());
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("windowWillClose:"),
-                NSWindow.WindowWillCloseNotification,
-                this.window);
+        window.setDelegate(this.id());
     }
 
     public NSWindow window() {

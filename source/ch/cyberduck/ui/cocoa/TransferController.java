@@ -159,7 +159,6 @@ public final class TransferController extends WindowController implements NSTool
     public void setWindow(NSWindow window) {
         window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
-        window.setDelegate(this.id());
         super.setWindow(window);
     }
 

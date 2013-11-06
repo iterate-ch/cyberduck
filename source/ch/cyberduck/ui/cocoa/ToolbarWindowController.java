@@ -143,7 +143,6 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void setWindow(NSWindow window) {
         windowTitle = window.title();
-        window.setDelegate(this.id());
         window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
