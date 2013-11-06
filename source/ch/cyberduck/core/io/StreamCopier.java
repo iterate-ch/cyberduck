@@ -69,7 +69,6 @@ public final class StreamCopier {
                     break;
                 }
                 else {
-                    status.addCurrent(read);
                     listener.bytesReceived(read);
                     bo.write(chunk, 0, read);
                     listener.bytesSent(read);
