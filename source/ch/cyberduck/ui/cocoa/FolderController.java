@@ -94,7 +94,7 @@ public class FolderController extends FileController {
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.createFolder(this.getWorkdir(), this.inputField.stringValue());
+            this.createFolder(this.getWorkdir(), inputField.stringValue());
         }
     }
 

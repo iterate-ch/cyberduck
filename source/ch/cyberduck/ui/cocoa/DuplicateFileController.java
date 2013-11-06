@@ -51,7 +51,7 @@ public class DuplicateFileController extends FileController {
                 FilenameUtils.getBaseName(selected.getName()),
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                 StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
-        this.inputField.setStringValue(proposal);
+        inputField.setStringValue(proposal);
     }
 
     @Override
