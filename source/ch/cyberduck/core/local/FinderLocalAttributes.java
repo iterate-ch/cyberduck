@@ -43,6 +43,7 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     public FinderLocalAttributes(final FinderLocal local) {
         super(local.getAbsolute());
+        this.local = local;
     }
 
     /**
@@ -143,10 +144,10 @@ public class FinderLocalAttributes extends LocalAttributes {
     /**
      * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
      */
-    public long getInode() {
+    public Long getInode() {
         final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
         if(null == object) {
-            return -1;
+            return null;
         }
         final NSNumber number = Rococoa.cast(object, NSNumber.class);
         return number.longValue();
@@ -190,5 +191,25 @@ public class FinderLocalAttributes extends LocalAttributes {
         public boolean isWritable() {
             return NSFileManager.defaultManager().isWritableFileAtPath(path);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FinderLocalAttributes that = (FinderLocalAttributes) o;
+        if(getInode() != null ? !getInode().equals(that.getInode()) : that.getInode() != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getInode() != null ? getInode().hashCode() : 0;
     }
 }

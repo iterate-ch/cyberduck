@@ -17,45 +17,45 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
 
     @Test
     public void testGetSize() throws Exception {
-        assertEquals(-1, new FinderLocalAttributes(UUID.randomUUID().toString()).getSize());
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getSize());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertEquals(0, a.getSize());
         f.delete();
     }
 
     @Test
     public void testGetPermission() throws Exception {
-        assertEquals(Permission.EMPTY, new FinderLocalAttributes(UUID.randomUUID().toString()).getPermission());
+        assertEquals(Permission.EMPTY, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getPermission());
     }
 
     @Test
     public void testGetCreationDate() throws Exception {
-        assertEquals(-1, new FinderLocalAttributes(UUID.randomUUID().toString()).getCreationDate());
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getCreationDate());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertTrue(a.getCreationDate() > 0);
         f.delete();
     }
 
     @Test
     public void testGetAccessedDate() throws Exception {
-        assertEquals(-1, new FinderLocalAttributes(UUID.randomUUID().toString()).getAccessedDate());
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getAccessedDate());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertTrue(a.getAccessedDate() > 0);
         f.delete();
     }
 
     @Test
     public void getGetModificationDate() throws Exception {
-        assertEquals(-1, new FinderLocalAttributes(UUID.randomUUID().toString()).getModificationDate());
+        assertEquals(-1, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getModificationDate());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertTrue(a.getModificationDate() > 0);
         f.delete();
     }
@@ -64,7 +64,7 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
     public void testGetOwner() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertNotNull(a.getOwner());
         f.delete();
     }
@@ -73,30 +73,30 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
     public void testGetGroup() throws Exception {
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertNotNull(a.getGroup());
         f.delete();
     }
 
     @Test
     public void testGetInode() throws Exception {
-        assertEquals(-1, new FinderLocalAttributes(UUID.randomUUID().toString()).getInode());
+        assertNull(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getInode());
         final File f = new File(UUID.randomUUID().toString());
         f.createNewFile();
-        FinderLocalAttributes a = new FinderLocalAttributes(f.getAbsolutePath());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath()));
         assertTrue(a.getInode() > 0);
         f.delete();
     }
 
     @Test
     public void testIsBundle() throws Exception {
-        FinderLocalAttributes a = new FinderLocalAttributes(UUID.randomUUID().toString());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
         assertFalse(a.isBundle());
     }
 
     @Test
     public void testIsSymbolicLink() throws Exception {
-        FinderLocalAttributes a = new FinderLocalAttributes(UUID.randomUUID().toString());
+        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
         assertFalse(a.isSymbolicLink());
     }
 }

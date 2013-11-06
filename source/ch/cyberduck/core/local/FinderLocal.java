@@ -399,21 +399,15 @@ public class FinderLocal extends Local {
         // Case insensitive compare returned
         if(super.equals(o)) {
             // Now test with inode for case sensitive volumes
-            if(!this.exists()) {
-                return super.equals(o);
-            }
             FinderLocal other = (FinderLocal) o;
-            if(!other.exists()) {
-                return super.equals(o);
-            }
-            return this.attributes().getInode() == other.attributes().getInode();
+            return this.attributes().equals(other.attributes());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Long.valueOf(this.attributes().getInode()).hashCode();
+        return this.attributes().getInode().hashCode();
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {
