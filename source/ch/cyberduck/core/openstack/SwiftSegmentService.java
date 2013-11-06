@@ -102,7 +102,7 @@ public class SwiftSegmentService {
     }
 
     public String basename(final Path file, final Long size) {
-        return String.format("%s%s/%d", prefix, file.getName(), size);
+        return String.format("%s%s/%d", prefix, containerService.getKey(file), size);
     }
 
     public String name(final Path file, final Long size, int segmentNumber) {
