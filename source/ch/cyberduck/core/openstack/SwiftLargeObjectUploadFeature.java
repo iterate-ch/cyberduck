@@ -51,7 +51,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
-import ch.iterate.openstack.swift.model.Region;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 /**
@@ -102,10 +101,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final BandwidthThrottle throttle,
                                 final StreamListener listener,
                                 final TransferStatus status) throws BackgroundException {
-
-        final Region region = session.getRegion(containerService.getContainer(file));
-        final String name = containerService.getKey(file);
-
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
@@ -180,8 +175,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(manifest);
-            stored.setMd5sum(session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
-                    mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap()));
+            stored.setMd5sum(session.getClient().createSLOManifestObject(session.getRegion(
+                    containerService.getContainer(file)),
+                    containerService.getContainer(file).getName(),
+                    mapping.getMime(file.getName()),
+                    containerService.getKey(file), manifest, Collections.<String, String>emptyMap()));
             return stored;
 
         }
