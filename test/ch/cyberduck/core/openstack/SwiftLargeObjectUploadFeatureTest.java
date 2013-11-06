@@ -75,6 +75,9 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
 
+            assertEquals(1048576 + 1048576 + 1, status.getCurrent());
+            assertTrue(status.isComplete());
+
             assertTrue(new SwiftFindFeature(session).find(test));
             final byte[] buffer = new byte[content.length];
             final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());

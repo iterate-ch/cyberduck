@@ -20,6 +20,8 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamProgress;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @version $Id$
  */
-public final class TransferStatus {
+public final class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
@@ -107,6 +109,11 @@ public final class TransferStatus {
         if(log.isInfoEnabled()) {
             log.info(String.format("Transferred bytes set to %d bytes", current));
         }
+    }
+
+    @Override
+    public void progress(final long transferred) {
+        this.setCurrent(current + transferred);
     }
 
     public TransferStatus current(final long transferred) {

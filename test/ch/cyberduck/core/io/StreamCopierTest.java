@@ -26,7 +26,7 @@ public class StreamCopierTest extends AbstractTestCase {
         Path p = new Path("/t", Path.FILE_TYPE);
         final TransferStatus status = new TransferStatus();
         status.setLength(432768L);
-        new StreamCopier(status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
+        new StreamCopier(status, status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
                 new StreamListener() {
                     long sent;
                     long received;
@@ -62,7 +62,7 @@ public class StreamCopierTest extends AbstractTestCase {
             @Override
             public void run() {
                 try {
-                    new StreamCopier(status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
+                    new StreamCopier(status, status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
                             new StreamListener() {
                                 @Override
                                 public void bytesSent(long bytes) {

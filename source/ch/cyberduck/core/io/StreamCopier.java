@@ -19,7 +19,6 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -35,12 +34,20 @@ import java.io.OutputStream;
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
-    private TransferStatus status;
+    private StreamCancelation cancel;
 
-    private Integer chunksize = Preferences.instance().getInteger("connection.chunksize");
+    private StreamProgress progress;
 
-    public StreamCopier(final TransferStatus status) {
-        this.status = status;
+    private Integer chunksize;
+
+    public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
+        this(cancel, progress, Preferences.instance().getInteger("connection.chunksize"));
+    }
+
+    public StreamCopier(final StreamCancelation cancel, final StreamProgress progress, final Integer chunksize) {
+        this.cancel = cancel;
+        this.progress = progress;
+        this.chunksize = chunksize;
     }
 
     /**
@@ -60,7 +67,7 @@ public final class StreamCopier {
         try {
             final byte[] chunk = new byte[chunksize];
             long bytesTransferred = 0;
-            while(!status.isCanceled()) {
+            while(!cancel.isCanceled()) {
                 final int read = bi.read(chunk, 0, chunksize);
                 if(-1 == read) {
                     if(log.isDebugEnabled()) {
@@ -71,6 +78,7 @@ public final class StreamCopier {
                 else {
                     listener.bytesReceived(read);
                     bo.write(chunk, 0, read);
+                    progress.progress(read);
                     listener.bytesSent(read);
                     bytesTransferred += read;
                     if(limit == bytesTransferred) {
@@ -85,7 +93,7 @@ public final class StreamCopier {
         finally {
             bo.flush();
         }
-        if(status.isCanceled()) {
+        if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
         }
     }

@@ -204,7 +204,7 @@ public class S3MultipartUploadService implements Upload<String> {
                 try {
                     in = local.getInputStream();
                     out = new S3WriteFeature(session).write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
+                    new StreamCopier(status, status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                     final StorageObject part = out.getResponse();
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response for part number %d", partNumber));

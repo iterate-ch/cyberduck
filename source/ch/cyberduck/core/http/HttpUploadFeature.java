@@ -23,8 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,6 +51,11 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     @Override
     public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status) throws BackgroundException {
+        return this.upload(file, local, throttle, listener, status, status, status);
+    }
+
+    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                         final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         try {
             InputStream in = null;
             ResponseOutputStream<Output> out = null;
@@ -56,7 +63,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             try {
                 in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
-                new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, status.getLength());
+                new StreamCopier(cancel, progress).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, status.getLength());
             }
             finally {
                 IOUtils.closeQuietly(in);
