@@ -104,6 +104,9 @@ public class FinderLocal extends Local {
      */
     private String bookmark;
 
+    private FinderLocalAttributes attributes
+            = new FinderLocalAttributes(this);
+
     public FinderLocal(final Local parent, final String name) {
         super(String.format("%s/%s", parent.getAbsolute(), name));
     }
@@ -318,7 +321,7 @@ public class FinderLocal extends Local {
 
     @Override
     public FinderLocalAttributes attributes() {
-        return new FinderLocalAttributes(this);
+        return attributes;
     }
 
     @Override
@@ -390,24 +393,31 @@ public class FinderLocal extends Local {
 
     /**
      * Comparing by inode if the file exists.
-     *
-     * @param o Other file
-     * @return True if Inode is same
      */
     @Override
-    public boolean equals(Object o) {
-        // Case insensitive compare returned
-        if(super.equals(o)) {
-            // Now test with inode for case sensitive volumes
-            FinderLocal other = (FinderLocal) o;
-            return this.attributes().equals(other.attributes());
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
         }
-        return false;
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+        // Now test with inode for case sensitive volumes
+        final FinderLocal that = (FinderLocal) o;
+        if(attributes != null ? !attributes.equals(that.attributes) : that.attributes != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return this.attributes().getInode().hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        return result;
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {
