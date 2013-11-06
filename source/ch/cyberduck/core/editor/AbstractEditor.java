@@ -196,4 +196,13 @@ public abstract class AbstractEditor implements Editor {
         result = 31 * result + (session != null ? session.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AbstractEditor{");
+        sb.append("application=").append(application);
+        sb.append(", local=").append(local);
+        sb.append('}');
+        return sb.toString();
+    }
 }
