@@ -56,7 +56,7 @@ public class IconUpdateSreamListener extends DisabledStreamListener {
     }
 
     @Override
-    public void bytesReceived(long bytes) {
+    public void bytesReceived(final long bytes) {
         if(enabled && threshold) {
             final BigDecimal fraction = new BigDecimal(status.getCurrent()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
             if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
