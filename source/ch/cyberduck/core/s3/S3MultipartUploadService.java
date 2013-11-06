@@ -204,6 +204,13 @@ public class S3MultipartUploadService implements Upload {
                     in = local.getInputStream();
                     out = new S3WriteFeature(session).write(file, new StorageObject(containerService.getKey(file)), length, requestParameters);
                     new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
+                    final StorageObject part = out.getResponse();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Received response for part number %d", partNumber));
+                    }
+                    // Populate part with response data that is accessible via the object's metadata
+                    return new MultipartPart(partNumber, part.getLastModifiedDate(),
+                            part.getETag(), part.getContentLength());
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -212,13 +219,6 @@ public class S3MultipartUploadService implements Upload {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(out);
                 }
-                final StorageObject part = out.getResponse();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response for part number %d", partNumber));
-                }
-                // Populate part with response data that is accessible via the object's metadata
-                return new MultipartPart(partNumber, part.getLastModifiedDate(),
-                        part.getETag(), part.getContentLength());
             }
         });
     }
