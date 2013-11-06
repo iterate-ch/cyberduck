@@ -677,6 +677,8 @@ public abstract class Preferences {
         defaults.put("webdav.redirect.PUT.follow", String.valueOf(false));
         defaults.put("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
+        defaults.put("webdav.upload.checksum", String.valueOf(false));
+
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         defaults.put("analytics.provider.qloudstat.iam.policy",
                 "{\n" +
@@ -965,7 +967,7 @@ public abstract class Preferences {
 
     /**
      * @return The preferred locale of all localizations available
-     *         in this application bundle
+     * in this application bundle
      */
     public String locale() {
         return this.applicationLocales().iterator().next();

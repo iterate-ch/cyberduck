@@ -21,15 +21,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -162,6 +154,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Write.class) {
             return (T) new DAVWriteFeature(this);
+        }
+        if(type == Upload.class) {
+            return (T) new DAVUploadFeature(this);
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);

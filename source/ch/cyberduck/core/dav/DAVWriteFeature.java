@@ -38,11 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.ETagResponseHandler;
 
 /**
  * @version $Id$
  */
-public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements Write {
+public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
 
     private DAVSession session;
 
@@ -55,13 +56,13 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         this(session, Preferences.instance().getBoolean("webdav.expect-continue"));
     }
 
-    public DAVWriteFeature(DAVSession session, boolean expect) {
+    public DAVWriteFeature(final DAVSession session, final boolean expect) {
         this.session = session;
         this.expect = expect;
     }
 
     @Override
-    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final Map<String, String> headers = new HashMap<String, String>();
         if(status.isAppend()) {
             headers.put(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
@@ -74,17 +75,17 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
         return this.write(file, headers, status);
     }
 
-    private ResponseOutputStream<Void> write(final Path file, final Map<String, String> headers, final TransferStatus status)
-            throws BackgroundException {
+    private ResponseOutputStream<String> write(final Path file, final Map<String, String> headers, final TransferStatus status)
+    throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
+        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    session.getClient().put(new DAVPathEncoder().encode(file), entity, headers);
+                    session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload failed", e, file);
