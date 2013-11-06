@@ -821,9 +821,7 @@ public final class TransferController extends WindowController implements NSTool
             case search:
                 item.setLabel(TransferToolbarItem.search.label());
                 item.setPaletteLabel(TransferToolbarItem.search.label());
-                item.setView(this.filterField);
-                item.setMinSize(this.filterField.frame().size);
-                item.setMaxSize(this.filterField.frame().size);
+                item.setView(filterField);
                 return item;
         }
         // Identifier refered to a toolbar item that is not provide or supported.

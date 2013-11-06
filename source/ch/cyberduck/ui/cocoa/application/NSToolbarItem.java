@@ -139,8 +139,6 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
 
     /**
      * <i>native declaration : :95</i><br>
-     * Conversion Error : /// Original signature : <code>void setAction(null)</code><br>
-     * - (void)setAction:(null)action; (Argument action cannot be converted)
      */
     public abstract void setAction(Selector action);
 
@@ -182,24 +180,24 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
 
     /**
      * <i>native declaration : :111</i><br>
-     * Conversion Error : NSSize
      */
     public abstract void setMinSize(NSSize size);
 
     /**
      * <i>native declaration : :112</i><br>
-     * Conversion Error : NSSize
      */
-    public abstract void setMaxSize(NSSize size);
+    public abstract NSSize minSize();
+
     /**
      * <i>native declaration : :115</i><br>
-     * Conversion Error : NSSize
      */
+    public abstract void setMaxSize(NSSize size);
+
     /**
      * <i>native declaration : :116</i><br>
-     * Conversion Error : NSSize
      */
-    /// <i>native declaration : :24</i>
+    public abstract NSSize maxSize();
+
     /**
      * Original signature : <code>void setVisibilityPriority(NSInteger)</code><br>
      * <i>native declaration : :123</i>

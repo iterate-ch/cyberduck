@@ -2955,7 +2955,7 @@ public class BrowserController extends WindowController
      * @param sendType   The pasteboard type the application needs to send.
      * @param returnType The pasteboard type the application needs to receive.
      * @return The object that can send and receive the specified types or nil
-     *         if the receiver knows of no object that can send and receive data of that type.
+     * if the receiver knows of no object that can send and receive data of that type.
      */
     public ID validRequestorForSendType_returnType(String sendType, String returnType) {
         log.debug("validRequestorForSendType_returnType:" + sendType + "," + returnType);
@@ -3338,7 +3338,7 @@ public class BrowserController extends WindowController
     /**
      * @param disconnected Callback after the session has been disconnected
      * @return True if the unmount process has finished, false if the user has to agree first
-     *         to close the connection
+     * to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
         return this.unmount(new SheetCallback() {
@@ -3940,8 +3940,6 @@ public class BrowserController extends WindowController
             viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
-            item.setMinSize(this.browserSwitchView.frame().size);
-            item.setMaxSize(this.browserSwitchView.frame().size);
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
@@ -3965,20 +3963,18 @@ public class BrowserController extends WindowController
             item.setLabel(LocaleFactory.localizedString("Action"));
             item.setPaletteLabel(LocaleFactory.localizedString("Action"));
             if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
-                item.setView(this.actionPopupButton);
+                item.setView(actionPopupButton);
                 // Add a menu representation for text mode of toolbar
                 NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
                 NSMenu toolSubmenu = NSMenu.menu();
-                for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
-                    NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(new NSInteger(i));
+                for(int i = 1; i < actionPopupButton.menu().numberOfItems().intValue(); i++) {
+                    NSMenuItem template = actionPopupButton.menu().itemAtIndex(new NSInteger(i));
                     toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
                             template.action(),
                             template.keyEquivalent()));
                 }
                 toolMenu.setSubmenu(toolSubmenu);
                 item.setMenuFormRepresentation(toolMenu);
-                item.setMinSize(this.actionPopupButton.frame().size);
-                item.setMaxSize(this.actionPopupButton.frame().size);
             }
             else {
                 NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
@@ -3993,8 +3989,6 @@ public class BrowserController extends WindowController
             item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
             item.setToolTip(LocaleFactory.localizedString("Connect to server"));
             item.setView(quickConnectPopup);
-            item.setMinSize(this.quickConnectPopup.frame().size);
-            item.setMaxSize(this.quickConnectPopup.frame().size);
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
@@ -4161,8 +4155,6 @@ public class BrowserController extends WindowController
                 quicklookButton.setTarget(this.id());
                 quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
                 item.setView(quicklookButton);
-                item.setMinSize(quicklookButton.frame().size);
-                item.setMaxSize(quicklookButton.frame().size);
             }
             else {
                 item.setEnabled(false);
