@@ -100,7 +100,7 @@ public class SFTPSession extends Session<Connection> {
             throw new ConnectionCanceledException(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map(e);
         }
     }
 
@@ -156,14 +156,14 @@ public class SFTPSession extends Session<Connection> {
                 sftp.setCharset(this.getEncoding());
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new SFTPExceptionMappingService().map(e);
             }
         }
         catch(IllegalStateException e) {
             throw new ConnectionCanceledException(e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map(e);
         }
     }
 
@@ -200,7 +200,7 @@ public class SFTPSession extends Session<Connection> {
             directory = this.sftp().canonicalPath(".");
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map(e);
         }
         return new Path(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
@@ -215,7 +215,7 @@ public class SFTPSession extends Session<Connection> {
             throw new ConnectionCanceledException();
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map(e);
         }
     }
 

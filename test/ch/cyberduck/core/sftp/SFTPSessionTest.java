@@ -6,9 +6,11 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -18,6 +20,9 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -79,5 +84,25 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getFeature(Symlink.class));
         assertNotNull(session.getFeature(Command.class));
         assertNotNull(session.getFeature(DistributionConfiguration.class));
+    }
+
+    @Test(expected = ConnectionCanceledException.class)
+    public void testConnectHostKeyDenied() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final Session session = new SFTPSession(host);
+        final AtomicBoolean verify = new AtomicBoolean();
+        try {
+            session.open(new HostKeyController() {
+                @Override
+                public boolean verify(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+                    verify.set(true);
+                    throw new ConnectionCanceledException();
+                }
+            });
+        }
+        catch(Exception e) {
+            assertTrue(verify.get());
+            throw e;
+        }
     }
 }
