@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -54,15 +53,15 @@ public class SwiftThresholdUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
+    public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) throws BackgroundException {
         final Upload feature;
         if(status.getLength() > threshold) {
             feature = new SwiftLargeObjectUploadFeature(session, segment);
         }
         else {
-            feature = new HttpUploadFeature(new SwiftWriteFeature(session));
+            feature = new SwiftSmallObjectUploadFeature(session);
         }
-        feature.upload(file, local, throttle, listener, status);
+        return feature.upload(file, local, throttle, listener, status);
     }
 }

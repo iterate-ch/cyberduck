@@ -27,21 +27,22 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +58,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
  * @author Joel Wright <joel.wright@sohonet.com>
  * @version $Id$
  */
-public class SwiftLargeObjectUploadFeature implements Upload {
+public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private SwiftSession session;
@@ -89,6 +90,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
                                          final Long segmentSize) {
+        super(new SwiftWriteFeature(session));
         this.session = session;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
@@ -96,10 +98,10 @@ public class SwiftLargeObjectUploadFeature implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final Local local,
-                       final BandwidthThrottle throttle,
-                       final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
+    public StorageObject upload(final Path file, final Local local,
+                                final BandwidthThrottle throttle,
+                                final StreamListener listener,
+                                final TransferStatus status) throws BackgroundException {
 
         final Region region = session.getRegion(containerService.getContainer(file));
         final String name = containerService.getKey(file);
@@ -140,7 +142,7 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             final Long length = Math.min(segmentSize, remaining);
             if(!skip) {
                 final Future<StorageObject> futureSegment = this.submitSegment(segment, local,
-                        throttle, listener, status, offset, length);
+                        throttle, listener, offset, length);
                 futureSegments.add(futureSegment);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
@@ -177,8 +179,11 @@ public class SwiftLargeObjectUploadFeature implements Upload {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
-            session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
-                    mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap());
+            final StorageObject stored = new StorageObject(manifest);
+            stored.setMd5sum(session.getClient().createSLOManifestObject(region, containerService.getContainer(file).getName(),
+                    mapping.getMime(file.getName()), name, manifest, Collections.<String, String>emptyMap()));
+            return stored;
+
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Upload failed", e);
@@ -190,32 +195,53 @@ public class SwiftLargeObjectUploadFeature implements Upload {
 
     private Future<StorageObject> submitSegment(final Path segment, final Local local,
                                                 final BandwidthThrottle throttle, final StreamListener listener,
-                                                final TransferStatus status, final Long offset, final Long length) {
+                                                final Long offset, final Long length) {
         return pool.execute(new Callable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                InputStream in = null;
-                ResponseOutputStream<String> out = null;
-                final String etag;
-                try {
-                    in = local.getInputStream();
-                    out = new SwiftWriteFeature(session).write(segment, length);
-                    new StreamCopier(status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
-                etag = out.getResponse();
-                // Maybe we should check the md5sum at some point
-                final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                stored.setMd5sum(etag);
-                stored.setSize(length);
-                return stored;
+                return SwiftLargeObjectUploadFeature.super.upload(segment, local, throttle, listener, new TransferStatus().length(length).current(offset));
             }
         });
+    }
+
+    @Override
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+        if(null == digest) {
+            log.warn("MD5 calculation disabled");
+            return in;
+        }
+        else {
+            return new DigestInputStream(in, digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() {
+        MessageDigest digest = null;
+        if(Preferences.instance().getBoolean("openstack.upload.md5")) {
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return digest;
+    }
+
+    @Override
+    protected void post(final MessageDigest digest, final StorageObject response) throws BackgroundException {
+        if(null != digest) {
+            // Obtain locally-calculated MD5 hash.
+            final String expected = ServiceUtils.toHex(digest.digest());
+            // Compare our locally-calculated hash with the ETag returned by S3.
+            if(!expected.equals(response.getMd5sum())) {
+                throw new ChecksumException("Upload failed",
+                        String.format("Mismatch between MD5 hash of uploaded data (%s) and ETag returned by the server (%s)", expected, response.getMd5sum()));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Verified checksum for %s", response));
+            }
+        }
     }
 }

@@ -40,11 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.StorageObject;
 
 /**
  * @version $Id$
  */
-public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
+public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private PathContainerService containerService
@@ -67,7 +68,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
         this.segmentService = segmentService;
     }
 
-    public ResponseOutputStream<String> write(final Path file, final Long length) throws BackgroundException {
+    @Override
+    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("openstack.metadata.default")) {
@@ -92,17 +94,20 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
             metadata.put(key, value);
         }
         // Submit store run to background thread
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             /**
-             *
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                    final String checksum = session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             entity, metadata, null);
+                    final StorageObject stored = new StorageObject(containerService.getKey(file));
+                    stored.setMd5sum(checksum);
+                    stored.setSize(status.getLength());
+                    return stored;
                 }
                 catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Upload failed", e);
@@ -114,15 +119,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<String> implemen
 
             @Override
             public long getContentLength() {
-                return length;
+                return status.getLength();
             }
         };
         return session.write(file, command);
-    }
-
-    @Override
-    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.write(file, status.getLength());
     }
 
     @Override

@@ -37,7 +37,7 @@ import java.io.InputStream;
 /**
  * @version $Id$
  */
-public class HttpUploadFeature<Output, Digest> implements Upload {
+public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
     private AbstractHttpWriteFeature writer;
@@ -47,8 +47,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload {
     }
 
     @Override
-    public void upload(final Path file, Local local, final BandwidthThrottle throttle,
-                       final StreamListener listener, final TransferStatus status) throws BackgroundException {
+    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                         final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
             ResponseOutputStream<Output> out = null;
@@ -64,6 +64,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload {
             }
             final Output response = out.getResponse();
             this.post(digest, response);
+            return response;
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);

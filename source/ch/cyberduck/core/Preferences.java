@@ -614,6 +614,8 @@ public abstract class Preferences {
         defaults.put("openstack.cdn.preload", String.valueOf(true));
         defaults.put("openstack.container.size.preload", String.valueOf(true));
 
+        defaults.put("openstack.upload.md5", String.valueOf(true));
+
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L - 32768)); // 2GB

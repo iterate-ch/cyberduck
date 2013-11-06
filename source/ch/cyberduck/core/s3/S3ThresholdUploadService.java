@@ -43,22 +43,22 @@ public class S3ThresholdUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status) throws BackgroundException {
+    public Object upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
             final S3MultipartUploadService service = new S3MultipartUploadService(session);
             try {
-                service.upload(file, local, throttle, listener, status);
+                return service.upload(file, local, throttle, listener, status);
             }
             catch(InteroperabilityException e) {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
                 final S3SingleUploadService single = new S3SingleUploadService(session);
-                single.upload(file, local, throttle, listener, status);
+                return single.upload(file, local, throttle, listener, status);
             }
         }
         else {
             final S3SingleUploadService single = new S3SingleUploadService(session);
-            single.upload(file, local, throttle, listener, status);
+            return single.upload(file, local, throttle, listener, status);
         }
     }
 }

@@ -28,8 +28,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 /**
  * @version $Id$
  */
-public interface Upload {
+public interface Upload<Output> {
 
-    void upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                final TransferStatus status) throws BackgroundException;
+    Output upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                  final TransferStatus status) throws BackgroundException;
 }

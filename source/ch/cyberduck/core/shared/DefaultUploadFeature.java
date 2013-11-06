@@ -40,7 +40,7 @@ import java.io.OutputStream;
 /**
  * @version $Id$
  */
-public class DefaultUploadFeature implements Upload {
+public class DefaultUploadFeature implements Upload<Void> {
 
     private Write writer;
 
@@ -49,7 +49,7 @@ public class DefaultUploadFeature implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status) throws BackgroundException {
         try {
             InputStream in = null;
@@ -58,6 +58,7 @@ public class DefaultUploadFeature implements Upload {
                 in = local.getInputStream();
                 out = writer.write(file, status);
                 new StreamCopier(status).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener);
+                return null;
             }
             finally {
                 IOUtils.closeQuietly(in);

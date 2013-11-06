@@ -55,7 +55,7 @@ import java.util.concurrent.Future;
 /**
  * @version $Id$
  */
-public class S3MultipartUploadService implements Upload {
+public class S3MultipartUploadService implements Upload<Void> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     /**
@@ -93,7 +93,7 @@ public class S3MultipartUploadService implements Upload {
     }
 
     @Override
-    public void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                        final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
@@ -172,6 +172,7 @@ public class S3MultipartUploadService implements Upload {
                     log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                 }
+                return null;
             }
             finally {
                 // Cancel future tasks
