@@ -24,7 +24,6 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
@@ -40,15 +39,16 @@ public abstract class AlertController extends SheetController {
      */
     protected NSAlert alert;
 
-    public AlertController(final WindowController parent, NSAlert alert) {
+    public AlertController(final WindowController parent, final NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);
     }
 
-    public AlertController(final WindowController parent, NSAlert alert, int style) {
+    public AlertController(final WindowController parent, final NSAlert alert, final int style) {
         super(parent);
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
+        this.setWindow(this.alert.window());
     }
 
     public void setAccessoryView(final NSView view) {
@@ -129,10 +129,5 @@ public abstract class AlertController extends SheetController {
     public boolean alertShowHelp(final NSAlert alert) {
         this.help();
         return true;
-    }
-
-    @Override
-    public NSWindow window() {
-        return alert.window();
     }
 }
