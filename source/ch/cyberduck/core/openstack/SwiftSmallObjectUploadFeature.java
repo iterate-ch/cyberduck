@@ -17,11 +17,9 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.log4j.Logger;
@@ -42,18 +40,8 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
 
-    private SwiftSession session;
-
-    private PathContainerService containerService
-            = new PathContainerService();
-
     public SwiftSmallObjectUploadFeature(final SwiftSession session) {
-        this(session, new SwiftWriteFeature(session));
-    }
-
-    public SwiftSmallObjectUploadFeature(final SwiftSession session, final AbstractHttpWriteFeature<?> writer) {
-        super(writer);
-        this.session = session;
+        super(new SwiftWriteFeature(session));
     }
 
     @Override
