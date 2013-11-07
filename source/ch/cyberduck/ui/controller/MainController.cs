@@ -121,16 +121,13 @@ namespace Ch.Cyberduck.Ui.Controller
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
                 {
-                    if (Preferences.instance().getBoolean("rendezvous.enable"))
+                    try
                     {
-                        try
-                        {
-                            RendezvousFactory.instance().quit();
-                        }
-                        catch (SystemException se)
-                        {
-                            Logger.warn("No Bonjour support available", se);
-                        }
+                        RendezvousFactory.instance().quit();
+                    }
+                    catch (SystemException se)
+                    {
+                        Logger.warn("No Bonjour support available", se);
                     }
                     Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
                     Preferences.instance().save();
@@ -197,10 +194,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DialogTransferErrorCallback.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
-            if (Preferences.instance().getBoolean("rendezvous.enable"))
-            {
-                Rendezvous.Register();
-            }
+            Rendezvous.Register();
             ProtocolFactory.register();
             WindowsTemporaryFileService.Register();
             EditorFactory.Register();
@@ -401,23 +395,20 @@ namespace Ch.Cyberduck.Ui.Controller
             _controller.Background(delegate { TransferCollection.defaultCollection().load(); }, delegate { });
 
             // Bonjour initialization
-            if (Preferences.instance().getBoolean("rendezvous.enable"))
-            {
-                ThreadStart start = delegate
+            ThreadStart start = delegate
+                {
+                    try
                     {
-                        try
-                        {
-                            RendezvousFactory.instance().init();
-                        }
-                        catch (COMException)
-                        {
-                            Logger.warn("No Bonjour support available");
-                        }
-                    };
-                Thread thread = new Thread(start);
-                thread.SetApartmentState(ApartmentState.STA);
-                thread.Start();
-            }
+                        RendezvousFactory.instance().init();
+                    }
+                    catch (COMException)
+                    {
+                        Logger.warn("No Bonjour support available");
+                    }
+                };
+            Thread thread = new Thread(start);
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
             if (Preferences.instance().getBoolean("defaulthandler.reminder") &&
                 Preferences.instance().getInteger("uses") > 0)
             {

@@ -42,7 +42,9 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     private Map<String, DNSSDService> browsers;
 
     public static void register() {
-        RendezvousFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
+            RendezvousFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        }
     }
 
     private static class Factory extends RendezvousFactory {

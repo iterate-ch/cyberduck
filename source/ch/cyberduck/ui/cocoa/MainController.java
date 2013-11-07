@@ -40,19 +40,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -979,24 +967,22 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Registering Growl";
             }
         });
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            RendezvousFactory.instance().addListener(new RendezvousListener() {
-                @Override
-                public void serviceResolved(final String identifier, final Host host) {
-                    invoke(new DefaultMainAction() {
-                        @Override
-                        public void run() {
-                            GrowlFactory.get().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
-                        }
-                    });
-                }
+        RendezvousFactory.instance().addListener(new RendezvousListener() {
+            @Override
+            public void serviceResolved(final String identifier, final Host host) {
+                invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        GrowlFactory.get().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
+                    }
+                });
+            }
 
-                @Override
-                public void serviceLost(final Host servicename) {
-                    //
-                }
-            });
-        }
+            @Override
+            public void serviceLost(final Host servicename) {
+                //
+            }
+        });
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
@@ -1045,15 +1031,13 @@ public class MainController extends BundleController implements NSApplication.De
                 Foundation.selector("applicationWillRestartAfterUpdate:"),
                 "SUUpdaterWillRestartNotificationName",
                 null);
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            this.background(new AbstractBackgroundAction<Void>() {
-                @Override
-                public Void run() throws BackgroundException {
-                    RendezvousFactory.instance().init();
-                    return null;
-                }
-            });
-        }
+        this.background(new AbstractBackgroundAction<Void>() {
+            @Override
+            public Void run() throws BackgroundException {
+                RendezvousFactory.instance().init();
+                return null;
+            }
+        });
         // Import thirdparty bookmarks.
         this.background(new AbstractBackgroundAction<Void>() {
             private List<ThirdpartyBookmarkCollection> thirdpartyBookmarkCollections = Collections.emptyList();
@@ -1364,10 +1348,9 @@ public class MainController extends BundleController implements NSApplication.De
 
         this.invalidate();
 
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            //Terminating rendezvous discovery
-            RendezvousFactory.instance().quit();
-        }
+        //Terminating rendezvous discovery
+        RendezvousFactory.instance().quit();
+
         //Writing usage info
         Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
         Preferences.instance().save();

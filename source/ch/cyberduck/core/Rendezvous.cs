@@ -143,7 +143,10 @@ namespace Ch.Cyberduck.Core
 
         public static void Register()
         {
-            RendezvousFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            if (Preferences.instance().getBoolean("rendezvous.enable"))
+            {
+                RendezvousFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            }
         }
 
         private class Factory : RendezvousFactory

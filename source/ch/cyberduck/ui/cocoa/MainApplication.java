@@ -128,10 +128,7 @@ public final class MainApplication {
                 AlertHostKeyController.register();
                 AlertTransferPromptControllerFactory.register();
                 AlertTransferErrorCallback.register();
-
-                if(Preferences.instance().getBoolean("rendezvous.enable")) {
-                    RendezvousResponder.register();
-                }
+                RendezvousResponder.register();
                 ProtocolFactory.register();
             }
 
