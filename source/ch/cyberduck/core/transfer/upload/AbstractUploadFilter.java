@@ -17,16 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -155,32 +146,28 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(this.options.permissions) {
                 final UnixPermission unix = session.getFeature(UnixPermission.class);
                 if(unix != null) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), file.attributes().getPermission().getMode()));
-                    this.permissions(file, unix);
+                    this.permissions(file, unix, listener);
                 }
                 final AclPermission acl = session.getFeature(AclPermission.class);
                 if(acl != null) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), file.attributes().getPermission().getMode()));
-                    this.acl(file, acl);
+                    this.acl(file, acl, listener);
                 }
             }
             if(this.options.timestamp) {
                 final Timestamp timestamp = session.getFeature(Timestamp.class);
                 if(timestamp != null) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                            file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
-                    this.timestamp(file, timestamp);
+                    this.timestamp(file, timestamp, listener);
 
                 }
             }
         }
     }
 
-    private void timestamp(final Path file, final Timestamp feature) {
+    private void timestamp(final Path file, final Timestamp feature, final ProgressListener listener) {
         // Read timestamps from local file
         try {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                    file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
             feature.setTimestamp(file, file.getLocal().attributes().getCreationDate(),
                     file.getLocal().attributes().getModificationDate(),
                     file.getLocal().attributes().getAccessedDate());
@@ -191,7 +178,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void permissions(final Path file, final UnixPermission feature) {
+    private void permissions(final Path file, final UnixPermission feature, final ProgressListener listener) {
         final Permission permission;
         if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
             if(file.attributes().isFile()) {
@@ -209,6 +196,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(!Permission.EMPTY.equals(permission)) {
             try {
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), permission));
                 feature.setUnixPermission(file, permission);
             }
             catch(BackgroundException e) {
@@ -218,7 +207,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void acl(final Path file, final AclPermission feature) {
+    private void acl(final Path file, final AclPermission feature, final ProgressListener listener) {
         final Permission permission;
         if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
             if(file.attributes().isFile()) {
@@ -246,6 +235,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(!Acl.EMPTY.equals(acl)) {
             try {
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                        file.getName(), acl));
                 feature.setPermission(file, acl);
             }
             catch(BackgroundException e) {
