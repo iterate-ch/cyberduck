@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BrowserBackgroundEditorTest extends AbstractTestCase {
 
@@ -59,7 +59,7 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
                         }
                     };
                 }
-                return null;
+                return super.getFeature(type);
             }
         };
         final AtomicBoolean e = new AtomicBoolean();
