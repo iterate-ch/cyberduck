@@ -45,6 +45,12 @@ public class CompareFilter extends AbstractDownloadFilter {
         this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
+    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options,
+                         final ComparisionServiceFilter comparisonService) {
+        super(symlinkResolver, session, options);
+        this.comparisonService = comparisonService;
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, parent)) {

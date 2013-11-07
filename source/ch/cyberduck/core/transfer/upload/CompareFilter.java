@@ -40,14 +40,20 @@ public class CompareFilter extends AbstractUploadFilter {
         this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
+    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options,
+                         final ComparisionServiceFilter comparisonService) {
+        super(symlinkResolver, session, options);
+        this.comparisonService = comparisonService;
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, parent)) {
             final Comparison comparison = comparisonService.compare(file);
             switch(comparison) {
                 case local:
-                case equal:
                     return true;
+                case equal:
                 case remote:
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));
