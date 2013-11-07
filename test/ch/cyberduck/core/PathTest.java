@@ -67,10 +67,6 @@ public class PathTest extends AbstractTestCase {
                     "/path/remove/../to/remove/.././", Path.DIRECTORY_TYPE);
             assertEquals("/path/to", path.getAbsolute());
         }
-//        path.setPath("../path/to");
-//        assertEquals( "/path/to", path.getAbsolute());
-//        path.setPath("/../path/to");
-//        assertEquals( "/path/to", path.getAbsolute());
         {
             final Path path = new Path(
                     "/path/to/remove/remove/../../", Path.DIRECTORY_TYPE);
