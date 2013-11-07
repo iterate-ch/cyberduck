@@ -71,7 +71,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
             final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
                     new SwiftObjectListService(session),
-                    new SwiftSegmentService(session, ".segments-test/"), (long) (content.length / 2));
+                    new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2));
 
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
 

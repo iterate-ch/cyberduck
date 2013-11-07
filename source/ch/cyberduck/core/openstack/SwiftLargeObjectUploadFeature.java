@@ -29,6 +29,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -82,14 +83,15 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private SwiftObjectListService listService;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), segmentSize);
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session), segmentSize);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
+                                         final AbstractHttpWriteFeature<?> writer,
                                          final Long segmentSize) {
-        super(new SwiftWriteFeature(session));
+        super(writer);
         this.session = session;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
