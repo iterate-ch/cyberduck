@@ -61,7 +61,7 @@ public class FinderLocalAttributes extends LocalAttributes {
                 path, error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("failure reading attributes for %s %s", path, f));
+            log.error(String.format("Failure reading attributes for %s %s", path, f));
         }
         return dict;
     }
@@ -164,7 +164,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         final String target = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(path, error);
         if(null == target) {
             final NSError f = error.getValueAs(NSError.class);
-            log.warn(String.format("File reading symbolic target for file %s %s", this, f));
+            log.warn(String.format("Failure reading symbolic target for file %s %s", this, f));
         }
         return target != null;
     }
