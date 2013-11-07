@@ -196,9 +196,9 @@ public class DownloadTransfer extends Transfer {
             final Download download = session.getFeature(Download.class);
             download.download(file, file.getLocal(), bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
                 @Override
-                public void bytesReceived(long bytes) {
+                public void recv(long bytes) {
                     addTransferred(bytes);
-                    super.bytesReceived(bytes);
+                    super.recv(bytes);
                 }
             }, status);
         }

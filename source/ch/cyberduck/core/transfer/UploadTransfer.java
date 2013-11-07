@@ -182,7 +182,7 @@ public class UploadTransfer extends Transfer {
             final Upload upload = session.getFeature(Upload.class);
             upload.upload(file, file.getLocal(), bandwidth, new DisabledStreamListener() {
                 @Override
-                public void bytesSent(long bytes) {
+                public void sent(long bytes) {
                     addTransferred(bytes);
                 }
             }, status);

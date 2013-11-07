@@ -25,10 +25,10 @@ public interface StreamListener {
     /**
      * @param bytes Number of bytes sent
      */
-    void bytesSent(long bytes);
+    void sent(long bytes);
 
     /**
      * @param bytes Number of bytes retrieved
      */
-    void bytesReceived(long bytes);
+    void recv(long bytes);
 }

@@ -24,12 +24,12 @@ package ch.cyberduck.core.io;
 public class DisabledStreamListener implements StreamListener {
 
     @Override
-    public void bytesSent(long bytes) {
+    public void sent(long bytes) {
         //
     }
 
     @Override
-    public void bytesReceived(long bytes) {
+    public void recv(long bytes) {
         //
     }
 }

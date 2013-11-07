@@ -130,7 +130,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 long count;
 
                 @Override
-                public void bytesSent(final long bytes) {
+                public void sent(final long bytes) {
                     if(count >= 5242880) {
                         throw new RuntimeException();
                     }
@@ -178,7 +178,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                 long count;
 
                 @Override
-                public void bytesSent(final long bytes) {
+                public void sent(final long bytes) {
                     if(count >= 32768) {
                         throw new RuntimeException();
                     }

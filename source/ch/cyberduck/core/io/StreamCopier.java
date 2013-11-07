@@ -76,10 +76,10 @@ public final class StreamCopier {
                     break;
                 }
                 else {
-                    listener.bytesReceived(read);
+                    listener.recv(read);
                     bo.write(chunk, 0, read);
                     progress.progress(read);
-                    listener.bytesSent(read);
+                    listener.sent(read);
                     bytesTransferred += read;
                     if(limit == bytesTransferred) {
                         if(log.isDebugEnabled()) {

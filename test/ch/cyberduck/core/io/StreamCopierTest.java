@@ -32,7 +32,7 @@ public class StreamCopierTest extends AbstractTestCase {
                     long received;
 
                     @Override
-                    public void bytesSent(long bytes) {
+                    public void sent(long bytes) {
                         assertTrue(bytes > 0L);
                         assertTrue(bytes <= 32768L);
                         sent += bytes;
@@ -40,7 +40,7 @@ public class StreamCopierTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public void bytesReceived(long bytes) {
+                    public void recv(long bytes) {
                         assertTrue(bytes > 0L);
                         assertTrue(bytes <= 32768L);
                         received += bytes;
@@ -65,12 +65,12 @@ public class StreamCopierTest extends AbstractTestCase {
                     new StreamCopier(status, status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
                             new StreamListener() {
                                 @Override
-                                public void bytesSent(long bytes) {
+                                public void sent(long bytes) {
                                     //
                                 }
 
                                 @Override
-                                public void bytesReceived(long bytes) {
+                                public void recv(long bytes) {
                                     try {
                                         lock.await();
                                         exit.await();

@@ -226,7 +226,7 @@ public class CopyTransfer extends Transfer {
                         0, out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle),
                         new DisabledStreamListener() {
                             @Override
-                            public void bytesSent(long bytes) {
+                            public void sent(long bytes) {
                                 addTransferred(bytes);
                             }
                         }, status.getLength());
