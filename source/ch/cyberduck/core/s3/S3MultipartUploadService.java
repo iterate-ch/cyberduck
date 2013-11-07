@@ -104,7 +104,7 @@ public class S3MultipartUploadService implements Upload<String> {
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session).createObjectDetails(file);
+                final S3Object object = new S3WriteFeature(session).getDetails(containerService.getKey(file), local.getName(), null);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(
                         containerService.getContainer(file).getName(), object);

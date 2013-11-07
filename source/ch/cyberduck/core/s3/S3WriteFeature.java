@@ -41,6 +41,7 @@ import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,6 +59,24 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private Find finder;
 
+    /**
+     * Storage class
+     */
+    private String storage
+            = Preferences.instance().getProperty("s3.storage.class");
+
+    /**
+     * Encrytion algorithm
+     */
+    private String encryption
+            = Preferences.instance().getProperty("s3.encryption.algorithm");
+
+    /**
+     * Default metadata for new files
+     */
+    private List<String> metadata
+            = Preferences.instance().getList("s3.metadata.default");
+
     public S3WriteFeature(final S3Session session) {
         this(session, new S3MultipartService(session), new S3FindFeature(session));
     }
@@ -70,7 +89,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return this.write(file, this.createObjectDetails(file), status.getLength(), Collections.<String, String>emptyMap());
+
+        final S3Object metadata = this.getDetails(containerService.getKey(file), file.getLocal().getName(),
+                Preferences.instance().getBoolean("s3.upload.metadata.md5") ? file.getLocal().attributes().getChecksum() : null);
+        return this.write(file, metadata, status.getLength(), Collections.<String, String>emptyMap());
     }
 
     public ResponseOutputStream<StorageObject> write(final Path file, final StorageObject part, final Long contentLength,
@@ -96,24 +118,25 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         return session.write(file, command);
     }
 
-    protected S3Object createObjectDetails(final Path file) throws BackgroundException {
-        final S3Object object = new S3Object(containerService.getKey(file));
-        object.setContentType(new MappingMimeTypeService().getMime(file.getName()));
-        if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            object.setMd5Hash(ServiceUtils.fromHex(file.getLocal().attributes().getChecksum()));
+    /**
+     * Add default metadata
+     */
+    protected S3Object getDetails(final String key, final String filename, final String checksum) {
+        final S3Object object = new S3Object(key);
+        object.setContentType(new MappingMimeTypeService().getMime(filename));
+        if(StringUtils.isNotBlank(checksum)) {
+            object.setMd5Hash(ServiceUtils.fromHex(checksum));
         }
-        // Storage class
-        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(Preferences.instance().getProperty("s3.storage.class"))) {
+        if(StringUtils.isNotBlank(storage)) {
+            if(!S3Object.STORAGE_CLASS_STANDARD.equals(storage)) {
                 // The default setting is STANDARD.
-                object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+                object.setStorageClass(storage);
             }
         }
-        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-            object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
+        if(StringUtils.isNotBlank(encryption)) {
+            object.setServerSideEncryptionAlgorithm(encryption);
         }
-        // Default metadata for new files
-        for(String m : Preferences.instance().getList("s3.metadata.default")) {
+        for(String m : metadata) {
             if(StringUtils.isBlank(m)) {
                 continue;
             }
@@ -135,6 +158,18 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             object.addMetadata(name, value);
         }
         return object;
+    }
+
+    public void setStorage(final String storage) {
+        this.storage = storage;
+    }
+
+    public void setEncryption(final String encryption) {
+        this.encryption = encryption;
+    }
+
+    public void setMetadata(final List<String> metadata) {
+        this.metadata = metadata;
     }
 
     /**
