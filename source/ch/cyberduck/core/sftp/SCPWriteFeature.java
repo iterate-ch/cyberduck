@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,8 +38,15 @@ public class SCPWriteFeature implements Write {
 
     private SFTPSession session;
 
+    private Find find;
+
     public SCPWriteFeature(final SFTPSession session) {
+        this(session, new SFTPFindFeature(session));
+    }
+
+    public SCPWriteFeature(final SFTPSession session, final Find find) {
         this.session = session;
+        this.find = find;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class SCPWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(new SFTPFindFeature(session).withCache(cache).find(file)) {
+        if(find.withCache(cache).find(file)) {
             return Write.override;
         }
         return Write.notfound;

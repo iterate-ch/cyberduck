@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -8,6 +9,9 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -54,6 +58,18 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppend() throws Exception {
-        assertFalse(new SCPWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, null).append);
+        final Write.Append append = new SCPWriteFeature(null, new Find() {
+            @Override
+            public boolean find(final Path file) throws BackgroundException {
+                return true;
+            }
+
+            @Override
+            public Find withCache(final Cache cache) {
+                return this;
+            }
+        }).append(new Path("/p", Path.FILE_TYPE), 0L, null);
+        assertFalse(append.append);
+        assertTrue(append.override);
     }
 }
