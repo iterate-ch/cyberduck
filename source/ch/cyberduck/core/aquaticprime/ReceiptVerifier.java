@@ -200,6 +200,10 @@ public class ReceiptVerifier implements LicenseVerifier {
             // Shutdown if receipt is not valid
             return false;
         }
+        catch(Exception e) {
+            log.error("Unknown receipt validation error", e);
+            return true;
+        }
     }
 
     public String getGuid() {
