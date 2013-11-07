@@ -20,6 +20,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.log4j.Logger;
@@ -41,7 +43,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     private S3Session session;
 
     public S3SingleUploadService(final S3Session session) {
-        super(new S3WriteFeature(session));
+        this(session, new S3WriteFeature(session));
+    }
+
+    public S3SingleUploadService(final S3Session session, final AbstractHttpWriteFeature<?> writer) {
+        super(writer);
         this.session = session;
     }
 

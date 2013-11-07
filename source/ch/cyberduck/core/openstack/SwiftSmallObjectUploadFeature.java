@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.log4j.Logger;
@@ -47,7 +48,12 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
             = new PathContainerService();
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session) {
-        super(new SwiftWriteFeature(session));
+        this(session, new SwiftWriteFeature(session));
+    }
+
+    public SwiftSmallObjectUploadFeature(final SwiftSession session, final AbstractHttpWriteFeature<?> writer) {
+        super(writer);
+        this.session = session;
     }
 
     @Override
