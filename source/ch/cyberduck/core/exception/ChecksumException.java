@@ -18,12 +18,16 @@ package ch.cyberduck.core.exception;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ChecksumException extends BackgroundException {
     private static final long serialVersionUID = 3459390972588992492L;
 
     public ChecksumException(final String message, final String detail) {
         super(message, detail);
+    }
+
+    public ChecksumException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
     }
 }

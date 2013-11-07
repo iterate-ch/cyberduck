@@ -85,7 +85,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
                 session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
             }
             catch(ServiceException e) {
-                throw new ChecksumException("Upload failed", e.getMessage());
+                throw new ChecksumException("Upload failed", e.getMessage(), e);
             }
         }
     }
