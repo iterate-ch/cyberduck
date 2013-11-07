@@ -114,9 +114,10 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public override void alert(SessionBackgroundAction action, BackgroundException failure, StringBuilder transcript)
+        public override bool alert(SessionBackgroundAction action, BackgroundException failure, StringBuilder transcript)
         {
             new DialogAlertCallback(this).alert(action, failure, transcript);
+            return false;
         }
 
         protected virtual void Invalidate()
@@ -134,8 +135,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns></returns>
         public DialogResult MessageBox(string title, string message, string detail, string help)
         {
-            return View.MessageBox(title, message, detail, null, help,
-                                   null, delegate { });
+            return View.MessageBox(title, message, detail, null, help, null, delegate { });
         }
 
         /// <summary>
@@ -150,8 +150,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public DialogResult QuestionBox(string title, string message, string detail, string commandButtons,
                                         bool showCancelButton)
         {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton, null,
-                              SysIcons.Question, delegate { });
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, null, SysIcons.Question,
+                              delegate { });
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public DialogResult WarningBox(string title, string message, string detail, string expanded,
                                        string commandButtons, bool showCancelButton, string help)
         {
-            return View.CommandBox(title, message, detail, expanded, help, null, commandButtons,
-                                   showCancelButton, SysIcons.Warning, SysIcons.Information, delegate { });
+            return View.CommandBox(title, message, detail, expanded, help, null, commandButtons, showCancelButton,
+                                   SysIcons.Warning, SysIcons.Information, delegate { });
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public DialogResult InfoBox(string title, string message, string detail, string commandButtons,
                                     string verificationText, bool showCancelButton)
         {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton,
-                              verificationText, SysIcons.Information, null, delegate { });
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText,
+                              SysIcons.Information, null, delegate { });
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                        bool showCancelButton, string verificationText, SysIcons mainIcon,
                                        DialogResponseHandler handler)
         {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton,
-                              verificationText, mainIcon, null, handler);
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
+                              handler);
         }
 
         /// <summary>
@@ -228,8 +228,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                        DialogResponseHandler handler)
         {
             return View.CommandBox(title, message, detail, null, help, verificationText, commandButtons,
-                                   showCancelButton,
-                                   mainIcon, SysIcons.Information, handler);
+                                   showCancelButton, mainIcon, SysIcons.Information, handler);
         }
     }
 }

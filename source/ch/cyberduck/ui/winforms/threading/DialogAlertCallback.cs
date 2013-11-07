@@ -36,32 +36,27 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _controller = controller;
         }
 
-        public void alert(SessionBackgroundAction rba, BackgroundException failure, StringBuilder log)
+        public bool alert(SessionBackgroundAction rba, BackgroundException failure, StringBuilder log)
         {
             _action = rba;
+            bool r = false;
             _controller.Invoke(delegate
                 {
                     String provider = rba.getSession().getHost().getProtocol().getProvider();
                     string footer = String.Format("{0}/{1}", Preferences.instance().getProperty("website.help"),
                                                   provider);
-                    DialogResult result =
-                        _controller.WarningBox(LocaleFactory.localizedString("Error"),
-                                               failure.getMessage() ?? LocaleFactory.localizedString("Unknown"),
-                                               failure.getDetail() ?? LocaleFactory.localizedString("Unknown"),
-                                               log.length() > 0 ? log.toString() : null,
-                                               String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert")),
-                                               true, footer);
-                    Callback(result);
+                    DialogResult result = _controller.WarningBox(LocaleFactory.localizedString("Error"),
+                                                                 failure.getMessage() ??
+                                                                 LocaleFactory.localizedString("Unknown"),
+                                                                 failure.getDetail() ??
+                                                                 LocaleFactory.localizedString("Unknown"),
+                                                                 log.length() > 0 ? log.toString() : null,
+                                                                 String.Format("{0}",
+                                                                               LocaleFactory.localizedString(
+                                                                                   "Try Again", "Alert")), true, footer);
+                    r = DialogResult.OK == result;
                 }, true);
-        }
-
-        private void Callback(DialogResult result)
-        {
-            if (DialogResult.OK == result)
-            {
-                // Re-run the action with the previous lock used
-                _controller.background(_action);
-            }
+            return r;
         }
     }
 }

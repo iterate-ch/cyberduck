@@ -62,11 +62,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.ModelTitleGetter =
                 delegate(object rowObject) { return ((AbstractBackgroundAction) rowObject).toString(); };
-            View.ModelDescriptionGetter = delegate(object rowObject)
-                {
-                    return
-                        ((BackgroundAction) rowObject).getActivity();
-                };
+            View.ModelDescriptionGetter =
+                delegate(object rowObject) { return ((BackgroundAction) rowObject).getActivity(); };
             View.ModelIsRunningGetter =
                 delegate(object rowObject) { return ((BackgroundAction) rowObject).isRunning(); };
             View.StopActionEvent += View_StopActionEvent;
@@ -133,8 +130,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 
-                public AddTaskAction(ActivityController controller, BackgroundAction action)
-                    : base(controller)
+                public AddTaskAction(ActivityController controller, BackgroundAction action) : base(controller)
                 {
                     _action = action;
                     _controller = controller;
@@ -153,8 +149,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 
-                public RemoveTaskAction(ActivityController controller, BackgroundAction action)
-                    : base(controller)
+                public RemoveTaskAction(ActivityController controller, BackgroundAction action) : base(controller)
                 {
                     _action = action;
                     _controller = controller;
@@ -194,9 +189,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
 
-                public void alert(SessionBackgroundAction sba, BackgroundException be, StringBuilder sb)
+                public bool alert(SessionBackgroundAction sba, BackgroundException be, StringBuilder sb)
                 {
-                    //
+                    return false;
                 }
             }
         }
