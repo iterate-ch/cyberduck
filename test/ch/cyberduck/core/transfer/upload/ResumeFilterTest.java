@@ -108,9 +108,18 @@ public class ResumeFilterTest extends AbstractTestCase {
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
         }, new UploadFilterOptions().withTemporary(true));
-        final Path t = new Path("t", Path.FILE_TYPE) {
-        };
-        t.setLocal(new NullLocal(null, "t"));
+        final Path t = new Path("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal(null, "t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("t") {
+                    @Override
+                    public long getSize() {
+                        return 8L;
+                    }
+                };
+            }
+        });
         final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
         assertFalse(status.isRename());
