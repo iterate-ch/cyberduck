@@ -87,4 +87,13 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     public int hashCode() {
         return worker != null ? worker.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("WorkerBackgroundAction{");
+        sb.append("worker=").append(worker);
+        sb.append(", result=").append(result);
+        sb.append('}');
+        return sb.toString();
+    }
 }
