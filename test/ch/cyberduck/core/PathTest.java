@@ -32,8 +32,21 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testDictionary() {
-        final Session s = SessionFactory.createSession(new Host("localhost"));
         Path path = new Path("/path", Path.DIRECTORY_TYPE);
+        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
+    }
+
+    @Test
+    public void testDictionaryRegion() {
+        Path path = new Path("/path", Path.FILE_TYPE);
+        path.attributes().setRegion("r");
+        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
+    }
+
+    @Test
+    public void testDictionaryRegionParentOnly() {
+        Path path = new Path("/root/path", Path.FILE_TYPE);
+        path.getParent().attributes().setRegion("r");
         assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
     }
 
