@@ -122,6 +122,11 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser.Invoke(d);
         }
 
+        public Local select()
+        {
+            throw new LoginCanceledException();
+        }
+
         public static void Register()
         {
             LoginControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
