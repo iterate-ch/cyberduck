@@ -185,7 +185,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyToolStripButton.ToolTipText = LocaleFactory.localizedString("History");
             bonjourToolStripButton.ToolTipText = LocaleFactory.localizedString("Bonjour", "Browser");
 
-            keyMainMenuItem.Text = String.Format(LocaleFactory.localizedString("Registered to {0}", "License"), LicenseFactory.find().getName());
+            keyMainMenuItem.Text = LicenseFactory.find().ToString();
             keyMainMenuItem.Enabled = false;
 
             //Terminal app menu entries

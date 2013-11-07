@@ -87,12 +87,4 @@ public class Donation extends AbstractLicense implements LicenseVerifier {
     }
 
     private native String getValue(String license, String property);
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Donation{");
-        sb.append("file=").append(file);
-        sb.append('}');
-        return sb.toString();
-    }
 }

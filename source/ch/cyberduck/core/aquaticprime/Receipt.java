@@ -125,12 +125,4 @@ public class Receipt extends AbstractLicense {
     public String getName() {
         return guid;
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Receipt{");
-        sb.append("guid='").append(guid).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }

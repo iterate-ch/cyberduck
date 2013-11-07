@@ -75,9 +75,6 @@ public abstract class AbstractLicense implements License {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("AbstractLicense{");
-        sb.append("file=").append(file);
-        sb.append('}');
-        return sb.toString();
+        return MessageFormat.format(LocaleFactory.localizedString("Registered to {0}", "License"), this.getName());
     }
 }
