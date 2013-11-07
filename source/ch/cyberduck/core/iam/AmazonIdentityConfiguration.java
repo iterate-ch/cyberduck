@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 
-import com.amazonaws.AmazonServiceException;
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.model.*;
@@ -49,8 +49,11 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final String prefix = "iam.";
 
     public AmazonIdentityConfiguration(final Host host) {
+        this(host, Preferences.instance().getInteger("connection.timeout.seconds") * 1000);
+    }
+
+    public AmazonIdentityConfiguration(final Host host, int timeout) {
         this.host = host;
-        final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
         final ClientConfiguration configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
@@ -127,7 +130,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 catch(NoSuchEntityException e) {
                     log.warn(String.format("User %s already removed", username));
                 }
-                catch(AmazonServiceException e) {
+                catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
                 }
                 return null;
@@ -185,7 +188,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                             host.getProtocol().getScheme(), host.getPort(), host.getHostname(),
                             id, key.getAccessKey().getSecretAccessKey());
                 }
-                catch(AmazonServiceException e) {
+                catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
                 }
                 return null;

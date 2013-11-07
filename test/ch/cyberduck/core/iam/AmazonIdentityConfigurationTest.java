@@ -59,4 +59,22 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         ));
         new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());
     }
+
+    @Test(expected = BackgroundException.class)
+    public void testTimeout() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, 1);
+        final String username = UUID.randomUUID().toString();
+        try {
+            iam.create(username, "{}", new DisabledLoginController());
+            fail();
+        }
+        catch(BackgroundException e) {
+            assertEquals("Cannot write user configuration.", e.getMessage());
+            assertEquals("Unable to execute HTTP request: Connect to iam.amazonaws.com:443 timed out.", e.getDetail());
+            throw e;
+        }
+    }
 }
