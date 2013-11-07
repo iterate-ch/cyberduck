@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -55,13 +56,16 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private S3MultipartService multipartService;
 
+    private Find finder;
+
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session));
+        this(session, new S3MultipartService(session), new S3FindFeature(session));
     }
 
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
+    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final Find finder) {
         this.session = session;
         this.multipartService = multipartService;
+        this.finder = finder;
     }
 
     @Override
@@ -148,7 +152,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 return new Append(size);
             }
         }
-        if(new S3FindFeature(session).withCache(cache).find(file)) {
+        if(finder.withCache(cache).find(file)) {
             return Write.override;
         }
         return Write.notfound;

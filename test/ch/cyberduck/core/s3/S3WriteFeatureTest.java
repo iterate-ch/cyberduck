@@ -8,6 +8,8 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 
 import org.junit.Test;
 
@@ -22,7 +24,17 @@ public class S3WriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppendBelowLimit() throws Exception {
-        assertFalse(new S3WriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
+        assertFalse(new S3WriteFeature(null, null, new Find() {
+            @Override
+            public boolean find(final Path file) throws BackgroundException {
+                return true;
+            }
+
+            @Override
+            public Find withCache(final Cache cache) {
+                return this;
+            }
+        }).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
     }
 
     @Test
