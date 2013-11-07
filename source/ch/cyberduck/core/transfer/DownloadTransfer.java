@@ -193,8 +193,8 @@ public class DownloadTransfer extends Transfer {
                     file.getName()));
             local.getParent().mkdir();
             // Transfer
-            final Download upload = session.getFeature(Download.class);
-            upload.download(file, file.getLocal(), bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
+            final Download download = session.getFeature(Download.class);
+            download.download(file, file.getLocal(), bandwidth, new IconUpdateSreamListener(status, file.getLocal()) {
                 @Override
                 public void bytesReceived(long bytes) {
                     addTransferred(bytes);
