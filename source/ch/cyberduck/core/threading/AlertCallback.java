@@ -25,6 +25,9 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface AlertCallback {
 
-    void alert(SessionBackgroundAction<?> action,
-               BackgroundException failure, StringBuilder transcript);
+    /**
+     * @return True if action should be repeated
+     */
+    boolean alert(SessionBackgroundAction<?> action,
+                  BackgroundException failure, StringBuilder transcript);
 }

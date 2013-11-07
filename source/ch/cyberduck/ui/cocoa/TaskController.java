@@ -108,9 +108,9 @@ public class TaskController extends BundleController {
             }
 
             @Override
-            public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
-                              final StringBuilder transcript) {
-                //
+            public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                                 final StringBuilder transcript) {
+                return false;
             }
         });
     }

@@ -172,20 +172,27 @@ public abstract class AbstractController implements Controller {
                 finally {
                     registry.remove(action);
                 }
-                // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                invoke(new ControllerMainAction(AbstractController.this) {
-                    @Override
-                    public void run() {
-                        try {
-                            action.cleanup();
+                // If there was any failure, display the summary now
+                if(action.alert()) {
+                    // Retry
+                    this.call();
+                }
+                else {
+                    // Invoke the cleanup on the main thread to let the action synchronize the user interface
+                    invoke(new ControllerMainAction(AbstractController.this) {
+                        @Override
+                        public void run() {
+                            try {
+                                action.cleanup();
+                            }
+                            catch(Exception e) {
+                                log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                            }
                         }
-                        catch(Exception e) {
-                            log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                        }
+                    });
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Releasing lock for background runnable %s", action));
                     }
-                });
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Releasing lock for background runnable %s", action));
                 }
             }
             // Canceled action yields no result
@@ -225,7 +232,8 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure, final StringBuilder transcript) {
         log.warn(failure.getMessage(), failure);
+        return false;
     }
 }

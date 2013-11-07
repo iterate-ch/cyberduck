@@ -73,9 +73,10 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     }
 
     @Override
-    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
-                      final StringBuilder transcript) {
+    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                         final StringBuilder transcript) {
         log.warn(failure.getMessage());
+        return false;
     }
 
     /**

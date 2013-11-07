@@ -38,8 +38,9 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction a = new SessionBackgroundAction(null, Cache.empty(), new AlertCallback() {
             @Override
-            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
+                return false;
             }
         }, new ProgressListener() {
             @Override
@@ -74,8 +75,9 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.empty(), new AlertCallback() {
             @Override
-            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
+                return false;
             }
         }, new ProgressListener() {
             @Override
@@ -110,8 +112,9 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
         SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(("t"))), Cache.empty(), new AlertCallback() {
             @Override
-            public void alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+            public boolean alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
+                return false;
             }
         }, new ProgressListener() {
             @Override

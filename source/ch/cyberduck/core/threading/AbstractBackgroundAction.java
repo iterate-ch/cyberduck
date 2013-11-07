@@ -107,6 +107,11 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
+    public boolean alert() {
+        return false;
+    }
+
+    @Override
     public T call() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run background task %s", this));

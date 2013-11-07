@@ -160,6 +160,10 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     @Override
     public void finish() {
         super.finish();
+        // Upon retry do not suggest to overwrite already completed items from the transfer
+        options.reloadRequested = false;
+        options.resumeRequested = true;
+
         progressTimer.cancel(false);
         listener.stop(transfer);
         timerPool.shutdown();
@@ -181,16 +185,5 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public Transfer getTransfer() {
         return transfer;
-    }
-
-    @Override
-    public void pause() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Pause background action for transfer %s", transfer));
-        }
-        // Upon retry do not suggest to overwrite already completed items from the transfer
-        options.reloadRequested = false;
-        options.resumeRequested = true;
-        super.pause();
     }
 }

@@ -18,16 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.ui.growl.Growl;
@@ -115,11 +106,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public void init() {
-        this.reset();
-    }
-
-    @Override
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         this.message(this.getActivity());
@@ -139,7 +125,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      *
      * @return Greater than zero if a failed action should be repeated again
      */
-    public int retry() {
+    protected int retry() {
         if(this.hasFailed() && !this.isCanceled()) {
             // Check for an exception we consider possibly temporary
             if(new NetworkFailureDiagnostics().isNetworkFailure(exception)) {
@@ -159,8 +145,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * @return True if the the action had a permanent failures. Returns false if
-     *         there were only temporary exceptions and the action succeeded upon retry
-     * @see #retry()
+     * there were only temporary exceptions and the action succeeded upon retry
      */
     protected boolean hasFailed() {
         return failed;
@@ -168,6 +153,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() {
+        this.reset();
         try {
             this.connect(session);
             return super.call();
@@ -221,12 +207,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         // is already running
         session.removeTranscriptListener(this);
         super.finish();
-        // If there was any failure, display the summary now
+    }
+
+    @Override
+    public boolean alert() {
         if(this.hasFailed() && !this.isCanceled()) {
             // Display alert if the action was not canceled intentionally
-            alert.alert(this, exception, transcript);
+            return alert.alert(this, exception, transcript);
         }
-        this.reset();
+        return false;
     }
 
     @Override

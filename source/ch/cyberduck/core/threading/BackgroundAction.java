@@ -89,4 +89,9 @@ public interface BackgroundAction<T> extends Callable<T> {
     void addListener(BackgroundActionListener listener);
 
     void removeListener(BackgroundActionListener listener);
+
+    /**
+     * @return True to retry
+     */
+    boolean alert();
 }

@@ -29,7 +29,8 @@ public class DisabledAlertCallback implements AlertCallback {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
     @Override
-    public void alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
         log.warn(failure.getMessage());
+        return false;
     }
 }

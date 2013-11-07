@@ -48,8 +48,8 @@ public class PanelAlertCallback implements AlertCallback {
     }
 
     @Override
-    public void alert(final SessionBackgroundAction<?> action,
-                      final BackgroundException failure, final StringBuilder log) {
+    public boolean alert(final SessionBackgroundAction<?> action,
+                         final BackgroundException failure, final StringBuilder log) {
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
@@ -64,10 +64,6 @@ public class PanelAlertCallback implements AlertCallback {
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.ALTERNATE_OPTION) {
                         ReachabilityFactory.get().diagnose(action.getSession().getHost());
-                    }
-                    if(returncode == SheetCallback.DEFAULT_OPTION) {
-                        // Re-run the action with the previous lock used
-                        controller.background(action);
                     }
                 }
 
@@ -89,6 +85,10 @@ public class PanelAlertCallback implements AlertCallback {
                 c.setAccessoryView(view);
             }
             c.beginSheet();
+            if(c.returnCode() == SheetCallback.DEFAULT_OPTION) {
+                return true;
+            }
         }
+        return false;
     }
 }

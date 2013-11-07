@@ -211,9 +211,9 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    public void alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
-                      final StringBuilder transcript) {
-        new PanelAlertCallback(this).alert(action, failure, transcript);
+    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+                         final StringBuilder transcript) {
+        return new PanelAlertCallback(this).alert(action, failure, transcript);
     }
 
     /**
