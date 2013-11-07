@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -66,16 +68,21 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         if(log.isInfoEnabled()) {
             log.info("Reloading:" + folder);
         }
-        final AttributedList<Local> groups = folder.list().filter(
-                new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return file.attributes().isDirectory();
+        try {
+            final AttributedList<Local> groups = folder.list().filter(
+                    new Filter<Local>() {
+                        @Override
+                        public boolean accept(final Local file) {
+                            return file.attributes().isDirectory();
+                        }
                     }
-                }
-        );
-        for(Local group : groups) {
-            this.add(new FolderBookmarkCollection(group));
+            );
+            for(Local group : groups) {
+                this.add(new FolderBookmarkCollection(group));
+            }
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
         }
         super.load();
     }

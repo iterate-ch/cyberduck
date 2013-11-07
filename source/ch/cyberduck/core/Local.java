@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
@@ -164,12 +165,12 @@ public abstract class Local extends AbstractPath implements Serializable {
         this.delete();
     }
 
-    public AttributedList<Local> list() {
+    public AttributedList<Local> list() throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
         final File[] files = new File(path).listFiles();
         if(null == files) {
             log.error(String.format("Error listing children for %s", path));
-            return children;
+            throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
         }
         for(File file : files) {
             children.add(LocalFactory.createLocal(file));

@@ -26,6 +26,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,13 +74,23 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                             log.info(String.format("Checksum changed for bookmarks file at %s", file.getAbsolute()));
                         }
                         // Should filter existing bookmarks
-                        this.parse(file);
+                        try {
+                            this.parse(file);
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Failure reading collection %s %s", file, e.getMessage()));
+                        }
                     }
                 }
             }
             else {
                 // First import
-                this.parse(file);
+                try {
+                    this.parse(file);
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure reading collection %s %s", file, e.getMessage()));
+                }
             }
             // Save last checksum
             Preferences.instance().setProperty(String.format("%s.checksum", this.getConfiguration()), this.getChecksum());
@@ -95,7 +106,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public abstract Local getFile();
 
-    protected abstract void parse(Local file);
+    protected abstract void parse(Local file) throws AccessDeniedException;
 
     public boolean isInstalled() {
         return StringUtils.isNotBlank(this.getName());

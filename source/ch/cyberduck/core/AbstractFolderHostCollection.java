@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -112,6 +113,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             }
             // Sort using previously built index
             this.sort();
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
         }
         finally {
             this.unlock();

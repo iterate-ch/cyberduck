@@ -25,6 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.io.IOUtils;
@@ -67,7 +68,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      * FireFTP settings are in Firefox/Profiles/.*\.default/fireFTPsites.dat
      */
     @Override
-    protected void parse(Local folder) {
+    protected void parse(Local folder) throws AccessDeniedException {
         for(Local settings : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {

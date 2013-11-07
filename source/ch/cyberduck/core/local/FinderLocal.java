@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -277,7 +278,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public AttributedList<Local> list() {
+    public AttributedList<Local> list() throws AccessDeniedException {
         if(Preferences.instance().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
             final ObjCObjectByReference error = new ObjCObjectByReference();
@@ -285,7 +286,7 @@ public class FinderLocal extends Local {
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
                 log.error(String.format("Error listing children for folder %s %s", this, f));
-                return children;
+                throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
             }
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;

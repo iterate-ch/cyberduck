@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +68,7 @@ public class Receipt extends AbstractLicense {
         }
 
         @Override
-        protected License open() {
+        protected License open() throws AccessDeniedException {
             final Local folder = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(folder.exists()) {
                 for(Local key : folder.list().filter(new Filter<Local>() {
@@ -86,7 +87,13 @@ public class Receipt extends AbstractLicense {
 
         @Override
         protected License create() {
-            return this.open();
+            try {
+                return this.open();
+            }
+            catch(AccessDeniedException e) {
+                log.error(String.format("Failure finding receipt %s", e.getMessage()));
+            }
+            return LicenseFactory.EMPTY_LICENSE;
         }
     }
 

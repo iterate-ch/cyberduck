@@ -25,6 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +67,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local folder) {
+    protected void parse(Local folder) throws AccessDeniedException {
         for(Local child : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {

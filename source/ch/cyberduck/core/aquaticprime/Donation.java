@@ -19,6 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
@@ -44,7 +45,13 @@ public class Donation extends AbstractLicense implements LicenseVerifier {
 
         @Override
         protected License create() {
-            return this.open();
+            try {
+                return this.open();
+            }
+            catch(AccessDeniedException e) {
+                log.error(String.format("Failure finding receipt %s", e.getMessage()));
+            }
+            return LicenseFactory.EMPTY_LICENSE;
         }
     }
 

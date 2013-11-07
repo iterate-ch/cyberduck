@@ -26,6 +26,10 @@ import ch.cyberduck.core.LocaleFactory;
 public class AccessDeniedException extends BackgroundException {
     private static final long serialVersionUID = 1479727475235108160L;
 
+    public AccessDeniedException(final String detail) {
+        super(detail);
+    }
+
     public AccessDeniedException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Access denied", "Credentials"), detail, cause);
     }

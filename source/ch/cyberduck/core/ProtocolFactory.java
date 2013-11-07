@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
@@ -75,41 +76,51 @@ public final class ProtocolFactory {
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
-            for(Local f : bundled.list().filter(new Filter<Local>() {
-                @Override
-                public boolean accept(final Local file) {
-                    return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+            try {
+                for(Local f : bundled.list().filter(new Filter<Local>() {
+                    @Override
+                    public boolean accept(final Local file) {
+                        return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+                    }
+                })) {
+                    final Profile profile = ProfileReaderFactory.get().read(f);
+                    if(null == profile.getProtocol()) {
+                        continue;
+                    }
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Adding bundled protocol %s", profile));
+                    }
+                    // Replace previous possibly disable protocol in Preferences
+                    register(profile);
                 }
-            })) {
-                final Profile profile = ProfileReaderFactory.get().read(f);
-                if(null == profile.getProtocol()) {
-                    continue;
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Adding bundled protocol %s", profile));
-                }
-                // Replace previous possibly disable protocol in Preferences
-                register(profile);
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure reading collection %s %s", bundled, e.getMessage()));
             }
         }
         // Load thirdparty protocols
         final Local library = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
         if(library.exists()) {
-            for(Local profile : library.list().filter(new Filter<Local>() {
-                @Override
-                public boolean accept(final Local file) {
-                    return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+            try {
+                for(Local profile : library.list().filter(new Filter<Local>() {
+                    @Override
+                    public boolean accept(final Local file) {
+                        return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+                    }
+                })) {
+                    final Profile protocol = ProfileReaderFactory.get().read(profile);
+                    if(null == protocol) {
+                        continue;
+                    }
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Adding thirdparty protocol %s", protocol));
+                    }
+                    // Replace previous possibly disable protocol in Preferences
+                    register(protocol);
                 }
-            })) {
-                final Profile protocol = ProfileReaderFactory.get().read(profile);
-                if(null == protocol) {
-                    continue;
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Adding thirdparty protocol %s", protocol));
-                }
-                // Replace previous possibly disable protocol in Preferences
-                register(protocol);
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure reading collection %s %s", library, e.getMessage()));
             }
         }
     }
@@ -157,7 +168,7 @@ public final class ProtocolFactory {
             }
         }
         for(Protocol protocol : getKnownProtocols()) {
-            for(String scheme: protocol.getSchemes()) {
+            for(String scheme : protocol.getSchemes()) {
                 if(scheme.equals(identifier)) {
                     return protocol;
                 }

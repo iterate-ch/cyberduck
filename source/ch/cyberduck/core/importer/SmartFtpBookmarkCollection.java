@@ -25,11 +25,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.InvalidDateException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.date.ISO8601DateParser;
-import ch.cyberduck.core.date.InvalidDateException;
 
 /**
  * @version $Id$
@@ -55,7 +56,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local folder) {
+    protected void parse(Local folder) throws AccessDeniedException {
         for(Local child : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
