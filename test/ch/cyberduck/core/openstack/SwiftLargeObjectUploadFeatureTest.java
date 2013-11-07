@@ -77,6 +77,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
             assertEquals(1048576 + 1048576 + 1, status.getCurrent());
             assertTrue(status.isComplete());
+            assertFalse(status.isCanceled());
 
             assertTrue(new SwiftFindFeature(session).find(test));
             final byte[] buffer = new byte[content.length];

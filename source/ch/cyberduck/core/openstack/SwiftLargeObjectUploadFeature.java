@@ -111,9 +111,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
         // because we should only continue when all segments have uploaded successfully
-        final List<StorageObject> completedSegments = new ArrayList<StorageObject>();
+        final List<StorageObject> completed = new ArrayList<StorageObject>();
         // Submit file segments for concurrent upload
-        final List<Future<StorageObject>> futureSegments = new ArrayList<Future<StorageObject>>();
+        final List<Future<StorageObject>> segments = new ArrayList<Future<StorageObject>>();
         long remaining = status.getLength();
         long offset = 0;
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
@@ -130,7 +130,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     final StorageObject stored = new StorageObject(containerService.getKey(segment));
                     stored.setMd5sum(existingSegment.attributes().getChecksum());
                     stored.setSize(existingSegment.attributes().getSize());
-                    completedSegments.add(stored);
+                    completed.add(stored);
                     skip = true;
                 }
             }
@@ -138,7 +138,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             if(!skip) {
                 final Future<StorageObject> futureSegment = this.submitSegment(segment, local,
                         throttle, listener, status, offset, length);
-                futureSegments.add(futureSegment);
+                segments.add(futureSegment);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
@@ -148,8 +148,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             remaining -= length;
         }
         try {
-            for(Future<StorageObject> futureSegment : futureSegments) {
-                completedSegments.add(futureSegment.get());
+            for(Future<StorageObject> futureSegment : segments) {
+                completed.add(futureSegment.get());
             }
         }
         catch(InterruptedException e) {
@@ -170,7 +170,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         // then create or update the manifest.
         try {
             // Static Large Object.
-            final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completedSegments);
+            final String manifest = segmentService.manifest(containerService.getContainer(file).getName(), completed);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
