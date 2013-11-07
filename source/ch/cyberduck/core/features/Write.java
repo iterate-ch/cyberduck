@@ -52,18 +52,40 @@ public interface Write {
          */
         public boolean append;
 
+        public boolean override;
+
         /**
          * Remote file size
          */
         public Long size = 0L;
 
-        public Append() {
-            //
+        /**
+         * No file exists
+         */
+        private Append() {
+            this.override = false;
+            this.append = false;
         }
 
+        /**
+         * Append
+         *
+         * @param size Remote file size
+         */
         public Append(final Long size) {
             this.append = true;
             this.size = size;
         }
+
+        /**
+         * Override
+         */
+        private Append(final boolean override) {
+            this.override = override;
+            this.append = false;
+        }
     }
+
+    public static final Append override = new Append(true);
+    public static final Append notfound = new Append();
 }

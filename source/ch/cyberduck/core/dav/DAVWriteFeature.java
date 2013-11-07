@@ -76,7 +76,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     private ResponseOutputStream<String> write(final Path file, final Map<String, String> headers, final TransferStatus status)
-    throws BackgroundException {
+            throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
@@ -109,6 +109,6 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         if(new DAVFindFeature(session).withCache(cache).find(file)) {
             return new Append(new DefaultAttributesFeature(session).withCache(cache).find(file).getSize());
         }
-        return new Append();
+        return Write.notfound;
     }
 }

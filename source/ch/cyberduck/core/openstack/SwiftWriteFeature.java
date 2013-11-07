@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -57,15 +58,23 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private SwiftObjectListService listService;
 
+    private Find finder;
+
     public SwiftWriteFeature(final SwiftSession session) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session));
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
+        this(session, listService, segmentService, new SwiftFindFeature(session));
+    }
+
+    public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
+                             final SwiftSegmentService segmentService, final Find finder) {
         this.session = session;
         this.listService = listService;
         this.segmentService = segmentService;
+        this.finder = finder;
     }
 
     @Override
@@ -133,13 +142,16 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     new Path(containerService.getContainer(file), segmentService.basename(file, length), Path.DIRECTORY_TYPE),
                     new DisabledListProgressListener());
             if(segments.isEmpty()) {
-                return new Append();
+                return Write.notfound;
             }
             for(Path segment : segments) {
                 size += segment.attributes().getSize();
             }
             return new Append(size);
         }
-        return new Append();
+        if(finder.withCache(cache).find(file)) {
+            return Write.override;
+        }
+        return Write.notfound;
     }
 }

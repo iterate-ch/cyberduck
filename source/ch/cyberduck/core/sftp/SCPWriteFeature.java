@@ -58,6 +58,9 @@ public class SCPWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        return new Append();
+        if(new SFTPFindFeature(session).withCache(cache).find(file)) {
+            return Write.override;
+        }
+        return Write.notfound;
     }
 }

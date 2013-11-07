@@ -91,6 +91,6 @@ public class SFTPWriteFeature implements Write {
         if(new SFTPFindFeature(session).withCache(cache).find(file)) {
             return new Append(new DefaultAttributesFeature(session).withCache(cache).find(file).getSize());
         }
-        return new Append();
+        return Write.notfound;
     }
 }

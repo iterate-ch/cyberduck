@@ -148,6 +148,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 return new Append(size);
             }
         }
-        return new Append();
+        if(new S3FindFeature(session).withCache(cache).find(file)) {
+            return Write.override;
+        }
+        return Write.notfound;
     }
 }

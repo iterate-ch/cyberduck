@@ -1,18 +1,8 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -25,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -68,12 +59,6 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testAppendBelowLimit() throws Exception {
-        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
-        assertFalse(new SwiftWriteFeature(null).append(new Path("/p", Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768 - 1, Cache.empty()).append);
-    }
-
-    @Test
     public void testAppendNoSegmentFound() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
@@ -81,16 +66,22 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
-        assertFalse(new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+        final AtomicBoolean list = new AtomicBoolean();
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+                list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768, Cache.empty()).append);
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768, Cache.empty());
+        assertTrue(list.get());
+        assertFalse(append.append);
+        assertFalse(append.override);
+        assertEquals(Write.notfound, append);
     }
 
     @Test
-    public void testAppend() throws Exception {
+    public void testAppendSegmentFound() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
@@ -99,9 +90,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final SwiftSegmentService segments = new SwiftSegmentService(session, ".test");
+        final AtomicBoolean list = new AtomicBoolean();
         final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+                list.set(true);
                 final Path segment1 = new Path(container, segments.name(file, 0L, 1), Path.FILE_TYPE);
                 segment1.attributes().setSize(1L);
                 final Path segment2 = new Path(container, segments.name(file, 0L, 2), Path.FILE_TYPE);
@@ -111,5 +104,80 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         }, segments).append(file, 2L * 1024L * 1024L * 1024L - 32768, Cache.empty());
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
+        assertTrue(list.get());
+    }
+
+    @Test
+    public void testOverride() throws Exception {
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final AtomicBoolean list = new AtomicBoolean();
+        final AtomicBoolean find = new AtomicBoolean();
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+            @Override
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+                list.set(true);
+                return new AttributedList<Path>(Collections.<Path>singletonList(file));
+            }
+        }, new SwiftSegmentService(session), new Find() {
+            @Override
+            public boolean find(final Path file) throws BackgroundException {
+                find.set(true);
+                return true;
+            }
+
+            @Override
+            public Find withCache(final Cache cache) {
+                return this;
+            }
+        }
+        ).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 1024L, Cache.empty());
+        assertFalse(append.append);
+        assertTrue(append.override);
+        assertEquals(Write.override, append);
+        assertFalse(list.get());
+        assertTrue(find.get());
+    }
+
+    @Test
+    public void testNotFound() throws Exception {
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final AtomicBoolean list = new AtomicBoolean();
+        final AtomicBoolean find = new AtomicBoolean();
+        final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
+            @Override
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+                list.set(true);
+                return new AttributedList<Path>(Collections.<Path>singletonList(file));
+            }
+        }, new SwiftSegmentService(session), new Find() {
+            @Override
+            public boolean find(final Path file) throws BackgroundException {
+                find.set(true);
+                return false;
+            }
+
+            @Override
+            public Find withCache(final Cache cache) {
+                return this;
+            }
+        }
+        ).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 1024L, Cache.empty());
+        assertFalse(append.append);
+        assertFalse(append.override);
+        assertEquals(Write.notfound, append);
+        assertFalse(list.get());
+        assertTrue(find.get());
     }
 }

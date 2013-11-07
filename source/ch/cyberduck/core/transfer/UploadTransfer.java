@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -141,10 +142,13 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             final Find find = session.getFeature(Find.class);
-            for(Path upload : this.getRoots()) {
-                if(find.find(upload)) {
-                    if(upload.attributes().isDirectory()) {
-                        if(this.list(session, upload, new DisabledListProgressListener()).isEmpty()) {
+            for(Path f : this.getRoots()) {
+                final Write write = session.getFeature(Write.class);
+                final Write.Append append = write.append(f, f.getLocal().attributes().getSize(), Cache.empty());
+                if(append.override || append.append) {
+                    // Found remote file
+                    if(f.attributes().isDirectory()) {
+                        if(this.list(session, f, new DisabledListProgressListener()).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
