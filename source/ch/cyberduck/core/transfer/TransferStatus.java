@@ -97,7 +97,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @return Number of bytes transferred
      */
-    public long getCurrent() {
+    public synchronized long getCurrent() {
         return current;
     }
 
@@ -116,7 +116,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         this.setCurrent(current + transferred);
     }
 
-    public TransferStatus current(final long transferred) {
+    public synchronized TransferStatus current(final long transferred) {
         this.current = transferred;
         return this;
     }
