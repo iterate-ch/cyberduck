@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.*;
@@ -53,24 +54,22 @@ public class StreamCopierTest extends AbstractTestCase {
 
     @Test
     public void testTransferInterrupt() throws Exception {
-        final Path p = new Path("/t", Path.FILE_TYPE);
-        final TransferStatus status = new TransferStatus();
-        final CyclicBarrier lock = new CyclicBarrier(2);
-        final CyclicBarrier exit = new CyclicBarrier(2);
-        status.setLength(432768L);
-        new Thread(new Runnable() {
+        this.repeat(new Callable<Object>() {
             @Override
-            public void run() {
-                try {
-                    new StreamCopier(status, status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
-                            new StreamListener() {
+            public Object call() throws Exception {
+                final Path p = new Path("/t", Path.FILE_TYPE);
+                final TransferStatus status = new TransferStatus();
+                final CyclicBarrier lock = new CyclicBarrier(2);
+                final CyclicBarrier exit = new CyclicBarrier(2);
+                status.setLength(432768L);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            new StreamCopier(status, new StreamProgress() {
                                 @Override
-                                public void sent(long bytes) {
-                                    //
-                                }
-
-                                @Override
-                                public void recv(long bytes) {
+                                public void progress(final long bytes) {
+                                    status.progress(bytes);
                                     try {
                                         lock.await();
                                         exit.await();
@@ -82,21 +81,25 @@ public class StreamCopierTest extends AbstractTestCase {
                                         fail(e.getMessage());
                                     }
                                 }
-                            }, -1);
-                }
-                catch(IOException e) {
-                    fail();
-                }
-                catch(BackgroundException e) {
-                    assertTrue(e instanceof ConnectionCanceledException);
-                }
+                            }).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
+                                    new DisabledStreamListener(), -1);
+                        }
+                        catch(IOException e) {
+                            fail();
+                        }
+                        catch(BackgroundException e) {
+                            assertTrue(e instanceof ConnectionCanceledException);
+                        }
+                    }
+                }).start();
+                lock.await();
+                status.setCanceled();
+                exit.await();
+                assertFalse(status.isComplete());
+                assertTrue(status.isCanceled());
+                assertEquals(32768L, status.getCurrent());
+                return null;
             }
-        }).start();
-        lock.await();
-        status.setCanceled();
-        exit.await();
-        assertFalse(status.isComplete());
-        assertTrue(status.isCanceled());
-        assertEquals(32768L, status.getCurrent());
+        }, 10);
     }
 }
