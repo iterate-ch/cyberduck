@@ -130,9 +130,18 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
         }
 
+        private bool IsFiltered(Path p)
+        {
+            return !_status.ContainsKey(p);
+        }
+
         public CheckState GetCheckState(Object p)
         {
             Path path = (Path) p;
+            if (IsFiltered(path))
+            {
+                return CheckState.Unchecked;
+            }
             if (_selected.ContainsKey(path))
             {
                 return _selected[path];

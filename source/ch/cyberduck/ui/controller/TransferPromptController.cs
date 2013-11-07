@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
 
@@ -55,6 +56,16 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         protected abstract string TransferName { get; }
+
+        public override void start(BackgroundAction action)
+        {
+            Invoke(delegate { View.StartActivityAnimation(); });
+        }
+
+        public override void stop(BackgroundAction action)
+        {
+            Invoke(delegate { View.StopActivityAnimation(); });            
+        }
 
         public override void message(string msg)
         {
@@ -208,6 +219,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Preferences.instance()
                        .setProperty(String.Format("queue.prompt.{0}.action.default", Transfer.getType().name()),
                                     selected.toString());
+            Action = selected;
             TransferPromptModel.SetAction(selected);
             ReloadData();
         }

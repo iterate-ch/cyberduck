@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,6 @@ using BrightIdeasSoftware;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -235,11 +234,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter
         {
-            set
-            {
-                new TypedColumn<Path>(treeColumnName)
-                    {ImageGetter = value};
-            }
+            set { new TypedColumn<Path>(treeColumnName) {ImageGetter = value}; }
         }
 
         public TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter
@@ -280,11 +275,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void StartActivityAnimation()
         {
             animation.Visible = true;
+            browser.Enabled = false;
         }
 
         public void StopActivityAnimation()
         {
             animation.Visible = false;
+            browser.Enabled = true;
         }
 
         public string StatusLabel
