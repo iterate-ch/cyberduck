@@ -1,22 +1,15 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -135,5 +128,97 @@ public class ResumeFilterTest extends AbstractTestCase {
         assertFalse(status.isAppend());
         assertTrue(status.isRename());
         assertEquals(0L, status.getCurrent());
+    }
+
+    @Test
+    public void testAppendEqualSize() throws Exception {
+        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true), new Write() {
+            @Override
+            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                return null;
+            }
+
+            @Override
+            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                return new Append(length);
+            }
+        });
+        final long size = 3L;
+        final Path t = new Path("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal(null, "t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("t") {
+                    @Override
+                    public long getSize() {
+                        return size;
+                    }
+                };
+            }
+        });
+        assertFalse(f.accept(t, new TransferStatus().exists(true)));
+    }
+
+    @Test
+    public void testAppendSmallerSize() throws Exception {
+        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true), new Write() {
+            @Override
+            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                return null;
+            }
+
+            @Override
+            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                return new Append(length - 1);
+            }
+        });
+        final long size = 3L;
+        final Path t = new Path("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal(null, "t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("t") {
+                    @Override
+                    public long getSize() {
+                        return size;
+                    }
+                };
+            }
+        });
+        assertTrue(f.accept(t, new TransferStatus().exists(true)));
+        assertEquals(3L, f.prepare(t, new TransferStatus().exists(true)).getLength());
+        assertEquals(2L, f.prepare(t, new TransferStatus().exists(true)).getCurrent());
+    }
+
+    @Test
+    public void testAppendLargerSize() throws Exception {
+        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true), new Write() {
+            @Override
+            public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                return null;
+            }
+
+            @Override
+            public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                return new Append(length + 1);
+            }
+        });
+        final long size = 3L;
+        final Path t = new Path("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal(null, "t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("t") {
+                    @Override
+                    public long getSize() {
+                        return size;
+                    }
+                };
+            }
+        });
+        assertFalse(f.accept(t, new TransferStatus().exists(true)));
     }
 }

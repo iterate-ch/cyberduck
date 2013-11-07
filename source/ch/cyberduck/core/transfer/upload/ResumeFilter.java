@@ -39,8 +39,13 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        this(symlinkResolver, session, options, session.getFeature(Write.class));
+    }
+
+    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options,
+                        final Write write) {
         super(symlinkResolver, session, options);
-        this.write = session.getFeature(Write.class);
+        this.write = write;
     }
 
     @Override
@@ -70,7 +75,8 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(file.attributes().isFile()) {
             if(parent.isExists()) {
                 final Write.Append append = write.append(file, status.getLength(), cache);
-                if(append.append) {
+                final long local = file.getLocal().attributes().getSize();
+                if(append.append && append.size <= local) {
                     // Append to existing file
                     status.setAppend(true);
                     status.setCurrent(append.size);
