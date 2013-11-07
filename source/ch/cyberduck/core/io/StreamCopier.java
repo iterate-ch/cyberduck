@@ -66,7 +66,7 @@ public final class StreamCopier {
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             final byte[] chunk = new byte[chunksize];
-            long bytesTransferred = 0;
+            long count = 0;
             while(!cancel.isCanceled()) {
                 final int read = bi.read(chunk, 0, chunksize);
                 if(-1 == read) {
@@ -80,8 +80,8 @@ public final class StreamCopier {
                     bo.write(chunk, 0, read);
                     progress.progress(read);
                     listener.sent(read);
-                    bytesTransferred += read;
-                    if(limit == bytesTransferred) {
+                    count += read;
+                    if(limit == count) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Limit %d reached reading from stream", limit));
                         }
