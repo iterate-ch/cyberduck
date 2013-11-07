@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -141,7 +140,6 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
-            final Find find = session.getFeature(Find.class);
             for(Path f : this.getRoots()) {
                 final Write write = session.getFeature(Write.class);
                 final Write.Append append = write.append(f, f.getLocal().attributes().getSize(), Cache.empty());
