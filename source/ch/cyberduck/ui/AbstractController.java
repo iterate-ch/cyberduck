@@ -166,9 +166,12 @@ public abstract class AbstractController implements Controller {
                 log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
             }
             finally {
-                // Remove from registry before retry
-                registry.remove(action);
-                action.finish();
+                try {
+                    action.finish();
+                }
+                finally {
+                    registry.remove(action);
+                }
                 // Invoke the cleanup on the main thread to let the action synchronize the user interface
                 invoke(new ControllerMainAction(AbstractController.this) {
                     @Override
