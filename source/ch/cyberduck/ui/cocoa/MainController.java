@@ -201,7 +201,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Set name of key in menu item
      */
     private void updateLicenseMenu() {
-        License key = LicenseFactory.find();
+        final License key = LicenseFactory.find();
         if(null == Updater.getFeed() && key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
@@ -212,7 +212,7 @@ public class MainController extends BundleController implements NSApplication.De
                     NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
             );
             this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(key.toString(), KEY_FONT_ATTRIBUTES)
+                    NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("Registered to {0}", "License"), key.getName()), KEY_FONT_ATTRIBUTES)
             );
         }
     }
