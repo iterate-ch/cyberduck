@@ -148,7 +148,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             if(null == en0) {
                 // Interface is not found when link is down #fail
                 log.warn("No network interface en0");
-                return false;
+                return true;
             }
             else {
                 final byte[] mac = en0.getHardwareAddress();
