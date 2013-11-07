@@ -29,7 +29,6 @@ Windows
 Compiling
 ---------
 
-- On Windows, run 'ant dll' initially.
 - Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml is included respectively for native compilation.
 - On Mac, to create an application with a bundled runtime, execute
 
