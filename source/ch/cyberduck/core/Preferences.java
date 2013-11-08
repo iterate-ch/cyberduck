@@ -784,6 +784,7 @@ public abstract class Preferences {
         defaults.put(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
         defaults.put("connection.ssl.protocols", "SSLv3, TLSv1");
+        defaults.put("connection.ssl.x509.revocation.online", String.valueOf(false));
 
         /**
          * Transfer read buffer size

@@ -37,8 +37,7 @@ namespace Ch.Cyberduck.Core
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();
-            //todo Online revocation check. Preference.
-            chain.ChainPolicy.RevocationMode = X509RevocationMode.Offline; // | X509RevocationMode.Online
+            chain.ChainPolicy.RevocationMode = Preferences.instance().getBoolean("connection.ssl.x509.revocation.online") ? X509RevocationMode.Online : X509RevocationMode.Offline;
             chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 0, 0, 10); // set timeout to 10 seconds
             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
 
