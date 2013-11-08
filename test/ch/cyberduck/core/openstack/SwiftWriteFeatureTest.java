@@ -33,6 +33,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
+        status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
@@ -73,7 +74,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L - 32768, Cache.empty());
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L, Cache.empty());
         assertTrue(list.get());
         assertFalse(append.append);
         assertFalse(append.override);
@@ -101,7 +102,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
-        }, segments).append(file, 2L * 1024L * 1024L * 1024L - 32768, Cache.empty());
+        }, segments).append(file, 2L * 1024L * 1024L * 1024L, Cache.empty());
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
         assertTrue(list.get());
