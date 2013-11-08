@@ -73,16 +73,14 @@ namespace Ch.Cyberduck.Core.Local
             string path = getAbsolute();
             if (System.IO.File.Exists(path))
             {
-                Log.debug(string.Format("File {0} exists", path));
                 return true;
             }
-            Log.warn(path + " is a non-existing file");
             bool directory = Directory.Exists(path);
             if (directory)
             {
                 return true;
             }
-            Log.warn(path + " is a non-existing folder");
+            Log.warn(path + " is a non-existing file");
             return false;
         }
 
