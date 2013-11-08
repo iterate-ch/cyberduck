@@ -2306,7 +2306,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, session,
+                background(new WorkerBackgroundAction(BrowserController.this, session,
                         new MoveWorker(session, selected) {
                             @Override
                             public void cleanup(final Boolean result) {
@@ -2486,7 +2486,7 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(this, session,
+        this.background(new WorkerBackgroundAction(this, session,
                 new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                     @Override
                     public void cleanup(final Boolean result) {
@@ -2497,7 +2497,7 @@ public class BrowserController extends WindowController
     }
 
     public void revertPaths(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(this, session,
+        this.background(new WorkerBackgroundAction(this, session,
                 new RevertWorker(session, files) {
                     @Override
                     public void cleanup(final Boolean result) {
@@ -3283,7 +3283,7 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
+                background(new WorkerBackgroundAction(BrowserController.this, session,
                         new MountWorker(session, cache, new PromptLimitedListProgressListener(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
