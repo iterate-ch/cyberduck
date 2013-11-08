@@ -48,6 +48,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
+        status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
