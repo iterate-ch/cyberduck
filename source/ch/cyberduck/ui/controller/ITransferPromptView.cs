@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<Path>.TypedImageGetterDelegate ModelSyncGetter { set; }
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
         string StatusLabel { set; }
+        IList<Path> VisiblePaths { get; }
         void SetModel(IEnumerable<Path> model);
         void RefreshBrowserObject(Path path);
         void PopulateActions(IDictionary<TransferAction, string> actions);

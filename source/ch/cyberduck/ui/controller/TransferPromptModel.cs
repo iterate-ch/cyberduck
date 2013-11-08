@@ -137,11 +137,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool IsSelected(Path p)
         {
-            if (_selected.ContainsKey(path))
+            if (_selected.ContainsKey(p))
             {
-                return _selected[path];
+                return _selected[p] == CheckState.Checked;
             }
-            return CheckState.Checked;
+            return true;
         }
 
         public CheckState GetCheckState(Object p)
@@ -151,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return CheckState.Unchecked;
             }
-            return IsSelected(path);
+            return IsSelected(path) ? CheckState.Checked : CheckState.Unchecked;
         }
 
         public CheckState SetCheckState(object p, CheckState newValue)

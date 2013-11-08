@@ -57,16 +57,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected abstract string TransferName { get; }
 
-        public override void start(BackgroundAction action)
-        {
-            Invoke(delegate { View.StartActivityAnimation(); });
-        }
-
-        public override void stop(BackgroundAction action)
-        {
-            Invoke(delegate { View.StopActivityAnimation(); });            
-        }
-
         public override void message(string msg)
         {
             Invoke(delegate { View.StatusLabel = msg; });
@@ -136,6 +126,16 @@ namespace Ch.Cyberduck.Ui.Controller
         public bool isSelected(Path p)
         {
             return TransferPromptModel.IsSelected(p);
+        }
+
+        public override void start(BackgroundAction action)
+        {
+            Invoke(delegate { View.StartActivityAnimation(); });
+        }
+
+        public override void stop(BackgroundAction action)
+        {
+            Invoke(delegate { View.StopActivityAnimation(); });
         }
 
         public void UpdateStatusLabel()
@@ -232,9 +232,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReloadData(List<Path> roots)
         {
-            foreach (Path p in roots)
+            //clear selection before resetting model. Otherwise we have weird selection effects.
+            View.SetModel(roots);
+            List<Path> toUpdate = new List<Path>();
+            foreach (Path path in View.VisiblePaths)
             {
-                View.RefreshBrowserObject(p);
+                if (path.attributes().isDirectory())
+                {
+                    View.RefreshBrowserObject(path);
+                }
             }
             UpdateStatusLabel();
         }

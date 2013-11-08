@@ -115,6 +115,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public IList<Path> VisiblePaths
+        {
+            get
+            {
+                int count = browser.GetItemCount();
+                IList<Path> paths = new List<Path>(count);
+                for (int i = 0; i < browser.GetItemCount(); i++)
+                {
+                    paths.Add((Path) browser.GetModelObject(i));
+                }
+                return paths;
+            }
+        }
+
         public bool DetailsVisible
         {
             get { return _expanded; }
