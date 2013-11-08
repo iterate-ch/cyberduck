@@ -44,6 +44,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
+        status.setMime("text/plain");
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));

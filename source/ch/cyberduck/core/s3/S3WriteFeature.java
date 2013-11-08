@@ -121,7 +121,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      */
     protected S3Object getDetails(final String key, final String mime, final String checksum) {
         final S3Object object = new S3Object(key);
-        object.setContentType(mime);
+        if(StringUtils.isNotBlank(mime)) {
+            object.setContentType(mime);
+        }
         if(StringUtils.isNotBlank(checksum)) {
             object.setMd5Hash(ServiceUtils.fromHex(checksum));
         }
