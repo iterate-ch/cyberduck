@@ -38,9 +38,28 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testDictionaryRegion() {
-        Path path = new Path("/path", Path.FILE_TYPE);
+        Path path = new Path("/path/f", Path.FILE_TYPE);
         path.attributes().setRegion("r");
-        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
+        final Path deserialized = new Path(path.serialize(SerializerFactory.get()));
+        assertEquals(path, deserialized);
+        assertEquals("r", deserialized.attributes().getRegion());
+        assertEquals("r", deserialized.getParent().attributes().getRegion());
+    }
+
+    @Test
+    public void testPopulateRegion() {
+        {
+            Path container = new Path("test", Path.DIRECTORY_TYPE);
+            container.attributes().setRegion("DFW");
+            Path path = new Path(container, "f", Path.FILE_TYPE);
+            assertEquals("DFW", path.attributes().getRegion());
+        }
+        {
+            Path container = new Path("test", Path.DIRECTORY_TYPE);
+            container.attributes().setRegion("DFW");
+            Path path = new Path(container, new NullLocal("/", "f"));
+            assertEquals("DFW", path.attributes().getRegion());
+        }
     }
 
     @Test
