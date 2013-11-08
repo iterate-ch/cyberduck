@@ -33,9 +33,21 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
         t.attributes().setVersionId("1");
         assertEquals("2-1/", new DefaultPathReference(t).unique());
         t.attributes().setRegion("r");
-        assertEquals("2-r1/", new DefaultPathReference(t).unique());
+        assertEquals("2-1/", new DefaultPathReference(t).unique());
         t.attributes().setVersionId(null);
-        assertEquals("2-r/", new DefaultPathReference(t).unique());
+        assertEquals("2-/", new DefaultPathReference(t).unique());
+    }
+
+    @Test
+    public void testUniqueContainer() throws Exception {
+        final Path t = new Path("/container", Path.DIRECTORY_TYPE);
+        assertEquals("2-/container", new DefaultPathReference(t).unique());
+        t.attributes().setVersionId("1");
+        assertEquals("2-1/container", new DefaultPathReference(t).unique());
+        t.attributes().setRegion("r");
+        assertEquals("2-r1/container", new DefaultPathReference(t).unique());
+        t.attributes().setVersionId(null);
+        assertEquals("2-r/container", new DefaultPathReference(t).unique());
     }
 
     @Test

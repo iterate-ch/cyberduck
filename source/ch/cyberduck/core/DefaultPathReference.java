@@ -27,6 +27,9 @@ public class DefaultPathReference implements PathReference<String> {
 
     private Path path;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public DefaultPathReference(final Path path) {
         this.path = path;
     }
@@ -46,7 +49,9 @@ public class DefaultPathReference implements PathReference<String> {
     public String attributes() {
         String qualifier = StringUtils.EMPTY;
         if(StringUtils.isNotBlank(path.attributes().getRegion())) {
-            qualifier += path.attributes().getRegion();
+            if(containerService.isContainer(path)) {
+                qualifier += path.attributes().getRegion();
+            }
         }
         if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
             qualifier += path.attributes().getVersionId();
