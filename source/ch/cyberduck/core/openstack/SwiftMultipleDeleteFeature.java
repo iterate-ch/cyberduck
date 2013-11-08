@@ -75,7 +75,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             try {
                 for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
-                    final Region region = session.getRegion(container.getKey());
+                    final Region region = new SwiftRegionService(session).lookup(container.getKey());
                     final List<String> keys = container.getValue();
                     session.getClient().deleteObjects(region, container.getKey().getName(), keys);
                 }
@@ -92,7 +92,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                             file.getName()));
                     // Finally delete bucket itself
                     try {
-                        session.getClient().deleteContainer(session.getRegion(containerService.getContainer(file)),
+                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName());
                     }
                     catch(GenericException e) {

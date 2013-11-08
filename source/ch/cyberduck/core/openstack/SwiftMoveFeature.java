@@ -51,7 +51,7 @@ public class SwiftMoveFeature implements Move {
         try {
             if(file.attributes().isFile()) {
                 new SwiftCopyFeature(session).copy(file, renamed);
-                session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.attributes().isDirectory()) {
@@ -59,7 +59,7 @@ public class SwiftMoveFeature implements Move {
                     this.move(i, new Path(renamed, i.getName(), i.attributes().getType()), false);
                 }
                 try {
-                    session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                    session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(NotFoundException e) {

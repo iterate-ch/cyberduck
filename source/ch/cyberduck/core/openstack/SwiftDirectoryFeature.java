@@ -35,10 +35,14 @@ public class SwiftDirectoryFeature implements Directory {
 
     private SwiftSession session;
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
+
+    private SwiftRegionService regionService;
 
     public SwiftDirectoryFeature(final SwiftSession session) {
         this.session = session;
+        this.regionService = new SwiftRegionService(session);
     }
 
     @Override
@@ -51,7 +55,7 @@ public class SwiftDirectoryFeature implements Directory {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level
-                session.getClient().createContainer(session.getRegion(region), file.getName());
+                session.getClient().createContainer(regionService.lookup(region), file.getName());
             }
             else {
                 // Create virtual directory. Use region of parent container.

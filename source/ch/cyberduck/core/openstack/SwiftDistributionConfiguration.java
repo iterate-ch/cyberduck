@@ -73,12 +73,12 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     public void write(final Path container, final Distribution configuration, final LoginController prompt) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
-                session.getClient().updateContainerMetadata(session.getRegion(container),
+                session.getClient().updateContainerMetadata(new SwiftRegionService(session).lookup(container),
                         container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", configuration.getIndexDocument()));
             }
             try {
                 final CDNContainer info
-                        = session.getClient().getCDNContainerInfo(session.getRegion(container), container.getName());
+                        = session.getClient().getCDNContainerInfo(new SwiftRegionService(session).lookup(container), container.getName());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found existing CDN configuration %s", info));
                 }
@@ -88,13 +88,13 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Enable CDN configuration for %s", container));
                 }
-                session.getClient().cdnEnableContainer(session.getRegion(container), container.getName());
+                session.getClient().cdnEnableContainer(new SwiftRegionService(session).lookup(container), container.getName());
             }
             // Toggle content distribution for the container without changing the TTL expiration
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Update CDN configuration for %s", container));
             }
-            session.getClient().cdnUpdateContainer(session.getRegion(container),
+            session.getClient().cdnUpdateContainer(new SwiftRegionService(session).lookup(container),
                     container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
         catch(GenericException e) {
@@ -109,9 +109,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
         try {
             try {
-                final CDNContainer info = session.getClient().getCDNContainerInfo(session.getRegion(container),
+                final CDNContainer info = session.getClient().getCDNContainerInfo(new SwiftRegionService(session).lookup(container),
                         container.getName());
-                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(container.getName()),
+                final Distribution distribution = new Distribution(new SwiftRegionService(session).lookup(container).getStorageUrl(container.getName()),
                         method, info.isEnabled());
                 distribution.setId(info.getName());
                 distribution.setStatus(info.isEnabled() ? LocaleFactory.localizedString("CDN Enabled", "Mosso") : LocaleFactory.localizedString("CDN Disabled", "Mosso"));
@@ -126,7 +126,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 }
                 distribution.setLogging(info.getRetainLogs());
                 distribution.setLoggingContainer(".CDN_ACCESS_LOGS");
-                final ContainerMetadata metadata = session.getClient().getContainerMetaData(session.getRegion(container),
+                final ContainerMetadata metadata = session.getClient().getContainerMetaData(new SwiftRegionService(session).lookup(container),
                         container.getName());
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
@@ -140,7 +140,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
                 }
-                final Distribution distribution = new Distribution(session.getRegion(container).getStorageUrl(container.getName()), method, false);
+                final Distribution distribution = new Distribution(new SwiftRegionService(session).lookup(container).getStorageUrl(container.getName()), method, false);
                 distribution.setStatus(LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 return distribution;
             }

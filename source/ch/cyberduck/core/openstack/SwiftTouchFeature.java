@@ -50,13 +50,13 @@ public class SwiftTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         try {
             if(file.attributes().isDirectory()) {
-                session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
                         new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
                         new HashMap<String, String>());
             }
             else {
-                session.getClient().storeObject(session.getRegion(containerService.getContainer(file)),
+                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
                         new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
                         new HashMap<String, String>());

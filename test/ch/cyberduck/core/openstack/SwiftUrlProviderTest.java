@@ -17,17 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
@@ -106,8 +96,8 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
             new SwiftTouchFeature(session).touch(file);
             final DescriptiveUrlBag list = provider.toUrl(file);
             assertNotNull(list.find(DescriptiveUrl.Type.signed));
-            if(session.accounts.containsKey(session.getRegion(container))) {
-                if(session.accounts.get(session.getRegion(container)).getTempUrlKey() != null) {
+            if(session.accounts.containsKey(new SwiftRegionService(session).lookup(container))) {
+                if(session.accounts.get(new SwiftRegionService(session).lookup(container)).getTempUrlKey() != null) {
                     assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
                 }
             }

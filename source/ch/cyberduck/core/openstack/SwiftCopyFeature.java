@@ -46,7 +46,7 @@ public class SwiftCopyFeature implements Copy {
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             if(source.attributes().isFile()) {
-                session.getClient().copyObject(session.getRegion(containerService.getContainer(source)),
+                session.getClient().copyObject(new SwiftRegionService(session).lookup(containerService.getContainer(source)),
                         containerService.getContainer(source).getName(), containerService.getKey(source),
                         containerService.getContainer(copy).getName(), containerService.getKey(copy));
             }

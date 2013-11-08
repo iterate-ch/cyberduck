@@ -50,11 +50,11 @@ public class SwiftDistributionPurgeFeature implements Purge {
         try {
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    session.getClient().purgeCDNContainer(session.getRegion(containerService.getContainer(file)),
+                    session.getClient().purgeCDNContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                             container.getName(), null);
                 }
                 else {
-                    session.getClient().purgeCDNObject(session.getRegion(containerService.getContainer(file)),
+                    session.getClient().purgeCDNObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                             container.getName(), containerService.getKey(file), null);
                 }
             }

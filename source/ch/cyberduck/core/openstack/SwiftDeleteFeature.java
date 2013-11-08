@@ -53,16 +53,16 @@ public class SwiftDeleteFeature implements Delete {
                     file.getName()));
             try {
                 if(file.attributes().isFile()) {
-                    session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                    session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 else if(file.attributes().isDirectory()) {
                     if(containerService.isContainer(file)) {
-                        session.getClient().deleteContainer(session.getRegion(containerService.getContainer(file)),
+                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName());
                     }
                     else {
-                        session.getClient().deleteObject(session.getRegion(containerService.getContainer(file)),
+                        session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                 }

@@ -48,11 +48,11 @@ public class SwiftReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(status.isAppend()) {
-                return session.getClient().getObject(session.getRegion(containerService.getContainer(file)),
+                return session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         status.getCurrent(), status.getLength());
             }
-            return session.getClient().getObject(session.getRegion(containerService.getContainer(file)),
+            return session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                     containerService.getContainer(file).getName(), containerService.getKey(file));
         }
         catch(GenericException e) {

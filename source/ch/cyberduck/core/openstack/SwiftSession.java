@@ -18,35 +18,14 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
@@ -73,6 +52,9 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
+    private SwiftRegionService regionService
+            = new SwiftRegionService(this);
+
     public SwiftSession(Host h) {
         super(h);
     }
@@ -84,36 +66,6 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public Client connect(final HostKeyController key) throws BackgroundException {
         return new Client(super.connect());
-    }
-
-    protected Region getRegion(final Path container) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Lookup region for container %s", container));
-        }
-        return this.getRegion(container.attributes().getRegion());
-    }
-
-    protected Region getRegion(final String location) {
-        if(null == client) {
-            log.warn("Cannot determine region if not connected");
-            return null;
-        }
-        for(Region region : client.getRegions()) {
-            if(StringUtils.isBlank(region.getRegionId())) {
-                continue;
-            }
-            if(region.getRegionId().equals(location)) {
-                return region;
-            }
-        }
-        log.warn(String.format("Unknown region %s in authentication context", location));
-        if(client.getRegions().isEmpty()) {
-            log.warn("No default region in authentication context");
-            return null;
-        }
-        final Region region = client.getRegions().iterator().next();
-        log.warn(String.format("Fallback to first region found %s", region.getRegionId()));
-        return region;
     }
 
     @Override

@@ -70,7 +70,7 @@ public class SwiftSegmentService {
         try {
             final Path container = containerService.getContainer(file);
             final Map<String, List<StorageObject>> segments
-                    = session.getClient().listObjectSegments(session.getRegion(container),
+                    = session.getClient().listObjectSegments(new SwiftRegionService(session).lookup(container),
                     container.getName(), containerService.getKey(file));
             if(null == segments) {
                 // Not a large object

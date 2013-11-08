@@ -18,17 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +69,7 @@ public class SwiftUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isFile()) {
-            final Region region = session.getRegion(containerService.getContainer(file));
+            final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
             if(null == region) {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }

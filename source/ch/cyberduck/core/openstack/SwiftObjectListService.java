@@ -66,7 +66,7 @@ public class SwiftObjectListService implements ListService {
             List<StorageObject> list;
             do {
                 final Path container = containerService.getContainer(directory);
-                list = session.getClient().listObjectsStartingWith(session.getRegion(container), container.getName(),
+                list = session.getClient().listObjectsStartingWith(new SwiftRegionService(session).lookup(container), container.getName(),
                         containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final Path child = new Path(directory, PathNormalizer.name(object.getName()),

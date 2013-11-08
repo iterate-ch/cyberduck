@@ -53,7 +53,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
             final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-            container.attributes().setRegion(session.getRegion(container).getRegionId());
+            container.attributes().setRegion(new SwiftRegionService(session).lookup(container).getRegionId());
             final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
 
             final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
