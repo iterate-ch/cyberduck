@@ -35,6 +35,6 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
     public void testUniquePath() throws Exception {
         Path one = new Path("a", Path.FILE_TYPE);
         Path second = new Path("a", Path.FILE_TYPE);
-        assertEquals(one.getReference(), second.getReference());
+        assertEquals(new NSObjectPathReference(one), new NSObjectPathReference(second));
     }
 }
