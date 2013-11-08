@@ -116,13 +116,13 @@ public final class BandwidthThrottle {
      *                       (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set rate to %s bytes per second", bytesPerSecond));
-        }
         if(bytesPerSecond < 0) {
             rate = UNLIMITED;
         }
         else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set rate to %s bytes per second", bytesPerSecond));
+            }
             rate = bytesPerSecond;
             bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
         }
