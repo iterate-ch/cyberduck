@@ -61,7 +61,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedSelectionEvent;
         event VoidHandler ToggleDetailsEvent;
 
-        //todo might be pulled out into a separate interface. same for toggledetails.
         void StartActivityAnimation();
         void StopActivityAnimation();
 

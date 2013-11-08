@@ -941,7 +941,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set
             {
                 toolBar.Visible = value;
-                //todo localize
                 toggleToolbarToolStripMenuItem.Text =
                     LocaleFactory.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
                 toggleToolbarMainMenuItem.Text = LocaleFactory.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
