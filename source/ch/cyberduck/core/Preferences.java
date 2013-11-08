@@ -576,11 +576,13 @@ public abstract class Preferences {
          * If set calculate MD5 sum of uploaded file and set metadata header Content-MD5
          */
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
+        defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
         /**
-         * Threshold in bytes. Only use multipart uploads for files more than 10MB
+         * Threshold in bytes. Only use multipart uploads for files more than 100MB
          */
-        defaults.put("s3.upload.multipart.threshold", String.valueOf(10L * 1024L * 1024L));
+        defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.size", String.valueOf(5L * 1024L * 1024L));
 
         /**
@@ -616,9 +618,11 @@ public abstract class Preferences {
 
         defaults.put("openstack.upload.md5", String.valueOf(true));
 
+        defaults.put("openstack.upload.largeobject", String.valueOf(true));
         defaults.put("openstack.upload.largeobject.concurrency", String.valueOf(5));
         defaults.put("openstack.upload.largeobject.segments.prefix", ".file-segments/");
-        defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L - 32768)); // 2GB
+        defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
+        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         defaults.put("openstack.upload.largeobject.size", String.valueOf(5L * 1024L * 1024L));
 
         //doc	Microsoft Word

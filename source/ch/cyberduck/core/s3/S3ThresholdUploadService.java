@@ -46,6 +46,14 @@ public class S3ThresholdUploadService implements Upload {
     public Object upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) throws BackgroundException {
         if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
+            if(!Preferences.instance().getBoolean("s3.upload.multipart")) {
+                // Disabled by user
+                if(status.getLength() < Preferences.instance().getLong("s3.upload.multipart.required.threshold")) {
+                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                    final S3SingleUploadService single = new S3SingleUploadService(session);
+                    return single.upload(file, local, throttle, listener, status);
+                }
+            }
             final S3MultipartUploadService service = new S3MultipartUploadService(session);
             try {
                 return service.upload(file, local, throttle, listener, status);

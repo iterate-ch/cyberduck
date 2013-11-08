@@ -26,11 +26,14 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Joel Wright <joel.wright@sohonet.com>
  * @version $Id$
  */
 public class SwiftThresholdUploadService implements Upload {
+    private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
 
     private SwiftSession session;
 
@@ -57,6 +60,14 @@ public class SwiftThresholdUploadService implements Upload {
                          final TransferStatus status) throws BackgroundException {
         final Upload feature;
         if(status.getLength() > threshold) {
+            if(!Preferences.instance().getBoolean("openstack.upload.largeobject")) {
+                // Disabled by user
+                if(status.getLength() < Preferences.instance().getLong("openstack.upload.largeobject.required.threshold")) {
+                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
+                    final SwiftSmallObjectUploadFeature single = new SwiftSmallObjectUploadFeature(session);
+                    return single.upload(file, local, throttle, listener, status);
+                }
+            }
             feature = new SwiftLargeObjectUploadFeature(session, segment);
         }
         else {
