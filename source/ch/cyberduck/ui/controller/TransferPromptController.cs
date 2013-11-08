@@ -135,7 +135,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool isSelected(Path p)
         {
-            return TransferPromptModel.GetCheckState(p) == CheckState.Checked;
+            return TransferPromptModel.IsSelected(p);
         }
 
         public void UpdateStatusLabel()
