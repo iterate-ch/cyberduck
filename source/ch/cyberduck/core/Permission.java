@@ -113,6 +113,16 @@ public class Permission implements Serializable {
         public String toString() {
             return LocaleFactory.localizedString("--");
         }
+
+        @Override
+        public String getMode() {
+            return LocaleFactory.localizedString("--");
+        }
+
+        @Override
+        public String getSymbol() {
+            return LocaleFactory.localizedString("--");
+        }
     };
 
     public <T> Permission(final T serialized) {

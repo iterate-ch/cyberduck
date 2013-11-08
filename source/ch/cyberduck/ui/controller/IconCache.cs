@@ -130,20 +130,22 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (path.attributes().isDirectory())
             {
-                if (!path.attributes().getPermission().isExecutable())
-                {
-                    return IconForFolder(IconForName("privatefolderbadge", size), size);
-                }
-                if (!path.attributes().getPermission().isReadable())
-                {
-                    if (path.attributes().getPermission().isWritable())
+                if(!Permission.EMPTY.equals(path.attributes().getPermission())) {
+                    if (!path.attributes().getPermission().isExecutable())
                     {
-                        return IconForFolder(IconForName("dropfolderbadge", size), size);
+                        return IconForFolder(IconForName("privatefolderbadge", size), size);
                     }
-                }
-                if (!path.attributes().getPermission().isWritable())
-                {
-                    return IconForFolder(IconForName("readonlyfolderbadge", size), size);
+                    if (!path.attributes().getPermission().isReadable())
+                    {
+                        if (path.attributes().getPermission().isWritable())
+                        {
+                            return IconForFolder(IconForName("dropfolderbadge", size), size);
+                        }
+                    }
+                    if (!path.attributes().getPermission().isWritable())
+                    {
+                        return IconForFolder(IconForName("readonlyfolderbadge", size), size);
+                    }
                 }
                 return IconForFolder(size);
             }

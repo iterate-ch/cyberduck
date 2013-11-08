@@ -20,6 +20,7 @@ package ch.cyberduck.ui.resources;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
@@ -205,19 +206,19 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     /**
-     * @param item File
+     * @param path File
      * @param size Requested size
      * @return Cached icon
      */
     @Override
-    public NSImage fileIcon(final Local item, final Integer size) {
+    public NSImage fileIcon(final Local path, final Integer size) {
         NSImage icon = null;
-        if(item.exists()) {
-            icon = this.load(item.getAbsolute(), size);
+        if(path.exists()) {
+            icon = this.load(path.getAbsolute(), size);
             if(null == icon) {
-                icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
-                icon = this.convert(item.getName(), icon, size);
-                this.put(item.getAbsolute(), icon, size);
+                icon = NSWorkspace.sharedWorkspace().iconForFile(path.getAbsolute());
+                icon = this.convert(path.getName(), icon, size);
+                this.put(path.getAbsolute(), icon, size);
             }
         }
         if(null == icon) {
@@ -247,45 +248,47 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     /**
-     * @param item File
+     * @param path File
      * @param size Requested size
      * @return Cached icon
      */
     @Override
-    public NSImage fileIcon(final Path item, final Integer size) {
-        if(item.attributes().isSymbolicLink()) {
+    public NSImage fileIcon(final Path path, final Integer size) {
+        if(path.attributes().isSymbolicLink()) {
             final NSImage badge = this.iconNamed("aliasbadge.tiff", size);
             badge.setName("aliasbadge");
-            if(item.attributes().isDirectory()) {
+            if(path.attributes().isDirectory()) {
                 return this.folderIcon(size, badge);
             }
-            return this.documentIcon(StringUtils.lowerCase(item.getExtension()), size, badge);
+            return this.documentIcon(StringUtils.lowerCase(path.getExtension()), size, badge);
         }
-        if(item.attributes().isFile()) {
-            if(StringUtils.isEmpty(item.getExtension())) {
-                if(item.attributes().getPermission().isExecutable()) {
+        if(path.attributes().isFile()) {
+            if(StringUtils.isEmpty(path.getExtension())) {
+                if(path.attributes().getPermission().isExecutable()) {
                     return this.iconNamed("executable.tiff", size);
                 }
             }
-            return this.documentIcon(StringUtils.lowerCase(item.getExtension()), size);
+            return this.documentIcon(StringUtils.lowerCase(path.getExtension()), size);
         }
-        if(item.attributes().isDirectory()) {
-            if(!item.attributes().getPermission().isExecutable()) {
-                final NSImage badge = this.iconNamed("privatefolderbadge.tiff", size);
-                badge.setName("privatefolderbadge");
-                return this.folderIcon(size, badge);
-            }
-            if(!item.attributes().getPermission().isReadable()) {
-                if(item.attributes().getPermission().isWritable()) {
-                    final NSImage badge = this.iconNamed("dropfolderbadge.tiff", size);
-                    badge.setName("dropfolderbadge");
+        if(path.attributes().isDirectory()) {
+            if(!Permission.EMPTY.equals(path.attributes().getPermission())) {
+                if(!path.attributes().getPermission().isExecutable()) {
+                    final NSImage badge = this.iconNamed("privatefolderbadge.tiff", size);
+                    badge.setName("privatefolderbadge");
                     return this.folderIcon(size, badge);
                 }
-            }
-            if(!item.attributes().getPermission().isWritable()) {
-                final NSImage badge = this.iconNamed("readonlyfolderbadge.tiff", size);
-                badge.setName("readonlyfolderbadge");
-                return this.folderIcon(size, badge);
+                if(!path.attributes().getPermission().isReadable()) {
+                    if(path.attributes().getPermission().isWritable()) {
+                        final NSImage badge = this.iconNamed("dropfolderbadge.tiff", size);
+                        badge.setName("dropfolderbadge");
+                        return this.folderIcon(size, badge);
+                    }
+                }
+                if(!path.attributes().getPermission().isWritable()) {
+                    final NSImage badge = this.iconNamed("readonlyfolderbadge.tiff", size);
+                    badge.setName("readonlyfolderbadge");
+                    return this.folderIcon(size, badge);
+                }
             }
             return this.folderIcon(size);
         }
