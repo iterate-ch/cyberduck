@@ -91,18 +91,16 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        for(String region : new SwiftLocationFeature(session).getLocations()) {
-            container.attributes().setRegion(region);
-            new SwiftTouchFeature(session).touch(file);
-            final DescriptiveUrlBag list = provider.toUrl(file);
-            assertNotNull(list.find(DescriptiveUrl.Type.signed));
-            if(session.accounts.containsKey(new SwiftRegionService(session).lookup(container))) {
-                if(session.accounts.get(new SwiftRegionService(session).lookup(container)).getTempUrlKey() != null) {
-                    assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
-                }
+        container.attributes().setRegion("DFW");
+        new SwiftTouchFeature(session).touch(file);
+        final DescriptiveUrlBag list = provider.toUrl(file);
+        assertNotNull(list.find(DescriptiveUrl.Type.signed));
+        if(session.accounts.containsKey(new SwiftRegionService(session).lookup(container))) {
+            if(session.accounts.get(new SwiftRegionService(session).lookup(container)).getTempUrlKey() != null) {
+                assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
             }
-            new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
         }
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
         session.close();
     }
 
