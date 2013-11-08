@@ -7,7 +7,7 @@
 "Secret Access Key" = "Slepenais piekļuves kods";
 
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
-"InProgress" = "Virzās uz priekšu";
+"InProgress" = "Procesā";
 
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
 "Deployed" = "Izvietots";
@@ -41,7 +41,7 @@
 
 /* MFA */
 "Multi-Factor Authentication" = "Multi-Faktoru autentificēšana";
-"MFA Serial Number" = "MFA seriāla nummurs";
+"MFA Serial Number" = "MFA seriālais nummurs";
 "MFA Authentication Code" = "MFA autentifikācijas kods";
 
 /* ACL Editing */
@@ -49,30 +49,30 @@
 "Email Address" = "E-pasta adrese";
 
 /* Amazon Related ACL Scopes */
-"Amazon Customer Email Address" = "Amazon Customer Email Address";
+"Amazon Customer Email Address" = "Amazon lietotāja e-pasta adrese";
 
 /* Google Storage Related ACL Scopes */
-"Google Account Email Address" = "Google Account Email Address";
-"Google Group Email Address" = "Google Group Email Address";
-"Google Apps Domain" = "Google Apps Domain";
+"Google Account Email Address" = "Google konta e-pasta adrese";
+"Google Group Email Address" = "Google grupas e-pasta adrese";
+"Google Apps Domain" = "Google aplikāciju domēns";
 
-"http://acs.amazonaws.com/groups/global/AllUsers" ="Everyone";
-"http://acs.amazonaws.com/groups/s3/LogDelivery" = "Log Delivery";
-"AllUsers" ="Everyone";
-"AllAuthenticatedUsers" = "Google Account Holders";
+"http://acs.amazonaws.com/groups/global/AllUsers" ="Ikviens";
+"http://acs.amazonaws.com/groups/s3/LogDelivery" = "Piegādes ieraksti";
+"AllUsers" ="Ikviens";
+"AllAuthenticatedUsers" = "Google konta turētājs";
 
 /* Signed URL Expiry */
-"Signed" = "Signed";
-"Expires {0}" = "Expires {0}";
+"Signed" = "Parakstīts";
+"Expires {0}" = "Beidzas {0}";
 
 /* HTTP Metadata */
-"Custom Header" = "Custom Header";
+"Custom Header" = "Pielāgota galvene";
 
 /* CloudFront object invalidation */
-"{0} invalidations in progress" = "{0} invalidations in progress";
-"{0} invalidations completed" = "{0} invalidations completed";
+"{0} invalidations in progress" = "{0} atzītas par nederīgām ir procesā";
+"{0} invalidations completed" = "{0} atzītas par nederīgām ir pabeigts";
 
 "Bucket name is not DNS compatible" = "Bucket name is not DNS compatible";
 
 /* Lifecyle configuration */
-"after {0} Days" = "after {0} Days";
+"after {0} Days" = "pēc {0} Dienām";
