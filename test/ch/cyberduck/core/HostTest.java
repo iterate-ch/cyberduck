@@ -32,9 +32,14 @@ import static org.junit.Assert.*;
 public class HostTest extends AbstractTestCase {
 
     @Test
-    public void testDictionary() {
+    public void testDictionaryWorkdirRegion() {
         final Host h = new Host(new DAVProtocol(), "h", 66);
-        assertEquals(h, new Host(h.serialize(SerializerFactory.get())));
+        final Path container = new Path("/container", Path.DIRECTORY_TYPE);
+        container.attributes().setRegion("r");
+        h.setWorkdir(container);
+        final Host deserialized = new Host(h.serialize(SerializerFactory.get()));
+        assertEquals(h, deserialized);
+        assertEquals("r", deserialized.getWorkdir().attributes().getRegion());
     }
 
     @Test

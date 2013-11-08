@@ -298,9 +298,14 @@ public class Host implements Serializable, Comparable<Host> {
         if(pathObj != null) {
             this.setDefaultPath(pathObj.toString());
         }
-        Object workdirObj = dict.stringForKey("Workdir");
+        // Legacy
+        Object workdirObjDeprecated = dict.stringForKey("Workdir");
+        if(workdirObjDeprecated != null) {
+            this.setWorkdir(new Path(workdirObjDeprecated.toString(), Path.DIRECTORY_TYPE));
+        }
+        Object workdirObj = dict.objectForKey("Workdir Dictionary");
         if(workdirObj != null) {
-            this.setWorkdir(new Path(workdirObj.toString(), Path.DIRECTORY_TYPE));
+            this.setWorkdir(new Path(workdirObj));
         }
         Object nicknameObj = dict.stringForKey("Nickname");
         if(nicknameObj != null) {
@@ -372,7 +377,7 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(this.getDefaultPath(), "Path");
         }
         if(this.getWorkdir() != null) {
-            dict.setStringForKey(this.getWorkdir().getAbsolute(), "Workdir");
+            dict.setObjectForKey(this.getWorkdir(), "Workdir Dictionary");
         }
         if(StringUtils.isNotBlank(this.getEncoding())) {
             dict.setStringForKey(this.getEncoding(), "Encoding");
@@ -565,7 +570,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The character encoding to be used when connecting to this server or null
-     *         if the default encoding should be used
+     * if the default encoding should be used
      */
     public String getEncoding() {
         return encoding;
@@ -577,7 +582,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The connect mode to be used when connecting
-     *         to this server or null if the default connect mode should be used
+     * to this server or null if the default connect mode should be used
      */
     public FTPConnectMode getFTPConnectMode() {
         return connectMode;
@@ -595,7 +600,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     *         if the default should be used
+     * if the default should be used
      */
     public Integer getMaxConnections() {
         return maxConnections;
