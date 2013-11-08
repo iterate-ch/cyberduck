@@ -122,25 +122,20 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             // Segment name with left padded segment number
             final Path segment = new Path(containerService.getContainer(file),
                     segmentService.name(file, status.getLength(), segmentNumber), Path.FILE_TYPE);
-            boolean skip = false;
-            if(segmentNumber - 1 < existingSegments.size()) {
-                final Path existingSegment = existingSegments.get(segmentNumber - 1);
-                if(containerService.getKey(existingSegment).equals(segmentService.name(file, status.getLength(), segmentNumber))) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Skip segment %s", existingSegment));
-                    }
-                    final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                    stored.setMd5sum(existingSegment.attributes().getChecksum());
-                    stored.setSize(existingSegment.attributes().getSize());
-                    completed.add(stored);
-                    skip = true;
-                }
-            }
             final Long length = Math.min(segmentSize, remaining);
-            if(!skip) {
-                final Future<StorageObject> futureSegment = this.submitSegment(segment, local,
-                        throttle, listener, status, offset, length);
-                segments.add(futureSegment);
+            if(existingSegments.contains(segment)) {
+                final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Skip segment %s", existingSegment));
+                }
+                final StorageObject stored = new StorageObject(containerService.getKey(segment));
+                stored.setMd5sum(existingSegment.attributes().getChecksum());
+                stored.setSize(existingSegment.attributes().getSize());
+                completed.add(stored);
+            }
+            else {
+                // Submit to queue
+                segments.add(this.submit(segment, local, throttle, listener, status, offset, length));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
@@ -194,9 +189,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
     }
 
-    private Future<StorageObject> submitSegment(final Path segment, final Local local,
-                                                final BandwidthThrottle throttle, final StreamListener listener,
-                                                final TransferStatus overall, final Long offset, final Long length) {
+    private Future<StorageObject> submit(final Path segment, final Local local,
+                                         final BandwidthThrottle throttle, final StreamListener listener,
+                                         final TransferStatus overall, final Long offset, final Long length) {
         return pool.execute(new Callable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
