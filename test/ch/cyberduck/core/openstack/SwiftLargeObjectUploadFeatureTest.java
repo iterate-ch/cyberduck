@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
@@ -17,7 +18,6 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,70 +32,91 @@ import static org.junit.Assert.*;
 public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
     @Test
-    public void testUpload() throws Exception {
-        for(Host host : Arrays.asList(
-                new Host(new SwiftProtocol() {
-                    @Override
-                    public String getContext() {
-                        return "/v2.0/tokens";
-                    }
-                }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
-                        properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
-                )),
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")))
-        )
-                ) {
+    public void testUploadHP() throws Exception {
+        final Host host = new Host(new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v2.0/tokens";
+            }
+        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+        ));
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("region-a.geo-1");
+        this.test(host, container);
+    }
 
-            final SwiftSession session = new SwiftSession(host);
-            session.open(new DefaultHostKeyController());
-            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+    @Test(expected = NotfoundException.class)
+    public void testUploadHPNotFound() throws Exception {
+        final Host host = new Host(new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v2.0/tokens";
+            }
+        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+                properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
+        ));
+        final Path container = new Path("t.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("region-b.geo-1");
+        this.test(host, container);
+    }
 
-            final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-            container.attributes().setRegion(new SwiftRegionService(session).lookup(container).getRegionId());
-            final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+    @Test
+    public void testUploadRax() throws Exception {
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(
+                        properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")));
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        this.test(host, container);
+    }
 
-            final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+    private void test(final Host host, final Path container) throws Exception {
+        final SwiftSession session = new SwiftSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
-            // Each segment, except the last, must be larger than 1048576 bytes.
-            //2MB + 1
-            final byte[] content = new byte[1048576 + 1048576 + 1];
-            new Random().nextBytes(content);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
 
-            final OutputStream out = local.getOutputStream(false);
-            IOUtils.write(content, out);
-            IOUtils.closeQuietly(out);
-            final TransferStatus status = new TransferStatus();
-            status.setLength(content.length);
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 
-            final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-                    new SwiftObjectListService(session),
-                    new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2));
+        // Each segment, except the last, must be larger than 1048576 bytes.
+        //2MB + 1
+        final byte[] content = new byte[1048576 + 1048576 + 1];
+        new Random().nextBytes(content);
 
-            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        IOUtils.closeQuietly(out);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
 
-            assertEquals(1048576 + 1048576 + 1, status.getCurrent());
-            assertTrue(status.isComplete());
-            assertFalse(status.isCanceled());
+        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+                new SwiftObjectListService(session),
+                new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2));
 
-            assertTrue(new SwiftFindFeature(session).find(test));
-            final byte[] buffer = new byte[content.length];
-            final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
-            IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
-            assertArrayEquals(content, buffer);
-            final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
-            assertFalse(metadata.isEmpty());
-            assertEquals("text/plain", metadata.get("Content-Type"));
-            final List<Path> segments = new SwiftSegmentService(session).list(test);
-            assertFalse(segments.isEmpty());
-            assertEquals(3, segments.size());
-            assertEquals(1048576L, segments.get(0).attributes().getSize());
-            assertEquals(1048576L, segments.get(1).attributes().getSize());
-            assertEquals(1L, segments.get(2).attributes().getSize());
-            new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
-            session.close();
-        }
+        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+
+        assertEquals(1048576 + 1048576 + 1, status.getCurrent());
+        assertTrue(status.isComplete());
+        assertFalse(status.isCanceled());
+
+        assertTrue(new SwiftFindFeature(session).find(test));
+        final byte[] buffer = new byte[content.length];
+        final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
+        IOUtils.readFully(in, buffer);
+        IOUtils.closeQuietly(in);
+        assertArrayEquals(content, buffer);
+        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        final List<Path> segments = new SwiftSegmentService(session).list(test);
+        assertFalse(segments.isEmpty());
+        assertEquals(3, segments.size());
+        assertEquals(1048576L, segments.get(0).attributes().getSize());
+        assertEquals(1048576L, segments.get(1).attributes().getSize());
+        assertEquals(1L, segments.get(2).attributes().getSize());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
     }
 }
