@@ -145,7 +145,6 @@ namespace Ch.Cyberduck.Core
                                                                          MinorVersionConst.Win98, true);
 
         private static readonly OSVersionInfo _WinCE = new OSVersionInfo(OSPlatformId.WinCE, true);
-        // TODO: WinCE version
 
         private static readonly OSVersionInfo _WinME = new OSVersionInfo(OSPlatformId.Win32Windows,
                                                                          MajorVersionConst.WinME,
@@ -1189,7 +1188,7 @@ namespace Ch.Cyberduck.Core
             public const int Win2003 = WinNT5;
             public const int Win2008 = 6;
             public const int Win2008R2 = 6;
-            public const int Win32s = 0; // TODO: check
+            public const int Win32s = 0;
             public const int Win7 = 6;
             public const int Win95 = 4;
             public const int Win98 = 4;
@@ -1212,7 +1211,7 @@ namespace Ch.Cyberduck.Core
             public const int Win2003 = 2;
             public const int Win2008 = 0;
             public const int Win2008R2 = 1;
-            public const int Win32s = 0; // TODO: check
+            public const int Win32s = 0;
             public const int Win7 = 1;
             public const int Win95 = 0;
             public const int Win98 = 10;
@@ -1289,7 +1288,6 @@ namespace Ch.Cyberduck.Core
             if (info.MinorVersion < 0) return false;
             if (info.MinorVersion > 0) return true;
 
-            // TODO: CSDVersion for NT4 SP6
             if (info.CSDVersion == "Service Pack 6") return true;
 
             return false;
