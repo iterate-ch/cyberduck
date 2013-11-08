@@ -133,7 +133,7 @@ public class AbstractTestCase {
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
-            public HostKeyController create(final Controller c) {
+            public HostKeyController create(final Controller c, final Protocol protocol) {
                 return new DefaultHostKeyController();
             }
 

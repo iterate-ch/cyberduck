@@ -7,6 +7,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
@@ -39,7 +40,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
-            public HostKeyController create(final Controller c) {
+            public HostKeyController create(final Controller c, final Protocol protocol) {
                 return null;
             }
 

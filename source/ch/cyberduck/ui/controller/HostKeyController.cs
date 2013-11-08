@@ -130,9 +130,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 return null;
             }
 
-            public override ch.cyberduck.core.HostKeyController create(ch.cyberduck.ui.Controller c)
+            public override ch.cyberduck.core.HostKeyController create(ch.cyberduck.ui.Controller c, Protocol protocol)
             {
-                return new HostKeyController(c as WindowController);
+                if(Scheme.sftp.equals(protocol.getScheme())) {
+                    return new HostKeyController(c as WindowController);
+                }
+                return new DefaultHostKeyController();
             }
         }
     }

@@ -99,7 +99,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, session, Cache.empty(), progressListener);
         this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
-                HostKeyControllerFactory.get(controller),
+                HostKeyControllerFactory.get(controller, session.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progressListener);
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
             this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
