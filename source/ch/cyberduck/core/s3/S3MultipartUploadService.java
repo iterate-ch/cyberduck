@@ -141,9 +141,7 @@ public class S3MultipartUploadService implements Upload<String> {
                     final Long length = Math.min(Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     if(!skip) {
                         // Submit to queue
-                        final Future<MultipartPart> multipartPartFuture = this.submitPart(file, local, throttle, listener,
-                                status, multipart, partNumber, offset, length);
-                        parts.add(multipartPartFuture);
+                        parts.add(this.submit(file, local, throttle, listener, status, multipart, partNumber, offset, length));
                     }
                     remaining -= length;
                     offset += length;
@@ -184,11 +182,11 @@ public class S3MultipartUploadService implements Upload<String> {
         }
     }
 
-    private Future<MultipartPart> submitPart(final Path file,
-                                             final Local local,
-                                             final BandwidthThrottle throttle, final StreamListener listener,
-                                             final TransferStatus status, final MultipartUpload multipart,
-                                             final int partNumber, final long offset, final long length) throws BackgroundException {
+    private Future<MultipartPart> submit(final Path file,
+                                         final Local local,
+                                         final BandwidthThrottle throttle, final StreamListener listener,
+                                         final TransferStatus status, final MultipartUpload multipart,
+                                         final int partNumber, final long offset, final long length) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
