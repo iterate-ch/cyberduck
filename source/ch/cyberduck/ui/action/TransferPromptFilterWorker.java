@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>> {
+    private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
 
     private Transfer transfer;
 
@@ -64,6 +66,9 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
         final TransferPathFilter filter = transfer.filter(session, action);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Filter cache %s with filter %s", cache, filter));
+        }
         for(PathReference key : cache.keySet()) {
             final AttributedList<Path> list = cache.get(key);
             for(Path file : list) {

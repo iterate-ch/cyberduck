@@ -28,12 +28,15 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 
 /**
  * @version $Id$
  */
 public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
+    private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 
     private Path directory;
 
@@ -49,6 +52,9 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
 
     @Override
     public AttributedList<Path> run() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List directory %s", directory));
+        }
         return transfer.list(session, directory, new ListProgressListener() {
             @Override
             public void chunk(AttributedList<Path> list) throws ConnectionCanceledException {
