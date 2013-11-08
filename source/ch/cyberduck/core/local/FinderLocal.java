@@ -44,6 +44,7 @@ import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
 
@@ -227,7 +228,9 @@ public class FinderLocal extends Local {
             log.warn(String.format("Failure resolving bookmark %s", bookmark));
             return super.getOutputStream(append);
         }
-        resolved.startAccessingSecurityScopedResource();
+        if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+            resolved.startAccessingSecurityScopedResource();
+        }
         return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
             @Override
             public void close() throws IOException {
@@ -235,13 +238,15 @@ public class FinderLocal extends Local {
                     super.close();
                 }
                 finally {
-                    resolved.stopAccessingSecurityScopedResource();
+                    if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                        resolved.stopAccessingSecurityScopedResource();
+                    }
                 }
             }
         };
     }
 
-    private NSURL resolve(final String data) {
+    protected NSURL resolve(final String data) {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData bookmark = NSData.dataWithBase64EncodedString(data);
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
@@ -263,7 +268,9 @@ public class FinderLocal extends Local {
             log.warn(String.format("Failure resolving bookmark %s", bookmark));
             return super.getInputStream();
         }
-        resolved.startAccessingSecurityScopedResource();
+        if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+            resolved.startAccessingSecurityScopedResource();
+        }
         return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
             @Override
             public void close() throws IOException {
@@ -271,7 +278,9 @@ public class FinderLocal extends Local {
                     super.close();
                 }
                 finally {
-                    resolved.stopAccessingSecurityScopedResource();
+                    if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                        resolved.stopAccessingSecurityScopedResource();
+                    }
                 }
             }
         };
