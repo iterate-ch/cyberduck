@@ -18,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVFindFeatureTest extends AbstractTestCase {
 
@@ -50,6 +50,7 @@ public class DAVFindFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertTrue(new DAVFindFeature(session).find(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
         assertTrue(new DAVFindFeature(session).find(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
         assertFalse(new DAVFindFeature(session).find(new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
         assertTrue(new DAVFindFeature(session).find(new Path("/trunk/LICENSE.txt", Path.FILE_TYPE)));
