@@ -18,6 +18,8 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,7 +27,7 @@ import org.apache.log4j.Logger;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftRegionService {
     private static final Logger log = Logger.getLogger(SwiftRegionService.class);
@@ -36,11 +38,11 @@ public class SwiftRegionService {
         this.session = session;
     }
 
-    public Region lookup(final Path file) {
+    public Region lookup(final Path file) throws BackgroundException {
         return this.lookup(file.attributes().getRegion());
     }
 
-    public Region lookup(final String location) {
+    public Region lookup(final String location) throws BackgroundException {
         if(null == session.getClient()) {
             log.warn("Cannot determine region if not connected");
             return null;
@@ -55,11 +57,16 @@ public class SwiftRegionService {
         }
         log.warn(String.format("Unknown region %s in authentication context", location));
         if(session.getClient().getRegions().isEmpty()) {
-            log.warn("No default region in authentication context");
-            return null;
+            throw new InteroperabilityException("No region found in authentication context");
         }
         final Region region = session.getClient().getRegions().iterator().next();
         log.warn(String.format("Fallback to first region found %s", region.getRegionId()));
+        if(null == region.getStorageUrl()) {
+            throw new InteroperabilityException(String.format("No storage endpoint found for region %s", region.getRegionId()));
+        }
+        if(null == region.getCDNManagementUrl()) {
+            log.warn(String.format("No CDN management endpoint found for region %s", region.getRegionId()));
+        }
         return region;
     }
 }

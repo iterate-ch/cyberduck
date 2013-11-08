@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +70,13 @@ public class SwiftUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.attributes().isFile()) {
-            final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
+            Region region = null;
+            try {
+                region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure looking up region for %s %s", file, e.getMessage()));
+            }
             if(null == region) {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }
