@@ -251,4 +251,14 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public Object lock() {
         return session;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SessionBackgroundAction{");
+        sb.append("session=").append(session);
+        sb.append(", failed=").append(failed);
+        sb.append(", exception=").append(exception);
+        sb.append('}');
+        return sb.toString();
+    }
 }
