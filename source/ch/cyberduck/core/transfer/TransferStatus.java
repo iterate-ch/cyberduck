@@ -71,6 +71,8 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Path renamed;
 
+    private String mime;
+
     /**
      * Local target
      */
@@ -200,6 +202,14 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         return renamed != null;
+    }
+
+    public String getMime() {
+        return mime;
+    }
+
+    public void setMime(final String mime) {
+        this.mime = mime;
     }
 
     @Override

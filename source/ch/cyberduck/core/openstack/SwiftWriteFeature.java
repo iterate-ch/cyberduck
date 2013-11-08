@@ -131,7 +131,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                 return status.getLength();
             }
         };
-        return session.write(file, command);
+        return session.write(file, status, command);
     }
 
     @Override

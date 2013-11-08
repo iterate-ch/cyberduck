@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -52,7 +51,7 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new DefaultTouchFeature(session).touch(test);
+        new S3TouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);

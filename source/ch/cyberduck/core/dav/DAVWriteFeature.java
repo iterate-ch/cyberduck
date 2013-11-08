@@ -101,7 +101,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                 return status.getLength() - status.getCurrent();
             }
         };
-        return session.write(file, command);
+        return session.write(file, status, command);
     }
 
     @Override

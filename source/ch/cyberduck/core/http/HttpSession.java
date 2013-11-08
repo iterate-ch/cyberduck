@@ -20,8 +20,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -33,6 +31,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -94,9 +93,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     private final ThreadFactory factory
             = new NamedThreadFactory("http");
-
-    private MimeTypeService mapping
-            = new MappingMimeTypeService();
 
     protected HttpSession(final Host host) {
         super(host);
@@ -262,8 +258,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
      * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> ResponseOutputStream<T> write(final Path file, final DelayedHttpEntityCallable<T> command)
-            throws BackgroundException {
+    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status, final DelayedHttpEntityCallable<T> command)
+    throws BackgroundException {
         /**
          * Signal on enter streaming
          */
@@ -277,7 +273,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     return command.getContentLength();
                 }
             };
-            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, mapping.getMime(file.getName())));
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
                 @Override
                 public void run() {

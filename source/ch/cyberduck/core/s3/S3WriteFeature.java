@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -90,12 +89,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
 
-        final S3Object metadata = this.getDetails(containerService.getKey(file), file.getLocal().getName(),
-                Preferences.instance().getBoolean("s3.upload.metadata.md5") ? file.getLocal().attributes().getChecksum() : null);
-        return this.write(file, metadata, status.getLength(), Collections.<String, String>emptyMap());
+        final S3Object metadata = this.getDetails(containerService.getKey(file), status.getMime(), null);
+        return this.write(file, status, metadata, status.getLength(), Collections.<String, String>emptyMap());
     }
 
-    public ResponseOutputStream<StorageObject> write(final Path file, final StorageObject part, final Long contentLength,
+    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final StorageObject part, final Long contentLength,
                                                      final Map<String, String> requestParams) throws BackgroundException {
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
@@ -115,15 +113,15 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 return contentLength;
             }
         };
-        return session.write(file, command);
+        return session.write(file, status, command);
     }
 
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final String key, final String filename, final String checksum) {
+    protected S3Object getDetails(final String key, final String mime, final String checksum) {
         final S3Object object = new S3Object(key);
-        object.setContentType(new MappingMimeTypeService().getMime(filename));
+        object.setContentType(mime);
         if(StringUtils.isNotBlank(checksum)) {
             object.setMd5Hash(ServiceUtils.fromHex(checksum));
         }

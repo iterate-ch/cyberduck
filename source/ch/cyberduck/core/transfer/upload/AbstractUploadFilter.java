@@ -57,6 +57,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Attributes attribute;
 
+    private MimeTypeService mapping
+            = new MappingMimeTypeService();
+
     protected Cache cache
             = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
 
@@ -113,6 +116,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setRenamed(renamed);
                 temporary.put(file, renamed);
             }
+            status.setMime(mapping.getMime(file.getName()));
         }
         if(parent.isExists()) {
             if(find.find(file)) {

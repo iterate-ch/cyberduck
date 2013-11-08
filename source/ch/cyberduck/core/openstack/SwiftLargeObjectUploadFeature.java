@@ -21,8 +21,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -72,9 +70,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private PathContainerService containerService
             = new PathContainerService();
-
-    private MimeTypeService mapping
-            = new MappingMimeTypeService();
 
     private Long segmentSize;
 
@@ -175,7 +170,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             final String checksum = session.getClient().createSLOManifestObject(new SwiftRegionService(session).lookup(
                     containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
-                    mapping.getMime(file.getName()),
+                    status.getMime(),
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
             stored.setMd5sum(checksum);
             return stored;
