@@ -40,7 +40,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class SaveBackgroundAction extends Worker {
+public class SaveBackgroundAction extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(SaveBackgroundAction.class);
 
     private AbstractEditor editor;
