@@ -30,4 +30,11 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
                 new Path("/d", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE)
         ));
     }
+
+    @Test
+    public void testUniquePath() throws Exception {
+        Path one = new Path("a", Path.FILE_TYPE);
+        Path second = new Path("a", Path.FILE_TYPE);
+        assertEquals(one.getReference(), second.getReference());
+    }
 }
