@@ -23,10 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.Worker;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> {
+    private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
     private Worker<T> worker;
 
@@ -40,6 +43,9 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
 
     @Override
     public Boolean run() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run worker %s", worker));
+        }
         result = worker.run();
         return true;
     }
@@ -48,13 +54,24 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     public void cleanup() {
         super.cleanup();
         if(!worker.isCanceled()) {
-            worker.cleanup(result);
+            if(null == result) {
+                log.warn(String.format("No result for worker %s. Skip cleanup.", worker));
+            }
+            else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cleanup worker %s", worker));
+                }
+                worker.cleanup(result);
+            }
         }
     }
 
     @Override
     public void cancel() {
         super.cancel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Cancel worker %s", worker));
+        }
         worker.cancel();
     }
 
