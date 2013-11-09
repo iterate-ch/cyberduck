@@ -24,11 +24,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-
-import org.apache.commons.lang3.StringUtils;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
-import java.io.File;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$
@@ -38,8 +36,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private OpenSshConfig configuration;
 
     public OpenSSHCredentialsConfigurator() {
-        this(new OpenSshConfig(
-                new File(LocalFactory.createLocal(Local.HOME, ".ssh/config").getAbsolute())));
+        this(new OpenSshConfig(LocalFactory.createLocal(Local.HOME, ".ssh/config")));
     }
 
     public OpenSSHCredentialsConfigurator(OpenSshConfig configuration) {
