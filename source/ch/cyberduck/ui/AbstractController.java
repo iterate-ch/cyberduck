@@ -109,22 +109,24 @@ public abstract class AbstractController implements Controller {
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action);
         try {
+            final Future<T> task;
             if(null == action.lock()) {
-                return concurrentExecutor.execute(command);
+                task = concurrentExecutor.execute(command);
             }
             else {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Synchronize on lock %s for action %s", action.lock(), action));
                 }
-                return singleExecutor.execute(command);
+                task = singleExecutor.execute(command);
             }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Scheduled background runnable %s for execution", action));
+            }
+            return task;
         }
         catch(RejectedExecutionException e) {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
             action.cleanup();
-        }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Scheduled background runnable %s for execution", action));
         }
         return null;
     }
