@@ -26,12 +26,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import java.net.URI;
 
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
@@ -67,7 +64,7 @@ public final class HyperlinkAttributedStringFactory {
             return NSAttributedString.attributedString(title);
         }
         return create(NSMutableAttributedString.create(title,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.fileURLWithPath(file.getAbsolute()));
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), file.getAbsolute());
     }
 
     public static NSAttributedString create(final String title, final String url) {
@@ -75,7 +72,7 @@ public final class HyperlinkAttributedStringFactory {
             return NSAttributedString.attributedString(title);
         }
         return create(NSMutableAttributedString.create(title,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), NSURL.URLWithString(url));
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), url);
     }
 
     /**
@@ -83,7 +80,7 @@ public final class HyperlinkAttributedStringFactory {
      * @param hyperlink URL
      * @return Clickable and underlined string to put into text field.
      */
-    private static NSAttributedString create(final NSMutableAttributedString value, final NSURL hyperlink) {
+    private static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
         final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
         value.beginEditing();
         value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,

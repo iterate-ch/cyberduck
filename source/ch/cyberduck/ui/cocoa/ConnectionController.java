@@ -22,17 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSComboBox;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -229,7 +219,6 @@ public class ConnectionController extends SheetController {
             this.hostChanged(parsed);
         }
         else {
-            this.updateURLLabel();
             this.updateIdentity();
             this.reachable();
         }
@@ -539,7 +528,7 @@ public class ConnectionController extends SheetController {
     /**
      */
     private void updateURLLabel() {
-        if(StringUtils.isNotBlank(hostField.stringValue())) {
+        if(ProtocolFactory.isURL(hostField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             final String url = String.format("%s://%s@%s:%d%s",
                     protocol.getScheme(),
