@@ -23,9 +23,11 @@ import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import ch.ethz.ssh2.KnownHosts;
 
@@ -49,23 +51,23 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
         this.setDatabase(file);
     }
 
-    protected void setDatabase(Local file) {
+    protected void setDatabase(final Local file) {
         if(!file.exists()) {
             file.touch();
         }
-        if(file.attributes().getPermission().isReadable()) {
-            try {
-                database = new KnownHosts(file.getAbsolute());
-            }
-            catch(IOException e) {
-                log.error(String.format("Cannot read known hosts file %s", file.getAbsolute()), e);
-            }
-            catch(IllegalArgumentException e) {
-                log.error(String.format("Cannot read known hosts file %s", file.getAbsolute()), e);
-            }
+        InputStream in = null;
+        try {
+            in = file.getInputStream();
+            database = new KnownHosts(file.getAbsolute());
         }
-        else {
-            log.warn(String.format("Cannot read known hosts file %s", file.getAbsolute()));
+        catch(IOException e) {
+            log.error(String.format("Cannot read known hosts file %s", file), e);
+        }
+        catch(IllegalArgumentException e) {
+            log.error(String.format("Cannot read known hosts file %s", file), e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
         }
         if(null == database) {
             database = new KnownHosts();
@@ -98,8 +100,7 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
     protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                                     final byte[] serverHostKey) throws ConnectionCanceledException;
@@ -110,8 +111,7 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
     protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                                     final byte[] serverHostKey) throws ConnectionCanceledException;
