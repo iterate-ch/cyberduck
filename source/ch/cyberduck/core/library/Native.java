@@ -18,9 +18,9 @@ package ch.cyberduck.core.library;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalFactory;
-
 import org.apache.log4j.Logger;
+
+import java.io.File;
 
 /**
  * @version $Id$
@@ -70,7 +70,7 @@ public final class Native {
      */
     protected static String getPath(final String name) {
         final String lib = String.format("%s/%s", System.getProperty("java.library.path"), getName(name));
-        return LocalFactory.createLocal(lib).getAbsolute();
+        return new File(lib).getAbsolutePath();
     }
 
     protected static String getName(final String name) {
