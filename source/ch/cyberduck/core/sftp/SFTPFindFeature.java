@@ -46,7 +46,8 @@ public class SFTPFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(Cache cache) {
+    public Find withCache(final Cache cache) {
+        this.attributes.withCache(cache);
         return this;
     }
 }
