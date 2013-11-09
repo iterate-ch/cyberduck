@@ -35,6 +35,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -90,7 +91,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -2735,7 +2735,7 @@ public class BrowserController extends WindowController
         this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
     }
 
-    private static String lastSelectedUploadDirectory = null;
+    private static Local lastSelectedUploadDirectory = null;
 
     private NSOpenPanel uploadPanel;
 
@@ -2760,7 +2760,7 @@ public class BrowserController extends WindowController
             uploadPanelHiddenFilesCheckbox.sizeToFit();
             uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
         }
-        uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory, //trying to be smart
+        uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory.getAbsolute(), //trying to be smart
                 null, this.window,
                 this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
@@ -2791,7 +2791,7 @@ public class BrowserController extends WindowController
             }
             transfer(new UploadTransfer(session.getHost(), roots));
         }
-        lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
+        lastSelectedUploadDirectory = new FinderLocal(sheet.filename()).getParent();
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
     }
