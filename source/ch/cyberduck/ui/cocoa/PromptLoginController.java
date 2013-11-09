@@ -18,33 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -120,7 +98,7 @@ public final class PromptLoginController implements LoginController {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for credentials for %s", protocol));
         }
-        final SheetController c = new SheetController(parent) {
+        final SheetController sheet = new SheetController(parent) {
             @Override
             protected String getBundleName() {
                 return "Login";
@@ -294,10 +272,21 @@ public final class PromptLoginController implements LoginController {
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
                     try {
-                        credentials.setIdentity(LocalFactory.createLocal(select().toString()));
+                        select(this, new SheetCallback() {
+                            @Override
+                            public void callback(final int returncode) {
+                                if(returncode == SheetCallback.DEFAULT_OPTION) {
+                                    final NSObject selected = publicKeyPanel.filenames().lastObject();
+                                    if(selected != null) {
+                                        credentials.setIdentity(LocalFactory.createLocal(selected.toString()));
+                                        update();
+                                    }
+                                }
+                            }
+                        });
                     }
                     catch(LoginCanceledException e) {
-                        credentials.setIdentity(null);
+                        //
                     }
                 }
                 else {
@@ -353,8 +342,8 @@ public final class PromptLoginController implements LoginController {
                 }
             }
         };
-        c.beginSheet();
-        if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
+        sheet.beginSheet();
+        if(sheet.returnCode() == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
     }
@@ -362,10 +351,19 @@ public final class PromptLoginController implements LoginController {
     private NSOpenPanel publicKeyPanel;
 
     public Local select() throws LoginCanceledException {
+        return this.select(parent, new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                //
+            }
+        });
+    }
+
+    protected Local select(WindowController parent, final SheetCallback callback) throws LoginCanceledException {
         final SheetController sheet = new SheetController(parent) {
             @Override
             public void callback(int returncode) {
-                //
+                callback.callback(returncode);
             }
 
             @Override
