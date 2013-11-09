@@ -219,6 +219,7 @@ public class ConnectionController extends SheetController {
             this.hostChanged(parsed);
         }
         else {
+            this.updateURLLabel();
             this.updateIdentity();
             this.reachable();
         }
@@ -528,7 +529,7 @@ public class ConnectionController extends SheetController {
     /**
      */
     private void updateURLLabel() {
-        if(ProtocolFactory.isURL(hostField.stringValue())) {
+        if(StringUtils.isNotBlank(hostField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             final String url = String.format("%s://%s@%s:%d%s",
                     protocol.getScheme(),
