@@ -37,13 +37,16 @@
 
 package ch.cyberduck.core.sftp.openssh.config.transport;
 
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,12 +67,12 @@ public class OpenSshConfig {
     /**
      * The user's home directory, as key files may be relative to here.
      */
-    private final File home = new File(System.getProperty("user.home"));
+    private final Local home = LocalFactory.createLocal(System.getProperty("user.home"));
 
     /**
      * The .ssh/config file we read and monitor for updates.
      */
-    private final File configuration;
+    private final Local configuration;
 
     /**
      * Modification time of {@link #configuration} when {@link #hosts} loaded.
@@ -89,7 +92,7 @@ public class OpenSshConfig {
      * requests are cached and are automatically updated if the user modifies
      * the configuration file since the last time it was cached.
      */
-    public OpenSshConfig(final File configuration) {
+    public OpenSshConfig(final Local configuration) {
         this.configuration = configuration;
         this.hosts = Collections.emptyMap();
     }
@@ -130,15 +133,15 @@ public class OpenSshConfig {
     }
 
     private synchronized Map<String, Host> refresh() {
-        final long mtime = configuration.lastModified();
+        final long mtime = configuration.attributes().getModificationDate();
         if(mtime != lastModified) {
             try {
-                final FileInputStream in = new FileInputStream(configuration);
+                final InputStream in = configuration.getInputStream();
                 try {
                     hosts = parse(in);
                 }
                 finally {
-                    in.close();
+                    IOUtils.closeQuietly(in);
                 }
             }
             catch(FileNotFoundException none) {
@@ -287,13 +290,13 @@ public class OpenSshConfig {
 
     private File toFile(final String path) {
         if(path.startsWith("~/")) {
-            return new File(home, path.substring(2));
+            return new File(home.getAbsolute(), path.substring(2));
         }
         File ret = new File(path);
         if(ret.isAbsolute()) {
             return ret;
         }
-        return new File(home, path);
+        return new File(home.getAbsolute(), path);
     }
 
     /**
@@ -359,7 +362,7 @@ public class OpenSshConfig {
 
         /**
          * @return path of the private key file to use for authentication; null
-         *         if the caller should use default authentication strategies.
+         * if the caller should use default authentication strategies.
          */
         public File getIdentityFile() {
             return identityFile;
@@ -374,7 +377,7 @@ public class OpenSshConfig {
 
         /**
          * @return the preferred authentication methods, separated by commas if
-         *         more than one authentication method is preferred.
+         * more than one authentication method is preferred.
          */
         public String getPreferredAuthentications() {
             return preferredAuthentications;
@@ -382,7 +385,7 @@ public class OpenSshConfig {
 
         /**
          * @return true if batch (non-interactive) mode is preferred for this
-         *         host connection.
+         * host connection.
          */
         public boolean isBatchMode() {
             return batchMode != null && batchMode;

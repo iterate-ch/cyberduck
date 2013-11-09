@@ -21,12 +21,10 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
-
-import java.io.File;
 
 /**
  * @version $Id$
@@ -37,8 +35,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private OpenSshConfig configuration;
 
     public OpenSSHHostnameConfigurator() {
-        this(new OpenSshConfig(
-                new File(LocalFactory.createLocal(Local.HOME, ".ssh/config").getAbsolute())));
+        this(new OpenSshConfig(LocalFactory.createLocal(Local.HOME, ".ssh/config")));
     }
 
     public OpenSSHHostnameConfigurator(OpenSshConfig configuration) {
