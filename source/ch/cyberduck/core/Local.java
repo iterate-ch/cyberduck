@@ -234,7 +234,7 @@ public abstract class Local extends AbstractPath implements Serializable {
     }
 
     public Local getVolume() {
-        return LocalFactory.createLocal(new File(String.valueOf(this.getDelimiter())));
+        return LocalFactory.createLocal(String.valueOf(this.getDelimiter()));
     }
 
     public Local getParent() {
