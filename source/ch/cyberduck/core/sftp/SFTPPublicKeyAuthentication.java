@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.CharArrayWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -83,7 +82,7 @@ public class SFTPPublicKeyAuthentication {
                     }
                 }
                 else {
-                    IOUtils.copy(new FileReader(identity.getAbsolute()), privatekey);
+                    IOUtils.copy(identity.getInputStream(), privatekey);
                     if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
                             prompt.prompt(host.getProtocol(), host.getCredentials(),
