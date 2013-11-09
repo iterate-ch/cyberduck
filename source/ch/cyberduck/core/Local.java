@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -288,11 +287,11 @@ public abstract class Local extends AbstractPath implements Serializable {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }
         else {
-            FileInputStream in = null;
-            FileOutputStream out = null;
+            InputStream in = null;
+            OutputStream out = null;
             try {
-                in = new FileInputStream(new File(path));
-                out = new FileOutputStream(copy.getAbsolute());
+                in = this.getInputStream();
+                out = copy.getOutputStream(false);
                 IOUtils.copy(in, out);
             }
             catch(IOException e) {
