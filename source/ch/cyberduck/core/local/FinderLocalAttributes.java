@@ -25,8 +25,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
@@ -179,17 +181,53 @@ public class FinderLocalAttributes extends LocalAttributes {
 
         @Override
         public boolean isExecutable() {
-            return NSFileManager.defaultManager().isExecutableFileAtPath(path);
+            final NSURL resolved = local.resolve(local.getBookmark());
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+                    resolved.startAccessingSecurityScopedResource();
+                }
+            }
+            final boolean executable = NSFileManager.defaultManager().isExecutableFileAtPath(path);
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                    resolved.stopAccessingSecurityScopedResource();
+                }
+            }
+            return executable;
         }
 
         @Override
         public boolean isReadable() {
-            return NSFileManager.defaultManager().isReadableFileAtPath(path);
+            final NSURL resolved = local.resolve(local.getBookmark());
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+                    resolved.startAccessingSecurityScopedResource();
+                }
+            }
+            final boolean readable = NSFileManager.defaultManager().isReadableFileAtPath(path);
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                    resolved.stopAccessingSecurityScopedResource();
+                }
+            }
+            return readable;
         }
 
         @Override
         public boolean isWritable() {
-            return NSFileManager.defaultManager().isWritableFileAtPath(path);
+            final NSURL resolved = local.resolve(local.getBookmark());
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
+                    resolved.startAccessingSecurityScopedResource();
+                }
+            }
+            final boolean writable = NSFileManager.defaultManager().isWritableFileAtPath(path);
+            if(resolved != null) {
+                if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                    resolved.stopAccessingSecurityScopedResource();
+                }
+            }
+            return writable;
         }
     }
 
