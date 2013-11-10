@@ -50,7 +50,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     public boolean open(final Local file) {
         synchronized(NSWorkspace.class) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
-                log.warn(String.format("Error opening file %s", file.getAbsolute()));
+                log.warn(String.format("Error opening file %s", file));
                 return false;
             }
             return true;
@@ -62,7 +62,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
         synchronized(NSWorkspace.class) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))) {
-                log.warn(String.format("Error opening file %s with application %s", file.getAbsolute(), application));
+                log.warn(String.format("Error opening file %s with application %s", file, application));
                 return false;
             }
             return true;

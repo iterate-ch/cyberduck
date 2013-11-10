@@ -389,7 +389,7 @@ public class FinderLocal extends Local {
         if(this.exists()) {
             synchronized(workspace) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Move %s to Trash", this.getAbsolute()));
+                    log.debug(String.format("Move %s to Trash", this));
                 }
                 if(!NSWorkspace.sharedWorkspace().performFileOperation(
                         NSWorkspace.RecycleOperation,
