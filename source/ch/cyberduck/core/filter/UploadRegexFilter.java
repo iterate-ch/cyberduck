@@ -40,7 +40,7 @@ public class UploadRegexFilter implements Filter<Local> {
         if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
             if(pattern.matcher(file.getName()).matches()) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
+                    log.debug(String.format("Skip %s excluded with regex", file));
                 }
                 return false;
             }
