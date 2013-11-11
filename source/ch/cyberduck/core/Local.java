@@ -297,6 +297,9 @@ public abstract class Local extends AbstractPath implements Serializable {
             catch(IOException e) {
                 log.error(e.getMessage());
             }
+            catch(AccessDeniedException e) {
+                log.error(e.getMessage());
+            }
             finally {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
@@ -332,12 +335,22 @@ public abstract class Local extends AbstractPath implements Serializable {
         return String.format("file:%s", this.getAbsolute());
     }
 
-    public InputStream getInputStream() throws FileNotFoundException {
-        return new LocalRepeatableFileInputStream(new File(path));
+    public InputStream getInputStream() throws AccessDeniedException {
+        try {
+            return new LocalRepeatableFileInputStream(new File(path));
+        }
+        catch(FileNotFoundException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
     }
 
-    public OutputStream getOutputStream(final boolean append) throws FileNotFoundException {
-        return new FileOutputStream(new File(path), append);
+    public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
+        try {
+            return new FileOutputStream(new File(path), append);
+        }
+        catch(FileNotFoundException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
     }
 
     /**

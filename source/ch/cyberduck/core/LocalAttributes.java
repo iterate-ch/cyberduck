@@ -17,12 +17,9 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.io.MD5ChecksumCompute;
-
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -31,7 +28,9 @@ import java.io.IOException;
 public class LocalAttributes extends Attributes {
     private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
-    protected String path;
+    private String path;
+
+    private String checksum;
 
     public LocalAttributes(final String path) {
         this.path = path;
@@ -147,23 +146,13 @@ public class LocalAttributes extends Attributes {
         return null;
     }
 
-    /**
-     * Calculate the MD5 sum as Hex-encoded string
-     *
-     * @return Null if failure
-     */
     @Override
     public String getChecksum() {
-        if(this.isFile()) {
-            try {
-                return new MD5ChecksumCompute().compute(new FileInputStream(path));
-            }
-            catch(IOException e) {
-                log.warn(String.format("Error computing checksum for path %s", path));
-                return null;
-            }
-        }
-        return null;
+        return checksum;
+    }
+
+    public void setChecksum(final String checksum) {
+        this.checksum = checksum;
     }
 
     private final class LocalPermission extends Permission {

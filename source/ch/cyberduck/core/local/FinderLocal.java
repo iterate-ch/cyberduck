@@ -218,7 +218,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+    public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
         if(null == bookmark) {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getOutputStream(append);
@@ -231,19 +231,24 @@ public class FinderLocal extends Local {
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             resolved.startAccessingSecurityScopedResource();
         }
-        return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
-            @Override
-            public void close() throws IOException {
-                try {
-                    super.close();
-                }
-                finally {
-                    if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
-                        resolved.stopAccessingSecurityScopedResource();
+        try {
+            return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                            resolved.stopAccessingSecurityScopedResource();
+                        }
                     }
                 }
-            }
-        };
+            };
+        }
+        catch(FileNotFoundException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
     }
 
     protected NSURL resolve(final String data) {
@@ -258,7 +263,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public InputStream getInputStream() throws FileNotFoundException {
+    public InputStream getInputStream() throws AccessDeniedException {
         if(null == bookmark) {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getInputStream();
@@ -271,19 +276,24 @@ public class FinderLocal extends Local {
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             resolved.startAccessingSecurityScopedResource();
         }
-        return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
-            @Override
-            public void close() throws IOException {
-                try {
-                    super.close();
-                }
-                finally {
-                    if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
-                        resolved.stopAccessingSecurityScopedResource();
+        try {
+            return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
+                            resolved.stopAccessingSecurityScopedResource();
+                        }
                     }
                 }
-            }
-        };
+            };
+        }
+        catch(FileNotFoundException e) {
+            throw new AccessDeniedException(e.getMessage(), e);
+        }
     }
 
     @Override
