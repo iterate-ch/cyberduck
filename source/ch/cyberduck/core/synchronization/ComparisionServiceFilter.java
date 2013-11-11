@@ -27,6 +27,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 
 import java.util.TimeZone;
 
@@ -65,6 +66,9 @@ public class ComparisionServiceFilter implements ComparePathFilter {
                 final PathAttributes attributes = attribute.find(file);
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
+                    if(local.attributes().isFile()) {
+                        local.attributes().setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+                    }
                     final Comparison comparison = checksum.compare(attributes, local.attributes());
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available

@@ -37,10 +37,13 @@ public class ChecksumComparisonService implements ComparisonService {
         }
         else {
             if(null == remote.getChecksum()) {
-                log.warn(String.format("No checksum available for comparison %s", remote));
+                log.warn(String.format("No remote checksum available for comparison %s", remote));
                 return Comparison.notequal;
             }
-            //fist make sure both files are larger than 0 bytes
+            if(null == local.getChecksum()) {
+                log.warn(String.format("No local checksum available for comparison %s", remote));
+                return Comparison.notequal;
+            }
             if(remote.getChecksum().equals(local.getChecksum())) {
                 return Comparison.equal;
             }

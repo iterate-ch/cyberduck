@@ -18,6 +18,8 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -30,15 +32,15 @@ import java.security.NoSuchAlgorithmException;
 public class MD5ChecksumCompute implements ChecksumCompute {
 
     @Override
-    public String compute(final InputStream in) throws IOException {
+    public String compute(final InputStream in) throws BackgroundException {
         try {
             return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(in));
         }
         catch(NoSuchAlgorithmException e) {
-            throw new IOException(String.format("Checksum failure %s", e.getMessage()), e);
+            throw new BackgroundException(String.format("Checksum failure %s", e.getMessage()), e);
         }
         catch(IOException e) {
-            throw new IOException(String.format("Checksum failure %s", e.getMessage()), e);
+            throw new BackgroundException(String.format("Checksum failure %s", e.getMessage()), e);
         }
     }
 }
