@@ -276,7 +276,7 @@ public final class PromptLoginController implements LoginController {
                             @Override
                             public void callback(final int returncode) {
                                 if(returncode == SheetCallback.DEFAULT_OPTION) {
-                                    final NSObject selected = publicKeyPanel.filenames().lastObject();
+                                    final NSObject selected = select.filenames().lastObject();
                                     if(selected != null) {
                                         credentials.setIdentity(LocalFactory.createLocal(selected.toString()));
                                         update();
@@ -348,7 +348,7 @@ public final class PromptLoginController implements LoginController {
         }
     }
 
-    private NSOpenPanel publicKeyPanel;
+    private NSOpenPanel select;
 
     public Local select() throws LoginCanceledException {
         return this.select(parent, new SheetCallback() {
@@ -359,33 +359,33 @@ public final class PromptLoginController implements LoginController {
         });
     }
 
-    protected Local select(WindowController parent, final SheetCallback callback) throws LoginCanceledException {
+    protected Local select(final WindowController parent, final SheetCallback callback) throws LoginCanceledException {
         final SheetController sheet = new SheetController(parent) {
             @Override
-            public void callback(int returncode) {
+            public void callback(final int returncode) {
                 callback.callback(returncode);
             }
 
             @Override
             protected void beginSheetImpl() {
-                publicKeyPanel = NSOpenPanel.openPanel();
-                publicKeyPanel.setCanChooseDirectories(false);
-                publicKeyPanel.setCanChooseFiles(true);
-                publicKeyPanel.setAllowsMultipleSelection(false);
-                publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-                publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-                publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
+                select = NSOpenPanel.openPanel();
+                select.setCanChooseDirectories(false);
+                select.setCanChooseFiles(true);
+                select.setAllowsMultipleSelection(false);
+                select.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+                select.setPrompt(LocaleFactory.localizedString("Choose"));
+                select.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                         null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
             }
 
             @Override
             public NSWindow window() {
-                return publicKeyPanel;
+                return select;
             }
         };
         sheet.beginSheet();
         if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
-            final NSObject selected = publicKeyPanel.filenames().lastObject();
+            final NSObject selected = select.filenames().lastObject();
             if(selected != null) {
                 return LocalFactory.createLocal(selected.toString());
             }
