@@ -21,8 +21,11 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.action.Worker;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,9 +52,9 @@ public abstract class AbstractEditor implements Editor {
     /**
      * The edited path
      */
-    protected Path edited;
+    private Path edited;
 
-    protected Local local;
+    private Local local;
 
     /**
      * The editor application
@@ -61,13 +64,13 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Store checksum of downloaded file to detect modifications
      */
-    protected String checksum
+    private String checksum
             = StringUtils.EMPTY;
 
     /**
      * Session for transfers
      */
-    protected Session<?> session;
+    private Session<?> session;
 
     public AbstractEditor(final Application application, final Session session, final Path file) {
         this.application = application;
@@ -97,7 +100,7 @@ public abstract class AbstractEditor implements Editor {
 
     protected void setClosed(boolean closed) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Set deferred delete flag for %s", local.getAbsolute()));
+            log.debug(String.format("Set deferred delete flag for %s", local));
         }
         this.closed = closed;
     }
@@ -116,7 +119,7 @@ public abstract class AbstractEditor implements Editor {
 
     protected void delete() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete edited file %s", local.getAbsolute()));
+            log.debug(String.format("Delete edited file %s", local));
         }
         local.trash();
     }
@@ -126,9 +129,21 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Worker worker = new EditBackgroundAction(this);
+        final Worker worker = new EditBackgroundAction(this, session) {
+            @Override
+            public void cleanup(final Transfer download) {
+                // Save checksum before edit
+                try {
+                    checksum = new MD5ChecksumCompute().compute(local.getInputStream());
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Error computing checksum for %s", local));
+                }
+
+            }
+        };
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Download file for edit %s", local.getAbsolute()));
+            log.debug(String.format("Download file for edit %s", local));
         }
         this.open(worker);
     }
@@ -144,14 +159,17 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void save() {
         // If checksum still the same no need for save
-        final String current = local.attributes().getChecksum();
-        if(null == current) {
-            log.warn(String.format("Ignore save with unknown checksum for %s", local));
+        final String current;
+        try {
+            current = new MD5ChecksumCompute().compute(local.getInputStream());
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Error computing checksum for %s", local));
             return;
         }
-        if(checksum.equals(current)) {
+        if(StringUtils.equals(checksum, current)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("File %s not modified with checkum %s", local, current));
+                log.info(String.format("File %s not modified with checksum %s", local, current));
             }
         }
         else {
@@ -160,9 +178,9 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker worker = new SaveBackgroundAction(this);
+            final Worker worker = new SaveBackgroundAction(this, session);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Upload changes for %s", local.getAbsolute()));
+                log.debug(String.format("Upload changes for %s", local));
             }
             this.save(worker);
         }

@@ -45,8 +45,11 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     private AbstractEditor editor;
 
-    public SaveBackgroundAction(final AbstractEditor editor) {
+    private Session session;
+
+    public SaveBackgroundAction(final AbstractEditor editor, final Session session) {
         this.editor = editor;
+        this.session = session;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run upload action for editor %s", editor));
         }
-        final Transfer upload = new UploadTransfer(editor.session.getHost(), editor.getEdited()) {
+        final Transfer upload = new UploadTransfer(session.getHost(), editor.getEdited()) {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,
@@ -70,17 +73,24 @@ public class SaveBackgroundAction extends Worker<Transfer> {
             }
         };
         final SingleTransferWorker worker
-                = new SingleTransferWorker(editor.session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                = new SingleTransferWorker(session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
-        if(upload.isComplete()) {
+        if(!upload.isComplete()) {
+            log.warn(String.format("File size changed for %s", editor.getEdited()));
+        }
+        else {
             // Update known remote file size
             editor.getEdited().attributes().setSize(upload.getTransferred());
-            if(editor.isClosed()) {
-                editor.delete();
-            }
-            editor.setModified(false);
         }
         return upload;
+    }
+
+    @Override
+    public void cleanup(final Transfer upload) {
+        if(editor.isClosed()) {
+            editor.delete();
+        }
+        editor.setModified(false);
     }
 
     @Override

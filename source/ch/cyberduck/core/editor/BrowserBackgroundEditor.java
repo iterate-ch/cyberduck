@@ -35,6 +35,8 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
 
     private Controller controller;
 
+    private Session session;
+
     /**
      * @param controller  Browser
      * @param application Editor
@@ -45,6 +47,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
                                    final Application application, final Path path) {
         super(application, session, path);
         this.controller = controller;
+        this.session = session;
     }
 
     /**
@@ -53,7 +56,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void open(final Worker download) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Open %s in %s", local.getAbsolute(), this.getApplication()));
+            log.debug(String.format("Open %s in %s", this.getEdited().getLocal(), this.getApplication()));
         }
         controller.background(new WorkerBackgroundAction(controller, session, download));
     }
@@ -64,7 +67,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void save(final Worker upload) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local.getAbsolute()));
+            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), this.getEdited().getLocal()));
         }
         controller.background(new WorkerBackgroundAction(controller, session, upload));
     }
