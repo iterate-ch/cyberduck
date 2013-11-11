@@ -20,15 +20,15 @@ public class FileWatcherTest extends AbstractTestCase {
 
     @Test
     public void testAddListener() throws Exception {
-        final FileWatcher w = new FileWatcher();
-        final FinderLocal f = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final FileWatcher watcher = new FileWatcher();
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir")+"/f", UUID.randomUUID().toString());
         final CyclicBarrier create = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new FileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
                 try {
-                    assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
                 }
                 catch(IOException e) {
                     fail();
@@ -38,7 +38,7 @@ public class FileWatcherTest extends AbstractTestCase {
             @Override
             public void fileDeleted(final Local file) {
                 try {
-                    assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
                 }
                 catch(IOException e) {
                     fail();
@@ -57,7 +57,7 @@ public class FileWatcherTest extends AbstractTestCase {
             @Override
             public void fileCreated(final Local file) {
                 try {
-                    assertEquals(new File(f.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
                 }
                 catch(IOException e) {
                     fail();
@@ -73,13 +73,13 @@ public class FileWatcherTest extends AbstractTestCase {
                 }
             }
         };
-        w.addListener(listener);
-        w.register(f).await();
-        assertTrue(f.touch());
+        watcher.addListener(listener);
+        watcher.register(file).await();
+        assertTrue(file.touch());
         create.await();
-        f.delete();
+        file.delete();
         delete.await();
-        w.removeListener(listener);
-        w.close(f);
+        watcher.removeListener(listener);
+        watcher.close(file);
     }
 }
