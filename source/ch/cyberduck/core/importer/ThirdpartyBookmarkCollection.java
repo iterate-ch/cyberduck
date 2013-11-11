@@ -27,11 +27,13 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
@@ -55,23 +57,31 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         final Local file = this.getFile();
         if(file.exists()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found bookmarks file at %s", file.getAbsolute()));
+                log.info(String.format("Found bookmarks file at %s", file));
+            }
+            final String current;
+            try {
+                current = this.getChecksum();
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure obtaining checksum for %s", file));
+                return;
             }
             if(Preferences.instance().getBoolean(this.getConfiguration())) {
                 // Previously imported
-                final String checksum = Preferences.instance().getProperty(String.format("%s.checksum", this.getConfiguration()));
+                final String previous = Preferences.instance().getProperty(String.format("%s.checksum", this.getConfiguration()));
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Saved previous checksum %s for bookmark %s", checksum, file));
+                    log.debug(String.format("Saved previous checksum %s for bookmark %s", previous, file));
                 }
-                if(StringUtils.isNotBlank(checksum)) {
-                    if(checksum.equals(this.getChecksum())) {
+                if(StringUtils.isNotBlank(previous)) {
+                    if(previous.equals(current)) {
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Skip already imported bookmarks in %s", file.getAbsolute()));
+                            log.info(String.format("Skip importing bookmarks from %s with previously saved checksum %s", file, previous));
                         }
                     }
                     else {
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Checksum changed for bookmarks file at %s", file.getAbsolute()));
+                            log.info(String.format("Checksum changed for bookmarks file at %s", file));
                         }
                         // Should filter existing bookmarks
                         try {
@@ -80,6 +90,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                         catch(AccessDeniedException e) {
                             log.warn(String.format("Failure reading collection %s %s", file, e.getMessage()));
                         }
+                    }
+                }
+                else {
+                    // Skip flagged
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip importing bookmarks from %s", file));
                     }
                 }
             }
@@ -93,11 +109,13 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                 }
             }
             // Save last checksum
-            Preferences.instance().setProperty(String.format("%s.checksum", this.getConfiguration()), this.getChecksum());
+            if(StringUtils.isNotBlank(current)) {
+                Preferences.instance().setProperty(String.format("%s.checksum", this.getConfiguration()), current);
+            }
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info(String.format("No bookmarks file at %s", file.getAbsolute()));
+                log.info(String.format("No bookmarks file at %s", file));
             }
         }
         // Flag as imported
@@ -121,10 +139,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     /**
      * @return MD5 sum of bookmark file
      */
-    public String getChecksum() {
+    public String getChecksum() throws IOException {
         final Local file = this.getFile();
-        String checksum = file.attributes().getChecksum();
-        log.debug(String.format("Current checksum for %s is %s", file.getAbsolute(), checksum));
+        final String checksum = new MD5ChecksumCompute().compute(file.getInputStream());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Current checksum for %s is %s", file, checksum));
+        }
         return checksum;
     }
 
