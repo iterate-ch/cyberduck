@@ -21,6 +21,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.HostKeyController;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.io.IOUtils;
@@ -64,6 +65,9 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
             log.error(String.format("Cannot read known hosts file %s", file), e);
         }
         catch(IllegalArgumentException e) {
+            log.error(String.format("Cannot read known hosts file %s", file), e);
+        }
+        catch(AccessDeniedException e) {
             log.error(String.format("Cannot read known hosts file %s", file), e);
         }
         finally {

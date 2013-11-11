@@ -39,6 +39,7 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
@@ -46,8 +47,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -144,7 +143,7 @@ public class OpenSshConfig {
                     IOUtils.closeQuietly(in);
                 }
             }
-            catch(FileNotFoundException none) {
+            catch(BackgroundException none) {
                 hosts = Collections.emptyMap();
             }
             catch(IOException err) {

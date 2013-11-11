@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.putty.PuTTYKey;
 
@@ -49,7 +50,7 @@ public class SFTPPublicKeyAuthentication {
     }
 
     public boolean authenticate(final Host host, final LoginController prompt)
-            throws IOException, LoginCanceledException {
+            throws IOException, LoginCanceledException, AccessDeniedException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", host.getCredentials()));
         }
