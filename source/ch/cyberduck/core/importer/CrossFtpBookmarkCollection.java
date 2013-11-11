@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -52,7 +53,7 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         this.read(file);
     }
 
@@ -114,7 +115,7 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
 
         @Override
         public void startElement(String name) {
-            ;
+            //
         }
 
         @Override

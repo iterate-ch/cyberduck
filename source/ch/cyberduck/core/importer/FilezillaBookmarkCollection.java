@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         this.read(file);
     }
 

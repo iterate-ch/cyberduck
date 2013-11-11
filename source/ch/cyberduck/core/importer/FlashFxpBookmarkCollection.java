@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +47,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
     private static final long serialVersionUID = 5122804563710604658L;
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         try {
             final BufferedReader in
                     = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
@@ -114,7 +115,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
             }
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            throw new AccessDeniedException(e.getMessage(), e);
         }
     }
 }

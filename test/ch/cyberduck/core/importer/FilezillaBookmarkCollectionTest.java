@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class FilezillaBookmarkCollectionTest extends AbstractTestCase {
 
     @Test
-    public void testParse() {
+    public void testParse() throws Exception {
         FilezillaBookmarkCollection c = new FilezillaBookmarkCollection();
         assertEquals(0, c.size());
         c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/org.filezilla-project.sitemanager.xml"));

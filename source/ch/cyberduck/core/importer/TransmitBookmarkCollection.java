@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -56,11 +57,10 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
-            log.error("Invalid bookmark file:" + file);
-            return;
+            throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         // Adds a class translation mapping to NSKeyedUnarchiver whereby objects encoded with a given class name
         // are decoded as instances of a given class instead.

@@ -22,6 +22,7 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -35,7 +36,7 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
     private static final long serialVersionUID = 2245328157886337606L;
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         this.read(file);
     }
 

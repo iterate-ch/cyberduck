@@ -86,7 +86,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
     }
 
-    protected void read(Local file) {
+    protected void read(Local file) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {

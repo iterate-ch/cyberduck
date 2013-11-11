@@ -27,13 +27,13 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
@@ -61,9 +61,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             final String current;
             try {
-                current = this.getChecksum();
+                current = new MD5ChecksumCompute().compute(file.getInputStream());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Current checksum for %s is %s", file, current));
+                }
             }
-            catch(IOException e) {
+            catch(BackgroundException e) {
                 log.warn(String.format("Failure obtaining checksum for %s", file));
                 return;
             }
@@ -134,18 +137,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public String getConfiguration() {
         return String.format("bookmark.import.%s", this.getBundleIdentifier());
-    }
-
-    /**
-     * @return MD5 sum of bookmark file
-     */
-    public String getChecksum() throws IOException {
-        final Local file = this.getFile();
-        final String checksum = new MD5ChecksumCompute().compute(file.getInputStream());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Current checksum for %s is %s", file, checksum));
-        }
-        return checksum;
     }
 
     @Override

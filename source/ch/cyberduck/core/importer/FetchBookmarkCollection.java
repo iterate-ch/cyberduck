@@ -24,6 +24,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -50,21 +51,18 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
-    protected void parse(Local file) {
+    protected void parse(Local file) throws AccessDeniedException {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
-            log.error("Invalid bookmark file:" + file);
-            return;
+            throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         NSDictionary dict = new PlistDeserializer(serialized).objectForKey("Shortcuts v2");
         if(null == dict) {
-            log.error("Invalid bookmark file:" + file);
-            return;
+            throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         dict = new PlistDeserializer(dict).objectForKey("Shortcuts");
         if(null == dict) {
-            log.error("Invalid bookmark file:" + file);
-            return;
+            throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         List<NSDictionary> shortcuts = new PlistDeserializer(dict).listForKey("Shortcuts");
         for(NSDictionary shortcut : shortcuts) {

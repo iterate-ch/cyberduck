@@ -20,6 +20,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -70,7 +71,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
 
     protected abstract AbstractHandler getHandler();
 
-    protected void read(final Local child) {
+    protected void read(final Local child) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
                     Charset.forName("UTF-8")));

@@ -92,7 +92,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     /**
      * Read invalid JSON format.
      */
-    private void read(Local file) {
+    protected void read(Local file) throws AccessDeniedException {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
             try {
@@ -113,7 +113,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            throw new AccessDeniedException(e.getMessage(), e);
         }
     }
 
