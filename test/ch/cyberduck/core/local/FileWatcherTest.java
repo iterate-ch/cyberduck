@@ -11,8 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -25,7 +24,7 @@ public class FileWatcherTest extends AbstractTestCase {
         final FinderLocal f = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final CyclicBarrier create = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
-        w.addListener(new FileWatcherListener() {
+        final FileWatcherListener listener = new FileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
                 try {
@@ -73,11 +72,14 @@ public class FileWatcherTest extends AbstractTestCase {
                     fail();
                 }
             }
-        });
+        };
+        w.addListener(listener);
         w.register(f).await();
-        f.touch();
+        assertTrue(f.touch());
         create.await();
         f.delete();
         delete.await();
+        w.removeListener(listener);
+        w.close(f);
     }
 }
