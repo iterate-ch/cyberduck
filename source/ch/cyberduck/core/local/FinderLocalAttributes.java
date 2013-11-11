@@ -60,10 +60,10 @@ public class FinderLocalAttributes extends LocalAttributes {
         // if the link points to a nonexistent file, this method returns null. If flag is false,
         // the attributes of the symbolic link are returned.
         final NSDictionary dict = NSFileManager.defaultManager().attributesOfItemAtPath_error(
-                path, error);
+                local.getAbsolute(), error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Failure reading attributes for %s %s", path, f));
+            log.error(String.format("Failure reading attributes for %s %s", local, f));
         }
         return dict;
     }
@@ -75,7 +75,7 @@ public class FinderLocalAttributes extends LocalAttributes {
     private NSObject getNativeAttribute(final String name) {
         final NSDictionary dict = this.getNativeAttributes();
         if(null == dict) {
-            log.warn(String.format("No file at %s", path));
+            log.warn(String.format("No file at %s", local));
             return null;
         }
         // Returns an entry’s value given its key, or null if no value is associated with key.
@@ -157,13 +157,13 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public boolean isBundle() {
-        return NSWorkspace.sharedWorkspace().isFilePackageAtPath(path);
+        return NSWorkspace.sharedWorkspace().isFilePackageAtPath(local.getAbsolute());
     }
 
     @Override
     public boolean isSymbolicLink() {
         final ObjCObjectByReference error = new ObjCObjectByReference();
-        final String target = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(path, error);
+        final String target = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(local.getAbsolute(), error);
         if(null == target) {
             final NSError f = error.getValueAs(NSError.class);
             log.warn(String.format("Failure reading symbolic target for file %s %s", this, f));
@@ -187,7 +187,7 @@ public class FinderLocalAttributes extends LocalAttributes {
                     resolved.startAccessingSecurityScopedResource();
                 }
             }
-            final boolean executable = NSFileManager.defaultManager().isExecutableFileAtPath(path);
+            final boolean executable = NSFileManager.defaultManager().isExecutableFileAtPath(local.getAbsolute());
             if(resolved != null) {
                 if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
                     resolved.stopAccessingSecurityScopedResource();
@@ -204,7 +204,7 @@ public class FinderLocalAttributes extends LocalAttributes {
                     resolved.startAccessingSecurityScopedResource();
                 }
             }
-            final boolean readable = NSFileManager.defaultManager().isReadableFileAtPath(path);
+            final boolean readable = NSFileManager.defaultManager().isReadableFileAtPath(local.getAbsolute());
             if(resolved != null) {
                 if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
                     resolved.stopAccessingSecurityScopedResource();
@@ -221,7 +221,7 @@ public class FinderLocalAttributes extends LocalAttributes {
                     resolved.startAccessingSecurityScopedResource();
                 }
             }
-            final boolean writable = NSFileManager.defaultManager().isWritableFileAtPath(path);
+            final boolean writable = NSFileManager.defaultManager().isWritableFileAtPath(local.getAbsolute());
             if(resolved != null) {
                 if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
                     resolved.stopAccessingSecurityScopedResource();
