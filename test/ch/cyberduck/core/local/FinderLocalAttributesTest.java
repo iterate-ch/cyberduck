@@ -96,7 +96,7 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
 
     @Test
     public void testIsSymbolicLink() throws Exception {
-        FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
-        assertFalse(a.isSymbolicLink());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).isSymbolicLink());
+        assertTrue(new FinderLocalAttributes(new FinderLocal("/tmp")).isSymbolicLink());
     }
 }

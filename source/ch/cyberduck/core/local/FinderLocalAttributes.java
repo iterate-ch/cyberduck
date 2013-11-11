@@ -162,13 +162,11 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public boolean isSymbolicLink() {
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final String target = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(local.getAbsolute(), error);
-        if(null == target) {
-            final NSError f = error.getValueAs(NSError.class);
-            log.warn(String.format("Failure reading symbolic target for file %s %s", this, f));
+        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileType);
+        if(null == object) {
+            return false;
         }
-        return target != null;
+        return NSFileManager.NSFileTypeSymbolicLink.equals(object.toString());
     }
 
     /**
