@@ -91,7 +91,7 @@ public final class FileWatcher implements FileWatcherCallback {
                         }
                         if(kind == OVERFLOW) {
                             log.error(String.format("Overflow event for %s", watchable.getFile()));
-                            continue;
+                            break;
                         }
                         // The filename is the context of the event.
                         final WatchEvent<File> ev = (WatchEvent<File>) event;
