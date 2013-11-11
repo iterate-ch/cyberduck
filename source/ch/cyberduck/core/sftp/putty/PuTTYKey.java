@@ -69,10 +69,6 @@ public class PuTTYKey {
     private final Map<String, String> headers
             = new HashMap<String, String>();
 
-    public PuTTYKey(File ppkFile) throws IOException {
-        this(new FileReader(ppkFile));
-    }
-
     public PuTTYKey(InputStream in) throws IOException {
         this(new InputStreamReader(in, Charset.forName("UTF-8")));
     }
@@ -234,10 +230,6 @@ public class PuTTYKey {
     /**
      * Checks if the given file is a PuTTY's ".ppk" file, by looking at the file contents.
      */
-    public static boolean isPuTTYKeyFile(File ppkFile) throws IOException {
-        return isPuTTYKeyFile(new FileReader(ppkFile));
-    }
-
     public static boolean isPuTTYKeyFile(InputStream in) throws IOException {
         return isPuTTYKeyFile(new InputStreamReader(in, Charset.forName("UTF-8")));
     }

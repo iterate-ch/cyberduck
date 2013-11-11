@@ -225,7 +225,7 @@ public class OpenSshConfig {
             else if("IdentityFile".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityFile == null) {
-                        c.identityFile = toFile(dequote(argValue));
+                        c.identityFile = LocalFactory.createLocal(dequote(argValue));
                     }
                 }
             }
@@ -288,17 +288,6 @@ public class OpenSshConfig {
         return Boolean.FALSE;
     }
 
-    private File toFile(final String path) {
-        if(path.startsWith("~/")) {
-            return new File(home.getAbsolute(), path.substring(2));
-        }
-        File ret = new File(path);
-        if(ret.isAbsolute()) {
-            return ret;
-        }
-        return new File(home.getAbsolute(), path);
-    }
-
     /**
      * Configuration of one "Host" block in the configuration file.
      * <p/>
@@ -317,7 +306,7 @@ public class OpenSshConfig {
 
         int port;
 
-        File identityFile;
+        Local identityFile;
 
         String user;
 
@@ -364,7 +353,7 @@ public class OpenSshConfig {
          * @return path of the private key file to use for authentication; null
          * if the caller should use default authentication strategies.
          */
-        public File getIdentityFile() {
+        public Local getIdentityFile() {
             return identityFile;
         }
 

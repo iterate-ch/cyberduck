@@ -54,7 +54,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                     credentials.setUsername(entry.getUser());
                 }
                 if(null != entry.getIdentityFile()) {
-                    credentials.setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
+                    credentials.setIdentity(entry.getIdentityFile());
                 }
                 else {
                     // No custom public key authentication configuration
