@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
@@ -40,9 +41,12 @@ public class ODBEditor extends BrowserBackgroundEditor {
         Native.load("ODBEdit");
     }
 
+    private Session<?> session;
+
     public ODBEditor(final Controller controller, final Session session,
                      final Application application, final Path file) {
         super(controller, session, application, file);
+        this.session = session;
     }
 
     /**
@@ -52,8 +56,9 @@ public class ODBEditor extends BrowserBackgroundEditor {
     public void edit() throws IOException {
         // Important, should always be run on the main thread; otherwise applescript crashes
         final UrlProvider provider = session.getFeature(UrlProvider.class);
-        if(!this.edit(local.getAbsolute(), provider.toUrl(edited).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
-            throw new IOException(String.format("Edit failed for %s", local));
+        final Path file = this.getEdited();
+        if(!this.edit(file.getLocal().getAbsolute(), provider.toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
+            throw new IOException(String.format("Edit failed for %s", file.getLocal()));
         }
     }
 
@@ -73,7 +78,8 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didCloseFile() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received notification from editor to close file %s", local));
+            final Local file = this.getEdited().getLocal();
+            log.debug(String.format("Received notification from editor to close file %s", file));
         }
         if(this.isModified()) {
             this.setClosed(true);
@@ -89,7 +95,8 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didModifyFile() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received notification from editor to save file %s", local));
+            final Local file = this.getEdited().getLocal();
+            log.debug(String.format("Received notification from editor to save file %s", file));
         }
         this.setModified(true);
         this.save();
