@@ -10,6 +10,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -74,6 +75,34 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledLoginController());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testConnectInvalidProjectId() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid") + "1", null
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DefaultHostKeyController());
+        try {
+            session.login(new DisabledPasswordStore() {
+                @Override
+                public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                    if(user.equals("Google OAuth2 Access Token")) {
+                        return properties.getProperty("google.accesstoken");
+                    }
+                    if(user.equals("Google OAuth2 Refresh Token")) {
+                        return properties.getProperty("google.refreshtoken");
+                    }
+                    return null;
+                }
+            }, new DisabledLoginController());
+        }
+        catch(BackgroundException e) {
+            assertEquals("Access denied. 4082461033721 is not a valid project id spec. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Listing directory failed.", e.getMessage());
+            throw e;
+        }
     }
 
     @Test(expected = LoginCanceledException.class)

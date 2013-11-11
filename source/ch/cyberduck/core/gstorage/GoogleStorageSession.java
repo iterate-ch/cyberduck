@@ -165,7 +165,7 @@ public class GoogleStorageSession extends S3Session {
                 cache.put(root.getReference(), this.list(root, new DisabledListProgressListener()));
             }
             catch(BackgroundException e) {
-                throw new LoginFailureException(e.getMessage(), e);
+                throw new LoginFailureException(e.getMessage(), e.getDetail(), e);
             }
         }
         else {
