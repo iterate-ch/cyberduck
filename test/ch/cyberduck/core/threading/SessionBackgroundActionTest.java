@@ -21,6 +21,8 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
@@ -68,6 +70,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
+        assertEquals(0, a.retry());
     }
 
     @Test
@@ -105,6 +108,45 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
+        assertEquals(0, a.retry());
+    }
+
+    @Test
+    public void testGetExceptionCancel() throws Exception {
+        final BackgroundException failure = new LoginCanceledException();
+        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.empty(), new AlertCallback() {
+            @Override
+            public boolean alert(final SessionBackgroundAction repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
+                assertEquals(failure, f);
+                return false;
+            }
+        }, new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+        }, new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                //
+            }
+        }, new DisabledLoginController(), new DefaultHostKeyController()
+        ) {
+            @Override
+            protected boolean connect(final Session session) throws BackgroundException {
+                assertNotNull(session);
+                return true;
+            }
+
+            @Override
+            public Object run() throws BackgroundException {
+                throw failure;
+            }
+        };
+        a.call();
+        assertFalse(a.hasFailed());
+        assertNull(a.getException());
+        assertEquals(0, a.retry());
     }
 
     @Test
