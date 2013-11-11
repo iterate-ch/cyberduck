@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -210,6 +211,9 @@ public final class Profile implements Protocol, Serializable {
             return file;
         }
         catch(IOException e) {
+            log.error("Error writing temporary file", e);
+        }
+        catch(AccessDeniedException e) {
             log.error("Error writing temporary file", e);
         }
         return null;
