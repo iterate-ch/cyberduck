@@ -114,7 +114,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     @Override
-    public void progress(final long transferred) {
+    public synchronized void progress(final long transferred) {
         this.setCurrent(current + transferred);
     }
 
