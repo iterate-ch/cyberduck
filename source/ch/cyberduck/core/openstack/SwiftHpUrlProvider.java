@@ -40,7 +40,7 @@ import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftHpUrlProvider extends SwiftUrlProvider {
     private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
@@ -57,7 +57,7 @@ public class SwiftHpUrlProvider extends SwiftUrlProvider {
     }
 
     public SwiftHpUrlProvider(final SwiftSession session, final HostPasswordStore store) {
-        super(session, Collections.<Region, AccountInfo>emptyMap(), store);
+        super(session, Collections.<Region, AccountInfo>emptyMap());
         this.session = session;
         this.store = store;
     }
