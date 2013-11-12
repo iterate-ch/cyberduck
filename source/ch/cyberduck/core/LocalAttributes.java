@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -26,7 +24,6 @@ import java.io.IOException;
  *
  */
 public class LocalAttributes extends Attributes {
-    private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private String path;
 

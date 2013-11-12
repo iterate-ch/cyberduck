@@ -192,9 +192,6 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public void setModificationDate(final long millis) {
-        if(millis < 0) {
-            return;
-        }
         this.modified = millis;
     }
 
@@ -204,9 +201,6 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public void setCreationDate(final long millis) {
-        if(millis < 0) {
-            return;
-        }
         this.created = millis;
     }
 
