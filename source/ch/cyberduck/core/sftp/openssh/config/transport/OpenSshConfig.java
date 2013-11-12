@@ -64,11 +64,6 @@ public class OpenSshConfig {
     private static Logger log = Logger.getLogger(OpenSshConfig.class);
 
     /**
-     * The user's home directory, as key files may be relative to here.
-     */
-    private final Local home = LocalFactory.createLocal(System.getProperty("user.home"));
-
-    /**
      * The .ssh/config file we read and monitor for updates.
      */
     private final Local configuration;
