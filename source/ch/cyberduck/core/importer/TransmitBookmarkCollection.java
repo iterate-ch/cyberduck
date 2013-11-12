@@ -68,11 +68,14 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         NSKeyedUnarchiver.setClass_forClassName(c, "FavoriteCollection");
         NSKeyedUnarchiver.setClass_forClassName(c, "HistoryCollection");
 
-        TransmitFavorite f = Rococoa.createClass("CDTransmitImportFavorite", TransmitFavorite.class);
+        final TransmitFavorite f = Rococoa.createClass("CDTransmitImportFavorite", TransmitFavorite.class);
         NSKeyedUnarchiver.setClass_forClassName(f, "Favorite");
         NSKeyedUnarchiver.setClass_forClassName(f, "DotMacFavorite");
 
         final NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
+        if(null == collectionsData) {
+            throw new AccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
+        }
         TransmitFavoriteCollection rootCollection
                 = Rococoa.cast(NSKeyedUnarchiver.unarchiveObjectWithData(collectionsData), TransmitFavoriteCollection.class);
         if(null == rootCollection) {
