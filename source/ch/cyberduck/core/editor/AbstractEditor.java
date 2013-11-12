@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -134,6 +136,8 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
+                    session.message(MessageFormat.format(
+                            LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
                     checksum = new MD5ChecksumCompute().compute(local.getInputStream());
                 }
                 catch(BackgroundException e) {
@@ -161,6 +165,8 @@ public abstract class AbstractEditor implements Editor {
         // If checksum still the same no need for save
         final String current;
         try {
+            session.message(MessageFormat.format(
+                    LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
             current = new MD5ChecksumCompute().compute(local.getInputStream());
         }
         catch(BackgroundException e) {
