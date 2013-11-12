@@ -58,13 +58,13 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     protected void parse(Local file) throws AccessDeniedException {
-        NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
+        final NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
             throw new AccessDeniedException(String.format("Invalid bookmark file %s", file));
         }
         // Adds a class translation mapping to NSKeyedUnarchiver whereby objects encoded with a given class name
         // are decoded as instances of a given class instead.
-        TransmitFavoriteCollection c = Rococoa.createClass("CDTransmitImportFavoriteCollection", TransmitFavoriteCollection.class);
+        final TransmitFavoriteCollection c = Rococoa.createClass("CDTransmitImportFavoriteCollection", TransmitFavoriteCollection.class);
         NSKeyedUnarchiver.setClass_forClassName(c, "FavoriteCollection");
         NSKeyedUnarchiver.setClass_forClassName(c, "HistoryCollection");
 
@@ -72,10 +72,12 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         NSKeyedUnarchiver.setClass_forClassName(f, "Favorite");
         NSKeyedUnarchiver.setClass_forClassName(f, "DotMacFavorite");
 
-        NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
+        final NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
         TransmitFavoriteCollection rootCollection
                 = Rococoa.cast(NSKeyedUnarchiver.unarchiveObjectWithData(collectionsData), TransmitFavoriteCollection.class);
-
+        if(null == rootCollection) {
+            throw new AccessDeniedException(String.format("Error unarchiving bookmark file %s", file));
+        }
         NSArray collections = rootCollection.favorites(); //The root has collections
         NSEnumerator collectionsEnumerator = collections.objectEnumerator();
         NSObject next;
@@ -93,7 +95,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
     }
 
-    private void parse(TransmitFavorite favorite) {
+    private void parse(final TransmitFavorite favorite) {
         String server = favorite.server();
         if(StringUtils.isBlank(server)) {
             log.warn("No server name:" + server);
