@@ -26,8 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 
-import org.apache.log4j.Logger;
-
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,7 +42,6 @@ import ch.iterate.openstack.swift.model.Region;
  * @version $Id$
  */
 public class SwiftSession extends HttpSession<Client> {
-    private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this);

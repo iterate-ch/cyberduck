@@ -174,7 +174,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
             stored.setMd5sum(checksum);
             return stored;
-
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Upload failed", e);

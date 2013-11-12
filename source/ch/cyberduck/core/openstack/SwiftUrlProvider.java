@@ -18,7 +18,14 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -48,8 +55,6 @@ public class SwiftUrlProvider implements UrlProvider {
 
     private SwiftSession session;
 
-    private HostPasswordStore store;
-
     private Map<Region, AccountInfo> accounts;
 
     public SwiftUrlProvider(final SwiftSession session) {
@@ -57,13 +62,8 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts) {
-        this(session, accounts, PasswordStoreFactory.get());
-    }
-
-    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final HostPasswordStore store) {
         this.session = session;
         this.accounts = accounts;
-        this.store = store;
     }
 
     @Override
