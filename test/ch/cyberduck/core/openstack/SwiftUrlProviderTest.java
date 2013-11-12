@@ -56,7 +56,7 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
         ));
-        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts, new DisabledPasswordStore());
+        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
