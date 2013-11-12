@@ -28,15 +28,12 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
-import org.apache.log4j.Logger;
-
 import java.util.List;
 
 /**
  * @version $Id$
  */
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(FetchBookmarkCollection.class);
 
     private static final long serialVersionUID = -7544710198776572190L;
 
