@@ -102,51 +102,22 @@ public class SwiftUrlProvider implements UrlProvider {
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
-        final String signature;
-        if(session.getHost().getHostname().endsWith("identity.hpcloudsvc.com")) {
-            final Credentials credentials = session.getHost().getCredentials();
-            if(StringUtils.contains(credentials.getUsername(), ':')) {
-                if(log.isInfoEnabled()) {
-                    log.info("Using account secret key to sign");
-                }
-                final String tenant = StringUtils.split(credentials.getUsername(), ':')[0];
-                final String accesskey = StringUtils.split(credentials.getUsername(), ':')[1];
-                // HP Cloud Object Storage Temporary URLs require the user's Tenant ID and Access Key ID
-                // to be prepended to the signature. Using the secret key to sign.
-                final String secret = store.find(session.getHost());
-                if(StringUtils.isBlank(secret)) {
-                    log.warn("No secret found in keychain required to sign temporary URL");
-                    return DescriptiveUrl.EMPTY;
-                }
-                signature = String.format("%s:%s:%s",
-                        tenant, accesskey,
-                        ServiceUtils.signWithHmacSha1(secret,
-                                String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path))
-                );
-            }
-            else {
-                log.warn("Missing tenant in user credentials to sign temporary URL");
-                return DescriptiveUrl.EMPTY;
-            }
+        if(!accounts.containsKey(region)) {
+            log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
+            return DescriptiveUrl.EMPTY;
         }
-        else {
-            if(!accounts.containsKey(region)) {
-                log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
-                return DescriptiveUrl.EMPTY;
-            }
-            // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
-            // be set on the Swift account. Used to sign.
-            final AccountInfo info = accounts.get(region);
-            if(StringUtils.isBlank(info.getTempUrlKey())) {
-                log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
-                return DescriptiveUrl.EMPTY;
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
-            }
-            signature = ServiceUtils.signWithHmacSha1(info.getTempUrlKey(),
-                    String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path));
+        // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
+        // be set on the Swift account. Used to sign.
+        final AccountInfo info = accounts.get(region);
+        if(StringUtils.isBlank(info.getTempUrlKey())) {
+            log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
+            return DescriptiveUrl.EMPTY;
         }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
+        }
+        final String signature = ServiceUtils.signWithHmacSha1(info.getTempUrlKey(),
+                String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path));
         //Compile the temporary URL
         return new DescriptiveUrl(URI.create(String.format("https://%s%s?temp_url_sig=%s&temp_url_expires=%d",
                 region.getStorageUrl().getHost(), path, signature, expiry.getTimeInMillis() / 1000)),
