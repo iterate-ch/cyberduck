@@ -1,8 +1,6 @@
 package ch.cyberduck.core.sftp.putty;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -172,8 +170,7 @@ public class PuTTYKey {
      * Converts this key into OpenSSH format.
      *
      * @return A multi-line string that can be written back to a file.
-     * @throws ch.ethz.ssh2.crypto.PEMDecryptException
-     *          If the passphrase is wrong
+     * @throws ch.ethz.ssh2.crypto.PEMDecryptException If the passphrase is wrong
      */
     public String toOpenSSH(String passphrase) throws IOException {
         if("ssh-rsa".equals(this.getAlgorithm())) {
