@@ -19,20 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -373,7 +360,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3MultipleDeleteFeature(this);
             }
             return (T) new S3DefaultDeleteFeature(this);
@@ -389,54 +376,54 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Location.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LocationFeature(this);
             }
         }
         if(type == AnalyticsProvider.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new QloudstatAnalyticsProvider();
             }
             return null;
         }
         if(type == Versioning.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3VersioningFeature(this);
             }
             return null;
         }
         if(type == Logging.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LoggingFeature(this);
             }
             return null;
         }
         if(type == Lifecycle.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LifecycleConfiguration(this);
             }
         }
         if(type == Encryption.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3EncryptionFeature(this);
             }
             return null;
         }
         if(type == Redundancy.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3StorageClassFeature(this);
             }
             return null;
         }
         if(type == IdentityConfiguration.class) {
             // Only for AWS
-            if(this.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new AmazonIdentityConfiguration(host);
             }
         }
