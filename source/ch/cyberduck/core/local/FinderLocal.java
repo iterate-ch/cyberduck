@@ -120,7 +120,7 @@ public class FinderLocal extends Local {
         super(serialized);
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String data = dict.stringForKey("Bookmark");
-        if(data != null) {
+        if(StringUtils.isNotBlank(data)) {
             this.bookmark = data;
         }
     }
@@ -141,7 +141,7 @@ public class FinderLocal extends Local {
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
         final String bookmark = this.getBookmark();
-        if(bookmark != null) {
+        if(StringUtils.isNotBlank(bookmark)) {
             dict.setStringForKey(bookmark, "Bookmark");
         }
         return dict.getSerialized();
@@ -175,7 +175,7 @@ public class FinderLocal extends Local {
 
     @Override
     public String getBookmark() {
-        if(null == bookmark) {
+        if(StringUtils.isBlank(bookmark)) {
             if(this.exists()) {
                 // Create new security scoped bookmark
                 bookmark = this.createBookmark();
@@ -210,10 +210,6 @@ public class FinderLocal extends Local {
 
     @Override
     public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
-        if(null == bookmark) {
-            log.warn(String.format("No security scoped bookmark for %s", this));
-            return super.getOutputStream(append);
-        }
         final NSURL resolved;
         try {
             resolved = this.lock();
@@ -241,7 +237,7 @@ public class FinderLocal extends Local {
 
     @Override
     public NSURL lock() throws AccessDeniedException {
-        if(null == bookmark) {
+        if(StringUtils.isBlank(bookmark)) {
             throw new AccessDeniedException(String.format("No security scoped bookmark for %s", this));
         }
         final NSURL resolved = this.resolve(bookmark);
@@ -276,10 +272,6 @@ public class FinderLocal extends Local {
 
     @Override
     public InputStream getInputStream() throws AccessDeniedException {
-        if(null == bookmark) {
-            log.warn(String.format("No security scoped bookmark for %s", this));
-            return super.getInputStream();
-        }
         final NSURL resolved;
         try {
             resolved = this.lock();
