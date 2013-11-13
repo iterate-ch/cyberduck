@@ -259,7 +259,7 @@ public class FinderLocal extends Local {
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Error resolving bookmark %s to URL %s", bookmark, f));
+            log.error(String.format("Error resolving bookmark to URL %s for %s", f, this));
         }
         return resolved;
     }
@@ -311,7 +311,7 @@ public class FinderLocal extends Local {
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("Error listing children for folder %s %s", this, f));
+                log.error(String.format("Error listing children for folder %s with error %s", this, f));
                 throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
             }
             final NSEnumerator i = files.objectEnumerator();
@@ -370,7 +370,7 @@ public class FinderLocal extends Local {
                     this.getAbsolute(), error);
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s %s", this, f));
+                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
             }
         }
     }
@@ -393,7 +393,7 @@ public class FinderLocal extends Local {
                     getAbsolute(), error);
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s %s", this, f));
+                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
             }
         }
     }
