@@ -179,9 +179,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                             selected.getLocal().attributes().getModificationDate()));
                     }
                     View.RemoteFileUrl =
-                        ((UrlProvider) Session.getFeature(typeof (UrlProvider))).toUrl(selected)
-                                                                                .find(DescriptiveUrl.Type.provider)
-                                                                                .getUrl();
+                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected).find(DescriptiveUrl.Type.provider).getUrl();
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;

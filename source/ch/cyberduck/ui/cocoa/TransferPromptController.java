@@ -275,7 +275,7 @@ public abstract class TransferPromptController extends SheetController
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            new DefaultUrlProvider(session.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(transfer.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     if(file.attributes().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
