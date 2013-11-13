@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.security.cert.CertificateException;
 
 /**
  * @version $Id$
@@ -52,9 +53,11 @@ public class DefaultIOExceptionMappingService extends AbstractIOExceptionMapping
             }
         }
         if(failure instanceof SSLHandshakeException) {
-            log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
-            // Server certificate not accepted
-            return new ConnectionCanceledException(failure);
+            if(failure.getCause() instanceof CertificateException) {
+                log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
+                // Server certificate not accepted
+                return new ConnectionCanceledException(failure);
+            }
         }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
