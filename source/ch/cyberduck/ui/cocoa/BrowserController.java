@@ -3264,7 +3264,7 @@ public class BrowserController extends WindowController
      * @return A session object bound to this browser controller
      */
     private Session init(final Host host) {
-        session = SessionFactory.createSession(host);
+        session = SessionFactory.create(host);
         transcript.clear();
         navigation.clear();
         pasteboard = PathPasteboardFactory.getPasteboard(session);

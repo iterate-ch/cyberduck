@@ -52,7 +52,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testAbsoluteDocumentRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("/usr/home/dkocher/public_html");
-        final Session session = SessionFactory.createSession(host);
+        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -64,7 +64,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testRelativeDocumentRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("public_html");
-        final Session session = SessionFactory.createSession(host);
+        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -76,7 +76,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testDefaultPathRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("/");
-        final Session session = SessionFactory.createSession(host);
+        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());

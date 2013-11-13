@@ -18,13 +18,20 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 public final class SessionFactory {
+    private static final Logger log = Logger.getLogger(SessionFactory.class);
 
     private SessionFactory() {
         //
     }
 
-    public static Session createSession(final Host h) {
-        return h.getProtocol().createSession(h);
+    public static Session create(final Host host) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Create session for %s", host));
+        }
+        final Protocol protocol = host.getProtocol();
+        return protocol.createSession(host);
     }
 }

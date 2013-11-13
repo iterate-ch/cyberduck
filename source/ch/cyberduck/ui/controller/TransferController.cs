@@ -637,7 +637,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                                             TransferCallback callback) :
                                                 base(
-                                                controller, SessionFactory.createSession(transfer.getHost()),
+                                                controller, SessionFactory.create(transfer.getHost()),
                                                 controller.GetController(transfer), controller.GetController(transfer),
                                                 transfer, options)
             {

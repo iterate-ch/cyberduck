@@ -73,7 +73,7 @@ public class CopyTransfer extends Transfer {
     private CopyTransfer(final Host host, final Host target,
                          final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(host, new ArrayList<Path>(selected.keySet()), bandwidth);
-        this.destination = SessionFactory.createSession(target);
+        this.destination = SessionFactory.create(target);
         this.files = selected;
     }
 
@@ -82,7 +82,7 @@ public class CopyTransfer extends Transfer {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object hostObj = dict.objectForKey("Destination");
         if(hostObj != null) {
-            destination = SessionFactory.createSession(new Host(hostObj));
+            destination = SessionFactory.create(new Host(hostObj));
         }
         final List destinationsObj = dict.listForKey("Destinations");
         if(destinationsObj != null) {

@@ -185,7 +185,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create new session for host %s in pool", host));
             }
-            final Session session = SessionFactory.createSession(host);
+            final Session session = SessionFactory.create(host);
             session.addProgressListener(progressListener);
             session.addTranscriptListener(transcriptListener);
             return session;

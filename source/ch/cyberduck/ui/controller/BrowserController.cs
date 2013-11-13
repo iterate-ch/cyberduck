@@ -2474,7 +2474,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>A session object bound to this browser controller</returns>
         private Session Init(Host host)
         {
-            _session = SessionFactory.createSession(host);
+            _session = SessionFactory.create(host);
             SetWorkdir(null);
             View.SelectedEncoding = _session.getEncoding();
             View.ClearTranscript();
