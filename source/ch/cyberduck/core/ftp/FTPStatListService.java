@@ -58,14 +58,14 @@ public class FTPStatListService implements ListService {
                     //Some servers include the status code for every line.
                     if(line.startsWith(String.valueOf(response))) {
                         try {
-                            result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
+                            result.add(StringUtils.strip(line.substring(line.indexOf(response) + line.length() + 1)));
                         }
                         catch(IndexOutOfBoundsException e) {
                             log.error(String.format("Failed parsing line %s", line), e);
                         }
                     }
                     else {
-                        result.add(StringUtils.stripStart(line, null));
+                        result.add(StringUtils.strip(line));
                     }
                 }
                 return new FTPListResponseReader().read(session, listener, directory, parser, result);
