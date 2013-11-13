@@ -47,11 +47,14 @@ import java.util.List;
 public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
-    private Filter<Path> filter
-            = new DownloadRegexFilter();
+    private Filter<Path> filter;
 
     public DownloadTransfer(final Host host, final Path root) {
         this(host, Collections.singletonList(root));
+    }
+
+    public DownloadTransfer(final Host host, final List<Path> roots) {
+        this(host, new DownloadRootPathsNormalizer().normalize(roots), new DownloadRegexFilter());
     }
 
     public DownloadTransfer(final Host host, final List<Path> roots, final Filter<Path> f) {
@@ -60,13 +63,8 @@ public class DownloadTransfer extends Transfer {
         filter = f;
     }
 
-    public DownloadTransfer(final Host host, final List<Path> roots) {
-        super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-    }
-
-    public <T> DownloadTransfer(final T dict) {
-        super(dict, new BandwidthThrottle(
+    public <T> DownloadTransfer(final T serialized) {
+        super(serialized, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
@@ -208,5 +206,4 @@ public class DownloadTransfer extends Transfer {
             }
         }
     }
-
 }

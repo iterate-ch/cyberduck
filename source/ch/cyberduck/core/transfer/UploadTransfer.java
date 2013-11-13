@@ -49,21 +49,20 @@ import java.util.List;
 public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 
-    private Filter<Local> filter = new UploadRegexFilter();
+    private Filter<Local> filter;
 
     public UploadTransfer(final Host host, final Path root) {
         this(host, Collections.singletonList(root));
+    }
+
+    public UploadTransfer(final Host session, final List<Path> roots) {
+        this(session, new UploadRootPathsNormalizer().normalize(roots), new UploadRegexFilter());
     }
 
     public UploadTransfer(final Host session, final List<Path> roots, final Filter<Local> f) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         filter = f;
-    }
-
-    public UploadTransfer(final Host session, final List<Path> roots) {
-        super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
     public <T> UploadTransfer(final T dict) {
