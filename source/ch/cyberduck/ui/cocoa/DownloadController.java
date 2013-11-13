@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
@@ -73,9 +74,9 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Host host = HostParser.parse(urlField.stringValue());
-            final Transfer transfer = new DownloadTransfer(host,
-                    new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()))
-            );
+            final Path file = new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()));
+            file.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
+            final Transfer transfer = new DownloadTransfer(host, file);
             TransferControllerFactory.get().start(transfer);
         }
     }
