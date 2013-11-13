@@ -8,6 +8,8 @@
 - [Bugfix] Softlayer connection profiles (Openstack Swift) (#7522)
 - [Bugfix] Missing CDN URLs (Openstack Swift, Windows) (#7532)
 - [Bugfix] Content type reset to application/octet-stream (S3) (#7598)
+- [Bugfix] Listing directory failure with missing permission to read symlink target (SFTP) (#7556)
+- [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
