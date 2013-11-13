@@ -140,6 +140,7 @@ public class FinderLocal extends Local {
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
+        // Get or create application scope bookmark
         final String bookmark = this.getBookmark();
         if(StringUtils.isNotBlank(bookmark)) {
             dict.setStringForKey(bookmark, "Bookmark");
@@ -176,31 +177,32 @@ public class FinderLocal extends Local {
     @Override
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
-            if(this.exists()) {
-                // Create new security scoped bookmark
-                bookmark = this.createBookmark();
-            }
-            else {
-                log.warn(String.format("Skip creating bookmark for file not found %s", this));
-            }
+            bookmark = this.createBookmark();
         }
         return bookmark;
     }
 
     private String createBookmark() {
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
-        if(null == data) {
-            final NSError f = error.getValueAs(NSError.class);
-            log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
+        if(this.exists()) {
+            // Create new security scoped bookmark
+            final ObjCObjectByReference error = new ObjCObjectByReference();
+            final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
+                    NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
+            if(null == data) {
+                final NSError f = error.getValueAs(NSError.class);
+                log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
+                return null;
+            }
+            final String encoded = data.base64EncodedString();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
+            }
+            return encoded;
+        }
+        else {
+            log.warn(String.format("Skip creating bookmark for file not found %s", this));
             return null;
         }
-        final String encoded = data.base64EncodedString();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
-        }
-        return encoded;
     }
 
     @Override
