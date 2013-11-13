@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in Preferences (SFTP, Mac)
 - [Bugfix] Prompt for private key file if sandboxing denies access and store security scoped bookmark in bookmark (SFTP, Mac)
 - [Bugfix] Missing CDN URLs (Openstack Swift, Windows) (#7532)
+- [Bugfix] Content type reset to application/octet-stream (S3) (#7598)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
