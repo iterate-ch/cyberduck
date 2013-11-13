@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 
@@ -39,6 +41,10 @@ public final class TransferCollection extends Collection<Transfer> {
     private static final long serialVersionUID = -6879481152545265228L;
 
     private Local file;
+
+    private Writer<Transfer> writer = TransferWriterFactory.get();
+
+    private Reader<Transfer> reader = TransferReaderFactory.get();
 
     /**
      * Formatter for file size
@@ -91,7 +97,7 @@ public final class TransferCollection extends Collection<Transfer> {
             log.debug(String.format("Save collection to %s", f));
         }
         f.getParent().mkdir();
-        TransferWriterFactory.get().write(this, f);
+        writer.write(this, f);
     }
 
     @Override
@@ -111,7 +117,7 @@ public final class TransferCollection extends Collection<Transfer> {
             log.debug(String.format("Load collection from %s", f));
         }
         if(f.exists()) {
-            this.addAll(TransferReaderFactory.get().readCollection(f));
+            this.addAll(reader.readCollection(f));
         }
     }
 
