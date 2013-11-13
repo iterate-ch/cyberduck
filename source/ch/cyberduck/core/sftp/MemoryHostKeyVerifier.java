@@ -62,13 +62,13 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
             database = new KnownHosts(file.getAbsolute());
         }
         catch(IOException e) {
-            log.error(String.format("Cannot read known hosts file %s", file), e);
+            log.error(String.format("Cannot read known hosts file %s", file));
         }
         catch(IllegalArgumentException e) {
-            log.error(String.format("Cannot read known hosts file %s", file), e);
+            log.error(String.format("Cannot read known hosts file %s", file));
         }
         catch(AccessDeniedException e) {
-            log.error(String.format("Cannot read known hosts file %s", file), e);
+            log.error(String.format("Cannot read known hosts file %s", file));
         }
         finally {
             IOUtils.closeQuietly(in);
