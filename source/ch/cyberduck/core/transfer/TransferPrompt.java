@@ -19,11 +19,12 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 
 /**
  * @version $Id$
  */
-public interface TransferPrompt {
+public interface TransferPrompt extends ProgressListener {
 
     /**
      * @return Transfer action selected in prompt for overwriting files

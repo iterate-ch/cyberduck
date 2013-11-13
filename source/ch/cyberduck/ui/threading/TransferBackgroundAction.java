@@ -79,6 +79,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private ConnectionService connection;
 
+    private TransferPrompt prompt;
+
     private Growl growl = GrowlFactory.get();
 
     public TransferBackgroundAction(final Controller controller,
@@ -99,7 +101,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, session, Cache.empty(), progressListener);
         this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
-                HostKeyControllerFactory.get(controller, session.getHost().getProtocol()),
+                HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progressListener);
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
             this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
@@ -110,6 +112,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.transfer = transfer;
         this.options = options;
         this.listener = transferListener;
+        this.prompt = prompt;
         this.meter = new TransferSpeedometer(transfer);
         this.timerPool = new ScheduledThreadPool();
     }
@@ -150,6 +153,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             }
         }, 100L, TimeUnit.MILLISECONDS);
         super.prepare();
+    }
+
+    @Override
+    public void message(final String message) {
+        prompt.message(message);
+        super.message(message);
     }
 
     @Override

@@ -444,6 +444,11 @@ public class BrowserController extends WindowController
                             public boolean isSelected(final Path file) {
                                 return true;
                             }
+
+                            @Override
+                            public void message(final String message) {
+                                BrowserController.this.message(message);
+                            }
                         }, new DisabledTransferErrorCallback()
                 ) {
                     @Override

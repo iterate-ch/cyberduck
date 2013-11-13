@@ -101,14 +101,12 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void awakeFromNib() {
-        session.addProgressListener(this);
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
         super.awakeFromNib();
     }
 
     @Override
     public void invalidate() {
-        session.removeProgressListener(this);
         browserView.setDataSource(null);
         browserView.setDelegate(null);
         super.invalidate();
