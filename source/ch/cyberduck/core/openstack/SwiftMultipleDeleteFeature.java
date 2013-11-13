@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 
 import java.io.IOException;
@@ -81,7 +82,12 @@ public class SwiftMultipleDeleteFeature implements Delete {
                 }
             }
             catch(GenericException e) {
-                throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+                if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                    new SwiftDeleteFeature(session).delete(files, prompt);
+                }
+                else {
+                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+                }
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
