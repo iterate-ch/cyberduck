@@ -346,6 +346,14 @@ public abstract class Local extends AbstractPath implements Serializable {
         }
     }
 
+    public Object lock() {
+        return null;
+    }
+
+    public void release(Object lock) {
+        //
+    }
+
     /**
      * @param directory Parent directory
      * @return True if this is a child in the path hierarchy of the argument passed
