@@ -56,13 +56,6 @@ public abstract class Local extends AbstractPath implements Serializable {
         this.setPath(name);
     }
 
-    /**
-     * @param path File reference
-     */
-    public Local(final File path) {
-        this.setPath(path.getAbsolutePath());
-    }
-
     public <T> Local(final T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         this.setPath(dict.stringForKey("Path"));
@@ -172,7 +165,7 @@ public abstract class Local extends AbstractPath implements Serializable {
             throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
         }
         for(File file : files) {
-            children.add(LocalFactory.createLocal(file));
+            children.add(LocalFactory.createLocal(file.getAbsolutePath()));
         }
         return children;
     }
@@ -238,7 +231,7 @@ public abstract class Local extends AbstractPath implements Serializable {
     }
 
     public Local getParent() {
-        return LocalFactory.createLocal(new File(path).getParentFile());
+        return LocalFactory.createLocal(new File(path).getParentFile().getAbsolutePath());
     }
 
     @Override

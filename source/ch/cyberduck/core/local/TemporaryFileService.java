@@ -59,7 +59,7 @@ public class TemporaryFileService {
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("tmp.dir"),
                         uid + String.valueOf(Path.DELIMITER) +
-                                this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()));
+                                this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()).getAbsolutePath());
         return LocalFactory.createLocal(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));
     }
 

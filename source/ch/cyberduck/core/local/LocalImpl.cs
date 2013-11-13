@@ -50,10 +50,6 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
-        public LocalImpl(File path) : base(path)
-        {
-        }
-
         public LocalImpl(Object serialized) : base(serialized)
         {
         }
@@ -175,11 +171,6 @@ namespace Ch.Cyberduck.Core.Local
             }
 
             protected override ch.cyberduck.core.Local create(string path)
-            {
-                return new LocalImpl(path);
-            }
-
-            protected override ch.cyberduck.core.Local create(File path)
             {
                 return new LocalImpl(path);
             }

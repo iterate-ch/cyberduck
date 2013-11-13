@@ -91,11 +91,6 @@ public class FinderLocal extends Local {
         }
 
         @Override
-        protected Local create(final File path) {
-            return new FinderLocal(path);
-        }
-
-        @Override
         protected <T> Local create(final T serialized) {
             return new FinderLocal(serialized);
         }
@@ -115,10 +110,6 @@ public class FinderLocal extends Local {
 
     public FinderLocal(final String parent, final String name) {
         super(String.format("%s/%s", parent, name));
-    }
-
-    public FinderLocal(final File path) {
-        super(path);
     }
 
     public FinderLocal(final String path) {

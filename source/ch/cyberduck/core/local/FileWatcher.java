@@ -122,17 +122,17 @@ public final class FileWatcher implements FileWatcherCallback {
         }
         if(ENTRY_MODIFY == kind) {
             for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileWritten(LocalFactory.createLocal(event.context()));
+                l.fileWritten(LocalFactory.createLocal(event.context().getAbsolutePath()));
             }
         }
         else if(ENTRY_DELETE == kind) {
             for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileDeleted(LocalFactory.createLocal(event.context()));
+                l.fileDeleted(LocalFactory.createLocal(event.context().getAbsolutePath()));
             }
         }
         else if(ENTRY_CREATE == kind) {
             for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileCreated(LocalFactory.createLocal(event.context()));
+                l.fileCreated(LocalFactory.createLocal(event.context().getAbsolutePath()));
             }
         }
         else {
