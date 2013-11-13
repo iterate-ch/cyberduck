@@ -49,9 +49,6 @@ public class SwiftSession extends HttpSession<Client> {
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
-    private SwiftRegionService regionService
-            = new SwiftRegionService(this);
-
     public SwiftSession(Host h) {
         super(h);
     }
