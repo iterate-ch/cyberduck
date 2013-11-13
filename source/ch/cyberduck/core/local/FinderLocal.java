@@ -214,8 +214,11 @@ public class FinderLocal extends Local {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getOutputStream(append);
         }
-        final NSURL resolved = this.lock();
-        if(null == resolved) {
+        final NSURL resolved;
+        try {
+            resolved = this.lock();
+        }
+        catch(AccessDeniedException e) {
             return super.getOutputStream(append);
         }
         try {
@@ -237,29 +240,25 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public NSURL lock() {
+    public NSURL lock() throws AccessDeniedException {
         if(null == bookmark) {
-            log.warn(String.format("No security scoped bookmark for %s", this));
-            return null;
+            throw new AccessDeniedException(String.format("No security scoped bookmark for %s", this));
         }
         final NSURL resolved = this.resolve(bookmark);
-        if(null == resolved) {
-            log.warn(String.format("Failure resolving bookmark %s", bookmark));
-            return null;
-        }
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             resolved.startAccessingSecurityScopedResource();
         }
         return resolved;
     }
 
-    protected NSURL resolve(final String data) {
+    protected NSURL resolve(final String data) throws AccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
         final NSData bookmark = NSData.dataWithBase64EncodedString(data);
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Error resolving bookmark to URL %s for %s", f, this));
+            log.error(String.format("Error resolving bookmark for %s to URL %s", this, f));
+            throw new AccessDeniedException(String.format("%s", f));
         }
         return resolved;
     }
@@ -281,8 +280,11 @@ public class FinderLocal extends Local {
             log.warn(String.format("No security scoped bookmark for %s", this));
             return super.getInputStream();
         }
-        final NSURL resolved = this.lock();
-        if(null == resolved) {
+        final NSURL resolved;
+        try {
+            resolved = this.lock();
+        }
+        catch(AccessDeniedException e) {
             return super.getInputStream();
         }
         try {

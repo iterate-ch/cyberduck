@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -186,8 +187,11 @@ public class FinderLocalAttributes extends LocalAttributes {
 
         @Override
         public boolean isExecutable() {
-            final NSURL resolved = local.lock();
-            if(null == resolved) {
+            final NSURL resolved;
+            try {
+                resolved = local.lock();
+            }
+            catch(AccessDeniedException e) {
                 return super.isExecutable();
             }
             try {
@@ -200,8 +204,11 @@ public class FinderLocalAttributes extends LocalAttributes {
 
         @Override
         public boolean isReadable() {
-            final NSURL resolved = local.lock();
-            if(null == resolved) {
+            final NSURL resolved;
+            try {
+                resolved = local.lock();
+            }
+            catch(AccessDeniedException e) {
                 return super.isReadable();
             }
             try {
@@ -214,8 +221,11 @@ public class FinderLocalAttributes extends LocalAttributes {
 
         @Override
         public boolean isWritable() {
-            final NSURL resolved = local.lock();
-            if(null == resolved) {
+            final NSURL resolved;
+            try {
+                resolved = local.lock();
+            }
+            catch(AccessDeniedException e) {
                 return super.isWritable();
             }
             try {

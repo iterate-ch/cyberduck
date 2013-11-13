@@ -346,7 +346,7 @@ public abstract class Local extends AbstractPath implements Serializable {
         }
     }
 
-    public Object lock() {
+    public Object lock() throws AccessDeniedException {
         return null;
     }
 
