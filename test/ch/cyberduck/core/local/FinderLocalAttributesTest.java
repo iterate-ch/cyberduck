@@ -99,4 +99,17 @@ public class FinderLocalAttributesTest extends AbstractTestCase {
         assertFalse(new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).isSymbolicLink());
         assertTrue(new FinderLocalAttributes(new FinderLocal("/tmp")).isSymbolicLink());
     }
+
+    @Test
+    public void testPermission() throws Exception {
+        final File f = new File(UUID.randomUUID().toString());
+        f.createNewFile();
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        assertFalse(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+        f.delete();
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isReadable());
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isWritable());
+        assertTrue(new FinderLocalAttributes(new FinderLocal(f.getAbsolutePath())).getPermission().isExecutable());
+    }
 }

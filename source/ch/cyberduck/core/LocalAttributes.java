@@ -152,7 +152,19 @@ public class LocalAttributes extends Attributes {
         this.checksum = checksum;
     }
 
-    private final class LocalPermission extends Permission {
+    protected class LocalPermission extends Permission {
+        public LocalPermission() {
+            //
+        }
+
+        public LocalPermission(final String mode) {
+            super(mode);
+        }
+
+        public LocalPermission(final int mode) {
+            super(mode);
+        }
+
         @Override
         public boolean isReadable() {
             return new File(path).canRead();
@@ -165,7 +177,7 @@ public class LocalAttributes extends Attributes {
 
         @Override
         public boolean isExecutable() {
-            return true;
+            return new File(path).canExecute();
         }
 
         @Override

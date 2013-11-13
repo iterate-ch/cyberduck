@@ -171,16 +171,27 @@ public class FinderLocalAttributes extends LocalAttributes {
     /**
      * Executable, readable and writable flags based on <code>NSFileManager</code>.
      */
-    private final class FinderLocalPermission extends Permission {
-        public FinderLocalPermission(final int octal) {
-            super(octal);
+    private final class FinderLocalPermission extends LocalPermission {
+        private FinderLocalPermission() {
+            //
+        }
+
+        private FinderLocalPermission(final String mode) {
+            super(mode);
+        }
+
+        private FinderLocalPermission(final int mode) {
+            super(mode);
         }
 
         @Override
         public boolean isExecutable() {
             final NSURL resolved = local.lock();
+            if(null == resolved) {
+                return super.isExecutable();
+            }
             try {
-                return NSFileManager.defaultManager().isExecutableFileAtPath(local.getAbsolute());
+                return NSFileManager.defaultManager().isExecutableFileAtPath(resolved.path());
             }
             finally {
                 local.release(resolved);
@@ -190,8 +201,11 @@ public class FinderLocalAttributes extends LocalAttributes {
         @Override
         public boolean isReadable() {
             final NSURL resolved = local.lock();
+            if(null == resolved) {
+                return super.isReadable();
+            }
             try {
-                return NSFileManager.defaultManager().isReadableFileAtPath(local.getAbsolute());
+                return NSFileManager.defaultManager().isReadableFileAtPath(resolved.path());
             }
             finally {
                 local.release(resolved);
@@ -201,8 +215,11 @@ public class FinderLocalAttributes extends LocalAttributes {
         @Override
         public boolean isWritable() {
             final NSURL resolved = local.lock();
+            if(null == resolved) {
+                return super.isWritable();
+            }
             try {
-                return NSFileManager.defaultManager().isWritableFileAtPath(local.getAbsolute());
+                return NSFileManager.defaultManager().isWritableFileAtPath(resolved.path());
             }
             finally {
                 local.release(resolved);

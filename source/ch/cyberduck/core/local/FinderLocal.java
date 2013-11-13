@@ -215,6 +215,9 @@ public class FinderLocal extends Local {
             return super.getOutputStream(append);
         }
         final NSURL resolved = this.lock();
+        if(null == resolved) {
+            return super.getOutputStream(append);
+        }
         try {
             return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
                 @Override
@@ -279,6 +282,9 @@ public class FinderLocal extends Local {
             return super.getInputStream();
         }
         final NSURL resolved = this.lock();
+        if(null == resolved) {
+            return super.getInputStream();
+        }
         try {
             return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
                 @Override
