@@ -114,6 +114,9 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void message(final String message) {
+        if(null == statusLabel) {
+            return;
+        }
         // Update the status label at the bottom of the browser window
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(message,
                 TRUNCATE_MIDDLE_ATTRIBUTES));
