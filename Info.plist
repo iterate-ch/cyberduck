@@ -96,6 +96,26 @@
                 <key>LSTypeIsPackage</key>
                 <false/>
             </dict>
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>cyberducktransfer</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>cyberduck-document.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>Cyberduck Transfer</string>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>ch.sudo.cyberduck.transfer</string>
+                </array>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
+                <key>LSTypeIsPackage</key>
+                <false/>
+            </dict>
         </array>
         <key>CFBundleExecutable</key>
         <string>Cyberduck</string>
@@ -312,6 +332,25 @@
                     <key>public.filename-extension</key>
                     <array>
                         <string>cyberduckprofile</string>
+                    </array>
+                </dict>
+                <key>UTTypeIconFile</key>
+                <string>cyberduck-document.icns</string>
+            </dict>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.data</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>Cyberduck Transfer</string>
+                <key>UTTypeIdentifier</key>
+                <string>ch.sudo.cyberduck.transfer</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>cyberducktransfer</string>
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>

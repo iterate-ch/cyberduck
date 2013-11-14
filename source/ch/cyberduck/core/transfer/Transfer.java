@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @version $Id$
@@ -120,6 +121,11 @@ public abstract class Transfer implements Serializable {
     private Date timestamp;
 
     /**
+     * Unique identifier
+     */
+    private String uuid;
+
+    /**
      * Transfer state
      */
     private State state = State.stopped;
@@ -194,6 +200,7 @@ public abstract class Transfer implements Serializable {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Roots");
+        dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
@@ -363,6 +370,17 @@ public abstract class Transfer implements Serializable {
 
     public void addTransferred(final long bytes) {
         transferred += bytes;
+    }
+
+    public String getUuid() {
+        if(null == uuid) {
+            uuid = UUID.randomUUID().toString();
+        }
+        return uuid;
+    }
+
+    public void setUuid(final String uuid) {
+        this.uuid = uuid;
     }
 
     @Override

@@ -19,16 +19,15 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.formatter.SizeFormatter;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.serializer.Reader;
-import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @version $Id$
@@ -36,75 +35,164 @@ import java.text.MessageFormat;
 public final class TransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(TransferCollection.class);
 
-    private static TransferCollection instance;
-
     private static final long serialVersionUID = -6879481152545265228L;
+
+    private static TransferCollection DEFAULT_COLLECTION = new TransferCollection(
+            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist")
+    );
+
+    public static TransferCollection defaultCollection() {
+        return DEFAULT_COLLECTION;
+    }
 
     private Local file;
 
-    private Writer<Transfer> writer = TransferWriterFactory.get();
-
     private Reader<Transfer> reader = TransferReaderFactory.get();
 
-    /**
-     * Formatter for file size
-     */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
-
-    protected TransferCollection(Local file) {
+    protected TransferCollection(final Local file) {
         this.file = file;
     }
 
-    private static final Object lock = new Object();
-
-    public static TransferCollection defaultCollection() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new TransferCollection(
-                        LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist")
-                );
-            }
-            return instance;
-        }
+    @Override
+    public int size() {
+        return FolderTransferCollection.defaultCollection().size();
     }
 
     @Override
-    public boolean add(Transfer o) {
-        boolean r = super.add(o);
-        this.save();
-        return r;
+    public boolean isEmpty() {
+        return FolderTransferCollection.defaultCollection().isEmpty();
     }
 
-    /**
-     * Saves the collection after adding the new item
-     *
-     * @param row Index of collection
-     * @param o   Transfer
-     * @see #save()
-     */
     @Override
-    public void add(int row, Transfer o) {
-        super.add(row, o);
-        this.save();
+    public boolean contains(Object o) {
+        return FolderTransferCollection.defaultCollection().contains(o);
+    }
+
+    @Override
+    public Transfer get(int row) {
+        return FolderTransferCollection.defaultCollection().get(row);
+    }
+
+    @Override
+    public boolean addAll(java.util.Collection<? extends Transfer> hosts) {
+        return FolderTransferCollection.defaultCollection().addAll(hosts);
+    }
+
+    @Override
+    public boolean add(Transfer host) {
+        return FolderTransferCollection.defaultCollection().add(host);
+    }
+
+    @Override
+    public void add(int row, Transfer host) {
+        FolderTransferCollection.defaultCollection().add(row, host);
+    }
+
+    @Override
+    public Transfer remove(int row) {
+        return FolderTransferCollection.defaultCollection().remove(row);
+    }
+
+    @Override
+    public boolean remove(Object host) {
+        return FolderTransferCollection.defaultCollection().remove(host);
+    }
+
+    @Override
+    public int indexOf(Object elem) {
+        return FolderTransferCollection.defaultCollection().indexOf(elem);
+    }
+
+    @Override
+    public int lastIndexOf(Object elem) {
+        return FolderTransferCollection.defaultCollection().lastIndexOf(elem);
+    }
+
+    @Override
+    public void addListener(CollectionListener<Transfer> l) {
+        FolderTransferCollection.defaultCollection().addListener(l);
+    }
+
+    @Override
+    public void removeListener(CollectionListener<Transfer> l) {
+        FolderTransferCollection.defaultCollection().removeListener(l);
+    }
+
+    @Override
+    public void clear() {
+        FolderTransferCollection.defaultCollection().clear();
+    }
+
+    @Override
+    public boolean removeAll(java.util.Collection<?> c) {
+        return FolderTransferCollection.defaultCollection().removeAll(c);
+    }
+
+    @Override
+    public void collectionItemChanged(Transfer item) {
+        FolderTransferCollection.defaultCollection().collectionItemChanged(item);
+    }
+
+    @Override
+    public boolean addAll(int index, java.util.Collection<? extends Transfer> c) {
+        return FolderTransferCollection.defaultCollection().addAll(index, c);
+    }
+
+    @Override
+    public Iterator<Transfer> iterator() {
+        return FolderTransferCollection.defaultCollection().iterator();
+    }
+
+    @Override
+    public ListIterator<Transfer> listIterator() {
+        return FolderTransferCollection.defaultCollection().listIterator();
+    }
+
+    @Override
+    public ListIterator<Transfer> listIterator(int index) {
+        return FolderTransferCollection.defaultCollection().listIterator(index);
+    }
+
+    @Override
+    public List<Transfer> subList(int fromIndex, int toIndex) {
+        return FolderTransferCollection.defaultCollection().subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public boolean containsAll(java.util.Collection<?> c) {
+        return FolderTransferCollection.defaultCollection().containsAll(c);
     }
 
     public void save() {
-        this.save(file);
-    }
-
-    private void save(Local f) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save collection to %s", f));
+        if(this.isLocked()) {
+            log.debug("Do not write locked collection");
+            return;
         }
-        f.getParent().mkdir();
-        writer.write(this, f);
+        FolderTransferCollection.defaultCollection().save();
     }
 
+
+    /**
+     * Migrate the deprecated queue file to the new format.
+     */
     @Override
     public void load() {
         this.lock();
         try {
-            this.load(file);
+            final FolderTransferCollection favorites = FolderTransferCollection.defaultCollection();
+            if(file.exists()) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Found queue file %s", file.getAbsolute()));
+                }
+                favorites.load(reader.readCollection(file));
+                if(log.isInfoEnabled()) {
+                    log.info("Moving deprecated queue file to Trash");
+                }
+                file.trash();
+            }
+            else {
+                favorites.load();
+            }
         }
         finally {
             this.unlock();
@@ -112,45 +200,15 @@ public final class TransferCollection extends Collection<Transfer> {
         super.load();
     }
 
-    private void load(Local f) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Load collection from %s", f));
-        }
-        if(f.exists()) {
-            this.addAll(reader.readCollection(f));
-        }
-    }
-
     /**
      * @return Number of transfers in collection that are running
      * @see ch.cyberduck.core.transfer.Transfer#isRunning()
      */
     public synchronized int numberOfRunningTransfers() {
-        int running = 0;
-        // Count the number of running transfers
-        for(Transfer t : this) {
-            if(t.isRunning()) {
-                running++;
-            }
-        }
-        return running;
+        return FolderTransferCollection.defaultCollection().numberOfRunningTransfers();
     }
 
     public synchronized TransferProgress getProgress() {
-        long size = 0;
-        for(Transfer t : this) {
-            if(t.isRunning()) {
-                size += t.getSize();
-            }
-        }
-        long transferred = 0;
-        for(Transfer t : this) {
-            if(t.isRunning()) {
-                transferred += t.getTransferred();
-            }
-        }
-        return new TransferProgress(size, transferred, MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                sizeFormatter.format(transferred),
-                sizeFormatter.format(size)), -1d);
+        return FolderTransferCollection.defaultCollection().getProgress();
     }
 }
