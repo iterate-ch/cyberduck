@@ -61,7 +61,5 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
         // Balance the most recent previous invocation of becomeCurrentWithPendingUnitCount: on the same thread
         // by restoring the current progress object
         [progress resignCurrent];
-        // Invoke cancelation handler
-        [progress cancel];
     }
 }
