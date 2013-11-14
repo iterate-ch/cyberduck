@@ -24,9 +24,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Ch.Cyberduck.Core.Collections;
 using Microsoft.Win32;
-using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.util;
+using org.apache.commons.io;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Editor
@@ -112,8 +112,7 @@ namespace Ch.Cyberduck.Core.Editor
                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
                                                                                    new Application(
                                                                                        application.ToLower(),
-                                                                                       LocalFactory.createLocal(
-                                                                                           application).getName())));
+                                                                                       FilenameUtils.getName(application))));
                 }
             }
             Application result;
