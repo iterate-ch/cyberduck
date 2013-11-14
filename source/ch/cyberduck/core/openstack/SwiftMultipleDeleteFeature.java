@@ -55,58 +55,58 @@ public class SwiftMultipleDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
         if(files.size() == 1) {
             new SwiftDeleteFeature(session).delete(files, prompt);
+            return;
         }
-        else {
-            final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    continue;
-                }
+        final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
+        for(Path file : files) {
+            if(containerService.isContainer(file)) {
+                continue;
+            }
+            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                    file.getName()));
+            final Path container = containerService.getContainer(file);
+            if(containers.containsKey(container)) {
+                containers.get(container).add(containerService.getKey(file));
+            }
+            else {
+                final List<String> keys = new ArrayList<String>();
+                keys.add(containerService.getKey(file));
+                containers.put(container, keys);
+            }
+        }
+        try {
+            for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
+                final Region region = new SwiftRegionService(session).lookup(container.getKey());
+                final List<String> keys = container.getValue();
+                session.getClient().deleteObjects(region, container.getKey().getName(), keys);
+            }
+        }
+        catch(GenericException e) {
+            if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                new SwiftDeleteFeature(session).delete(files, prompt);
+                return;
+            }
+            else {
+                throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+        }
+        for(Path file : files) {
+            if(containerService.isContainer(file)) {
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
-                final Path container = containerService.getContainer(file);
-                if(containers.containsKey(container)) {
-                    containers.get(container).add(containerService.getKey(file));
+                // Finally delete bucket itself
+                try {
+                    session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                            containerService.getContainer(file).getName());
                 }
-                else {
-                    final List<String> keys = new ArrayList<String>();
-                    keys.add(containerService.getKey(file));
-                    containers.put(container, keys);
+                catch(GenericException e) {
+                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
-            }
-            try {
-                for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
-                    final Region region = new SwiftRegionService(session).lookup(container.getKey());
-                    final List<String> keys = container.getValue();
-                    session.getClient().deleteObjects(region, container.getKey().getName(), keys);
-                }
-            }
-            catch(GenericException e) {
-                if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                    new SwiftDeleteFeature(session).delete(files, prompt);
-                }
-                else {
-                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
-                }
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
-            }
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                            file.getName()));
-                    // Finally delete bucket itself
-                    try {
-                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
-                                containerService.getContainer(file).getName());
-                    }
-                    catch(GenericException e) {
-                        throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
         }
