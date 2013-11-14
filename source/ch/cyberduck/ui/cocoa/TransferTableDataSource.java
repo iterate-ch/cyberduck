@@ -46,6 +46,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -62,8 +63,10 @@ public class TransferTableDataSource extends ListDataSource {
 
     private TransferFilter filter = new NullTransferFilter();
 
+    private TransferCollection collection = TransferCollection.defaultCollection();
+
     public TransferTableDataSource() {
-        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
+        collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionItemRemoved(Transfer item) {
                 final ProgressController controller = controllers.remove(item);
@@ -89,11 +92,11 @@ public class TransferTableDataSource extends ListDataSource {
                 public boolean accept(final Transfer transfer) {
                     // Match for path names and hostname
                     for(Path root : transfer.getRoots()) {
-                        if(root.getName().toLowerCase().contains(searchString.toLowerCase())) {
+                        if(root.getName().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
                             return true;
                         }
                     }
-                    if(transfer.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
+                    if(transfer.getHost().getHostname().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
                         return true;
                     }
                     return false;
@@ -107,9 +110,9 @@ public class TransferTableDataSource extends ListDataSource {
      */
     protected Collection<Transfer> getSource() {
         if(filter instanceof NullTransferFilter) {
-            return TransferCollection.defaultCollection();
+            return collection;
         }
-        Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.defaultCollection());
+        Collection<Transfer> filtered = new Collection<Transfer>(collection);
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext(); ) {
             if(!filter.accept(i.next())) {
                 // Temporarily remove the transfer from the collection copy
@@ -178,7 +181,7 @@ public class TransferTableDataSource extends ListDataSource {
             for(Path download : pasteboard) {
                 download.setLocal(LocalFactory.createLocal(host.getDownloadFolder(), download.getName()));
             }
-            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(host, pasteboard));
+            collection.add(row.intValue(), new DownloadTransfer(host, pasteboard));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);

@@ -87,9 +87,11 @@ public final class TransferController extends WindowController implements NSTool
 
     private RevealService reveal = RevealServiceFactory.get();
 
+    private TransferCollection collection = TransferCollection.defaultCollection();
+
     public TransferController() {
         this.loadBundle();
-        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
+        collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionLoaded() {
                 invoke(new ControllerMainAction(TransferController.this) {
@@ -340,7 +342,7 @@ public final class TransferController extends WindowController implements NSTool
                 int bytes = Integer.valueOf(item.representedObject());
                 NSIndexSet iterator = transferTable.selectedRowIndexes();
                 for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                    Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
+                    Transfer transfer = collection.get(index.intValue());
                     if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth().getRate()) {
                         if(BandwidthThrottle.UNLIMITED == bytes) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
@@ -376,7 +378,7 @@ public final class TransferController extends WindowController implements NSTool
         NSIndexSet selected = transferTable.selectedRowIndexes();
         float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
-            Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
+            Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
         }
         this.updateBandwidthPopup();
@@ -601,7 +603,6 @@ public final class TransferController extends WindowController implements NSTool
      * @param transfer Transfer
      */
     public void add(final Transfer transfer, final BackgroundAction action) {
-        final TransferCollection collection = TransferCollection.defaultCollection();
         if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
                     TransferToolbarItem.cleanup.label(), //title
@@ -634,7 +635,6 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private void add(final Transfer transfer) {
-        final TransferCollection collection = TransferCollection.defaultCollection();
         collection.add(transfer);
         final int row = collection.size() - 1;
         final NSInteger index = new NSInteger(row);
@@ -691,14 +691,14 @@ public final class TransferController extends WindowController implements NSTool
                 super.cleanup();
                 if(transfer.isReset() && transfer.isComplete()) {
                     if(Preferences.instance().getBoolean("queue.window.open.transfer.stop")) {
-                        if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
+                        if(!(collection.numberOfRunningTransfers() > 0)) {
                             window.close();
                         }
                     }
                 }
             }
         };
-        if(!TransferCollection.defaultCollection().contains(transfer)) {
+        if(!collection.contains(transfer)) {
             this.add(transfer, action);
         }
         else {
@@ -951,7 +951,6 @@ public final class TransferController extends WindowController implements NSTool
                 remove.add(transfer);
             }
         }
-        final TransferCollection collection = TransferCollection.defaultCollection();
         for(Transfer t : remove) {
             collection.remove(t);
         }
@@ -960,7 +959,6 @@ public final class TransferController extends WindowController implements NSTool
 
     @Action
     public void clearButtonClicked(final ID sender) {
-        final TransferCollection collection = TransferCollection.defaultCollection();
         for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
             Transfer transfer = iter.next();
             if(!transfer.isRunning() && transfer.isComplete()) {
