@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -102,8 +103,10 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testHandshakeFailure() {
+        final SSLHandshakeException f = new SSLHandshakeException("f");
+        f.initCause(new CertificateException("c"));
         assertEquals(ConnectionCanceledException.class, new ServiceExceptionMappingService().map(
-                new ServiceException(new SSLHandshakeException("f"))).getClass());
+                new ServiceException(f)).getClass());
     }
 
     @Test
