@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.shared;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
@@ -57,14 +58,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected abstract string TransferName { get; }
 
-        public override void message(string msg)
-        {
-            Invoke(delegate { View.StatusLabel = msg; });
-        }
-
         public override void log(bool request, string message)
         {
             //
+        }
+
+        public override void message(string msg)
+        {
+            Invoke(delegate { View.StatusLabel = msg; });
         }
 
         public virtual TransferAction prompt()
@@ -179,7 +180,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                             selected.getLocal().attributes().getModificationDate()));
                     }
                     View.RemoteFileUrl =
-                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected).find(DescriptiveUrl.Type.provider).getUrl();
+                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected)
+                                                                  .find(DescriptiveUrl.Type.provider)
+                                                                  .getUrl();
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
