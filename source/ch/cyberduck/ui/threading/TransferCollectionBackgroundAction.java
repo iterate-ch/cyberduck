@@ -90,12 +90,13 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         }
         super.cleanup();
         final TransferCollection collection = TransferCollection.defaultCollection();
-        if(transfer.isReset() && transfer.isComplete()) {
-            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                collection.remove(transfer);
-            }
+        if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")
+                && transfer.isReset() && transfer.isComplete()) {
+            collection.remove(transfer);
         }
-        collection.save();
+        else {
+            collection.collectionItemChanged(transfer);
+        }
     }
 
     @Override
