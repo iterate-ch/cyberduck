@@ -1,6 +1,9 @@
+4.4.2 [http://trac.cyberduck.ch/milestone/4.4.2]
+- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
+- [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
+
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
 - [Feature] Large (5GB) object uploads (#6056)
-- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Partial authentication failure (SFTP) (#7536)
@@ -10,7 +13,6 @@
 - [Bugfix] Missing CDN URLs (Openstack Swift, Windows) (#7532)
 - [Bugfix] Content type reset to application/octet-stream (S3) (#7598)
 - [Bugfix] Listing directory failure with missing permission to read symlink target (SFTP) (#7556)
-- [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
 
 4.4 [http://trac.cyberduck.ch/milestone/4.4]
 - [Feature] Performance improvements
