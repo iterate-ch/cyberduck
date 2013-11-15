@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")),
                         false,
-                        isHostKeyDatabaseWritable() ? LocaleFactory.localizedString("Always") : null,
+                        LocaleFactory.localizedString("Always"),
                         SysIcons.Question,
                         Preferences.instance().getProperty("website.help") + "/" +
                         Scheme.sftp.name(),
@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")),
                         false,
-                        isHostKeyDatabaseWritable() ? LocaleFactory.localizedString("Always") : null,
+                        LocaleFactory.localizedString("Always"),
                         SysIcons.Warning,
                         Preferences.instance().getProperty("website.help") + "/" +
                         Scheme.sftp.name(),
