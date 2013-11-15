@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
@@ -46,6 +47,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private TransferController()
         {
             View = ObjectFactory.GetInstance<ITransferView>();
+            IList<IProgressView> model = new List<IProgressView>();
+
+            lock (TransferCollection.defaultCollection())
+            {
+                foreach (Transfer transfer in TransferCollection.defaultCollection())
+                {
+                    collectionItemAdded(transfer);
+                }                
+            }
             Init();
         }
 
@@ -72,19 +82,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionLoaded()
         {
-            Invoke(delegate
-                {
-                    IList<IProgressView> model = new List<IProgressView>();
-                    foreach (Transfer transfer in TransferCollection.defaultCollection())
-                    {
-                        ProgressController progressController = new ProgressController(transfer);
-                        model.Add(progressController.View);
-                        _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer,
-                                                                                        progressController));
-                    }
-                    View.SetModel(model);
-                }
-                );
         }
 
         public void collectionItemAdded(object obj)
@@ -118,7 +115,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionItemChanged(object obj)
         {
-            ;
         }
 
         public override void log(bool request, string transcript)
@@ -174,7 +170,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Init()
         {
-            collectionLoaded();
             TransferCollection.defaultCollection().addListener(this);
 
             PopulateBandwithList();
@@ -340,15 +335,15 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (
-                String option in
-                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
-                                                                                        StringSplitOptions.
-                                                                                            RemoveEmptyEntries))
+            foreach (String option in
+                Preferences.instance()
+                           .getProperty("queue.bandwidth.options")
+                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get().format(
-                                                             Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.get()
+                                                                              .format(Convert.ToInt32(option.Trim())) +
+                                                          "/s")));
             }
             View.PopulateBandwidthList(list);
         }
@@ -420,8 +415,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot(),
-                                                                       IconCache.IconSize.Large);
+                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot(), IconCache.IconSize.Large);
                     }
                 }
                 else
@@ -607,8 +601,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly string _msg;
             private readonly bool _request;
 
-            public LogAction(TransferController c, bool request, string msg)
-                : base(c)
+            public LogAction(TransferController c, bool request, string msg) : base(c)
             {
                 _request = request;
                 _msg = msg;
@@ -635,11 +628,10 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
-                                            TransferCallback callback) :
-                                                base(
-                                                controller, SessionFactory.create(transfer.getHost()),
-                                                controller.GetController(transfer), controller.GetController(transfer),
-                                                transfer, options)
+                                            TransferCallback callback)
+                : base(
+                    controller, SessionFactory.create(transfer.getHost()), controller.GetController(transfer),
+                    controller.GetController(transfer), transfer, options)
             {
                 _transfer = transfer;
                 _callback = callback;

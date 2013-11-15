@@ -392,7 +392,13 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
-            _controller.Background(delegate { TransferCollection.defaultCollection().load(); }, delegate { });
+            _controller.Background(delegate
+                {
+                    lock (TransferCollection.defaultCollection())
+                    {
+                        TransferCollection.defaultCollection().load();
+                    }
+                }, delegate { });
 
             // Bonjour initialization
             ThreadStart start = delegate

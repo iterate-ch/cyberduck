@@ -35,7 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
         int TranscriptHeight { get; set; }
         IList<IProgressView> SelectedTransfers { get; }
 
-        void SetModel(IList<IProgressView> model);
         void SelectTransfer(IProgressView view);
         void AddTransfer(IProgressView view);
         void RemoveTransfer(IProgressView view);

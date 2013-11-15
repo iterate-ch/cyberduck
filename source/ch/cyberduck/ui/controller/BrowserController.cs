@@ -101,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 
             _browserModel = new TreeBrowserModel(this, _cache);
-            _bookmarkModel = new BookmarkModel(this, BookmarkCollection.defaultCollection());
+            _bookmarkModel = new BookmarkModel(this, _bookmarkCollection);
             View.ViewClosedEvent += delegate { _bookmarkModel.Source = null; };
 
             //default view is the bookmark view
@@ -304,11 +304,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateSearchField += View_ValidateSearchField;
 
             View.Exit += View_Exit;
-            View.ViewShownEvent += delegate
-                {
-                    //eagerly initialize the TransferController singleton
-                    TransferController tc = TransferController.Instance;
-                };
             View.SetBookmarkModel(_bookmarkCollection, null);
         }
 
@@ -691,6 +686,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (e.DropTargetLocation == DropTargetLocation.Item)
                 {
+                    IList<Path> roots = new List<Path>();
+                    Host host = null;
                     foreach (string filename in data.GetFileDropList())
                     {
                         //check if we received at least one non-duck file
@@ -698,27 +695,22 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             // The bookmark this file has been dropped onto
                             Host destination = (Host) e.DropTargetItem.RowObject;
-                            IList<Path> roots = new List<Path>();
-                            Host host = null;
-                            foreach (string upload in data.GetFileDropList())
+                            if (null == host)
                             {
-                                if (null == host)
-                                {
-                                    host = destination;
-                                }
-                                // Upload to the remote host this bookmark points to
-                                roots.Add(new Path(new Path(destination.getDefaultPath(), AbstractPath.DIRECTORY_TYPE),
-                                                   LocalFactory.createLocal(filename)));
+                                host = destination;
                             }
-                            if (roots.Count > 0)
-                            {
-                                UploadTransfer q = new UploadTransfer(host, Utils.ConvertToJavaList(roots));
-                                // If anything has been added to the queue, then process the queue
-                                if (q.getRoots().size() > 0)
-                                {
-                                    TransferController.Instance.StartTransfer(q);
-                                }
-                            }
+                            // Upload to the remote host this bookmark points to
+                            roots.Add(new Path(new Path(destination.getDefaultPath(), AbstractPath.DIRECTORY_TYPE),
+                                               LocalFactory.createLocal(filename)));
+                        }
+                    }
+                    if (roots.Count > 0)
+                    {
+                        UploadTransfer q = new UploadTransfer(host, Utils.ConvertToJavaList(roots));
+                        // If anything has been added to the queue, then process the queue
+                        if (q.getRoots().size() > 0)
+                        {
+                            TransferController.Instance.StartTransfer(q);
                         }
                     }
                     return;

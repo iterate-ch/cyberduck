@@ -66,9 +66,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transferColumn.FillsFreeSpace = true;
             transferListView.ItemSelectionChanged += delegate(object sender, ListViewItemSelectionChangedEventArgs e)
                 {
-                    TransferControl uc =
-                        ((TransferControl)
-                         transferListView.GetEmbeddedControl(1, e.ItemIndex));
+                    TransferControl uc = ((TransferControl) transferListView.GetEmbeddedControl(1, e.ItemIndex));
                     if (null != uc)
                     {
                         uc.Selected = e.IsSelected;
@@ -182,21 +180,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return Convert.ToInt32(queueSizeUpDown.Value); }
             set { queueSizeUpDown.Value = value; }
-        }
-
-        public void SetModel(IList<IProgressView> model)
-        {
-            transferListView.RemoveAllEmbeddedControls();
-            transferListView.Objects = model;
-            for (int i = 0; i < model.Count; i++)
-            {
-                Control c = model[i] as Control;
-                if (null != c)
-                {
-                    c.DoubleClick += delegate { ReloadEvent(); };
-                    transferListView.AddEmbeddedControl((model[i] as Control), 1, i, DockStyle.Fill);
-                }
-            }
         }
 
         public void SelectTransfer(IProgressView view)
@@ -336,11 +319,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             menuItem.CheckOnClick = true;
             menuItem.Click += delegate
                 {
-                    button.Visible =
-                        !button.Visible;
-                    Preferences.instance().setProperty(
-                        property,
-                        button.Visible);
+                    button.Visible = !button.Visible;
+                    Preferences.instance().setProperty(property, button.Visible);
                 };
 
             button.Visible = menuItem.Checked = Preferences.instance().getBoolean(property);
@@ -390,9 +370,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void toolbarMenuStrip_Closing(object sender, ToolStripDropDownClosingEventArgs e)
         {
-            e.Cancel = (
-                           e.CloseReason == ToolStripDropDownCloseReason.ItemClicked &&
-                           _lastMenuItemClicked != null);
+            e.Cancel = (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked && _lastMenuItemClicked != null);
         }
 
         private void bandwithSplitButton_Click(object sender, EventArgs e)

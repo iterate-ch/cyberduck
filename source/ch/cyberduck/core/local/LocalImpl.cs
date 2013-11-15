@@ -22,7 +22,6 @@ using System.Text;
 using ch.cyberduck.core;
 using org.apache.commons.io;
 using org.apache.log4j;
-using File = java.io.File;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
@@ -67,7 +66,7 @@ namespace Ch.Cyberduck.Core.Local
         public override bool exists()
         {
             string path = getAbsolute();
-            if (System.IO.File.Exists(path))
+            if (File.Exists(path))
             {
                 return true;
             }
