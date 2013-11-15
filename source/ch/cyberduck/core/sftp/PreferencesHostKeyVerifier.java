@@ -19,8 +19,11 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+
+import java.io.IOException;
 
 import ch.ethz.ssh2.crypto.Base64;
 
@@ -31,9 +34,17 @@ import ch.ethz.ssh2.crypto.Base64;
  */
 public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
 
+    public PreferencesHostKeyVerifier() {
+        //
+    }
+
+    public PreferencesHostKeyVerifier(final Local file) {
+        super(file);
+    }
+
     @Override
-    protected boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey)
-            throws ConnectionCanceledException {
+    protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
+    throws ConnectionCanceledException {
         return String.valueOf(Base64.encode(serverHostKey)).equals(
                 Preferences.instance().getProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname)));
     }
@@ -45,7 +56,7 @@ public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
 
     @Override
     protected void save(final String hostname, final String serverHostKeyAlgorithm,
-                        final byte[] serverHostKey) {
+                        final byte[] serverHostKey) throws IOException {
         Preferences.instance().setProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname),
                 String.valueOf(Base64.encode(serverHostKey)));
     }

@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
@@ -41,7 +40,7 @@ import ch.ethz.ssh2.KnownHosts;
  *
  * @version $Id$
  */
-public class AlertHostKeyController extends MemoryHostKeyVerifier {
+public class AlertHostKeyController extends PreferencesHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
 
     public static void register() {
@@ -57,12 +56,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         @Override
         public HostKeyController create(final Controller c, final Protocol protocol) {
             if(Scheme.sftp.equals(protocol.getScheme())) {
-                if(LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
-                        Preferences.instance().getProperty("ssh.knownhosts.bookmark")
-                ).attributes().getPermission().isReadable()) {
-                    return new AlertHostKeyController((WindowController) c);
-                }
-                return new PreferencesHostKeyVerifier();
+                return new AlertHostKeyController((WindowController) c);
             }
             return new DefaultHostKeyController();
         }
@@ -92,6 +86,9 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
+        if(super.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey)) {
+            return true;
+        }
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
@@ -99,10 +96,8 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
         );
-        if(file.attributes().getPermission().isWritable()) {
-            alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        }
+        alert.setShowsSuppressionButton(true);
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
             @Override
@@ -139,10 +134,8 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button
         );
-        if(file.attributes().getPermission().isWritable()) {
-            alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        }
+        alert.setShowsSuppressionButton(true);
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
             @Override
@@ -176,6 +169,9 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
                     new String[]{KnownHosts.createHashedHostname(hostname)},
                     serverHostKeyAlgorithm, serverHostKey);
+        }
+        else {
+            super.save(hostname, serverHostKeyAlgorithm, serverHostKey);
         }
     }
 }
