@@ -32,11 +32,6 @@ import ch.ethz.ssh2.crypto.Base64;
 public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
 
     @Override
-    protected boolean isHostKeyDatabaseWritable() {
-        return true;
-    }
-
-    @Override
     protected boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey)
             throws ConnectionCanceledException {
         return String.valueOf(Base64.encode(serverHostKey)).equals(

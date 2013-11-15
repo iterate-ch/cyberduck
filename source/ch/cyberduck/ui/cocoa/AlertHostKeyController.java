@@ -93,51 +93,6 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     }
 
     @Override
-    protected boolean isHostKeyDatabaseWritable() {
-        if(!file.attributes().getPermission().isWritable()) {
-            // Ask for known_hosts file to select. Possibly not allowed by sandbox
-            final SheetController sheet = new SheetController(parent) {
-                @Override
-                public void callback(int returncode) {
-                    //
-                }
-
-                @Override
-                protected void beginSheetImpl() {
-                    panel = NSOpenPanel.openPanel();
-                    panel.setCanChooseDirectories(false);
-                    panel.setCanChooseFiles(true);
-                    panel.setAllowsMultipleSelection(false);
-                    panel.setMessage(LocaleFactory.localizedString("Select the SSH known_hosts file to save host keys.", "Credentials"));
-                    panel.setPrompt(LocaleFactory.localizedString("Choose"));
-                    panel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
-                            null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
-                }
-
-                @Override
-                public NSWindow window() {
-                    return panel;
-                }
-            };
-            sheet.beginSheet();
-            if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
-                final NSObject selected = panel.filenames().lastObject();
-                if(selected != null) {
-                    final Local f = LocalFactory.createLocal(selected.toString());
-                    Preferences.instance().setProperty("ssh.knownhosts", f.getAbbreviatedPath());
-                    Preferences.instance().setProperty("ssh.knownhosts.bookmark", f.getBookmark());
-                    setDatabase(f);
-                    return f.attributes().getPermission().isWritable();
-                }
-            }
-            if(sheet.returnCode() == SheetCallback.CANCEL_OPTION) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
@@ -147,7 +102,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
         );
-        if(this.isHostKeyDatabaseWritable()) {
+        if(file.attributes().getPermission().isWritable()) {
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         }
@@ -187,7 +142,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button
         );
-        if(this.isHostKeyDatabaseWritable()) {
+        if(file.attributes().getPermission().isWritable()) {
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         }
@@ -214,15 +169,58 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             throw new ConnectionCanceledException();
         }
         return c.returnCode() == SheetCallback.DEFAULT_OPTION;
+    }
 
+    @Override
+    public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
+            throws IOException, ConnectionCanceledException {
+        if(!file.attributes().getPermission().isWritable()) {
+            // Ask for known_hosts file to select. Possibly not allowed by sandbox
+            final SheetController sheet = new SheetController(parent) {
+                @Override
+                public void callback(int returncode) {
+                    //
+                }
+
+                @Override
+                protected void beginSheetImpl() {
+                    panel = NSOpenPanel.openPanel();
+                    panel.setCanChooseDirectories(false);
+                    panel.setCanChooseFiles(true);
+                    panel.setAllowsMultipleSelection(false);
+                    panel.setMessage(LocaleFactory.localizedString("Select the SSH known_hosts file to save host keys.", "Credentials"));
+                    panel.setPrompt(LocaleFactory.localizedString("Choose"));
+                    panel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
+                            null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
+                }
+
+                @Override
+                public NSWindow window() {
+                    return panel;
+                }
+            };
+            sheet.beginSheet();
+            if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
+                final NSObject selected = panel.filenames().lastObject();
+                if(selected != null) {
+                    final Local f = LocalFactory.createLocal(selected.toString());
+                    Preferences.instance().setProperty("ssh.knownhosts", f.getAbbreviatedPath());
+                    Preferences.instance().setProperty("ssh.knownhosts.bookmark", f.getBookmark());
+                    setDatabase(f);
+                }
+            }
+        }
+        return super.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
     }
 
     @Override
     protected void save(final String hostname,
                         final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException {
-        // Also try to add the key to a known_host file
-        KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
-                new String[]{KnownHosts.createHashedHostname(hostname)},
-                serverHostKeyAlgorithm, serverHostKey);
+        if(file.attributes().getPermission().isWritable()) {
+            // Also try to add the key to a known_host file
+            KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
+                    new String[]{KnownHosts.createHashedHostname(hostname)},
+                    serverHostKeyAlgorithm, serverHostKey);
+        }
     }
 }

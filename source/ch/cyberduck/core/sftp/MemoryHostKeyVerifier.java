@@ -78,10 +78,6 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
         }
     }
 
-    protected boolean isHostKeyDatabaseWritable() {
-        return false;
-    }
-
     @Override
     public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm,
                           final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
@@ -106,8 +102,8 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @return True if accepted.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
-    protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
+    protected abstract boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
+                                                    byte[] serverHostKey) throws ConnectionCanceledException;
 
     /**
      * @param hostname               Hostname
@@ -117,11 +113,11 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
      * @return True if accepted.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
-    protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
+    protected abstract boolean isChangedKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
+                                                    byte[] serverHostKey) throws ConnectionCanceledException;
 
     protected void allow(final String hostname, final String serverHostKeyAlgorithm,
-                         final byte[] serverHostKey, boolean always) {
+                         final byte[] serverHostKey, final boolean always) {
         // The following call will ONLY put the key into the memory cache!
         // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
         final String hashedHostname = KnownHosts.createHashedHostname(hostname);
@@ -129,9 +125,7 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
             // Add the hostkey to the in-memory database
             database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
             if(always) {
-                if(this.isHostKeyDatabaseWritable()) {
-                    this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
-                }
+                this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
             }
         }
         catch(IOException e) {
@@ -139,6 +133,8 @@ public abstract class MemoryHostKeyVerifier implements HostKeyController {
         }
     }
 
-    protected abstract void save(final String hostname, final String serverHostKeyAlgorithm,
-                                 final byte[] serverHostKey) throws IOException;
+    protected void save(final String hostname, final String serverHostKeyAlgorithm,
+                        final byte[] serverHostKey) throws IOException {
+        //
+    }
 }
