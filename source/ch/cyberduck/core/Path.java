@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -83,6 +84,10 @@ public class Path extends AbstractPath implements Serializable {
         final String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
             this.setPath(pathObj);
+        }
+        if(this.local == null) {
+            this.local = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"),
+                    FilenameUtils.getName(this.path));
         }
     }
 
