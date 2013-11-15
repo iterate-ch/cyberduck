@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
+import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -59,7 +60,12 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         @Override
         public HostKeyController create(final Controller c, final Protocol protocol) {
             if(Scheme.sftp.equals(protocol.getScheme())) {
-                return new AlertHostKeyController((WindowController) c);
+                if(LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
+                        Preferences.instance().getProperty("ssh.knownhosts.bookmark")
+                ).attributes().getPermission().isReadable()) {
+                    return new AlertHostKeyController((WindowController) c);
+                }
+                return new PreferencesHostKeyVerifier();
             }
             return new DefaultHostKeyController();
         }
