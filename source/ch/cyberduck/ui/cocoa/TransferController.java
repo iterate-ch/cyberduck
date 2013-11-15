@@ -40,7 +40,9 @@ import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -421,7 +423,7 @@ public final class TransferController extends WindowController implements NSTool
                 transferTable.tableColumnWithIdentifier(TransferTableDataSource.Column.progress.name())
         ) {
             @Override
-            public String tooltip(Transfer t) {
+            public String tooltip(final Transfer t) {
                 return t.getName();
             }
 
@@ -446,12 +448,12 @@ public final class TransferController extends WindowController implements NSTool
             }
 
             @Override
-            public void selectionIsChanging(NSNotification notification) {
+            public void selectionIsChanging(final NSNotification notification) {
                 updateHighlight();
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 updateHighlight();
                 updateSelection();
                 transferTable.noteHeightOfRowsWithIndexesChanged(
@@ -493,7 +495,7 @@ public final class TransferController extends WindowController implements NSTool
     private final NSCell prototype = ControllerCell.controllerCell();
 
     /**
-     *
+     * Update highlighted rows
      */
     private void updateHighlight() {
         boolean main = window().isMainWindow();
@@ -508,7 +510,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     /**
-     *
+     * Update labels from selection
      */
     private void updateSelection() {
         this.updateLabels();
@@ -669,7 +671,24 @@ public final class TransferController extends WindowController implements NSTool
         final Session session = SessionFactory.create(transfer.getHost());
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 session,
-                progress, progress, transfer, options) {
+                new TransferListener() {
+                    @Override
+                    public void start(final Transfer transfer) {
+                        progress.start(transfer);
+                        toolbar.validateVisibleItems();
+                    }
+
+                    @Override
+                    public void stop(final Transfer transfer) {
+                        progress.stop(transfer);
+                        toolbar.validateVisibleItems();
+                    }
+
+                    @Override
+                    public void progress(final TransferProgress status) {
+                        progress.progress(status);
+                    }
+                }, progress, transfer, options) {
             @Override
             public void init() {
                 super.init();
@@ -994,7 +1013,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param toolbar Window toolbar
      */
     @Override
-    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarDefaultItemIdentifiers(final NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TransferToolbarItem.resume.name(),
                 TransferToolbarItem.stop.name(),
@@ -1012,7 +1031,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param toolbar Window toolbar
      */
     @Override
-    public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarAllowedItemIdentifiers(final NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TransferToolbarItem.resume.name(),
                 TransferToolbarItem.reload.name(),
@@ -1032,7 +1051,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Override
-    public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
+    public NSArray toolbarSelectableItemIdentifiers(final NSToolbar toolbar) {
         return NSArray.array();
     }
 
@@ -1040,7 +1059,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param item Menu item
      * @return True if enabled
      */
-    public boolean validateMenuItem(NSMenuItem item) {
+    public boolean validateMenuItem(final NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
             final List<PathPasteboard> pasteboards = PathPasteboardFactory.allPasteboards();
@@ -1083,7 +1102,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     return transfer.isRunning();
                 }
             });
@@ -1091,7 +1110,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     return transfer.getType().isReloadable() && !transfer.isRunning();
                 }
             });
@@ -1099,7 +1118,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("deleteButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     return !transfer.isRunning();
                 }
             });
@@ -1107,7 +1126,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("resumeButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     if(transfer.isRunning()) {
                         return false;
                     }
@@ -1119,7 +1138,7 @@ public final class TransferController extends WindowController implements NSTool
                 || action.equals(Foundation.selector("trashButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     if(transfer.getLocal() != null) {
                         if(!transfer.isComplete()) {
                             return false;
@@ -1139,7 +1158,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("revealButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 @Override
-                public boolean validate(Transfer transfer) {
+                public boolean validate(final Transfer transfer) {
                     if(transfer.getLocal() != null) {
                         for(Path i : transfer.getRoots()) {
                             if(i.getLocal().exists()) {
@@ -1160,15 +1179,15 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * Validates the selected items in the transfer window against the toolbar validator
      *
-     * @param v The validator to use
+     * @param validator The validator to use
      * @return True if one or more of the selected items passes the validation test
      */
-    private boolean validate(final TransferToolbarValidator v) {
+    private boolean validate(final TransferToolbarValidator validator) {
         final NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
-            if(v.validate(transfer)) {
+            if(validator.validate(transfer)) {
                 return true;
             }
         }
