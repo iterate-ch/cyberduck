@@ -43,7 +43,13 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
 
     @Override
     protected InputStream decorate(final InputStream in, final MessageDigest digest) {
-        return new DigestInputStream(in, digest);
+        if(null == digest) {
+            log.warn("MD5 calculation disabled");
+            return in;
+        }
+        else {
+            return new DigestInputStream(in, digest);
+        }
     }
 
     @Override
