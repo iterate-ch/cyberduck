@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
 - [Feature] Large (5GB) object uploads (#6056)
+- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Code signing requirements for embedded bundles (Mac)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
@@ -35,7 +36,6 @@ Changelog. Last modified: $Date$
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
 - [Feature] Fullscreen option for browser window (Mac)
 - [Feature] Remember window position of browser window when saving workspace (Mac)
-- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Feature] Preview file status in overwrite prompt when choosing transfer action
 - [Feature] Option to continue or cancel on failure transferring multiple files
 - [Feature] Display download progress in Finder and Dock (Mac)

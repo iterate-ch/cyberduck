@@ -25,11 +25,15 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.threading.NamedThreadFactory;
+
+import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -42,12 +46,16 @@ import ch.iterate.openstack.swift.model.Region;
  * @version $Id$
  */
 public class SwiftSession extends HttpSession<Client> {
+    private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this);
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
+
+    private final ThreadFactory threadFactory
+            = new NamedThreadFactory("account");
 
     public SwiftSession(Host h) {
         super(h);
@@ -66,6 +74,23 @@ public class SwiftSession extends HttpSession<Client> {
     public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
+            threadFactory.newThread(new Runnable() {
+                @Override
+                public void run() {
+                    for(Region region : client.getRegions()) {
+                        try {
+                            final AccountInfo info = client.getAccountInfo(region);
+                            accounts.put(region, info);
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                            }
+                        }
+                        catch(IOException e) {
+                            log.warn(String.format("Failure loading account info for region %s", region));
+                        }
+                    }
+                }
+            }).start();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);

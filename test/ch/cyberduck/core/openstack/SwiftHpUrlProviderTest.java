@@ -17,17 +17,23 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Scheme;
 
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.net.URI;
 
-import static org.junit.Assert.assertTrue;
+import ch.iterate.openstack.swift.model.Region;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftHpUrlProviderTest extends AbstractTestCase {
 
@@ -43,21 +49,16 @@ public class SwiftHpUrlProviderTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        new SwiftTouchFeature(session).touch(file);
-        final UrlProvider provider = new SwiftHpUrlProvider(session, new DisabledPasswordStore() {
+        final Path file = new Path(container, "a", Path.FILE_TYPE);
+        final SwiftHpUrlProvider provider = new SwiftHpUrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 return properties.getProperty("hpcloud.secret");
             }
         });
-        assertTrue(provider.toUrl(file).find(DescriptiveUrl.Type.signed).getUrl().startsWith(
-                "https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/" + file.getName()));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
-        session.close();
+        final String url = provider.createTempUrl(new Region("region-a.geo-1", URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), null),
+                file, 1379500716L).getUrl();
+        assertEquals("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/a?temp_url_sig=88650632417788:5C84TLCPJJ5FSSG6EDML:c4ff78486459b66d2ce45f8a3a51061e318f233a&temp_url_expires=1379500716", url);
     }
-
 }

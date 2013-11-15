@@ -28,13 +28,10 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.TimeZone;
 
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
@@ -63,11 +60,9 @@ public class SwiftHpUrlProvider extends SwiftUrlProvider {
     }
 
     @Override
-    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final int seconds) {
+    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final Long expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
-        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiry.add(Calendar.SECOND, seconds);
         final Credentials credentials = session.getHost().getCredentials();
         if(StringUtils.contains(credentials.getUsername(), ':')) {
             if(log.isInfoEnabled()) {
@@ -82,18 +77,15 @@ public class SwiftHpUrlProvider extends SwiftUrlProvider {
                 log.warn("No secret found in keychain required to sign temporary URL");
                 return DescriptiveUrl.EMPTY;
             }
-            final String signature = String.format("%s:%s:%s",
-                    tenant, accesskey,
-                    ServiceUtils.signWithHmacSha1(secret,
-                            String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path))
-            );
+            final String body = String.format("GET\n%d\n%s", expiry, path);
+            final String signature = String.format("%s:%s:%s", tenant, accesskey, this.sign(secret, body));
             //Compile the temporary URL
             return new DescriptiveUrl(URI.create(String.format("https://%s%s?temp_url_sig=%s&temp_url_expires=%d",
-                    region.getStorageUrl().getHost(), path, signature, expiry.getTimeInMillis() / 1000)),
+                    region.getStorageUrl().getHost(), path, signature, expiry)),
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                             + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                            UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+                            UserDateFormatterFactory.get().getShortFormat(expiry))
             );
         }
         else {

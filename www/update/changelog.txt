@@ -1,5 +1,6 @@
 4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
 - [Feature] Large (5GB) object uploads (#6056)
+- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Partial authentication failure (SFTP) (#7536)
@@ -22,7 +23,6 @@
 - [Feature] Select region when creating new container (S3, OpenStack)
 - [Feature] Confirmation alert on move and rename in browser (#595)
 - [Feature] Transfer action to skip existing files that match checksum, size or timestamp (#6500)
-- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Feature] Cut and paste to move and copy files in browser (#7153)
 - [Feature] Preview file status in overwrite prompt when choosing transfer action
 - [Feature] Option to continue or cancel on failure transferring multiple files

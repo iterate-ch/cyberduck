@@ -29,11 +29,17 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
+import org.jets3t.service.Constants;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -87,21 +93,22 @@ public class SwiftUrlProvider implements UrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
-                list.add(this.createTempUrl(region, file, 60 * 60));
+                list.add(this.createTempUrl(region, file, this.getExpiry(60 * 60)));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.createTempUrl(region, file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+                list.add(this.createTempUrl(region, file, this.getExpiry(Preferences.instance().getInteger("s3.url.expire.seconds"))));
                 // Week
-                list.add(this.createTempUrl(region, file, 7 * 24 * 60 * 60));
+                list.add(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60)));
             }
         }
         return list;
     }
 
-    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final int seconds) {
+    /**
+     * @param expiry Milliseconds
+     */
+    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final Long expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
-        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiry.add(Calendar.SECOND, seconds);
         if(!accounts.containsKey(region)) {
             log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
             return DescriptiveUrl.EMPTY;
@@ -116,15 +123,41 @@ public class SwiftUrlProvider implements UrlProvider {
         if(log.isInfoEnabled()) {
             log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
         }
-        final String signature = ServiceUtils.signWithHmacSha1(info.getTempUrlKey(),
-                String.format("GET\n%d\n%s", expiry.getTimeInMillis() / 1000, path));
+        final String signature = this.sign(info.getTempUrlKey(),
+                String.format("GET\n%d\n%s", expiry, path));
         //Compile the temporary URL
         return new DescriptiveUrl(URI.create(String.format("https://%s%s?temp_url_sig=%s&temp_url_expires=%d",
-                region.getStorageUrl().getHost(), path, signature, expiry.getTimeInMillis() / 1000)),
+                region.getStorageUrl().getHost(), path, signature, expiry)),
                 DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+                        UserDateFormatterFactory.get().getShortFormat(expiry))
         );
+    }
+
+    protected String sign(final String secret, final String body) {
+        try {
+            // Acquire an HMAC/SHA1 from the raw key bytes.
+            final SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(Charset.forName("UTF-8")),
+                    Constants.HMAC_SHA1_ALGORITHM);
+            // Acquire the MAC instance and initialize with the signing key.
+            final Mac mac = Mac.getInstance(Constants.HMAC_SHA1_ALGORITHM);
+            mac.init(signingKey);
+            return Hex.encodeHexString(mac.doFinal(body.getBytes(Charset.forName("UTF-8"))));
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error(String.format("Error signing %s %s", body, e.getMessage()));
+            return null;
+        }
+        catch(InvalidKeyException e) {
+            log.error(String.format("Error signing %s %s", body, e.getMessage()));
+            return null;
+        }
+    }
+
+    protected Long getExpiry(final int seconds) {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.SECOND, seconds);
+        return expiry.getTimeInMillis();
     }
 }
