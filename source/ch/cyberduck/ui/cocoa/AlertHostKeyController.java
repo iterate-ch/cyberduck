@@ -27,11 +27,8 @@ import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 
 import java.io.File;
 import java.io.IOException;
@@ -169,48 +166,6 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             throw new ConnectionCanceledException();
         }
         return c.returnCode() == SheetCallback.DEFAULT_OPTION;
-    }
-
-    @Override
-    public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
-            throws IOException, ConnectionCanceledException {
-        if(!file.attributes().getPermission().isWritable()) {
-            // Ask for known_hosts file to select. Possibly not allowed by sandbox
-            final SheetController sheet = new SheetController(parent) {
-                @Override
-                public void callback(int returncode) {
-                    //
-                }
-
-                @Override
-                protected void beginSheetImpl() {
-                    panel = NSOpenPanel.openPanel();
-                    panel.setCanChooseDirectories(false);
-                    panel.setCanChooseFiles(true);
-                    panel.setAllowsMultipleSelection(false);
-                    panel.setMessage(LocaleFactory.localizedString("Select the SSH known_hosts file to save host keys.", "Credentials"));
-                    panel.setPrompt(LocaleFactory.localizedString("Choose"));
-                    panel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
-                            null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
-                }
-
-                @Override
-                public NSWindow window() {
-                    return panel;
-                }
-            };
-            sheet.beginSheet();
-            if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
-                final NSObject selected = panel.filenames().lastObject();
-                if(selected != null) {
-                    final Local f = LocalFactory.createLocal(selected.toString());
-                    Preferences.instance().setProperty("ssh.knownhosts", f.getAbbreviatedPath());
-                    Preferences.instance().setProperty("ssh.knownhosts.bookmark", f.getBookmark());
-                    setDatabase(f);
-                }
-            }
-        }
-        return super.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
     }
 
     @Override
