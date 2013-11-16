@@ -34,12 +34,7 @@ public final class WorkspaceIconService implements IconService {
     private static final Logger log = Logger.getLogger(WorkspaceIconService.class);
 
     public static void register() {
-        if(Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
-            IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-        }
-        else {
-            log.warn(String.format("Skip registering Growl on %s", Factory.VERSION_PLATFORM));
-        }
+        IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
     private static class Factory extends IconServiceFactory {

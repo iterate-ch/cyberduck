@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.RendezvousResponder;
 import ch.cyberduck.core.SystemConfigurationProxy;
@@ -115,7 +114,6 @@ public final class MainApplication {
                 LaunchServicesQuarantineService.register();
                 LaunchServicesSchemeHandler.register();
                 WorkspaceIconService.register();
-                FoundationProgressIconService.register();
                 WorkspaceApplicationLauncher.register();
                 WorkspaceBrowserLauncher.register();
                 WorkspaceRevealService.register();

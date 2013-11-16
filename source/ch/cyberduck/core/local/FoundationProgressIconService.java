@@ -35,7 +35,7 @@ public final class FoundationProgressIconService implements IconService {
             IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
         }
         else {
-            log.warn(String.format("Skip registering notifications on %s", Factory.VERSION_PLATFORM));
+            log.warn(String.format("Skip registering progress icon service on %s", Factory.VERSION_PLATFORM));
         }
     }
 
