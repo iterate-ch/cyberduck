@@ -10,6 +10,7 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
@@ -24,6 +25,17 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class S3SingleUploadServiceTest extends AbstractTestCase {
+
+    @Test
+    public void testDecorate() throws Exception {
+        final NullInputStream n = new NullInputStream(1L);
+        assertSame(n, new S3SingleUploadService(null).decorate(n, null));
+    }
+
+    @Test
+    public void testDigest() throws Exception {
+        assertNotNull(new S3SingleUploadService(null).digest());
+    }
 
     @Test
     public void testUploadAmazon() throws Exception {
