@@ -35,7 +35,6 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -2626,9 +2625,6 @@ public class BrowserController extends WindowController
         this.deletePaths(this.getSelectedPaths());
     }
 
-    private static String lastSelectedDownloadDirectory =
-            Preferences.instance().getProperty("queue.download.folder");
-
     private NSOpenPanel downloadToPanel;
 
     @Action
@@ -2640,7 +2636,7 @@ public class BrowserController extends WindowController
         downloadToPanel.setAllowsMultipleSelection(false);
         downloadToPanel.setPrompt(LocaleFactory.localizedString("Choose"));
         downloadToPanel.beginSheetForDirectory(
-                lastSelectedDownloadDirectory, //trying to be smart
+                session.getHost().getDownloadFolder().getAbsolute(),
                 null, this.window, this.id(),
                 Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"),
                 null);
@@ -2658,7 +2654,6 @@ public class BrowserController extends WindowController
                 this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
             }
         }
-        lastSelectedDownloadDirectory = sheet.filename();
         downloadToPanel = null;
     }
 
@@ -2671,7 +2666,8 @@ public class BrowserController extends WindowController
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
         downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
-        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getName(), this.window, this.id(),
+        downloadAsPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
+                this.getSelectedPath().getName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
                 null);
     }
@@ -2709,7 +2705,8 @@ public class BrowserController extends WindowController
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
                 selection.getName()));
         syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
+        syncPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
+                null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
     }
@@ -2740,8 +2737,6 @@ public class BrowserController extends WindowController
         this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
     }
 
-    private static Local lastSelectedUploadDirectory = null;
-
     private NSOpenPanel uploadPanel;
 
     private NSButton uploadPanelHiddenFilesCheckbox;
@@ -2765,7 +2760,7 @@ public class BrowserController extends WindowController
             uploadPanelHiddenFilesCheckbox.sizeToFit();
             uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
         }
-        uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory.getAbsolute(), //trying to be smart
+        uploadPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
                 null, this.window,
                 this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
@@ -2796,7 +2791,6 @@ public class BrowserController extends WindowController
             }
             transfer(new UploadTransfer(session.getHost(), roots));
         }
-        lastSelectedUploadDirectory = new FinderLocal(sheet.filename()).getParent();
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
     }
