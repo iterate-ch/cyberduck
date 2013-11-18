@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Move;
 
 import java.text.MessageFormat;
@@ -44,6 +45,9 @@ public abstract class MoveWorker extends Worker<Boolean> {
     public Boolean run() throws BackgroundException {
         final Move feature = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             feature.move(entry.getKey(), entry.getValue(), false);
         }
         return true;

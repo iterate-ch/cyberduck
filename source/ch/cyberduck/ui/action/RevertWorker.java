@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 
 import java.text.MessageFormat;
@@ -44,6 +45,9 @@ public class RevertWorker extends Worker<Boolean> {
     public Boolean run() throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             feature.revert(file);
         }
         return true;

@@ -22,6 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.log4j.Logger;
@@ -67,6 +68,9 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
             }
         };
         for(Path next : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             // Reading HTTP headers custom metadata
             if(next.attributes().getMetadata().isEmpty()) {
                 next.attributes().setMetadata(feature.getMetadata(next));

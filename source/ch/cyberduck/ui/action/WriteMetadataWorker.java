@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,9 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public Boolean run() throws BackgroundException {
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             if(!metadata.equals(file.attributes().getMetadata())) {
                 for(Map.Entry<String, String> entry : metadata.entrySet()) {
                     // Prune metadata from entries which are unique to a single file. For example md5-hash.

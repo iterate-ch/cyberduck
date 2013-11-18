@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
@@ -54,6 +55,9 @@ public abstract class DeleteWorker extends Worker<Boolean> {
     public Boolean run() throws BackgroundException {
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             recursive.addAll(this.compile(file));
         }
         final Delete feature = session.getFeature(Delete.class);
@@ -69,6 +73,9 @@ public abstract class DeleteWorker extends Worker<Boolean> {
         }
         else if(file.attributes().isDirectory()) {
             for(Path child : session.list(file, new DisabledListProgressListener())) {
+                if(this.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 recursive.addAll(this.compile(child));
             }
             // Add parent after children

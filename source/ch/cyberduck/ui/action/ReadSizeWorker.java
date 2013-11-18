@@ -22,6 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -44,6 +45,9 @@ public abstract class ReadSizeWorker extends Worker<Long> {
     public Long run() throws BackgroundException {
         long total = 0L;
         for(Path next : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             if(-1 == next.attributes().getSize()) {
                 continue;
             }

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
@@ -47,6 +48,9 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     public List<Acl.UserAndRole> run() throws BackgroundException {
         final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             if(Acl.EMPTY.equals(next.attributes().getAcl())) {
                 next.attributes().setAcl(feature.getPermission(next));
             }

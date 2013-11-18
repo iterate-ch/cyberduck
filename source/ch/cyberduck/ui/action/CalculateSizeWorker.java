@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -64,6 +65,9 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      */
     private long calculateSize(final Path p) throws BackgroundException {
         long size = 0;
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         session.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
         if(p.attributes().isDirectory()) {

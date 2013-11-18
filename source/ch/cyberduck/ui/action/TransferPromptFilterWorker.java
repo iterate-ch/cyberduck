@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -63,6 +64,9 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     public Map<Path, TransferStatus> run() throws BackgroundException {
         final Map<Path, TransferStatus> status = new HashMap<Path, TransferStatus>();
         for(Path file : transfer.getRoots()) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
         final TransferPathFilter filter = transfer.filter(session, action);
@@ -70,8 +74,14 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
         for(PathReference key : cache.keySet()) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             final AttributedList<Path> list = cache.get(key);
             for(Path file : list) {
+                if(this.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 if(filter.accept(file, status.get(file.getParent()))) {
                     status.put(file, filter.prepare(file, status.get(file.getParent())));
                 }

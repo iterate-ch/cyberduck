@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
@@ -72,6 +73,9 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
     }
 
     protected void write(final Path file) throws BackgroundException {
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         if(!acl.equals(file.attributes().getAcl())) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                     file.getName(), acl));

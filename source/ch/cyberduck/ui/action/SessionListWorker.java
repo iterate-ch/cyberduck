@@ -80,7 +80,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
         if(log.isInfoEnabled()) {
             log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
         }
-        if(super.isCanceled()) {
+        if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
         listener.chunk(list);

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
 import java.text.MessageFormat;
@@ -71,6 +72,9 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
     }
 
     protected void write(final Path file) throws BackgroundException {
+        if(this.isCanceled()) {
+            throw new ConnectionCanceledException();
+        }
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory. See #1787
             final Permission modified = new Permission(permission.getMode());
