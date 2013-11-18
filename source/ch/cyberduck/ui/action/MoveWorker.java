@@ -67,16 +67,11 @@ public abstract class MoveWorker extends Worker<Boolean> {
         if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = session != null ? session.hashCode() : 0;
-        result = 31 * result + (files != null ? files.hashCode() : 0);
-        return result;
+        return files != null ? files.hashCode() : 0;
     }
 }

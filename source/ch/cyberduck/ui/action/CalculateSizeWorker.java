@@ -91,4 +91,26 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         return MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 this.toString(files));
     }
+
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final CalculateSizeWorker that = (CalculateSizeWorker) o;
+        if(files != null ? !files.equals(that.files) : that.files != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return files != null ? files.hashCode() : 0;
+    }
 }

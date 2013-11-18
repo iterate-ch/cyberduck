@@ -104,16 +104,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
         if(directory != null ? !directory.equals(that.directory) : that.directory != null) {
             return false;
         }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = session != null ? session.hashCode() : 0;
-        result = 31 * result + (directory != null ? directory.hashCode() : 0);
-        return result;
+        return directory != null ? directory.hashCode() : 0;
     }
 }

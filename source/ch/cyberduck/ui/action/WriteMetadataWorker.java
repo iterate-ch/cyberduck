@@ -93,11 +93,7 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-
         if(files != null ? !files.equals(that.files) : that.files != null) {
-            return false;
-        }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
             return false;
         }
         return true;
@@ -105,8 +101,6 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public int hashCode() {
-        int result = session != null ? session.hashCode() : 0;
-        result = 31 * result + (files != null ? files.hashCode() : 0);
-        return result;
+        return files != null ? files.hashCode() : 0;
     }
 }
