@@ -44,6 +44,6 @@ public class ReadPermissionWorkerTest extends AbstractTestCase {
             }
         };
         assertEquals(2, worker.run().size());
-        assertEquals("Getting permission of a… (2)", worker.getActivity());
+        assertEquals("Getting permission of a… (Multiple files) (2)", worker.getActivity());
     }
 }

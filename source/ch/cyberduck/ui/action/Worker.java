@@ -38,12 +38,11 @@ public abstract class Worker<T> {
         if(files.isEmpty()) {
             return LocaleFactory.localizedString("None");
         }
-        final StringBuilder name = new StringBuilder();
-        name.append(files.get(0).getName());
+        final String name = files.get(0).getName();
         if(files.size() > 1) {
-            name.append("… (").append(files.size()).append(")");
+            return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
         }
-        return name.toString();
+        return String.format("%s…", name);
     }
 
     public T run() throws BackgroundException {
