@@ -33,6 +33,7 @@
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
+    <property name="build.compile.target" value="1.7"/>
     <property name="configuration" value="Release"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/test-classes"/>
@@ -129,8 +130,7 @@
                debug="${debug}"
                encoding="utf-8"
                srcdir="${source}"
-               source="1.6"
-               target="1.6"
+               target="${build.compile.target}"
                deprecation="on"
                listfiles="on"
                extdirs=""
@@ -201,8 +201,7 @@
         <javac debug="${debug}"
                includeantruntime="false"
                encoding="utf-8"
-               source="1.6"
-               target="1.6"
+               target="${build.compile.target}"
                deprecation="off"
                srcdir="${unittests}"
                destdir="${build.unittests}"

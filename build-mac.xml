@@ -540,6 +540,7 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Java"/>
             <param name="app.runtime.system.min" value="10.6"/>
+            <param name="build.compile.target" value="1.6"/>
         </antcall>
         <antcall target="codesign">
             <param name="codesign.options" value="--force"/>
