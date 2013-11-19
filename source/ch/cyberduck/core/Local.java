@@ -321,7 +321,7 @@ public abstract class Local extends AbstractPath implements Serializable {
 
     @Override
     public int hashCode() {
-        return path != null ? path.hashCode() : 0;
+        return path != null ? StringUtils.lowerCase(path).hashCode() : 0;
     }
 
     public String toURL() {

@@ -31,4 +31,9 @@ public class LocalTest extends AbstractTestCase {
         assertNotEquals(new TestLocal("/p/1"), new TestLocal("/p/2"));
         assertEquals(new TestLocal("/p/1"), new TestLocal("/P/1"));
     }
+
+    @Test
+    public void testHashCode() throws Exception {
+        assertEquals(new TestLocal("/p/1").hashCode(), new TestLocal("/P/1").hashCode());
+    }
 }
