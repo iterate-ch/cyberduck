@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Command;
 
 import org.apache.commons.io.IOUtils;
@@ -89,7 +90,7 @@ public class SFTPCommandFeature implements Command {
                 error.append(line).append(".");
             }
             if(StringUtils.isNotBlank(error.toString())) {
-                throw new BackgroundException(error.toString());
+                throw new InteroperabilityException(error.toString());
             }
             else {
                 if(log.isInfoEnabled()) {
