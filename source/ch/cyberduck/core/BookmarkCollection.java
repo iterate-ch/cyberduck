@@ -201,6 +201,16 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
+    public Object[] toArray() {
+        return FolderBookmarkCollection.favoritesCollection().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(final T[] a) {
+        return FolderBookmarkCollection.favoritesCollection().toArray(a);
+    }
+
+    @Override
     public void save() {
         if(this.isLocked()) {
             log.debug("Do not write locked collection");

@@ -163,6 +163,16 @@ public final class TransferCollection extends Collection<Transfer> {
         return FolderTransferCollection.defaultCollection().containsAll(c);
     }
 
+    @Override
+    public Object[] toArray() {
+        return FolderTransferCollection.defaultCollection().toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(final T[] a) {
+        return FolderTransferCollection.defaultCollection().toArray(a);
+    }
+
     public void save() {
         if(this.isLocked()) {
             log.debug("Do not write locked collection");
