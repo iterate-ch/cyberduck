@@ -68,5 +68,7 @@ public abstract class Worker<T> {
     /**
      * Default result when execute fails with exception
      */
-    public abstract T initialize();
+    public T initialize() {
+        return null;
+    }
 }
