@@ -3467,9 +3467,13 @@ public class BrowserController extends WindowController
                                            if(returncode == DEFAULT_OPTION) { //Disconnect
                                                controller.window().close();
                                                if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
-                                                   app.terminate(null);
+                                                   app.replyToApplicationShouldTerminate(true);
                                                }
                                            }
+                                           else {
+                                               app.replyToApplicationShouldTerminate(false);
+                                           }
+
                                        }
                                    }, new Runnable() {
                                        @Override

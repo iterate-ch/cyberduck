@@ -528,8 +528,10 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     @Override
-    public boolean application_openFile(NSApplication app, String filename) {
-        log.debug("applicationOpenFile:" + filename);
+    public boolean application_openFile(final NSApplication app, final String filename) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open file %s", filename));
+        }
         final Local f = LocalFactory.createLocal(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
@@ -760,7 +762,9 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean application_openTempFile(NSApplication app, String filename) {
-        log.debug("applicationOpenTempFile:" + filename);
+        if(log.isDebugEnabled()) {
+            log.debug("applicationOpenTempFile:" + filename);
+        }
         return this.application_openFile(app, filename);
     }
 
@@ -771,7 +775,9 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
-        log.debug("applicationShouldOpenUntitledFile");
+        if(log.isDebugEnabled()) {
+            log.debug("applicationShouldOpenUntitledFile");
+        }
         return Preferences.instance().getBoolean("browser.open.untitled");
     }
 
@@ -780,7 +786,9 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public boolean applicationOpenUntitledFile(NSApplication app) {
-        log.debug("applicationOpenUntitledFile");
+        if(log.isDebugEnabled()) {
+            log.debug("applicationOpenUntitledFile");
+        }
         return false;
     }
 
@@ -828,9 +836,10 @@ public class MainController extends BundleController implements NSApplication.De
      * handle the event yourself in some custom way, and return false.
      */
     @Override
-    public boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound) {
-        log.debug("applicationShouldHandleReopen");
-        // While an application is open, the Dock icon has a symbol below it.
+    public boolean applicationShouldHandleReopen_hasVisibleWindows(final NSApplication app, final boolean visibleWindowsFound) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Should handle reopen with windows %s", visibleWindowsFound));
+        }        // While an application is open, the Dock icon has a symbol below it.
         // When a user clicks an open application’s icon in the Dock, the application
         // becomes active and all open unminimized windows are brought to the front;
         // minimized document windows remain in the Dock. If there are no unminimized
@@ -1137,7 +1146,7 @@ public class MainController extends BundleController implements NSApplication.De
                     defaults.load();
                     for(Host bookmark : defaults) {
                         if(log.isDebugEnabled()) {
-                            log.debug("Adding default bookmark:" + bookmark);
+                            log.debug(String.format("Adding default bookmark %s", bookmark));
                         }
                         c.add(bookmark);
                     }
@@ -1155,8 +1164,10 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * NSService implementation
      */
-    public void serviceUploadFileUrl_(final NSPasteboard pboard, String userData) {
-        log.debug("serviceUploadFileUrl_:" + userData);
+    public void serviceUploadFileUrl_(final NSPasteboard pboard, final String userData) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("serviceUploadFileUrl_: with user data %s", userData));
+        }
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
@@ -1194,9 +1205,11 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public NSUInteger applicationShouldTerminate(final NSApplication app) {
-        log.debug("applicationShouldTerminate");
+        if(log.isDebugEnabled()) {
+            log.debug("Application should quit with notification");
+        }
         // Determine if there are any running transfers
-        NSUInteger result = TransferControllerFactory.applicationShouldTerminate(app);
+        final NSUInteger result = TransferControllerFactory.applicationShouldTerminate(app);
         if(!result.equals(NSApplication.NSTerminateNow)) {
             return result;
         }
@@ -1226,19 +1239,18 @@ public class MainController extends BundleController implements NSApplication.De
                         // Never show again.
                         Preferences.instance().setProperty("browser.disconnect.confirm", false);
                     }
-                    if(choice == SheetCallback.CANCEL_OPTION) {
+                    if(choice == SheetCallback.ALTERNATE_OPTION) {
                         // Cancel. Quit has been interrupted. Delete any saved sessions so far.
                         sessions.clear();
                         return NSApplication.NSTerminateCancel;
                     }
-                    if(choice == SheetCallback.ALTERNATE_OPTION) {
-                        // Review if at least one window reqested to terminate later, we shall wait.
+                    if(choice == SheetCallback.CANCEL_OPTION) {
+                        // Review if at least one window requested to terminate later, we shall wait.
                         // This will iterate over all mounted browsers.
-                        result = BrowserController.applicationShouldTerminate(app);
-                        if(NSApplication.NSTerminateNow.equals(result)) {
+                        if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
                             return this.applicationShouldTerminateAfterDonationPrompt(app);
                         }
-                        return result;
+                        return NSApplication.NSTerminateLater;
                     }
                     if(choice == SheetCallback.DEFAULT_OPTION) {
                         // Quit immediatly
@@ -1254,7 +1266,9 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     public NSUInteger applicationShouldTerminateAfterDonationPrompt(final NSApplication app) {
-        log.debug("applicationShouldTerminateAfterDonationPrompt");
+        if(log.isDebugEnabled()) {
+            log.debug("applicationShouldTerminateAfterDonationPrompt");
+        }
         if(!displayDonationPrompt) {
             // Already displayed
             return NSApplication.NSTerminateNow;
@@ -1326,7 +1340,7 @@ public class MainController extends BundleController implements NSApplication.De
                         Preferences.instance().setProperty("donate.reminder",
                                 NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
                     }
-                    // Remeber this reminder date
+                    // Remember this reminder date
                     Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
                     // Quit again
                     app.replyToApplicationShouldTerminate(true);
@@ -1346,8 +1360,9 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public void applicationWillTerminate(NSNotification notification) {
-        log.debug("applicationWillTerminate");
-
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Application will quit with notification %s", notification));
+        }
         this.invalidate();
 
         //Terminating rendezvous discovery
@@ -1369,7 +1384,9 @@ public class MainController extends BundleController implements NSApplication.De
      * @param notification Notification name
      */
     public void workspaceWillPowerOff(NSNotification notification) {
-        log.debug("workspaceWillPowerOff");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Workspace will power off with notification %s", notification));
+        }
     }
 
     /**
@@ -1380,11 +1397,15 @@ public class MainController extends BundleController implements NSApplication.De
      * @param notification Notification name
      */
     public void workspaceWillLogout(NSNotification notification) {
-        log.debug("workspaceWillLogout");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Workspace will logout with notification %s", notification));
+        }
     }
 
     public void workspaceWillSleep(NSNotification notification) {
-        log.debug("workspaceWillSleep");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Workspace will sleep with notification %s", notification));
+        }
     }
 
     /**
