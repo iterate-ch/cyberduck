@@ -236,24 +236,4 @@ public class FinderLocalAttributes extends LocalAttributes {
             }
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        FinderLocalAttributes that = (FinderLocalAttributes) o;
-        if(getInode() != null ? !getInode().equals(that.getInode()) : that.getInode() != null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return getInode() != null ? getInode().hashCode() : 0;
-    }
 }
