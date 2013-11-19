@@ -18,7 +18,6 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
@@ -72,7 +71,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
             recursive.add(file);
         }
         else if(file.attributes().isDirectory()) {
-            for(Path child : session.list(file, new DisabledListProgressListener())) {
+            for(Path child : session.list(file, new ActionListProgressListener(this))) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }

@@ -19,7 +19,6 @@ package ch.cyberduck.ui.action;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -71,7 +70,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         session.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
         if(p.attributes().isDirectory()) {
-            for(Path next : session.list(p, new DisabledListProgressListener())) {
+            for(Path next : session.list(p, new ActionListProgressListener(this))) {
                 size += this.calculateSize(next);
             }
         }
@@ -117,4 +116,5 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     public int hashCode() {
         return files != null ? files.hashCode() : 0;
     }
+
 }

@@ -18,7 +18,6 @@ package ch.cyberduck.ui.action;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -114,7 +113,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
         }
         if(recursive) {
             if(file.attributes().isDirectory()) {
-                for(Path child : session.list(file, new DisabledListProgressListener())) {
+                for(Path child : session.list(file, new ActionListProgressListener(this))) {
                     this.write(child);
                 }
             }

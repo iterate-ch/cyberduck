@@ -20,7 +20,6 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -87,7 +86,7 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
                 // No recursion when changing container ACL
             }
             else if(file.attributes().isDirectory()) {
-                for(Path child : session.list(file, new DisabledListProgressListener())) {
+                for(Path child : session.list(file, new ActionListProgressListener(this))) {
                     this.write(child);
                 }
             }
