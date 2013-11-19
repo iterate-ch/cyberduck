@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -46,7 +47,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     /**
      *
      */
-    private boolean loaded;
+    private AtomicBoolean loaded = new AtomicBoolean();
 
     public Collection() {
         super();
@@ -60,7 +61,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
      * Mark collection as loaded and notify listeners.
      */
     public void load() {
-        loaded = true;
+        loaded.set(true);
         this.collectionLoaded();
     }
 
@@ -199,7 +200,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     public boolean isLoaded() {
-        return loaded;
+        return loaded.get();
     }
 
     /**
