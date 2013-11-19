@@ -136,8 +136,6 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    session.message(MessageFormat.format(
-                            LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
                     checksum = new MD5ChecksumCompute().compute(local.getInputStream());
                 }
                 catch(BackgroundException e) {
