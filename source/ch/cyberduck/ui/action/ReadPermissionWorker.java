@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +61,11 @@ public abstract class ReadPermissionWorker extends Worker<List<Permission>> {
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Getting permission of {0}", "Status"),
                 this.toString(files));
+    }
+
+    @Override
+    public List<Permission> initialize() {
+        return Collections.emptyList();
     }
 
     @Override

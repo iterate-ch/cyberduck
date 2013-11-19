@@ -80,6 +80,11 @@ public class MountWorker extends Worker<Path> {
     }
 
     @Override
+    public Path initialize() {
+        return null;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

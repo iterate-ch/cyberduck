@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +94,11 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Apply {0} filter", "Status"), StringUtils.uncapitalize(action.getTitle()));
+    }
+
+    @Override
+    public Map<Path, TransferStatus> initialize() {
+        return Collections.emptyMap();
     }
 
     @Override

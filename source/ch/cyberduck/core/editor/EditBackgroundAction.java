@@ -48,9 +48,19 @@ public class EditBackgroundAction extends Worker<Transfer> {
 
     private Session session;
 
+    private Transfer download;
+
     public EditBackgroundAction(final AbstractEditor editor, final Session session) {
         this.editor = editor;
         this.session = session;
+        this.download = new DownloadTransfer(session.getHost(), editor.getEdited()) {
+            @Override
+            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+                                         final TransferPrompt prompt) throws BackgroundException {
+                return TransferAction.trash;
+            }
+        };
+
     }
 
     @Override
@@ -63,13 +73,6 @@ public class EditBackgroundAction extends Worker<Transfer> {
         final TransferOptions options = new TransferOptions();
         options.quarantine = false;
         options.open = false;
-        final Transfer download = new DownloadTransfer(session.getHost(), file) {
-            @Override
-            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt) throws BackgroundException {
-                return TransferAction.trash;
-            }
-        };
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
@@ -95,6 +98,11 @@ public class EditBackgroundAction extends Worker<Transfer> {
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                 editor.getEdited().getName());
+    }
+
+    @Override
+    public Transfer initialize() {
+        return download;
     }
 
     @Override

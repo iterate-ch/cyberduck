@@ -125,6 +125,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
     }
 
     @Override
+    public Boolean initialize() {
+        return false;
+    }
+
+    @Override
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
         try {

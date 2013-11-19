@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Headers;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,11 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
                 this.toString(files));
+    }
+
+    @Override
+    public Map<String, String> initialize() {
+        return Collections.emptyMap();
     }
 
     @Override

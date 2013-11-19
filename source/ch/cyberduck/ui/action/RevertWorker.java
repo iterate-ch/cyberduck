@@ -60,6 +60,11 @@ public class RevertWorker extends Worker<Boolean> {
     }
 
     @Override
+    public Boolean initialize() {
+        return false;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

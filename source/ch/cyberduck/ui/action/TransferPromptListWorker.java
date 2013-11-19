@@ -61,6 +61,11 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
     }
 
     @Override
+    public AttributedList<Path> initialize() {
+        return AttributedList.emptyList();
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

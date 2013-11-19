@@ -93,6 +93,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
+    public AttributedList<Path> initialize() {
+        return AttributedList.emptyList();
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

@@ -45,7 +45,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         this.files = files;
     }
 
-    private long total;
+    private Long total = 0L;
 
     @Override
     public Long run() throws BackgroundException {
@@ -95,6 +95,10 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
                 this.toString(files));
     }
 
+    @Override
+    public Long initialize() {
+        return total;
+    }
 
     @Override
     public boolean equals(final Object o) {

@@ -53,16 +53,15 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     @Override
     public void cleanup() {
         super.cleanup();
-        if(!worker.isCanceled()) {
-            if(null == result) {
-                log.warn(String.format("No result for worker %s. Skip cleanup.", worker));
+        if(null == result) {
+            log.warn(String.format("Missing result for worker %s. Use default value.", worker));
+            worker.cleanup(worker.initialize());
+        }
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cleanup worker %s", worker));
             }
-            else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cleanup worker %s", worker));
-                }
-                worker.cleanup(result);
-            }
+            worker.cleanup(result);
         }
     }
 

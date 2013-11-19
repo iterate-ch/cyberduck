@@ -37,13 +37,14 @@ public abstract class ReadSizeWorker extends Worker<Long> {
      */
     private List<Path> files;
 
+    private Long total = 0L;
+
     public ReadSizeWorker(final List<Path> files) {
         this.files = files;
     }
 
     @Override
     public Long run() throws BackgroundException {
-        long total = 0L;
         for(Path next : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -60,6 +61,11 @@ public abstract class ReadSizeWorker extends Worker<Long> {
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 this.toString(files));
+    }
+
+    @Override
+    public Long initialize() {
+        return total;
     }
 
     @Override

@@ -94,6 +94,11 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
     }
 
     @Override
+    public Boolean initialize() {
+        return false;
+    }
+
+    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.toString(files), acl);

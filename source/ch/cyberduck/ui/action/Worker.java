@@ -64,4 +64,9 @@ public abstract class Worker<T> {
     public boolean isCanceled() {
         return canceled.get();
     }
+
+    /**
+     * Default result when execute fails with exception
+     */
+    public abstract T initialize();
 }

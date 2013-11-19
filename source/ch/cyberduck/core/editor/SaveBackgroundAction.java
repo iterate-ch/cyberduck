@@ -47,17 +47,12 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     private Session session;
 
+    private Transfer upload;
+
     public SaveBackgroundAction(final AbstractEditor editor, final Session session) {
         this.editor = editor;
         this.session = session;
-    }
-
-    @Override
-    public Transfer run() throws BackgroundException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Run upload action for editor %s", editor));
-        }
-        final Transfer upload = new UploadTransfer(session.getHost(), editor.getEdited()) {
+        this.upload = new UploadTransfer(session.getHost(), editor.getEdited()) {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,
@@ -72,6 +67,13 @@ public class SaveBackgroundAction extends Worker<Transfer> {
                         .withPermission(Preferences.instance().getBoolean("editor.upload.permissions.change")));
             }
         };
+    }
+
+    @Override
+    public Transfer run() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run upload action for editor %s", editor));
+        }
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
@@ -97,6 +99,11 @@ public class SaveBackgroundAction extends Worker<Transfer> {
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                 editor.getEdited().getName());
+    }
+
+    @Override
+    public Transfer initialize() {
+        return upload;
     }
 
     @Override
