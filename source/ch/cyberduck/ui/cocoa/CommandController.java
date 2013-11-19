@@ -94,7 +94,6 @@ public class CommandController extends SheetController implements TranscriptList
     public CommandController(final WindowController parent, final Session session) {
         super(parent);
         this.session = session;
-        this.session.addTranscriptListener(this);
     }
 
     @Override
@@ -109,7 +108,10 @@ public class CommandController extends SheetController implements TranscriptList
             progress.startAnimation(null);
             sender.setEnabled(false);
             parent.background(new ControllerBackgroundAction<Void>(this, session, Cache.empty()) {
-                boolean close;
+                @Override
+                public boolean alert() {
+                    return false;
+                }
 
                 @Override
                 public Void run() throws BackgroundException {
@@ -123,9 +125,6 @@ public class CommandController extends SheetController implements TranscriptList
                     super.cleanup();
                     progress.stopAnimation(null);
                     sender.setEnabled(true);
-                    if(close) {
-                        closeSheet(sender);
-                    }
                 }
 
                 @Override
@@ -160,7 +159,6 @@ public class CommandController extends SheetController implements TranscriptList
 
     @Override
     protected void invalidate() {
-        session.removeTranscriptListener(this);
         responseField.layoutManager().setDelegate(null);
         super.invalidate();
     }
