@@ -18,7 +18,9 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -37,10 +39,10 @@ public class MD5ChecksumCompute implements ChecksumCompute {
             return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(in));
         }
         catch(NoSuchAlgorithmException e) {
-            throw new BackgroundException(String.format("Checksum failure %s", e.getMessage()), e);
+            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
         catch(IOException e) {
-            throw new BackgroundException(String.format("Checksum failure %s", e.getMessage()), e);
+            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
     }
 }
