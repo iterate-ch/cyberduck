@@ -117,6 +117,9 @@ namespace Ch.Cyberduck.Core
 
         public bool display(List certificates)
         {
+            if(certificates.isEmpty()) {
+                return false;
+            }
             //todo did not find a way to show the chain in the case of self signed certs
             X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
             X509Certificate2UI.DisplayCertificate(cert);

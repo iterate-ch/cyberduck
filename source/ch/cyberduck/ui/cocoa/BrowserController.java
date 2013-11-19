@@ -2201,10 +2201,6 @@ public class BrowserController extends WindowController
         if(session instanceof SSLSession) {
             final SSLSession<?> secured = (SSLSession) session;
             final List<X509Certificate> certificates = secured.getAcceptedIssuers();
-            if(0 == certificates.size()) {
-                log.warn("No accepted certificates found");
-                return;
-            }
             try {
                 CertificateStoreFactory.get().display(certificates);
             }

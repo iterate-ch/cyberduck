@@ -1044,11 +1044,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 SSLSession secured = (SSLSession) _session;
                 List certificates = secured.getAcceptedIssuers();
-                if (0 == certificates.size())
-                {
-                    Log.warn("No accepted certificates found");
-                    return;
-                }
                 CertificateStoreFactory.get().display(certificates);
             }
         }
