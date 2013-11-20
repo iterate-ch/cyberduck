@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
@@ -187,11 +188,28 @@ public final class ActivityController extends WindowController {
             }
 
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell,
-                                                                     final NSTableColumn tableColumn, final NSInteger row) {
-                Rococoa.cast(cell, ControllerCell.class).setView(tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()].view());
+                                                                     final NSTableColumn column, final NSInteger row) {
+                if(Factory.VERSION_PLATFORM.matches("10\\.(5|6).*")) {
+                    final TaskController controller = getController(row);
+                    Rococoa.cast(cell, ControllerCell.class).setView(controller.view());
+                }
+            }
+
+            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
+                                                           final NSInteger row) {
+                if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6).*")) {
+                    // 10.7 or later supports view View-Based Table Views
+                    final TaskController controller = getController(row);
+                    return controller.view();
+                }
+                return null;
             }
         }).id());
         this.table.sizeToFit();
+    }
+
+    protected TaskController getController(final NSInteger row) {
+        return tasks.values().toArray(new TaskController[tasks.size()])[row.intValue()];
     }
 
     private final NSCell prototype = ControllerCell.controllerCell();

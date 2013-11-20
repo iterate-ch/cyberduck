@@ -774,7 +774,6 @@ public class InfoController extends ToolbarWindowController {
                 return new NSInteger(acl.size());
             }
 
-            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < acl.size()) {
@@ -1003,7 +1002,6 @@ public class InfoController extends ToolbarWindowController {
                 return new NSInteger(metadata.size());
             }
 
-            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < metadata.size()) {

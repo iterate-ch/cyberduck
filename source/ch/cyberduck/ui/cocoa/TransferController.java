@@ -19,15 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
@@ -461,8 +453,20 @@ public final class TransferController extends WindowController implements NSTool
                                 NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(transferTable.numberOfRows()))));
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
-                Rococoa.cast(cell, ControllerCell.class).setView(transferTableModel.getController(row.intValue()).view());
+            public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSCell cell,
+                                                                     final NSTableColumn column, final NSInteger row) {
+                if(Factory.VERSION_PLATFORM.matches("10\\.(5|6).*")) {
+                    Rococoa.cast(cell, ControllerCell.class).setView(transferTableModel.getController(row.intValue()).view());
+                }
+            }
+
+            public NSView tableView_viewForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
+                                                           final NSInteger row) {
+                if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6).*")) {
+                    // 10.7 or later supports view View-Based Table Views
+                    return transferTableModel.getController(row.intValue()).view();
+                }
+                return null;
             }
 
             @Override
@@ -470,9 +474,7 @@ public final class TransferController extends WindowController implements NSTool
                 return true;
             }
 
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
-                                                                       NSTableColumn tableColumn,
-                                                                       NSInteger row) {
+            public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
                 return transferTableModel.getSource().get(row.intValue()).getName();
             }
         }).id());
