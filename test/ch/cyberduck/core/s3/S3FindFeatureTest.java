@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3FindFeatureTest extends AbstractTestCase {
 
@@ -44,5 +44,10 @@ public class S3FindFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
         assertTrue(new S3FindFeature(session).find(container));
         session.close();
+    }
+
+    @Test
+    public void testFindRoot() throws Exception {
+        assertTrue(new S3FindFeature(new S3Session(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
     }
 }

@@ -62,4 +62,9 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
         assertNotNull(new DefaultAttributesFeature(session).find(file));
         session.close();
     }
+
+    @Test
+    public void testFindRoot() throws Exception {
+        assertTrue(new SwiftFindFeature(new SwiftSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+    }
 }

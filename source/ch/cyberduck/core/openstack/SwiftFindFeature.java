@@ -37,6 +37,9 @@ public class SwiftFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
         try {
             feature.getMetadata(file);
             return true;

@@ -36,6 +36,9 @@ public class SFTPFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
         try {
             return attributes.find(file) != null;
         }

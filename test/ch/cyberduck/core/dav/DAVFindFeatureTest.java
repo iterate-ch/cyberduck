@@ -57,4 +57,9 @@ public class DAVFindFeatureTest extends AbstractTestCase {
         assertFalse(new DAVFindFeature(session).find(new Path("/trunk/" + UUID.randomUUID().toString(), Path.FILE_TYPE)));
         session.close();
     }
+
+    @Test
+    public void testFindRoot() throws Exception {
+        assertTrue(new DAVFindFeature(new DAVSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+    }
 }

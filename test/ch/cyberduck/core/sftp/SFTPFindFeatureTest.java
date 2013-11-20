@@ -43,4 +43,9 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         assertTrue(new SFTPFindFeature(session).find(session.workdir()));
         session.close();
     }
+
+    @Test
+    public void testFindRoot() throws Exception {
+        assertTrue(new SFTPFindFeature(new SFTPSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+    }
 }

@@ -43,6 +43,9 @@ public class DAVFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
         try {
             try {
                 return session.getClient().exists(new DAVPathEncoder().encode(file));
