@@ -1,25 +1,18 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -141,11 +134,33 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         }
                     };
                 }
+                if(type.equals(Write.class)) {
+                    return (T) new Write() {
+                        @Override
+                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                            fail();
+                            return null;
+                        }
+
+                        @Override
+                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                            fail();
+                            return new Append(1L);
+                        }
+
+                        @Override
+                        public boolean temporary() {
+                            return true;
+                        }
+                    };
+                }
                 return null;
             }
         };
+        final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true));
+                options);
+        assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
         assertNotNull(status.getRenamed());
         assertTrue(status.isRename());
@@ -153,8 +168,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         assertNotNull(status.getRenamed().getLocal());
         assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
         // Complete
-        status.setLength(1L);
-        status.setCurrent(1L);
+        status.setComplete();
         f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());
@@ -211,6 +225,26 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                         @Override
                         public Attributes withCache(Cache cache) {
                             return this;
+                        }
+                    };
+                }
+                if(type.equals(Write.class)) {
+                    return (T) new Write() {
+                        @Override
+                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                            fail();
+                            return null;
+                        }
+
+                        @Override
+                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                            fail();
+                            return new Append(0L);
+                        }
+
+                        @Override
+                        public boolean temporary() {
+                            return true;
                         }
                     };
                 }

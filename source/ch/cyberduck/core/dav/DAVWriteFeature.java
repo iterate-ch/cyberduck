@@ -105,6 +105,11 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     @Override
+    public boolean temporary() {
+        return true;
+    }
+
+    @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
         if(new DAVFindFeature(session).withCache(cache).find(file)) {
             return new Append(new DefaultAttributesFeature(session).withCache(cache).find(file).getSize());

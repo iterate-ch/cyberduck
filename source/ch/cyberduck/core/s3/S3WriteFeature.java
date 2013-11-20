@@ -192,4 +192,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         return Write.notfound;
     }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
 }

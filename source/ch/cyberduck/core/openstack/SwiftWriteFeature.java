@@ -154,4 +154,9 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         }
         return Write.notfound;
     }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
 }

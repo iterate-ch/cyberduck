@@ -10,6 +10,8 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.openstack.SwiftSession;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
@@ -122,10 +124,33 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final Path file = new Path("/t", Path.FILE_TYPE);
         file.setLocal(new NullLocal(null, "a"));
         final TransferStatus status = f.prepare(file, new TransferStatus());
+        assertFalse(f.temporary.isEmpty());
         assertNotNull(status.getRenamed());
         assertTrue(status.isRename());
         assertNotEquals(file, status.getRenamed());
         assertNotNull(status.getRenamed().getLocal());
         assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
+    }
+
+    @Test
+    public void testTemporaryDisabledLageUpload() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new SwiftSession(new Host("h")),
+                new UploadFilterOptions().withTemporary(true));
+        final Path file = new Path("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        final TransferStatus status = f.prepare(file, new TransferStatus());
+        assertTrue(f.temporary.isEmpty());
+        assertNull(status.getRenamed());
+    }
+
+    @Test
+    public void testTemporaryDisabledMultipartUpload() throws Exception {
+        final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new S3Session(new Host("h")),
+                new UploadFilterOptions().withTemporary(true));
+        final Path file = new Path("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
+        final TransferStatus status = f.prepare(file, new TransferStatus());
+        assertTrue(f.temporary.isEmpty());
+        assertNull(status.getRenamed());
     }
 }

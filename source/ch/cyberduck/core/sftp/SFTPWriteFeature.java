@@ -93,4 +93,9 @@ public class SFTPWriteFeature implements Write {
         }
         return Write.notfound;
     }
+
+    @Override
+    public boolean temporary() {
+        return true;
+    }
 }

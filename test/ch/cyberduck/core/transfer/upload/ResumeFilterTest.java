@@ -152,6 +152,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
                 return new Append(length);
             }
+
+            @Override
+            public boolean temporary() {
+                return true;
+            }
         });
         final long size = 3L;
         final Path t = new Path("t", Path.FILE_TYPE);
@@ -181,6 +186,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             @Override
             public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
                 return new Append(length - 1);
+            }
+
+            @Override
+            public boolean temporary() {
+                return true;
             }
         });
         final long size = 3L;
@@ -213,6 +223,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             @Override
             public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
                 return new Append(length + 1);
+            }
+
+            @Override
+            public boolean temporary() {
+                return true;
             }
         });
         final long size = 3L;

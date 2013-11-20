@@ -46,6 +46,11 @@ public interface Write {
      */
     Append append(Path file, Long length, Cache cache) throws BackgroundException;
 
+    /**
+     * @return True if temporary upload filename can be used
+     */
+    boolean temporary();
+
     public static final class Append {
         /**
          * Append to file
