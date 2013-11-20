@@ -24,14 +24,12 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
  */
 public final class WorkspaceIconService implements IconService {
-    private static final Logger log = Logger.getLogger(WorkspaceIconService.class);
 
     public static void register() {
         IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
