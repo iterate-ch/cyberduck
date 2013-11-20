@@ -168,7 +168,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         assertNotNull(status.getRenamed().getLocal());
         assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
         // Complete
-        status.setComplete();
+//        status.setComplete();
         f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());

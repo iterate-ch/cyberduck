@@ -411,7 +411,7 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 assertEquals(table.get(test).getRenamed(), file);
-                status.setComplete();
+//                status.setComplete();
                 set.set(true);
             }
         };
