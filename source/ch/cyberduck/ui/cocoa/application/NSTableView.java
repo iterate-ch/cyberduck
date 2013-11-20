@@ -19,7 +19,12 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
@@ -66,8 +71,6 @@ public abstract class NSTableView extends NSControl {
         NSInteger numberOfRowsInTableView(NSTableView view);
 
         void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row);
-
-        NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row);
 
         boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard);
 
@@ -321,6 +324,14 @@ public abstract class NSTableView extends NSControl {
      * <i>native declaration : :167</i>
      */
     public abstract void reloadData();
+
+    /**
+     * Original signature : <code>- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet *)columnIndexes</code><br>
+     * <i>native declaration : :167</i>
+     */
+    public abstract void reloadDataForRowIndexes_columnIndexes(NSIndexSet rowIndexes, NSIndexSet columnIndexes);
+
+    public abstract NSView makeViewWithIdentifier_owner(String identifier, ID owner);
 
     /**
      * Original signature : <code>void noteNumberOfRowsChanged()</code><br>
