@@ -29,7 +29,8 @@ public class OverwriteFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                           final DownloadFilterOptions options) {
         super(symlinkResolver, session, options);
     }
 }

@@ -35,7 +35,8 @@ public class SkipFilter extends AbstractUploadFilter {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                      final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
     }
 

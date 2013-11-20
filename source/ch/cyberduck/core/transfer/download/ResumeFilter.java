@@ -40,6 +40,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
         this.read = session.getFeature(Read.class);
     }
 
+    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                        final DownloadFilterOptions options, final Read read) {
+        super(symlinkResolver, session, options);
+        this.read = read;
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isFile()) {

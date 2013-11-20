@@ -35,6 +35,11 @@ public class SkipFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
+    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                      final DownloadFilterOptions options) {
+        super(symlinkResolver, session, options);
+    }
+
     @Override
     public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
         if(file.getLocal().exists()) {

@@ -43,6 +43,11 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                                final DownloadFilterOptions options) {
+        super(symlinkResolver, session, options);
+    }
+
     /**
      * Rename existing file on disk if there is a conflict.
      */

@@ -36,6 +36,11 @@ public class TrashFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
+    public TrashFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                       final DownloadFilterOptions options) {
+        super(symlinkResolver, session, options);
+    }
+
     /**
      * Rename existing file on disk if there is a conflict.
      */

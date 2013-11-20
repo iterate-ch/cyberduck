@@ -29,7 +29,8 @@ public class OverwriteFilter extends AbstractUploadFilter {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                           final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
     }
 }

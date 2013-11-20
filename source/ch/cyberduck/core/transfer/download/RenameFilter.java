@@ -38,6 +38,11 @@ public class RenameFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
+    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                        final DownloadFilterOptions options) {
+        super(symlinkResolver, session, options);
+    }
+
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, parent);
