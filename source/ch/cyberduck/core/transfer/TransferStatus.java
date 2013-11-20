@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.StreamProgress;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The Status class is the model of a download's status.
@@ -54,7 +55,8 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
-    private long current = 0L;
+    private AtomicLong current
+            = new AtomicLong(0);
 
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
@@ -64,7 +66,11 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * The transfer has been canceled by the user.
      */
-    private AtomicBoolean canceled = new AtomicBoolean();
+    private AtomicBoolean canceled
+            = new AtomicBoolean();
+
+    private AtomicBoolean complete
+            = new AtomicBoolean();
 
     /**
      * Upload target
@@ -78,8 +84,13 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Local local;
 
-    public synchronized boolean isComplete() {
-        return current == length;
+    public boolean isComplete() {
+        return complete.get();
+    }
+
+    @Override
+    public void setComplete() {
+        complete.set(true);
     }
 
     /**
@@ -99,27 +110,27 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @return Number of bytes transferred
      */
-    public synchronized long getCurrent() {
-        return current;
+    public long getCurrent() {
+        return current.get();
     }
 
     /**
      * @param current The already transferred bytes
      */
-    public synchronized void setCurrent(final long current) {
-        this.current = current;
+    public void setCurrent(final long current) {
+        this.current.set(current);
         if(log.isInfoEnabled()) {
             log.info(String.format("Transferred bytes set to %d bytes", current));
         }
     }
 
     @Override
-    public synchronized void progress(final long transferred) {
-        this.setCurrent(current + transferred);
+    public void progress(final long transferred) {
+        this.setCurrent(current.get() + transferred);
     }
 
-    public synchronized TransferStatus current(final long transferred) {
-        this.current = transferred;
+    public TransferStatus current(final long transferred) {
+        this.current.set(transferred);
         return this;
     }
 
@@ -157,7 +168,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public void setAppend(final boolean append) {
         if(!append) {
-            current = 0;
+            current.set(0);
         }
         this.append = append;
     }
@@ -221,16 +232,13 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         final TransferStatus that = (TransferStatus) o;
-        if(current != that.current) {
-            return false;
-        }
-        if(length != that.length) {
-            return false;
-        }
         if(append != that.append) {
             return false;
         }
         if(exists != that.exists) {
+            return false;
+        }
+        if(length != that.length) {
             return false;
         }
         return true;
@@ -238,10 +246,9 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     @Override
     public int hashCode() {
-        int result = (append ? 1 : 0);
-        result = 31 * result + (int) (current ^ (current >>> 32));
+        int result = (exists ? 1 : 0);
+        result = 31 * result + (append ? 1 : 0);
         result = 31 * result + (int) (length ^ (length >>> 32));
-        result = 31 * result + (exists ? 1 : 0);
         return result;
     }
 

@@ -61,18 +61,30 @@ public final class StreamCopier {
      */
     public void transfer(final InputStream in, final long offset, final OutputStream out,
                          final StreamListener listener, final long limit) throws IOException, ConnectionCanceledException {
+        if(limit == 0) {
+            return;
+        }
         final BufferedInputStream bi = new BufferedInputStream(in);
-        this.skip(offset, bi);
+        if(offset > 0) {
+            this.skip(bi, offset);
+        }
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             final byte[] chunk = new byte[chunksize];
-            long count = 0;
+            long total = 0;
+            int len = chunksize;
+            if(limit > 0 && limit < chunksize) {
+                // Cast will work because chunk size is int
+                len = (int) limit;
+            }
             while(!cancel.isCanceled()) {
-                final int read = bi.read(chunk, 0, chunksize);
+                final int read;
+                read = bi.read(chunk, 0, len);
                 if(-1 == read) {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
                     }
+                    progress.setComplete();
                     break;
                 }
                 else {
@@ -80,13 +92,18 @@ public final class StreamCopier {
                     bo.write(chunk, 0, read);
                     progress.progress(read);
                     listener.sent(read);
-                    count += read;
-                    if(limit == count) {
+                    total += read;
+                    if(limit == total) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Limit %d reached reading from stream", limit));
                         }
+                        progress.setComplete();
                         break;
                     }
+                }
+                if(limit > 0) {
+                    // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
+                    len = (int) Math.min(limit - total, chunksize);
                 }
             }
         }
@@ -98,16 +115,14 @@ public final class StreamCopier {
         }
     }
 
-    private void skip(final long offset, final BufferedInputStream bi) throws IOException {
-        if(offset > 0) {
-            long skipped = bi.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < offset) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                        skipped, offset));
-            }
+    private void skip(final BufferedInputStream bi, final long offset) throws IOException {
+        long skipped = bi.skip(offset);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Skipping %d bytes", skipped));
+        }
+        if(skipped < offset) {
+            throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                    skipped, offset));
         }
     }
 }

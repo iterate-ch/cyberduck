@@ -1,7 +1,6 @@
 package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -23,11 +22,9 @@ import static org.junit.Assert.*;
 public class StreamCopierTest extends AbstractTestCase {
 
     @Test
-    public void testTransfer() throws Exception {
-        Path p = new Path("/t", Path.FILE_TYPE);
+    public void testTransferUnknownLength() throws Exception {
         final TransferStatus status = new TransferStatus();
-        status.setLength(432768L);
-        new StreamCopier(status, status).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
+        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
                 new StreamListener() {
                     long sent;
                     long received;
@@ -49,7 +46,43 @@ public class StreamCopierTest extends AbstractTestCase {
                     }
                 }, -1);
         assertTrue(status.isComplete());
-        assertTrue(status.getCurrent() == status.getLength());
+        assertEquals(432768L, status.getCurrent(), 0L);
+    }
+
+    @Test
+    public void testTransferFixedLength() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
+                new DisabledStreamListener(), 432768L);
+        assertTrue(status.isComplete());
+        assertEquals(432768L, status.getCurrent(), 0L);
+    }
+
+    @Test
+    public void testTransferFixedLengthIncomplete() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
+                new DisabledStreamListener(), 432767L);
+        assertEquals(432767L, status.getCurrent(), 0L);
+        assertTrue(status.isComplete());
+    }
+
+    @Test
+    public void testSkipInput() throws Exception {
+        {
+            final TransferStatus status = new TransferStatus();
+            new StreamCopier(status, status).transfer(new NullInputStream(432768L), 1, new NullOutputStream(),
+                    new DisabledStreamListener(), 432768L);
+            assertEquals(432767L, status.getCurrent(), 0L);
+            assertTrue(status.isComplete());
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            new StreamCopier(status, status).transfer(new NullInputStream(432768L), 1, new NullOutputStream(),
+                    new DisabledStreamListener(), -1);
+            assertEquals(432767L, status.getCurrent(), 0L);
+            assertTrue(status.isComplete());
+        }
     }
 
     @Test
@@ -57,7 +90,6 @@ public class StreamCopierTest extends AbstractTestCase {
         this.repeat(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                final Path p = new Path("/t", Path.FILE_TYPE);
                 final TransferStatus status = new TransferStatus();
                 final CyclicBarrier lock = new CyclicBarrier(2);
                 final CyclicBarrier exit = new CyclicBarrier(2);
@@ -80,6 +112,11 @@ public class StreamCopierTest extends AbstractTestCase {
                                     catch(BrokenBarrierException e) {
                                         fail(e.getMessage());
                                     }
+                                }
+
+                                @Override
+                                public void setComplete() {
+
                                 }
                             }).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
                                     new DisabledStreamListener(), -1);

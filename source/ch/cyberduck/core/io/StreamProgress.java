@@ -18,9 +18,11 @@ package ch.cyberduck.core.io;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface StreamProgress {
 
     void progress(long bytes);
+
+    void setComplete();
 }

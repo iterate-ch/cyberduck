@@ -40,11 +40,14 @@ public class TransferStatusTest {
         status.setLength(1L);
         assertFalse(status.isComplete());
         status.setCurrent(1L);
+        assertFalse(status.isComplete());
+        status.setComplete();
         assertTrue(status.isComplete());
     }
 
     @Test
     public void testEquals() throws Exception {
         assertEquals(new TransferStatus(), new TransferStatus());
+        assertEquals(new TransferStatus().hashCode(), new TransferStatus().hashCode());
     }
 }
