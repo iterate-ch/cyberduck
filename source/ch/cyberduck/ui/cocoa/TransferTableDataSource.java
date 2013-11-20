@@ -30,11 +30,9 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
@@ -59,11 +57,14 @@ public class TransferTableDataSource extends ListDataSource {
         progress,
     }
 
-    private final Map<Transfer, ProgressController> controllers = new HashMap<Transfer, ProgressController>();
+    private final Map<Transfer, ProgressController> controllers
+            = new HashMap<Transfer, ProgressController>();
 
-    private TransferFilter filter = new NullTransferFilter();
+    private TransferFilter filter
+            = new NullTransferFilter();
 
-    private TransferCollection collection = TransferCollection.defaultCollection();
+    private TransferCollection collection
+            = TransferCollection.defaultCollection();
 
     public TransferTableDataSource() {
         collection.addListener(new AbstractCollectionListener<Transfer>() {
@@ -112,7 +113,7 @@ public class TransferTableDataSource extends ListDataSource {
         if(filter instanceof NullTransferFilter) {
             return collection;
         }
-        Collection<Transfer> filtered = new Collection<Transfer>(collection);
+        final Collection<Transfer> filtered = new Collection<Transfer>(collection);
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext(); ) {
             if(!filter.accept(i.next())) {
                 // Temporarily remove the transfer from the collection copy
@@ -127,17 +128,13 @@ public class TransferTableDataSource extends ListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    @Override
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-        return null;
-    }
-
     // ----------------------------------------------------------
     // Drop methods
     // ----------------------------------------------------------
 
     @Override
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(final NSTableView view, final NSDraggingInfo draggingInfo,
+                                                                               final NSInteger row, final NSUInteger operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
@@ -158,7 +155,8 @@ public class TransferTableDataSource extends ListDataSource {
      * @param row          The proposed location is row and action is operation.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo draggingInfo,
+                                                          final NSInteger row, final NSUInteger operation) {
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
@@ -190,22 +188,22 @@ public class TransferTableDataSource extends ListDataSource {
         return true;
     }
 
-    public ProgressController getController(int row) {
+    public ProgressController getController(final int row) {
         return this.getController(this.getSource().get(row));
     }
 
-    public ProgressController getController(Transfer t) {
+    public ProgressController getController(final Transfer t) {
         if(!controllers.containsKey(t)) {
             controllers.put(t, new ProgressController(t));
         }
         return controllers.get(t);
     }
 
-    public boolean isHighlighted(int row) {
+    public boolean isHighlighted(final int row) {
         return this.getController(row).isHighlighted();
     }
 
-    public void setHighlighted(int row, boolean highlighted) {
+    public void setHighlighted(final int row, final boolean highlighted) {
         this.getController(row).setHighlighted(highlighted);
     }
 }

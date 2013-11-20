@@ -28,7 +28,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.log4j.Logger;
@@ -73,7 +72,9 @@ public final class ActivityController extends WindowController {
 
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
-            log.debug(String.format("Add background action %s", action));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add background action %s", action));
+            }
             tasks.put(action, new TaskController(action));
             reload();
         }
@@ -83,6 +84,7 @@ public final class ActivityController extends WindowController {
             log.debug(String.format("Remove background action %s", action));
             final TaskController controller = tasks.remove(action);
             if(null == controller) {
+                log.warn(String.format("Failed to find controller for action %s", action));
                 return;
             }
             controller.invalidate();
@@ -144,11 +146,6 @@ public final class ActivityController extends WindowController {
             @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(tasks.size());
-            }
-
-            @Override
-            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-                return null;
             }
         }).id());
         this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController>(

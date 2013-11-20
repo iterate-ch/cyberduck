@@ -41,6 +41,11 @@ public abstract class ListDataSource extends ProxyController implements NSTableV
     private static Logger log = Logger.getLogger(ListDataSource.class);
 
     @Override
+    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn, final NSInteger row) {
+        return null;
+    }
+
+    @Override
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {
         //
     }
