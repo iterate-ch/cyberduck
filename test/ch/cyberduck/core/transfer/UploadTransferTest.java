@@ -4,6 +4,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
@@ -379,6 +380,26 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
                     };
                 }
+                if(type.equals(Write.class)) {
+                    return (T) new Write() {
+                        @Override
+                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                            fail();
+                            return null;
+                        }
+
+                        @Override
+                        public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+                            fail();
+                            return new Write.Append(0L);
+                        }
+
+                        @Override
+                        public boolean temporary() {
+                            return true;
+                        }
+                    };
+                }
                 return null;
             }
         };
@@ -390,6 +411,7 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 assertEquals(table.get(test).getRenamed(), file);
+                status.setComplete();
                 set.set(true);
             }
         };

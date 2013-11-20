@@ -51,6 +51,9 @@ public class UploadTransfer extends Transfer {
 
     private Filter<Local> filter;
 
+    private Cache cache
+            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+
     public UploadTransfer(final Host host, final Path root) {
         this(host, Collections.singletonList(root));
     }
@@ -103,21 +106,21 @@ public class UploadTransfer extends Transfer {
         }
         final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session);
+            return new ResumeFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session);
+            return new RenameFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session);
+            return new RenameExistingFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session);
+            return new SkipFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session);
+            return new CompareFilter(resolver, session).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session);
+        return new OverwriteFilter(resolver, session).withCache(cache);
     }
 
     @Override
@@ -141,7 +144,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.callback)) {
             for(Path f : this.getRoots()) {
                 final Write write = session.getFeature(Write.class);
-                final Write.Append append = write.append(f, f.getLocal().attributes().getSize(), Cache.empty());
+                final Write.Append append = write.append(f, f.getLocal().attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
                     if(f.attributes().isDirectory()) {

@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -60,15 +61,27 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    protected Cache cache
-            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+    protected Cache cache;
 
     public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+        this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
+    }
+
+    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                                final UploadFilterOptions options, final Cache cache) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
-        this.options = options;
+        this.options = options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
+        this.cache = cache;
         this.find = session.getFeature(Find.class).withCache(cache);
         this.attribute = session.getFeature(Attributes.class).withCache(cache);
+    }
+
+    public AbstractUploadFilter withCache(final Cache cache) {
+        this.cache = cache;
+        find.withCache(cache);
+        attribute.withCache(cache);
+        return this;
     }
 
     public AbstractUploadFilter withOptions(final UploadFilterOptions options) {
