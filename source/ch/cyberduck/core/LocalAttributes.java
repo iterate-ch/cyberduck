@@ -29,8 +29,11 @@ public class LocalAttributes extends Attributes {
 
     private String checksum;
 
+    private Permission permission;
+
     public LocalAttributes(final String path) {
         this.path = path;
+        this.permission = new LocalPermission();
     }
 
     @Override
@@ -72,7 +75,7 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public Permission getPermission() {
-        return new LocalPermission();
+        return permission;
     }
 
     /**

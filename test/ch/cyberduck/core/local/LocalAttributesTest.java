@@ -28,7 +28,10 @@ public class LocalAttributesTest extends AbstractTestCase {
 
     @Test
     public void testGetPermission() throws Exception {
-        assertEquals(Permission.EMPTY, new LocalAttributes(UUID.randomUUID().toString()).getPermission());
+        final LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
+        assertNotNull(a.getPermission());
+        assertEquals(Permission.EMPTY, a.getPermission());
+        assertSame(a.getPermission(), a.getPermission());
     }
 
     @Test

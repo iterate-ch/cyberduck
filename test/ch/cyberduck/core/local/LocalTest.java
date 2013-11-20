@@ -36,4 +36,11 @@ public class LocalTest extends AbstractTestCase {
     public void testHashCode() throws Exception {
         assertEquals(new TestLocal("/p/1").hashCode(), new TestLocal("/P/1").hashCode());
     }
+
+    @Test
+    public void testAttributes() throws Exception {
+        final TestLocal l = new TestLocal("/p/1");
+        assertNotNull(l.attributes());
+        assertSame(l.attributes(), l.attributes());
+    }
 }

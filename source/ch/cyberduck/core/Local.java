@@ -49,6 +49,8 @@ public abstract class Local extends AbstractPath implements Serializable {
      */
     protected String path;
 
+    private LocalAttributes attributes;
+
     /**
      * @param name Absolute path
      */
@@ -77,6 +79,7 @@ public abstract class Local extends AbstractPath implements Serializable {
         else {
             path = name;
         }
+        this.attributes = new LocalAttributes(path);
     }
 
     @Override
@@ -87,7 +90,7 @@ public abstract class Local extends AbstractPath implements Serializable {
 
     @Override
     public LocalAttributes attributes() {
-        return new LocalAttributes(this.getAbsolute());
+        return attributes;
     }
 
     @Override
