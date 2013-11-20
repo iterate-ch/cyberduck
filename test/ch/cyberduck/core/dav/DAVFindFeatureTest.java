@@ -1,21 +1,15 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -61,5 +55,36 @@ public class DAVFindFeatureTest extends AbstractTestCase {
     @Test
     public void testFindRoot() throws Exception {
         assertTrue(new DAVFindFeature(new DAVSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+    }
+
+    @Test
+    public void testCacheNotFound() throws Exception {
+        final Cache cache = new Cache();
+        final AttributedList<Path> list = AttributedList.emptyList();
+        list.attributes().addHidden(new Path("/g/gd", Path.FILE_TYPE));
+        cache.put(new Path("/g", Path.DIRECTORY_TYPE).getReference(), list);
+        final Find finder = new DAVFindFeature(new DAVSession(new Host("t")) {
+            @Override
+            public DAVClient getClient() {
+                fail();
+                return null;
+            }
+        }).withCache(cache);
+        assertFalse(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testCacheFound() throws Exception {
+        final Cache cache = new Cache();
+        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", Path.FILE_TYPE)));
+        cache.put(new Path("/g", Path.DIRECTORY_TYPE).getReference(), list);
+        final Find finder = new DAVFindFeature(new DAVSession(new Host("t")) {
+            @Override
+            public DAVClient getClient() {
+                fail();
+                return null;
+            }
+        }).withCache(cache);
+        assertTrue(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
     }
 }

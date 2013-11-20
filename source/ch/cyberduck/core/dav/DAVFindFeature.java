@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
@@ -37,8 +38,11 @@ public class DAVFindFeature implements Find {
 
     private DAVSession session;
 
+    private Cache cache;
+
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
+        this.cache = Cache.empty();
     }
 
     @Override
@@ -46,9 +50,32 @@ public class DAVFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
+        final AttributedList<Path> list;
+        if(cache.containsKey(file.getParent().getReference())) {
+            list = cache.get(file.getParent().getReference());
+        }
+        else {
+            list = new AttributedList<Path>();
+            cache.put(file.getParent().getReference(), list);
+        }
+        if(list.contains(file.getReference())) {
+            // Previously found
+            return true;
+        }
+        if(list.attributes().getHidden().contains(file)) {
+            // Previously not found
+            return false;
+        }
         try {
             try {
-                return session.getClient().exists(new DAVPathEncoder().encode(file));
+                final boolean found = session.getClient().exists(new DAVPathEncoder().encode(file));
+                if(found) {
+                    list.add(file);
+                }
+                else {
+                    list.attributes().addHidden(file);
+                }
+                return found;
             }
             catch(SardineException e) {
                 throw new DAVExceptionMappingService().map("Cannot read file attributes", e, file);
@@ -67,7 +94,8 @@ public class DAVFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(Cache cache) {
+    public Find withCache(final Cache cache) {
+        this.cache = cache;
         return this;
     }
 }

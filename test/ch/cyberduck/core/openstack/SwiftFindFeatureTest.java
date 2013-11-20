@@ -1,18 +1,27 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import ch.iterate.openstack.swift.Client;
 
 import static org.junit.Assert.*;
 
@@ -66,5 +75,71 @@ public class SwiftFindFeatureTest extends AbstractTestCase {
     @Test
     public void testFindRoot() throws Exception {
         assertTrue(new SwiftFindFeature(new SwiftSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+    }
+
+    @Test
+    public void testNoCacheNotFound() throws Exception {
+        final Cache cache = new Cache();
+        final AttributedList<Path> list = AttributedList.emptyList();
+        cache.put(new Path("/g", Path.DIRECTORY_TYPE).getReference(), list);
+        final AtomicBoolean b = new AtomicBoolean();
+        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
+            @Override
+            public Client getClient() {
+                fail();
+                return null;
+            }
+        }) {
+            @Override
+            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                b.set(true);
+                return Collections.emptyMap();
+            }
+        }).withCache(cache);
+        assertTrue(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
+        assertTrue(b.get());
+    }
+
+    @Test
+    public void testCacheNotFound() throws Exception {
+        final Cache cache = new Cache();
+        final AttributedList<Path> list = AttributedList.emptyList();
+        list.attributes().addHidden(new Path("/g/gd", Path.FILE_TYPE));
+        cache.put(new Path("/g", Path.DIRECTORY_TYPE).getReference(), list);
+        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
+            @Override
+            public Client getClient() {
+                fail();
+                return null;
+            }
+        }) {
+            @Override
+            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                fail();
+                return null;
+            }
+        }).withCache(cache);
+        assertFalse(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testCacheFound() throws Exception {
+        final Cache cache = new Cache();
+        final AttributedList<Path> list = new AttributedList<Path>(Collections.singletonList(new Path("/g/gd", Path.FILE_TYPE)));
+        cache.put(new Path("/g", Path.DIRECTORY_TYPE).getReference(), list);
+        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host("t")) {
+            @Override
+            public Client getClient() {
+                fail();
+                return null;
+            }
+        }) {
+            @Override
+            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                fail();
+                return null;
+            }
+        }).withCache(cache);
+        assertTrue(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
     }
 }
