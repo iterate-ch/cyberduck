@@ -18,16 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -343,7 +334,7 @@ public abstract class Transfer implements Serializable {
     /**
      * @return True if the bytes transferred equal the size of the queue
      */
-    public boolean isComplete() {
+    public synchronized boolean isComplete() {
         if(this.isRunning()) {
             return false;
         }
@@ -364,11 +355,11 @@ public abstract class Transfer implements Serializable {
     /**
      * @return The number of bytes transferred of all files.
      */
-    public long getTransferred() {
+    public synchronized long getTransferred() {
         return transferred;
     }
 
-    public void addTransferred(final long bytes) {
+    public synchronized void addTransferred(final long bytes) {
         transferred += bytes;
     }
 
