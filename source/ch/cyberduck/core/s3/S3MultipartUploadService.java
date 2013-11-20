@@ -74,8 +74,7 @@ public class S3MultipartUploadService implements Upload<String> {
     /**
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
      */
-    private ThreadPool pool = new ThreadPool(
-            Preferences.instance().getInteger("s3.upload.multipart.concurency"), "multipart");
+    private ThreadPool pool;
 
     /**
      * A split smaller than 5M is not allowed
@@ -83,11 +82,12 @@ public class S3MultipartUploadService implements Upload<String> {
     private Long partsize;
 
     public S3MultipartUploadService(final S3Session session) {
-        this(session, Preferences.instance().getLong("s3.upload.multipart.size"));
+        this(session, Preferences.instance().getLong("s3.upload.multipart.size"), Preferences.instance().getInteger("s3.upload.multipart.concurency"));
     }
 
-    public S3MultipartUploadService(final S3Session session, final Long partsize) {
+    public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
         this.session = session;
+        this.pool = new ThreadPool(concurrency, "multipart");
         this.multipartService = new S3MultipartService(session);
         this.partsize = partsize;
     }
@@ -185,7 +185,7 @@ public class S3MultipartUploadService implements Upload<String> {
     private Future<MultipartPart> submit(final Path file,
                                          final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus status, final MultipartUpload multipart,
+                                         final TransferStatus overall, final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
@@ -201,8 +201,9 @@ public class S3MultipartUploadService implements Upload<String> {
                 ResponseOutputStream<StorageObject> out = null;
                 try {
                     in = local.getInputStream();
-                    out = new S3WriteFeature(session).write(file, status, new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    new StreamCopier(status, status).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
+                    out = new S3WriteFeature(session).write(file, new TransferStatus().length(length).current(offset),
+                            new StorageObject(containerService.getKey(file)), length, requestParameters);
+                    new StreamCopier(overall, overall).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);

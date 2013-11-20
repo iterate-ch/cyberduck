@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -34,7 +35,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 2);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, Path.FILE_TYPE);
@@ -47,6 +48,8 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         status.setMime("text/plain");
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);
+        assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
@@ -68,7 +71,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 1);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -87,7 +90,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5242880L);
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5242880L, 5);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -98,6 +101,8 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        assertEquals((long) random.length, status.getCurrent(), 0L);
+        assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
@@ -123,25 +128,33 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
+        final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new S3MultipartUploadService(session, 10485760L).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
                 public void sent(final long bytes) {
+                    count += bytes;
                     if(count >= 5242880) {
                         throw new RuntimeException();
                     }
-                    count += bytes;
                 }
             }, status);
         }
         catch(BackgroundException e) {
             // Expected
+            interrupt.set(true);
         }
-        status.setAppend(true);
+        assertTrue(interrupt.get());
+        assertEquals(5242880L, status.getCurrent(), 0L);
+        assertFalse(status.isComplete());
         assertFalse(new S3FindFeature(session).find(test));
-        new S3MultipartUploadService(session, 10485760L).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+
+        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append);
+        assertEquals(random.length, append.getCurrent(), 0L);
+        assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
@@ -172,24 +185,32 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
+        final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new S3MultipartUploadService(session, 10485760L).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
                 public void sent(final long bytes) {
+                    count += bytes;
                     if(count >= 32768) {
                         throw new RuntimeException();
                     }
-                    count += bytes;
                 }
             }, status);
         }
         catch(BackgroundException e) {
             // Expected
+            interrupt.set(true);
         }
-        status.setAppend(true);
-        new S3MultipartUploadService(session, 10485760L).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        assertTrue(interrupt.get());
+        assertEquals(32768L, status.getCurrent(), 0L);
+        assertFalse(status.isComplete());
+
+        final TransferStatus append = new TransferStatus().append(true).length(random.length);
+        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append);
+        assertEquals(32769L, append.getCurrent(), 0L);
+        assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
