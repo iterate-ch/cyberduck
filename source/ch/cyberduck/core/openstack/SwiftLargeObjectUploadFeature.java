@@ -65,8 +65,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks. Possibility of
      * parallel uploads of the segments.
      */
-    private ThreadPool pool = new ThreadPool(
-            Preferences.instance().getInteger("openstack.upload.largeobject.concurrency"), "multipart");
+    private ThreadPool pool;
 
     private PathContainerService containerService
             = new PathContainerService();
@@ -78,16 +77,18 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private SwiftObjectListService listService;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session), segmentSize);
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session),
+                segmentSize, Preferences.instance().getInteger("openstack.upload.largeobject.concurrency"));
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
                                          final AbstractHttpWriteFeature<?> writer,
-                                         final Long segmentSize) {
+                                         final Long segmentSize, final Integer concurrency) {
         super(writer);
         this.session = session;
+        this.pool = new ThreadPool(concurrency, "multipart");
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
