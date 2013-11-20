@@ -178,13 +178,15 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
         if(length >= Preferences.instance().getLong("s3.upload.multipart.threshold")) {
-            final MultipartUpload upload = multipartService.find(file);
-            if(upload != null) {
-                Long size = 0L;
-                for(MultipartPart completed : multipartService.list(upload)) {
-                    size += completed.getSize();
+            if(Preferences.instance().getBoolean("s3.upload.multipart")) {
+                final MultipartUpload upload = multipartService.find(file);
+                if(upload != null) {
+                    Long size = 0L;
+                    for(MultipartPart completed : multipartService.list(upload)) {
+                        size += completed.getSize();
+                    }
+                    return new Append(size);
                 }
-                return new Append(size);
             }
         }
         if(finder.withCache(cache).find(file)) {
