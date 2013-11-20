@@ -119,4 +119,11 @@ public class HostTest extends AbstractTestCase {
         assertEquals("h", bookmark.getHostname());
         assertEquals("uu", bookmark.getCredentials().getUsername());
     }
+
+    @Test
+    public void testTrim() {
+        final Host bookmark = new Host(ProtocolFactory.SFTP);
+        bookmark.setHostname("h ");
+        assertEquals("h", bookmark.getHostname());
+    }
 }

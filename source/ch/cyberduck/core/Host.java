@@ -249,7 +249,7 @@ public class Host implements Serializable, Comparable<Host> {
         if(protocolObj != null) {
             final Protocol p = ProtocolFactory.forName(protocolObj.toString());
             if(null != p) {
-                this.setProtocol(p);
+                this.protocol = p;
             }
             else {
                 log.warn(String.format("Protocol %s no more available. Default to %s", protocolObj, protocol));
@@ -259,7 +259,7 @@ public class Host implements Serializable, Comparable<Host> {
         if(providerObj != null) {
             final Protocol provider = ProtocolFactory.forName(providerObj.toString());
             if(null != provider) {
-                this.setProtocol(provider);
+                this.protocol = provider;
             }
             else {
                 log.warn(String.format("Provider %s no more available. Default to %s", providerObj, protocol));
@@ -267,7 +267,7 @@ public class Host implements Serializable, Comparable<Host> {
         }
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {
-            this.setHostname(hostnameObj.toString());
+            this.hostname = hostnameObj.toString();
         }
         Object usernameObj = dict.stringForKey("Username");
         if(usernameObj != null) {
@@ -292,66 +292,66 @@ public class Host implements Serializable, Comparable<Host> {
         }
         Object portObj = dict.stringForKey("Port");
         if(portObj != null) {
-            this.setPort(Integer.parseInt(portObj.toString()));
+            this.port = Integer.parseInt(portObj.toString());
         }
         Object pathObj = dict.stringForKey("Path");
         if(pathObj != null) {
-            this.setDefaultPath(pathObj.toString());
+            this.defaultpath = pathObj.toString();
         }
         // Legacy
         Object workdirObjDeprecated = dict.stringForKey("Workdir");
         if(workdirObjDeprecated != null) {
-            this.setWorkdir(new Path(workdirObjDeprecated.toString(), Path.DIRECTORY_TYPE));
+            this.workdir = new Path(workdirObjDeprecated.toString(), Path.DIRECTORY_TYPE);
         }
         Object workdirObj = dict.objectForKey("Workdir Dictionary");
         if(workdirObj != null) {
-            this.setWorkdir(new Path(workdirObj));
+            this.workdir = new Path(workdirObj);
         }
         Object nicknameObj = dict.stringForKey("Nickname");
         if(nicknameObj != null) {
-            this.setNickname(nicknameObj.toString());
+            this.nickname = nicknameObj.toString();
         }
         Object encodingObj = dict.stringForKey("Encoding");
         if(encodingObj != null) {
-            this.setEncoding(encodingObj.toString());
+            this.encoding = encodingObj.toString();
         }
         Object connectModeObj = dict.stringForKey("FTP Connect Mode");
         if(connectModeObj != null) {
             if(connectModeObj.toString().equals(FTPConnectMode.PORT.toString())) {
-                this.setFTPConnectMode(FTPConnectMode.PORT);
+                this.connectMode = FTPConnectMode.PORT;
             }
             if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
-                this.setFTPConnectMode(FTPConnectMode.PASV);
+                this.connectMode = FTPConnectMode.PASV;
             }
         }
         Object connObj = dict.stringForKey("Maximum Connections");
         if(connObj != null) {
-            this.setMaxConnections(Integer.valueOf(connObj.toString()));
+            this.maxConnections = Integer.valueOf(connObj.toString());
         }
         // Legacy
         Object downloadObjDeprecated = dict.stringForKey("Download Folder");
         if(downloadObjDeprecated != null) {
-            this.setDownloadFolder(LocalFactory.createLocal(downloadObjDeprecated.toString()));
+            this.downloadFolder = LocalFactory.createLocal(downloadObjDeprecated.toString());
         }
         Object downloadObj = dict.objectForKey("Download Folder Dictionary");
         if(downloadObj != null) {
-            this.setDownloadFolder(LocalFactory.createLocal(downloadObj));
+            this.downloadFolder = LocalFactory.createLocal(downloadObj);
         }
         Object timezoneObj = dict.stringForKey("Timezone");
         if(timezoneObj != null) {
-            this.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
+            this.timezone = TimeZone.getTimeZone(timezoneObj.toString());
         }
         Object commentObj = dict.stringForKey("Comment");
         if(commentObj != null) {
-            this.setComment(commentObj.toString());
+            this.comment = commentObj.toString();
         }
         Object urlObj = dict.stringForKey("Web URL");
         if(urlObj != null) {
-            this.setWebURL(urlObj.toString());
+            this.webURL = urlObj.toString();
         }
         Object accessObj = dict.stringForKey("Access Timestamp");
         if(accessObj != null) {
-            this.setTimestamp(new Date(Long.parseLong(accessObj.toString())));
+            this.timestamp = new Date(Long.parseLong(accessObj.toString()));
         }
     }
 
