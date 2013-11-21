@@ -278,9 +278,9 @@ namespace Ch.Cyberduck.Core.Editor
 
                 if (cmd.Contains("\""))
                 {
-                    return cmd.Substring(1, cmd.LastIndexOf("\"") - 1);
+                    return cmd.Substring(1, cmd.LastIndexOf("\""));
                 }
-                return cmd.Substring(0, cmd.IndexOf(" ") - 1);
+                return cmd.Substring(0, cmd.IndexOf(" "));
             }
             catch (Exception e)
             {
