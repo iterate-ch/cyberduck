@@ -18,13 +18,14 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * @version $Id$
  */
-public class ThrottledInputStream extends InputStream {
+public class ThrottledInputStream extends FilterInputStream {
 
     /**
      * The delegate.
@@ -36,19 +37,10 @@ public class ThrottledInputStream extends InputStream {
      */
     private BandwidthThrottle throttle;
 
-    public ThrottledInputStream(InputStream delegate, BandwidthThrottle throttle) {
+    public ThrottledInputStream(final InputStream delegate, final BandwidthThrottle throttle) {
+        super(delegate);
         this.delegate = delegate;
         this.throttle = throttle;
-    }
-
-    /**
-     * Read a single byte from this InputStream.
-     *
-     * @throws IOException if an I/O error occurs on the InputStream.
-     */
-    @Override
-    public int read() throws IOException {
-        return delegate.read();
     }
 
     /**
@@ -62,10 +54,5 @@ public class ThrottledInputStream extends InputStream {
     @Override
     public int read(byte[] data, int offset, int len) throws IOException {
         return delegate.read(data, offset, throttle.request(len));
-    }
-
-    @Override
-    public void close() throws IOException {
-        delegate.close();
     }
 }

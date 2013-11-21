@@ -1,24 +1,30 @@
 package ch.cyberduck.core.io;
 
+/*
+ * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ */
+
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Wraps a stream to ensure that the caller can write no more than N bytes/sec.
- * ThrottledOutputStream delegates to a BandwidthThrottle object to control
- * throughput.  By sharing a single BandwidthThrottle among multiple
- * ThrottledOutputStream instances, the user can approximate fair global
- * bandwidth sharing.<p>
- * <p/>
- * This implementation is based on the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/freenet/
- * freenet/src/freenet/support/io/ThrottledOutputStream.java">ThrottledOutputStream</a> class from the Freenet project.
- * It has been modified so that the bandwidth throttle is no longer static.  It also
- * no longer subclasses FilterOutputStream, as the temptation to call
- * super.write() introduced some bugs.  <p>
- *
  * @version $Id$
  */
-public class ThrottledOutputStream extends OutputStream {
+public class ThrottledOutputStream extends FilterOutputStream {
 
     /**
      * The delegate.
@@ -35,8 +41,8 @@ public class ThrottledOutputStream extends OutputStream {
      * @param delegate the underlying stream for all IO
      * @param throttle limits throughput.  May be shared with other streams.
      */
-    public ThrottledOutputStream(OutputStream delegate,
-                                 BandwidthThrottle throttle) {
+    public ThrottledOutputStream(final OutputStream delegate, final BandwidthThrottle throttle) {
+        super(delegate);
         this.delegate = delegate;
         this.throttle = throttle;
     }
@@ -51,7 +57,6 @@ public class ThrottledOutputStream extends OutputStream {
     @Override
     public void write(final int b) throws IOException {
         int allow = throttle.request(1); //Note that _request never returns zero.
-        assert (allow == 1);
         delegate.write(b);
     }
 
@@ -66,35 +71,14 @@ public class ThrottledOutputStream extends OutputStream {
      * @throws IOException if an I/O error occurs on the OutputStream.
      */
     @Override
-    public void write(byte[] data, int offset, int totalLength)
-            throws IOException {
+    public void write(byte[] data, int offset, int totalLength) throws IOException {
         //Note that we delegate directly to out.  Do NOT call super.write();
         //that calls this.write() resulting in HALF the throughput.
         while(totalLength > 0) {
             int length = throttle.request(totalLength);
-            assert (length + offset <= data.length);
             delegate.write(data, offset, length);
             totalLength -= length;
             offset += length;
         }
-    }
-
-    /**
-     * Write the given bytes to the delegate stream, possibly blocking if
-     * necessary to ensure that throughput doesn't exceed the limits.
-     */
-    @Override
-    public void write(byte[] data) throws IOException {
-        write(data, 0, data.length);
-    }
-
-    @Override
-    public void flush() throws IOException {
-        delegate.flush();
-    }
-
-    @Override
-    public void close() throws IOException {
-        delegate.close();
     }
 }
