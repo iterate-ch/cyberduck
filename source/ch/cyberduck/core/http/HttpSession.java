@@ -258,11 +258,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
      * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status, final DelayedHttpEntityCallable<T> command)
-    throws BackgroundException {
-        /**
-         * Signal on enter streaming
-         */
+    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
+        // Signal on enter streaming
         final CountDownLatch entry = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
 

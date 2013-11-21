@@ -55,7 +55,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                         final StreamListener listener, final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+                         final StreamListener listener, final TransferStatus status,
+                         final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         try {
             InputStream in = null;
             ResponseOutputStream<Output> out = null;
