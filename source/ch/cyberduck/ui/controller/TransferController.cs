@@ -47,8 +47,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private TransferController()
         {
             View = ObjectFactory.GetInstance<ITransferView>();
-            IList<IProgressView> model = new List<IProgressView>();
-
             lock (TransferCollection.defaultCollection())
             {
                 foreach (Transfer transfer in TransferCollection.defaultCollection())
