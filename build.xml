@@ -178,7 +178,7 @@
                  use="true"
                  windowtitle="${app.name} API"
                  doctitle="${app.name}"
-                 bottom="Copyright (c) 2005-2012 David Kocher. Enjoy ${app.name}!">
+                 bottom="Copyright (c) 2005-2013 David Kocher. Enjoy ${app.name}!">
             <classpath refid="build.classpath"/>
         </javadoc>
     </target>
