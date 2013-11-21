@@ -574,7 +574,7 @@ public abstract class Preferences {
         defaults.put("s3.revisions.enable", String.valueOf(true));
 
         defaults.put("s3.upload.multipart", String.valueOf(true));
-        defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
+        defaults.put("s3.upload.multipart.concurrency", String.valueOf(5));
         /**
          * Threshold in bytes. Only use multipart uploads for files more than 100MB
          */
