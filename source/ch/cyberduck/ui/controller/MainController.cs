@@ -343,11 +343,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             UpdateController.Instance.CheckForUpdatesIfNecessary();
 
-            if (Preferences.instance().getBoolean("queue.window.open.default"))
-            {
-                TransferController.Instance.View.Show();
-            }
-
             if (Preferences.instance().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
@@ -398,7 +393,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         TransferCollection.defaultCollection().load();
                     }
-                }, delegate { });
+                }, delegate
+                    {
+                        if (Preferences.instance().getBoolean("queue.window.open.default"))
+                        {
+                            _bc.Invoke(delegate { TransferController.Instance.View.Show(); });
+                        }
+                    });
 
             // Bonjour initialization
             ThreadStart start = delegate
