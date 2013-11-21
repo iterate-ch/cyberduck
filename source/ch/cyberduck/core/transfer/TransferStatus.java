@@ -25,6 +25,8 @@ import ch.cyberduck.core.io.StreamProgress;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -78,6 +80,9 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     private Path renamed;
 
     private String mime;
+
+    private Map<String, String> parameters
+            = Collections.emptyMap();
 
     /**
      * Local target
@@ -221,6 +226,15 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setMime(final String mime) {
         this.mime = mime;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public TransferStatus parameters(final Map<String, String> parameters) {
+        this.parameters = parameters;
+        return this;
     }
 
     @Override

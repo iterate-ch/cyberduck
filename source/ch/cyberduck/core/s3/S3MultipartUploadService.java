@@ -17,23 +17,18 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -42,8 +37,8 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +50,7 @@ import java.util.concurrent.Future;
 /**
  * @version $Id$
  */
-public class S3MultipartUploadService implements Upload<String> {
+public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
 
     /**
@@ -86,6 +81,7 @@ public class S3MultipartUploadService implements Upload<String> {
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
+        super(new S3WriteFeature(session).withStorage(null));
         this.session = session;
         this.pool = new ThreadPool(concurrency, "multipart");
         this.multipartService = new S3MultipartService(session);
@@ -93,8 +89,8 @@ public class S3MultipartUploadService implements Upload<String> {
     }
 
     @Override
-    public String upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                final TransferStatus status) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
@@ -170,7 +166,7 @@ public class S3MultipartUploadService implements Upload<String> {
                     log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                 }
-                return complete.getEtag();
+                return new StorageObject(containerService.getKey(file));
             }
             finally {
                 // Cancel future tasks
@@ -182,8 +178,7 @@ public class S3MultipartUploadService implements Upload<String> {
         }
     }
 
-    private Future<MultipartPart> submit(final Path file,
-                                         final Local local,
+    private Future<MultipartPart> submit(final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
                                          final int partNumber, final long offset, final long length) throws BackgroundException {
@@ -197,24 +192,12 @@ public class S3MultipartUploadService implements Upload<String> {
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
-                InputStream in = null;
-                ResponseOutputStream<StorageObject> out = null;
-                try {
-                    in = local.getInputStream();
-                    out = new S3WriteFeature(session).write(file, new TransferStatus().length(length).current(offset),
-                            new StorageObject(containerService.getKey(file)), length, requestParameters);
-                    new StreamCopier(overall, overall).transfer(in, offset, new ThrottledOutputStream(out, throttle), listener, length);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
-                final StorageObject part = out.getResponse();
+                InputStream in = local.getInputStream();
+                final StorageObject part = S3MultipartUploadService.super.upload(
+                        file, local, throttle, listener, new TransferStatus().length(length).current(offset).parameters(requestParameters),
+                        overall, overall);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Received response for part number %d", partNumber));
+                    log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber, part.getLastModifiedDate(),

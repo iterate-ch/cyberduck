@@ -46,8 +46,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final S3WriteFeature write = new S3WriteFeature(session);
-        write.setStorage("REDUCED_REDUNDANCY");
+        final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
         final S3SingleUploadService service = new S3SingleUploadService(session, write);
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final String name = UUID.randomUUID().toString() + ".txt";

@@ -39,9 +39,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -88,29 +86,23 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-
-        final S3Object metadata = this.getDetails(containerService.getKey(file), status.getMime(), null);
-        return this.write(file, status, metadata, status.getLength(), Collections.<String, String>emptyMap());
-    }
-
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final StorageObject part, final Long contentLength,
-                                                     final Map<String, String> requestParams) throws BackgroundException {
+        final S3Object object = this.getDetails(containerService.getKey(file), status.getMime(), null);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     session.getClient().putObjectWithRequestEntityImpl(
-                            containerService.getContainer(file).getName(), part, entity, requestParams);
+                            containerService.getContainer(file).getName(), object, entity, status.getParameters());
                 }
                 catch(ServiceException e) {
                     throw new ServiceExceptionMappingService().map("Upload failed", e, file);
                 }
-                return part;
+                return object;
             }
 
             @Override
             public long getContentLength() {
-                return contentLength;
+                return status.getLength();
             }
         };
         return session.write(file, status, command);
@@ -160,16 +152,19 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         return object;
     }
 
-    public void setStorage(final String storage) {
+    public S3WriteFeature withStorage(final String storage) {
         this.storage = storage;
+        return this;
     }
 
-    public void setEncryption(final String encryption) {
+    public S3WriteFeature withEncryption(final String encryption) {
         this.encryption = encryption;
+        return this;
     }
 
-    public void setMetadata(final List<String> metadata) {
+    public S3WriteFeature withMetadata(final List<String> metadata) {
         this.metadata = metadata;
+        return this;
     }
 
     /**
