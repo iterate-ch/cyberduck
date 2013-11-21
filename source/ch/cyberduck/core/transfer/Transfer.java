@@ -315,7 +315,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Recalculate the size of the <code>queue</code>
      */
-    public void reset() {
+    public synchronized void reset() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset status for %s", this));
         }
