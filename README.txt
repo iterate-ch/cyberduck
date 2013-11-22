@@ -41,4 +41,4 @@ Compiling
 Tagged Releases
 ---------------
 
-Releases are branched in SVN such as 'release-2-6'. Checkout using 'svn co http://svn.cyberduck.ch/tags/release-2-6'.
+Releases are branched in SVN such as 'release-2-6'. Checkout using 'svn co http://svn.cyberduck.io/tags/release-2-6'.

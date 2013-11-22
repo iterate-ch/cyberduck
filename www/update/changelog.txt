@@ -1,8 +1,8 @@
-4.4.2 [http://trac.cyberduck.ch/milestone/4.4.2]
+4.4.2 [https://trac.cyberduck.io/milestone/4.4.2]
 - [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
 
-4.4.1 [http://trac.cyberduck.ch/milestone/4.4.1]
+4.4.1 [https://trac.cyberduck.io/milestone/4.4.1]
 - [Feature] Large (5GB) object uploads (#6056)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
@@ -14,7 +14,7 @@
 - [Bugfix] Content type reset to application/octet-stream (S3) (#7598)
 - [Bugfix] Listing directory failure with missing permission to read symlink target (SFTP) (#7556)
 
-4.4 [http://trac.cyberduck.ch/milestone/4.4]
+4.4 [https://trac.cyberduck.io/milestone/4.4]
 - [Feature] Performance improvements
 - [Feature] Resumable multipart uploads (S3) (#6208)
 - [Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) (#6830)
