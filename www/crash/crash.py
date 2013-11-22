@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import cgi
@@ -24,8 +24,8 @@ db = 'crash.sqlite'
 
 def mailreport(crashlog, ip, revision):
 	mail = MIMEText(crashlog)
-	mail["To"] = "bugs@cyberduck.ch"
-	mail["From"] = "noreply@cyberduck.ch"
+	mail["To"] = "bugs@cyberduck.io"
+	mail["From"] = "noreply@cyberduck.io"
 	if revision:
 		mail["Subject"] = "Cyberduck Crash Report (r" + revision + ") from " + ip
 	else:
@@ -34,7 +34,7 @@ def mailreport(crashlog, ip, revision):
 	mail["Message-ID"] = email.Utils.make_msgid()
 	s = smtplib.SMTP()
 	s.connect("localhost")
-	s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
+	s.sendmail("noreply@cyberduck.io", "bugs@cyberduck.io", mail.as_string())
 	s.quit()
 
 if __name__=="__main__":
@@ -73,8 +73,8 @@ if __name__=="__main__":
 				c.close()
 
 			#send mail
-			#if revision:
-				#mailreport(crashlog, ip, revision)
+			if revision:
+				mailreport(crashlog, ip, revision)
 	except:
 		logging.error("Unexpected error:".join(format_exception(*exc_info())))
 		cgi.print_exception()
