@@ -183,14 +183,14 @@ public abstract class Preferences {
 
         defaults.put("defaulthandler.reminder", String.valueOf(true));
 
-        defaults.put("mail.feedback", "mailto:feedback@cyberduck.ch");
+        defaults.put("mail.feedback", "mailto:feedback@cyberduck.io");
 
-        defaults.put("website.donate", "http://cyberduck.ch/donate/");
-        defaults.put("website.home", "http://cyberduck.ch/");
-        defaults.put("website.forum", "http://forum.cyberduck.ch/");
-        defaults.put("website.help", "http://help.cyberduck.ch/" + this.locale());
-        defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
-        defaults.put("website.crash", "http://crash.cyberduck.ch/report");
+        defaults.put("website.donate", "http://cyberduck.io/donate/");
+        defaults.put("website.home", "http://cyberduck.io/");
+        defaults.put("website.forum", "http://forum.cyberduck.io/");
+        defaults.put("website.help", "http://help.cyberduck.io/" + this.locale());
+        defaults.put("website.bug", "http://trac.cyberduck.io/newticket/");
+        defaults.put("website.crash", "http://crash.cyberduck.io/report");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.supress", String.valueOf(true));

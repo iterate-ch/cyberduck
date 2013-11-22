@@ -204,9 +204,9 @@ public class UserDefaultsPreferences extends Preferences {
             defaults.put("application.profiles.path", bundle.bundlePath() + "/Contents/Resources/Profiles");
         }
 
-        defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
-        defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.rss");
-        defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.rss");
+        defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.rss");
+        defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
+        defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
 
         defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
         defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
