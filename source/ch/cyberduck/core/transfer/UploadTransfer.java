@@ -196,6 +196,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             if(!status.isExists()) {
                 session.getFeature(Directory.class).mkdir(file);
+                status.setComplete();
             }
         }
     }
