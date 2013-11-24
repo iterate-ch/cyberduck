@@ -182,10 +182,5 @@ public class LocalAttributes extends Attributes {
         public boolean isExecutable() {
             return new File(path).canExecute();
         }
-
-        @Override
-        public String toString() {
-            return LocaleFactory.localizedString("Unknown");
-        }
     }
 }
