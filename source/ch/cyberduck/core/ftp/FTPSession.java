@@ -17,18 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -49,6 +38,7 @@ import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -71,6 +61,10 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     public FTPSession(Host h) {
         super(h);
+    }
+
+    public FTPSession(final Host host, final X509TrustManager manager) {
+        super(host, manager);
     }
 
     @Override
