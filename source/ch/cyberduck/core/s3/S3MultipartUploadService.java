@@ -37,7 +37,6 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -193,7 +192,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
-                InputStream in = local.getInputStream();
                 final StorageObject part = S3MultipartUploadService.super.upload(
                         file, local, throttle, listener, new TransferStatus().length(length).current(offset).parameters(requestParameters),
                         overall, overall);
