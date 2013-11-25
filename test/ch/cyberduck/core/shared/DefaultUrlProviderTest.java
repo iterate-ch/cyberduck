@@ -5,12 +5,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
@@ -27,13 +23,20 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
                 "u", "p"
         ));
         host.setDefaultPath("/my/documentroot");
-        final DAVSession session = new DAVSession(host);
         assertEquals("http://test.cyberduck.ch/my/documentroot/f",
                 new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("http://test.cyberduck.ch/f",
                 new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
     }
 
+    @Test
+    public void testWhitespace() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch ", new Credentials(
+                "u", "p"
+        ));
+        assertEquals("http://test.cyberduck.ch/f",
+                new DefaultUrlProvider(host).toUrl(new Path("/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
+    }
 
     @Test
     public void testSftp() throws Exception {
@@ -41,7 +44,6 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
                 "u", "p"
         ));
         host.setDefaultPath("/my/documentroot");
-        final SFTPSession session = new SFTPSession(host);
         assertEquals("sftp://test.cyberduck.ch/my/documentroot/f",
                 new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("http://test.cyberduck.ch/f",
@@ -52,7 +54,6 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testAbsoluteDocumentRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("/usr/home/dkocher/public_html");
-        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -64,7 +65,6 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testRelativeDocumentRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("public_html");
-        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -76,7 +76,6 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
     public void testDefaultPathRoot() {
         Host host = new Host("localhost");
         host.setDefaultPath("/");
-        final Session session = SessionFactory.create(host);
         Path path = new Path(
                 "/file", Path.DIRECTORY_TYPE);
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());

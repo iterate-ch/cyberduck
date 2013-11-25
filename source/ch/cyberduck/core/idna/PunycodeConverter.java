@@ -36,7 +36,7 @@ public class PunycodeConverter {
      */
     public String convert(final String hostname) {
         if(!Preferences.instance().getBoolean("connection.hostname.idn")) {
-            return hostname;
+            return StringUtils.strip(hostname);
         }
         if(StringUtils.isNotEmpty(hostname)) {
             try {
@@ -48,9 +48,9 @@ public class PunycodeConverter {
                 // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
                 // and do not use STD3 ASCII rules If unassigned code points are found
                 // the operation fails with ParseException
-                final String idn = IDNA.convertIDNToASCII(hostname, IDNA.DEFAULT).toString();
+                final String idn = IDNA.convertIDNToASCII(StringUtils.strip(hostname), IDNA.DEFAULT).toString();
                 if(log.isDebugEnabled()) {
-                    if(!StringUtils.equals(hostname, idn)) {
+                    if(!StringUtils.equals(StringUtils.strip(hostname), idn)) {
                         log.debug(String.format("IDN hostname for %s is %s", hostname, idn));
                     }
                 }
@@ -62,6 +62,6 @@ public class PunycodeConverter {
                 log.error(String.format("Failed to convert hostname %s to IDNA", hostname), e);
             }
         }
-        return hostname;
+        return StringUtils.strip(hostname);
     }
 }

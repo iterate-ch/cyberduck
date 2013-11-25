@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PunycodeConverterTest extends AbstractTestCase {
 
@@ -34,5 +34,10 @@ public class PunycodeConverterTest extends AbstractTestCase {
         assertEquals(null, new PunycodeConverter().convert(null));
         assertEquals("", new PunycodeConverter().convert(""));
         assertEquals("xn--4ca", new PunycodeConverter().convert("ä"));
+    }
+
+    @Test
+    public void testConvertWhitespace() throws Exception {
+        assertEquals("host.localdomain", new PunycodeConverter().convert("host.localdomain "));
     }
 }

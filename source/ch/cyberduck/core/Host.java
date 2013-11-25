@@ -506,9 +506,9 @@ public class Host implements Serializable, Comparable<Host> {
     private String getDefaultNickname() {
         if(StringUtils.isNotBlank(hostname)) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
-                return String.format("%s@%s \u2013 %s", credentials.getUsername(), hostname, protocol.getName());
+                return String.format("%s@%s \u2013 %s", credentials.getUsername(), StringUtils.strip(hostname), protocol.getName());
             }
-            return String.format("%s \u2013 %s", hostname, protocol.getName());
+            return String.format("%s \u2013 %s", StringUtils.strip(hostname), protocol.getName());
         }
         return StringUtils.EMPTY;
     }
@@ -697,7 +697,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @return HTTP accessible URL with the same hostname as the server
      */
     public String getDefaultWebURL() {
-        return String.format("http://%s", hostname);
+        return String.format("http://%s", StringUtils.strip(hostname));
     }
 
     public void setWebURL(final String url) {
