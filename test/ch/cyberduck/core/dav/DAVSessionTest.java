@@ -1,19 +1,6 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -277,31 +264,63 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
-    public void testPixi() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
-                "webdav", "webdav"
-        ));
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        assertTrue(session.isConnected());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertNotNull(session.workdir());
-        session.close();
-    }
-
-    @Test
-    @Ignore
-    public void testPixig2() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "pulangyuta.pixi.me", new Credentials(
+    public void testdavpiximegallery() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "g2.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
         host.setDefaultPath("/w/webdav/");
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testdavpixime() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "dav.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testtlsv11pixime() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "tlsv11.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
+        session.close();
+    }
+
+    @Test
+    public void testtlsv12pixime() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "tlsv12.pixi.me", new Credentials(
+                "webdav", "webdav"
+        ));
+        final DAVSession session = new DAVSession(host);
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        assertNotNull(session.workdir());
+        assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
 }
