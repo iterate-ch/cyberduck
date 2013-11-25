@@ -24,13 +24,17 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
+
+import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class S3MoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(S3MoveFeature.class);
 
     private PathContainerService containerService = new PathContainerService();
 
@@ -53,9 +57,13 @@ public class S3MoveFeature implements Move {
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 destination.setAcl(acl.convert(acl.getPermission(file)));
                 // Moving the object retaining the metadata of the original.
-                session.getClient().moveObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                final Map<String, Object> headers = session.getClient().copyObject(containerService.getContainer(file).getName(), containerService.getKey(file),
                         containerService.getContainer(renamed).getName(),
                         destination, false);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Received response headers for copy %s", headers));
+                }
+                session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.attributes().isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
