@@ -4,8 +4,8 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,23 +29,23 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
     public void factory() {
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
             @Override
-            public LoginController create(final Controller c) {
+            public LoginCallback create(final Controller c) {
                 return null;
             }
 
             @Override
-            protected LoginController create() {
+            protected LoginCallback create() {
                 return null;
             }
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
-            public HostKeyController create(final Controller c, final Protocol protocol) {
+            public HostKeyCallback create(final Controller c, final Protocol protocol) {
                 return null;
             }
 
             @Override
-            protected HostKeyController create() {
+            protected HostKeyCallback create() {
                 return null;
             }
         });

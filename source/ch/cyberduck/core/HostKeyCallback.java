@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public interface HostKeyController {
+public interface HostKeyCallback {
 
     boolean verify(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey)
             throws IOException, ConnectionCanceledException;

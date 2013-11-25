@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class DefaultHostKeyController implements HostKeyController {
+public class DefaultHostKeyController implements HostKeyCallback {
 
     @Override
     public boolean verify(final String hostname, final int port,

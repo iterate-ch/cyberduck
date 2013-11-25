@@ -122,23 +122,23 @@ public class AbstractTestCase {
         LaunchServicesFileDescriptor.register();
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
             @Override
-            public LoginController create(final Controller c) {
+            public LoginCallback create(final Controller c) {
                 return new DisabledLoginController();
             }
 
             @Override
-            protected LoginController create() {
+            protected LoginCallback create() {
                 return null;
             }
         });
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
-            public HostKeyController create(final Controller c, final Protocol protocol) {
+            public HostKeyCallback create(final Controller c, final Protocol protocol) {
                 return new DefaultHostKeyController();
             }
 
             @Override
-            protected HostKeyController create() {
+            protected HostKeyCallback create() {
                 return null;
             }
         });

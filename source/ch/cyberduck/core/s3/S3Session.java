@@ -311,12 +311,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyController key) throws BackgroundException {
+    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
         return new RequestEntityRestStorageService(this.configure());
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         try {

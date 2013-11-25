@@ -36,7 +36,7 @@ import org.rococoa.Foundation;
 /**
  * @version $Id$
  */
-public final class PromptLoginController implements LoginController {
+public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
     public static void register() {
@@ -45,12 +45,12 @@ public final class PromptLoginController implements LoginController {
 
     private static class Factory extends LoginControllerFactory {
         @Override
-        protected LoginController create() {
+        protected LoginCallback create() {
             throw new FactoryException();
         }
 
         @Override
-        public LoginController create(Controller c) {
+        public LoginCallback create(Controller c) {
             return new PromptLoginController((WindowController) c);
         }
     }

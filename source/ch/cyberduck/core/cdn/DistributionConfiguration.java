@@ -19,7 +19,7 @@ package ch.cyberduck.core.cdn;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,7 +39,7 @@ public interface DistributionConfiguration extends UrlProvider {
      * @param configuration Configuration
      * @param prompt        Callback
      */
-    void write(Path container, Distribution configuration, final LoginController prompt) throws BackgroundException;
+    void write(Path container, Distribution configuration, final LoginCallback prompt) throws BackgroundException;
 
     /**
      * Read distribution configuration of origin
@@ -49,7 +49,7 @@ public interface DistributionConfiguration extends UrlProvider {
      * @param prompt    Callback
      * @return Distribution Configuration
      */
-    Distribution read(Path container, Distribution.Method method, final LoginController prompt) throws BackgroundException;
+    Distribution read(Path container, Distribution.Method method, final LoginCallback prompt) throws BackgroundException;
 
     /**
      * List available distribution methods for this CDN.

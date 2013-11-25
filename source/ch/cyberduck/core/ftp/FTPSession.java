@@ -144,7 +144,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyController key) throws BackgroundException {
+    public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
@@ -187,7 +187,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         try {
             if(super.alert() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.

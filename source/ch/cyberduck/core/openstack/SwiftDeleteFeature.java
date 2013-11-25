@@ -20,7 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +47,7 @@ public class SwiftDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
         for(Path file : files) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));

@@ -89,12 +89,12 @@ public class S3SessionTest extends AbstractTestCase {
         final AtomicBoolean p = new AtomicBoolean();
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginController() {
-                    @Override
-                    public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        p.set(true);
-                        credentials.setPassword(properties.getProperty("s3.secret"));
-                    }
-                }, new DefaultHostKeyController(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                p.set(true);
+                credentials.setPassword(properties.getProperty("s3.secret"));
+            }
+        }, new DefaultHostKeyController(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertTrue(p.get());
         session.close();
     }
@@ -133,7 +133,7 @@ public class S3SessionTest extends AbstractTestCase {
                 }
             }
         });
-        session.open(new HostKeyController() {
+        session.open(new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
                     throws IOException, ConnectionCanceledException {

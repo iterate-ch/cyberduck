@@ -28,7 +28,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class PromptLoginController : LoginController
+    public class PromptLoginController : LoginCallback
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LoginController).FullName);
         private readonly WindowController _browser;

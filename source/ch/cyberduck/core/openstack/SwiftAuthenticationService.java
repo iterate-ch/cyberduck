@@ -21,7 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -58,7 +58,7 @@ public class SwiftAuthenticationService {
         this.version = version;
     }
 
-    public AuthenticationRequest getRequest(final Host host, final LoginController prompt) throws LoginCanceledException {
+    public AuthenticationRequest getRequest(final Host host, final LoginCallback prompt) throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");

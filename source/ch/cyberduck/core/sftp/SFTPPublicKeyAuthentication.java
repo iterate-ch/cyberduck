@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -49,7 +49,7 @@ public class SFTPPublicKeyAuthentication {
         this.session = session;
     }
 
-    public boolean authenticate(final Host host, final LoginController prompt)
+    public boolean authenticate(final Host host, final LoginCallback prompt)
             throws IOException, LoginCanceledException, AccessDeniedException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", host.getCredentials()));

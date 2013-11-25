@@ -19,7 +19,7 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -35,7 +35,7 @@ import ch.ethz.ssh2.KnownHosts;
 /**
  * @version $Id$
  */
-public abstract class MemoryHostKeyVerifier implements HostKeyController {
+public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
     private static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
 
     /**

@@ -104,7 +104,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return Client
      * @throws BackgroundException
      */
-    public C open(final HostKeyController key) throws BackgroundException {
+    public C open(final HostKeyCallback key) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
@@ -125,9 +125,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         return client;
     }
 
-    protected abstract C connect(HostKeyController key) throws BackgroundException;
+    protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
-    public void login(PasswordStore keychain, LoginController prompt) throws BackgroundException {
+    public void login(PasswordStore keychain, LoginCallback prompt) throws BackgroundException {
         this.login(keychain, prompt, Cache.empty());
     }
 
@@ -138,7 +138,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @param prompt   Prompt
      * @param cache    Directory listing cache
      */
-    public abstract void login(PasswordStore keychain, LoginController prompt, Cache cache) throws BackgroundException;
+    public abstract void login(PasswordStore keychain, LoginCallback prompt, Cache cache) throws BackgroundException;
 
     /**
      * Logout and close client connection
@@ -217,7 +217,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return The custom character encoding specified by the host
-     *         of this session or the default encoding if not specified
+     * of this session or the default encoding if not specified
      * @see Preferences
      * @see Host
      */
@@ -254,7 +254,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return True if a connection attempt is currently being made. False if the connection
-     *         has already been established or is closed.
+     * has already been established or is closed.
      */
     public State getState() {
         return state;

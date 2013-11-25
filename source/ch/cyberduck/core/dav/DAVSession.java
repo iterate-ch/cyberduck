@@ -63,7 +63,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public DAVClient connect(final HostKeyController key) throws BackgroundException {
+    public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
         final AbstractHttpClient client = super.connect();
         client.setRedirectStrategy(new SardineRedirectStrategy() {
             @Override
@@ -75,7 +75,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),

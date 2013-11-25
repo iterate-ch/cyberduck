@@ -21,7 +21,7 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +29,9 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class LoginControllerFactory extends Factory<LoginController> {
+public abstract class LoginControllerFactory extends Factory<LoginCallback> {
 
-    public abstract LoginController create(Controller c);
+    public abstract LoginCallback create(Controller c);
 
     /**
      * Registered factories
@@ -43,7 +43,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static LoginController get(final Controller c) {
+    public static LoginCallback get(final Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

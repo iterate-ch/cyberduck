@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ public class SFTPPasswordAuthentication {
         this.session = session;
     }
 
-    public boolean authenticate(final Host host, final LoginController prompt)
+    public boolean authenticate(final Host host, final LoginCallback prompt)
             throws IOException, LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", host.getCredentials()));

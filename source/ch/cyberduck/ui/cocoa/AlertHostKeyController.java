@@ -49,12 +49,12 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
 
     private static class Factory extends HostKeyControllerFactory {
         @Override
-        protected HostKeyController create() {
+        protected HostKeyCallback create() {
             throw new FactoryException();
         }
 
         @Override
-        public HostKeyController create(final Controller c, final Protocol protocol) {
+        public HostKeyCallback create(final Controller c, final Protocol protocol) {
             if(Scheme.sftp.equals(protocol.getScheme())) {
                 return new AlertHostKeyController((WindowController) c);
             }

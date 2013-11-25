@@ -25,27 +25,27 @@
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_progress(JNIEnv *env, jobject this, jstring file, jlong current, jlong size)
 {
     if(NSClassFromString(@"NSProgress")) {
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-            @"NSProgressFileOperationKindDownloading", @"NSProgressFileOperationKindKey",
-            [NSURL fileURLWithPath:JNFJavaToNSString(env, file)], @"NSProgressFileURLKey",
-            nil];
-        id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
-        if(nil == progress) {
-            progress = [NSClassFromString(@"NSProgress") performSelector:@selector(alloc)];
+        id parent = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
+        if(nil == parent) {
+            parent = [NSClassFromString(@"NSProgress") performSelector:@selector(progressWithTotalUnitCount:) withObject:[NSNumber numberWithFloat:size]];
+            [parent setPausable:NO];
+            [parent setCancellable:NO];
+            // Sets the receiver as the current progress object of the current thread.
+            [parent becomeCurrentWithPendingUnitCount:size];
+            [parent publish];
+        }
+        else {
+            id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(alloc)];
+            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                @"NSProgressFileOperationKindDownloading", @"NSProgressFileOperationKindKey",
+                [NSURL fileURLWithPath:JNFJavaToNSString(env, file)], @"NSProgressFileURLKey",
+                nil];
             [progress performSelector:@selector(initWithParent:userInfo:)
-                          withObject:nil
+                          withObject:parent
                           withObject:info];
-            [progress setTotalUnitCount:[[NSNumber numberWithFloat:size] integerValue]];
-            [progress setCompletedUnitCount:[[NSNumber numberWithFloat:current] integerValue]];
             [progress setKind:@"NSProgressKindFile"];
             [progress setPausable:NO];
             [progress setCancellable:NO];
-            // Sets the receiver as the current progress object of the current thread.
-            [progress becomeCurrentWithPendingUnitCount:size];
-            [progress publish];
-        }
-        else {
-            [progress setTotalUnitCount:[[NSNumber numberWithFloat:size] integerValue]];
             [progress setCompletedUnitCount:[[NSNumber numberWithFloat:current] integerValue]];
         }
     }
@@ -54,12 +54,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconServic
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FoundationProgressIconService_cancel(JNIEnv *env, jobject this, jstring file)
 {
     if(NSClassFromString(@"NSProgress")) {
-        id progress = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
-        if(nil == progress) {
+        id parent = [NSClassFromString(@"NSProgress") performSelector:@selector(currentProgress)];
+        if(nil == parent) {
             return;
         }
         // Balance the most recent previous invocation of becomeCurrentWithPendingUnitCount: on the same thread
         // by restoring the current progress object
-        [progress resignCurrent];
+        [parent resignCurrent];
     }
 }

@@ -21,7 +21,7 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Protocol;
 
 import java.util.HashMap;
@@ -30,9 +30,9 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class HostKeyControllerFactory extends Factory<HostKeyController> {
+public abstract class HostKeyControllerFactory extends Factory<HostKeyCallback> {
 
-    public abstract HostKeyController create(Controller c, Protocol protocol);
+    public abstract HostKeyCallback create(Controller c, Protocol protocol);
 
     /**
      * Registered factories
@@ -44,7 +44,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static HostKeyController get(final Controller c, final Protocol protocol) {
+    public static HostKeyCallback get(final Controller c, final Protocol protocol) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

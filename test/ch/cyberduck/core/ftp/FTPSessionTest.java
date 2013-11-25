@@ -140,7 +140,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host) {
             @Override
-            public void login(final PasswordStore keychain, final LoginController login) throws BackgroundException {
+            public void login(final PasswordStore keychain, final LoginCallback login) throws BackgroundException {
                 assertEquals(Session.State.open, this.getState());
                 super.login(keychain, login);
                 assertEquals(new FTPTLSProtocol(), host.getProtocol());

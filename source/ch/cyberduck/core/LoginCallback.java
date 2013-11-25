@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public interface LoginController {
+public interface LoginCallback {
 
     /**
      * Display warning sheet. Block connection until decision is made.

@@ -20,7 +20,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProtocolFactory;
@@ -65,7 +65,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         return this.connected(new Connected<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
@@ -75,7 +75,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         this.connected(new Connected<Void>() {
             @Override
             public Void call() throws BackgroundException {

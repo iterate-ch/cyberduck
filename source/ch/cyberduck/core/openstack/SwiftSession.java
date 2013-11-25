@@ -66,12 +66,12 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public Client connect(final HostKeyController key) throws BackgroundException {
+    public Client connect(final HostKeyCallback key) throws BackgroundException {
         return new Client(super.connect());
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         try {
             client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
             threadFactory.newThread(new Runnable() {

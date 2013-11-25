@@ -25,7 +25,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
         final FTPSession session = new FTPSession(new Host("unknownhost.local"));
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new HostKeyController() {
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
                 assertEquals(Session.State.opening, session.getState());

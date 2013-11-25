@@ -33,7 +33,7 @@ import java.util.Date;
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
-    private HostKeyController key;
+    private HostKeyCallback key;
 
     private ProgressListener listener;
 
@@ -43,8 +43,8 @@ public class LoginConnectionService implements ConnectionService {
 
     private Proxy proxy;
 
-    public LoginConnectionService(final LoginController prompt,
-                                  final HostKeyController key,
+    public LoginConnectionService(final LoginCallback prompt,
+                                  final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
         this(key,
@@ -54,7 +54,7 @@ public class LoginConnectionService implements ConnectionService {
                 listener);
     }
 
-    public LoginConnectionService(final HostKeyController key,
+    public LoginConnectionService(final HostKeyCallback key,
                                   final LoginService login,
                                   final Resolver resolver,
                                   final Proxy proxy,

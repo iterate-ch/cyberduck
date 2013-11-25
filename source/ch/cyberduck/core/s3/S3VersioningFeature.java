@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -52,7 +52,7 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoginController prompt, final VersioningConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path container, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         try {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(current.isMultifactor()) {
@@ -165,10 +165,9 @@ public class S3VersioningFeature implements Versioning {
      *
      * @param controller Prompt controller
      * @return MFA one time authentication password.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Prompt dismissed
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
-    protected Credentials getToken(final LoginController controller) throws ConnectionCanceledException {
+    protected Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         final Credentials credentials = new MultifactorCredentials();
         // Prompt for multi factor authentication credentials.
         controller.prompt(session.getHost().getProtocol(), credentials,

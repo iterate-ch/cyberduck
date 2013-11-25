@@ -20,7 +20,7 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
@@ -94,7 +94,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname()));
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
@@ -122,7 +122,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         try {
             if(distribution.isEnabled()) {
                 String suffix = "index.html";

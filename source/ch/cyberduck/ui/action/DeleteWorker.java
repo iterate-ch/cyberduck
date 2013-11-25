@@ -19,7 +19,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,9 +42,9 @@ public abstract class DeleteWorker extends Worker<Boolean> {
      */
     private List<Path> files;
 
-    private LoginController prompt;
+    private LoginCallback prompt;
 
-    public DeleteWorker(final Session session, final LoginController prompt, final List<Path> files) {
+    public DeleteWorker(final Session session, final LoginCallback prompt, final List<Path> files) {
         this.session = session;
         this.prompt = prompt;
         this.files = files;

@@ -130,7 +130,7 @@ public class CloudFrontDistributionConfiguration
         T call() throws BackgroundException;
     }
 
-    private <T> T authenticated(final Authenticated<T> run, final LoginController prompt) throws BackgroundException {
+    private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
         options.anonymous = false;
         options.publickey = false;
@@ -149,7 +149,7 @@ public class CloudFrontDistributionConfiguration
     /**
      * @param method Distribution method
      * @return Origin server hostname. This is not the same as the container for
-     *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
+     * custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     protected URI getOrigin(final Path container, final Distribution.Method method) {
         return URI.create(String.format("http://%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname()));
@@ -169,7 +169,7 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         return this.authenticated(new Authenticated<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
@@ -230,7 +230,7 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
@@ -321,7 +321,7 @@ public class CloudFrontDistributionConfiguration
      * the size of your request.
      */
     @Override
-    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginController prompt) throws BackgroundException {
+    public void invalidate(final Path container, final Distribution.Method method, final List<Path> files, final LoginCallback prompt) throws BackgroundException {
         try {
             final long reference = System.currentTimeMillis();
             final Distribution d = this.read(container, method, prompt);

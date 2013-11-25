@@ -20,7 +20,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.cdn.Distribution;
@@ -98,7 +98,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         if(method.equals(Distribution.WEBSITE)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
@@ -125,7 +125,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginController prompt) throws BackgroundException {
+    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         if(distribution.getMethod().equals(Distribution.WEBSITE)) {
             try {
                 if(distribution.isEnabled()) {

@@ -5,7 +5,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -32,7 +32,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
-                    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+                    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
                         assertEquals(new Path("/t/a", Path.FILE_TYPE), files.get(0));
                         assertEquals(new Path("/t/d/b", Path.FILE_TYPE), files.get(1));
                         assertEquals(new Path("/t/d", Path.DIRECTORY_TYPE), files.get(2));
@@ -74,7 +74,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
-                    public void delete(final List<Path> files, final LoginController prompt) throws BackgroundException {
+                    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
                         assertEquals(new Path("/s", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE), files.get(0));
                     }
                 };

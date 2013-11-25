@@ -76,8 +76,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                                    final AlertCallback alert,
                                    final ProgressListener progressListener,
                                    final TranscriptListener transcriptListener,
-                                   final LoginController prompt,
-                                   final HostKeyController key) {
+                                   final LoginCallback prompt,
+                                   final HostKeyCallback key) {
         this.session = session;
         this.cache = cache;
         this.alert = alert;

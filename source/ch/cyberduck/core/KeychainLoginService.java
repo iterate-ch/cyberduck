@@ -32,14 +32,14 @@ import java.text.MessageFormat;
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
-    private LoginController controller;
+    private LoginCallback controller;
 
     private HostPasswordStore keychain;
 
     private StringAppender appender
             = new StringAppender();
 
-    public KeychainLoginService(final LoginController prompt, final HostPasswordStore keychain) {
+    public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
         this.controller = prompt;
         this.keychain = keychain;
     }

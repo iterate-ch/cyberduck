@@ -82,7 +82,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         T call() throws BackgroundException;
     }
 
-    private <T> T authenticated(final Authenticated<T> run, final LoginController prompt) throws BackgroundException {
+    private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions();
         options.anonymous = false;
         options.publickey = false;
@@ -99,7 +99,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void delete(final String username, final LoginController prompt) throws BackgroundException {
+    public void delete(final String username, final LoginCallback prompt) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Delete user %s", username));
         }
@@ -154,7 +154,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void create(final String username, final String policy, final LoginController prompt) throws BackgroundException {
+    public void create(final String username, final String policy, final LoginCallback prompt) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create user %s with policy %s", username, policy));
         }

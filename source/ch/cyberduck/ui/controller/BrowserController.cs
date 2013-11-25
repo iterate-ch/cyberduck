@@ -3043,7 +3043,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class DeleteAction : WorkerBackgroundAction
         {
-            public DeleteAction(BrowserController controller, LoginController prompt, List files)
+            public DeleteAction(BrowserController controller, LoginCallback prompt, List files)
                 : base(controller, controller._session, new InnerDeleteWorker(controller, prompt, files))
             {
             }
@@ -3053,7 +3053,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly List _files;
 
-                public InnerDeleteWorker(BrowserController controller, LoginController prompt, List files)
+                public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
                     : base(controller._session, prompt, files)
                 {
                     _controller = controller;

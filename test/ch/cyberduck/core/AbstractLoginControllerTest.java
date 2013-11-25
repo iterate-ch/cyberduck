@@ -16,7 +16,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckFTP() throws Exception {
-        LoginController c = new DisabledLoginController() {
+        LoginCallback c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(new FTPProtocol(), protocol);
@@ -37,7 +37,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckSFTP() throws Exception {
-        LoginController c = new DisabledLoginController() {
+        LoginCallback c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(new SFTPProtocol(), protocol);
@@ -59,7 +59,7 @@ public class AbstractLoginControllerTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testFail() throws Exception {
         final Credentials user = new Credentials("t", "p");
-        LoginController c = new DisabledLoginController() {
+        LoginCallback c = new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 assertEquals(new DAVProtocol(), protocol);

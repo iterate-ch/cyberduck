@@ -18,7 +18,7 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -28,5 +28,5 @@ import java.util.List;
  * @version $Id$
  */
 public interface Delete {
-    void delete(List<Path> files, final LoginController prompt) throws BackgroundException;
+    void delete(List<Path> files, final LoginCallback prompt) throws BackgroundException;
 }

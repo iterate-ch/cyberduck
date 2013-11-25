@@ -21,7 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -70,7 +70,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution configuration, final LoginController prompt) throws BackgroundException {
+    public void write(final Path container, final Distribution configuration, final LoginCallback prompt) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(new SwiftRegionService(session).lookup(container),
@@ -106,7 +106,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginController prompt) throws BackgroundException {
+    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         try {
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(new SwiftRegionService(session).lookup(container),

@@ -17,7 +17,7 @@ package ch.cyberduck.core.cdn.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,5 +38,5 @@ public interface Purge {
      * @param prompt    Callback
      */
     void invalidate(Path container, Distribution.Method method, List<Path> files,
-                    LoginController prompt) throws BackgroundException;
+                    LoginCallback prompt) throws BackgroundException;
 }

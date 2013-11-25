@@ -23,18 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Command;
-import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 import org.apache.log4j.Logger;
@@ -72,7 +61,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public Connection connect(final HostKeyController key) throws BackgroundException {
+    public Connection connect(final HostKeyCallback key) throws BackgroundException {
         try {
             final Connection connection = new Connection(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
                     host.getPort(),
@@ -105,7 +94,7 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginController prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         try {
             if(host.getCredentials().isAnonymousLogin()) {
                 if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {

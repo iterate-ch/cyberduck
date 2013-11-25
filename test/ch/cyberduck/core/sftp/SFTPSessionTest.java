@@ -6,7 +6,7 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyController;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -92,7 +92,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Session session = new SFTPSession(host);
         final AtomicBoolean verify = new AtomicBoolean();
         try {
-            session.open(new HostKeyController() {
+            session.open(new HostKeyCallback() {
                 @Override
                 public boolean verify(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws IOException, ConnectionCanceledException {
                     verify.set(true);

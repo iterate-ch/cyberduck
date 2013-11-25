@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -42,11 +42,11 @@ public class SFTPChallengeResponseAuthentication {
         this.session = session;
     }
 
-    public boolean authenticate(final Host host, final LoginController controller) throws IOException, LoginCanceledException {
+    public boolean authenticate(final Host host, final LoginCallback controller) throws IOException, LoginCanceledException {
         return this.authenticate(host, host.getCredentials(), controller);
     }
 
-    public boolean authenticate(final Host host, final Credentials credentials, final LoginController controller)
+    public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)
             throws IOException, LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));

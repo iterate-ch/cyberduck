@@ -18,7 +18,7 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.versioning.VersioningConfiguration;
@@ -30,7 +30,7 @@ public interface Versioning {
 
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 
-    void setConfiguration(Path container, LoginController prompt, VersioningConfiguration configuration) throws BackgroundException;
+    void setConfiguration(Path container, LoginCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
     void revert(Path file) throws BackgroundException;
 }

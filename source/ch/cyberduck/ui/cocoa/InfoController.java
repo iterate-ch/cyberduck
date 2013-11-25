@@ -94,7 +94,7 @@ public class InfoController extends ToolbarWindowController {
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    private LoginController prompt = LoginControllerFactory.get(this);
+    private LoginCallback prompt = LoginControllerFactory.get(this);
 
     private PathContainerService containerService
             = new PathContainerService();
