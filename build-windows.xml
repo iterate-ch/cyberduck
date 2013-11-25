@@ -6,7 +6,7 @@
  *	$Date$
  *
  *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ *  http://cyberduck.io/
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  *	GNU General Public License for more details.
  *
  *	Bug fixes, suggestions and comments should be sent to:
- *	dkocher@cyberduck.ch
+ *	dkocher@cyberduck.io
  -->
 <project name="Cyberduck for Windows" basedir=".">
 
@@ -129,19 +129,19 @@
     <target name="release" depends="clean, package-release">
         <antcall target="confirm"/>
         <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/update/${app.name}-all-${updaterversion}.wyu"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/update"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
+        <!-- Changelog Release - version.cyberduck.io -->
         <scp file="${build}/update/changelog.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -149,19 +149,19 @@
     <target name="nightly" depends="clean, package-nightly">
         <antcall target="confirm"/>
         <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/nightly"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/update/${app.name}-all-${updaterversion}.wyu"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly/update"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/nightly/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
+        <!-- Changelog Release - version.cyberduck.io -->
         <scp file="${build}/update/changelog.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -169,19 +169,19 @@
     <target name="beta" depends="clean, package-beta">
         <antcall target="confirm"/>
         <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/beta"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/update/${app.name}-all-${updaterversion}.wyu"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta/update"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/beta/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
+        <!-- Changelog Release - version.cyberduck.io -->
         <scp file="${build}/update/changelog.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/beta"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -283,14 +283,14 @@
 
         <antcall target="confirm"/>
         <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/update"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
+        <!-- Changelog Release - version.cyberduck.io -->
         <scp file="${build}/update/updater.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
 

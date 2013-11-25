@@ -6,7 +6,7 @@
  *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
  *
  *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ *  http://cyberduck.io/
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  *	GNU General Public License for more details.
  *
  *	Bug fixes, suggestions and comments should be sent to:
- *	dkocher@cyberduck.ch
+ *	dkocher@cyberduck.io
  -->
 <project name="Cyberduck for Mac" basedir=".">
 
@@ -424,33 +424,33 @@
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.ch/nightly/changelog.html"/>
+            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Nightly - version.cyberduck.ch -->
+        <!-- Changelog Nightly - version.cyberduck.io -->
         <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -460,33 +460,33 @@
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.ch/beta/changelog.html"/>
+            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Beta - version.cyberduck.ch -->
+        <!-- Changelog Beta - version.cyberduck.io -->
         <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/beta/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/beta/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -496,42 +496,42 @@
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.ch/changelog.html"/>
+            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
         </antcall>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
+        <!-- Changelog Release - version.cyberduck.io -->
         <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
+             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -553,13 +553,13 @@
         </antcall>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
@@ -574,13 +574,13 @@
         <antcall target="distribution-mas"/>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/mas"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/mas"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>

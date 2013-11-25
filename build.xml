@@ -6,7 +6,7 @@
  *	$Date$
  *
  *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ *  http://cyberduck.io/
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  *	GNU General Public License for more details.
  *
  *	Bug fixes, suggestions and comments should be sent to:
- *	dkocher@cyberduck.ch
+ *	dkocher@cyberduck.io
  -->
 <project name="Cyberduck" default="build" basedir=".">
 
@@ -49,7 +49,7 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
 
-    <property name="sonar.host" value="sonar.cyberduck.ch"/>
+    <property name="sonar.host" value="sonar.cyberduck.io"/>
 
     <condition property="platform" value="mac">
         <os family="mac"/>
@@ -286,12 +286,12 @@
         <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
         <property name="sonar.jacoco.reportPath" value="${build}/jacoco.exec"/>
         <property name="sonar.jacoco.antTargets" value="test"/>
-        <property name="sonar.links.homepage" value="http://cyberduck.ch"/>
-        <property name="sonar.links.ci" value="https://ci.cyberduck.ch"/>
-        <property name="sonar.links.issue" value="https://trac.cyberduck.ch"/>
-        <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.ch/trunk"/>
-        <property name="sonar.links.scm" value="https://svn.cyberduck.ch"/>
-        <property name="sonar.links.scm_dev" value="https://svn.cyberduck.ch"/>
+        <property name="sonar.links.homepage" value="http://cyberduck.io"/>
+        <property name="sonar.links.ci" value="https://ci.cyberduck.io"/>
+        <property name="sonar.links.issue" value="https://trac.cyberduck.io"/>
+        <property name="sonar.scm.url" value="scm:svn:http://svn.cyberduck.io/trunk"/>
+        <property name="sonar.links.scm" value="https://svn.cyberduck.io"/>
+        <property name="sonar.links.scm_dev" value="https://svn.cyberduck.io"/>
         <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
 </project>
