@@ -55,6 +55,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         assertFalse(session.alert());
         session.open(new DefaultHostKeyController());
+        assertTrue(session.isSecured());
         try {
             session.login(new DisabledPasswordStore(), new DisabledLoginController());
         }
@@ -65,9 +66,8 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = InteroperabilityException.class)
-    @Ignore
     public void testHtmlResponse() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "cyberduck.ch", new Credentials(
+        final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
