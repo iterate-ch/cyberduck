@@ -113,7 +113,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 PlainSocketFactory.getSocketFactory()));
         registry.register(new Scheme(ch.cyberduck.core.Scheme.https.toString(), ch.cyberduck.core.Scheme.https.getPort(),
                 new SSLSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()),
                         new X509HostnameVerifier() {
                             @Override
                             public void verify(final String host, final SSLSocket socket) throws IOException {
