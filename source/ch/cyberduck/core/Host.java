@@ -504,8 +504,11 @@ public class Host implements Serializable, Comparable<Host> {
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        if(StringUtils.isNotEmpty(hostname)) {
-            return hostname + " \u2013 " + protocol.getName();
+        if(StringUtils.isNotBlank(hostname)) {
+            if(StringUtils.isNotBlank(credentials.getUsername())) {
+                return String.format("%s@%s \u2013 %s", credentials.getUsername(), hostname, protocol.getName());
+            }
+            return String.format("%s \u2013 %s", hostname, protocol.getName());
         }
         return StringUtils.EMPTY;
     }
