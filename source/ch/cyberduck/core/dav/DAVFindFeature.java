@@ -24,6 +24,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
@@ -87,6 +88,10 @@ public class DAVFindFeature implements Find {
         catch(AccessDeniedException e) {
             // Parent directory may not be accessible. Issue #5662
             return true;
+        }
+        catch(LoginFailureException e) {
+            // HEAD may return 401 in G2
+            return false;
         }
         catch(NotfoundException e) {
             return false;
