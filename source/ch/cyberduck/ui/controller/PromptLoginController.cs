@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class PromptLoginController : LoginCallback
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (LoginController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (PromptLoginController).FullName);
         private readonly WindowController _browser;
         private Credentials _credentials;
         private LoginOptions _options;
@@ -53,33 +53,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             AsyncController.AsyncDelegate d = delegate
                 {
-                    _browser.CommandBox(title,
-                                        title,
-                                        message,
-                                        String.Format("{0}|{1}",
-                                                      continueButton,
-                                                      disconnectButton),
-                                        false,
-                                        LocaleFactory.localizedString("Don't show again",
-                                                                      "Credentials"),
+                    _browser.CommandBox(title, title, message,
+                                        String.Format("{0}|{1}", continueButton, disconnectButton), false,
+                                        LocaleFactory.localizedString("Don't show again", "Credentials"),
                                         SysIcons.Question,
-                                        Preferences.instance().getProperty(
-                                            "website.help") + "/" +
-                                        protocol.getScheme().name(),
-                                        delegate(int option,
-                                                 Boolean verificationChecked)
+                                        Preferences.instance().getProperty("website.help") + "/" +
+                                        protocol.getScheme().name(), delegate(int option, Boolean verificationChecked)
                                             {
                                                 if (verificationChecked)
                                                 {
                                                     // Never show again.
-                                                    Preferences.instance().setProperty
-                                                        (preference, true);
+                                                    Preferences.instance().setProperty(preference, true);
                                                 }
                                                 switch (option)
                                                 {
                                                     case 1:
-                                                        throw new LoginCanceledException
-                                                            ();
+                                                        throw new LoginCanceledException();
                                                 }
                                             });
                 };
@@ -87,8 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //Proceed nevertheless.
         }
 
-        public void prompt(Protocol protocol, Credentials credentials,
-                           String title, String reason, LoginOptions options)
+        public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
         {
             _view = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
@@ -102,9 +90,8 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.Username = credentials.getUsername();
             _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
             _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
-            _view.SavePasswordState =
-                Preferences.instance().getBoolean("connection.login.useKeychain") &&
-                Preferences.instance().getBoolean("connection.login.addKeychain");
+            _view.SavePasswordState = Preferences.instance().getBoolean("connection.login.useKeychain") &&
+                                      Preferences.instance().getBoolean("connection.login.addKeychain");
             _view.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
 
             Update();
@@ -159,8 +146,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                _credentials.setUsername(
-                    Preferences.instance().getProperty("connection.login.name"));
+                _credentials.setUsername(Preferences.instance().getProperty("connection.login.name"));
                 _credentials.setPassword(null);
             }
             _view.Username = _credentials.getUsername();
@@ -183,10 +169,10 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(_view.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = PasswordStoreFactory.get().getPassword(_protocol.getScheme(),
-                                                                         _protocol.getDefaultPort(),
-                                                                         _protocol.getDefaultHostname(),
-                                                                         _credentials.getUsername());
+                String password = PasswordStoreFactory.get()
+                                                      .getPassword(_protocol.getScheme(), _protocol.getDefaultPort(),
+                                                                   _protocol.getDefaultHostname(),
+                                                                   _credentials.getUsername());
                 if (Utils.IsNotBlank(password))
                 {
                     _view.Password = password;
@@ -258,7 +244,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return new PromptLoginController(TransferController.Instance);
             }
 
-            public override LoginController create(ch.cyberduck.ui.Controller c)
+            public override LoginCallback create(ch.cyberduck.ui.Controller c)
             {
                 return new PromptLoginController((WindowController) c);
             }

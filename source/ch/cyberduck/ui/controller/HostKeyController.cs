@@ -58,19 +58,15 @@ namespace Ch.Cyberduck.Ui.Controller
                                 "The host is currently unknown to the system. The host key fingerprint is {0}."),
                             KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
-                                      LocaleFactory.localizedString("Deny")),
-                        false,
-                        LocaleFactory.localizedString("Always"),
-                        SysIcons.Question,
-                        Preferences.instance().getProperty("website.help") + "/" +
-                        Scheme.sftp.name(),
+                                      LocaleFactory.localizedString("Deny")), false,
+                        LocaleFactory.localizedString("Always"), SysIcons.Question,
+                        Preferences.instance().getProperty("website.help") + "/" + Scheme.sftp.name(),
                         delegate(int option, bool verificationChecked)
                             {
                                 switch (option)
                                 {
                                     case 0:
-                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey,
-                                              verificationChecked);
+                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, verificationChecked);
                                         break;
                                     case 1:
                                         Log.warn("Cannot continue without a valid host key");
@@ -91,22 +87,17 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                                      KnownHosts.createHexFingerprint(serverHostKeyAlgorithm,
-                                                                      serverHostKey)),
+                                      KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
-                                      LocaleFactory.localizedString("Deny")),
-                        false,
-                        LocaleFactory.localizedString("Always"),
-                        SysIcons.Warning,
-                        Preferences.instance().getProperty("website.help") + "/" +
-                        Scheme.sftp.name(),
+                                      LocaleFactory.localizedString("Deny")), false,
+                        LocaleFactory.localizedString("Always"), SysIcons.Warning,
+                        Preferences.instance().getProperty("website.help") + "/" + Scheme.sftp.name(),
                         delegate(int option, bool verificationChecked)
                             {
                                 switch (option)
                                 {
                                     case 0:
-                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey,
-                                              verificationChecked);
+                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, verificationChecked);
                                         break;
                                     case 1:
                                         Log.warn("Cannot continue without a valid host key");
@@ -130,9 +121,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 return null;
             }
 
-            public override ch.cyberduck.core.HostKeyController create(ch.cyberduck.ui.Controller c, Protocol protocol)
+            public override HostKeyCallback create(ch.cyberduck.ui.Controller c, Protocol protocol)
             {
-                if(Scheme.sftp.equals(protocol.getScheme())) {
+                if (Scheme.sftp.equals(protocol.getScheme()))
+                {
                     return new HostKeyController(c as WindowController);
                 }
                 return new DefaultHostKeyController();
