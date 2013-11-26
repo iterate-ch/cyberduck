@@ -55,7 +55,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private boolean consumed = false;
 
     public boolean isRepeatable() {
-        return false;
+        return true;
     }
 
     public abstract long getContentLength();
