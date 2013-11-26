@@ -5,10 +5,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
@@ -21,6 +24,19 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class StreamCopierTest extends AbstractTestCase {
+
+    @Test
+    public void testIntegrity() throws Exception {
+        final String random = RandomStringUtils.random(39865);
+        final byte[] bytes = random.getBytes();
+        final TransferStatus status = new TransferStatus();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
+        new StreamCopier(status, status).transfer(IOUtils.toInputStream(random), -1, out,
+                new DisabledStreamListener(), bytes.length);
+        assertEquals(bytes.length, status.getCurrent(), 0L);
+        assertArrayEquals(bytes, out.toByteArray());
+        assertTrue(status.isComplete());
+    }
 
     @Test
     public void testTransferUnknownLength() throws Exception {
