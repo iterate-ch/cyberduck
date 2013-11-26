@@ -3,7 +3,7 @@
 - [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
 
 4.4.1 [https://trac.cyberduck.io/milestone/4.4.1]
-- [Feature] Large (5GB) object uploads (#6056)
+- [Feature] Large (5GB) object uploads (Openstack Swift) (#6056)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
 - [Bugfix] Partial authentication failure (SFTP) (#7536)

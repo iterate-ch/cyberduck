@@ -9,8 +9,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (#1343)
 
 4.4.1 [https://trac.cyberduck.io/milestone/4.4.1]
-- [Feature] Large (5GB) object uploads (#6056)
-- [Feature] Copy temporary signed URLs (OpenStack) (#7018)
+- [Feature] Large (5GB) object uploads (Openstack Swift) (#6056)
+- [Feature] Copy temporary signed URLs (Openstack Swift) (#7018)
 - [Bugfix] Code signing requirements for embedded bundles (Mac)
 - [Bugfix] Temporary URL for containers with whitespace (Openstack Swift)
 - [Bugfix] Prompt to switch to secured FTP Connection always shows (#7510)
