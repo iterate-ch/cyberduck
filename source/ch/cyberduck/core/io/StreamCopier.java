@@ -22,8 +22,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +31,8 @@ import java.io.OutputStream;
  */
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
+
+    private static final int EOF = -1;
 
     private StreamCancelation cancel;
 
@@ -64,11 +64,9 @@ public final class StreamCopier {
         if(limit == 0) {
             return;
         }
-        final BufferedInputStream bi = new BufferedInputStream(in);
         if(offset > 0) {
-            this.skip(bi, offset);
+            this.skip(in, offset);
         }
-        final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             final byte[] chunk = new byte[chunksize];
             long total = 0;
@@ -78,8 +76,8 @@ public final class StreamCopier {
                 len = (int) limit;
             }
             while(!cancel.isCanceled()) {
-                final int read = bi.read(chunk, 0, len);
-                if(-1 == read) {
+                final int read = in.read(chunk, 0, len);
+                if(EOF == read) {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
                     }
@@ -88,7 +86,7 @@ public final class StreamCopier {
                 }
                 else {
                     listener.recv(read);
-                    bo.write(chunk, 0, read);
+                    out.write(chunk, 0, read);
                     progress.progress(read);
                     listener.sent(read);
                     total += read;
@@ -107,14 +105,14 @@ public final class StreamCopier {
             }
         }
         finally {
-            bo.flush();
+            out.flush();
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
         }
     }
 
-    private void skip(final BufferedInputStream bi, final long offset) throws IOException {
+    private void skip(final InputStream bi, final long offset) throws IOException {
         long skipped = bi.skip(offset);
         if(log.isInfoEnabled()) {
             log.info(String.format("Skipping %d bytes", skipped));
