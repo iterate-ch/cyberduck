@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -47,6 +48,34 @@ public class StreamCopierTest extends AbstractTestCase {
                 }, -1);
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getCurrent(), 0L);
+    }
+
+    @Test
+    public void testTransferIncorrectLength() throws Exception {
+        final TransferStatus status = new TransferStatus();
+        final AtomicBoolean write = new AtomicBoolean();
+        new StreamCopier(status, status).transfer(new NullInputStream(5L), -1, new NullOutputStream() {
+                    @Override
+                    public void write(final byte[] b, final int off, final int len) {
+                        assertEquals(0, off);
+                        assertEquals(5, len);
+                        write.set(true);
+                    }
+                }, new DisabledStreamListener() {
+                    @Override
+                    public void sent(final long bytes) {
+                        assertEquals(5L, bytes);
+                    }
+
+                    @Override
+                    public void recv(final long bytes) {
+                        assertEquals(5L, bytes);
+                    }
+                }, 10L
+        );
+        assertTrue(write.get());
+        assertTrue(status.isComplete());
+        assertEquals(5L, status.getCurrent(), 0L);
     }
 
     @Test
