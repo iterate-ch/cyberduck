@@ -66,15 +66,15 @@ public final class StreamCopier {
             this.skip(in, offset);
         }
         try {
-            final byte[] chunk = new byte[chunksize];
+            final byte[] buffer = new byte[chunksize];
             long total = 0;
             int len = chunksize;
             if(limit > 0 && limit < chunksize) {
                 // Cast will work because chunk size is int
                 len = (int) limit;
             }
-            while(!cancel.isCanceled()) {
-                final int read = in.read(chunk, 0, len);
+            while(len > 0 && !cancel.isCanceled()) {
+                final int read = in.read(buffer, 0, len);
                 if(-1 == read) {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
@@ -84,21 +84,20 @@ public final class StreamCopier {
                 }
                 else {
                     listener.recv(read);
-                    out.write(chunk, 0, read);
+                    out.write(buffer, 0, read);
                     progress.progress(read);
                     listener.sent(read);
                     total += read;
-                    if(limit == total) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Limit %d reached reading from stream", limit));
-                        }
-                        progress.setComplete();
-                        break;
-                    }
                 }
                 if(limit > 0) {
                     // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
                     len = (int) Math.min(limit - total, chunksize);
+                }
+                if(limit == total) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Limit %d reached reading from stream", limit));
+                    }
+                    progress.setComplete();
                 }
             }
         }
