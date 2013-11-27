@@ -14,7 +14,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -24,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -80,8 +78,8 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
 
     @Test
     @Ignore
-    public void testReadWritePixi() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "pulangyuta.pixi.me", new Credentials(
+    public void testReadWritePixiGallery2() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "g2.pixi.me", new Credentials(
                 "webdav", "webdav"
         ));
         host.setDefaultPath("/w/webdav/");
@@ -92,27 +90,12 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final OutputStream out = new DAVWriteFeature(session).write(test, status);
+        final OutputStream out = new DAVWriteFeature(session, true).write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session, false).append(test, status.getLength(), Cache.empty()).size, 0L);
-        {
-            final ByteArrayOutputStream download = new ByteArrayOutputStream(content.length - 100);
-            new StreamCopier(status, status).transfer(new DAVReadFeature(session).read(test, new TransferStatus()), 0, download, new DisabledStreamListener(), -1);
-            assertArrayEquals(content, download.toByteArray());
-        }
-        {
-            final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length).append(true).current(1L));
-            IOUtils.readFully(in, buffer);
-            IOUtils.closeQuietly(in);
-            final byte[] reference = new byte[content.length - 1];
-            System.arraycopy(content, 1, reference, 0, content.length - 1);
-            assertArrayEquals(reference, buffer);
-        }
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
