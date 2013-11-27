@@ -11,12 +11,15 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -49,11 +52,11 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
         assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
         {
-            final byte[] buffer = new byte[content.length];
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
-            IOUtils.readFully(in, buffer);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
             IOUtils.closeQuietly(in);
-            assertArrayEquals(content, buffer);
+            assertArrayEquals(content, buffer.toByteArray());
         }
         {
             final byte[] buffer = new byte[content.length - 1];

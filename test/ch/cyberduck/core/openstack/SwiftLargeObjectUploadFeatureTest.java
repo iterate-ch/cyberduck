@@ -10,12 +10,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -102,11 +104,11 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         assertFalse(status.isCanceled());
 
         assertTrue(new SwiftFindFeature(session).find(test));
-        final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
-        IOUtils.readFully(in, buffer);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(in);
-        assertArrayEquals(content, buffer);
+        assertArrayEquals(content, buffer.toByteArray());
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));

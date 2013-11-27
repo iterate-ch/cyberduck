@@ -14,6 +14,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -23,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -98,9 +100,9 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
         assertEquals(content.length, new DAVWriteFeature(session, false).append(test, status.getLength(), Cache.empty()).size, 0L);
         {
-            final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
-            assertArrayEquals(content, buffer);
+            final ByteArrayOutputStream download = new ByteArrayOutputStream(content.length - 100);
+            new StreamCopier(status, status).transfer(new DAVReadFeature(session).read(test, new TransferStatus()), 0, download, new DisabledStreamListener(), -1);
+            assertArrayEquals(content, download.toByteArray());
         }
         {
             final byte[] buffer = new byte[content.length - 1];

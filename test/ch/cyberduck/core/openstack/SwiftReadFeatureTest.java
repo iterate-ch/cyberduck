@@ -9,6 +9,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -16,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -69,11 +72,11 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         status.setCurrent(100L);
         final InputStream in = new SwiftReadFeature(session).read(test, status);
         assertNotNull(in);
-        final byte[] download = new byte[content.length - 100];
-        IOUtils.readFully(in, download);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
         final byte[] reference = new byte[content.length - 100];
         System.arraycopy(content, 100, reference, 0, content.length - 100);
-        assertArrayEquals(reference, download);
+        assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
