@@ -36,10 +36,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -59,6 +61,40 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
         new FTPReadFeature(session).read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
+    }
+
+    @Test
+    public void testRead() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final FTPSession session = new FTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = new byte[39865];
+        new Random().nextBytes(content);
+        {
+            final TransferStatus status = new TransferStatus().length(content.length);
+            final OutputStream out = new FTPWriteFeature(session).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(status, status, 32768).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), content.length);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            final InputStream in = new FTPReadFeature(session).read(test, status);
+            assertNotNull(in);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            new StreamCopier(status, status, 32768).transfer(in, 0, buffer, new DisabledStreamListener(), content.length);
+            in.close();
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
     }
 
     @Test
