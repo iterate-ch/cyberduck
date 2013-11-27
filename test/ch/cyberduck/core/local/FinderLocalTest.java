@@ -3,6 +3,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
@@ -27,6 +28,13 @@ public class FinderLocalTest extends AbstractTestCase {
         assertNotSame(other, l);
         other.touch();
         assertNotSame(other, l);
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testReadNoFile() throws Exception {
+        final String name = UUID.randomUUID().toString();
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        l.getInputStream();
     }
 
     @Test

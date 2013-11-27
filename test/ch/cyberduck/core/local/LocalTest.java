@@ -2,8 +2,11 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -23,6 +26,13 @@ public class LocalTest extends AbstractTestCase {
         private TestLocal(final String name) {
             super(name);
         }
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testReadNoFile() throws Exception {
+        final String name = UUID.randomUUID().toString();
+        TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + name);
+        l.getInputStream();
     }
 
     @Test
