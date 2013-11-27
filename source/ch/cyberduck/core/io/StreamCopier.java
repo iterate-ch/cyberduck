@@ -32,8 +32,6 @@ import java.io.OutputStream;
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
-    private static final int EOF = -1;
-
     private StreamCancelation cancel;
 
     private StreamProgress progress;
@@ -77,7 +75,7 @@ public final class StreamCopier {
             }
             while(!cancel.isCanceled()) {
                 final int read = in.read(chunk, 0, len);
-                if(EOF == read) {
+                if(-1 == read) {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
                     }
