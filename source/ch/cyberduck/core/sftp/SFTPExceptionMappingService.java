@@ -43,7 +43,7 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e.getMessage().equals("Unexpected end of sftp stream.")) {
-            return this.wrap(new SocketException(), buffer);
+            return this.wrap(new SocketException(e.getMessage()), buffer);
         }
         if(e instanceof SFTPException) {
             final SFTPException failure = (SFTPException) e;
