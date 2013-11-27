@@ -32,14 +32,14 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -63,6 +63,40 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
     }
 
     @Test
+    public void testRead() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new DefaultTouchFeature(session).touch(test);
+        final byte[] content = new byte[39865];
+        new Random().nextBytes(content);
+        {
+            final TransferStatus status = new TransferStatus().length(content.length);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(status, status, 32768).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), content.length);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            assertNotNull(in);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            new StreamCopier(status, status, 32768).transfer(in, 0, buffer, new DisabledStreamListener(), content.length);
+            in.close();
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        session.close();
+    }
+
+    @Test
     public void testReadRange() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
@@ -70,26 +104,32 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new SFTPWriteFeature(session).write(test, new TransferStatus().length(content.length));
-        assertNotNull(out);
-        IOUtils.write(content, out);
-        IOUtils.closeQuietly(out);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        status.setAppend(true);
-        status.setCurrent(100L);
-        final Path workdir = session.workdir();
-        final InputStream in = new SFTPReadFeature(session).read(test, status);
-        assertNotNull(in);
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
-        final byte[] reference = new byte[content.length - 100];
-        System.arraycopy(content, 100, reference, 0, content.length - 100);
-        assertArrayEquals(reference, buffer.toByteArray());
-        in.close();
+        final byte[] content = new byte[1048576];
+        new Random().nextBytes(content);
+        {
+            final TransferStatus status = new TransferStatus().length(content.length);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(status, status, 32768).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), content.length);
+            out.close();
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            status.setAppend(true);
+            status.setCurrent(100L);
+            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            assertNotNull(in);
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
+            new StreamCopier(status, status, 32768).transfer(in, 0, buffer, new DisabledStreamListener(), content.length - 100);
+            in.close();
+            final byte[] reference = new byte[content.length - 100];
+            System.arraycopy(content, 100, reference, 0, content.length - 100);
+            assertArrayEquals(reference, buffer.toByteArray());
+        }
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
