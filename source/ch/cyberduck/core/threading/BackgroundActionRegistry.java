@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> implements BackgroundActionListener {
+public final class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> implements BackgroundActionListener {
     private static final long serialVersionUID = 1721336643608575003L;
 
     private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
@@ -44,6 +44,12 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     }
 
     private BackgroundAction current;
+
+    public BackgroundActionRegistry() {
+        //
+    }
+
+    private Object identity = new Object();
 
     /**
      * @return The currently running background action. Null if none is currently running.
@@ -102,7 +108,28 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
         return true;
     }
 
-    public BackgroundActionRegistry() {
-        //
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+        final BackgroundActionRegistry that = (BackgroundActionRegistry) o;
+        if(identity != null ? !identity.equals(that.identity) : that.identity != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (identity != null ? identity.hashCode() : 0);
+        return result;
     }
 }
