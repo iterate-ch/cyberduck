@@ -49,13 +49,12 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes("UTF-8");
         final OutputStream out = local.getOutputStream(false);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
+        IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final HttpUploadFeature upload = new HttpUploadFeature(new DAVWriteFeature(session));
-        upload.upload(test,
-                local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
         assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
