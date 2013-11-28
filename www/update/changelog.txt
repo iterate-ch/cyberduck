@@ -1,3 +1,8 @@
+4.4.3 [https://trac.cyberduck.io/milestone/4.4.3]
+- [Feature] Support TLS 1.1 and TLS 1.2 (#7637)
+- [Bugfix] Permission change for folders on upload (#7635)
+- [Bugfix] Some files downloaded get truncated (SFTP) (#7641)
+
 4.4.2 [https://trac.cyberduck.io/milestone/4.4.2]
 - [Feature] Copy temporary signed URLs (OpenStack) (#7018)
 - [Bugfix] Fallback on missing bulk delete support (Openstack Swift) (#7603)
