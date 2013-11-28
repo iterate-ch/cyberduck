@@ -44,6 +44,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertTrue(ProtocolFactory.isURL("ftps://h.name"));
         assertTrue(ProtocolFactory.isURL("sftp://h.name"));
         assertTrue(ProtocolFactory.isURL("http://h.name"));
+        assertTrue(ProtocolFactory.isURL("https://h.name"));
         assertFalse(ProtocolFactory.isURL("h.name"));
     }
 
