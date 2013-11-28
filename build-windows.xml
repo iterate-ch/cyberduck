@@ -147,7 +147,6 @@
     </target>
 
     <target name="nightly" depends="clean, package-nightly">
-        <antcall target="confirm"/>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/nightly"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
@@ -167,7 +166,6 @@
     </target>
 
     <target name="beta" depends="clean, package-beta">
-        <antcall target="confirm"/>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/beta"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"

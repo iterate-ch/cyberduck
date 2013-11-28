@@ -431,7 +431,6 @@
             <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
-        <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/nightly/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
@@ -467,7 +466,6 @@
             <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
         </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
-        <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/beta/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
