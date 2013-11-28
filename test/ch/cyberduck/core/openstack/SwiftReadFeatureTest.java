@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,7 +64,7 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new SwiftWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
-        IOUtils.write(content, out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         assertNotNull(((ResponseOutputStream<String>) out).getResponse());
         final TransferStatus status = new TransferStatus();

@@ -4,11 +4,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -41,7 +44,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
         final OutputStream out = new SwiftWriteFeature(session).write(test, status);
         assertNotNull(out);
-        IOUtils.write(content, out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();

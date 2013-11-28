@@ -14,15 +14,16 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes("UTF-8");
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
@@ -77,7 +78,6 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testReadWritePixiGallery2() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "g2.pixi.me", new Credentials(
                 "webdav", "webdav"
@@ -92,7 +92,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = new DAVWriteFeature(session, true).write(test, status);
         assertNotNull(out);
-        IOUtils.write(content, out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);

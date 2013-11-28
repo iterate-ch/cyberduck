@@ -19,6 +19,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,7 +47,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         final OutputStream out = new FTPWriteFeature(session).write(test, status);
         assertNotNull(out);
-        IOUtils.write(content, out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());

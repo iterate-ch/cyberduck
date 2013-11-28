@@ -110,7 +110,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
-        IOUtils.write(content, out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -166,7 +166,7 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(20L));
         assertNotNull(out);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        IOUtils.write(content, out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(20L);
