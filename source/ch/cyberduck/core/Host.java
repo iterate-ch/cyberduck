@@ -243,7 +243,7 @@ public class Host implements Serializable, Comparable<Host> {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object uuidObj = dict.stringForKey("UUID");
         if(uuidObj != null) {
-            this.setUuid(uuidObj.toString());
+            this.uuid = uuidObj.toString();
         }
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj != null) {
