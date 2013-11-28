@@ -181,7 +181,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     protected abstract void logout() throws BackgroundException;
 
     protected void disconnect() {
-        //
+        state = State.closed;
     }
 
     /**
