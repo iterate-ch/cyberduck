@@ -236,6 +236,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginFailureException.class)
+    @Ignore
     public void testLoginErrorBasicFallback() throws Exception {
         final Host host = new Host(new DAVProtocol(), "prod.lattusdemo.com", new Credentials(
                 "u", "p"
