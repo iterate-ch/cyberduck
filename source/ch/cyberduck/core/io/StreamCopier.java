@@ -74,7 +74,7 @@ public final class StreamCopier {
                 len = (int) limit;
             }
             while(len > 0 && !cancel.isCanceled()) {
-                final int read = in.read(buffer, 0, chunksize);
+                final int read = in.read(buffer, 0, len);
                 if(-1 == read) {
                     if(log.isDebugEnabled()) {
                         log.debug("End of file reached");
