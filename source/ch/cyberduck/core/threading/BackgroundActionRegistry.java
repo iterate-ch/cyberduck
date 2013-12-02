@@ -128,8 +128,6 @@ public final class BackgroundActionRegistry extends AbstractActionRegistry<Backg
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (identity != null ? identity.hashCode() : 0);
-        return result;
+        return identity.hashCode();
     }
 }
