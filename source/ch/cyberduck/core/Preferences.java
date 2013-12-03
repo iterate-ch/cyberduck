@@ -581,7 +581,7 @@ public abstract class Preferences {
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         // Maximum number of parts is 10'000. With 5MB segements this gives a maximum object size of 50GB
-        defaults.put("s3.upload.multipart.size", String.valueOf(5L * 1024L * 1024L)); // 5MB
+        defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         /**
          * A prefix to apply to log file names
@@ -622,7 +622,7 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.threshold", String.valueOf(2L * 1024L * 1024L * 1024L)); // 2GB
         defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // Default maximum number of segments is 1000. With 50MB segements this gives a maximum object size of 50GB
-        defaults.put("openstack.upload.largeobject.size", String.valueOf(50L * 1024L * 1024L)); // 50MB
+        defaults.put("openstack.upload.largeobject.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
 
         //doc	Microsoft Word
         //html	HTML Format
