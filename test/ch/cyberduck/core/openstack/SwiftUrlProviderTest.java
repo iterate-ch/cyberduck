@@ -17,13 +17,23 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 
 import org.junit.Test;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -86,7 +96,10 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final Path container = new Path("test w.cyberduck.ch", Path.VOLUME_TYPE);
         final Path file = new Path(container, "key", Path.FILE_TYPE);
         final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
+        final Iterator<DescriptiveUrl> iterator = provider.createTempUrl(region, file, 1379500716L).iterator();
+        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",
+                iterator.next().getUrl());
         assertEquals("https://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",
-                provider.createTempUrl(region, file, 1379500716L).getUrl());
+                iterator.next().getUrl());
     }
 }

@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.Scheme;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.Iterator;
 
 import ch.iterate.openstack.swift.model.Region;
 
@@ -57,8 +59,11 @@ public class SwiftHpUrlProviderTest extends AbstractTestCase {
                 return properties.getProperty("hpcloud.secret");
             }
         });
-        final String url = provider.createTempUrl(new Region("region-a.geo-1", URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), null),
-                file, 1379500716L).getUrl();
-        assertEquals("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/a?temp_url_sig=88650632417788:5C84TLCPJJ5FSSG6EDML:c4ff78486459b66d2ce45f8a3a51061e318f233a&temp_url_expires=1379500716", url);
+        final Iterator<DescriptiveUrl> iterator = provider.createTempUrl(new Region("region-a.geo-1", URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788"), null),
+                file, 1379500716L).iterator();
+        assertEquals("http://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/a?temp_url_sig=88650632417788:5C84TLCPJJ5FSSG6EDML:c4ff78486459b66d2ce45f8a3a51061e318f233a&temp_url_expires=1379500716",
+                iterator.next().getUrl());
+        assertEquals("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch/a?temp_url_sig=88650632417788:5C84TLCPJJ5FSSG6EDML:c4ff78486459b66d2ce45f8a3a51061e318f233a&temp_url_expires=1379500716",
+                iterator.next().getUrl());
     }
 }

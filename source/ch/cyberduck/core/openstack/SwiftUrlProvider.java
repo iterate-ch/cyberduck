@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,6 +42,7 @@ import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Locale;
@@ -93,11 +95,11 @@ public class SwiftUrlProvider implements UrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
-                list.add(this.createTempUrl(region, file, this.getExpiry(60 * 60)));
+                list.addAll(this.createTempUrl(region, file, this.getExpiry(60 * 60)));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.createTempUrl(region, file, this.getExpiry(Preferences.instance().getInteger("s3.url.expire.seconds"))));
+                list.addAll(this.createTempUrl(region, file, this.getExpiry(Preferences.instance().getInteger("s3.url.expire.seconds"))));
                 // Week
-                list.add(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60)));
+                list.addAll(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60)));
             }
         }
         return list;
@@ -106,19 +108,19 @@ public class SwiftUrlProvider implements UrlProvider {
     /**
      * @param expiry Milliseconds
      */
-    protected DescriptiveUrl createTempUrl(final Region region, final Path file, final Long expiry) {
+    protected DescriptiveUrlBag createTempUrl(final Region region, final Path file, final Long expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
         if(!accounts.containsKey(region)) {
             log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
-            return DescriptiveUrl.EMPTY;
+            return DescriptiveUrlBag.empty();
         }
         // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
         // be set on the Swift account. Used to sign.
         final AccountInfo info = accounts.get(region);
         if(StringUtils.isBlank(info.getTempUrlKey())) {
             log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
-            return DescriptiveUrl.EMPTY;
+            return DescriptiveUrlBag.empty();
         }
         if(log.isInfoEnabled()) {
             log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
@@ -126,13 +128,17 @@ public class SwiftUrlProvider implements UrlProvider {
         final String signature = this.sign(info.getTempUrlKey(),
                 String.format("GET\n%d\n%s", expiry, path));
         //Compile the temporary URL
-        return new DescriptiveUrl(URI.create(String.format("https://%s%s?temp_url_sig=%s&temp_url_expires=%d",
-                region.getStorageUrl().getHost(), path, signature, expiry)),
-                DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
-                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(expiry))
-        );
+        final DescriptiveUrlBag list = new DescriptiveUrlBag();
+        for(Scheme scheme : Arrays.asList(Scheme.http, Scheme.https)) {
+            list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s?temp_url_sig=%s&temp_url_expires=%d",
+                    scheme.name(), region.getStorageUrl().getHost(), path, signature, expiry)),
+                    DescriptiveUrl.Type.signed,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                            + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                            UserDateFormatterFactory.get().getShortFormat(expiry))
+            ));
+        }
+        return list;
     }
 
     protected String sign(final String secret, final String body) {
