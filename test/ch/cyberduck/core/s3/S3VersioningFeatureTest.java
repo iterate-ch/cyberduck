@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.junit.Test;
 

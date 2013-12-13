@@ -21,7 +21,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.versioning.VersioningConfiguration;
+import ch.cyberduck.core.s3.VersioningConfiguration;
 
 /**
  * @version $Id$

@@ -37,7 +37,6 @@ using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
 using ch.cyberduck.core.s3;
-using ch.cyberduck.core.versioning;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.threading;

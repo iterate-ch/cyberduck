@@ -29,7 +29,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.versioning.VersioningConfiguration;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;

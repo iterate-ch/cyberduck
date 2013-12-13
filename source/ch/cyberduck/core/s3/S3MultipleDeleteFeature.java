@@ -46,8 +46,11 @@ public class S3MultipleDeleteFeature implements Delete {
     private PathContainerService containerService
             = new PathContainerService();
 
+    private S3VersioningFeature versioning;
+
     public S3MultipleDeleteFeature(final S3Session session) {
         this.session = session;
+        this.versioning = new S3VersioningFeature(session);
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
@@ -105,13 +108,14 @@ public class S3MultipleDeleteFeature implements Delete {
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Authentication canceled for MFA delete
      */
     protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
             throws BackgroundException {
         try {
-            if(new S3VersioningFeature(session).getConfiguration(container).isMultifactor()) {
-                final Credentials factor = new S3VersioningFeature(session).getToken(prompt);
+            if(versioning.getConfiguration(container).isMultifactor()) {
+                final Credentials factor = versioning.getToken(prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         factor.getUsername(),
