@@ -37,4 +37,9 @@ public class NotfoundException extends BackgroundException {
     public NotfoundException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("File not found", "Error"), detail, cause);
     }
+
+    @Override
+    public String getHelp() {
+        return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
+    }
 }
