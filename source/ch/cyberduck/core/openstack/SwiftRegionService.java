@@ -59,8 +59,14 @@ public class SwiftRegionService {
         if(session.getClient().getRegions().isEmpty()) {
             throw new InteroperabilityException("No region found in authentication context");
         }
+        for(Region region : session.getClient().getRegions()) {
+            if(region.isDefault()) {
+                log.warn(String.format("Fallback to default region %s", region.getRegionId()));
+                return region;
+            }
+        }
         final Region region = session.getClient().getRegions().iterator().next();
-        log.warn(String.format("Fallback to first region found %s", region.getRegionId()));
+        log.warn(String.format("Fallback to first region %s", region.getRegionId()));
         if(null == region.getStorageUrl()) {
             throw new InteroperabilityException(String.format("No storage endpoint found for region %s", region.getRegionId()));
         }
