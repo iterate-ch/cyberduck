@@ -19,12 +19,15 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -36,13 +39,21 @@ import ch.iterate.openstack.swift.exception.GenericException;
  * @version $Id$
  */
 public class SwiftDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 
     private SwiftSession session;
 
     private PathContainerService containerService
             = new PathContainerService();
 
+    private SwiftSegmentService segmentService;
+
     public SwiftDeleteFeature(final SwiftSession session) {
+        this(session, new SwiftSegmentService(session));
+    }
+
+    public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService) {
+        this.segmentService = segmentService;
         this.session = session;
     }
 
@@ -53,8 +64,14 @@ public class SwiftDeleteFeature implements Delete {
                     file.getName()));
             try {
                 if(file.attributes().isFile()) {
+                    // Collect a list of existing segments. Must do this before deleting the manifest file.
+                    final List<Path> segments = segmentService.list(file);
                     session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
+                    if(!segments.isEmpty()) {
+                        // Clean up any old segments
+                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController());
+                    }
                 }
                 else if(file.attributes().isDirectory()) {
                     if(containerService.isContainer(file)) {

@@ -47,7 +47,14 @@ public class SwiftMultipleDeleteFeature implements Delete {
     private PathContainerService containerService
             = new PathContainerService();
 
+    private SwiftSegmentService segmentService;
+
     public SwiftMultipleDeleteFeature(final SwiftSession session) {
+        this(session, new SwiftSegmentService(session));
+    }
+
+    public SwiftMultipleDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService) {
+        this.segmentService = segmentService;
         this.session = session;
     }
 
@@ -58,6 +65,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
+            final List<Path> segments = new ArrayList<Path>();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
                     continue;
@@ -71,6 +79,10 @@ public class SwiftMultipleDeleteFeature implements Delete {
                 else {
                     final List<String> keys = new ArrayList<String>();
                     keys.add(containerService.getKey(file));
+                    // Collect a list of existing segments. Must do this before deleting the manifest file.
+                    for(Path segment : segmentService.list(file)) {
+                        keys.add(containerService.getKey(segment));
+                    }
                     containers.put(container, keys);
                 }
             }
