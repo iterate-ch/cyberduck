@@ -25,7 +25,11 @@ import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import ch.iterate.openstack.swift.model.Region;
@@ -43,15 +47,28 @@ public class SwiftLocationFeature implements Location {
 
     @Override
     public Set<String> getLocations() {
-        final Set<String> regions = new HashSet<String>();
-        for(Region region : session.getClient().getRegions()) {
+        final Set<String> locations = new LinkedHashSet<String>();
+        final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
+        Collections.sort(regions, new Comparator<Region>() {
+            @Override
+            public int compare(Region r1, Region r2) {
+                if(r1.isDefault()) {
+                    return -1;
+                }
+                if(r2.isDefault()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        for(Region region : regions) {
             if(StringUtils.isBlank(region.getRegionId())) {
                 // v1 authentication contexts do not have region support
                 continue;
             }
-            regions.add(region.getRegionId());
+            locations.add(region.getRegionId());
         }
-        return regions;
+        return locations;
     }
 
     @Override

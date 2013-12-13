@@ -9,6 +9,9 @@ import ch.cyberduck.core.Host;
 
 import org.junit.Test;
 
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -25,9 +28,11 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertTrue(new SwiftLocationFeature(session).getLocations().contains("DFW"));
-        assertTrue(new SwiftLocationFeature(session).getLocations().contains("ORD"));
-        assertTrue(new SwiftLocationFeature(session).getLocations().contains("SYD"));
+        final Set<String> locations = new SwiftLocationFeature(session).getLocations();
+        assertTrue(locations.contains("DFW"));
+        assertTrue(locations.contains("ORD"));
+        assertTrue(locations.contains("SYD"));
+        assertEquals("DFW", locations.iterator().next());
         session.close();
     }
 }
