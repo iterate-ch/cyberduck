@@ -20,7 +20,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
@@ -30,8 +29,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.threading.NamedThreadFactory;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -55,13 +52,11 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -69,13 +64,10 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
@@ -90,9 +82,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             = new ThreadLocal<String>();
 
     protected AbstractHttpClient route;
-
-    private final ThreadFactory factory
-            = new NamedThreadFactory("http");
 
     protected HttpSession(final Host host) {
         super(host);
@@ -237,98 +226,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     @Override
     public String getTarget() {
         return target.get();
-    }
-
-    private abstract class FutureHttpResponse<T> implements Runnable {
-
-        Exception exception;
-        T response;
-
-        public Exception getException() {
-            return exception;
-        }
-
-        public T getResponse() {
-            return response;
-        }
-    }
-
-    /**
-     * @param command Callable writing entity to stream and returning checksum
-     * @param <T>     Type of returned checksum
-     * @return Outputstream to write entity into.
-     */
-    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
-        // Signal on enter streaming
-        final CountDownLatch entry = new CountDownLatch(1);
-        final CountDownLatch exit = new CountDownLatch(1);
-
-        try {
-            final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
-                @Override
-                public long getContentLength() {
-                    return command.getContentLength();
-                }
-            };
-            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
-            final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
-                @Override
-                public void run() {
-                    try {
-                        response = command.call(entity);
-                    }
-                    catch(BackgroundException e) {
-                        exception = e;
-                    }
-                    finally {
-                        // For zero byte files #writeTo is never called and the entry latch not triggered
-                        entry.countDown();
-                        // Continue reading the response
-                        exit.countDown();
-                    }
-                }
-            };
-            final Thread t = factory.newThread(target);
-            t.start();
-            // Wait for output stream to become available
-            entry.await();
-            if(null != target.getException()) {
-                if(target.getException() instanceof BackgroundException) {
-                    throw (BackgroundException) target.getException();
-                }
-                throw new BackgroundException(target.getException());
-            }
-            final OutputStream stream = entity.getStream();
-            return new ResponseOutputStream<T>(stream) {
-                /**
-                 * Only available after this stream is closed.
-                 * @return Response from server for upload
-                 */
-                @Override
-                public T getResponse() throws BackgroundException {
-                    try {
-                        // Block the calling thread until after the full response from the server
-                        // has been consumed.
-                        exit.await();
-                    }
-                    catch(InterruptedException e) {
-                        throw new BackgroundException(e);
-                    }
-                    if(null != target.getException()) {
-                        if(target.getException() instanceof BackgroundException) {
-                            throw (BackgroundException) target.getException();
-                        }
-                        throw new BackgroundException(target.getException());
-                    }
-                    return target.getResponse();
-                }
-            };
-        }
-        catch(InterruptedException e) {
-            log.warn(String.format("Error waiting for output stream for %s", file));
-            throw new BackgroundException(e);
-        }
     }
 
     @Override

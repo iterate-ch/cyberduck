@@ -20,12 +20,118 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.apache.log4j.Logger;
+
+import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadFactory;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractHttpWriteFeature<T> implements Write {
+    private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
+
+    private final ThreadFactory factory
+            = new NamedThreadFactory("http");
+
+    private abstract class FutureHttpResponse<T> implements Runnable {
+
+        Exception exception;
+        T response;
+
+        public Exception getException() {
+            return exception;
+        }
+
+        public T getResponse() {
+            return response;
+        }
+    }
+
+    /**
+     * @param command Callable writing entity to stream and returning checksum
+     * @param <T>     Type of returned checksum
+     * @return Outputstream to write entity into.
+     */
+    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
+        // Signal on enter streaming
+        final CountDownLatch entry = new CountDownLatch(1);
+        final CountDownLatch exit = new CountDownLatch(1);
+
+        try {
+            final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
+                @Override
+                public long getContentLength() {
+                    return command.getContentLength();
+                }
+            };
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
+            final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
+                @Override
+                public void run() {
+                    try {
+                        response = command.call(entity);
+                    }
+                    catch(BackgroundException e) {
+                        exception = e;
+                    }
+                    finally {
+                        // For zero byte files #writeTo is never called and the entry latch not triggered
+                        entry.countDown();
+                        // Continue reading the response
+                        exit.countDown();
+                    }
+                }
+            };
+            final Thread t = factory.newThread(target);
+            t.start();
+            // Wait for output stream to become available
+            entry.await();
+            if(null != target.getException()) {
+                if(target.getException() instanceof BackgroundException) {
+                    throw (BackgroundException) target.getException();
+                }
+                throw new BackgroundException(target.getException());
+            }
+            final OutputStream stream = entity.getStream();
+            return new ResponseOutputStream<T>(stream) {
+                /**
+                 * Only available after this stream is closed.
+                 * @return Response from server for upload
+                 */
+                @Override
+                public T getResponse() throws BackgroundException {
+                    try {
+                        // Block the calling thread until after the full response from the server
+                        // has been consumed.
+                        exit.await();
+                    }
+                    catch(InterruptedException e) {
+                        throw new BackgroundException(e);
+                    }
+                    if(null != target.getException()) {
+                        if(target.getException() instanceof BackgroundException) {
+                            throw (BackgroundException) target.getException();
+                        }
+                        throw new BackgroundException(target.getException());
+                    }
+                    return target.getResponse();
+                }
+            };
+        }
+        catch(InterruptedException e) {
+            log.warn(String.format("Error waiting for output stream for %s", file));
+            throw new BackgroundException(e);
+        }
+    }
+
 
     @Override
     public abstract ResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;

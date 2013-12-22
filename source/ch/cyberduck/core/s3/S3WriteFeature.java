@@ -105,7 +105,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 return status.getLength();
             }
         };
-        return session.write(file, status, command);
+        return this.write(file, status, command);
     }
 
     /**
