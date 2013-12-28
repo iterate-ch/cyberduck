@@ -623,6 +623,8 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // Default maximum number of segments is 1000. With 50MB segements this gives a maximum object size of 50GB
         defaults.put("openstack.upload.largeobject.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
+        // Remove segments when deleting large object manifest
+        defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
         //doc	Microsoft Word
         //html	HTML Format

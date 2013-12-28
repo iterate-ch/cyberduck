@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -27,6 +28,9 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joel Wright <joel.wright@sohonet.com>
@@ -73,6 +77,19 @@ public class SwiftThresholdUploadService implements Upload {
         else {
             feature = new SwiftSmallObjectUploadFeature(session);
         }
-        return feature.upload(file, local, throttle, listener, status);
+        // Previous segments to delete
+        final List<Path> segments = new ArrayList<Path>();
+        if(Preferences.instance().getBoolean("openstack.upload.largeobject.cleanup")) {
+            if(!status.isAppend()) {
+                // Cleanup if necessary
+                segments.addAll(new SwiftSegmentService(session).list(file));
+            }
+        }
+        final Object checksum = feature.upload(file, local, throttle, listener, status);
+        if(!segments.isEmpty()) {
+            // Clean up any old segments
+            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController());
+        }
+        return checksum;
     }
 }
