@@ -53,7 +53,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         catch(NotfoundException e) {
             assertEquals("Cannot delete t (/home/jenkins/t).",
                     e.getMessage());
-            assertEquals("No such file (SSH_FX_NO_SUCH_FILE: A reference was made to a file which does not exist.).",
+            assertEquals("No such file (SSH_FX_NO_SUCH_FILE: A reference was made to a file which does not exist.). Please contact your web hosting service provider for assistance.",
                     e.getDetail());
             throw e;
         }
