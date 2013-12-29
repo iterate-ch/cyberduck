@@ -65,7 +65,6 @@ public class SwiftMultipleDeleteFeature implements Delete {
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
-            final List<Path> segments = new ArrayList<Path>();
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
                     continue;
