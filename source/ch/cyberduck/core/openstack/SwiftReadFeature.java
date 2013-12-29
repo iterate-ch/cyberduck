@@ -25,15 +25,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 
 /**
  * @version $Id$
  */
 public class SwiftReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
     private PathContainerService containerService
             = new PathContainerService();
@@ -47,13 +51,20 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final ContentLengthInputStream stream;
             if(status.isAppend()) {
-                return session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                stream = session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         status.getCurrent(), status.getLength());
             }
-            return session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
+            else {
+                stream = session.getClient().getObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reading stream with content length %d", stream.getLength()));
+            }
+            return stream;
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download failed", e, file);

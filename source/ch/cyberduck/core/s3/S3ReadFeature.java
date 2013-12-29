@@ -24,7 +24,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.S3Object;
 
 import java.io.InputStream;
 
@@ -32,6 +34,7 @@ import java.io.InputStream;
  * @version $Id$
  */
 public class S3ReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(S3ReadFeature.class);
 
     private PathContainerService containerService
             = new PathContainerService();
@@ -45,21 +48,29 @@ public class S3ReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final S3Object object;
             if(file.attributes().isDuplicate()) {
-                return session.getClient().getVersionedObject(file.attributes().getVersionId(),
+                object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         null, // ifModifiedSince
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        status.isAppend() ? status.getCurrent() : null, null).getDataInputStream();
+                        status.isAppend() ? status.getCurrent() : null, null);
+                return object.getDataInputStream();
             }
-            return session.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    null, // ifModifiedSince
-                    null, // ifUnmodifiedSince
-                    null, // ifMatch
-                    null, // ifNoneMatch
-                    status.isAppend() ? status.getCurrent() : null, null).getDataInputStream();
+            else {
+                object = session.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        null, // ifModifiedSince
+                        null, // ifUnmodifiedSince
+                        null, // ifMatch
+                        null, // ifNoneMatch
+                        status.isAppend() ? status.getCurrent() : null, null);
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
+            }
+            return object.getDataInputStream();
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Download failed", e, file);
