@@ -15,7 +15,7 @@
     <ApplicationIcon>..\..\..\cyberduck-application.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <ApplicationManifest>properties\app.manifest</ApplicationManifest>
     <SignAssembly>false</SignAssembly>
     <DelaySign>true</DelaySign>
     <FileUpgradeFlags>
@@ -227,7 +227,7 @@
     <Compile Include="core\SerializableDictionary.cs" />
     <Compile Include="core\Utils.cs" />
     <Compile Include="core\VirtualFileDataObject.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="ui\controller\BaseController.cs" />
     <Compile Include="ui\controller\ICreateSymlinkPromptView.cs" />
     <Compile Include="ui\controller\CreateSymlinkController.cs" />
@@ -379,12 +379,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Include="properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.cs" />
+    <Compile Include="properties\Settings.cs" />
     <Compile Include="core\StructureMapBootstrapper.cs" />
     <Compile Include="ResourcesBundle.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -612,10 +612,10 @@
     <Compile Include="ui\winforms\TransferPromptForm.Designer.cs">
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
-    <None Include="Properties\app.manifest" />
+    <None Include="properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\Settings.settings">
+    <None Include="properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
@@ -656,7 +656,7 @@
   <!-- to manage version number -->
   <!-- to generate our personnal version info -->
   <Target Name="AssemblyInfo">
-    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="© 2010-2011 Yves Langisch. All rights reserved." ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="© 2010-2011 Yves Langisch. All rights reserved." ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
   </Target>
   <!-- We launch these two targets -->
   <Target Name="BeforeBuild">
