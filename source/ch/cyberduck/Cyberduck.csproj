@@ -498,7 +498,7 @@
     <Compile Include="ui\winforms\ConnectionForm.Designer.cs">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\winforms\controls\Design\SearchTextBoxDesigner.cs" />
+    <Compile Include="ui\winforms\controls\design\SearchTextBoxDesigner.cs" />
     <Compile Include="ui\winforms\controls\EllipsisLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -652,7 +652,7 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->
   <!-- Import of the MSBuildCommunityTask targets -->
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
   <!-- to manage version number -->
   <!-- to generate our personnal version info -->
   <Target Name="AssemblyInfo">
