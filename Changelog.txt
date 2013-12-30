@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
+- [Bugfix] File segments not deleted when a large object is overwritten or manifest is deleted (Openstack Swift) (#7682, #7679)
+
 4.4.3 [https://trac.cyberduck.io/milestone/4.4.3]
 - [Feature] Support TLS 1.1 and TLS 1.2 (#7637)
 - [Bugfix] Permission change for folders on upload (#7635)

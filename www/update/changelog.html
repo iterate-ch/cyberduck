@@ -2,186 +2,197 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="content-type" content="application/xhtml; charset=utf-8"/>
-    <title>Release Notes. Last modified: $Date$</title>
-    <style type="text/css">
-        p.note {
-            display: block;
-            height: 15px;
-            padding: 3px 10px 3px 10px;
-            background-color: #fff3f3;
-            border: 1px solid red;
-            color: #cc0000;
-        }
+    <head>
+        <meta http-equiv="content-type" content="application/xhtml; charset=utf-8"/>
+        <title>Release Notes. Last modified: $Date$</title>
+        <style type="text/css">
+            p.note {
+                display: block;
+                height: 15px;
+                padding: 3px 10px 3px 10px;
+                background-color: #fff3f3;
+                border: 1px solid red;
+                color: #cc0000;
+            }
 
-        p.windows {
-            display: block;
-            background-image: url(http://media.cyberduck.io/img/windows32.png);
-            background-repeat: no-repeat;
-            background-position: 5px 5px;
-            padding: 10px 10px 10px 50px;
-            background-color: #E5E5DB;
-            border: 1px solid #cccccc;
-            color: black;
-        }
-    </style>
-</head>
+            p.windows {
+                display: block;
+                background-image: url(http://media.cyberduck.io/img/windows32.png);
+                background-repeat: no-repeat;
+                background-position: 5px 5px;
+                padding: 10px 10px 10px 50px;
+                background-color: #E5E5DB;
+                border: 1px solid #cccccc;
+                color: black;
+            }
+        </style>
+    </head>
 
-<body>
+    <body>
 
-<p class="windows">
-    <strong>Now also </strong><a href="http://cyberduck.io/news/">available</a> for Windows.
-</p>
+        <p class="windows">
+            <strong>Now also </strong><a href="http://cyberduck.io/news/">available</a> for Windows.
+        </p>
 
-<p class="note">
-    <strong>Note</strong>: <strong>OS X 10.6 (Snow Leopard) or later on
-    <a href="http://support.apple.com/kb/ht3696">64bit</a> Intel</strong> is required.
-</p>
+        <p class="note">
+            <strong>Note</strong>: <strong>OS X 10.6 (Snow Leopard) or later on
+            <a href="http://support.apple.com/kb/ht3696">64bit</a> Intel</strong> is required.
+        </p>
 
-<p>
-    <a href="http://trac.cyberduck.io/milestone/4.4.3"><strong>Version 4.4.3</strong></a>
-</p>
-<ul>
-    <li>[Feature] Support TLS 1.1 and TLS 1.2 (<a
-            href="http://trac.cyberduck.io/ticket/7637">#7637</a>)
-    </li>
-    <li>[Bugfix] Permission change for folders on upload (<a
-            href="http://trac.cyberduck.io/ticket/7635">#7635</a>)
-    </li>
-    <li>[Bugfix] Some files downloaded get truncated (SFTP) (<a
-            href="http://trac.cyberduck.io/ticket/7641">#7641</a>)
-    </li>
-</ul>
+        <p>
+            <a href="http://trac.cyberduck.io/milestone/4.4.4"><strong>Version 4.4.4</strong></a>
+        </p>
+        <ul>
+            <li>[Bugfix] File segments not deleted when a large object is overwritten or manifest is deleted (Openstack
+                Swift) (<a
+                        href="http://trac.cyberduck.io/ticket/7682">#7682</a>, <a
+                        href="http://trac.cyberduck.io/ticket/7679">#7679</a>)
+            </li>
+        </ul>
 
-<p>
-    <a href="http://trac.cyberduck.io/milestone/4.4.2"><strong>Version 4.4.2</strong></a>
-</p>
-    <ul>
-        <li>[Feature] Copy temporary signed URLs (OpenStack) (<a
-                href="http://trac.cyberduck.io/ticket/7018">#7018</a>)
-        </li>
-        <li>[Bugfix] Fallback on missing bulk delete support (Openstack Swift) (<a
-                href="http://trac.cyberduck.io/ticket/7603">#7603</a>)
-        </li>
-        <li>[Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (<a
-                href="http://trac.cyberduck.io/ticket/1343">#1343</a>)
-        </li>
-    </ul>
+        <p>
+            <a href="http://trac.cyberduck.io/milestone/4.4.3"><strong>Version 4.4.3</strong></a>
+        </p>
+        <ul>
+            <li>[Feature] Support TLS 1.1 and TLS 1.2 (<a
+                    href="http://trac.cyberduck.io/ticket/7637">#7637</a>)
+            </li>
+            <li>[Bugfix] Permission change for folders on upload (<a
+                    href="http://trac.cyberduck.io/ticket/7635">#7635</a>)
+            </li>
+            <li>[Bugfix] Some files downloaded get truncated (SFTP) (<a
+                    href="http://trac.cyberduck.io/ticket/7641">#7641</a>)
+            </li>
+        </ul>
 
-    <p>
-        <a href="http://trac.cyberduck.io/milestone/4.4.1"><strong>Version 4.4.1</strong></a>
-</p>
-<ul>
-    <li>[Feature] Large (5GB) object uploads (Openstack Swift) (<a
-            href="http://trac.cyberduck.io/ticket/6056">#6056</a>)
-    </li>
-    <li>[Bugfix] Code signing requirements for embedded bundles (Mac)</li>
-    <li>[Bugfix] Temporary URL for containers with whitespace (Openstack Swift)</li>
-    <li>[Bugfix] Prompt to switch to secured FTP Connection always shows (<a
-            href="http://trac.cyberduck.io/ticket/7510">#7510</a>)
-    </li>
-    <li>[Bugfix] Sandboxing denies access to SSH keys (Mac) (<a href="http://trac.cyberduck.io/ticket/7208">#7208</a>)
-    </li>
-    <li>[Bugfix] Partial authentication failure (SFTP) (<a href="http://trac.cyberduck.io/ticket/7536">#7536</a>)
-    </li>
-    <li>[Bugfix] Interoperability with WinSSHD (SFTP) (<a href="http://trac.cyberduck.io/ticket/7522">#7522</a>)
-    </li>
-    <li>[Bugfix] Softlayer connection profiles (Openstack Swift) (<a
-            href="http://trac.cyberduck.io/ticket/7522">#7522</a>)
-    </li>
-    <li>[Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in
-        Preferences (SFTP, Mac)
-    </li>
-    <li>[Bugfix] Prompt for private key file if sandboxing denies access and store security scoped bookmark in
-        bookmark (SFTP, Mac)
-    </li>
-    <li>[Bugfix] Content type reset to application/octet-stream (S3) (<a
-            href="http://trac.cyberduck.io/ticket/7598">#7598</a>)
-    </li>
-    <li>[Bugfix] Listing directory failure with missing permission to read symlink target (SFTP) (<a
-            href="http://trac.cyberduck.io/ticket/7556">#7556</a>)
-    </li>
-</ul>
+        <p>
+            <a href="http://trac.cyberduck.io/milestone/4.4.2"><strong>Version 4.4.2</strong></a>
+        </p>
+        <ul>
+            <li>[Feature] Copy temporary signed URLs (OpenStack) (<a
+                    href="http://trac.cyberduck.io/ticket/7018">#7018</a>)
+            </li>
+            <li>[Bugfix] Fallback on missing bulk delete support (Openstack Swift) (<a
+                    href="http://trac.cyberduck.io/ticket/7603">#7603</a>)
+            </li>
+            <li>[Bugfix] Accessibility for blind users in Transfer window (VoiceOver) (<a
+                    href="http://trac.cyberduck.io/ticket/1343">#1343</a>)
+            </li>
+        </ul>
 
-<p>
-    <a href="http://trac.cyberduck.io/milestone/4.4"><strong>Version 4.4</strong></a>
-</p>
-<ul>
-    <li>[Feature] Performance improvements</li>
-    <li>[Feature] No Java installation requirement (Mac)</li>
-    <li>[Feature] Resumable multipart uploads (S3) (<a href="http://trac.cyberduck.io/ticket/6208">#6208</a>)
-    </li>
-    <li>[Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) <a
-            href="http://trac.cyberduck.io/ticket/6830">#6830</a></li>
-    <li>[Feature] Keystone (2.0) authentication support (OpenStack) (<a
-            href="http://trac.cyberduck.io/ticket/6330">#6330</a>)
-    </li>
-    <li>[Feature] Multiple region support (OpenStack) (<a href="http://trac.cyberduck.io/ticket/6902">#6902</a>)
-    </li>
-    <li>[Feature] Set container metadata (OpenStack)</li>
-    <li>[Feature] Edit non prefixed headers (OpenStack) (<a
-            href="http://trac.cyberduck.io/ticket/7209">#7209</a>)
-    </li>
-    <li>[Feature] Support ECHDE cipher suites (WebDAV) (<a href="http://trac.cyberduck.io/ticket/7344">#7344</a>)
-    </li>
-    <li>[Feature] Select region when creating new container (S3, OpenStack)</li>
-    <li>[Feature] Confirmation alert on move and rename in browser (<a
-            href="http://trac.cyberduck.io/ticket/595">#595</a>)
-    </li>
-    <li>[Feature] Transfer action to skip existing files that match checksum, size or timestamp (<a
-            href="http://trac.cyberduck.io/ticket/6500">#6500</a>)
-    </li>
-    <li>[Feature] Fullscreen option for browser window</li>
-    <li>[Feature] Remember window position of browser window when saving workspace</li>
-    <li>[Feature] Preview file status in overwrite prompt when choosing transfer action</li>
-    <li>[Feature] Option to continue or cancel on failure transferring multiple files</li>
-    <li>[Feature] Display download progress in Finder and Dock</li>
-    <li>[Feature] Enable website configuration for buckets (GreenQloud)</li>
-    <li>[Feature] Option to change default port for custom origin (CloudFront) (<a
-            href="http://trac.cyberduck.io/ticket/5460">#5460</a>)
-    </li>
-    <li>[Feature] Upload with temporary name when saving from external editor</li>
-    <li>[Bugfix] Cannot edit non prefixed headers (OpenStack) (<a href="http://trac.cyberduck.io/ticket/7209">#7209</a>)
-    </li>
-    <li>[Bugfix] Quick Look does not display preview (Mac) (<a
-            href="http://trac.cyberduck.io/ticket/7231">#7231</a>)
-    </li>
-    <li>[Bugfix] Failure duplicating files (FTP) (<a href="http://trac.cyberduck.io/ticket/7224">#7224</a>)</li>
-    <li>[Bugfix] Save workspace does not work for multiple browser sessions to the same server (<a
-            href="http://trac.cyberduck.io/ticket/7213">#7213</a>)
-    </li>
-    <li>[Bugfix] Permission error for upload to write-only folder (<a
-            href="http://trac.cyberduck.io/ticket/6240">#6240</a>)
-    </li>
-    <li>[Bugfix] Authentication with none password (SFTP) (<a
-            href="http://trac.cyberduck.io/ticket/7322">#7322</a>)
-    </li>
-    <li>[Bugfix] Interoperability issues (WebDAV) (<a href="http://trac.cyberduck.io/ticket/7227">#7227</a>)
-    </li>
-    <li>[Bugfix] Subsequent edit fails (<a href="http://trac.cyberduck.io/ticket/7248">#7248</a>)</li>
-    <li>[Bugfix] Omit absolute paths in archives (ZIP, TAR) (<a href="http://trac.cyberduck.io/ticket/6644">#6644</a>)
-    </li>
-    <li>[Bugfix] Connect mode fallback failures (FTP) (<a href="http://trac.cyberduck.io/ticket/5385">#5385</a>)
-    </li>
-    <li>[Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (<a
-            href="http://trac.cyberduck.io/ticket/6988">#6988</a>)
-    </li>
-    <li>[Bugfix] Cannot set custom keyboard shortcut (<a href="http://trac.cyberduck.io/ticket/7045">#7045</a>)
-    </li>
-    <li>[Bugfix] Registration with Growl fails (<a href="http://trac.cyberduck.io/ticket/7274">#7274</a>)</li>
-    <li>[Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (<a
-            href="http://trac.cyberduck.io/ticket/3790">#3790</a>)
-    </li>
-    <li>[Bugfix] Remember browser column widths (<a href="http://trac.cyberduck.io/ticket/6034">#6034</a>)</li>
-    <li>[Bugfix] Refresh list of thirdparty application bookmarks to import (<a
-            href="http://trac.cyberduck.io/ticket/6141">#6141</a>)
-    </li>
-    <li>[Bugfix] PRET support not working anymore (<a href="http://trac.cyberduck.io/ticket/7427">#7427</a>)
-    </li>
-</ul>
+        <p>
+            <a href="http://trac.cyberduck.io/milestone/4.4.1"><strong>Version 4.4.1</strong></a>
+        </p>
+        <ul>
+            <li>[Feature] Large (5GB) object uploads (Openstack Swift) (<a
+                    href="http://trac.cyberduck.io/ticket/6056">#6056</a>)
+            </li>
+            <li>[Bugfix] Code signing requirements for embedded bundles (Mac)</li>
+            <li>[Bugfix] Temporary URL for containers with whitespace (Openstack Swift)</li>
+            <li>[Bugfix] Prompt to switch to secured FTP Connection always shows (<a
+                    href="http://trac.cyberduck.io/ticket/7510">#7510</a>)
+            </li>
+            <li>[Bugfix] Sandboxing denies access to SSH keys (Mac) (<a href="http://trac.cyberduck.io/ticket/7208">#7208</a>)
+            </li>
+            <li>[Bugfix] Partial authentication failure (SFTP) (<a href="http://trac.cyberduck.io/ticket/7536">#7536</a>)
+            </li>
+            <li>[Bugfix] Interoperability with WinSSHD (SFTP) (<a href="http://trac.cyberduck.io/ticket/7522">#7522</a>)
+            </li>
+            <li>[Bugfix] Softlayer connection profiles (Openstack Swift) (<a
+                    href="http://trac.cyberduck.io/ticket/7522">#7522</a>)
+            </li>
+            <li>[Bugfix] Prompt for known_hosts file if sandboxing denies access and store security scoped bookmark in
+                Preferences (SFTP, Mac)
+            </li>
+            <li>[Bugfix] Prompt for private key file if sandboxing denies access and store security scoped bookmark in
+                bookmark (SFTP, Mac)
+            </li>
+            <li>[Bugfix] Content type reset to application/octet-stream (S3) (<a
+                    href="http://trac.cyberduck.io/ticket/7598">#7598</a>)
+            </li>
+            <li>[Bugfix] Listing directory failure with missing permission to read symlink target (SFTP) (<a
+                    href="http://trac.cyberduck.io/ticket/7556">#7556</a>)
+            </li>
+        </ul>
 
-<p>Release notes for previous versions can be found at <a
-        href="http://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
-</body>
+        <p>
+            <a href="http://trac.cyberduck.io/milestone/4.4"><strong>Version 4.4</strong></a>
+        </p>
+        <ul>
+            <li>[Feature] Performance improvements</li>
+            <li>[Feature] No Java installation requirement (Mac)</li>
+            <li>[Feature] Resumable multipart uploads (S3) (<a href="http://trac.cyberduck.io/ticket/6208">#6208</a>)
+            </li>
+            <li>[Feature] Bucket lifecycle configuration to archive objects in Glacier (S3) <a
+                    href="http://trac.cyberduck.io/ticket/6830">#6830</a></li>
+            <li>[Feature] Keystone (2.0) authentication support (OpenStack) (<a
+                    href="http://trac.cyberduck.io/ticket/6330">#6330</a>)
+            </li>
+            <li>[Feature] Multiple region support (OpenStack) (<a href="http://trac.cyberduck.io/ticket/6902">#6902</a>)
+            </li>
+            <li>[Feature] Set container metadata (OpenStack)</li>
+            <li>[Feature] Edit non prefixed headers (OpenStack) (<a
+                    href="http://trac.cyberduck.io/ticket/7209">#7209</a>)
+            </li>
+            <li>[Feature] Support ECHDE cipher suites (WebDAV) (<a href="http://trac.cyberduck.io/ticket/7344">#7344</a>)
+            </li>
+            <li>[Feature] Select region when creating new container (S3, OpenStack)</li>
+            <li>[Feature] Confirmation alert on move and rename in browser (<a
+                    href="http://trac.cyberduck.io/ticket/595">#595</a>)
+            </li>
+            <li>[Feature] Transfer action to skip existing files that match checksum, size or timestamp (<a
+                    href="http://trac.cyberduck.io/ticket/6500">#6500</a>)
+            </li>
+            <li>[Feature] Fullscreen option for browser window</li>
+            <li>[Feature] Remember window position of browser window when saving workspace</li>
+            <li>[Feature] Preview file status in overwrite prompt when choosing transfer action</li>
+            <li>[Feature] Option to continue or cancel on failure transferring multiple files</li>
+            <li>[Feature] Display download progress in Finder and Dock</li>
+            <li>[Feature] Enable website configuration for buckets (GreenQloud)</li>
+            <li>[Feature] Option to change default port for custom origin (CloudFront) (<a
+                    href="http://trac.cyberduck.io/ticket/5460">#5460</a>)
+            </li>
+            <li>[Feature] Upload with temporary name when saving from external editor</li>
+            <li>[Bugfix] Cannot edit non prefixed headers (OpenStack) (<a href="http://trac.cyberduck.io/ticket/7209">#7209</a>)
+            </li>
+            <li>[Bugfix] Quick Look does not display preview (Mac) (<a
+                    href="http://trac.cyberduck.io/ticket/7231">#7231</a>)
+            </li>
+            <li>[Bugfix] Failure duplicating files (FTP) (<a href="http://trac.cyberduck.io/ticket/7224">#7224</a>)</li>
+            <li>[Bugfix] Save workspace does not work for multiple browser sessions to the same server (<a
+                    href="http://trac.cyberduck.io/ticket/7213">#7213</a>)
+            </li>
+            <li>[Bugfix] Permission error for upload to write-only folder (<a
+                    href="http://trac.cyberduck.io/ticket/6240">#6240</a>)
+            </li>
+            <li>[Bugfix] Authentication with none password (SFTP) (<a
+                    href="http://trac.cyberduck.io/ticket/7322">#7322</a>)
+            </li>
+            <li>[Bugfix] Interoperability issues (WebDAV) (<a href="http://trac.cyberduck.io/ticket/7227">#7227</a>)
+            </li>
+            <li>[Bugfix] Subsequent edit fails (<a href="http://trac.cyberduck.io/ticket/7248">#7248</a>)</li>
+            <li>[Bugfix] Omit absolute paths in archives (ZIP, TAR) (<a href="http://trac.cyberduck.io/ticket/6644">#6644</a>)
+            </li>
+            <li>[Bugfix] Connect mode fallback failures (FTP) (<a href="http://trac.cyberduck.io/ticket/5385">#5385</a>)
+            </li>
+            <li>[Bugfix] Directory placeholder not displayed if same name as object (OpenStack) (<a
+                    href="http://trac.cyberduck.io/ticket/6988">#6988</a>)
+            </li>
+            <li>[Bugfix] Cannot set custom keyboard shortcut (<a href="http://trac.cyberduck.io/ticket/7045">#7045</a>)
+            </li>
+            <li>[Bugfix] Registration with Growl fails (<a href="http://trac.cyberduck.io/ticket/7274">#7274</a>)</li>
+            <li>[Bugfix] Changing permissions resets extended access rights flags (SFTP, FTP) (<a
+                    href="http://trac.cyberduck.io/ticket/3790">#3790</a>)
+            </li>
+            <li>[Bugfix] Remember browser column widths (<a href="http://trac.cyberduck.io/ticket/6034">#6034</a>)</li>
+            <li>[Bugfix] Refresh list of thirdparty application bookmarks to import (<a
+                    href="http://trac.cyberduck.io/ticket/6141">#6141</a>)
+            </li>
+            <li>[Bugfix] PRET support not working anymore (<a href="http://trac.cyberduck.io/ticket/7427">#7427</a>)
+            </li>
+        </ul>
+
+        <p>Release notes for previous versions can be found at <a
+                href="http://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
+    </body>
 </html>
