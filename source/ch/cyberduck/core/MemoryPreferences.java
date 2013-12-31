@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,7 @@ public class MemoryPreferences extends Preferences {
 
     @Override
     public void setProperty(final String property, final List<String> values) {
-        throw new UnsupportedOperationException();
+        store.put(property, StringUtils.join(values, ","));
     }
 
     @Override
