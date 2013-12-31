@@ -83,4 +83,12 @@ public abstract class MoveWorker extends Worker<Boolean> {
     public int hashCode() {
         return files != null ? files.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MoveWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -116,4 +116,12 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     public int hashCode() {
         return directory != null ? directory.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SessionListWorker{");
+        sb.append("directory=").append(directory);
+        sb.append('}');
+        return sb.toString();
+    }
 }

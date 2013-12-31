@@ -89,4 +89,12 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
         result = 31 * result + (transfer != null ? transfer.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TransferPromptListWorker{");
+        sb.append("transfer=").append(transfer);
+        sb.append('}');
+        return sb.toString();
+    }
 }

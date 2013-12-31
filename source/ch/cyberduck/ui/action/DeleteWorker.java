@@ -118,4 +118,12 @@ public abstract class DeleteWorker extends Worker<Boolean> {
         result = 31 * result + (files != null ? files.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DeleteWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
+    }
 }

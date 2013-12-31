@@ -125,4 +125,12 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
         result = 31 * result + (cache != null ? cache.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TransferPromptFilterWorker{");
+        sb.append("transfer=").append(transfer);
+        sb.append('}');
+        return sb.toString();
+    }
 }

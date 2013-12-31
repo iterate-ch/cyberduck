@@ -95,4 +95,12 @@ public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     public int hashCode() {
         return files != null ? files.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ReadAclWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
+    }
 }

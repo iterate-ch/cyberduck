@@ -103,4 +103,12 @@ public class MountWorker extends Worker<Path> {
     public int hashCode() {
         return cache != null ? cache.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MountWorker{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
+    }
 }

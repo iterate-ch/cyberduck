@@ -87,4 +87,12 @@ public abstract class ReadSizeWorker extends Worker<Long> {
     public int hashCode() {
         return files != null ? files.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ReadSizeWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
+    }
 }

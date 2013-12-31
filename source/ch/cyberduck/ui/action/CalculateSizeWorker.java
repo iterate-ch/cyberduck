@@ -121,4 +121,11 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         return files != null ? files.hashCode() : 0;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CalculateSizeWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
+    }
 }

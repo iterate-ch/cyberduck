@@ -334,4 +334,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
     protected interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AbstractTransferWorker{");
+        sb.append("transfer=").append(transfer);
+        sb.append('}');
+        return sb.toString();
+    }
 }
