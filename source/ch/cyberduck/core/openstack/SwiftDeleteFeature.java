@@ -27,8 +27,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -39,7 +37,6 @@ import ch.iterate.openstack.swift.exception.GenericException;
  * @version $Id$
  */
 public class SwiftDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 
     private SwiftSession session;
 
