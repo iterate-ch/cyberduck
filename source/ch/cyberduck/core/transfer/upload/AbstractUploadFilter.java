@@ -17,7 +17,18 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.MimeTypeService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -134,8 +145,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(parent.isExists()) {
             if(find.find(file)) {
                 status.setExists(true);
-                // Read remote attributes
-                file.setAttributes(attribute.find(file));
+                if(file.attributes().isFile()) {
+                    // Read remote attributes
+                    file.setAttributes(attribute.find(file));
+                }
             }
         }
         return status;
