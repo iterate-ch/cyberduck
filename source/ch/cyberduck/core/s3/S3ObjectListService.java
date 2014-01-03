@@ -33,7 +33,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Version;
 import org.jets3t.service.model.StorageObject;
 
@@ -52,6 +51,8 @@ public class S3ObjectListService implements ListService {
 
     private S3Session session;
 
+    private S3AttributesFeature attributes;
+
     private PathContainerService containerService = new PathContainerService();
 
     private boolean versioning;
@@ -63,6 +64,7 @@ public class S3ObjectListService implements ListService {
     public S3ObjectListService(final S3Session session, final boolean versioning) {
         this.session = session;
         this.versioning = versioning;
+        this.attributes = new S3AttributesFeature(session);
     }
 
     @Override
@@ -139,36 +141,9 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, PathNormalizer.name(key), Path.FILE_TYPE);
-                p.attributes().setSize(object.getContentLength());
-                p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
+                final Path p = new Path(parent, PathNormalizer.name(key), attributes.find(object));
+                // Copy bucket location
                 p.attributes().setRegion(bucket.attributes().getRegion());
-                p.attributes().setStorageClass(object.getStorageClass());
-                // Directory placeholders
-                if(object.isDirectoryPlaceholder()) {
-                    p.attributes().setType(Path.DIRECTORY_TYPE);
-                    p.attributes().setPlaceholder(true);
-                }
-                else if(0 == object.getContentLength()) {
-                    if("application/x-directory".equals(
-                            new S3ObjectDetailService(session).getDetails(p).getContentType())) {
-                        p.attributes().setType(Path.DIRECTORY_TYPE);
-                        p.attributes().setPlaceholder(true);
-                    }
-                }
-                final Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
-                if(null != etag) {
-                    final String checksum = etag.toString().replaceAll("\"", StringUtils.EMPTY);
-                    p.attributes().setChecksum(checksum);
-                    if(checksum.equals("d66759af42f282e1ba19144df2d405d0")) {
-                        // Fix #5374 s3sync.rb interoperability
-                        p.attributes().setType(Path.DIRECTORY_TYPE);
-                        p.attributes().setPlaceholder(true);
-                    }
-                }
-                if(object instanceof S3Object) {
-                    p.attributes().setVersionId(((S3Object) object).getVersionId());
-                }
                 children.add(p);
             }
             final String[] prefixes = chunk.getCommonPrefixes();
