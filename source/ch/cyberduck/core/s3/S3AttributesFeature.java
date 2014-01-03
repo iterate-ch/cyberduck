@@ -28,14 +28,13 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3AttributesFeature implements Attributes {
 
     private S3Session session;
 
     private S3ObjectDetailService objectDetailService;
-
 
     public S3AttributesFeature(S3Session session) {
         this.session = session;
@@ -51,7 +50,7 @@ public class S3AttributesFeature implements Attributes {
         return this;
     }
 
-    public PathAttributes find(final StorageObject object) {
+    protected PathAttributes find(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
         attributes.setSize(object.getContentLength());
         attributes.setModificationDate(object.getLastModifiedDate().getTime());
