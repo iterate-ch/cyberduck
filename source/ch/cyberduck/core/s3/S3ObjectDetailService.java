@@ -34,6 +34,9 @@ public class S3ObjectDetailService {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public S3ObjectDetailService(final S3Session session) {
         this.session = session;
     }
@@ -44,14 +47,14 @@ public class S3ObjectDetailService {
      * @return Object details
      */
     public StorageObject getDetails(final Path file) throws BackgroundException {
-        final String container = new PathContainerService().getContainer(file).getName();
+        final String container = containerService.getContainer(file).getName();
         try {
             if(file.attributes().isDuplicate()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                        container, new PathContainerService().getKey(file));
+                        container, containerService.getKey(file));
             }
             else {
-                return session.getClient().getObjectDetails(container, new PathContainerService().getKey(file));
+                return session.getClient().getObjectDetails(container, containerService.getKey(file));
             }
         }
         catch(ServiceException e) {
@@ -60,7 +63,7 @@ public class S3ObjectDetailService {
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
-                final StorageObject object = new StorageObject(new PathContainerService().getKey(file));
+                final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
                 return object;
             }
