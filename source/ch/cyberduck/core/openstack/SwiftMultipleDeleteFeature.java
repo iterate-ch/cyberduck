@@ -23,6 +23,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -89,7 +91,9 @@ public class SwiftMultipleDeleteFeature implements Delete {
                 for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
                     final Region region = new SwiftRegionService(session).lookup(container.getKey());
                     final List<String> keys = container.getValue();
-                    session.getClient().deleteObjects(region, container.getKey().getName(), keys);
+                    for(List<String> partition : new Partition<String>(keys, Preferences.instance().getInteger("openstack.delete.multiple.partition"))) {
+                        session.getClient().deleteObjects(region, container.getKey().getName(), partition);
+                    }
                 }
             }
             catch(GenericException e) {

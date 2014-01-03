@@ -604,6 +604,8 @@ public abstract class Preferences {
         defaults.put("s3.lifecycle.transition.options", "1 7 10 30 60 180 360 720");
         defaults.put("s3.lifecycle.delete.options", "1 7 10 30 60 180 360 720");
 
+        defaults.put("s3.delete.multiple.partition", String.valueOf(1000));
+
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
         defaults.put("openstack.authentication.context", "/v1.0");
@@ -625,6 +627,8 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.size", String.valueOf(100L * 1024L * 1024L)); // 100MB
         // Remove segments when deleting large object manifest
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
+
+        defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
         //doc	Microsoft Word
         //html	HTML Format
