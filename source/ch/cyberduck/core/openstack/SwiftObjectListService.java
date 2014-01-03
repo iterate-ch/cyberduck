@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -69,23 +70,30 @@ public class SwiftObjectListService implements ListService {
                 list = session.getClient().listObjectsStartingWith(new SwiftRegionService(session).lookup(container), container.getName(),
                         containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final Path child = new Path(directory, PathNormalizer.name(object.getName()),
+                    final PathAttributes attributes = new PathAttributes(
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    child.attributes().setOwner(child.attributes().getOwner());
-                    child.attributes().setRegion(container.attributes().getRegion());
-                    if(child.attributes().isFile()) {
-                        child.attributes().setSize(object.getSize());
-                        child.attributes().setChecksum(object.getMd5sum());
-                        child.attributes().setETag(object.getMd5sum());
+                    attributes.setOwner(container.attributes().getOwner());
+                    attributes.setRegion(container.attributes().getRegion());
+                    if(object.getSize() != null) {
+                        attributes.setSize(object.getSize());
+                    }
+                    if(object.getMd5sum() != null) {
+                        attributes.setChecksum(object.getMd5sum());
+                        attributes.setETag(object.getMd5sum());
+                    }
+                    if(object.getLastModified() != null) {
                         try {
-                            child.attributes().setModificationDate(dateParser.parse(object.getLastModified()).getTime());
+                            attributes.setModificationDate(dateParser.parse(object.getLastModified()).getTime());
                         }
                         catch(InvalidDateException e) {
                             log.warn(String.format("%s is not ISO 8601 format %s", object.getLastModified(), e.getMessage()));
                         }
                     }
-                    if(child.attributes().isDirectory()) {
-                        child.attributes().setPlaceholder(true);
+                    if("application/directory".equals(object.getMimeType())) {
+                        attributes.setPlaceholder(true);
+                    }
+                    final Path child = new Path(directory, PathNormalizer.name(object.getName()), attributes);
+                    if(attributes.isDirectory()) {
                         if(children.contains(child.getReference())) {
                             // There is already a placeholder object
                             continue;
