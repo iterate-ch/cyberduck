@@ -129,7 +129,7 @@ public class SwiftUrlProvider implements UrlProvider {
                 String.format("GET\n%d\n%s", expiry, path));
         //Compile the temporary URL
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        for(Scheme scheme : Arrays.asList(Scheme.http, Scheme.https)) {
+        for(Scheme scheme : Arrays.asList(Scheme.valueOf(region.getStorageUrl().getScheme()))) {
             final int port = region.getStorageUrl().getPort();
             list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s%s?temp_url_sig=%s&temp_url_expires=%d",
                     scheme.name(), region.getStorageUrl().getHost(),

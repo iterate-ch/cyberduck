@@ -99,7 +99,5 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final Iterator<DescriptiveUrl> iterator = provider.createTempUrl(region, file, 1379500716L).iterator();
         assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",
                 iterator.next().getUrl());
-        assertEquals("https://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",
-                iterator.next().getUrl());
     }
 }
