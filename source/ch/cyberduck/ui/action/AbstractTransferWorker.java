@@ -279,6 +279,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                     // Transfer
                     final Session<?> session = borrow();
                     try {
+                        boolean failure = false;
                         try {
                             if(status.isRename()) {
                                 // Save with different name
@@ -294,6 +295,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                         catch(BackgroundException e) {
                             // Prompt to continue or abort
                             if(error.prompt(e)) {
+                                failure = true;
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
@@ -309,12 +311,14 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             }
                             cache.remove(file.getReference());
                         }
-                        // Post process of file.
-                        try {
-                            filter.complete(file, options, status, session);
-                        }
-                        catch(BackgroundException e) {
-                            log.warn(String.format("Ignore failure in completion filter for %s", file));
+                        if(!failure) {
+                            // Post process of file.
+                            try {
+                                filter.complete(file, options, status, session);
+                            }
+                            catch(BackgroundException e) {
+                                log.warn(String.format("Ignore failure in completion filter for %s", file));
+                            }
                         }
                         return table.remove(file);
                     }
