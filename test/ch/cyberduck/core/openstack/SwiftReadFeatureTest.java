@@ -25,8 +25,9 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import ch.iterate.openstack.swift.io.ContentLengthInputStream;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -73,6 +74,9 @@ public class SwiftReadFeatureTest extends AbstractTestCase {
         status.setCurrent(100L);
         final InputStream in = new SwiftReadFeature(session).read(test, status);
         assertNotNull(in);
+        assertTrue(in instanceof ContentLengthInputStream);
+        assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
+        assertEquals(content.length, status.getLength(), 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
         final byte[] reference = new byte[content.length - 100];
