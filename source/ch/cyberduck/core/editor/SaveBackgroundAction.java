@@ -75,7 +75,8 @@ public class SaveBackgroundAction extends Worker<Transfer> {
             log.debug(String.format("Run upload action for editor %s", editor));
         }
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, upload, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                = new SingleTransferWorker(session, upload, new TransferOptions(),
+                new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getEdited()));
