@@ -18,12 +18,33 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
@@ -156,6 +177,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Find.class) {
             return (T) new SwiftFindFeature(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new SwiftAttributesFeature(this);
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
