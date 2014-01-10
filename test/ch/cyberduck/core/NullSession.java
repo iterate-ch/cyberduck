@@ -36,4 +36,23 @@ public class NullSession extends FTPSession {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
         return AttributedList.emptyList();
     }
+
+    @Override
+    public <T> T getFeature(Class<T> type) {
+        if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
+            return (T) new ch.cyberduck.core.features.Attributes() {
+                @Override
+                public PathAttributes find(Path file) throws BackgroundException {
+                    return file.attributes();
+                }
+
+                @Override
+                public ch.cyberduck.core.features.Attributes withCache(Cache cache) {
+                    return this;
+                }
+            };
+        }
+        return super.getFeature(type);
+    }
 }
+
