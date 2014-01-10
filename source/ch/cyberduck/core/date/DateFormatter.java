@@ -17,7 +17,6 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -30,6 +29,6 @@ public interface DateFormatter {
 
     String format(long milliseconds, TimeZone zone);
 
-    Date parse(String input) throws ParseException;
+    Date parse(String input) throws InvalidDateException;
 
 }

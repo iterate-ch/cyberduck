@@ -50,9 +50,14 @@ public abstract class AbstractDateFormatter implements DateFormatter {
     }
 
     @Override
-    public Date parse(final String input) throws ParseException {
+    public Date parse(final String input) throws InvalidDateException {
         synchronized(format) {
-            return format.parse(input);
+            try {
+                return format.parse(input);
+            }
+            catch(ParseException e) {
+                throw new InvalidDateException(e.getMessage(), e);
+            }
         }
     }
 }

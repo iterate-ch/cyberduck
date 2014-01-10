@@ -21,6 +21,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 
@@ -28,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -155,13 +155,13 @@ public class FTPMlsdListResponseReader {
             final Date parsed = new MDTMSecondsDateFormatter().parse(timestamp);
             return parsed.getTime();
         }
-        catch(ParseException e) {
+        catch(InvalidDateException e) {
             log.warn("Failed to parse timestamp:" + e.getMessage());
             try {
                 final Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
                 return parsed.getTime();
             }
-            catch(ParseException f) {
+            catch(InvalidDateException f) {
                 log.warn("Failed to parse timestamp:" + f.getMessage());
             }
         }
