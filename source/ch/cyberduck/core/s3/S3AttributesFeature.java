@@ -34,15 +34,13 @@ public class S3AttributesFeature implements Attributes {
 
     private S3Session session;
 
-    private S3ObjectDetailService objectDetailService;
-
     public S3AttributesFeature(S3Session session) {
         this.session = session;
     }
 
     @Override
     public PathAttributes find(Path file) throws BackgroundException {
-        return this.find(objectDetailService.getDetails(file));
+        return this.find(new S3ObjectDetailService(session).getDetails(file));
     }
 
     @Override
