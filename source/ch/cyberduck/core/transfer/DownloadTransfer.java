@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -57,6 +58,9 @@ public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
     private Filter<Path> filter;
+
+    private Cache cache
+            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
 
     public DownloadTransfer(final Host host, final Path root) {
         this(host, Collections.singletonList(root));
@@ -113,24 +117,24 @@ public class DownloadTransfer extends Transfer {
         }
         final SymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session);
+            return new ResumeFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session);
+            return new RenameFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session);
+            return new RenameExistingFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session);
+            return new SkipFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, session);
+            return new TrashFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session);
+            return new CompareFilter(resolver, session).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session);
+        return new OverwriteFilter(resolver, session).withCache(cache);
     }
 
     @Override

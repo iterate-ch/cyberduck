@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.IconService;
@@ -60,16 +62,31 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private Session<?> session;
 
+    private Attributes attribute;
+
     private DownloadFilterOptions options;
 
-    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
+    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                                     final DownloadFilterOptions options) {
+        this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
+    }
+
+    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+                                     final DownloadFilterOptions options, final Cache cache) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
+        this.attribute = session.getFeature(Attributes.class).withCache(cache);
     }
 
-    public void setOptions(final DownloadFilterOptions options) {
+    public AbstractDownloadFilter withCache(final Cache cache) {
+        attribute.withCache(cache);
+        return this;
+    }
+
+    public AbstractDownloadFilter withOptions(final DownloadFilterOptions options) {
         this.options = options;
+        return this;
     }
 
     @Override
@@ -97,13 +114,16 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 else {
                     // A server will resolve the symbolic link when the file is requested.
                     final Path target = file.getSymlinkTarget();
-                    status.setLength(target.attributes().getSize());
+                    // Read remote attributes
+                    file.setAttributes(attribute.find(target));
                 }
             }
             else {
-                // Read file size
-                status.setLength(file.attributes().getSize());
+                // Read remote attributes
+                file.setAttributes(attribute.find(file));
             }
+            // Read file size
+            status.setLength(file.attributes().getSize());
         }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
