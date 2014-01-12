@@ -70,6 +70,8 @@ public class S3ReadFeature implements Read {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
             }
+            // Update content length
+            status.setLength(object.getContentLength());
             return object.getDataInputStream();
         }
         catch(ServiceException e) {

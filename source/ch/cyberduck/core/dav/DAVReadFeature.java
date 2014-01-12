@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.io.ContentLengthInputStream;
 
 /**
  * @version $Id$
@@ -53,7 +54,10 @@ public class DAVReadFeature implements Read {
             session.getClient().disableCompression();
         }
         try {
-            return session.getClient().get(new DAVPathEncoder().encode(file), headers);
+            final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file), headers);
+            // Update content length
+            status.setLength(stream.getLength());
+            return stream;
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download failed", e, file);
