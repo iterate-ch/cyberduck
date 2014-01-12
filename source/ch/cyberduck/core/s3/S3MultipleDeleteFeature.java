@@ -55,52 +55,57 @@ public class S3MultipleDeleteFeature implements Delete {
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
-        final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
-        for(Path file : files) {
-            if(containerService.isContainer(file)) {
-                continue;
-            }
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
-            final Path container = containerService.getContainer(file);
-            final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-            if(file.attributes().isDirectory()) {
-                // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                // default directory placeholder formats has the format `/placeholder/' as a key.
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
-                        file.attributes().getVersionId()));
-                // Always returning 204 even if the key does not exist.
-                // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
-                        file.attributes().getVersionId()));
-                // AWS does not return 404 for non-existing keys
-            }
-            else {
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-            }
-            if(map.containsKey(container)) {
-                map.get(container).addAll(keys);
-            }
-            else {
-                map.put(container, keys);
-            }
+        if(files.size() == 1) {
+            new S3DefaultDeleteFeature(session).delete(files, prompt);
         }
-        // Iterate over all containers and delete list of keys
-        for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
-            final Path container = entry.getKey();
-            final List<ObjectKeyAndVersion> keys = entry.getValue();
-            this.delete(container, keys, prompt);
-        }
-        for(Path file : files) {
-            if(containerService.isContainer(file)) {
+        else {
+            final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
+            for(Path file : files) {
+                if(containerService.isContainer(file)) {
+                    continue;
+                }
                 session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
-                // Finally delete bucket itself
-                try {
-                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                final Path container = containerService.getContainer(file);
+                final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+                if(file.attributes().isDirectory()) {
+                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
+                    // default directory placeholder formats has the format `/placeholder/' as a key.
+                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
+                            file.attributes().getVersionId()));
+                    // Always returning 204 even if the key does not exist.
+                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
+                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
+                            file.attributes().getVersionId()));
+                    // AWS does not return 404 for non-existing keys
                 }
-                catch(ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                else {
+                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+                }
+                if(map.containsKey(container)) {
+                    map.get(container).addAll(keys);
+                }
+                else {
+                    map.put(container, keys);
+                }
+            }
+            // Iterate over all containers and delete list of keys
+            for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
+                final Path container = entry.getKey();
+                final List<ObjectKeyAndVersion> keys = entry.getValue();
+                this.delete(container, keys, prompt);
+            }
+            for(Path file : files) {
+                if(containerService.isContainer(file)) {
+                    session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                            file.getName()));
+                    // Finally delete bucket itself
+                    try {
+                        session.getClient().deleteBucket(containerService.getContainer(file).getName());
+                    }
+                    catch(ServiceException e) {
+                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
+                    }
                 }
             }
         }
