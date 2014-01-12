@@ -134,7 +134,8 @@ public class S3AccessControlListFeature implements AclPermission {
                         Permission.parsePermission(userAndRole.getRole().getName()));
             }
             else if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                if(userAndRole.getUser().getIdentifier().equals(GroupGrantee.ALL_USERS.getIdentifier())
+                        || userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
                     list.grantPermission(GroupGrantee.ALL_USERS,
                             Permission.parsePermission(userAndRole.getRole().getName()));
                 }
@@ -210,7 +211,7 @@ public class S3AccessControlListFeature implements AclPermission {
     public List<Acl.User> getAvailableAclUsers() {
         return new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
-                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
+                new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
                 new Acl.EmailUser() {
                     @Override
                     public String getPlaceholder() {

@@ -113,8 +113,8 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
-                new Acl.GroupUser(new AllAuthenticatedUsersGrantee().getIdentifier(), false),
-                new Acl.GroupUser(new AllUsersGrantee().getIdentifier(), false))
+                new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED, false),
+                new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
         users.add(new Acl.EmailUser() {
             @Override
