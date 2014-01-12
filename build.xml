@@ -57,6 +57,9 @@
     <condition property="platform" value="windows">
         <os family="windows"/>
     </condition>
+    <condition property="platform" value="linux">
+        <os family="unix"/>
+    </condition>
 
     <import description="Platform specific targets" file="build-${platform}.xml"/>
 

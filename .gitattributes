@@ -126,6 +126,7 @@ bg.lproj/S3.strings -text svneol=unset#text/utf-16
 bg.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 bg.lproj/Status.strings -text svneol=unset#text/utf-16
 bg.lproj/Transfer.strings -text svneol=unset#text/utf-16
+/build-linux.xml svneol=native#text/xml
 /build-mac.xml svneol=native#text/xml
 /build-windows.xml svneol=native#text/xml
 /build.xml svneol=native#text/xml
