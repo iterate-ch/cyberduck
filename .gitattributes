@@ -1843,7 +1843,7 @@ lib/aws-java-sdk-1.6.6.jar -text svneol=unset#application/jar
 lib/bcmail-jdk15-145.jar -text
 lib/bcprov-jdk15-145.jar -text
 lib/cglib-2.2.2.jar -text
-lib/commons-codec-1.6.jar -text
+lib/commons-codec-1.8.jar -text svneol=unset#application/zip
 lib/commons-collections-3.2.1.jar -text
 lib/commons-io-2.4.jar -text svneol=unset#application/zip
 lib/commons-lang3-3.1.jar -text svneol=unset#application/zip
