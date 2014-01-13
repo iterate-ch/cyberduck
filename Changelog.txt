@@ -5,6 +5,10 @@ Changelog. Last modified: $Date$
 
 4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
 - [Bugfix] File segments not deleted when a large object is overwritten or manifest is deleted (Openstack Swift) (#7682, #7679)
+- [Bugfix] Re-authentication failure (Openstack Swift) (#7608)
+- [Bugfix] Downloading dynamic large object fails (Openstack Swift) (#7693)
+- [Bugfix] Cannot update ACL with anonymous grant (S3) (#7726)
+- [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
 
 4.4.3 [https://trac.cyberduck.io/milestone/4.4.3]
 - [Feature] Support TLS 1.1 and TLS 1.2 (#7637)
