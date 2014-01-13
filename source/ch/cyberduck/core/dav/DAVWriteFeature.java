@@ -85,7 +85,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             @Override
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                    return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload failed", e, file);
@@ -93,7 +93,6 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
                 }
-                return null;
             }
 
             @Override
