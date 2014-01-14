@@ -14,7 +14,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -23,7 +22,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -72,29 +70,6 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
-        session.close();
-    }
-
-    @Test
-    public void testReadWritePixiGallery2() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "g2.pixi.me", new Credentials(
-                "webdav", "webdav"
-        ));
-        host.setDefaultPath("/w/webdav/");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
-        status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final OutputStream out = new DAVWriteFeature(session, true).write(test, status);
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
-        IOUtils.closeQuietly(out);
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize(), 0L);
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
