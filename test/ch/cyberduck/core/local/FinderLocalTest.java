@@ -85,7 +85,7 @@ public class FinderLocalTest extends AbstractTestCase {
                 Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
                 l.touch();
                 final Permission permission = new Permission(644);
-                l.writeUnixPermission(permission);
+                l.attributes().setPermission(permission);
                 assertEquals(permission, l.attributes().getPermission());
                 l.delete();
                 return l;

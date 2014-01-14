@@ -195,7 +195,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
             }
-            file.getLocal().writeTimestamp(-1, timestamp, -1);
+            file.getLocal().attributes().setModificationDate(timestamp);
         }
     }
 
@@ -226,7 +226,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
             }
-            file.getLocal().writeUnixPermission(permission);
+            file.getLocal().attributes().setPermission(permission);
         }
     }
 }

@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -24,6 +26,7 @@ import java.io.IOException;
  *
  */
 public class LocalAttributes extends Attributes {
+    private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private String path;
 
@@ -61,6 +64,15 @@ public class LocalAttributes extends Attributes {
         return this.getModificationDate();
     }
 
+    public void setModificationDate(final long timestamp) {
+        if(timestamp < 0) {
+            return;
+        }
+        if(!new File(path).setLastModified(timestamp)) {
+            log.error(String.format("Write modification date failed for %s", path));
+        }
+    }
+
     @Override
     public long getSize() {
         if(this.isDirectory()) {
@@ -76,6 +88,10 @@ public class LocalAttributes extends Attributes {
     @Override
     public Permission getPermission() {
         return permission;
+    }
+
+    public void setPermission(final Permission permission) {
+        this.permission = permission;
     }
 
     /**

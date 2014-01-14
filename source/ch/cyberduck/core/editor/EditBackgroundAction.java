@@ -83,7 +83,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
         // Update local permissions to make sure the file is readable and writable for editing.
         permissions.setUser(permissions.getUser().or(Permission.Action.read).or(Permission.Action.write));
         if(!permissions.equals(file.getLocal().attributes().getPermission())) {
-            file.getLocal().writeUnixPermission(permissions);
+            file.getLocal().attributes().setPermission(permissions);
         }
         try {
             editor.edit();

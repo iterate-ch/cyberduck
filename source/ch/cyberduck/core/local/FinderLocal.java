@@ -22,7 +22,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
@@ -32,11 +31,8 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
@@ -353,54 +349,13 @@ public class FinderLocal extends Local {
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }
 
-    private static final Object workspace = new Object();
-
-    @Override
-    public void writeUnixPermission(final Permission permission) {
-        synchronized(workspace) {
-            final ObjCObjectByReference error = new ObjCObjectByReference();
-            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
-                    NSDictionary.dictionaryWithObjectsForKeys(
-                            NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
-                            NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                    this.getAbsolute(), error);
-            if(!success) {
-                final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
-            }
-        }
-    }
-
-    /**
-     * Write <code>NSFileModificationDate</code>.
-     *
-     * @param created  Milliseconds
-     * @param modified Milliseconds
-     * @param accessed Milliseconds
-     */
-    @Override
-    public void writeTimestamp(final long created, final long modified, final long accessed) {
-        synchronized(workspace) {
-            final ObjCObjectByReference error = new ObjCObjectByReference();
-            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
-                    NSDictionary.dictionaryWithObjectsForKeys(
-                            NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
-                            NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                    getAbsolute(), error);
-            if(!success) {
-                final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
-            }
-        }
-    }
-
     /**
      * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
      */
     @Override
     public void trash() {
         if(this.exists()) {
-            synchronized(workspace) {
+            synchronized(NSWorkspace.class) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Move %s to Trash", this));
                 }

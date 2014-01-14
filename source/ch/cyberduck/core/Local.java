@@ -259,19 +259,6 @@ public abstract class Local extends AbstractPath implements Serializable {
         return new File(path).exists();
     }
 
-    public void writeUnixPermission(final Permission permission) {
-        //
-    }
-
-    public void writeTimestamp(final long created, final long modified, final long accessed) {
-        if(modified < 0) {
-            return;
-        }
-        if(!new File(path).setLastModified(modified)) {
-            log.error(String.format("Write modification date failed for %s", path));
-        }
-    }
-
     public void rename(final Local renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
             log.error(String.format("Rename failed for %s", renamed));

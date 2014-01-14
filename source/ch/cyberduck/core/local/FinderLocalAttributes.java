@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
@@ -109,6 +110,43 @@ public class FinderLocalAttributes extends LocalAttributes {
             log.error(e.getMessage());
         }
         return Permission.EMPTY;
+    }
+
+    @Override
+    public void setPermission(final Permission permission) {
+        synchronized(NSWorkspace.class) {
+            final ObjCObjectByReference error = new ObjCObjectByReference();
+            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
+                    NSDictionary.dictionaryWithObjectsForKeys(
+                            NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
+                            NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
+                    local.getAbsolute(), error);
+            if(!success) {
+                final NSError f = error.getValueAs(NSError.class);
+                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+            }
+        }
+    }
+
+    /**
+     * Write <code>NSFileModificationDate</code>.
+     *
+     * @param modified Milliseconds
+     */
+    @Override
+    public void setModificationDate(final long modified) {
+        synchronized(NSWorkspace.class) {
+            final ObjCObjectByReference error = new ObjCObjectByReference();
+            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
+                    NSDictionary.dictionaryWithObjectsForKeys(
+                            NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
+                            NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
+                    local.getAbsolute(), error);
+            if(!success) {
+                final NSError f = error.getValueAs(NSError.class);
+                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+            }
+        }
     }
 
     /**
