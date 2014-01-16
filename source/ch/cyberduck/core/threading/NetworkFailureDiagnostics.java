@@ -21,6 +21,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 
 import javax.net.ssl.SSLException;
@@ -34,7 +35,7 @@ import java.net.UnknownHostException;
 public final class NetworkFailureDiagnostics {
 
     public boolean isNetworkFailure(final BackgroundException e) {
-        final Throwable cause = e.getCause();
+        final Throwable cause = ExceptionUtils.getRootCause(e);
         if(cause instanceof SSLException) {
             return StringUtils.contains(cause.getMessage(), "Received close_notify during handshake");
         }
