@@ -95,8 +95,13 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private void configure(final Socket socket, final String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
-                log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
+                }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Enabled cipher suites %s", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                }
             }
             catch(Exception e) {
                 log.warn(String.format("Failed to configure SSL parameters %s", e.getMessage()));
