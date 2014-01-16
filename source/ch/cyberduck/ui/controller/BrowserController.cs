@@ -2332,6 +2332,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IEnumerable<Path> children = _browserModel.ChildrenGetter(Workdir);
                 //clear selection before resetting model. Otherwise we have weird selection effects.
                 SelectedPaths = new List<Path>();
+                View.SetBrowserModel(null); // #7670
                 View.SetBrowserModel(children);
                 SelectedPaths = selected;
                 List<Path> toUpdate = new List<Path>();
