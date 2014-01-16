@@ -22,11 +22,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
 import java.net.URI;
 
 import com.github.sardine.impl.SardineImpl;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  * @version $Id$
@@ -35,7 +37,7 @@ public class DAVClient extends SardineImpl {
 
     private String uri;
 
-    public DAVClient(final String uri, final AbstractHttpClient http) {
+    public DAVClient(final String uri, final HttpClientBuilder http) {
         super(http);
         this.uri = uri;
     }

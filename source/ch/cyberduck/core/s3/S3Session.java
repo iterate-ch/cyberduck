@@ -30,7 +30,6 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -48,8 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
@@ -118,13 +116,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
         @Override
         protected HttpClient initHttpConnection() {
-            final AbstractHttpClient client = connect();
-            if(Preferences.instance().getBoolean("s3.expect-continue")) {
-                // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
-                HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
-            }
-            client.setHttpRequestRetryHandler(new RestUtils.JetS3tRetryHandler(5, this));
-            return client;
+            final HttpClientBuilder builder = connect();
+            builder.setRetryHandler(new RestUtils.JetS3tRetryHandler(5, this));
+            return builder.build();
         }
 
         @Override
@@ -250,6 +244,16 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                         Collections.<String, Object>singletonMap("x-goog-project-id", getProjectId()));
             }
             return super.listAllBucketsImpl();
+        }
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            client.shutdown();
+        }
+        catch(ServiceException e) {
+            throw new ServiceExceptionMappingService().map(e);
         }
     }
 

@@ -88,7 +88,17 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public Client connect(final HostKeyCallback key) throws BackgroundException {
-        return new Client(super.connect());
+        return new Client(super.connect().build());
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            client.disconnect();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

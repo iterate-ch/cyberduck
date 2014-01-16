@@ -52,7 +52,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
@@ -86,14 +86,24 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
-        final AbstractHttpClient client = super.connect();
-        client.setRedirectStrategy(new SardineRedirectStrategy() {
+        final HttpClientBuilder builder = super.connect();
+        builder.setRedirectStrategy(new SardineRedirectStrategy() {
             @Override
             protected boolean isRedirectable(final String method) {
                 return redirect.redirect(method);
             }
         });
-        return new DAVClient(new HostUrlProvider(false).get(host), client);
+        return new DAVClient(new HostUrlProvider(false).get(host), builder);
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            client.shutdown();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

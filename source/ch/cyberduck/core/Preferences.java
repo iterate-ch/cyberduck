@@ -541,8 +541,6 @@ public abstract class Preferences {
         defaults.put("ftp.timezone.auto", String.valueOf(false));
         defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
 
-        defaults.put("s3.expect-continue", String.valueOf(true));
-
         /**
          * Default bucket location
          */

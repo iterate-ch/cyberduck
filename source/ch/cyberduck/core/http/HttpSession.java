@@ -24,7 +24,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -37,27 +37,30 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.auth.params.AuthParams;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.auth.AuthSchemeProvider;
+import org.apache.http.client.config.AuthSchemes;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.params.ConnRouteParams;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.config.ConnectionConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.impl.auth.BasicSchemeFactory;
+import org.apache.http.impl.auth.DigestSchemeFactory;
+import org.apache.http.impl.auth.KerberosSchemeFactory;
+import org.apache.http.impl.auth.NTLMSchemeFactory;
+import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
@@ -66,7 +69,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.security.cert.X509Certificate;
 
 /**
@@ -81,8 +84,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private ThreadLocal<String> target
             = new ThreadLocal<String>();
 
-    protected AbstractHttpClient route;
-
     protected HttpSession(final Host host) {
         super(host);
         target.set(host.getHostname());
@@ -93,15 +94,12 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         target.set(host.getHostname());
     }
 
-    public AbstractHttpClient connect() {
-        final HttpParams params = this.parameters();
-        final SchemeRegistry registry = new SchemeRegistry();
+    public HttpClientBuilder connect() {
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
         // factory to be used to create the java.net.Socket instances for the given protocol
-        registry.register(new Scheme(ch.cyberduck.core.Scheme.http.toString(), ch.cyberduck.core.Scheme.http.getPort(),
-                PlainSocketFactory.getSocketFactory()));
-        registry.register(new Scheme(ch.cyberduck.core.Scheme.https.toString(), ch.cyberduck.core.Scheme.https.getPort(),
-                new SSLSocketFactory(
+        final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(Scheme.http.toString(), PlainConnectionSocketFactory.getSocketFactory())
+                .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()),
                         new X509HostnameVerifier() {
                             @Override
@@ -130,25 +128,58 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         }
                 ) {
                     @Override
-                    public Socket connectSocket(final Socket socket, final InetSocketAddress remoteAddress,
-                                                final InetSocketAddress localAddress, final HttpParams params)
-                            throws IOException, UnknownHostException, ConnectTimeoutException {
+                    public Socket connectSocket(final int connectTimeout,
+                                                final Socket socket,
+                                                final HttpHost host,
+                                                final InetSocketAddress remoteAddress,
+                                                final InetSocketAddress localAddress,
+                                                final HttpContext context) throws IOException {
                         target.set(remoteAddress.getHostName());
-                        return super.connectSocket(socket, remoteAddress, localAddress, params);
+                        return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                     }
-                }));
+                }).build();
+        final HttpClientBuilder builder = HttpClients.custom();
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-            this.proxy(params);
+            final Proxy proxy = ProxyFactory.get();
+            if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
+                if(proxy.isHTTPSProxyEnabled(host)) {
+                    builder.setProxy(new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
+                }
+            }
+            if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
+                if(proxy.isHTTPProxyEnabled(host)) {
+                    builder.setProxy(new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
+                }
+            }
         }
-        final PoolingClientConnectionManager manager = this.pool(registry);
-        route = new DefaultHttpClient(manager, params);
-        route.addRequestInterceptor(new HttpRequestInterceptor() {
+        final HttpClientConnectionManager manager = this.pool(registry);
+        builder.setUserAgent(new PreferencesUseragentProvider().get());
+        builder.setConnectionManager(manager);
+        builder.setDefaultSocketConfig(SocketConfig.custom()
+                .setTcpNoDelay(true)
+                .setSoTimeout(this.timeout())
+                .build());
+        builder.setDefaultRequestConfig(RequestConfig.custom()
+                .setRedirectsEnabled(true)
+                .setExpectContinueEnabled(true)
+                .setAuthenticationEnabled(true)
+                .setConnectTimeout(timeout())
+                        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+                .setConnectionRequestTimeout(Preferences.instance().getInteger("http.manager.timeout"))
+                .setStaleConnectionCheckEnabled(true)
+                .setSocketTimeout(timeout())
+                .build());
+        builder.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setBufferSize(Preferences.instance().getInteger("http.socket.buffer"))
+                .setCharset(Charset.forName(getEncoding()))
+                .build());
+        builder.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                target.set(((HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST)).getHostName());
+                target.set(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
             }
         });
-        route.addRequestInterceptor(new HttpRequestInterceptor() {
+        builder.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 log(true, request.getRequestLine().toString());
@@ -157,7 +188,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         });
-        route.addResponseInterceptor(new HttpResponseInterceptor() {
+        builder.addInterceptorLast(new HttpResponseInterceptor() {
             @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(false, response.getStatusLine().toString());
@@ -167,60 +198,26 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             }
         });
         if(Preferences.instance().getBoolean("http.compression.enable")) {
-            route.addRequestInterceptor(new RequestAcceptEncoding());
-            route.addResponseInterceptor(new ResponseContentEncoding());
+            builder.addInterceptorLast(new RequestAcceptEncoding());
+            builder.addInterceptorLast(new ResponseContentEncoding());
         }
-        return route;
+        builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
+                .register(AuthSchemes.BASIC, new BasicSchemeFactory(
+                        Charset.forName(Preferences.instance().getProperty("http.credentials.charset"))))
+                .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
+                        Charset.forName(Preferences.instance().getProperty("http.credentials.charset"))))
+                .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
+                .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
+                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory())
+                .build());
+        return builder;
     }
 
-    protected PoolingClientConnectionManager pool(final SchemeRegistry registry) {
-        final PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
+    protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {
+        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
         return manager;
-    }
-
-    protected void proxy(final HttpParams params) {
-        final Proxy proxy = ProxyFactory.get();
-        if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
-            if(proxy.isHTTPSProxyEnabled(host)) {
-                ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
-            }
-        }
-        if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
-            if(proxy.isHTTPProxyEnabled(host)) {
-                ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
-            }
-        }
-    }
-
-    protected HttpParams parameters() {
-        final HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setContentCharset(params, getEncoding());
-        HttpProtocolParams.setUserAgent(params, new PreferencesUseragentProvider().get());
-
-        AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
-
-        HttpConnectionParams.setTcpNoDelay(params, true);
-        HttpConnectionParams.setSoTimeout(params, timeout());
-        HttpConnectionParams.setConnectionTimeout(params, timeout());
-        HttpConnectionParams.setSocketBufferSize(params,
-                Preferences.instance().getInteger("http.socket.buffer"));
-        HttpConnectionParams.setStaleCheckingEnabled(params, true);
-
-        HttpClientParams.setRedirecting(params, true);
-        HttpClientParams.setAuthenticating(params, true);
-        HttpClientParams.setCookiePolicy(params, CookiePolicy.BEST_MATCH);
-
-        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-        HttpClientParams.setConnectionManagerTimeout(params, Preferences.instance().getLong("http.manager.timeout"));
-        return params;
-    }
-
-    @Override
-    protected void logout() throws BackgroundException {
-        route.getConnectionManager().shutdown();
     }
 
     @Override
