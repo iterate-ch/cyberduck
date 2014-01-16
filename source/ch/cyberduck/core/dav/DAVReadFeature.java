@@ -50,8 +50,7 @@ public class DAVReadFeature implements Read {
         if(status.isAppend()) {
             headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
             // Disable compression
-            headers.put(HttpHeaders.ACCEPT, "identity");
-            session.getClient().disableCompression();
+            headers.put(HttpHeaders.ACCEPT_ENCODING, "identity");
         }
         try {
             final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file), headers);
