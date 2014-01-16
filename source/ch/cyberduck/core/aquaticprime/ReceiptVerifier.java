@@ -22,20 +22,23 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.DEREncodable;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DERInteger;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.DLSequence;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.jce.PKCS7SignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Store;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,6 +48,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 
 /**
@@ -68,62 +72,66 @@ public class ReceiptVerifier implements LicenseVerifier {
     @Override
     public boolean verify() {
         try {
-            PKCS7SignedData signature = new PKCS7SignedData(IOUtils.toByteArray(new FileInputStream(
-                    file.getAbsolute()
-            )));
-
-            signature.verify();
-            // For additional security, you may verify the fingerprint of the root CA and the OIDs of the
-            // intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the
-            // intermediate CA is (1 2 840 113635 100 5 6 1), and the Marker OID of the signing certificate
-            // is (1 2 840 113635 100 6 11 1).
-
+//            For additional security, you may verify the fingerprint of the root CA and the OIDs of the
+//            intermediate CA and signing certificate. The OID in the Certificate Policies Extension of the
+//            intermediate CA is (1 2 840 113635 100 5 6 1), and the Marker OID of the signing certificate
+//            is (1 2 840 113635 100 6 11 1).
+            final CMSSignedData s = new CMSSignedData(new FileInputStream(file.getAbsolute()));
+            Store certs = s.getCertificates();
+            SignerInformationStore signers = s.getSignerInfos();
+            for(SignerInformation signer : (Iterable<SignerInformation>) signers.getSigners()) {
+                final Collection<X509CertificateHolder> matches = certs.getMatches(signer.getSID());
+                for(X509CertificateHolder holder : matches) {
+                    if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(
+                            new BouncyCastleProvider()
+                    ).build(holder))) {
+                        return false;
+                    }
+                }
+            }
             // Extract the receipt attributes
-            final CMSSignedData s = new CMSSignedData(new FileInputStream(
-                    file.getAbsolute()
-            ));
             final CMSProcessable signedContent = s.getSignedContent();
             byte[] originalContent = (byte[]) signedContent.getContent();
-            final ASN1Object asn = ASN1Object.fromByteArray(originalContent);
+            final ASN1Primitive asn = ASN1Primitive.fromByteArray(originalContent);
 
             byte[] opaque = null;
             String bundleIdentifier = null;
             String bundleVersion = null;
             byte[] hash = null;
 
-            if(asn instanceof DERSet) {
+            if(asn instanceof ASN1Set) {
                 // 2 Bundle identifier      Interpret as an ASN.1 UTF8STRING.
                 // 3 Application version    Interpret as an ASN.1 UTF8STRING.
                 // 4 Opaque value           Interpret as a series of bytes.
                 // 5 SHA-1 hash             Interpret as a 20-byte SHA-1 digest value.
-                final DERSet set = (DERSet) asn;
+                final ASN1Set set = (ASN1Set) asn;
                 final Enumeration enumeration = set.getObjects();
                 while(enumeration.hasMoreElements()) {
                     Object next = enumeration.nextElement();
-                    if(next instanceof DERSequence) {
-                        DERSequence sequence = (DERSequence) next;
-                        DEREncodable type = sequence.getObjectAt(0);
+                    if(next instanceof DLSequence) {
+                        DLSequence sequence = (DLSequence) next;
+                        ASN1Encodable type = sequence.getObjectAt(0);
                         if(type instanceof DERInteger) {
                             if(((DERInteger) type).getValue().intValue() == 2) {
-                                final DEREncodable value = sequence.getObjectAt(2);
+                                final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleIdentifier = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 3) {
-                                final DEREncodable value = sequence.getObjectAt(2);
+                                final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     bundleVersion = new String(((DEROctetString) value).getOctets(), "UTF-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 4) {
-                                final DEREncodable value = sequence.getObjectAt(2);
+                                final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     opaque = ((DEROctetString) value).getOctets();
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 5) {
-                                final DEREncodable value = sequence.getObjectAt(2);
+                                final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
                                     hash = ((DEROctetString) value).getOctets();
                                 }
@@ -137,12 +145,12 @@ public class ReceiptVerifier implements LicenseVerifier {
                 return false;
             }
             if(!StringUtils.equals("ch.sudo.cyberduck", StringUtils.trim(bundleIdentifier))) {
-                log.error("Bundle identifier in ASN set does not match");
+                log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
                 return false;
             }
             if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleShortVersionString"),
                     StringUtils.trim(bundleVersion))) {
-                log.warn("Bundle version in ASN set does not match");
+                log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
             final NetworkInterface en0 = NetworkInterface.getByName("en0");
             if(null == en0) {
