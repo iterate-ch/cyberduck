@@ -79,11 +79,6 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        public override void writeUnixPermission(Permission p)
-        {
-            ;
-        }
-
         public override LocalAttributes attributes()
         {
             if (null == _info)
