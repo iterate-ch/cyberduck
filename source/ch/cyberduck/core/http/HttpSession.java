@@ -180,6 +180,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .setBufferSize(Preferences.instance().getInteger("http.socket.buffer"))
                 .setCharset(Charset.forName(getEncoding()))
                 .build());
+        builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
         builder.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
