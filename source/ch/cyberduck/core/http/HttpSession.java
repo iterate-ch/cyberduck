@@ -167,7 +167,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .build());
         builder.setDefaultRequestConfig(RequestConfig.custom()
                 .setRedirectsEnabled(true)
-                .setExpectContinueEnabled(true)
+                // Disable use of Expect: Continue by default for all methods
+                .setExpectContinueEnabled(false)
                 .setAuthenticationEnabled(true)
                 .setConnectTimeout(timeout())
                         // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
