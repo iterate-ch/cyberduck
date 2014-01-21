@@ -49,10 +49,6 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
     }
 
     public MemoryHostKeyVerifier(final Local file) {
-        this.setDatabase(file);
-    }
-
-    protected void setDatabase(final Local file) {
         if(!file.exists()) {
             file.touch();
         }
@@ -100,7 +96,8 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Canceled by user
      */
     protected abstract boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
                                                     byte[] serverHostKey) throws ConnectionCanceledException;
@@ -111,7 +108,8 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Canceled by user
      */
     protected abstract boolean isChangedKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
                                                     byte[] serverHostKey) throws ConnectionCanceledException;
