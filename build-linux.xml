@@ -27,13 +27,24 @@
 
     <property name="ikvm.home" value="${home}/ikvm-7.2.4630.5"/>
 
-    <target name="build" depends="dll">
+    <target name="build">
+        <echo message="Version=${version}"/>
+        <echo message="ShortVersion=${shortversion}"/>
+        <echo message="Configuration=${configuration}"/>
+        <echo message="Platform=${architecture}"/>
+
         <exec executable="xbuild" dir="${home}">
+            <arg value="/target:build"/>
+            <!--<arg value="/verbosity:minimal"/>-->
+            <arg value="/property:Version=${version}"/>
+            <arg value="/property:ShortVersion=${shortversion}"/>
+            <arg value="/property:Configuration=${configuration}"/>
+            <arg value="/property:Platform=${architecture}"/>
             <arg value="source/ch/cyberduck/Cyberduck.csproj"/>
         </exec>
     </target>
 
-    <target name="dll" depends="archive">
+    <target name="dll" depends="version, archive">
         <fileset id="jars" dir=".">
             <include name="build/core.jar"/>
             <include name="build/ui.jar"/>
@@ -47,7 +58,12 @@
         <pathconvert property="jars" refid="jars" pathsep=" ">
             <mapper type="regexp" from="^(.*)$" to="{ \1 }"/>
         </pathconvert>
+        <echo message="Building ${build}/core.dll"/>
         <exec executable="${ikvm.home}/bin/ikvmc.exe" dir="${home}">
+            <arg value="-out:${build}/core.dll"/>
+            <arg value="-assembly:${core}"/>
+            <arg value="-version:${version}"/>
+            <arg value="-platform:x86"/>
             <arg value="-target:library"/>
             <arg value="-sharedclassloader"/>
             <arg line="${jars}"/>
