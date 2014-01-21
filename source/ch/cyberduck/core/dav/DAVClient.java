@@ -21,14 +21,12 @@ package ch.cyberduck.core.dav;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 
 import com.github.sardine.impl.SardineImpl;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  * @version $Id$
