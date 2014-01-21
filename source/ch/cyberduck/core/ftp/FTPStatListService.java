@@ -53,21 +53,7 @@ public class FTPStatListService implements ListService {
             final int response = session.getClient().stat(directory.getAbsolute());
             if(FTPReply.isPositiveCompletion(response)) {
                 final String[] reply = session.getClient().getReplyStrings();
-                final List<String> result = new ArrayList<String>(reply.length);
-                for(final String line : reply) {
-                    //Some servers include the status code for every line.
-                    if(line.startsWith(String.valueOf(response))) {
-                        try {
-                            result.add(StringUtils.strip(line.substring(line.indexOf(response) + line.length() + 1)));
-                        }
-                        catch(IndexOutOfBoundsException e) {
-                            log.error(String.format("Failed parsing line %s", line), e);
-                        }
-                    }
-                    else {
-                        result.add(StringUtils.strip(line));
-                    }
-                }
+                final List<String> result = this.parse(response, reply);
                 return new FTPListResponseReader().read(session, listener, directory, parser, result);
             }
             else {
@@ -77,5 +63,24 @@ public class FTPStatListService implements ListService {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
         }
+    }
+
+    protected List<String> parse(int response, String[] reply) {
+        final List<String> result = new ArrayList<String>(reply.length);
+        for(final String line : reply) {
+            //Some servers include the status code for every line.
+            if(line.startsWith(String.valueOf(response))) {
+                try {
+                    result.add(StringUtils.strip(line.substring(line.indexOf(response) + line.length() + 1)));
+                }
+                catch(IndexOutOfBoundsException e) {
+                    log.error(String.format("Failed parsing line %s", line), e);
+                }
+            }
+            else {
+                result.add(StringUtils.strip(line));
+            }
+        }
+        return result;
     }
 }

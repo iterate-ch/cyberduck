@@ -17,13 +17,24 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -49,5 +60,12 @@ public class FTPStatListServiceTest extends AbstractTestCase {
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
                 list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
         session.close();
+    }
+
+    @Test
+    public void testParse() {
+        final List<String> list = new FTPStatListService(null, null).parse(
+                200, new String[]{" drwxr-xr-x  11 root     root          8192 Dec 14 23:44 DK_BookStore"});
+        assertEquals(1, list.size());
     }
 }
