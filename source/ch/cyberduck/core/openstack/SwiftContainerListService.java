@@ -77,46 +77,54 @@ public class SwiftContainerListService implements RootListService {
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
+            final int limit = Preferences.instance().getInteger("openstack.list.limit");
             final Client client = session.getClient();
             for(Region region : client.getRegions()) {
                 // List all containers
-                for(final Container f : client.listContainers(region)) {
-                    final Path container = new Path(String.format("/%s", f.getName()),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    container.attributes().setRegion(f.getRegion().getRegionId());
-                    if(cdn) {
-                        final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                        threadFactory.newThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                for(Distribution.Method method : cdn.getMethods(container)) {
+                List<Container> chunk;
+                String marker = null;
+                do {
+                    chunk = client.listContainers(region, limit, marker);
+                    for(final Container f : chunk) {
+                        final Path container = new Path(String.format("/%s", f.getName()),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        container.attributes().setRegion(f.getRegion().getRegionId());
+                        if(cdn) {
+                            final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
+                            threadFactory.newThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for(Distribution.Method method : cdn.getMethods(container)) {
+                                        try {
+                                            cdn.read(container, method, new DisabledLoginController());
+                                        }
+                                        catch(BackgroundException e) {
+                                            log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
+                                        }
+                                    }
+                                }
+                            }).start();
+                        }
+                        if(size) {
+                            threadFactory.newThread(new Runnable() {
+                                @Override
+                                public void run() {
                                     try {
-                                        cdn.read(container, method, new DisabledLoginController());
+                                        final ContainerInfo info = client.getContainerInfo(f.getRegion(), f.getName());
+                                        container.attributes().setSize(info.getTotalSize());
                                     }
-                                    catch(BackgroundException e) {
-                                        log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
+                                    catch(IOException e) {
+                                        log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
                                     }
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        }
+                        containers.add(container);
+                        marker = f.getName();
                     }
-                    if(size) {
-                        threadFactory.newThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    final ContainerInfo info = client.getContainerInfo(f.getRegion(), f.getName());
-                                    container.attributes().setSize(info.getTotalSize());
-                                }
-                                catch(IOException e) {
-                                    log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
-                                }
-                            }
-                        }).start();
-                    }
-                    containers.add(container);
                     listener.chunk(new AttributedList<Path>(containers));
                 }
+                while(!chunk.isEmpty());
             }
             return containers;
         }
