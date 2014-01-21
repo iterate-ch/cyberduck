@@ -17,7 +17,16 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
@@ -167,7 +176,7 @@ public class FTPListService implements ListService {
                     this.remove(Command.lista);
                 }
                 catch(FTPInvalidListException e) {
-                    this.remove(Command.lista);
+                    // Empty directory listing. #7737
                 }
             }
             try {
