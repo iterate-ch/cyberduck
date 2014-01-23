@@ -104,7 +104,6 @@ public class SwiftAuthenticationService {
                 user = credentials.getUsername();
                 final Credentials tenantCredentials = new TenantCredentials();
                 final LoginOptions options = new LoginOptions();
-                options.user = false;
                 options.password = false;
                 prompt.prompt(host.getProtocol(), tenantCredentials,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
