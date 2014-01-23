@@ -18,11 +18,33 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
+import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -315,7 +337,8 @@ public final class PromptLoginController implements LoginCallback {
                 this.pkCheckbox.setEnabled(options.publickey);
                 if(options.publickey && credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
-                    this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath());
+                    this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES);
                     this.pkLabel.setTextColor(NSColor.textColor());
                 }
                 else {
