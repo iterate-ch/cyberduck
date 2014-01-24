@@ -15,11 +15,10 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftAttributesFeatureTest extends AbstractTestCase {
 
@@ -59,6 +58,23 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
         assertNotNull(attributes.getModificationDate());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        session.close();
+    }
+
+    @Test
+    public void testFindContainer() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        container.attributes().setRegion("DFW");
+        final PathAttributes attributes = new SwiftAttributesFeature(session).find(container);
+        assertTrue(attributes.getSize() > 0);
+        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, attributes.getType());
         session.close();
     }
 }
