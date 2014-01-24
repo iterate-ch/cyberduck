@@ -516,9 +516,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param nickname Custom name
      */
     public void setNickname(String nickname) {
-        if(!this.getDefaultNickname().equals(nickname)) {
-            this.nickname = nickname;
-        }
+        this.nickname = nickname;
     }
 
     /**
@@ -570,7 +568,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The character encoding to be used when connecting to this server or null
-     * if the default encoding should be used
+     *         if the default encoding should be used
      */
     public String getEncoding() {
         return encoding;
@@ -582,7 +580,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The connect mode to be used when connecting
-     * to this server or null if the default connect mode should be used
+     *         to this server or null if the default connect mode should be used
      */
     public FTPConnectMode getFTPConnectMode() {
         return connectMode;
@@ -600,7 +598,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     * if the default should be used
+     *         if the default should be used
      */
     public Integer getMaxConnections() {
         return maxConnections;
