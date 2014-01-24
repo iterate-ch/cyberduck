@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -61,6 +62,7 @@ public class DefaultIOExceptionMappingService extends AbstractIOExceptionMapping
         }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
+        this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
         return this.wrap(failure, buffer);
     }
 }
