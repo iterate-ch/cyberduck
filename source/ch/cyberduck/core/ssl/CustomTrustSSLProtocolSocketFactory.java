@@ -99,8 +99,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                     log.debug(String.format("Configure SSL parameters with protocols %s", Arrays.toString(protocols)));
                 }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Enabled cipher suites %s", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Enabled cipher suites %s", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
                 }
             }
             catch(Exception e) {
