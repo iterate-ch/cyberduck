@@ -62,7 +62,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
@@ -71,7 +70,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 
 /**
@@ -79,10 +77,6 @@ import java.security.cert.X509Certificate;
  */
 public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
-
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     /**
      * Target hostname of current request stored as thread local
@@ -167,7 +161,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .build());
         builder.setDefaultRequestConfig(RequestConfig.custom()
                 .setRedirectsEnabled(true)
-                // Disable use of Expect: Continue by default for all methods
+                        // Disable use of Expect: Continue by default for all methods
                 .setExpectContinueEnabled(false)
                 .setAuthenticationEnabled(true)
                 .setConnectTimeout(timeout())

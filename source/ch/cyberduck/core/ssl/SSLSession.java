@@ -22,7 +22,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import javax.net.ssl.X509TrustManager;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +34,10 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class SSLSession<C> extends Session<C> implements TrustManagerHostnameCallback {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private X509TrustManager trust;
 
