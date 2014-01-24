@@ -44,8 +44,8 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
     protected AbstractX509KeyManager() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.
-            KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+            final KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            final KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
             // Load default key store
             store.load(null);
             // Load default key manager factory using key store
@@ -58,8 +58,8 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
                 }
             }
             if(null == manager) {
-                throw new NoSuchAlgorithmException("The default algorithm :" +
-                        KeyManagerFactory.getDefaultAlgorithm() + " did not produce a X509 Key manager");
+                throw new NoSuchAlgorithmException(String.format("The default algorithm %s did not produce a X509 Key manager",
+                        KeyManagerFactory.getDefaultAlgorithm()));
             }
         }
         catch(CertificateException e) {
