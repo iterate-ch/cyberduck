@@ -105,12 +105,20 @@ public class SwiftAuthenticationService {
                 final Credentials tenantCredentials = new TenantCredentials();
                 final LoginOptions options = new LoginOptions();
                 options.password = false;
-                prompt.prompt(host.getProtocol(), tenantCredentials,
+                prompt.prompt(new SwiftProtocol() {
+                    @Override
+                    public boolean validate(Credentials credentials, LoginOptions options) {
+                        // Allow empty tenant
+                        return true;
+                    }
+                }, tenantCredentials,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant or project identifier", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
-                // Save tenant in username
-                credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                if(StringUtils.isNotBlank(tenant)) {
+                    // Save tenant in username
+                    credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
+                }
             }
             if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
                 return new Authentication20AccessKeySecretKeyRequest(
@@ -120,7 +128,7 @@ public class SwiftAuthenticationService {
             }
             return new Authentication20UsernamePasswordRequest(
                     URI.create(url.toString()),
-                    user, host.getCredentials().getPassword(), tenant
+                    user, credentials.getPassword(), tenant
             );
         }
         else {
