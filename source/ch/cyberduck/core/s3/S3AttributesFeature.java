@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 
@@ -34,13 +35,21 @@ public class S3AttributesFeature implements Attributes {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new PathContainerService();
+
     public S3AttributesFeature(S3Session session) {
         this.session = session;
     }
 
     @Override
     public PathAttributes find(Path file) throws BackgroundException {
-        return this.find(new S3ObjectDetailService(session).getDetails(file));
+        if(containerService.isContainer(file)) {
+            return new PathAttributes(Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        }
+        else {
+            return this.find(new S3ObjectDetailService(session).getDetails(file));
+        }
     }
 
     @Override
