@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
@@ -28,6 +29,8 @@ import java.util.Set;
 public interface Protocol {
 
     Session createSession(Host host);
+
+    boolean validate(Credentials credentials, LoginOptions options);
 
     public enum Type {
         ftp {
@@ -44,7 +47,7 @@ public interface Protocol {
         },
         ssh {
             @Override
-            public boolean validate(Credentials credentials, final LoginOptions options) {
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
                 if(credentials.isPublicKeyAuthentication()) {
                     return StringUtils.isNotBlank(credentials.getUsername());
                 }
@@ -60,7 +63,19 @@ public interface Protocol {
             }
         },
         swift,
-        dav;
+        dav,
+        azure {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                if(super.validate(credentials, options)) {
+                    if(Base64.isBase64(credentials.getPassword())) {
+                        return true;
+                    }
+                    // Storage Key is not a valid base64 encoded string
+                }
+                return false;
+            }
+        };
 
         /**
          * Check login credentials for validity for this protocol.
@@ -69,7 +84,7 @@ public interface Protocol {
          * @param options     Options
          * @return True if username is not a blank string and password is not empty ("") and not null.
          */
-        public boolean validate(Credentials credentials, final LoginOptions options) {
+        public boolean validate(final Credentials credentials, final LoginOptions options) {
             if(options.user) {
                 if(StringUtils.isBlank(credentials.getUsername())) {
                     return false;

@@ -154,6 +154,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean validate(Credentials credentials, LoginOptions options) {
+        return this.getType().validate(credentials, options);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if(this == o) {
             return true;

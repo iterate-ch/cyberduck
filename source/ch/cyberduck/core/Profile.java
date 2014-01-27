@@ -220,6 +220,11 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean validate(Credentials credentials, LoginOptions options) {
+        return parent.validate(credentials, options);
+    }
+
+    @Override
     public Scheme getScheme() {
         final String v = this.value("Scheme");
         if(StringUtils.isBlank(v)) {
