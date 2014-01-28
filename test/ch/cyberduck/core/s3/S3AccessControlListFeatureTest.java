@@ -119,7 +119,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testWriteNotFound() throws Exception {
+    public void testReadNotFound() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -134,7 +134,7 @@ public class S3AccessControlListFeatureTest extends AbstractTestCase {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testReadNotFound() throws Exception {
+    public void testWriteNotFound() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
