@@ -20,20 +20,16 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureFindFeature implements Find {
 
     private AzureSession session;
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     private Cache cache;
 
