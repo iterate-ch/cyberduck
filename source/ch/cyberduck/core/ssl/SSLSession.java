@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
@@ -36,7 +37,8 @@ import java.util.List;
 public abstract class SSLSession<C> extends Session<C> implements TrustManagerHostnameCallback {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        Security.insertProviderAt(new BouncyCastleProvider(),
+                Preferences.instance().getInteger("connection.ssl.provider.bouncycastle.position"));
     }
 
     private X509TrustManager trust;
