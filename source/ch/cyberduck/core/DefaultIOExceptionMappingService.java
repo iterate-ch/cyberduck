@@ -62,7 +62,10 @@ public class DefaultIOExceptionMappingService extends AbstractIOExceptionMapping
         }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
-        this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
+        final Throwable cause = ExceptionUtils.getRootCause(failure);
+        if(null != cause) {
+            this.append(buffer, cause.getMessage());
+        }
         return this.wrap(failure, buffer);
     }
 }
