@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,10 +56,9 @@ import com.microsoft.windowsazure.services.core.storage.StorageCredentialsAccoun
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureSession extends Session<CloudBlobClient> {
-    private static final Logger log = Logger.getLogger(AzureSession.class);
 
     private PathContainerService containerService
             = new PathContainerService();
@@ -114,7 +112,7 @@ public class AzureSession extends Session<CloudBlobClient> {
                     final BlobRequestOptions options = new BlobRequestOptions();
                     options.setRetryPolicyFactory(new RetryNoRetry());
                     result = client.listContainersSegmented(null, ContainerListingDetails.METADATA,
-                            Preferences.instance().getInteger("s3.listing.chunksize"), token,
+                            Preferences.instance().getInteger("azure.listing.chunksize"), token,
                             options, null);
                     for(CloudBlobContainer container : result.getResults()) {
                         containers.add(new Path(String.format("/%s", container.getName()), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE));
@@ -143,7 +141,7 @@ public class AzureSession extends Session<CloudBlobClient> {
                     options.setRetryPolicyFactory(new RetryNoRetry());
                     result = container.listBlobsSegmented(
                             prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                            Preferences.instance().getInteger("s3.listing.chunksize"), token, options, null);
+                            Preferences.instance().getInteger("azure.listing.chunksize"), token, options, null);
                     for(ListBlobItem object : result.getResults()) {
                         if(new Path(object.getUri().getPath(), Path.DIRECTORY_TYPE).equals(directory)) {
                             continue;
