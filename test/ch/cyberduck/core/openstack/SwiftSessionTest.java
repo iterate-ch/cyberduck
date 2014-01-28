@@ -1,6 +1,18 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -90,7 +102,12 @@ public class SwiftSessionTest extends AbstractTestCase {
 
     @Test
     public void testConnectHpv1() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
+        final Host host = new Host(new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/v1.0";
+            }
+        }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.user"), properties.getProperty("hpcloud.password")
         ));
         final SwiftSession session = new SwiftSession(host);
