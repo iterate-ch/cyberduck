@@ -32,7 +32,7 @@ import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureWriteFeature implements Write {
 
@@ -47,6 +47,9 @@ public class AzureWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
+        if(new AzureFindFeature(session).withCache(cache).find(file)) {
+            return Write.override;
+        }
         return Write.notfound;
     }
 
