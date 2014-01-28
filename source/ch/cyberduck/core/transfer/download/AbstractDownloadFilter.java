@@ -115,15 +115,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     // A server will resolve the symbolic link when the file is requested.
                     final Path target = file.getSymlinkTarget();
                     // Read remote attributes
-                    file.setAttributes(attribute.find(target));
+                    status.setLength(attribute.find(target).getSize());
                 }
             }
             else {
                 // Read remote attributes
-                file.setAttributes(attribute.find(file));
+                status.setLength(attribute.find(file).getSize());
             }
-            // Read file size
-            status.setLength(file.attributes().getSize());
         }
         if(file.attributes().isDirectory()) {
             // Do not attempt to create a directory that already exists
