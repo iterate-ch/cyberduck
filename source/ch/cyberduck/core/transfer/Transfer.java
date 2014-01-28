@@ -18,7 +18,16 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -239,11 +248,21 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getRemote() {
-        return new DefaultUrlProvider(host).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
+        if(this.getRoots().size() == 1) {
+            return new DefaultUrlProvider(host).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
+        }
+        else {
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().getParent()).find(DescriptiveUrl.Type.provider).getUrl();
+        }
     }
 
     public String getLocal() {
-        return this.getRoot().getLocal().getAbbreviatedPath();
+        if(this.getRoots().size() == 1) {
+            return this.getRoot().getLocal().getAbbreviatedPath();
+        }
+        else {
+            return this.getRoot().getLocal().getParent().getAbbreviatedPath();
+        }
     }
 
     public List<Path> getRoots() {

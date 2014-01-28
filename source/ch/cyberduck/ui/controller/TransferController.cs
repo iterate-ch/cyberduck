@@ -433,20 +433,15 @@ namespace Ch.Cyberduck.Ui.Controller
             if (1 == selectedTransfers.Count)
             {
                 Transfer transfer = GetTransferFromView(selectedTransfers[0]);
-                if (transfer.getRoots().size() == 1)
+                View.Url = transfer.getRemote();
+                //Workaround to prevent NullReferenceException
+                if (transfer.getLocal() != null)
                 {
-                    View.Url = transfer.getRemote();
-                    //Workaround to prevent NullReferenceException
-                    if (transfer.getRoot() != null && transfer.getRoot().getLocal() != null &&
-                        transfer.getRoot().getLocal().getParent() != null)
-                    {
-                        View.Local = transfer.getLocal();
-                    }
+                    View.Local = transfer.getLocal();
                 }
                 else
                 {
-                    View.Url = LocaleFactory.localizedString("Multiple files");
-                    View.Local = LocaleFactory.localizedString("Multiple files");
+                    View.Local = string.Empty;
                 }
             }
             else
