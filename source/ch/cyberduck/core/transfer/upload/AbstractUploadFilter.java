@@ -151,6 +151,66 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
+        if(this.options.permissions) {
+            final Permission permission;
+            if(status.isExists()) {
+                permission = attribute.find(file).getPermission();
+            }
+            else {
+                if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
+                    if(file.attributes().isFile()) {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                    }
+                    else {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                    }
+                }
+                else {
+                    // Read permissions from local file
+                    permission = file.getLocal().attributes().getPermission();
+                }
+            }
+            status.setPermission(permission);
+        }
+        if(this.options.acl) {
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(feature != null) {
+                final Acl acl;
+                if(status.isExists()) {
+                    acl = feature.getPermission(file);
+                }
+                else {
+                    final Permission permission;
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
+                        if(file.attributes().isFile()) {
+                            permission = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                        }
+                        else {
+                            permission = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                        }
+                    }
+                    else {
+                        // Read permissions from local file
+                        permission = file.getLocal().attributes().getPermission();
+                    }
+                    acl = new Acl();
+                    if(permission.getOther().implies(Permission.Action.read)) {
+                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+                    }
+                    if(permission.getGroup().implies(Permission.Action.read)) {
+                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+                    }
+                    if(permission.getGroup().implies(Permission.Action.write)) {
+                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+                    }
+                }
+                status.setAcl(acl);
+            }
+        }
         return status;
     }
 
@@ -174,20 +234,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
             if(this.options.permissions) {
-                final UnixPermission unix = session.getFeature(UnixPermission.class);
-                if(unix != null) {
-                    this.permissions(file, unix, listener);
+                final UnixPermission feature = session.getFeature(UnixPermission.class);
+                if(feature != null) {
+                    this.permissions(file, status.getPermission(), feature, listener);
                 }
-                final AclPermission acl = session.getFeature(AclPermission.class);
-                if(acl != null) {
-                    this.acl(file, acl, listener);
+            }
+            if(this.options.acl) {
+                final AclPermission feature = session.getFeature(AclPermission.class);
+                if(feature != null) {
+                    this.acl(file, status.getAcl(), feature, listener);
                 }
             }
             if(this.options.timestamp) {
-                final Timestamp timestamp = session.getFeature(Timestamp.class);
-                if(timestamp != null) {
-                    this.timestamp(file, timestamp, listener);
-
+                final Timestamp feature = session.getFeature(Timestamp.class);
+                if(feature != null) {
+                    this.timestamp(file, feature, listener);
                 }
             }
         }
@@ -208,22 +269,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void permissions(final Path file, final UnixPermission feature, final ProgressListener listener) {
-        final Permission permission;
-        if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-            if(file.attributes().isFile()) {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-            }
-        }
-        else {
-            // Read permissions from local file
-            permission = file.getLocal().attributes().getPermission();
-        }
+    private void permissions(final Path file, final Permission permission,
+                             final UnixPermission feature, final ProgressListener listener) {
         if(!Permission.EMPTY.equals(permission)) {
             try {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
@@ -237,32 +284,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
     }
 
-    private void acl(final Path file, final AclPermission feature, final ProgressListener listener) {
-        final Permission permission;
-        if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-            if(file.attributes().isFile()) {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-            }
-            else {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-            }
-        }
-        else {
-            // Read permissions from local file
-            permission = file.getLocal().attributes().getPermission();
-        }
-        final Acl acl = new Acl();
-        if(permission.getOther().implies(Permission.Action.read)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-        }
-        if(permission.getGroup().implies(Permission.Action.read)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-        }
-        if(permission.getGroup().implies(Permission.Action.write)) {
-            acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
-        }
+    private void acl(final Path file, final Acl acl,
+                     final AclPermission feature, final ProgressListener listener) {
         if(!Acl.EMPTY.equals(acl)) {
             try {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),

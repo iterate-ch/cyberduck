@@ -28,6 +28,9 @@ public final class UploadFilterOptions {
     public boolean permissions
             = Preferences.instance().getBoolean("queue.upload.permissions.change");
 
+    public boolean acl
+            = Preferences.instance().getBoolean("queue.upload.permissions.change");
+
     public boolean timestamp
             = Preferences.instance().getBoolean("queue.upload.timestamp.change");
 
@@ -43,12 +46,14 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
         this.permissions = permissions;
+        this.acl = permissions;
         this.timestamp = timestamp;
         this.temporary = temporary;
     }
 
     public UploadFilterOptions withPermission(boolean enabled) {
         permissions = enabled;
+        acl = enabled;
         return this;
     }
 

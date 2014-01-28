@@ -18,8 +18,10 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 
@@ -79,7 +81,20 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Path renamed;
 
+    /**
+     * MIME type
+     */
     private String mime;
+
+    /**
+     * Target UNIX permissions
+     */
+    private Permission permission;
+
+    /**
+     * Target ACL
+     */
+    private Acl acl;
 
     private Map<String, String> parameters
             = Collections.emptyMap();
@@ -226,6 +241,22 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setMime(final String mime) {
         this.mime = mime;
+    }
+
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
+    }
+
+    public Acl getAcl() {
+        return acl;
+    }
+
+    public void setAcl(Acl acl) {
+        this.acl = acl;
     }
 
     public Map<String, String> getParameters() {
