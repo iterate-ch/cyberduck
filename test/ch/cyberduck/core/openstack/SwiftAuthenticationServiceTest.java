@@ -31,7 +31,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testGetRequest() throws Exception {
-        final SwiftAuthenticationService s = new SwiftAuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v1.0");
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials("u", "P")),
                         new DisabledLoginController()).getVersion());
@@ -91,7 +91,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                                 credentials.setUsername("");
                             }
                         }).getVersion());
-        assertEquals(":u", host.getCredentials().getUsername());
+        assertEquals("u", host.getCredentials().getUsername());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
 
     @Test
     public void testDefault() throws Exception {
-        final SwiftAuthenticationService s = new SwiftAuthenticationService();
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v1.0");
         final Host host = new Host(new SwiftProtocol(), "myidentityservice.example.net");
         assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host, new DisabledLoginController()).getURI());
         assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).getVersion());
