@@ -258,6 +258,8 @@
                 <sysproperty key="google.projectid" value="${google.projectid}"/>
                 <sysproperty key="google.accesstoken" value="${google.accesstoken}"/>
                 <sysproperty key="google.refreshtoken" value="${google.refreshtoken}"/>
+                <sysproperty key="azure.account" value="${azure.account}"/>
+                <sysproperty key="azure.key" value="${azure.key}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">

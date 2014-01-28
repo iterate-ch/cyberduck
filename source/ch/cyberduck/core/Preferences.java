@@ -630,6 +630,8 @@ public abstract class Preferences {
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
+        defaults.put("azure.listing.chunksize", String.valueOf(1000));
+
         //doc	Microsoft Word
         //html	HTML Format
         //odt	Open Document Format
