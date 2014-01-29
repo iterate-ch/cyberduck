@@ -27,7 +27,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
@@ -72,9 +71,6 @@ import com.microsoft.windowsazure.services.core.storage.StorageException;
  * @version $Id$
  */
 public class AzureSession extends SSLSession<CloudBlobClient> {
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     private StorageCredentialsAccountAndKey credentials;
 
