@@ -5,6 +5,9 @@
 - [Bugfix] Re-authentication failure (Openstack Swift) (#7608)
 - [Bugfix] Downloading dynamic large object fails (Openstack Swift) (#7693)
 - [Bugfix] Cannot update ACL with anonymous grant (S3) (#7726)
+- [Bugfix] Could not generate DH keypair (FTP-TLS, Windows) (#7738)
+- [Bugfix] ACL not maintained when replacing files (S3) (#7756)
+- [Bugfix] UNIX permissions not maintained when replacing files (SFTP)
 
 4.4.3 [https://trac.cyberduck.io/milestone/4.4.3]
 - [Feature] Support TLS 1.1 and TLS 1.2 (#7637)
