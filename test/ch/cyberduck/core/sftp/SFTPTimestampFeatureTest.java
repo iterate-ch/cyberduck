@@ -49,7 +49,7 @@ public class SFTPTimestampFeatureTest extends AbstractTestCase {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path test = new Path(home, "test", Path.FILE_TYPE);
         final long modified = System.currentTimeMillis();
-        new SFTPTimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
+        new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());
         assertTrue(session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getCreationDate() == -1L);
         assertFalse(session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getAccessedDate() == -1L);

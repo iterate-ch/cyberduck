@@ -56,7 +56,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         final long modified = System.currentTimeMillis();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
         new DefaultTouchFeature(session).touch(test);
-        new FTPUTIMETimestampFeature(session).setTimestamp(test, -1L, modified, -1L);
+        new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }
