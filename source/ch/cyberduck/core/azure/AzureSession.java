@@ -176,6 +176,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                             attributes.setSize(blob.getProperties().getLength());
                             attributes.setModificationDate(blob.getProperties().getLastModified().getTime());
                             attributes.setETag(blob.getProperties().getEtag());
+                            attributes.setChecksum(blob.getProperties().getContentMD5());
                         }
                         if(object instanceof CloudBlobDirectory) {
                             attributes.setPlaceholder(true);
