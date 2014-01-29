@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -43,7 +44,7 @@ import com.microsoft.windowsazure.services.blob.client.SharedAccessBlobPolicy;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureUrlProvider implements UrlProvider {
 
@@ -92,7 +93,7 @@ public class AzureUrlProvider implements UrlProvider {
             return DescriptiveUrl.EMPTY;
         }
         return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
-                Scheme.https.name(), session.getHost().getHostname(), file.getAbsolute(), token)),
+                Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
                 DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
