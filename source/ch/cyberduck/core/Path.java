@@ -130,6 +130,17 @@ public class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * A remote path where nothing is known about a local equivalent.
+     *
+     * @param absolute   The absolute path of the remote file
+     * @param attributes File type
+     */
+    public Path(final String absolute, final PathAttributes attributes) {
+        this.attributes = attributes;
+        this.setPath(absolute);
+    }
+
+    /**
      * Create a new path where you know the local file already exists
      * and the remote equivalent might be created later.
      * The remote filename will be extracted from the local file.

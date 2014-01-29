@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.cdn.Distribution;
@@ -86,9 +87,9 @@ public class SwiftContainerListService implements RootListService {
                 do {
                     chunk = client.listContainers(region, limit, marker);
                     for(final Container f : chunk) {
-                        final Path container = new Path(String.format("/%s", f.getName()),
-                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                        container.attributes().setRegion(f.getRegion().getRegionId());
+                        final PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        attributes.setRegion(f.getRegion().getRegionId());
+                        final Path container = new Path(String.format("/%s", f.getName()));
                         if(cdn) {
                             final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                             threadFactory.newThread(new Runnable() {
