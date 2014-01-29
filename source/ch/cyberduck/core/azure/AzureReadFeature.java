@@ -30,11 +30,13 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import com.microsoft.windowsazure.services.blob.client.BlobInputStream;
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
 import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureReadFeature implements Read {
 
@@ -57,7 +59,9 @@ public class AzureReadFeature implements Read {
         try {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
-            final BlobInputStream input = blob.openInputStream();
+            final BlobRequestOptions options = new BlobRequestOptions();
+            options.setRetryPolicyFactory(new RetryNoRetry());
+            final BlobInputStream input = blob.openInputStream(null, options, null);
             try {
                 input.skip(status.getCurrent());
             }

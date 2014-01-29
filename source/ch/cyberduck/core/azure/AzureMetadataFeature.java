@@ -27,12 +27,14 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
 import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureMetadataFeature implements Headers {
 
@@ -78,16 +80,18 @@ public class AzureMetadataFeature implements Headers {
     @Override
     public void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException {
         try {
+            final BlobRequestOptions options = new BlobRequestOptions();
+            options.setRetryPolicyFactory(new RetryNoRetry());
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 container.setMetadata(new HashMap<String, String>(metadata));
-                container.uploadMetadata();
+                container.uploadMetadata(options, null);
             }
             else {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
                 blob.setMetadata(new HashMap<String, String>(metadata));
-                blob.uploadMetadata();
+                blob.uploadMetadata(null, options, null);
             }
         }
         catch(URISyntaxException e) {

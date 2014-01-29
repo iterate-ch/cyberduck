@@ -605,6 +605,8 @@ public abstract class Preferences {
         defaults.put("s3.delete.multiple.partition", String.valueOf(1000));
 
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
+        defaults.put("azure.listing.chunksize", String.valueOf(1000));
+        defaults.put("azure.upload.md5", String.valueOf(true));
 
         // Legacy authentication
 //        defaults.put("openstack.authentication.context", "/v1.0");
@@ -629,8 +631,6 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
-
-        defaults.put("azure.listing.chunksize", String.valueOf(1000));
 
         //doc	Microsoft Word
         //html	HTML Format

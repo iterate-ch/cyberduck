@@ -19,16 +19,20 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 
 import java.net.URISyntaxException;
 
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
+import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureCopyFeature implements Copy {
 
@@ -44,10 +48,14 @@ public class AzureCopyFeature implements Copy {
     @Override
     public void copy(Path source, Path copy) throws BackgroundException {
         try {
-            session.getClient().getContainerReference(containerService.getContainer(copy).getName())
-                    .getBlockBlobReference(containerService.getKey(copy)).copyFromBlob(
-                    session.getClient().getContainerReference(containerService.getContainer(source).getName())
-                            .getBlockBlobReference(containerService.getKey(source)));
+            final CloudBlockBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
+                    .getBlockBlobReference(containerService.getKey(copy));
+            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
+                    .getBlockBlobReference(containerService.getKey(source));
+            final BlobRequestOptions options = new BlobRequestOptions();
+            options.setRetryPolicyFactory(new RetryNoRetry());
+            options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
+            target.copyFromBlob(blob, null, null, options, null);
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

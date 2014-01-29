@@ -27,10 +27,12 @@ import ch.cyberduck.core.features.Delete;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureDeleteFeature implements Delete {
 
@@ -47,17 +49,19 @@ public class AzureDeleteFeature implements Delete {
     public void delete(List<Path> files, LoginCallback prompt) throws BackgroundException {
         for(Path file : files) {
             try {
+                final BlobRequestOptions options = new BlobRequestOptions();
+                options.setRetryPolicyFactory(new RetryNoRetry());
                 if(containerService.isContainer(file)) {
-                    session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete();
+                    session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(options, null);
                 }
                 else {
                     if(file.attributes().isPlaceholder()) {
                         session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).delete();
+                                .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).delete(null, null, options, null);
                     }
                     else {
                         session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file)).delete();
+                                .getBlockBlobReference(containerService.getKey(file)).delete(null, null, options, null);
                     }
                 }
             }

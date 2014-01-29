@@ -29,12 +29,14 @@ import java.net.URISyntaxException;
 
 import com.microsoft.windowsazure.services.blob.client.BlobContainerProperties;
 import com.microsoft.windowsazure.services.blob.client.BlobProperties;
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
 import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureAttributesFeature implements Attributes {
 
@@ -69,7 +71,9 @@ public class AzureAttributesFeature implements Attributes {
                     blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                             .getBlockBlobReference(containerService.getKey(file));
                 }
-                blob.downloadAttributes();
+                final BlobRequestOptions options = new BlobRequestOptions();
+                options.setRetryPolicyFactory(new RetryNoRetry());
+                blob.downloadAttributes(null, options, null);
                 final BlobProperties properties = blob.getProperties();
                 final PathAttributes attributes = new PathAttributes(
                         "application/directory".equals(properties.getContentType()) ? Path.DIRECTORY_TYPE : Path.VOLUME_TYPE);

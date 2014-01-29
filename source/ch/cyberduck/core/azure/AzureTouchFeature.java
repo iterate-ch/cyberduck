@@ -28,10 +28,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
+import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureTouchFeature implements Touch {
 
@@ -52,9 +55,11 @@ public class AzureTouchFeature implements Touch {
     @Override
     public void touch(Path file) throws BackgroundException {
         try {
-            session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file)).upload(
-                    new ByteArrayInputStream(new byte[]{}), 0L);
+            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getBlockBlobReference(containerService.getKey(file));
+            final BlobRequestOptions options = new BlobRequestOptions();
+            options.setRetryPolicyFactory(new RetryNoRetry());
+            blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, null, options, null);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
