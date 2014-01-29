@@ -344,7 +344,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         NSObject modificationNumber = attributes.objectForKey(NSFileManager.NSFileModificationDate);
                         if(null != modificationNumber) {
                             final long modification = (long) (Rococoa.cast(modificationNumber, NSDate.class).timeIntervalSince1970() * 1000);
-                            timestamp.setTimestamp(file, modification, modification, modification);
+                            timestamp.setTimestamp(file, modification);
                         }
                     }
                     return true;
