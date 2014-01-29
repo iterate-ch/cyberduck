@@ -89,7 +89,7 @@ public class SwiftContainerListService implements RootListService {
                     for(final Container f : chunk) {
                         final PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         attributes.setRegion(f.getRegion().getRegionId());
-                        final Path container = new Path(String.format("/%s", f.getName()));
+                        final Path container = new Path(String.format("/%s", f.getName()), attributes);
                         if(cdn) {
                             final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                             threadFactory.newThread(new Runnable() {
