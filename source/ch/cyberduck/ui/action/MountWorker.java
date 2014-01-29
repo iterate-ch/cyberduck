@@ -59,6 +59,8 @@ public class MountWorker extends Worker<Path> {
         AttributedList<Path> list;
         try {
             home = session.getFeature(Home.class).find();
+            // Remove cached home to force error if repeated attempt to mount fails
+            cache.remove(home.getReference());
             // Retrieve directory listing of default path
             list = new SessionListWorker(session, cache, home, listener).run();
         }
