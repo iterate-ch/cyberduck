@@ -151,12 +151,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
-        if(this.options.permissions) {
-            final Permission permission;
-            if(status.isExists()) {
-                permission = attribute.find(file).getPermission();
-            }
-            else {
+        Permission permission = Permission.EMPTY;
+        if(status.isExists()) {
+            permission = attribute.find(file).getPermission();
+        }
+        else {
+            if(this.options.permissions) {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
                     if(file.attributes().isFile()) {
                         permission = new Permission(
@@ -172,44 +172,44 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     permission = file.getLocal().attributes().getPermission();
                 }
             }
-            status.setPermission(permission);
         }
-        if(this.options.acl) {
-            final AclPermission feature = session.getFeature(AclPermission.class);
-            if(feature != null) {
-                final Acl acl;
-                if(status.isExists()) {
-                    acl = feature.getPermission(file);
-                }
-                else {
-                    final Permission permission;
+        status.setPermission(permission);
+        final AclPermission feature = session.getFeature(AclPermission.class);
+        if(feature != null) {
+            Acl acl = Acl.EMPTY;
+            if(status.isExists()) {
+                acl = feature.getPermission(file);
+            }
+            else {
+                if(this.options.acl) {
+                    final Permission p;
                     if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
                         if(file.attributes().isFile()) {
-                            permission = new Permission(
+                            p = new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                         }
                         else {
-                            permission = new Permission(
+                            p = new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                         }
                     }
                     else {
                         // Read permissions from local file
-                        permission = file.getLocal().attributes().getPermission();
+                        p = file.getLocal().attributes().getPermission();
                     }
                     acl = new Acl();
-                    if(permission.getOther().implies(Permission.Action.read)) {
+                    if(p.getOther().implies(Permission.Action.read)) {
                         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
                     }
-                    if(permission.getGroup().implies(Permission.Action.read)) {
+                    if(p.getGroup().implies(Permission.Action.read)) {
                         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
                     }
-                    if(permission.getGroup().implies(Permission.Action.write)) {
+                    if(p.getGroup().implies(Permission.Action.write)) {
                         acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
                     }
                 }
-                status.setAcl(acl);
             }
+            status.setAcl(acl);
         }
         return status;
     }
