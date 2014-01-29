@@ -22,11 +22,11 @@ public class S3UrlProviderTest extends AbstractTestCase {
     @Test
     public void testToHttpURL() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        Path p = new Path("/bucket/f/key", Path.FILE_TYPE);
-        assertEquals("https://bucket.s3.amazonaws.com/f/key",
+        Path p = new Path("/bucket/f/key f", Path.FILE_TYPE);
+        assertEquals("https://bucket.s3.amazonaws.com/f/key%20f",
                 new S3UrlProvider(session).toUrl(p).find(DescriptiveUrl.Type.http).getUrl());
         assertTrue(new S3UrlProvider(session).toUrl(p).filter(DescriptiveUrl.Type.http).contains(
-                new DescriptiveUrl(URI.create("http://bucket.s3.amazonaws.com/f/key"))
+                new DescriptiveUrl(URI.create("http://bucket.s3.amazonaws.com/f/key%20f"))
         ));
         assertEquals(3, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
@@ -50,7 +50,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
         assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).find(DescriptiveUrl.Type.signed));
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.signed));
     }
 
     @Test
@@ -88,8 +88,8 @@ public class S3UrlProviderTest extends AbstractTestCase {
     public void testToTorrentUrl() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
-        assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test?torrent"), DescriptiveUrl.Type.torrent),
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).find(DescriptiveUrl.Type.torrent));
+        assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.torrent));
     }
 
     @Test
