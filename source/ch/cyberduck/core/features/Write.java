@@ -91,6 +91,13 @@ public interface Write {
         }
     }
 
+    /**
+     * Existing remote file found
+     */
     public static final Append override = new Append(true);
+
+    /**
+     * No file found
+     */
     public static final Append notfound = new Append();
 }
