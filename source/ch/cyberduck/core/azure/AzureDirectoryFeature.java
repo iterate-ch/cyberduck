@@ -28,10 +28,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
+import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
+import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
+import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureDirectoryFeature implements Directory {
 
@@ -50,17 +54,20 @@ public class AzureDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(Path file, String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
+            final BlobRequestOptions options = new BlobRequestOptions();
+            options.setRetryPolicyFactory(new RetryNoRetry());
             if(containerService.isContainer(file)) {
                 // Container name must be lower case.
-                session.getClient().getContainerReference(containerService.getContainer(file).getName()).create();
+                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
+                container.create(options, null);
             }
             else {
                 // Create delimiter placeholder
-                session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).upload(
-                        new ByteArrayInputStream(new byte[]{}), 0L);
+                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
+                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, null, options, null);
             }
         }
         catch(URISyntaxException e) {
