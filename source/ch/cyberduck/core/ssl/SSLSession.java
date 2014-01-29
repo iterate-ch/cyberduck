@@ -68,6 +68,6 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
      * @return List of certificates accepted by all trust managers of this session.
      */
     public List<X509Certificate> getAcceptedIssuers() {
-        return Arrays.asList(trust.getAcceptedIssuers());
+        return Arrays.asList(this.getTrustManager().getAcceptedIssuers());
     }
 }
