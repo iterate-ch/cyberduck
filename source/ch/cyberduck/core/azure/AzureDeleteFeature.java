@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
+import com.microsoft.windowsazure.services.blob.client.DeleteSnapshotsOption;
 import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
@@ -57,11 +58,13 @@ public class AzureDeleteFeature implements Delete {
                 else {
                     if(file.attributes().isPlaceholder()) {
                         session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).delete(null, null, options, null);
+                                .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).delete(
+                                DeleteSnapshotsOption.NONE, null, options, null);
                     }
                     else {
                         session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file)).delete(null, null, options, null);
+                                .getBlockBlobReference(containerService.getKey(file)).delete(
+                                DeleteSnapshotsOption.NONE, null, options, null);
                     }
                 }
             }
