@@ -32,9 +32,15 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -58,15 +64,32 @@ import com.microsoft.windowsazure.services.core.storage.StorageException;
 /**
  * @version $Id$
  */
-public class AzureSession extends Session<CloudBlobClient> {
+public class AzureSession extends SSLSession<CloudBlobClient> {
 
     private PathContainerService containerService
             = new PathContainerService();
 
     private StorageCredentialsAccountAndKey credentials;
 
+    private final static DisabledX509HostnameVerifier verifier
+            = new DisabledX509HostnameVerifier();
+
+    private final static KeychainX509TrustManager trust
+            = new KeychainX509TrustManager(verifier);
+
     public AzureSession(Host h) {
-        super(h);
+        super(h, trust);
+    }
+
+    @Override
+    public X509TrustManager getTrustManager() {
+        return trust;
+    }
+
+    static {
+        HttpsURLConnection.setDefaultHostnameVerifier(verifier);
+        HttpsURLConnection.setFollowRedirects(true);
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust));
     }
 
     @Override
