@@ -50,7 +50,6 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
@@ -63,14 +62,11 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.security.cert.X509Certificate;
 
 /**
  * @version $Id$
@@ -78,20 +74,17 @@ import java.security.cert.X509Certificate;
 public abstract class HttpSession<C> extends SSLSession<C> {
     private static final Logger log = Logger.getLogger(HttpSession.class);
 
-    /**
-     * Target hostname of current request stored as thread local
-     */
-    private ThreadLocal<String> target
-            = new ThreadLocal<String>();
+    private DisabledX509HostnameVerifier hostnameVerifier
+            = new DisabledX509HostnameVerifier();
 
     protected HttpSession(final Host host) {
         super(host);
-        target.set(host.getHostname());
+        hostnameVerifier.setTarget(host.getHostname());
     }
 
     protected HttpSession(final Host host, final X509TrustManager manager) {
         super(host, manager);
-        target.set(host.getHostname());
+        hostnameVerifier.setTarget(host.getHostname());
     }
 
     public HttpClientBuilder connect() {
@@ -101,31 +94,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .register(Scheme.http.toString(), PlainConnectionSocketFactory.getSocketFactory())
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()),
-                        new X509HostnameVerifier() {
-                            @Override
-                            public void verify(final String host, final SSLSocket socket) throws IOException {
-                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                                target.set(host);
-                            }
-
-                            @Override
-                            public void verify(final String host, final X509Certificate cert) throws SSLException {
-                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                                target.set(host);
-                            }
-
-                            @Override
-                            public void verify(final String host, final String[] cns, final String[] subjectAlts) throws SSLException {
-                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                                target.set(host);
-                            }
-
-                            @Override
-                            public boolean verify(String s, final javax.net.ssl.SSLSession sslSession) {
-                                log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
-                                return true;
-                            }
-                        }
+                        hostnameVerifier
                 ) {
                     @Override
                     public Socket connectSocket(final int connectTimeout,
@@ -134,7 +103,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                                                 final InetSocketAddress remoteAddress,
                                                 final InetSocketAddress localAddress,
                                                 final HttpContext context) throws IOException {
-                        target.set(remoteAddress.getHostName());
+                        hostnameVerifier.setTarget(remoteAddress.getHostName());
                         return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                     }
                 }).build();
@@ -178,7 +147,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         builder.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                target.set(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
+                hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
             }
         });
         builder.addInterceptorLast(new HttpRequestInterceptor() {
@@ -224,7 +193,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     @Override
     public String getTarget() {
-        return target.get();
+        return hostnameVerifier.getTarget();
     }
 
     @Override
