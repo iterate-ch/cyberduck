@@ -17,10 +17,22 @@ package ch.cyberduck.core.azure;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
@@ -43,16 +55,11 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.EnumSet;
 
-import com.microsoft.windowsazure.services.blob.client.BlobListingDetails;
 import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlob;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobClient;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobDirectory;
 import com.microsoft.windowsazure.services.blob.client.ContainerListingDetails;
-import com.microsoft.windowsazure.services.blob.client.ListBlobItem;
 import com.microsoft.windowsazure.services.core.storage.AuthenticationScheme;
 import com.microsoft.windowsazure.services.core.storage.Credentials;
 import com.microsoft.windowsazure.services.core.storage.ResultContinuation;
@@ -134,11 +141,14 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                 do {
                     final BlobRequestOptions options = new BlobRequestOptions();
                     options.setRetryPolicyFactory(new RetryNoRetry());
-                    result = client.listContainersSegmented(null, ContainerListingDetails.METADATA,
+                    result = client.listContainersSegmented(null, ContainerListingDetails.NONE,
                             Preferences.instance().getInteger("azure.listing.chunksize"), token,
                             options, null);
                     for(CloudBlobContainer container : result.getResults()) {
-                        containers.add(new Path(String.format("/%s", container.getName()), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE));
+                        final PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        attributes.setETag(container.getProperties().getEtag());
+                        attributes.setModificationDate(container.getProperties().getLastModified().getTime());
+                        containers.add(new Path(String.format("/%s", container.getName()), attributes));
                     }
                     listener.chunk(containers);
                     token = result.getContinuationToken();
@@ -148,54 +158,11 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
             }
             else {
-                final CloudBlobContainer container = this.getClient().getContainerReference(containerService.getContainer(directory).getName());
-                final AttributedList<Path> children = new AttributedList<Path>();
-                ResultContinuation token = null;
-                ResultSegment<ListBlobItem> result;
-                final String prefix;
-                if(containerService.isContainer(directory)) {
-                    prefix = StringUtils.EMPTY;
-                }
-                else {
-                    prefix = containerService.getKey(directory).concat(String.valueOf(Path.DELIMITER));
-                }
-                do {
-                    final BlobRequestOptions options = new BlobRequestOptions();
-                    options.setRetryPolicyFactory(new RetryNoRetry());
-                    result = container.listBlobsSegmented(
-                            prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                            Preferences.instance().getInteger("azure.listing.chunksize"), token, options, null);
-                    for(ListBlobItem object : result.getResults()) {
-                        if(new Path(object.getUri().getPath(), Path.DIRECTORY_TYPE).equals(directory)) {
-                            continue;
-                        }
-                        final PathAttributes attributes = new PathAttributes(
-                                object instanceof CloudBlobDirectory ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                        if(object instanceof CloudBlob) {
-                            final CloudBlob blob = (CloudBlob) object;
-                            attributes.setSize(blob.getProperties().getLength());
-                            attributes.setModificationDate(blob.getProperties().getLastModified().getTime());
-                            attributes.setETag(blob.getProperties().getEtag());
-                            attributes.setChecksum(blob.getProperties().getContentMD5());
-                        }
-                        if(object instanceof CloudBlobDirectory) {
-                            attributes.setPlaceholder(true);
-                        }
-                        final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), attributes);
-                        children.add(child);
-                    }
-                    listener.chunk(children);
-                    token = result.getContinuationToken();
-                }
-                while(result.getHasMoreResults());
-                return children;
+                return new AzureObjectListService(this).list(directory, listener);
             }
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Listing directory failed", e);
-        }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
         }
     }
 
