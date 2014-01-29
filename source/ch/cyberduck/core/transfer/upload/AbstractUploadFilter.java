@@ -259,9 +259,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         try {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                     file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
-            feature.setTimestamp(file, file.getLocal().attributes().getCreationDate(),
-                    file.getLocal().attributes().getModificationDate(),
-                    file.getLocal().attributes().getAccessedDate());
+            feature.setTimestamp(file,
+                    file.getLocal().attributes().getModificationDate());
         }
         catch(BackgroundException e) {
             // Ignore

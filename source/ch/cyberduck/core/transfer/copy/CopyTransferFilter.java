@@ -117,9 +117,9 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     private void timestamp(final Path source, final Timestamp timestamp) {
         try {
-            timestamp.setTimestamp(files.get(source), source.attributes().getCreationDate(),
-                    source.attributes().getModificationDate(),
-                    source.attributes().getAccessedDate());
+            timestamp.setTimestamp(files.get(source),
+                    source.attributes().getModificationDate()
+            );
         }
         catch(BackgroundException e) {
             // Ignore

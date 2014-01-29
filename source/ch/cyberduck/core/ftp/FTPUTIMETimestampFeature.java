@@ -43,7 +43,7 @@ public class FTPUTIMETimestampFeature implements Timestamp {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         if(failure != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));
@@ -59,9 +59,9 @@ public class FTPUTIMETimestampFeature implements Timestamp {
             // Accessed date, modified date, created date
             if(!session.getClient().sendSiteCommand(String.format("UTIME %s %s %s %s UTC",
                     file.getAbsolute(),
-                    formatter.format(new Date(accessed), TimeZone.getTimeZone("UTC")),
+                    formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
                     formatter.format(new Date(modified), TimeZone.getTimeZone("UTC")),
-                    formatter.format(new Date(created), TimeZone.getTimeZone("UTC"))))) {
+                    formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))))) {
                 throw failure = new FTPException(session.getClient().getReplyCode(),
                         session.getClient().getReplyString());
             }

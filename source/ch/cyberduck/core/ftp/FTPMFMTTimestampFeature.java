@@ -42,7 +42,7 @@ public class FTPMFMTTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         if(failure != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));

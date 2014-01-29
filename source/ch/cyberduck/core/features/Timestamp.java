@@ -25,5 +25,5 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface Timestamp {
-    void setTimestamp(Path file, Long created, Long modified, Long accessed) throws BackgroundException;
+    void setTimestamp(Path file, Long modified) throws BackgroundException;
 }

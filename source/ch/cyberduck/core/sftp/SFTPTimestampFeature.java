@@ -37,7 +37,7 @@ public class SFTPTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long created, final Long modified, final Long accessed) throws BackgroundException {
+    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
             final SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
