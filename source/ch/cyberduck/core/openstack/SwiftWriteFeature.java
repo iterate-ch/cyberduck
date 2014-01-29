@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -79,7 +80,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final HashMap<String, String> metadata = new HashMap<String, String>();
+        final Map<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("openstack.metadata.default")) {
             if(StringUtils.isBlank(m)) {
