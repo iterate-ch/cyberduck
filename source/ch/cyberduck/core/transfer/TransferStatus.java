@@ -96,6 +96,8 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private Acl acl;
 
+    private Long timestamp;
+
     private Map<String, String> parameters
             = Collections.emptyMap();
 
@@ -257,6 +259,14 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setAcl(Acl acl) {
         this.acl = acl;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public Map<String, String> getParameters() {

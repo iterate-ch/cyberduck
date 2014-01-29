@@ -173,43 +173,49 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
+        // Setting target UNIX permissions in transfer status
         status.setPermission(permission);
-        final AclPermission feature = session.getFeature(AclPermission.class);
-        if(feature != null) {
-            Acl acl = Acl.EMPTY;
-            if(status.isExists()) {
+        Acl acl = Acl.EMPTY;
+        if(status.isExists()) {
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(feature != null) {
                 acl = feature.getPermission(file);
             }
-            else {
-                if(this.options.acl) {
-                    final Permission p;
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-                        if(file.attributes().isFile()) {
-                            p = new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                        }
-                        else {
-                            p = new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                        }
+        }
+        else {
+            if(this.options.acl) {
+                final Permission p;
+                if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
+                    if(file.attributes().isFile()) {
+                        p = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
                     else {
-                        // Read permissions from local file
-                        p = file.getLocal().attributes().getPermission();
-                    }
-                    acl = new Acl();
-                    if(p.getOther().implies(Permission.Action.read)) {
-                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-                    }
-                    if(p.getGroup().implies(Permission.Action.read)) {
-                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-                    }
-                    if(p.getGroup().implies(Permission.Action.write)) {
-                        acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+                        p = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                     }
                 }
+                else {
+                    // Read permissions from local file
+                    p = file.getLocal().attributes().getPermission();
+                }
+                acl = new Acl();
+                if(p.getOther().implies(Permission.Action.read)) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
+                }
+                if(p.getGroup().implies(Permission.Action.read)) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
+                }
+                if(p.getGroup().implies(Permission.Action.write)) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+                }
             }
-            status.setAcl(acl);
+        }
+        // Setting target ACL in transfer status
+        status.setAcl(acl);
+        if(options.timestamp) {
+            // Read timestamps from local file
+            status.setTimestamp(file.getLocal().attributes().getModificationDate());
         }
         return status;
     }
@@ -233,67 +239,47 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     temporary.remove(file);
                 }
             }
-            if(this.options.permissions) {
+            if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);
                 if(feature != null) {
-                    this.permissions(file, status.getPermission(), feature, listener);
+                    try {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                                file.getName(), status.getPermission()));
+                        feature.setUnixPermission(file, status.getPermission());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
-            if(this.options.acl) {
+            if(!Acl.EMPTY.equals(status.getAcl())) {
                 final AclPermission feature = session.getFeature(AclPermission.class);
                 if(feature != null) {
-                    this.acl(file, status.getAcl(), feature, listener);
+                    try {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                                file.getName(), status.getAcl()));
+                        feature.setPermission(file, status.getAcl());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
-            if(this.options.timestamp) {
+            if(status.getTimestamp() != null) {
                 final Timestamp feature = session.getFeature(Timestamp.class);
                 if(feature != null) {
-                    this.timestamp(file, feature, listener);
+                    try {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                                file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
+                        feature.setTimestamp(file, status.getTimestamp());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
-            }
-        }
-    }
-
-    private void timestamp(final Path file, final Timestamp feature, final ProgressListener listener) {
-        // Read timestamps from local file
-        try {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                    file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
-            feature.setTimestamp(file,
-                    file.getLocal().attributes().getModificationDate());
-        }
-        catch(BackgroundException e) {
-            // Ignore
-            log.warn(e.getMessage());
-        }
-    }
-
-    private void permissions(final Path file, final Permission permission,
-                             final UnixPermission feature, final ProgressListener listener) {
-        if(!Permission.EMPTY.equals(permission)) {
-            try {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), permission));
-                feature.setUnixPermission(file, permission);
-            }
-            catch(BackgroundException e) {
-                // Ignore
-                log.warn(e.getMessage());
-            }
-        }
-    }
-
-    private void acl(final Path file, final Acl acl,
-                     final AclPermission feature, final ProgressListener listener) {
-        if(!Acl.EMPTY.equals(acl)) {
-            try {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                        file.getName(), acl));
-                feature.setPermission(file, acl);
-            }
-            catch(BackgroundException e) {
-                // Ignore
-                log.warn(e.getMessage());
             }
         }
     }
