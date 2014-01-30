@@ -11,7 +11,7 @@ public class SessionFactoryTest extends AbstractTestCase {
 
     @Test
     public void testCreateSession() throws Exception {
-        for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
             assertNotNull(SessionFactory.create(new Host(protocol, "h")));
         }
     }

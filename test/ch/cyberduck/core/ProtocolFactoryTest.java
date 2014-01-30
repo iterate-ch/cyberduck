@@ -18,7 +18,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
 
     @Test
     public void testRegister() throws Exception {
-        assertFalse(ProtocolFactory.getKnownProtocols().isEmpty());
+        assertFalse(ProtocolFactory.getEnabledProtocols().isEmpty());
     }
 
     @Test

@@ -1621,10 +1621,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setTarget(this.id());
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
-        for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
             this.protocolCombobox.addItemWithTitle(protocol.getDescription());
         }
-        for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getProvider());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));

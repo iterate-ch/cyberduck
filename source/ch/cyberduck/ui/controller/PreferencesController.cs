@@ -1248,7 +1248,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
+            foreach (Protocol p in ProtocolFactory.getEnabledProtocols().toArray(new Protocol[] {}))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }

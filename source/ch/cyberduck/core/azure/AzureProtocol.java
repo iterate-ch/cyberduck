@@ -23,7 +23,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureProtocol extends AbstractProtocol {
 
@@ -59,6 +59,11 @@ public class AzureProtocol extends AbstractProtocol {
     @Override
     public boolean isHostnameConfigurable() {
         return true;
+    }
+
+    @Override
+    public boolean isPortConfigurable() {
+        return false;
     }
 
     @Override

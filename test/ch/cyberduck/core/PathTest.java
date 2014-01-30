@@ -169,7 +169,7 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testCreatePath() throws Exception {
-        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
             final Path path = new Path("p", Path.FILE_TYPE);
             assertNotNull(path);
             assertEquals("/p", path.getAbsolute());

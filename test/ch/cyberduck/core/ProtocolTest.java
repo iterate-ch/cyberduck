@@ -42,7 +42,7 @@ public class ProtocolTest extends AbstractTestCase {
 
     @Test
     public void testIcons() {
-        for(Protocol p : ProtocolFactory.getKnownProtocols()) {
+        for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
             assertNotNull(p.disk());
             assertNotNull(p.icon());
             assertNotNull(p.getDefaultPort());

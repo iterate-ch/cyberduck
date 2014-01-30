@@ -129,16 +129,20 @@ public final class ProtocolFactory {
     }
 
     public static void register(Protocol p) {
-        if(p.isEnabled()) {
-            protocols.add(p);
-        }
+        protocols.add(p);
     }
 
     /**
      * @return List of protocols
      */
-    public static List<Protocol> getKnownProtocols() {
-        return new ArrayList<Protocol>(protocols);
+    public static List<Protocol> getEnabledProtocols() {
+        final List<Protocol> enabled = new ArrayList<Protocol>();
+        for(Protocol protocol: protocols) {
+            if(protocol.isEnabled()) {
+                enabled.add(protocol);
+            }
+        }
+        return enabled;
     }
 
     /**
@@ -146,7 +150,7 @@ public final class ProtocolFactory {
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(final int port) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : getEnabledProtocols()) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
             }
@@ -160,17 +164,17 @@ public final class ProtocolFactory {
      * @return Matching protocol or null if no match
      */
     public static Protocol forName(final String identifier) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : protocols) {
             if(protocol.getProvider().equals(identifier)) {
                 return protocol;
             }
         }
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : protocols) {
             if(String.valueOf(protocol.hashCode()).equals(identifier)) {
                 return protocol;
             }
         }
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : protocols) {
             for(String scheme : protocol.getSchemes()) {
                 if(scheme.equals(identifier)) {
                     return protocol;
@@ -186,7 +190,7 @@ public final class ProtocolFactory {
      * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : getEnabledProtocols()) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
@@ -203,7 +207,7 @@ public final class ProtocolFactory {
      */
     public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
-            for(Protocol protocol : getKnownProtocols()) {
+            for(Protocol protocol : getEnabledProtocols()) {
                 for(String scheme : protocol.getSchemes()) {
                     if(str.startsWith(scheme + "://")) {
                         return true;
