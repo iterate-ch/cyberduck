@@ -46,11 +46,11 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return this.createFileEntryParser(config.getServerSystemKey(), TimeZone.getTimeZone(config.getServerTimeZoneId()));
     }
 
-    public CompositeFileEntryParser createFileEntryParser(String system) throws ParserInitializationException {
+    public CompositeFileEntryParser createFileEntryParser(final String system) throws ParserInitializationException {
         return this.createFileEntryParser(system, TimeZone.getDefault());
     }
 
-    public CompositeFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
+    public CompositeFileEntryParser createFileEntryParser(final String system, final TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
             String ukey = system.toUpperCase(Locale.ROOT);
             if(ukey.contains(FTPClientConfig.SYST_UNIX)) {
@@ -72,7 +72,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                 return this.createOS400FTPEntryParser(timezone);
             }
             else if(ukey.contains(FTPClientConfig.SYST_MVS)) {
-                return this.createMVSEntryParser(timezone);
+                return this.createUnixFTPEntryParser(timezone);
             }
         }
         // Defaulting to UNIX parser

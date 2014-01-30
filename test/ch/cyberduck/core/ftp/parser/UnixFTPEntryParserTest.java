@@ -26,6 +26,8 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import static org.junit.Assert.*;
@@ -439,5 +441,25 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(Calendar.JANUARY, parsed.getTimestamp().get(Calendar.MONTH));
         assertEquals(22, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertEquals(2009, parsed.getTimestamp().get(Calendar.YEAR));
+    }
+
+    @Test
+    public void testMVSParser() {
+        FTPFileEntryParser parser = new FTPParserSelector().getParser("MVS is the operating system of this server. FTP Server is running on z/OS.");
+
+        FTPFile parsed;
+
+        final String entry = "drwxr-xr-x   6 START2   SYS1        8192 Oct 28  2008 ADCD";
+        parser.preParse(new ArrayList<String>(Arrays.asList("total 66", entry)));
+        // #7717
+        parsed = parser.parseFTPEntry(entry);
+        assertNotNull(parsed);
+        assertEquals("ADCD", parsed.getName());
+        assertEquals("START2", parsed.getUser());
+        assertEquals("SYS1", parsed.getGroup());
+        assertNotNull(parsed.getTimestamp());
+        assertEquals(Calendar.OCTOBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(28, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2008, parsed.getTimestamp().get(Calendar.YEAR));
     }
 }
