@@ -184,7 +184,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.Session;
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session.getHost().getProtocol().getType() == Protocol.Type.s3)
+            if (session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
@@ -1292,7 +1293,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3;
+            bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             if (enable)
             {
                 enable = !credentials.isAnonymousLogin();

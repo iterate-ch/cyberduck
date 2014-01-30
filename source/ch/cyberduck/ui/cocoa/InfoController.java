@@ -1464,7 +1464,8 @@ public class InfoController extends ToolbarWindowController {
                 if(anonymous) {
                     return false;
                 }
-                return session.getHost().getProtocol().getType() == Protocol.Type.s3;
+                return session.getHost().getProtocol().getType() == Protocol.Type.s3
+                        || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
                 if(anonymous) {
                     return false;
@@ -1892,7 +1893,8 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Session<?> session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3;
+        boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {
             enable = !credentials.isAnonymousLogin();
         }
