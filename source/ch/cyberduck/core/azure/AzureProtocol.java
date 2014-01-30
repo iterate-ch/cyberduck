@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
 
@@ -73,11 +74,16 @@ public class AzureProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return "Windows Azure Blob Storage ";
+        return "Windows Azure Storage";
     }
 
     @Override
     public Scheme getScheme() {
         return Scheme.https;
+    }
+
+    @Override
+    public String disk() {
+        return ProtocolFactory.FTP.disk();
     }
 }
