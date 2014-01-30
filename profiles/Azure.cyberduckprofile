@@ -5,6 +5,6 @@
         <key>Protocol</key>
         <string>azure</string>
         <key>Vendor</key>
-        <string>Windows Azure Storage</string>
+        <string>Microsoft</string>
     </dict>
 </plist>
