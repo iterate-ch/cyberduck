@@ -15,11 +15,10 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureObjectListServiceTest extends AbstractTestCase {
 
@@ -34,6 +33,5 @@ public class AzureObjectListServiceTest extends AbstractTestCase {
         final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
         final AttributedList<Path> list = new AzureObjectListService(session).list(container, new DisabledListProgressListener());
         assertNotNull(list);
-        assertFalse(list.isEmpty());
     }
 }
