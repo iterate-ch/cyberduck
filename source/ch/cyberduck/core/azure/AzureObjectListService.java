@@ -28,7 +28,7 @@ import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureObjectListService implements ListService {
 
@@ -87,7 +87,7 @@ public class AzureObjectListService implements ListService {
             return children;
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Listing directory failed", e);
+            throw new AzureExceptionMappingService().map("Listing directory failed", e, directory);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

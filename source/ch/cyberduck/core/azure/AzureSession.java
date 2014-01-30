@@ -158,7 +158,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             }
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Listing directory failed", e);
+            throw new AzureExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
 
