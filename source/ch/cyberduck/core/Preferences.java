@@ -760,6 +760,17 @@ public abstract class Preferences {
 
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", Scheme.ftp.name());
+
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.FTP.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.FTP_TLS.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.SFTP.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.WEBDAV.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.WEBDAV_SSL.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.SWIFT.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.S3_SSL.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.GOOGLESTORAGE_SSL.getIdentifier()), String.valueOf(true));
+        defaults.put(String.format("connection.protocol.%s.enable", ProtocolFactory.AZURE.getIdentifier()), String.valueOf(false));
+
         /**
          * Socket timeout
          */

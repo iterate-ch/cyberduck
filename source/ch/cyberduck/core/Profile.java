@@ -75,8 +75,11 @@ public final class Profile implements Protocol, Serializable {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.value("Protocol"))
-                && StringUtils.isNotBlank(this.value("Vendor"));
+        if(parent.isEnabled()) {
+            return StringUtils.isNotBlank(this.value("Protocol"))
+                    && StringUtils.isNotBlank(this.value("Vendor"));
+        }
+        return false;
     }
 
     @Override

@@ -46,7 +46,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return Preferences.instance().getBoolean(String.format("connection.protocol.%s.enable", this.getIdentifier()));
     }
 
     @Override

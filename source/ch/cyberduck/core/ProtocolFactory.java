@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -52,6 +53,7 @@ public final class ProtocolFactory {
     public static final Protocol WEBDAV_SSL = new DAVSSLProtocol();
     public static final Protocol SWIFT = new SwiftProtocol();
     public static final Protocol GOOGLESTORAGE_SSL = new GoogleStorageProtocol();
+    public static final Protocol AZURE = new AzureProtocol();
 
     /**
      * Ordered list of supported protocols.
@@ -73,6 +75,7 @@ public final class ProtocolFactory {
         register(SWIFT);
         register(S3_SSL);
         register(GOOGLESTORAGE_SSL);
+        register(AZURE);
         // Order determines list in connection dropdown
         final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
