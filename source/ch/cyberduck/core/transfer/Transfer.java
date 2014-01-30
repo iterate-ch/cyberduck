@@ -357,7 +357,7 @@ public abstract class Transfer implements Serializable {
         if(this.isRunning()) {
             return false;
         }
-        return size == transferred;
+        return this.getSize() == this.getTransferred();
     }
 
     /**
