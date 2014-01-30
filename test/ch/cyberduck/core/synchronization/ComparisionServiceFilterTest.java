@@ -81,6 +81,11 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                             public String getChecksum() {
                                 return "a";
                             }
+
+                            @Override
+                            public boolean isFile() {
+                                return true;
+                            }
                         };
                     }
 
