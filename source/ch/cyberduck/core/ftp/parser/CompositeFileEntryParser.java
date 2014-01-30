@@ -29,6 +29,14 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
     }
 
     @Override
+    public List<String> preParse(final List<String> original) {
+        for(FTPFileEntryParser parser : parsers) {
+            parser.preParse(original);
+        }
+        return original;
+    }
+
+    @Override
     public FTPFile parseFTPEntry(final String line) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Parse %s", line));
@@ -44,7 +52,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
             current = null;
         }
         for(FTPFileEntryParser parser : parsers) {
-            FTPFile matched = parser.parseFTPEntry(line);
+            final FTPFile matched = parser.parseFTPEntry(line);
             if(matched != null) {
                 current = parser;
                 if(log.isInfoEnabled()) {
