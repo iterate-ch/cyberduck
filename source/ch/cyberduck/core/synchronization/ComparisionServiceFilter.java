@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
@@ -50,7 +51,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
 
     private ComparisonService timestamp;
 
-    private Session session;
+    private ProgressListener progress;
 
     public ComparisionServiceFilter(final Session<?> session, final TimeZone tz) {
         this(session, Cache.empty(), tz);
@@ -62,7 +63,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
-        this.session = session;
+        this.progress = session;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
                     if(StringUtils.isNotBlank(attributes.getChecksum())) {
-                        session.message(MessageFormat.format(
+                        progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
