@@ -129,6 +129,7 @@ public final class ProtocolFactory {
     }
 
     public static void register(Protocol p) {
+        protocols.remove(p);
         protocols.add(p);
     }
 
@@ -137,7 +138,7 @@ public final class ProtocolFactory {
      */
     public static List<Protocol> getEnabledProtocols() {
         final List<Protocol> enabled = new ArrayList<Protocol>();
-        for(Protocol protocol: protocols) {
+        for(Protocol protocol : protocols) {
             if(protocol.isEnabled()) {
                 enabled.add(protocol);
             }
