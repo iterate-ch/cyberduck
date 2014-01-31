@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>memset</string>
+        <string>Memset Hosting (1.0)</string>
         <key>Default Hostname</key>
        	<string>auth.storage.memset.com</string>
         <key>Context</key>
