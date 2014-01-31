@@ -127,7 +127,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
-    public void login(PasswordStore keychain, LoginCallback prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
         this.login(keychain, prompt, Cache.empty());
     }
 
@@ -217,7 +217,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return The custom character encoding specified by the host
-     * of this session or the default encoding if not specified
+     *         of this session or the default encoding if not specified
      * @see Preferences
      * @see Host
      */
@@ -254,7 +254,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return True if a connection attempt is currently being made. False if the connection
-     * has already been established or is closed.
+     *         has already been established or is closed.
      */
     public State getState() {
         return state;
