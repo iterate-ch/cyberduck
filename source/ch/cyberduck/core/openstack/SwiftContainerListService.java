@@ -91,20 +91,22 @@ public class SwiftContainerListService implements RootListService {
                         attributes.setRegion(f.getRegion().getRegionId());
                         final Path container = new Path(String.format("/%s", f.getName()), attributes);
                         if(cdn) {
-                            final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                            threadFactory.newThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for(Distribution.Method method : cdn.getMethods(container)) {
-                                        try {
-                                            cdn.read(container, method, new DisabledLoginController());
-                                        }
-                                        catch(BackgroundException e) {
-                                            log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
+                            final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+                            if(feature != null) {
+                                threadFactory.newThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(Distribution.Method method : feature.getMethods(container)) {
+                                            try {
+                                                feature.read(container, method, new DisabledLoginController());
+                                            }
+                                            catch(BackgroundException e) {
+                                                log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
+                                            }
                                         }
                                     }
-                                }
-                            }).start();
+                                }).start();
+                            }
                         }
                         if(size) {
                             threadFactory.newThread(new Runnable() {

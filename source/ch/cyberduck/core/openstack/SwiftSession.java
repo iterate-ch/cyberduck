@@ -177,6 +177,12 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new QloudstatAnalyticsProvider();
         }
         if(type == DistributionConfiguration.class) {
+            for(Region region : accounts.keySet()) {
+                if(null == region.getCDNManagementUrl()) {
+                    log.warn(String.format("Missing CDN Management URL for region %s", region.getRegionId()));
+                    return null;
+                }
+            }
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
