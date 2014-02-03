@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.Session;
@@ -44,12 +45,12 @@ public class AzureProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return "Storage Account Name";
+        return LocaleFactory.localizedString("Storage Account Name", "Azure");
     }
 
     @Override
     public String getPasswordPlaceholder() {
-        return "Primary Access Key";
+        return LocaleFactory.localizedString("Primary Access Key", "Azure");
     }
 
     @Override
