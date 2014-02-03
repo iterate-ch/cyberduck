@@ -29,7 +29,7 @@ import java.net.UnknownHostException;
 import com.microsoft.windowsazure.services.core.storage.StorageException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureExceptionMappingService extends AbstractIOExceptionMappingService<StorageException> {
 
@@ -38,13 +38,13 @@ public class AzureExceptionMappingService extends AbstractIOExceptionMappingServ
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(ExceptionUtils.getRootCause(e) instanceof UnknownHostException) {
-            return new NotfoundException(e.getMessage(), e);
+            return new NotfoundException(buffer.toString(), e);
         }
         if(403 == e.getHttpStatusCode()) {
-            return new LoginFailureException(e.getMessage(), e);
+            return new LoginFailureException(buffer.toString(), e);
         }
         if(404 == e.getHttpStatusCode()) {
-            return new NotfoundException(e.getMessage(), e);
+            return new NotfoundException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
