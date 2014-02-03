@@ -26,8 +26,6 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +35,8 @@ import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * @version $Id$
@@ -118,17 +118,17 @@ public class SwiftSegmentService {
      * @return ETag returned by the simple upload total size of segment uploaded path of segment
      */
     public String manifest(final String container, final List<StorageObject> objects) {
-        JSONArray manifestSLO = new JSONArray();
+        JsonArray manifestSLO = new JsonArray();
         for(StorageObject s : objects) {
-            JSONObject segmentJSON = new JSONObject();
+            JsonObject segmentJSON = new JsonObject();
             // this is the container and object name in the format {container-name}/{object-name}
-            segmentJSON.put("path", String.format("/%s/%s", container, s.getName()));
+            segmentJSON.addProperty("path", String.format("/%s/%s", container, s.getName()));
             // MD5 checksum of the content of the segment object
-            segmentJSON.put("etag", s.getMd5sum());
-            segmentJSON.put("size_bytes", s.getSize());
+            segmentJSON.addProperty("etag", s.getMd5sum());
+            segmentJSON.addProperty("size_bytes", s.getSize());
             manifestSLO.add(segmentJSON);
         }
-        return manifestSLO.toJSONString();
+        return manifestSLO.toString();
     }
 
 }

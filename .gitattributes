@@ -1860,6 +1860,7 @@ lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/ganymed-ssh2-261.jar -text svneol=unset#application/zip
+lib/gson-2.2.4.jar -text svneol=unset#application/zip
 lib/httpclient-4.3.2.jar -text svneol=unset#application/zip
 lib/httpcore-4.3.1.jar -text svneol=unset#application/zip
 lib/httpmime-4.3.2.jar -text svneol=unset#application/zip
@@ -1869,7 +1870,6 @@ lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/java-xmlbuilder-0.6.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.1.jar -text
 lib/jna-4.0.1.jar -text svneol=unset#application/zip
-lib/json-simple-1.1.1.jar -text svneol=unset#application/jar
 lib/jul-to-slf4j-1.7.1.jar -text
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text
@@ -1886,7 +1886,7 @@ lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
 lib/slf4j-api-1.7.1.jar -text
 lib/slf4j-log4j12-1.7.1.jar -text
-lib/swift-2.1.jar -text svneol=unset#application/zip
+lib/swift-2.2.jar -text svneol=unset#application/zip
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
 lv.lproj/Archive.strings -text svneol=unset#text/utf-16
 lv.lproj/Azure.strings -text svneol=unset#text/utf-16

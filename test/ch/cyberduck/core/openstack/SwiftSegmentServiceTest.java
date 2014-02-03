@@ -54,7 +54,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
         b.setMd5sum("m2");
         b.setSize(1L);
         final String manifest = service.manifest(container.getName(), Arrays.asList(a, b));
-        assertEquals("[{\"size_bytes\":1,\"etag\":\"m1\",\"path\":\"\\/test.cyberduck.ch\\/a\"},{\"size_bytes\":1,\"etag\":\"m2\",\"path\":\"\\/test.cyberduck.ch\\/b\"}]", manifest);
+        assertEquals("[{\"path\":\"/test.cyberduck.ch/a\",\"etag\":\"m1\",\"size_bytes\":1},{\"path\":\"/test.cyberduck.ch/b\",\"etag\":\"m2\",\"size_bytes\":1}]", manifest);
     }
 
     @Test
