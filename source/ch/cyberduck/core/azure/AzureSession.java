@@ -105,7 +105,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
             client.setTimeoutInMs(this.timeout());
             client.setAuthenticationScheme(AuthenticationScheme.SHAREDKEYFULL);
-
+            client.setRetryPolicyFactory(new RetryNoRetry());
             return client;
         }
         catch(URISyntaxException e) {
