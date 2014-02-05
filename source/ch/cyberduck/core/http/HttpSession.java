@@ -110,12 +110,12 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final HttpClientBuilder builder = HttpClients.custom();
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.get();
-            if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
+            if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                 if(proxy.isHTTPSProxyEnabled(host)) {
                     builder.setProxy(new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
                 }
             }
-            if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
+            if(Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
                 if(proxy.isHTTPProxyEnabled(host)) {
                     builder.setProxy(new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
                 }
