@@ -50,9 +50,17 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.ProtocolException;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
@@ -91,6 +99,23 @@ public class DAVSession extends HttpSession<DAVClient> {
             @Override
             protected boolean isRedirectable(final String method) {
                 return redirect.redirect(method);
+            }
+
+            @Override
+            public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+                final String method = request.getRequestLine().getMethod();
+                if(method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
+                    return this.copyEntity(new HttpPut(this.getLocationURI(request, response, context)), request);
+                }
+                return super.getRedirect(request, response, context);
+            }
+
+            private HttpUriRequest copyEntity(
+                    final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
+                if(original instanceof HttpEntityEnclosingRequest) {
+                    redirect.setEntity(((HttpEntityEnclosingRequest) original).getEntity());
+                }
+                return redirect;
             }
         });
         return new DAVClient(new HostUrlProvider(false).get(host), builder);
