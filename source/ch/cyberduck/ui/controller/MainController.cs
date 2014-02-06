@@ -38,12 +38,15 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using Ch.Cyberduck.core.local;
 using Microsoft.VisualBasic.ApplicationServices;
+using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.ui.growl;
+using java.util;
 using org.apache.log4j;
 using org.apache.log4j.xml;
+using ArrayList = System.Collections.ArrayList;
 using Keychain = Ch.Cyberduck.Core.Keychain;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
@@ -56,12 +59,13 @@ namespace Ch.Cyberduck.Ui.Controller
     /// <summary>
     /// A potential alternative for the VB.WindowsFormsApplicationBase: http://www.ai.uga.edu/mc/SingleInstance.html
     /// </summary>
-    internal class MainController : WindowsFormsApplicationBase
+    internal class MainController : WindowsFormsApplicationBase, CollectionListener
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (MainController).FullName);
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
         private static MainController _application;
+        private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
 
         /// <summary>
@@ -147,6 +151,26 @@ namespace Ch.Cyberduck.Ui.Controller
         public static IList<BrowserController> Browsers
         {
             get { return _browsers; }
+        }
+
+        public void collectionLoaded()
+        {
+            RefreshJumpList();
+        }
+
+        public void collectionItemAdded(object obj)
+        {
+            RefreshJumpList();
+        }
+
+        public void collectionItemRemoved(object obj)
+        {
+            RefreshJumpList();
+        }
+
+        public void collectionItemChanged(object obj)
+        {
+            RefreshJumpList();
         }
 
         private void StartupNextInstanceHandler(object sender, StartupNextInstanceEventArgs e)
@@ -340,7 +364,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
-
+            HistoryCollection.defaultCollection().addListener(this);
             UpdateController.Instance.CheckForUpdatesIfNecessary();
 
             if (Preferences.instance().getBoolean("browser.serialize"))
@@ -741,6 +765,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static BrowserController NewBrowser(bool force, bool show)
         {
+            InitJumpList();
             Logger.debug("NewBrowser");
             if (!force)
             {
@@ -794,9 +819,45 @@ namespace Ch.Cyberduck.Ui.Controller
             return controller;
         }
 
+        private static void InitJumpList()
+        {
+            if (Utils.IsWin7OrLater)
+            {
+                Windows7Taskbar.SetCurrentProcessAppId(Preferences.instance().getProperty("application.name"));
+                _jumpListManager = new JumpListManager(Preferences.instance().getProperty("application.name"));
+                _jumpListManager.UserRemovedItems += (o, e) =>
+                    {
+                        //statusLabel.Text = "User removed " + e.RemovedItems.Length + " items (cancelling refresh)";
+                        e.CancelCurrentOperation = true;
+                    };
+            }
+        }
+
         public static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
         {
             CrashReporter.Instance.Write(e.ExceptionObject as Exception);
+        }
+
+        private void RefreshJumpList()
+        {
+            if (Utils.IsWin7OrLater)
+            {
+                _jumpListManager.ClearCustomDestinations();
+                Iterator iterator = HistoryCollection.defaultCollection().iterator();
+                while (iterator.hasNext())
+                {
+                    Host host = (Host) iterator.next();
+                    _jumpListManager.AddCustomDestination(new ShellLink
+                        {
+                            Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
+                            Title = host.getNickname(),
+                            Category = LocaleFactory.localizedString("History"),
+                            IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
+                            IconIndex = 1
+                        });
+                }
+                _jumpListManager.Refresh();
+            }
         }
     }
 }
