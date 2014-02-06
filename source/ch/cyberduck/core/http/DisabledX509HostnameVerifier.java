@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.security.cert.X509Certificate;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DisabledX509HostnameVerifier implements X509HostnameVerifier, TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(DisabledX509HostnameVerifier.class);
@@ -44,6 +44,7 @@ public class DisabledX509HostnameVerifier implements X509HostnameVerifier, Trust
     @Override
     public boolean verify(final String host, final SSLSession sslSession) {
         log.debug(String.format("Hostname verification disabled for %s handled in system trust manager", host));
+        target.set(host);
         return true;
     }
 
