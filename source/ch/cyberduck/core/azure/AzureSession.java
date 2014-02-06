@@ -100,8 +100,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         try {
             credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), StringUtils.EMPTY);
             // Client configured with no credentials
-            final CloudBlobClient client = new CloudBlobClient(new URI(String.format("%s://%s", Scheme.https, host.getHostname())),
-                    credentials);
+            final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
+            verifier.setTarget(uri.getHost());
+            final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
             client.setTimeoutInMs(this.timeout());
             client.setAuthenticationScheme(AuthenticationScheme.SHAREDKEYFULL);
