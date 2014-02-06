@@ -825,11 +825,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Windows7Taskbar.SetCurrentProcessAppId(Preferences.instance().getProperty("application.name"));
                 _jumpListManager = new JumpListManager(Preferences.instance().getProperty("application.name"));
-                _jumpListManager.UserRemovedItems += (o, e) =>
-                    {
-                        //statusLabel.Text = "User removed " + e.RemovedItems.Length + " items (cancelling refresh)";
-                        e.CancelCurrentOperation = true;
-                    };
+                _jumpListManager.UserRemovedItems += (o, e) => { };
             }
         }
 
@@ -853,7 +849,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             Title = host.getNickname(),
                             Category = LocaleFactory.localizedString("History"),
                             IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
-                            IconIndex = 1
+                            IconIndex = 0
                         });
                 }
                 _jumpListManager.Refresh();
