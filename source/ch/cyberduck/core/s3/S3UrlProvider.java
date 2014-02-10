@@ -33,7 +33,6 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
@@ -51,7 +50,8 @@ import java.util.TimeZone;
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
     private HostPasswordStore store;
 
@@ -73,21 +73,19 @@ public class S3UrlProvider implements UrlProvider {
             // Publicly accessible URL of given object
             list.add(this.createBucketUrl(file, session.getHost().getProtocol().getScheme()));
             list.add(this.createBucketUrl(file, Scheme.http));
-            if(session.getHost().getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                if(!session.getHost().getCredentials().isAnonymousLogin()) {
-                    list.add(this.createSignedUrl(file, 60 * 60));
-                    // Default signed URL expiring in 24 hours.
-                    list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
-                    // Week
-                    list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
-                }
-                // Torrent
-                final S3Service service = new RestS3Service(
-                        new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
-                list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
-                        DescriptiveUrl.Type.torrent,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
+            if(!session.getHost().getCredentials().isAnonymousLogin()) {
+                list.add(this.createSignedUrl(file, 60 * 60));
+                // Default signed URL expiring in 24 hours.
+                list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+                // Week
+                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
             }
+            // Torrent
+            final S3Service service = new RestS3Service(
+                    new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
+            list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+                    DescriptiveUrl.Type.torrent,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         return list;
