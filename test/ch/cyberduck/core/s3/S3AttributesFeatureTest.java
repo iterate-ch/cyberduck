@@ -8,6 +8,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
@@ -74,5 +76,26 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final S3AttributesFeature f = new S3AttributesFeature(session);
         f.find(test);
+    }
+
+    @Test
+    public void testVersioning() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(ProtocolFactory.forName(Protocol.Type.s3.name()), ProtocolFactory.forName(Protocol.Type.s3.name()).getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        // Retrieve latest object version
+        assertEquals("DoedXkQ9DR.GDKwS7AICUvKOBIpazl.M", new S3AttributesFeature(session).find(
+                new Path("/versioning.test.cyberduck.ch/test", attributes)).getVersionId());
+        attributes.setVersionId("DoedXkQ9DR.GDKwS7AICUvKOBIpazl.M");
+        attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
+        assertEquals("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh", new S3AttributesFeature(session).find(
+                new Path("/versioning.test.cyberduck.ch/test", attributes)).getVersionId());
+        attributes.setVersionId(null);
+        session.close();
     }
 }
