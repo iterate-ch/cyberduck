@@ -5,10 +5,14 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Find;
 
 import org.junit.Test;
@@ -83,5 +87,28 @@ public class S3FindFeatureTest extends AbstractTestCase {
             }
         }).withCache(cache);
         assertTrue(finder.find(new Path("/g/gd", Path.FILE_TYPE)));
+    }
+
+    @Test
+    public void testVersioning() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(ProtocolFactory.forName(Protocol.Type.s3.name()), ProtocolFactory.forName(Protocol.Type.s3.name()).getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+                new DisabledListProgressListener());
+        final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        final Cache cache = new Cache();
+        assertTrue(new S3FindFeature(session).withCache(cache).find(new Path("/versioning.test.cyberduck.ch/test", attributes)));
+        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", attributes).getReference()));
+        attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
+        assertTrue(new S3FindFeature(session).withCache(cache).find(new Path("/versioning.test.cyberduck.ch/test", attributes)));
+        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", attributes).getReference()));
+        attributes.setVersionId(null);
+        assertNotNull(cache.lookup(new Path("/versioning.test.cyberduck.ch/test", attributes).getReference()));
+        session.close();
     }
 }
