@@ -35,6 +35,9 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * @version $Id$
  */
@@ -46,8 +49,17 @@ public class S3VersioningFeature implements Versioning {
     private PathContainerService containerService
             = new PathContainerService();
 
+    private Map<Path, VersioningConfiguration> cache
+            = Collections.emptyMap();
+
     public S3VersioningFeature(final S3Session session) {
         this.session = session;
+    }
+
+    @Override
+    public S3VersioningFeature withCache(final Map<Path, VersioningConfiguration> cache) {
+        this.cache = cache;
+        return this;
     }
 
     @Override
@@ -112,6 +124,9 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(final Path container) throws BackgroundException {
+        if(cache.containsKey(container)) {
+            return cache.get(container);
+        }
         try {
             final S3BucketVersioningStatus status
                     = session.getClient().getBucketVersioningStatus(container.getName());
@@ -164,7 +179,8 @@ public class S3VersioningFeature implements Versioning {
      *
      * @param controller Prompt controller
      * @return MFA one time authentication password.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
+     *          Prompt dismissed
      */
     protected Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         final Credentials credentials = new MultifactorCredentials();

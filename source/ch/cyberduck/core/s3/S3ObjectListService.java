@@ -41,7 +41,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -53,17 +55,14 @@ public class S3ObjectListService implements ListService {
 
     private S3AttributesFeature attributes;
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
-    private boolean versioning;
+    private Map<Path, VersioningConfiguration> versioning
+            = new HashMap<Path, VersioningConfiguration>();
 
     public S3ObjectListService(final S3Session session) {
-        this(session, Preferences.instance().getBoolean("s3.revisions.enable"));
-    }
-
-    public S3ObjectListService(final S3Session session, final boolean versioning) {
         this.session = session;
-        this.versioning = versioning;
         this.attributes = new S3AttributesFeature(session);
     }
 
@@ -94,8 +93,8 @@ public class S3ObjectListService implements ListService {
             final Path container = containerService.getContainer(directory);
             children.addAll(this.listObjects(container,
                     directory, prefix, String.valueOf(Path.DELIMITER), listener));
-            if(versioning) {
-                if(new S3VersioningFeature(session).getConfiguration(container).isEnabled()) {
+            if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+                if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {

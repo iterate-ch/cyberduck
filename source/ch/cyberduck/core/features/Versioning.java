@@ -23,10 +23,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.VersioningConfiguration;
 
+import java.util.Map;
+
 /**
  * @version $Id$
  */
 public interface Versioning {
+
+    public Versioning withCache(Map<Path, VersioningConfiguration> cache);
 
     VersioningConfiguration getConfiguration(Path container) throws BackgroundException;
 

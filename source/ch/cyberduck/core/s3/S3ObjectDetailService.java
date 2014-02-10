@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @version $Id$
  */
@@ -36,6 +39,9 @@ public class S3ObjectDetailService {
 
     private PathContainerService containerService
             = new PathContainerService();
+
+    private Map<Path, VersioningConfiguration> versioning
+            = new HashMap<Path, VersioningConfiguration>();
 
     public S3ObjectDetailService(final S3Session session) {
         this.session = session;
@@ -49,7 +55,7 @@ public class S3ObjectDetailService {
     public StorageObject getDetails(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            if(file.attributes().isDuplicate()) {
+            if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
                         container, containerService.getKey(file));
             }
