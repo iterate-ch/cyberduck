@@ -79,7 +79,7 @@ public class Cache {
             }
             return path;
         }
-        log.warn(String.format("Lookup failed for %s in cache", reference));
+        log.error(String.format("Lookup failed for %s in cache", reference));
         return null;
     }
 
