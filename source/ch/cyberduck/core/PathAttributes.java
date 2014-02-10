@@ -447,4 +447,30 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PathAttributes{");
+        sb.append("accessed=").append(accessed);
+        sb.append(", size=").append(size);
+        sb.append(", modified=").append(modified);
+        sb.append(", created=").append(created);
+        sb.append(", owner='").append(owner).append('\'');
+        sb.append(", group='").append(group).append('\'');
+        sb.append(", type=").append(type);
+        sb.append(", permission=").append(permission);
+        sb.append(", acl=").append(acl);
+        sb.append(", checksum='").append(checksum).append('\'');
+        sb.append(", etag='").append(etag).append('\'');
+        sb.append(", storageClass='").append(storageClass).append('\'');
+        sb.append(", encryption='").append(encryption).append('\'');
+        sb.append(", versionId='").append(versionId).append('\'');
+        sb.append(", duplicate=").append(duplicate);
+        sb.append(", revision=").append(revision);
+        sb.append(", placeholder=").append(placeholder);
+        sb.append(", region='").append(region).append('\'');
+        sb.append(", metadata=").append(metadata);
+        sb.append('}');
+        return sb.toString();
+    }
 }
