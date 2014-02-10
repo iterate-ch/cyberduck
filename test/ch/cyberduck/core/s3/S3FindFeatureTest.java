@@ -5,7 +5,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -98,8 +97,6 @@ public class S3FindFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
-                new DisabledListProgressListener());
         final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
         final Cache cache = new Cache();
         assertTrue(new S3FindFeature(session).withCache(cache).find(new Path("/versioning.test.cyberduck.ch/test", attributes)));
