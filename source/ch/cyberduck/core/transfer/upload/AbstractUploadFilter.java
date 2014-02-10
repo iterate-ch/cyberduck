@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -119,6 +120,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
+        // Read remote attributes first
+        if(parent.isExists()) {
+            if(find.find(file)) {
+                status.setExists(true);
+                if(file.attributes().isFile()) {
+                    // Read remote attributes
+                    file.setAttributes(attribute.find(file));
+                }
+            }
+        }
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
@@ -135,21 +146,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setLength(file.getLocal().attributes().getSize());
             }
             if(options.temporary) {
-                final Path renamed = new Path(file.getParent(), MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
-                        file.getName(), UUID.randomUUID().toString()), file.attributes(), file.getLocal());
+                final Path renamed = new Path(file.getParent(),
+                        MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
+                                file.getName(), UUID.randomUUID().toString()),
+                        new PathAttributes(file.attributes().getType()), file.getLocal());
                 status.setRenamed(renamed);
+                // File attributes should not change after calculate the hash code of the file reference
                 temporary.put(file, renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
-        }
-        if(parent.isExists()) {
-            if(find.find(file)) {
-                status.setExists(true);
-                if(file.attributes().isFile()) {
-                    // Read remote attributes
-                    file.setAttributes(attribute.find(file));
-                }
-            }
         }
         Permission permission = Permission.EMPTY;
         if(status.isExists()) {
