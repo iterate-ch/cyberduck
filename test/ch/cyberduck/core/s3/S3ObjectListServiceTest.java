@@ -17,7 +17,19 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -68,7 +80,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final List<Path> list = new S3ObjectListService(session, false).list(new Path(container, "test", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        final List<Path> list = new S3ObjectListService(session, false).list(new Path(container, "test", Path.DIRECTORY_TYPE),
+                new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
     }
@@ -96,7 +109,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE),
+                new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
         assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
@@ -113,7 +127,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE),
+                new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
         assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
@@ -135,6 +150,24 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                 = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", Path.DIRECTORY_TYPE).getReference()));
+        session.close();
+    }
+
+    @Test
+    public void testListVersioning() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(ProtocolFactory.forName(Protocol.Type.s3.name()), ProtocolFactory.forName(Protocol.Type.s3.name()).getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+                new DisabledListProgressListener());
+        final PathAttributes att = new PathAttributes(Path.FILE_TYPE);
+        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", att).getReference()));
+        att.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
+        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", att).getReference()));
         session.close();
     }
 }
