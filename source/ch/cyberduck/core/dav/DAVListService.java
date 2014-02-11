@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -53,18 +54,19 @@ public class DAVListService implements ListService {
                 if(href.equals(directory.getAbsolute())) {
                     continue;
                 }
-                final Path p = new Path(directory, PathNormalizer.name(href), resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final PathAttributes attributes = new PathAttributes(resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 if(resource.getModified() != null) {
-                    p.attributes().setModificationDate(resource.getModified().getTime());
+                    attributes.setModificationDate(resource.getModified().getTime());
                 }
                 if(resource.getCreation() != null) {
-                    p.attributes().setCreationDate(resource.getCreation().getTime());
+                    attributes.setCreationDate(resource.getCreation().getTime());
                 }
                 if(resource.getContentLength() != null) {
-                    p.attributes().setSize(resource.getContentLength());
+                    attributes.setSize(resource.getContentLength());
                 }
-                p.attributes().setChecksum(resource.getEtag());
-                p.attributes().setETag(resource.getEtag());
+                attributes.setChecksum(resource.getEtag());
+                attributes.setETag(resource.getEtag());
+                final Path p = new Path(directory, PathNormalizer.name(href), attributes);
                 children.add(p);
                 listener.chunk(children);
             }
