@@ -89,12 +89,12 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Target UNIX permissions
      */
-    private Permission permission;
+    private Permission permission = Permission.EMPTY;
 
     /**
      * Target ACL
      */
-    private Acl acl;
+    private Acl acl = Acl.EMPTY;
 
     private Long timestamp;
 
