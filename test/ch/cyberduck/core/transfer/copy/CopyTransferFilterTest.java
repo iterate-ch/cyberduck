@@ -137,8 +137,8 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return null;
             }
         }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
-        final TransferStatus status = new TransferStatus();
         final NullSession session = new NullSession(new Host("h"));
+        final TransferStatus status = f.prepare(source, new TransferStatus());
         f.complete(source, new TransferOptions(), status, session);
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
