@@ -22,6 +22,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -115,12 +116,19 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     // A server will resolve the symbolic link when the file is requested.
                     final Path target = file.getSymlinkTarget();
                     // Read remote attributes
-                    status.setLength(attribute.find(target).getSize());
+                    final PathAttributes attributes = attribute.find(target);
+                    status.setLength(attributes.getSize());
+                    status.setTimestamp(attributes.getModificationDate());
+                    status.setPermission(attributes.getPermission());
+                    status.setAcl(attributes.getAcl());
                 }
             }
             else {
                 // Read remote attributes
-                status.setLength(attribute.find(file).getSize());
+                final PathAttributes attributes = attribute.find(file);
+                status.setLength(attributes.getSize());
+                status.setTimestamp(attributes.getModificationDate());
+                status.setPermission(attributes.getPermission());
             }
         }
         if(file.attributes().isDirectory()) {
@@ -179,52 +187,44 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         if(!status.isCanceled()) {
             if(this.options.permissions) {
-                this.permissions(file);
+                Permission permission = Permission.EMPTY;
+                if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
+                    if(file.attributes().isFile()) {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.download.permissions.file.default"));
+                    }
+                    if(file.attributes().isDirectory()) {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+                    }
+                }
+                else {
+                    permission = status.getPermission();
+                }
+                if(!Permission.EMPTY.equals(permission)) {
+                    if(file.attributes().isDirectory()) {
+                        // Make sure we can read & write files to directory created.
+                        permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
+                    }
+                    if(file.attributes().isFile()) {
+                        // Make sure the owner can always read and write.
+                        permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write));
+                    }
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
+                    }
+                    file.getLocal().attributes().setPermission(permission);
+                }
             }
             if(this.options.timestamp) {
-                this.timestamp(file);
+                long timestamp = status.getTimestamp();
+                if(timestamp != -1) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
+                    }
+                    file.getLocal().attributes().setModificationDate(timestamp);
+                }
             }
-        }
-    }
-
-    private void timestamp(final Path file) {
-        long timestamp = file.attributes().getModificationDate();
-        if(timestamp != -1) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
-            }
-            file.getLocal().attributes().setModificationDate(timestamp);
-        }
-    }
-
-    private void permissions(final Path file) {
-        Permission permission = Permission.EMPTY;
-        if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
-            if(file.attributes().isFile()) {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.download.permissions.file.default"));
-            }
-            if(file.attributes().isDirectory()) {
-                permission = new Permission(
-                        Preferences.instance().getInteger("queue.download.permissions.folder.default"));
-            }
-        }
-        else {
-            permission = file.attributes().getPermission();
-        }
-        if(!Permission.EMPTY.equals(permission)) {
-            if(file.attributes().isDirectory()) {
-                // Make sure we can read & write files to directory created.
-                permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
-            }
-            if(file.attributes().isFile()) {
-                // Make sure the owner can always read and write.
-                permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write));
-            }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
-            }
-            file.getLocal().attributes().setPermission(permission);
         }
     }
 }
