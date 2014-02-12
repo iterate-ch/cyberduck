@@ -527,11 +527,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(pasteboard.size() == 1) {
                 final Local file = pasteboard.get(0).getLocal();
                 if(pasteboard.get(0).attributes().isFile()) {
-                    file.touch();
-                    IconServiceFactory.get().set(file, new TransferStatus());
+                    if(!file.exists()) {
+                        file.touch();
+                        IconServiceFactory.get().set(file, new TransferStatus());
+                    }
                 }
                 if(pasteboard.get(0).attributes().isDirectory()) {
-                    file.mkdir();
+                    if(!file.exists()) {
+                        file.mkdir();
+                    }
                 }
             }
             // kTemporaryFolderType
