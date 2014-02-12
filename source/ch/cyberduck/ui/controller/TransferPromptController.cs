@@ -183,22 +183,23 @@ namespace Ch.Cyberduck.Ui.Controller
                         new DefaultUrlProvider(Transfer.getHost()).toUrl(selected)
                                                                   .find(DescriptiveUrl.Type.provider)
                                                                   .getUrl();
-                    if (selected.attributes().getSize() == -1)
+                    TransferStatus status = TransferPromptModel.GetStatus(selected);
+                    if (status.getRemote().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
                     }
                     else
                     {
-                        View.RemoteFileSize = SizeFormatterFactory.get().format(selected.attributes().getSize());
+                        View.RemoteFileSize = SizeFormatterFactory.get().format(status.getRemote());
                     }
-                    if (selected.attributes().getModificationDate() == -1)
+                    if (status.getRemote().getModificationDate() == -1)
                     {
                         View.RemoteFileModificationDate = UnknownString;
                     }
                     else
                     {
                         View.RemoteFileModificationDate =
-                            UserDateFormatterFactory.get().getLongFormat(selected.attributes().getModificationDate());
+                            UserDateFormatterFactory.get().getLongFormat(status.getRemote().getModificationDate());
                     }
                 }
                 else

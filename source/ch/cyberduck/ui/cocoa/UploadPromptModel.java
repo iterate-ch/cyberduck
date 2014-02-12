@@ -19,14 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.resources.IconCacheFactory;
 
 /**
  * @version $Id$
@@ -35,26 +29,5 @@ public class UploadPromptModel extends TransferPromptModel {
 
     public UploadPromptModel(final TransferPromptController c, final Session session, final Transfer transfer, final Cache cache) {
         super(c, session, transfer, cache);
-    }
-
-    @Override
-    protected NSObject objectValueForItem(final Path file, final String identifier) {
-        if(identifier.equals(Column.size.name())) {
-            return NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(file.attributes().getSize()),
-                    TableCellAttributes.browserFontRightAlignment());
-        }
-        if(identifier.equals(Column.warning.name())) {
-            if(file.attributes().isFile()) {
-                if(file.getLocal().attributes().getSize() == 0) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                }
-                if(file.attributes().getSize() > file.getLocal().attributes().getSize()) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                }
-            }
-            return null;
-        }
-        return super.objectValueForItem(file, identifier);
     }
 }

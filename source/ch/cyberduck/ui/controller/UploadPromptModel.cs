@@ -27,26 +27,5 @@ namespace Ch.Cyberduck.Ui.Controller
             : base(controller, session, transfer)
         {
         }
-
-        public override object GetSize(Path path)
-        {
-            return path.attributes().getSize();
-        }
-
-        public override object GetWarningImage(Path path)
-        {
-            if (path.attributes().isFile())
-            {
-                if (path.attributes().getSize() == 0)
-                {
-                    return AlertIcon;
-                }
-                if (path.attributes().getSize() > path.getLocal().attributes().getSize())
-                {
-                    return AlertIcon;
-                }
-            }
-            return null;
-        }
     }
 }

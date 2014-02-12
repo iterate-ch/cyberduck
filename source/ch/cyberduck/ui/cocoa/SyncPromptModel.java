@@ -21,11 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
@@ -54,13 +53,6 @@ public class SyncPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path file, final String identifier) {
-        if(identifier.equals(TransferPromptModel.Column.size.name())) {
-            final Comparison compare = transfer.compare(file);
-            return NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(
-                            compare.equals(Comparison.remote) ? file.attributes().getSize() : file.getLocal().attributes().getSize()),
-                    TableCellAttributes.browserFontRightAlignment());
-        }
         if(identifier.equals(Column.sync.name())) {
             final Comparison compare = transfer.compare(file);
             if(compare.equals(Comparison.remote)) {
@@ -71,27 +63,10 @@ public class SyncPromptModel extends TransferPromptModel {
             }
             return null;
         }
-        if(identifier.equals(TransferPromptModel.Column.warning.name())) {
-            if(file.attributes().isFile()) {
-                if(file.attributes().getSize() == 0) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                }
-                if(file.getLocal().exists()) {
-                    if(file.getLocal().attributes().getSize() == 0) {
-                        return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
-                    }
-                }
-            }
-            return null;
-        }
         if(identifier.equals(Column.create.name())) {
-            if(!file.getLocal().exists()) {
+            final TransferStatus status = this.getStatus(file);
+            if(!status.isExists()) {
                 return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
-            }
-            if(status.containsKey(file)) {
-                if(!status.get(file).isExists()) {
-                    return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
-                }
             }
             return null;
         }

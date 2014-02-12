@@ -29,45 +29,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        public override object GetSize(Path path)
+        public virtual object GetCreateImage(Path path)
         {
-            Comparison compare = ((SyncTransfer) Transfer).compare(path);
-            return compare.equals(Comparison.remote)
-                       ? path.attributes().getSize()
-                       : path.getLocal().attributes().getSize();
-        }
-
-        public override object GetWarningImage(Path path)
-        {
-            if (path.attributes().isFile())
-            {
-                if (path.attributes().getSize() == 0)
-                {
-                    return AlertIcon;
-                }
-                if (path.getLocal().exists())
-                {
-                    if (path.getLocal().attributes().getSize() == 0)
-                    {
-                        return AlertIcon;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public override object GetCreateImage(Path path)
-        {
-            if (!path.getLocal().exists())
+            if (!GetStatus(path).isExists())
             {
                 return IconCache.Instance.IconForName("plus");
-            }
-            if (_status.ContainsKey(path))
-            {
-                if (!_status[path].isExists())
-                {
-                    return IconCache.Instance.IconForName("plus");
-                }
             }
             return null;
         }

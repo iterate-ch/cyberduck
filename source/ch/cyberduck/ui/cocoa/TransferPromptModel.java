@@ -24,17 +24,20 @@ import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.action.TransferPromptFilterWorker;
 import ch.cyberduck.ui.action.TransferPromptListWorker;
 import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.log4j.Logger;
@@ -116,6 +119,10 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         selected.put(file, state);
     }
 
+    /**
+     * @param file File
+     * @return False if transfer filter rejected file
+     */
     public boolean isFiltered(final Path file) {
         return !status.containsKey(file);
     }
@@ -123,6 +130,15 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected AttributedList<Path> get(final Path directory) {
         // Return list with filtered files included
         return cache.get(null == directory ? null : directory.getReference());
+    }
+
+    public TransferStatus getStatus(final Path file) {
+        if(!status.containsKey(file)) {
+            // Transfer filter background task has not yet finished
+            log.warn(String.format("Unknown transfer status for %s", file));
+            return new TransferStatus();
+        }
+        return status.get(file);
     }
 
     protected AttributedList<Path> children(final Path directory) {
@@ -158,7 +174,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         );
     }
 
-
     protected NSObject objectValueForItem(final Path file, final String identifier) {
         if(identifier.equals(Column.include.name())) {
             if(this.isFiltered(file)) {
@@ -169,6 +184,19 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(identifier.equals(Column.filename.name())) {
             return NSAttributedString.attributedStringWithAttributes(file.getName(),
                     TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.size.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    SizeFormatterFactory.get().format(this.getStatus(file).getLength()),
+                    TableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(Column.warning.name())) {
+            if(file.attributes().isFile()) {
+                if(this.getStatus(file).getLength() == 0) {
+                    return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
+                }
+            }
+            return null;
         }
         throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
     }

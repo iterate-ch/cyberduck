@@ -118,7 +118,21 @@ namespace Ch.Cyberduck.Ui.Controller
             return UNKNOWN;
         }
 
-        public abstract object GetSize(Path path);
+        public object GetSize(Path path)
+        {
+            TransferStatus status = GetStatus(path);
+            return status.getLength();
+        }
+
+        public TransferStatus GetStatus(Path path)
+        {
+            if(!_status.ContainsKey(path)) {
+                // Transfer filter background task has not yet finished
+                return new TransferStatus();
+            }
+            TransferStatus status = _status[path];
+            return status;
+        }
 
         public string GetSizeAsString(object size)
         {
@@ -160,7 +174,18 @@ namespace Ch.Cyberduck.Ui.Controller
             return newValue;
         }
 
-        public abstract object GetWarningImage(Path path);
+        public object GetWarningImage(Path path)
+        {
+            TransferStatus status = GetStatus(path);
+            if (path.attributes().isFile())
+            {
+                if (status.getLength() == 0)
+                {
+                    return AlertIcon;
+                }
+            }
+            return null;
+        }
 
         public virtual object GetCreateImage(Path path)
         {

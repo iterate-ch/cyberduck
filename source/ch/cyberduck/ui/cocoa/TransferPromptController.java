@@ -18,13 +18,23 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -278,20 +288,21 @@ public abstract class TransferPromptController extends SheetController
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             new DefaultUrlProvider(transfer.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    if(file.attributes().getSize() == -1) {
+                    final TransferStatus status = browserModel.getStatus(file);
+                    if(status.getRemote().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.get().format(file.attributes().getSize()),
+                                SizeFormatterFactory.get().format(status.getRemote().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
-                    if(file.attributes().getModificationDate() == -1) {
+                    if(status.getRemote().getModificationDate() == -1) {
                         remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                UserDateFormatterFactory.get().getLongFormat(file.attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(status.getRemote().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                 }
