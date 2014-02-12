@@ -10,17 +10,20 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class AzureAclPermissionFeatureTest extends AbstractTestCase {
+public class AzureAttributesFeatureTest extends AbstractTestCase {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
@@ -31,20 +34,28 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
-        f.getPermission(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE));
+        final AzureAttributesFeature f = new AzureAttributesFeature(session);
+        f.find(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE));
     }
 
-    @Test(expected = NotfoundException.class)
-    public void testReadNotFoundContainer() throws Exception {
+    @Test
+    public void testFind() throws Exception {
         final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
-        f.getPermission(container);
+        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        new AzureTouchFeature(session).touch(test);
+        final String v = UUID.randomUUID().toString();
+        final AzureAttributesFeature f = new AzureAttributesFeature(session);
+        final PathAttributes attributes = f.find(test);
+        assertEquals(Path.FILE_TYPE, attributes.getType());
+        assertEquals(0L, attributes.getSize());
+        assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", attributes.getChecksum());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        session.close();
     }
 }

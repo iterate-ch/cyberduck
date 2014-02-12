@@ -76,7 +76,7 @@ public class AzureAttributesFeature implements Attributes {
                 blob.downloadAttributes(null, options, null);
                 final BlobProperties properties = blob.getProperties();
                 final PathAttributes attributes = new PathAttributes(
-                        "application/directory".equals(properties.getContentType()) ? Path.DIRECTORY_TYPE : Path.VOLUME_TYPE);
+                        "application/directory".equals(properties.getContentType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 attributes.setSize(properties.getLength());
                 attributes.setModificationDate(properties.getLastModified().getTime());
                 attributes.setChecksum(properties.getContentMD5());
