@@ -20,7 +20,6 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -78,12 +77,6 @@ public class EditBackgroundAction extends Worker<Transfer> {
         worker.run();
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file.getLocal()));
-        }
-        final Permission permissions = file.getLocal().attributes().getPermission();
-        // Update local permissions to make sure the file is readable and writable for editing.
-        permissions.setUser(permissions.getUser().or(Permission.Action.read).or(Permission.Action.write));
-        if(!permissions.equals(file.getLocal().attributes().getPermission())) {
-            file.getLocal().attributes().setPermission(permissions);
         }
         try {
             editor.edit();
