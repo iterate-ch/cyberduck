@@ -242,10 +242,6 @@ public class Path extends AbstractPath implements Serializable {
         return attributes;
     }
 
-    public void setAttributes(final PathAttributes attributes) {
-        this.attributes = attributes;
-    }
-
     /**
      * @return the path relative to its parent directory
      */

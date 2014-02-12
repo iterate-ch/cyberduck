@@ -21,6 +21,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -87,15 +88,23 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     private String mime;
 
     /**
-     * Target UNIX permissions
+     * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
+     */
+    private PathAttributes remote = new PathAttributes(Path.FILE_TYPE);
+
+    /**
+     * Target UNIX permissions to set when transfer is complete
      */
     private Permission permission = Permission.EMPTY;
 
     /**
-     * Target ACL
+     * Target ACL to set when transfer is complete
      */
     private Acl acl = Acl.EMPTY;
 
+    /**
+     * Target timestamp to set when transfer is complete
+     */
     private Long timestamp;
 
     private Map<String, String> parameters
@@ -156,14 +165,23 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    /**
+     * @return Transfer content length
+     */
     public long getLength() {
         return length;
     }
 
+    /**
+     * @param length Transfer content length
+     */
     public void setLength(final long length) {
         this.length = length;
     }
 
+    /**
+     * @param length Transfer content length
+     */
     public TransferStatus length(final long length) {
         this.length = length;
         return this;
@@ -243,6 +261,14 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setMime(final String mime) {
         this.mime = mime;
+    }
+
+    public PathAttributes getRemote() {
+        return remote;
+    }
+
+    public void setRemote(PathAttributes remote) {
+        this.remote = remote;
     }
 
     public Permission getPermission() {

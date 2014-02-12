@@ -107,36 +107,56 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
-        if(file.attributes().isFile()) {
-            if(file.attributes().isSymbolicLink()) {
-                if(symlinkResolver.resolve(file)) {
-                    // No file size increase for symbolic link to be created locally
-                }
-                else {
-                    // A server will resolve the symbolic link when the file is requested.
-                    final Path target = file.getSymlinkTarget();
-                    // Read remote attributes
-                    final PathAttributes attributes = attribute.find(target);
-                    status.setLength(attributes.getSize());
-                    status.setTimestamp(attributes.getModificationDate());
-                    status.setPermission(attributes.getPermission());
-                    status.setAcl(attributes.getAcl());
-                }
-            }
-            else {
-                // Read remote attributes
-                final PathAttributes attributes = attribute.find(file);
-                status.setLength(attributes.getSize());
-                status.setTimestamp(attributes.getModificationDate());
-                status.setPermission(attributes.getPermission());
-            }
-        }
-        if(file.attributes().isDirectory()) {
-            // Do not attempt to create a directory that already exists
+        if(parent.isExists()) {
             if(file.getLocal().exists()) {
+                // Do not attempt to create a directory that already exists
                 status.setExists(true);
             }
         }
+        final PathAttributes attributes;
+        if(file.attributes().isSymbolicLink()) {
+            // A server will resolve the symbolic link when the file is requested.
+            final Path target = file.getSymlinkTarget();
+            // Read remote attributes of symlink target
+            attributes = attribute.find(target);
+            if(!symlinkResolver.resolve(file)) {
+                if(file.attributes().isFile()) {
+                    // Content length
+                    status.setLength(attributes.getSize());
+                }
+            }
+            // No file size increase for symbolic link to be created locally
+        }
+        else {
+            // Read remote attributes
+            attributes = attribute.find(file);
+            if(file.attributes().isFile()) {
+                // Content length
+                status.setLength(attributes.getSize());
+            }
+        }
+        status.setRemote(attributes);
+        if(this.options.timestamp) {
+            status.setTimestamp(attributes.getModificationDate());
+        }
+        if(this.options.permissions) {
+            Permission permission = Permission.EMPTY;
+            if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
+                if(file.attributes().isFile()) {
+                    permission = new Permission(
+                            Preferences.instance().getInteger("queue.download.permissions.file.default"));
+                }
+                if(file.attributes().isDirectory()) {
+                    permission = new Permission(
+                            Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+                }
+            }
+            else {
+                permission = attributes.getPermission();
+            }
+            status.setPermission(permission);
+        }
+        status.setAcl(attributes.getAcl());
         return status;
     }
 
@@ -185,45 +205,26 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             launcher.bounce(file.getLocal());
         }
-        if(!status.isCanceled()) {
-            if(this.options.permissions) {
-                Permission permission = Permission.EMPTY;
-                if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
-                    if(file.attributes().isFile()) {
-                        permission = new Permission(
-                                Preferences.instance().getInteger("queue.download.permissions.file.default"));
-                    }
-                    if(file.attributes().isDirectory()) {
-                        permission = new Permission(
-                                Preferences.instance().getInteger("queue.download.permissions.folder.default"));
-                    }
+        if(status.isComplete()) {
+            if(!Permission.EMPTY.equals(status.getPermission())) {
+                if(file.attributes().isDirectory()) {
+                    // Make sure we can read & write files to directory created.
+                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
                 }
-                else {
-                    permission = status.getPermission();
+                if(file.attributes().isFile()) {
+                    // Make sure the owner can always read and write.
+                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
                 }
-                if(!Permission.EMPTY.equals(permission)) {
-                    if(file.attributes().isDirectory()) {
-                        // Make sure we can read & write files to directory created.
-                        permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
-                    }
-                    if(file.attributes().isFile()) {
-                        // Make sure the owner can always read and write.
-                        permission.setUser(permission.getUser().or(Permission.Action.read).or(Permission.Action.write));
-                    }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
-                    }
-                    file.getLocal().attributes().setPermission(permission);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Updating permissions of %s to %s", file.getLocal(), status.getPermission()));
                 }
+                file.getLocal().attributes().setPermission(status.getPermission());
             }
-            if(this.options.timestamp) {
-                long timestamp = status.getTimestamp();
-                if(timestamp != -1) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
-                    }
-                    file.getLocal().attributes().setModificationDate(timestamp);
+            if(status.getTimestamp() != null) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), status.getTimestamp()));
                 }
+                file.getLocal().attributes().setModificationDate(status.getTimestamp());
             }
         }
     }

@@ -236,6 +236,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         assertEquals(status, table.get(test));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);
+        expected.setExists(true);
         expected.setCurrent("test".getBytes().length);
         // Remote size
         expected.setLength(5L);

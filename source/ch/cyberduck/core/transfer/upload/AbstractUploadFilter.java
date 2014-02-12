@@ -124,22 +124,22 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         if(parent.isExists()) {
             if(find.find(file)) {
                 status.setExists(true);
-                if(file.attributes().isFile()) {
-                    // Read remote attributes
-                    file.setAttributes(attribute.find(file));
-                }
+                // Read remote attributes
+                final PathAttributes attributes = attribute.find(file);
+                status.setRemote(attributes);
             }
         }
         if(file.attributes().isFile()) {
+            // Set content length from local file
             if(file.getLocal().attributes().isSymbolicLink()) {
-                if(symlinkResolver.resolve(file)) {
-                    // No file size increase for symbolic link to be created on the server
-                }
-                else {
+                if(!symlinkResolver.resolve(file)) {
                     // Will resolve the symbolic link when the file is requested.
-                    final Local target = file.getLocal().getSymlinkTarget();
-                    status.setLength(target.attributes().getSize());
+                    if(file.attributes().isFile()) {
+                        final Local target = file.getLocal().getSymlinkTarget();
+                        status.setLength(target.attributes().getSize());
+                    }
                 }
+                // No file size increase for symbolic link to be created on the server
             }
             else {
                 // Read file size from filesystem
@@ -156,12 +156,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             status.setMime(mapping.getMime(file.getName()));
         }
-        Permission permission = Permission.EMPTY;
-        if(status.isExists()) {
-            permission = attribute.find(file).getPermission();
-        }
-        else {
-            if(this.options.permissions) {
+        if(this.options.permissions) {
+            Permission permission = Permission.EMPTY;
+            if(status.isExists()) {
+                permission = status.getRemote().getPermission();
+            }
+            else {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
                     if(file.attributes().isFile()) {
                         permission = new Permission(
@@ -177,47 +177,47 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     permission = file.getLocal().attributes().getPermission();
                 }
             }
+            // Setting target UNIX permissions in transfer status
+            status.setPermission(permission);
         }
-        // Setting target UNIX permissions in transfer status
-        status.setPermission(permission);
-        Acl acl = Acl.EMPTY;
-        if(status.isExists()) {
-            final AclPermission feature = session.getFeature(AclPermission.class);
-            if(feature != null) {
-                acl = feature.getPermission(file);
+        if(this.options.acl) {
+            Acl acl = Acl.EMPTY;
+            if(status.isExists()) {
+                final AclPermission feature = session.getFeature(AclPermission.class);
+                if(feature != null) {
+                    acl = feature.getPermission(file);
+                }
             }
-        }
-        else {
-            if(this.options.acl) {
-                final Permission p;
+            else {
+                final Permission permission;
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
                     if(file.attributes().isFile()) {
-                        p = new Permission(
+                        permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
                     else {
-                        p = new Permission(
+                        permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                     }
                 }
                 else {
                     // Read permissions from local file
-                    p = file.getLocal().attributes().getPermission();
+                    permission = file.getLocal().attributes().getPermission();
                 }
                 acl = new Acl();
-                if(p.getOther().implies(Permission.Action.read)) {
+                if(permission.getOther().implies(Permission.Action.read)) {
                     acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
                 }
-                if(p.getGroup().implies(Permission.Action.read)) {
+                if(permission.getGroup().implies(Permission.Action.read)) {
                     acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
                 }
-                if(p.getGroup().implies(Permission.Action.write)) {
+                if(permission.getGroup().implies(Permission.Action.write)) {
                     acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
                 }
             }
+            // Setting target ACL in transfer status
+            status.setAcl(acl);
         }
-        // Setting target ACL in transfer status
-        status.setAcl(acl);
         if(options.timestamp) {
             // Read timestamps from local file
             status.setTimestamp(file.getLocal().attributes().getModificationDate());

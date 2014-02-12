@@ -17,13 +17,19 @@ package ch.cyberduck.core.transfer.copy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -43,23 +49,31 @@ import java.util.Map;
 public class CopyTransferFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
+    private Session<?> source;
+
     private Session<?> destination;
 
     private Find find;
+
+    private Attributes attribute;
 
     private final Map<Path, Path> files;
 
     private UploadFilterOptions options;
 
-    public CopyTransferFilter(final Session destination, final Map<Path, Path> files) {
-        this(destination, files, new UploadFilterOptions());
+    public CopyTransferFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
+        this(source, destination, files, new UploadFilterOptions(),
+                new Cache(Preferences.instance().getInteger("transfer.cache.size")));
     }
 
-    public CopyTransferFilter(final Session<?> destination, final Map<Path, Path> files, final UploadFilterOptions options) {
+    public CopyTransferFilter(final Session<?> source, final Session<?> destination,
+                              final Map<Path, Path> files, final UploadFilterOptions options, final Cache cache) {
         this.destination = destination;
+        this.source = source;
         this.files = files;
         this.options = options;
         this.find = destination.getFeature(Find.class);
+        this.attribute = source.getFeature(Attributes.class).withCache(cache);
     }
 
     @Override
@@ -70,8 +84,24 @@ public class CopyTransferFilter implements TransferPathFilter {
     @Override
     public TransferStatus prepare(final Path source, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
-        if(source.attributes().isFile()) {
-            status.setLength(source.attributes().getSize());
+        // Read remote attributes
+        final PathAttributes attributes = attribute.find(source);
+        if(attributes.isFile()) {
+            // Content length
+            status.setLength(attributes.getSize());
+        }
+        status.setRemote(attributes);
+        if(this.options.permissions) {
+            status.setPermission(attributes.getPermission());
+        }
+        if(this.options.timestamp) {
+            status.setTimestamp(attributes.getModificationDate());
+        }
+        if(this.options.acl) {
+            final AclPermission feature = this.source.getFeature(AclPermission.class);
+            if(feature != null) {
+                status.setAcl(feature.getPermission(source));
+            }
         }
         if(parent.isExists()) {
             // Do not attempt to create a directory that already exists
@@ -95,45 +125,50 @@ public class CopyTransferFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(this.options.permissions) {
-                final UnixPermission unix = destination.getFeature(UnixPermission.class);
-                if(unix != null) {
-                    Permission permission = source.attributes().getPermission();
-                    if(!Permission.EMPTY.equals(permission)) {
-                        this.permission(source, unix, permission);
+            if(!Permission.EMPTY.equals(status.getPermission())) {
+                final UnixPermission feature = destination.getFeature(UnixPermission.class);
+                if(feature != null) {
+                    if(!Permission.EMPTY.equals(status.getPermission())) {
+                        try {
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                                    files.get(source).getName(), status.getPermission()));
+                            feature.setUnixPermission(files.get(source), status.getPermission());
+                        }
+                        catch(BackgroundException e) {
+                            // Ignore
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
             }
-            if(this.options.timestamp) {
+            if(!Acl.EMPTY.equals(status.getAcl())) {
+                final AclPermission feature = destination.getFeature(AclPermission.class);
+                if(feature != null) {
+                    try {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                                files.get(source).getName(), status.getAcl()));
+                        feature.setPermission(files.get(source), status.getAcl());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
+                }
+            }
+            if(status.getTimestamp() != null) {
                 final Timestamp timestamp = destination.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                            source.getName(), UserDateFormatterFactory.get().getShortFormat(source.attributes().getModificationDate())));
-                    this.timestamp(source, timestamp);
+                            source.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                    try {
+                        timestamp.setTimestamp(files.get(source), status.getTimestamp());
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore
+                        log.warn(e.getMessage());
+                    }
                 }
             }
-        }
-    }
-
-    private void timestamp(final Path source, final Timestamp timestamp) {
-        try {
-            timestamp.setTimestamp(files.get(source),
-                    source.attributes().getModificationDate()
-            );
-        }
-        catch(BackgroundException e) {
-            // Ignore
-            log.warn(e.getMessage());
-        }
-    }
-
-    private void permission(final Path source, final UnixPermission unix, final Permission permission) {
-        try {
-            unix.setUnixPermission(files.get(source), permission);
-        }
-        catch(BackgroundException e) {
-            // Ignore
-            log.warn(e.getMessage());
         }
     }
 }
