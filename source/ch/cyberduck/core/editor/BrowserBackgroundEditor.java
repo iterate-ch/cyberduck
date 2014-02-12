@@ -56,7 +56,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void open(final Worker download) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Open %s in %s", this.getEdited().getLocal(), this.getApplication()));
+            log.debug(String.format("Open %s in %s", local, this.getApplication()));
         }
         controller.background(new WorkerBackgroundAction(controller, session, download));
     }
@@ -67,7 +67,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     @Override
     public void save(final Worker upload) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), this.getEdited().getLocal()));
+            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local));
         }
         controller.background(new WorkerBackgroundAction(controller, session, upload));
     }

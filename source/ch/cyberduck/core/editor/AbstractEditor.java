@@ -54,9 +54,9 @@ public abstract class AbstractEditor implements Editor {
     /**
      * The edited path
      */
-    private Path edited;
+    protected Path edited;
 
-    private Local local;
+    protected Local local;
 
     /**
      * The editor application
