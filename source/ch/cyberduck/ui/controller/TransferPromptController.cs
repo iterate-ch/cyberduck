@@ -190,7 +190,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.RemoteFileSize = SizeFormatterFactory.get().format(status.getRemote());
+                        View.RemoteFileSize = SizeFormatterFactory.get().format(status.getRemote().getSize());
                     }
                     if (status.getRemote().getModificationDate() == -1)
                     {
