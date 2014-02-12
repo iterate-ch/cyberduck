@@ -112,12 +112,20 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             final Proxy proxy = ProxyFactory.get();
             if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                 if(proxy.isHTTPSProxyEnabled(host)) {
-                    builder.setProxy(new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
+                    final HttpHost h = new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Setup proxy %s", h));
+                    }
+                    builder.setProxy(h);
                 }
             }
             if(Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
                 if(proxy.isHTTPProxyEnabled(host)) {
-                    builder.setProxy(new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
+                    final HttpHost h = new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Setup proxy %s", h));
+                    }
+                    builder.setProxy(h);
                 }
             }
         }
@@ -185,6 +193,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Setup connection pool with registry %s", registry));
+        }
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
