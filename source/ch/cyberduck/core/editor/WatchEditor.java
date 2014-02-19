@@ -100,12 +100,12 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s deleted", file));
         }
-        monitor.close(this.getEdited().getLocal());
+        monitor.close(local);
         monitor.removeListener(this);
     }
 
     @Override
-    public void fileCreated(Local file) {
+    public void fileCreated(final Local file) {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s created", file));
         }
