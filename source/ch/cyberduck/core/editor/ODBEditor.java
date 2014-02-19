@@ -19,7 +19,6 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
@@ -78,8 +77,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didCloseFile() {
         if(log.isDebugEnabled()) {
-            final Local file = this.getEdited().getLocal();
-            log.debug(String.format("Received notification from editor to close file %s", file));
+            log.debug(String.format("Received notification from editor to close file %s", local));
         }
         if(this.isModified()) {
             this.setClosed(true);
@@ -95,8 +93,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
      */
     public void didModifyFile() {
         if(log.isDebugEnabled()) {
-            final Local file = this.getEdited().getLocal();
-            log.debug(String.format("Received notification from editor to save file %s", file));
+            log.debug(String.format("Received notification from editor to save file %s", local));
         }
         this.setModified(true);
         this.save();
