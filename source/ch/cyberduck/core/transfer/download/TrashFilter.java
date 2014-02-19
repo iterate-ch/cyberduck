@@ -41,11 +41,8 @@ public class TrashFilter extends AbstractDownloadFilter {
         super(symlinkResolver, session, options);
     }
 
-    /**
-     * Rename existing file on disk if there is a conflict.
-     */
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+    public void apply(Path file, TransferStatus status) throws BackgroundException {
         final Local local = file.getLocal();
         if(local.exists()) {
             if(log.isInfoEnabled()) {
@@ -53,6 +50,5 @@ public class TrashFilter extends AbstractDownloadFilter {
             }
             local.trash();
         }
-        return super.prepare(file, parent);
     }
 }
