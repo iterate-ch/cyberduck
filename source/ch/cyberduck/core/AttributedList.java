@@ -79,7 +79,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
 
     @Override
     public boolean add(E path) {
-        final AbstractPath previous = references.put(path.getReference(), path);
+        final E previous = references.put(path.getReference(), path);
         if(null != previous) {
             log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
         }
@@ -89,7 +89,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
     @Override
     public boolean addAll(java.util.Collection<? extends E> c) {
         for(E path : c) {
-            final AbstractPath previous = references.put(path.getReference(), path);
+            final E previous = references.put(path.getReference(), path);
             if(null != previous) {
                 log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
             }
