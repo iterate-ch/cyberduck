@@ -113,7 +113,7 @@ public class SwiftAuthenticationService {
                     }
                 }, tenantCredentials,
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Tenant or project identifier", "Mosso"), options);
+                        LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
                 if(StringUtils.isNotBlank(tenant)) {
                     // Save tenant in username
