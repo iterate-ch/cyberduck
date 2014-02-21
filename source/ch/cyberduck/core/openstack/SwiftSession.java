@@ -116,6 +116,7 @@ public class SwiftSession extends HttpSession<Client> {
                         log.info(String.format("Attempt authentication with %s", auth));
                     }
                     client.authenticate(auth);
+                    break;
                 }
                 catch(AuthorizationException failure) {
                     if(!iter.hasNext()) {
