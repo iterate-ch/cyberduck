@@ -18,7 +18,7 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Path;
 
 /**
  * @version $Id$
@@ -31,7 +31,7 @@ public interface FileDescriptor {
      * @param file Filename
      * @return Description of file type
      */
-    String getKind(AbstractPath file);
+    String getKind(Path file);
 
     /**
      * Human readable localized description of file type

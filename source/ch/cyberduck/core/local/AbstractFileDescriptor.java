@@ -18,8 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 
 /**
  * @version $Id$
@@ -27,7 +27,7 @@ import ch.cyberduck.core.LocaleFactory;
 public abstract class AbstractFileDescriptor implements FileDescriptor {
 
     @Override
-    public String getKind(final AbstractPath file) {
+    public String getKind(final Path file) {
         if(file.attributes().isFile()) {
             return this.getKind(file.getName());
         }
