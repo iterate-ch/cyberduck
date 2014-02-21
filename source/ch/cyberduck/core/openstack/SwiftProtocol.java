@@ -63,6 +63,16 @@ public class SwiftProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getUsernamePlaceholder() {
+        return "Tenant ID:Access Key";
+    }
+
+    @Override
+    public String getPasswordPlaceholder() {
+        return "Secret Key";
+    }
+
+    @Override
     public SwiftSession createSession(final Host host) {
         return new SwiftSession(host);
     }
