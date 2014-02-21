@@ -14,12 +14,14 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
+import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -34,25 +36,25 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         final SwiftAuthenticationService s = new SwiftAuthenticationService("/v1.0");
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials("u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Client.AuthVersion.v10,
                 s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Client.AuthVersion.v10,
                 s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Client.AuthVersion.v10,
                 s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals("GET", s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("u", "P")),
-                new DisabledLoginController()).getMethod());
+                new DisabledLoginController()).iterator().next().getMethod());
         assertEquals("POST", s.getRequest(new Host(new SwiftProtocol(), "lon.identity.api.rackspacecloud.com", new Credentials("u", "P")),
-                new DisabledLoginController()).getMethod());
+                new DisabledLoginController()).iterator().next().getMethod());
         final Host host = new Host(new SwiftProtocol(), "identity.openstack.com", new Credentials("u", "P"));
         host.setPort(3451);
-        assertEquals(URI.create("https://identity.openstack.com:3451/v1.0"), s.getRequest(host, new DisabledLoginController()).getURI());
-        assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).getVersion());
-        assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
+        assertEquals(URI.create("https://identity.openstack.com:3451/v1.0"), s.getRequest(host, new DisabledLoginController()).iterator().next().getURI());
+        assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).iterator().next().getVersion());
+        assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).iterator().next().getClass());
     }
 
     @Test
@@ -60,13 +62,13 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", new Credentials("tenant:u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("tenant:u", "P")),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Authentication20UsernamePasswordRequest.class,
-                s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("tenant:u", "P")),
-                        new DisabledLoginController()).getClass());
+                new ArrayList<AuthenticationRequest>(s.getRequest(new Host(new SwiftProtocol(), "myhost", new Credentials("tenant:u", "P")),
+                        new DisabledLoginController())).get(0).getClass());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -75,7 +77,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         final Credentials credentials = new Credentials("u", "P");
         assertEquals(Client.AuthVersion.v20,
                 s.getRequest(new Host(new SwiftProtocol(), "region-b.geo-1.identity.hpcloudsvc.com", credentials),
-                        new DisabledLoginController()).getVersion());
+                        new DisabledLoginController()).iterator().next().getVersion());
     }
 
     @Test
@@ -90,7 +92,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                                                final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                                 credentials.setUsername("");
                             }
-                        }).getVersion());
+                        }).iterator().next().getVersion());
         assertEquals("u", host.getCredentials().getUsername());
     }
 
@@ -109,9 +111,10 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         }
         host.getCredentials().setUsername("tenant:key");
         assertEquals(URI.create("https://region-a.geo-1.identity.hpcloudsvc.com:35357/v2.0/tokens"), s.getRequest(host,
-                new DisabledLoginController()).getURI());
-        assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginController()).getVersion());
-        assertEquals(Authentication20AccessKeySecretKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
+                new DisabledLoginController()).iterator().next().getURI());
+        assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginController()).iterator().next().getVersion());
+        assertEquals(Authentication20AccessKeySecretKeyRequest.class,
+                new ArrayList<AuthenticationRequest>(s.getRequest(host, new DisabledLoginController())).get(2).getClass());
     }
 
     @Test
@@ -121,17 +124,17 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                 LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertEquals("/v2.0/tokens", profile.getContext());
-        assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host, new DisabledLoginController()).getURI());
-        assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginController()).getVersion());
-        assertEquals(Authentication20RAXUsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
+        assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host, new DisabledLoginController()).iterator().next().getURI());
+        assertEquals(Client.AuthVersion.v20, s.getRequest(host, new DisabledLoginController()).iterator().next().getVersion());
+        assertEquals(Authentication20RAXUsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).iterator().next().getClass());
     }
 
     @Test
     public void testDefault() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService("/v1.0");
         final Host host = new Host(new SwiftProtocol(), "myidentityservice.example.net");
-        assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host, new DisabledLoginController()).getURI());
-        assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).getVersion());
-        assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).getClass());
+        assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host, new DisabledLoginController()).iterator().next().getURI());
+        assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).iterator().next().getVersion());
+        assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).iterator().next().getClass());
     }
 }

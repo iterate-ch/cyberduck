@@ -31,12 +31,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import ch.iterate.openstack.swift.method.Authentication10UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication11UsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20AccessKeySecretKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20RAXUsernameKeyRequest;
 import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordRequest;
+import ch.iterate.openstack.swift.method.Authentication20UsernamePasswordTenantIdRequest;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 /**
@@ -58,7 +62,7 @@ public class SwiftAuthenticationService {
         this.version = version;
     }
 
-    public AuthenticationRequest getRequest(final Host host, final LoginCallback prompt) throws LoginCanceledException {
+    public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt) throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -69,9 +73,9 @@ public class SwiftAuthenticationService {
         if(host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
             // Fix access to *.identity.api.rackspacecloud.com
             url.append("/v2.0/tokens");
-            return new Authentication20RAXUsernameKeyRequest(
+            return Collections.singleton(new Authentication20RAXUsernameKeyRequest(
                     URI.create(url.toString()),
-                    credentials.getUsername(), credentials.getPassword(), null
+                    credentials.getUsername(), credentials.getPassword(), null)
             );
         }
         final String context;
@@ -85,12 +89,12 @@ public class SwiftAuthenticationService {
         // Custom authentication context
         url.append(context);
         if(context.contains("1.0")) {
-            return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
-                    credentials.getUsername(), credentials.getPassword());
+            return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword()));
         }
         else if(context.contains("1.1")) {
-            return new Authentication11UsernameKeyRequest(URI.create(url.toString()),
-                    credentials.getUsername(), credentials.getPassword());
+            return Collections.singleton(new Authentication11UsernameKeyRequest(URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword()));
         }
         else if(context.contains("2.0")) {
             // Prompt for tenant
@@ -120,22 +124,25 @@ public class SwiftAuthenticationService {
                     credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
                 }
             }
-            if(host.getHostname().endsWith("identity.hpcloudsvc.com")) {
-                return new Authentication20AccessKeySecretKeyRequest(
-                        URI.create(url.toString()),
-                        user, credentials.getPassword(), tenant
-                );
-            }
-            return new Authentication20UsernamePasswordRequest(
+            final Set<AuthenticationRequest> options = new LinkedHashSet<AuthenticationRequest>();
+            options.add(new Authentication20UsernamePasswordRequest(
                     URI.create(url.toString()),
-                    user, credentials.getPassword(), tenant
+                    user, credentials.getPassword(), tenant)
             );
+            options.add(new Authentication20UsernamePasswordTenantIdRequest(
+                    URI.create(url.toString()),
+                    user, credentials.getPassword(), tenant)
+            );
+            options.add(new Authentication20AccessKeySecretKeyRequest(
+                    URI.create(url.toString()),
+                    user, credentials.getPassword(), tenant));
+            return options;
         }
         else {
             log.warn(String.format("Unknown context version in %s. Default to v1 authentication.", context));
             // Default to 1.0
-            return new Authentication10UsernameKeyRequest(URI.create(url.toString()),
-                    credentials.getUsername(), credentials.getPassword());
+            return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword()));
         }
     }
 }

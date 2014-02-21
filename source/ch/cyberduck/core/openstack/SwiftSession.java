@@ -53,11 +53,15 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
+import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.method.AuthenticationRequest;
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
@@ -104,7 +108,21 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
         try {
-            client.authenticate(new SwiftAuthenticationService().getRequest(host, prompt));
+            final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
+            for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {
+                try {
+                    final AuthenticationRequest auth = iter.next();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Attempt authentication with %s", auth));
+                    }
+                    client.authenticate(auth);
+                }
+                catch(AuthorizationException failure) {
+                    if(!iter.hasNext()) {
+                        throw failure;
+                    }
+                }
+            }
             threadFactory.newThread(new Runnable() {
                 @Override
                 public void run() {
