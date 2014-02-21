@@ -31,7 +31,10 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -59,7 +62,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
-import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 import ch.iterate.openstack.swift.model.AccountInfo;
@@ -118,8 +120,15 @@ public class SwiftSession extends HttpSession<Client> {
                     client.authenticate(auth);
                     break;
                 }
-                catch(AuthorizationException failure) {
-                    if(!iter.hasNext()) {
+                catch(GenericException failure) {
+                    if(new SwiftExceptionMappingService().map(failure) instanceof LoginFailureException
+                            || new SwiftExceptionMappingService().map(failure) instanceof AccessDeniedException
+                            || new SwiftExceptionMappingService().map(failure) instanceof InteroperabilityException) {
+                        if(!iter.hasNext()) {
+                            throw failure;
+                        }
+                    }
+                    else {
                         throw failure;
                     }
                 }
