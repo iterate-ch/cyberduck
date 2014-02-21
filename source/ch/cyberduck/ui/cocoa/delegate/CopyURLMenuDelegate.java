@@ -53,8 +53,14 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     @Override
     protected List<DescriptiveUrl> getURLs(Path selected) {
         final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
-        list.addAll(this.getSession().getFeature(UrlProvider.class).toUrl(selected));
-        list.addAll(this.getSession().getFeature(DistributionConfiguration.class).toUrl(selected));
+        final UrlProvider provider = this.getSession().getFeature(UrlProvider.class);
+        if(provider != null) {
+            list.addAll(provider.toUrl(selected));
+        }
+        final DistributionConfiguration feature = this.getSession().getFeature(DistributionConfiguration.class);
+        if(feature != null) {
+            list.addAll(feature.toUrl(selected));
+        }
         return list;
     }
 
