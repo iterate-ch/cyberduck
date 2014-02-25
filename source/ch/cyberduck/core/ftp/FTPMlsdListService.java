@@ -52,8 +52,13 @@ public class FTPMlsdListService implements ListService {
             }
             final List<String> list = new FTPDataFallback(session).data(directory, new DataConnectionAction<List<String>>() {
                 @Override
-                public List<String> execute() throws IOException {
-                    return session.getClient().list(FTPCmd.MLSD);
+                public List<String> execute() throws BackgroundException {
+                    try {
+                        return session.getClient().list(FTPCmd.MLSD);
+                    }
+                    catch(IOException e) {
+                        throw new FTPExceptionMappingService().map(e);
+                    }
                 }
             });
             return new FTPMlsdListResponseReader().read(session, directory, list);

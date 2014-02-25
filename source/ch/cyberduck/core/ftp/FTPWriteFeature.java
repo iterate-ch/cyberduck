@@ -51,12 +51,17 @@ public class FTPWriteFeature implements Write {
             }
             final OutputStream out = new FTPDataFallback(session).data(file, new DataConnectionAction<OutputStream>() {
                 @Override
-                public OutputStream execute() throws IOException {
-                    if(status.isAppend()) {
-                        return session.getClient().appendFileStream(file.getAbsolute());
+                public OutputStream execute() throws BackgroundException {
+                    try {
+                        if(status.isAppend()) {
+                            return session.getClient().appendFileStream(file.getAbsolute());
+                        }
+                        else {
+                            return session.getClient().storeFileStream(file.getAbsolute());
+                        }
                     }
-                    else {
-                        return session.getClient().storeFileStream(file.getAbsolute());
+                    catch(IOException e) {
+                        throw new FTPExceptionMappingService().map(e);
                     }
                 }
             });

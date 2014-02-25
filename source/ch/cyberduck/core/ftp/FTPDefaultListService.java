@@ -57,8 +57,13 @@ public class FTPDefaultListService implements ListService {
             }
             final List<String> list = new FTPDataFallback(session).data(directory, new DataConnectionAction<List<String>>() {
                 @Override
-                public List<String> execute() throws IOException {
-                    return session.getClient().list(command.getCommand(), command.getArg());
+                public List<String> execute() throws BackgroundException {
+                    try {
+                        return session.getClient().list(command.getCommand(), command.getArg());
+                    }
+                    catch(IOException e) {
+                        throw new FTPExceptionMappingService().map(e);
+                    }
                 }
             });
             return new FTPListResponseReader().read(session, listener, directory, parser, list);

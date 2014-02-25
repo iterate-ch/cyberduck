@@ -58,8 +58,13 @@ public class FTPReadFeature implements Read {
             }
             final InputStream in = new FTPDataFallback(session).data(file, new DataConnectionAction<InputStream>() {
                 @Override
-                public InputStream execute() throws IOException {
-                    return session.getClient().retrieveFileStream(file.getAbsolute());
+                public InputStream execute() throws BackgroundException {
+                    try {
+                        return session.getClient().retrieveFileStream(file.getAbsolute());
+                    }
+                    catch(IOException e) {
+                        throw new FTPExceptionMappingService().map(e);
+                    }
                 }
             });
             return new CountingInputStream(in) {

@@ -17,11 +17,11 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.io.IOException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 /**
  * @version $Id$
  */
 public interface DataConnectionAction<T> {
-    T execute() throws IOException, FTPInvalidListException;
+    T execute() throws BackgroundException;
 }
