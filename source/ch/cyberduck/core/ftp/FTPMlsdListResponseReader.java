@@ -18,12 +18,14 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,8 +45,9 @@ import java.util.regex.Pattern;
 public class FTPMlsdListResponseReader {
     private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
 
-    public AttributedList<Path> read(final FTPSession session, final Path parent,
-                                     final List<String> replies) throws IOException, FTPInvalidListException {
+    public AttributedList<Path> read(final FTPSession session, final ListProgressListener listener,
+                                     final Path parent, final List<String> replies)
+            throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;
@@ -132,6 +135,7 @@ public class FTPMlsdListResponseReader {
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
                     children.add(parsed);
+                    listener.chunk(children);
                 }
             }
         }

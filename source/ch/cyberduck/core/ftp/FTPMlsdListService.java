@@ -61,7 +61,7 @@ public class FTPMlsdListService implements ListService {
                     }
                 }
             });
-            return new FTPMlsdListResponseReader().read(session, directory, list);
+            return new FTPMlsdListResponseReader().read(session, listener, directory, list);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
