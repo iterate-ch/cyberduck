@@ -732,6 +732,9 @@ img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
+img/azure.png -text svneol=unset#image/png
+img/azure.tiff -text svneol=unset#image/tiff
+img/azure@2x.png -text svneol=unset#image/png
 img/bandwidth.png -text svneol=unset#image/png
 img/bandwidth.tiff -text svneol=unset#image/tiff
 img/bandwidth@2x.png -text svneol=unset#image/png

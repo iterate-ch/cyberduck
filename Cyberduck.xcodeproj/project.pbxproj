@@ -56,6 +56,8 @@
 		473A701B182259350055C76C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
 		473A701C182259350055C76C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
 		473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
+		473BF0861892968E0068B4C1 /* azure.png in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0841892968E0068B4C1 /* azure.png */; };
+		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
 		474163C306C4F64100AC0BD2 /* Main.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A706C4F64100AC0BD2 /* Main.nib */; };
@@ -713,6 +715,8 @@
 		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
 		473A7018182259350055C76C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		473A7019182259350055C76C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		473BF0841892968E0068B4C1 /* azure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = azure.png; sourceTree = "<group>"; };
+		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
 		474163B006C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = en; path = en.lproj/License.txt; sourceTree = "<group>"; };
@@ -1110,7 +1114,7 @@
 		478ECD180DAD5743008A5B1F /* libQuickLook.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libQuickLook.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		478F0DF312FB03DC000FE33C /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
-		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
+		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4792112812F6F4FD00E35E16 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = lib/Sparkle.framework; sourceTree = "<group>"; };
 		4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesApplicationFinder.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1153,8 +1157,14 @@
 		47993F7B11699F40000271A8 /* Transfer.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Transfer.nib; path = resources/Transfer.nib; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		479BF77D1725A68C006854BF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		47A082B0167A169D004458C7 /* cyberduck-application.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-application.icns"; sourceTree = "<group>"; };
+		47A8474618A1753800519D14 /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt_BR; path = pt_BR.lproj/Azure.strings; sourceTree = "<group>"; };
+		47A8474718A1753800519D14 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Azure.strings; sourceTree = "<group>"; };
+		47A8474818A1753800519D14 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Azure.strings; sourceTree = "<group>"; };
+		47A8474918A1753800519D14 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Azure.strings; sourceTree = "<group>"; };
+		47A8474A18A1753800519D14 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Azure.strings; sourceTree = "<group>"; };
+		47A8474B18A1753800519D14 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Azure.strings; sourceTree = "<group>"; };
 		47A88FBA0B931D9C00DB9D87 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC30B931E6800DB9D87 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC40B931E6800DB9D87 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Configuration.strings; sourceTree = "<group>"; };
@@ -1957,6 +1967,8 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				473BF0841892968E0068B4C1 /* azure.png */,
+				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
 				47B331911668102400C9FFA0 /* s3.tiff */,
@@ -2831,6 +2843,7 @@
 				476730D816108E1300B28D35 /* dropfolderbadge.tiff in Resources */,
 				476730D916108E1300B28D35 /* edit.tiff in Resources */,
 				476730DA16108E1300B28D35 /* editPressed.tiff in Resources */,
+				473BF0861892968E0068B4C1 /* azure.png in Resources */,
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
 				476730DE16108E1300B28D35 /* gear.tiff in Resources */,
@@ -2875,6 +2888,7 @@
 				47B331941668102400C9FFA0 /* swift.tiff in Resources */,
 				47A082B1167A169D004458C7 /* cyberduck-application.icns in Resources */,
 				471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */,
+				473BF0871892968E0068B4C1 /* azure.tiff in Resources */,
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47B888A917984584004E298A /* Folder.nib in Resources */,
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
@@ -3856,6 +3870,12 @@
 				47652D091202BED200745031 /* lv */,
 				47652D0A1202BED200745031 /* en */,
 				470DECC4125F2CBD00952823 /* ru */,
+				47A8474618A1753800519D14 /* pt_BR */,
+				47A8474718A1753800519D14 /* zh_TW */,
+				47A8474818A1753800519D14 /* th */,
+				47A8474918A1753800519D14 /* cy */,
+				47A8474A18A1753800519D14 /* hu */,
+				47A8474B18A1753800519D14 /* id */,
 			);
 			name = Azure.strings;
 			sourceTree = "<group>";
