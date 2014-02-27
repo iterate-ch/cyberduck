@@ -25,11 +25,11 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,16 +60,16 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
-            public Void execute() throws IOException {
+            public Void execute() throws BackgroundException {
                 if(count.get() == 0) {
-                    throw new SocketTimeoutException();
+                    throw new BackgroundException(new SocketTimeoutException());
                 }
                 return null;
             }
         };
         final FTPDataFallback f = new FTPDataFallback(session) {
             @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
+            protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();
                 return super.fallback(action);
             }
@@ -92,16 +92,16 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
-            public Void execute() throws IOException {
+            public Void execute() throws BackgroundException {
                 if(count.get() == 0) {
-                    throw new FTPException(500, "m");
+                    throw new BackgroundException(new FTPException(500, "m"));
                 }
                 return null;
             }
         };
         final FTPDataFallback f = new FTPDataFallback(session) {
             @Override
-            protected <T> T fallback(final DataConnectionAction<T> action) throws IOException, FTPInvalidListException {
+            protected <T> T fallback(final DataConnectionAction<T> action) throws BackgroundException {
                 count.incrementAndGet();
                 return super.fallback(action);
             }
