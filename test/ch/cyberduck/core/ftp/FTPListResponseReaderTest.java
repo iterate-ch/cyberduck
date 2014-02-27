@@ -21,8 +21,10 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -114,7 +116,6 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         assertEquals("/store/public/brain", parsed.getParent().getAbsolute());
     }
 
-
     @Test
     public void testParseAbsolutePaths() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
@@ -134,5 +135,18 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         assertFalse(parsed.attributes().getPermission().isSticky());
         assertFalse(parsed.attributes().getPermission().isSetuid());
         assertFalse(parsed.attributes().getPermission().isSetgid());
+    }
+
+    @Test(expected = ListCanceledException.class)
+    public void testLimit() throws Exception {
+        final AttributedList<Path> list = new FTPListResponseReader().read(new NullSession(new Host("f")),
+                new DisabledListProgressListener() {
+                    @Override
+                    public void chunk(AttributedList<Path> list) throws ListCanceledException {
+                        throw new ListCanceledException(AttributedList.<Path>emptyList());
+                    }
+                },
+                new Path("/", Path.DIRECTORY_TYPE), new FTPParserSelector().getParser("NETWARE  Type : L8"),
+                Arrays.asList("lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"));
     }
 }
