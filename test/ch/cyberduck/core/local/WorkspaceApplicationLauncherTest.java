@@ -44,7 +44,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                ApplicationLauncherFactory.get().open(new NullLocal(null, "t"));
+                ApplicationLauncherFactory.get().open(new NullLocal("t"));
                 return null;
             }
         }, 5);
@@ -65,7 +65,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                ApplicationLauncherFactory.get().bounce(new NullLocal(null, "t"));
+                ApplicationLauncherFactory.get().bounce(new NullLocal("t"));
                 return null;
             }
         }, 5);

@@ -3,7 +3,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -29,16 +28,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         // Local file does not exist
         assertFalse(f.accept(new Path("a", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
-                };
-            }
-        }, new TransferStatus()));
+                             }, new NullLocal("t") {
+                                 @Override
+                                 public boolean exists() {
+                                     return false;
+                                 }
+                             }, new TransferStatus()
+        ));
     }
 
     @Test(expected = NotfoundException.class)
@@ -46,33 +42,22 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         // Local file does not exist
         assertFalse(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
-                };
-            }
-        }, new TransferStatus()));
+                             }, new NullLocal("t") {
+                                 @Override
+                                 public boolean exists() {
+                                     return false;
+                                 }
+                             }, new TransferStatus()
+        ));
     }
 
     @Test
     public void testAcceptRemoteExists() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t");
-            }
-        }, new TransferStatus()));
+        }, new NullLocal("t"), new TransferStatus()));
         assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t");
-            }
-        }, new TransferStatus()
+        }, new NullLocal("t"), new TransferStatus()
         ));
     }
 
@@ -80,29 +65,30 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testSize() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         assertEquals(1L, f.prepare(new Path("/t", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "/t") {
-                    @Override
-                    public LocalAttributes attributes() {
-                        return new LocalAttributes("/t") {
-                            @Override
-                            public long getSize() {
-                                return 1L;
-                            }
-                        };
-                    }
-                };
-            }
-        }, new TransferStatus()).getLength(), 0L);
+                                   }, new NullLocal("/t") {
+                                       @Override
+                                       public LocalAttributes attributes() {
+                                           return new LocalAttributes("/t") {
+                                               @Override
+                                               public long getSize() {
+                                                   return 1L;
+                                               }
+
+                                               @Override
+                                               public boolean isFile() {
+                                                   return true;
+                                               }
+                                           };
+                                       }
+                                   }, new TransferStatus()
+        ).getLength(), 0L);
     }
 
     @Test
     public void testPermissionsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(file, new TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new NullLocal("t"), new TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -111,8 +97,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testPermissionsExistsNoChange() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
-        assertFalse(f.prepare(file, new TransferStatus()).isComplete());
+        assertFalse(f.prepare(file, new NullLocal("/t"), new TransferStatus()).isComplete());
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
         assertEquals(Permission.EMPTY, file.attributes().getPermission());
     }
@@ -122,14 +107,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
-        final TransferStatus status = f.prepare(file, new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertFalse(f.temporary.isEmpty());
-        assertNotNull(status.getRenamed());
+        assertNotNull(status.getRename());
         assertTrue(status.isRename());
-        assertNotEquals(file, status.getRenamed());
-        assertNotNull(status.getRenamed().getLocal());
-        assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
+        assertNotEquals(file, status.getRename());
+        assertNull(status.getRename().local);
+        assertNotNull(status.getRename().remote);
     }
 
     @Test
@@ -137,10 +121,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new SwiftSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
-        final TransferStatus status = f.prepare(file, new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertTrue(f.temporary.isEmpty());
-        assertNull(status.getRenamed());
+        assertNull(status.getRename().remote);
     }
 
     @Test
@@ -148,9 +131,9 @@ public class OverwriteFilterTest extends AbstractTestCase {
         final OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new S3Session(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
-        final TransferStatus status = f.prepare(file, new TransferStatus());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertTrue(f.temporary.isEmpty());
-        assertNull(status.getRenamed());
+        assertNull(status.getRename().local);
+        assertNull(status.getRename().remote);
     }
 }

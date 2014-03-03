@@ -75,8 +75,8 @@ public class DownloadController extends AlertController {
         if(returncode == DEFAULT_OPTION) {
             final Host host = HostParser.parse(urlField.stringValue());
             final Path file = new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()));
-            file.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
-            final Transfer transfer = new DownloadTransfer(host, file);
+            final Transfer transfer = new DownloadTransfer(host, file,
+                    LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);
         }
     }

@@ -38,7 +38,7 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testAddRemove() throws Exception {
         final Queue queue = new Queue();
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE));
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null);
         queue.add(transfer, new DisabledProgressListener());
         queue.remove(transfer);
     }
@@ -46,14 +46,14 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testConcurrent() throws Exception {
         final Queue queue = new Queue(1);
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE));
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null);
         queue.add(transfer, new DisabledProgressListener());
         final AtomicBoolean added = new AtomicBoolean();
         final CyclicBarrier wait = new CyclicBarrier(2);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                queue.add(new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE)), new DisabledProgressListener());
+                queue.add(new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null), new DisabledProgressListener());
                 added.set(true);
                 try {
                     wait.await();

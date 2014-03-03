@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,13 +51,12 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(super.accept(file, parent)) {
-            if(file.attributes().isFile()) {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(super.accept(file, local, parent)) {
+            if(local.attributes().isFile()) {
                 if(parent.isExists()) {
-                    final long local = file.getLocal().attributes().getSize();
-                    final Write.Append append = write.append(file, local, cache);
-                    if(append.append && append.size >= local) {
+                    final Write.Append append = write.append(file, local.attributes().getSize(), cache);
+                    if(append.append && append.size >= local.attributes().getSize()) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Skip file %s with remote size %d", file, append.size));
                         }
@@ -71,13 +71,12 @@ public class ResumeFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, parent);
-        if(file.attributes().isFile()) {
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, local, parent);
+        if(local.attributes().isFile()) {
             if(parent.isExists()) {
                 final Write.Append append = write.append(file, status.getLength(), cache);
-                final long local = file.getLocal().attributes().getSize();
-                if(append.append && append.size <= local) {
+                if(append.append && append.size <= local.attributes().getSize()) {
                     // Append to existing file
                     status.setAppend(true);
                     status.setCurrent(append.size);

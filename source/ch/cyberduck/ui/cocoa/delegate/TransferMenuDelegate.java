@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
@@ -31,6 +31,8 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -57,11 +59,12 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        final Path path = transfer.getRoots().get(index.intValue());
-        item.setTitle(path.getName());
-        if(transfer.getLocal() != null) {
-            item.setRepresentedObject(path.getLocal().getAbsolute());
-            if(path.getLocal().exists()) {
+        final TransferItem entry
+                = new ArrayList<TransferItem>(transfer.getRoots()).get(index.intValue());
+        item.setTitle(entry.remote.getName());
+        if(entry.local != null) {
+            item.setRepresentedObject(entry.local.getAbsolute());
+            if(entry.local.exists()) {
                 item.setEnabled(true);
                 item.setTarget(this.id());
                 item.setAction(this.getDefaultAction());
@@ -72,9 +75,9 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
             }
         }
         else {
-            item.setRepresentedObject(path.getAbsolute());
+            item.setRepresentedObject(entry.remote.getAbsolute());
         }
-        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
+        item.setImage(IconCacheFactory.<NSImage>get().fileIcon(entry.remote, 16));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 

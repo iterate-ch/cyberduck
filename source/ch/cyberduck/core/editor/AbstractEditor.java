@@ -54,7 +54,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * The edited path
      */
-    protected Path edited;
+    protected Path remote;
 
     protected Local local;
 
@@ -76,9 +76,8 @@ public abstract class AbstractEditor implements Editor {
 
     public AbstractEditor(final Application application, final Session session, final Path file) {
         this.application = application;
-        this.edited = file;
-        this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), edited);
-        this.edited.setLocal(local);
+        this.remote = file;
+        this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
     }
 
@@ -92,8 +91,12 @@ public abstract class AbstractEditor implements Editor {
      */
     protected abstract void save(Worker background);
 
-    public Path getEdited() {
-        return edited;
+    public Path getRemote() {
+        return remote;
+    }
+
+    public Local getLocal() {
+        return local;
     }
 
     public Application getApplication() {

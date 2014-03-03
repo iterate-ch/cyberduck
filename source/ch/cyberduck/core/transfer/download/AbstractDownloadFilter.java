@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
-    private SymlinkResolver symlinkResolver;
+    private SymlinkResolver<Path> symlinkResolver;
 
     private final QuarantineService quarantine
             = QuarantineServiceFactory.get();
@@ -67,12 +67,12 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private DownloadFilterOptions options;
 
-    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                                      final DownloadFilterOptions options) {
         this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
     }
 
-    protected AbstractDownloadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                                      final DownloadFilterOptions options, final Cache cache) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
@@ -91,13 +91,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);
             }
         }
-        final Local volume = file.getLocal().getVolume();
+        final Local volume = local.getVolume();
         if(!volume.exists()) {
             throw new NotfoundException(String.format("Volume %s not mounted", volume.getAbsolute()));
         }
@@ -105,10 +105,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         if(parent.isExists()) {
-            if(file.getLocal().exists()) {
+            if(local.exists()) {
                 // Do not attempt to create a directory that already exists
                 status.setExists(true);
             }
@@ -161,11 +161,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
         if(file.attributes().isFile()) {
             // No icon update if disabled
             if(options.icon) {
-                icon.set(file.getLocal(), new TransferStatus());
+                icon.set(local, new TransferStatus());
             }
         }
     }
@@ -174,7 +174,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Path file,
+    public void complete(final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) {
         if(log.isDebugEnabled()) {
@@ -184,26 +184,26 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.attributes().isFile()) {
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
-                    icon.set(file.getLocal(), status);
-                    icon.remove(file.getLocal());
+                    icon.set(local, status);
+                    icon.remove(local);
                 }
                 final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
                 if(!DescriptiveUrl.EMPTY.equals(provider)) {
                     if(options.quarantine) {
                         // Set quarantine attributes
-                        quarantine.setQuarantine(file.getLocal(), new HostUrlProvider(false).get(session.getHost()),
+                        quarantine.setQuarantine(local, new HostUrlProvider(false).get(session.getHost()),
                                 provider.getUrl());
                     }
                     if(this.options.wherefrom) {
                         // Set quarantine attributes
-                        quarantine.setWhereFrom(file.getLocal(), provider.getUrl());
+                        quarantine.setWhereFrom(local, provider.getUrl());
                     }
                 }
                 if(options.open) {
-                    launcher.open(file.getLocal());
+                    launcher.open(local);
                 }
             }
-            launcher.bounce(file.getLocal());
+            launcher.bounce(local);
         }
         if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
@@ -216,15 +216,15 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
                 }
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Updating permissions of %s to %s", file.getLocal(), status.getPermission()));
+                    log.info(String.format("Updating permissions of %s to %s", local, status.getPermission()));
                 }
-                file.getLocal().attributes().setPermission(status.getPermission());
+                local.attributes().setPermission(status.getPermission());
             }
             if(status.getTimestamp() != null) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), status.getTimestamp()));
+                    log.info(String.format("Updating timestamp of %s to %d", local, status.getTimestamp()));
                 }
-                file.getLocal().attributes().setModificationDate(status.getTimestamp());
+                local.attributes().setModificationDate(status.getTimestamp());
             }
         }
     }

@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,8 +27,8 @@ public class QuartzQuickLookTest extends AbstractTestCase {
     public void testSelect() throws Exception {
         QuickLook q = QuickLookFactory.get();
         final List<Local> files = new ArrayList<Local>();
-        files.add(new NullLocal(null, "f"));
-        files.add(new NullLocal(null, "b"));
+        files.add(new NullLocal("f"));
+        files.add(new NullLocal("b"));
         q.select(files);
     }
 

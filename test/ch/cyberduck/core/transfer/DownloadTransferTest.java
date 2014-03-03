@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testSerialize() throws Exception {
         final Path test = new Path("t", Path.FILE_TYPE);
-        Transfer t = new DownloadTransfer(new Host("t"), test);
+        Transfer t = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         t.addSize(4L);
         t.addTransferred(3L);
         final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()));
@@ -47,15 +46,11 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerializeComplete() throws Exception {
-        Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE) {
+        // Test transfer to complete with existing directory
+        Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+            public boolean exists() {
+                return true;
             }
         });
         new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new DisabledTransferPrompt() {
@@ -73,8 +68,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testChildren() throws Exception {
         final Path root = new Path("/t", Path.DIRECTORY_TYPE);
-        root.setLocal(new NullLocal(null, "l"));
-        Transfer t = new DownloadTransfer(new Host("t"), root);
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -83,37 +77,46 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return children;
             }
         };
-        assertEquals(Collections.<Path>singletonList(new Path("/t/c", Path.FILE_TYPE)), t.list(session, root, new DisabledListProgressListener()));
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", Path.FILE_TYPE), new NullLocal("t/c"))),
+                t.list(session, root, new NullLocal("t") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                }, new DisabledListProgressListener()));
     }
 
     @Test
     public void testChildrenEmpty() throws Exception {
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
-        };
-        Transfer t = new DownloadTransfer(new Host("t"), root);
+        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        Transfer t = new DownloadTransfer(new Host("t"), root, null);
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return AttributedList.emptyList();
             }
         };
-        assertTrue(t.list(session, root, new DisabledListProgressListener()).isEmpty());
+        assertTrue(t.list(session, root, new NullLocal("t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }, new DisabledListProgressListener()).isEmpty());
     }
 
     @Test
     public void testPrepareOverride() throws Exception {
         final Path child = new Path("/t/c", Path.FILE_TYPE);
         final Path root = new Path("/t", Path.DIRECTORY_TYPE);
-        root.setLocal(new NullLocal(null, "l") {
+        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l") {
             @Override
             public boolean exists() {
                 return true;
             }
-        });
-        final Cache cache = new Cache(Integer.MAX_VALUE);
-        final Transfer t = new DownloadTransfer(new Host("t"), root) {
+        }) {
             @Override
-            public void transfer(final Session<?> session, final Path file, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -137,11 +140,16 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), cache) {
             @Override
-            public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
+            public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, filter);
+                super.transfer(file, new NullLocal("l") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                }, filter);
                 if(file.equals(root)) {
                     assertFalse(cache.containsKey(root.getReference()));
                 }
@@ -150,26 +158,6 @@ public class DownloadTransferTest extends AbstractTestCase {
         worker.run();
         assertFalse(cache.containsKey(child.getReference()));
         assertTrue(cache.isEmpty());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testDownloadPath() throws Exception {
-        final Path root = new Path("/t", Path.FILE_TYPE);
-        assertNull(root.getLocal());
-        List<Path> roots = new ArrayList<Path>();
-        roots.add(root);
-        roots.add(root);
-        Transfer t = new DownloadTransfer(new Host("t"), roots);
-    }
-
-    @Test
-    public void testCustomDownloadPath() throws Exception {
-        final Path root = new Path("/t", Path.FILE_TYPE);
-        final NullLocal l = new NullLocal(null, "n");
-        root.setLocal(l);
-        assertNotNull(root.getLocal());
-        Transfer t = new DownloadTransfer(new Host("t"), root);
-        assertEquals(l, root.getLocal());
     }
 
     @Test
@@ -181,8 +169,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
-        test.setLocal(new NullLocal(UUID.randomUUID().toString(), "transfer"));
-        final Transfer transfer = new DownloadTransfer(new Host("t"), test);
+        final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
@@ -192,8 +179,9 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), table);
-        worker.prepare(test, new TransferStatus().exists(true),
-                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(test)), new NullSession(new Host("h"))));
+        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
+                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
+                        new NullSession(new Host("h"))));
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         assertEquals(status, table.get(test));
@@ -212,14 +200,14 @@ public class DownloadTransferTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
-        test.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
+        final Path test = new Path("/transfer/test", Path.FILE_TYPE);
+        test.attributes().setSize(5L);
+        final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
         local.touch();
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);
-        final Transfer transfer = new DownloadTransfer(host, test);
+        final Transfer transfer = new DownloadTransfer(host, test, local);
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
@@ -229,26 +217,25 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledTransferErrorCallback(), table);
-        worker.prepare(test, new TransferStatus().exists(true),
-                new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(test)), new NullSession(new Host("h"))));
+        worker.prepare(test, local, new TransferStatus().exists(true),
+                new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
+                        new NullSession(new Host("h"))));
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
-        assertEquals(status, table.get(test));
         final TransferStatus expected = new TransferStatus();
         expected.setAppend(true);
         expected.setExists(true);
         expected.setCurrent("test".getBytes().length);
         // Remote size
         expected.setLength(5L);
-        assertEquals(expected, table.get(new Path("/transfer/test", Path.FILE_TYPE)));
+        assertEquals(expected, table.get(test));
         local.delete();
     }
 
     @Test
-    public void testActionFileExists() throws Exception {
+    public void testActionFileExistsTrue() throws Exception {
         final Path root = new Path("t", Path.FILE_TYPE);
-        Transfer t = new DownloadTransfer(new Host("t"), root);
-        root.setLocal(new NullLocal("p", "t") {
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return true;
@@ -268,28 +255,15 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }));
         assertTrue(prompt.get());
-        root.setLocal(new NullLocal("p", "t") {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-        });
-        assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
-            @Override
-            public TransferAction prompt() {
-                return TransferAction.callback;
-            }
-        }));
     }
 
     @Test
-    public void testActionDirectoryExists() throws Exception {
-        final Path root = new Path("t", Path.DIRECTORY_TYPE);
-        Transfer t = new DownloadTransfer(new Host("t"), root);
-        root.setLocal(new NullLocal("p", "t") {
+    public void testActionFileExistsFalse() throws Exception {
+        final Path root = new Path("t", Path.FILE_TYPE);
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
-                return true;
+                return false;
             }
 
             @Override
@@ -298,20 +272,6 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.callback, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
-            @Override
-            public TransferAction prompt() {
-                prompt.set(true);
-                return TransferAction.callback;
-            }
-        }));
-        assertTrue(prompt.get());
-        root.setLocal(new NullLocal("p", "t") {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-        });
         assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
@@ -319,12 +279,63 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return TransferAction.callback;
             }
         }));
+        assertFalse(prompt.get());
+    }
+
+    @Test
+    public void testActionDirectoryExistsTrue() throws Exception {
+        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+
+            @Override
+            public AttributedList<Local> list() {
+                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+            }
+        });
+        final AtomicBoolean prompt = new AtomicBoolean();
+        assertEquals(TransferAction.callback, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt() {
+                prompt.set(true);
+                return TransferAction.callback;
+            }
+        }));
+        assertTrue(prompt.get());
+    }
+
+    @Test
+    public void testActionDirectoryExistsFalse() throws Exception {
+        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
+            @Override
+            public boolean exists() {
+                return false;
+            }
+
+            @Override
+            public AttributedList<Local> list() {
+                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+            }
+        });
+        final AtomicBoolean prompt = new AtomicBoolean();
+        assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt() {
+                fail();
+                return TransferAction.callback;
+            }
+        }));
+        assertFalse(prompt.get());
     }
 
     @Test
     public void testActionResume() throws Exception {
         final Path root = new Path("t", Path.FILE_TYPE);
-        Transfer t = new DownloadTransfer(new Host("t"), root);
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertEquals(TransferAction.resume, t.action(new NullSession(new Host("t")), true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
@@ -337,7 +348,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testStatus() throws Exception {
         final Path parent = new Path("t", Path.FILE_TYPE);
-        Transfer t = new DownloadTransfer(new Host("t"), parent);
+        Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());
         assertFalse(t.isReset());
         assertNull(t.getTimestamp());
@@ -346,8 +357,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testRegexFilter() throws Exception {
         final Path parent = new Path("t", Path.DIRECTORY_TYPE);
-        parent.setLocal(new FinderLocal(System.getProperty("java.io.tmpdir")));
-        Transfer t = new DownloadTransfer(new Host("t"), parent);
+        Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -357,9 +367,10 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final AttributedList<Path> list = t.list(session, parent, new DisabledListProgressListener());
+        final List<TransferItem> list = t.list(session, parent,
+                new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(1, list.size());
-        assertFalse(list.contains(new Path("/t/.DS_Store", Path.FILE_TYPE)));
-        assertTrue(list.contains(new Path("/t/t", Path.FILE_TYPE)));
+        assertFalse(list.contains(new TransferItem(new Path("/t/.DS_Store", Path.FILE_TYPE))));
+        assertTrue(list.contains(new TransferItem(new Path("/t/t", Path.FILE_TYPE), new NullLocal(System.getProperty("java.io.tmpdir"), "t"))));
     }
 }

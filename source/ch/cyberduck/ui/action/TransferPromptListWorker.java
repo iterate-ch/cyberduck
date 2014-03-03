@@ -18,41 +18,48 @@ package ch.cyberduck.ui.action;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @version $Id$
  */
-public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
+public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 
     private Path directory;
+
+    private Local local;
 
     private Session session;
 
     private Transfer transfer;
 
-    public TransferPromptListWorker(final Session session, final Transfer transfer, final Path directory) {
+    public TransferPromptListWorker(final Session session, final Transfer transfer,
+                                    final Path directory, final Local local) {
         this.session = session;
         this.directory = directory;
+        this.local = local;
         this.transfer = transfer;
     }
 
     @Override
-    public AttributedList<Path> run() throws BackgroundException {
+    public List<TransferItem> run() throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List directory %s", directory));
         }
-        return transfer.list(session, directory, new ActionListProgressListener(this));
+        return transfer.list(session, directory, local, new ActionListProgressListener(this));
     }
 
     @Override
@@ -61,8 +68,8 @@ public class TransferPromptListWorker extends Worker<AttributedList<Path>> {
     }
 
     @Override
-    public AttributedList<Path> initialize() {
-        return AttributedList.emptyList();
+    public List<TransferItem> initialize() {
+        return Collections.emptyList();
     }
 
     @Override

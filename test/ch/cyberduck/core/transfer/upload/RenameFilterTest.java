@@ -28,15 +28,13 @@ public class RenameFilterTest extends AbstractTestCase {
     public void testPrepare() throws Exception {
         RenameFilter f = new RenameFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t"));
-        f.prepare(t, new TransferStatus());
+        f.prepare(t, new NullLocal("t"), new TransferStatus());
         assertNotSame("t", t.getName());
     }
 
     @Test
     public void testDirectoryUpload() throws Exception {
         final Path file = new Path("/t", Path.DIRECTORY_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
         final NullSession session = new NullSession(new Host("h")) {
@@ -76,9 +74,10 @@ public class RenameFilterTest extends AbstractTestCase {
             }
         };
         final RenameFilter f = new RenameFilter(new NullSymlinkResolver(), session);
-        final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
         assertTrue(found.get());
-        assertNotNull(status.getRenamed());
-        assertNotNull(status.getRenamed().getLocal());
+        assertNotNull(status.getRename());
+        assertNull(status.getRename().local);
+        assertNotNull(status.getRename().remote);
     }
 }

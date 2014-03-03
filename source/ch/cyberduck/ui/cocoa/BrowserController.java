@@ -49,6 +49,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -191,7 +192,8 @@ public class BrowserController extends WindowController
     /**
      * Caching files listings of previously listed directories
      */
-    private Cache<Path> cache = new Cache<Path>();
+    private Cache<Path> cache
+            = new Cache<Path>();
 
     public BrowserController() {
         this.loadBundle();
@@ -427,13 +429,13 @@ public class BrowserController extends WindowController
 
     private void updateQuickLookSelection(final List<Path> selected) {
         if(quicklook.isAvailable()) {
-            final Collection<Path> downloads = new Collection<Path>();
+            final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path path : selected) {
                 if(!path.attributes().isFile()) {
                     continue;
                 }
-                path.setLocal(TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path));
-                downloads.add(path);
+                downloads.add(new TransferItem(
+                        path, TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path)));
             }
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session.getHost(), downloads);
@@ -464,9 +466,9 @@ public class BrowserController extends WindowController
                     @Override
                     public void cleanup() {
                         super.cleanup();
-                        final Collection<Local> previews = new Collection<Local>();
-                        for(Path download : downloads) {
-                            previews.add(download.getLocal());
+                        final List<Local> previews = new ArrayList<Local>();
+                        for(TransferItem download : downloads) {
+                            previews.add(download.local);
                         }
                         // Change files in Quick Look
                         quicklook.select(previews);
@@ -2654,11 +2656,12 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             String folder;
             if((folder = sheet.filename()) != null) {
-                final List<Path> selected = this.getSelectedPaths();
-                for(Path file : selected) {
-                    file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
+                final List<TransferItem> downloads = new ArrayList<TransferItem>();
+                for(Path file : this.getSelectedPaths()) {
+                    downloads.add(new TransferItem(
+                            file, LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName())));
                 }
-                this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
             }
         }
         downloadToPanel = null;
@@ -2685,8 +2688,8 @@ public class BrowserController extends WindowController
             String filename;
             if((filename = sheet.filename()) != null) {
                 final Path selected = this.getSelectedPath();
-                selected.setLocal(LocalFactory.createLocal(filename));
-                this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
+                this.transfer(new DownloadTransfer(session.getHost(), selected,
+                        LocalFactory.createLocal(filename)), Collections.<Path>emptyList());
             }
         }
     }
@@ -2729,19 +2732,20 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                selected.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
-                this.transfer(new SyncTransfer(session.getHost(), selected));
+                this.transfer(new SyncTransfer(session.getHost(), selected,
+                        LocalFactory.createLocal(sheet.filenames().lastObject().toString()).getParent()));
             }
         }
     }
 
     @Action
     public void downloadButtonClicked(final ID sender) {
-        final List<Path> selected = this.getSelectedPaths();
-        for(Path file : selected) {
-            file.setLocal(LocalFactory.createLocal(session.getHost().getDownloadFolder(), file.getName()));
+        final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        for(Path file : this.getSelectedPaths()) {
+            downloads.add(new TransferItem(
+                    file, LocalFactory.createLocal(session.getHost().getDownloadFolder(), file.getName())));
         }
-        this.transfer(new DownloadTransfer(session.getHost(), selected), Collections.<Path>emptyList());
+        this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
     }
 
     private NSOpenPanel uploadPanel;
@@ -2781,29 +2785,36 @@ public class BrowserController extends WindowController
     public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            Path destination = getSelectedPath();
+            Path destination = this.getSelectedPath();
             if(null == destination) {
-                destination = workdir();
+                destination = this.workdir();
             }
             else if(!destination.attributes().isDirectory()) {
                 destination = destination.getParent();
             }
-            // selected files on the local filesystem
-            NSArray selected = sheet.filenames();
-            NSEnumerator iterator = selected.objectEnumerator();
-            final List<Path> roots = new Collection<Path>();
+            // Selected files on the local filesystem
+            final NSArray selected = sheet.filenames();
+            final NSEnumerator iterator = selected.objectEnumerator();
+            final List<TransferItem> downloads = new ArrayList<TransferItem>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
-                roots.add(new Path(destination, LocalFactory.createLocal(next.toString())));
+                final Local local = LocalFactory.createLocal(next.toString());
+                downloads.add(new TransferItem(
+                        new Path(destination, local.getName(),
+                                local.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE), local));
             }
-            transfer(new UploadTransfer(session.getHost(), roots));
+            transfer(new UploadTransfer(session.getHost(), downloads));
         }
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
     }
 
     protected void transfer(final Transfer transfer) {
-        this.transfer(transfer, transfer.getRoots());
+        final List<Path> selected = new ArrayList<Path>();
+        for(TransferItem i : transfer.getRoots()) {
+            selected.add(i.remote);
+        }
+        this.transfer(transfer, selected);
     }
 
     /**
@@ -3081,12 +3092,12 @@ public class BrowserController extends WindowController
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 final Path workdir = this.workdir();
-                final List<Path> roots = new Collection<Path>();
+                final List<TransferItem> uploads = new ArrayList<TransferItem>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    Path p = new Path(workdir, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                    roots.add(p);
+                    uploads.add(new TransferItem(
+                            new Path(workdir), LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString())));
                 }
-                this.transfer(new UploadTransfer(session.getHost(), roots));
+                this.transfer(new UploadTransfer(session.getHost(), uploads));
             }
         }
         return false;

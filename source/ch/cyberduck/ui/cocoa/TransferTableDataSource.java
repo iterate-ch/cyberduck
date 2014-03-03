@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
@@ -41,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -92,8 +94,8 @@ public class TransferTableDataSource extends ListDataSource {
                 @Override
                 public boolean accept(final Transfer transfer) {
                     // Match for path names and hostname
-                    for(Path root : transfer.getRoots()) {
-                        if(root.getName().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
+                    for(TransferItem root : transfer.getRoots()) {
+                        if(root.remote.getName().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
                             return true;
                         }
                     }
@@ -176,10 +178,12 @@ public class TransferTableDataSource extends ListDataSource {
                 continue;
             }
             final Host host = pasteboard.getSession().getHost();
+            final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
-                download.setLocal(LocalFactory.createLocal(host.getDownloadFolder(), download.getName()));
+                downloads.add(new TransferItem(
+                        download, LocalFactory.createLocal(host.getDownloadFolder(), download.getName())));
             }
-            collection.add(row.intValue(), new DownloadTransfer(host, pasteboard));
+            collection.add(row.intValue(), new DownloadTransfer(host, downloads));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);

@@ -28,12 +28,12 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class SizeComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(ComparisonService.class);
+    private static final Logger log = Logger.getLogger(SizeComparisonService.class);
 
     @Override
     public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s", remote));
+            log.debug(String.format("Compare size for %s with %s", remote, local));
         }
         if(remote.isDirectory()) {
             return Comparison.notequal;

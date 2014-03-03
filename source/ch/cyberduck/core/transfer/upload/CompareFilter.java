@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,9 +49,9 @@ public class CompareFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(super.accept(file, parent)) {
-            final Comparison comparison = comparisonService.compare(file);
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(super.accept(file, local, parent)) {
+            final Comparison comparison = comparisonService.compare(file, local);
             switch(comparison) {
                 case local:
                     return true;

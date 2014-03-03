@@ -47,6 +47,26 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    public final class Rename {
+        /**
+         * Upload target
+         */
+        public Path remote;
+        public Local local;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Rename{");
+            sb.append("local=").append(local);
+            sb.append(", remote=").append(remote);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    private Rename rename
+            = new Rename();
+
     /**
      * Target file or directory already exists
      */
@@ -78,11 +98,6 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
             = new AtomicBoolean();
 
     /**
-     * Upload target
-     */
-    private Path renamed;
-
-    /**
      * MIME type
      */
     private String mime;
@@ -109,11 +124,6 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     private Map<String, String> parameters
             = Collections.emptyMap();
-
-    /**
-     * Local target
-     */
-    private Local local;
 
     public boolean isComplete() {
         return complete.get();
@@ -222,29 +232,21 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public Path getRenamed() {
-        return renamed;
+    public Rename getRename() {
+        return rename;
     }
 
-    public void setRenamed(final Path renamed) {
-        this.renamed = renamed;
-    }
-
-    public Local getLocal() {
-        return local;
-    }
-
-    public void setLocal(final Local local) {
-        this.local = local;
-    }
-
-    public TransferStatus local(final Local local) {
-        this.local = local;
-        return this;
+    public void setRename(final Rename rename) {
+        this.rename = rename;
     }
 
     public TransferStatus rename(final Path renamed) {
-        this.renamed = renamed;
+        this.rename.remote = renamed;
+        return this;
+    }
+
+    public TransferStatus rename(final Local renamed) {
+        this.rename.local = renamed;
         return this;
     }
 
@@ -252,7 +254,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         if(this.isAppend()) {
             return false;
         }
-        return renamed != null;
+        return rename.remote != null;
     }
 
     public String getMime() {
@@ -341,7 +343,7 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", current=").append(current);
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
-        sb.append(", renamed=").append(renamed);
+        sb.append(", renamed=").append(rename);
         sb.append('}');
         return sb.toString();
     }

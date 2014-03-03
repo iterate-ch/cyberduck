@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
@@ -381,10 +382,10 @@ public class BookmarkTableDataSource extends ListDataSource {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
-            final List<Path> roots = new Collection<Path>();
+            final List<TransferItem> uploads = new ArrayList<TransferItem>();
             Host host = null;
             for(int i = 0; i < filesList.count().intValue(); i++) {
-                String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
+                final String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
                     Host bookmark = HostReaderFactory.get().read(LocalFactory.createLocal(filename));
@@ -402,12 +403,13 @@ public class BookmarkTableDataSource extends ListDataSource {
                         host = h;
                     }
                     // Upload to the remote host this bookmark points to
-                    roots.add(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE), LocalFactory.createLocal(filename)));
+                    uploads.add(new TransferItem(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE)),
+                            LocalFactory.createLocal(filename)));
                 }
             }
-            if(!roots.isEmpty()) {
+            if(!uploads.isEmpty()) {
                 // If anything has been added to the queue, then process the queue
-                final Transfer t = new UploadTransfer(host, roots);
+                final Transfer t = new UploadTransfer(host, uploads);
                 TransferControllerFactory.get().start(t);
             }
             return true;

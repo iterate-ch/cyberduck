@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -59,8 +60,8 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
-        if(!options.temporary || file.attributes().isDirectory()) {
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+        if(!options.temporary || local.attributes().isDirectory()) {
             // Rename existing file before putting new file in place
             if(status.isExists()) {
                 this.rename(file);
@@ -86,15 +87,15 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status,
+    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        if(file.attributes().isFile()) {
+        if(local.attributes().isFile()) {
             if(this.options.temporary) {
                 // If uploaded with temporary name rename existing file after upload
                 // is complete but before temporary upload is renamed
                 this.rename(file);
             }
         }
-        super.complete(file, options, status, listener);
+        super.complete(file, local, options, status, listener);
     }
 }

@@ -64,7 +64,6 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
         };
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", Path.FILE_TYPE);
-        assertNull(file.getLocal());
         file.attributes().setSize("content".getBytes().length);
         final BrowserBackgroundEditor editor = new BrowserBackgroundEditor(new AbstractController() {
             @Override
@@ -93,8 +92,8 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
         };
         editor.open();
         assertTrue(t.get());
-        assertNotNull(file.getLocal());
+        assertNotNull(editor.getLocal());
         assertTrue(e.get());
-        assertTrue(file.getLocal().exists());
+        assertTrue(editor.getLocal().exists());
     }
 }

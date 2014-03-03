@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
 
@@ -27,12 +28,12 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
+public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
     private static final Logger log = Logger.getLogger(DownloadSymlinkResolver.class);
 
-    private List<Path> files;
+    private List<TransferItem> files;
 
-    public DownloadSymlinkResolver(final List<Path> files) {
+    public DownloadSymlinkResolver(final List<TransferItem> files) {
         this.files = files;
     }
 
@@ -46,8 +47,8 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
             // Create symbolic link only if choosen in the preferences. Otherwise download target file
             final Path target = file.getSymlinkTarget();
             // Only create symbolic link if target is included in the download
-            for(Path root : files) {
-                if(this.findTarget(target, root)) {
+            for(TransferItem root : files) {
+                if(this.findTarget(target, root.remote)) {
                     return true;
                 }
             }
@@ -60,8 +61,8 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
         if(file.attributes().isSymbolicLink()) {
             final Path target = file.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
-            for(Path root : files) {
-                if(this.findTarget(target, root)) {
+            for(TransferItem root : files) {
+                if(this.findTarget(target, root.remote)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with target %s already included", file, target));
                     }

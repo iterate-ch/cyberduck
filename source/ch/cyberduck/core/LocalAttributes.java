@@ -199,4 +199,14 @@ public class LocalAttributes extends Attributes {
             return new File(path).canExecute();
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LocalAttributes{");
+        sb.append("checksum='").append(checksum).append('\'');
+        sb.append(", timestamp=").append(this.getModificationDate());
+        sb.append(", permission=").append(permission);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
@@ -50,6 +49,7 @@ import ch.cyberduck.core.transfer.upload.SkipFilter;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,15 +64,15 @@ public class UploadTransfer extends Transfer {
     private Cache cache
             = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
 
-    public UploadTransfer(final Host host, final Path root) {
-        this(host, Collections.singletonList(root));
+    public UploadTransfer(final Host host, final Path root, final Local local) {
+        this(host, Collections.singletonList(new TransferItem(root, local)));
     }
 
-    public UploadTransfer(final Host session, final List<Path> roots) {
+    public UploadTransfer(final Host session, final List<TransferItem> roots) {
         this(session, new UploadRootPathsNormalizer().normalize(roots), new UploadRegexFilter());
     }
 
-    public UploadTransfer(final Host session, final List<Path> roots, final Filter<Local> f) {
+    public UploadTransfer(final Host session, final List<TransferItem> roots, final Filter<Local> f) {
         super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         filter = f;
@@ -89,24 +89,25 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory,
-                                     final ListProgressListener listener) throws BackgroundException {
+    public List<TransferItem> list(final Session<?> session, final Path remote,
+                                   final Local directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.getLocal().attributes().isSymbolicLink()
-                && new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots()).resolve(directory)) {
+        if(directory.attributes().isSymbolicLink()
+                && new UploadSymlinkResolver(session.getFeature(Symlink.class), roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
-            return AttributedList.emptyList();
+            return Collections.emptyList();
         }
         else {
-            final AttributedList<Path> list = new AttributedList<Path>();
-            for(Local local : directory.getLocal().list().filter(filter)) {
-                list.add(new Path(directory, local));
+            final List<TransferItem> children = new ArrayList<TransferItem>();
+            for(Local local : directory.list().filter(filter)) {
+                children.add(new TransferItem(new Path(remote, local.getName(),
+                        local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
             }
-            return list;
+            return children;
         }
     }
 
@@ -115,7 +116,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), this.getRoots());
+        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), roots);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session).withCache(cache);
         }
@@ -153,13 +154,13 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
-            for(Path f : this.getRoots()) {
+            for(TransferItem f : roots) {
                 final Write write = session.getFeature(Write.class);
-                final Write.Append append = write.append(f, f.getLocal().attributes().getSize(), cache);
+                final Write.Append append = write.append(f.remote, f.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
-                    if(f.attributes().isDirectory()) {
-                        if(this.list(session, f, new DisabledListProgressListener()).isEmpty()) {
+                    if(f.remote.attributes().isDirectory()) {
+                        if(this.list(session, f.remote, f.local, new DisabledListProgressListener()).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -175,17 +176,17 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path file, final TransferOptions options,
+    public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options,
                          final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Symlink symlink = session.getFeature(Symlink.class);
-        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, this.getRoots());
-        if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
+        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, roots);
+        if(local.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
-            final String target = symlinkResolver.relativize(file.getLocal().getAbsolute(),
-                    file.getLocal().getSymlinkTarget().getAbsolute());
+            final String target = symlinkResolver.relativize(local.getAbsolute(),
+                    local.getSymlinkTarget().getAbsolute());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }
@@ -196,7 +197,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = session.getFeature(Upload.class);
-            upload.upload(file, file.getLocal(), bandwidth, new DisabledStreamListener() {
+            upload.upload(file, local, bandwidth, new DisabledStreamListener() {
                 @Override
                 public void sent(long bytes) {
                     addTransferred(bytes);

@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -44,7 +45,7 @@ public class SkipFilter extends AbstractUploadFilter {
      * Skip files that already exist on the server.
      */
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
             if(find.find(file)) {
                 if(log.isInfoEnabled()) {
@@ -53,6 +54,6 @@ public class SkipFilter extends AbstractUploadFilter {
                 return false;
             }
         }
-        return super.accept(file, parent);
+        return super.accept(file, local, parent);
     }
 }

@@ -19,7 +19,16 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
@@ -32,13 +41,13 @@ import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -549,10 +558,10 @@ public final class TransferController extends WindowController implements NSTool
             // Draw file type icon
             if(transfer.getRoots().size() == 1) {
                 if(transfer.getLocal() != null) {
-                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot().getLocal(), 32));
+                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot().local, 32));
                 }
                 else {
-                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot(), 32));
+                    iconView.setImage(IconCacheFactory.<NSImage>get().fileIcon(transfer.getRoot().remote, 32));
                 }
             }
             else {
@@ -854,12 +863,13 @@ public final class TransferController extends WindowController implements NSTool
             if(log.isDebugEnabled()) {
                 log.debug("Paste download transfer from pasteboard");
             }
+            final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
-                download.setLocal(LocalFactory.createLocal(
+                downloads.add(new TransferItem(download, LocalFactory.createLocal(
                         pasteboard.getSession().getHost().getDownloadFolder(),
-                        download.getName()));
+                        download.getName())));
             }
-            this.add(new DownloadTransfer(pasteboard.getSession().getHost(), pasteboard));
+            this.add(new DownloadTransfer(pasteboard.getSession().getHost(), downloads));
             pasteboard.clear();
         }
     }
@@ -937,8 +947,8 @@ public final class TransferController extends WindowController implements NSTool
     public void openButtonClicked(final ID sender) {
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
-            for(Path i : transfer.getRoots()) {
-                ApplicationLauncherFactory.get().open(i.getLocal());
+            for(TransferItem l : transfer.getRoots()) {
+                ApplicationLauncherFactory.get().open(l.local);
             }
         }
     }
@@ -949,8 +959,8 @@ public final class TransferController extends WindowController implements NSTool
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
-            for(Path i : transfer.getRoots()) {
-                reveal.reveal(i.getLocal());
+            for(TransferItem l : transfer.getRoots()) {
+                reveal.reveal(l.local);
             }
         }
     }
@@ -991,8 +1001,8 @@ public final class TransferController extends WindowController implements NSTool
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                for(Path i : transfer.getRoots()) {
-                    i.getLocal().trash();
+                for(TransferItem l : transfer.getRoots()) {
+                    l.local.trash();
                 }
             }
         }
@@ -1141,8 +1151,8 @@ public final class TransferController extends WindowController implements NSTool
                             return false;
                         }
                         if(!transfer.isRunning()) {
-                            for(Path i : transfer.getRoots()) {
-                                if(i.getLocal().exists()) {
+                            for(TransferItem l : transfer.getRoots()) {
+                                if(l.local.exists()) {
                                     return true;
                                 }
                             }
@@ -1157,8 +1167,8 @@ public final class TransferController extends WindowController implements NSTool
                 @Override
                 public boolean validate(final Transfer transfer) {
                     if(transfer.getLocal() != null) {
-                        for(Path i : transfer.getRoots()) {
-                            if(i.getLocal().exists()) {
+                        for(TransferItem l : transfer.getRoots()) {
+                            if(l.local.exists()) {
                                 return true;
                             }
                         }

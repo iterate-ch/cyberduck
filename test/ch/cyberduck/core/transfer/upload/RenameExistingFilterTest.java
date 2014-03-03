@@ -1,6 +1,16 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
@@ -27,8 +37,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     public void testAccept() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal("/Downloads", "n"));
-        assertTrue(f.accept(t, new TransferStatus().exists(true)));
+        assertTrue(f.accept(t, new NullLocal("/", "t"), new TransferStatus().exists(true)));
     }
 
     @Test
@@ -67,17 +76,15 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return new Path("p", Path.DIRECTORY_TYPE);
             }
         };
-        p.setLocal(new NullLocal("/Downloads", "n"));
-        f.prepare(p, new TransferStatus().exists(true));
+        f.prepare(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
         assertFalse(c.get());
-        f.apply(p, new TransferStatus().exists(true));
+        f.apply(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
         assertTrue(c.get());
     }
 
     @Test
     public void testTemporaryFileUpload() throws Exception {
         final Path file = new Path("/t", Path.FILE_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicInteger moved = new AtomicInteger();
         final NullSession session = new NullSession(new Host("h")) {
@@ -161,15 +168,15 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
                 options);
         assertTrue(options.temporary);
-        final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
-        assertNotNull(status.getRenamed());
+        final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
+        assertNotNull(status.getRename());
+        assertNotNull(status.getRename().remote);
         assertTrue(status.isRename());
-        assertNotEquals(file, status.getRenamed());
-        assertNotNull(status.getRenamed().getLocal());
-        assertEquals(new NullLocal(null, "a"), status.getRenamed().getLocal());
+        assertNotEquals(file, status.getRename().remote);
+        assertNull(status.getRename().local);
         // Complete
         status.setComplete();
-        f.complete(file, new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(file, new NullLocal("t"), new TransferOptions(), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());
     }
@@ -177,7 +184,6 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testTemporaryDirectoryUpload() throws Exception {
         final Path file = new Path("/t", Path.DIRECTORY_TYPE);
-        file.setLocal(new NullLocal(null, "a"));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
         final NullSession session = new NullSession(new Host("h")) {
@@ -253,11 +259,37 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true));
-        final TransferStatus status = f.prepare(file, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(file, new NullLocal("/t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("/t") {
+                    @Override
+                    public boolean isDirectory() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isFile() {
+                        return false;
+                    }
+                };
+            }
+        }, new TransferStatus().exists(true));
         assertTrue(found.get());
-        assertNull(status.getRenamed());
+        assertNull(status.getRename().remote);
+        assertNull(status.getRename().local);
         assertFalse(moved.get());
-        f.apply(file, new TransferStatus().exists(true));
+        f.apply(file, new NullLocal("/t") {
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes("/t") {
+                    @Override
+                    public boolean isDirectory() {
+                        return true;
+                    }
+                };
+            }
+        }, new TransferStatus().exists(true));
         assertTrue(moved.get());
     }
 }

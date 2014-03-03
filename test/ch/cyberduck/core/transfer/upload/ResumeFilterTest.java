@@ -1,6 +1,14 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -22,23 +30,18 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertTrue(f.accept(new Path("t", Path.FILE_TYPE) {
+        assertTrue(f.accept(new Path("t", Path.FILE_TYPE), new NullLocal("a") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
+            public boolean exists() {
+                return true;
+            }
 
+            @Override
+            public LocalAttributes attributes() {
+                return new LocalAttributes(this.getAbsolute()) {
                     @Override
-                    public LocalAttributes attributes() {
-                        return new LocalAttributes(this.getAbsolute()) {
-                            @Override
-                            public long getSize() {
-                                return 1L;
-                            }
-                        };
+                    public long getSize() {
+                        return 1L;
                     }
                 };
             }
@@ -47,17 +50,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testSkip() throws Exception {
-        final Path file = new Path("t", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
-            }
-        };
+        final Path file = new Path("t", Path.FILE_TYPE);
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
@@ -83,7 +76,12 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         });
         file.attributes().setSize(1L);
-        assertFalse(f.accept(file, new TransferStatus().exists(true)));
+        assertFalse(f.accept(file, new NullLocal("a") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -91,9 +89,8 @@ public class ResumeFilterTest extends AbstractTestCase {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
-        final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
         assertTrue(status.isRename());
     }
@@ -109,7 +106,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         }, new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t") {
+        final TransferStatus status = f.prepare(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
@@ -117,10 +114,14 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return 8L;
                     }
+
+                    @Override
+                    public boolean isFile() {
+                        return true;
+                    }
                 };
             }
-        });
-        final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
+        }, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
         assertFalse(status.isRename());
         assertEquals(7L, status.getCurrent());
@@ -131,9 +132,8 @@ public class ResumeFilterTest extends AbstractTestCase {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(0L);
-        final TransferStatus status = f.prepare(t, new TransferStatus().exists(true));
+        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
         assertTrue(status.isRename());
         assertEquals(0L, status.getCurrent());
@@ -160,7 +160,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         });
         final long size = 3L;
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t") {
+        assertFalse(f.accept(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
@@ -168,10 +168,14 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
+
+                    @Override
+                    public boolean isFile() {
+                        return true;
+                    }
                 };
             }
-        });
-        assertFalse(f.accept(t, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -195,7 +199,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         });
         final long size = 3L;
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t") {
+        final NullLocal l = new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
@@ -203,12 +207,17 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
+
+                    @Override
+                    public boolean isFile() {
+                        return true;
+                    }
                 };
             }
-        });
-        assertTrue(f.accept(t, new TransferStatus().exists(true)));
-        assertEquals(3L, f.prepare(t, new TransferStatus().exists(true)).getLength());
-        assertEquals(2L, f.prepare(t, new TransferStatus().exists(true)).getCurrent());
+        };
+        assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
+        assertEquals(3L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
+        assertEquals(2L, f.prepare(t, l, new TransferStatus().exists(true)).getCurrent());
     }
 
     @Test
@@ -232,7 +241,7 @@ public class ResumeFilterTest extends AbstractTestCase {
         });
         final long size = 3L;
         final Path t = new Path("t", Path.FILE_TYPE);
-        t.setLocal(new NullLocal(null, "t") {
+        assertFalse(f.accept(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
@@ -240,9 +249,13 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
+
+                    @Override
+                    public boolean isFile() {
+                        return true;
+                    }
                 };
             }
-        });
-        assertFalse(f.accept(t, new TransferStatus().exists(true)));
+        }, new TransferStatus().exists(true)));
     }
 }

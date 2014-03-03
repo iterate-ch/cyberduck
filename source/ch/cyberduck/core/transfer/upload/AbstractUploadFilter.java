@@ -57,7 +57,7 @@ import java.util.UUID;
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
-    private SymlinkResolver symlinkResolver;
+    private SymlinkResolver<Local> symlinkResolver;
 
     private Session<?> session;
 
@@ -75,11 +75,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Cache cache;
 
-    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
+    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
     }
 
-    public AbstractUploadFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options, final Cache cache) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
@@ -102,15 +102,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(!file.getLocal().exists()) {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(!local.exists()) {
             // Local file is no more here
-            throw new NotfoundException(file.getLocal().getAbsolute());
+            throw new NotfoundException(local.getAbsolute());
         }
-        if(file.attributes().isFile()) {
-            if(file.getLocal().attributes().isSymbolicLink()) {
-                if(!symlinkResolver.resolve(file)) {
-                    return symlinkResolver.include(file);
+        if(local.attributes().isFile()) {
+            if(local.attributes().isSymbolicLink()) {
+                if(!symlinkResolver.resolve(local)) {
+                    return symlinkResolver.include(local);
                 }
             }
         }
@@ -118,7 +118,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes first
         if(parent.isExists()) {
@@ -129,28 +129,26 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setRemote(attributes);
             }
         }
-        if(file.attributes().isFile()) {
+        if(local.attributes().isFile()) {
             // Set content length from local file
-            if(file.getLocal().attributes().isSymbolicLink()) {
-                if(!symlinkResolver.resolve(file)) {
+            if(local.attributes().isSymbolicLink()) {
+                if(!symlinkResolver.resolve(local)) {
                     // Will resolve the symbolic link when the file is requested.
-                    if(file.attributes().isFile()) {
-                        final Local target = file.getLocal().getSymlinkTarget();
-                        status.setLength(target.attributes().getSize());
-                    }
+                    final Local target = local.getSymlinkTarget();
+                    status.setLength(target.attributes().getSize());
                 }
                 // No file size increase for symbolic link to be created on the server
             }
             else {
                 // Read file size from filesystem
-                status.setLength(file.getLocal().attributes().getSize());
+                status.setLength(local.attributes().getSize());
             }
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), UUID.randomUUID().toString()),
-                        new PathAttributes(file.attributes().getType()), file.getLocal());
-                status.setRenamed(renamed);
+                        new PathAttributes(file.attributes().getType()));
+                status.rename(renamed);
                 // File attributes should not change after calculate the hash code of the file reference
                 temporary.put(file, renamed);
             }
@@ -163,7 +161,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             else {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-                    if(file.attributes().isFile()) {
+                    if(local.attributes().isFile()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
@@ -174,7 +172,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
                 else {
                     // Read permissions from local file
-                    permission = file.getLocal().attributes().getPermission();
+                    permission = local.attributes().getPermission();
                 }
             }
             // Setting target UNIX permissions in transfer status
@@ -191,7 +189,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else {
                 final Permission permission;
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-                    if(file.attributes().isFile()) {
+                    if(local.attributes().isFile()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
@@ -202,7 +200,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
                 else {
                     // Read permissions from local file
-                    permission = file.getLocal().attributes().getPermission();
+                    permission = local.attributes().getPermission();
                 }
                 acl = new Acl();
                 if(permission.getOther().implies(Permission.Action.read)) {
@@ -220,24 +218,25 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(options.timestamp) {
             // Read timestamps from local file
-            status.setTimestamp(file.getLocal().attributes().getModificationDate());
+            status.setTimestamp(local.attributes().getModificationDate());
         }
         return status;
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
         //
     }
 
     @Override
-    public void complete(final Path file, final TransferOptions options,
-                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void complete(final Path file, final Local local,
+                         final TransferOptions options, final TransferStatus status,
+                         final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(file.attributes().isFile()) {
+            if(local.attributes().isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
                     move.move(temporary.get(file), file, status.isExists());
@@ -277,7 +276,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                                file.getName(), UserDateFormatterFactory.get().getShortFormat(file.getLocal().attributes().getModificationDate())));
+                                file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
                         feature.setTimestamp(file, status.getTimestamp());
                     }
                     catch(BackgroundException e) {

@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -51,7 +52,7 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
 
     private TransferAction action;
 
-    private Cache<Path> cache;
+    private Cache<TransferItem> cache;
 
     public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
                                       final Cache cache) {
@@ -64,11 +65,11 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     @Override
     public Map<Path, TransferStatus> run() throws BackgroundException {
         final Map<Path, TransferStatus> status = new HashMap<Path, TransferStatus>();
-        for(Path file : transfer.getRoots()) {
+        for(TransferItem file : transfer.getRoots()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            status.put(file.getParent(), new TransferStatus().exists(true));
+            status.put(file.remote.getParent(), new TransferStatus().exists(true));
         }
         final TransferPathFilter filter = transfer.filter(session, action);
         if(log.isDebugEnabled()) {
@@ -78,13 +79,13 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final AttributedList<Path> list = cache.get(key);
-            for(Path file : list) {
+            final AttributedList<TransferItem> list = cache.get(key);
+            for(TransferItem file : list) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                if(filter.accept(file, status.get(file.getParent()))) {
-                    status.put(file, filter.prepare(file, status.get(file.getParent())));
+                if(filter.accept(file.remote, file.local, status.get(file.remote.getParent()))) {
+                    status.put(file.remote, filter.prepare(file.remote, file.local, status.get(file.remote.getParent())));
                 }
             }
         }
@@ -93,7 +94,8 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Apply {0} filter", "Status"), StringUtils.uncapitalize(action.getTitle()));
+        return MessageFormat.format(LocaleFactory.localizedString("Apply {0} filter", "Status"),
+                StringUtils.uncapitalize(action.getTitle()));
     }
 
     @Override

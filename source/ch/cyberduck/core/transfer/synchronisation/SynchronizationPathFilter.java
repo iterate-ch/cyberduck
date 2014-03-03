@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.synchronisation;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -64,21 +65,21 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final Comparison compare = comparison.compare(file);
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            return downloadFilter.prepare(file, parent);
+            return downloadFilter.prepare(file, local, parent);
         }
         if(compare.equals(Comparison.local)) {
-            return uploadFilter.prepare(file, parent);
+            return uploadFilter.prepare(file, local, parent);
         }
         // Directory with equal comparison
         return new TransferStatus().exists(true);
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        final Comparison compare = comparison.compare(file);
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.equal)) {
             return file.attributes().isDirectory();
         }
@@ -91,7 +92,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                 return false;
             }
             // Include for mirror and download. Ask the download delegate for inclusion
-            return downloadFilter.accept(file, parent);
+            return downloadFilter.accept(file, local, parent);
         }
         if(compare.equals(Comparison.local)) {
             if(action.equals(TransferAction.download)) {
@@ -102,7 +103,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
                 return false;
             }
             // Include for mirror and download. Ask the upload delegate for inclusion
-            return uploadFilter.accept(file, parent);
+            return uploadFilter.accept(file, local, parent);
         }
         log.warn(String.format("Invalid comparison %s", compare));
         // Not equal
@@ -110,26 +111,26 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
-        final Comparison compare = comparison.compare(file);
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+        final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            downloadFilter.apply(file, status);
+            downloadFilter.apply(file, local, status);
         }
         else if(compare.equals(Comparison.local)) {
-            uploadFilter.apply(file, status);
+            uploadFilter.apply(file, local, status);
         }
         // Ignore equal compare result
     }
 
     @Override
-    public void complete(final Path file, final TransferOptions options, final TransferStatus status,
+    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        final Comparison compare = comparison.compare(file);
+        final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            downloadFilter.complete(file, options, status, listener);
+            downloadFilter.complete(file, local, options, status, listener);
         }
         else if(compare.equals(Comparison.local)) {
-            uploadFilter.complete(file, options, status, listener);
+            uploadFilter.complete(file, local, options, status, listener);
         }
     }
 }

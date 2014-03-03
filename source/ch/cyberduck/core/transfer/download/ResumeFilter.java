@@ -59,30 +59,28 @@ public class ResumeFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(file.attributes().isFile()) {
-            if(file.getLocal().exists()) {
-                final long local = file.getLocal().attributes().getSize();
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(local.attributes().isFile()) {
+            if(local.exists()) {
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
-                if(local >= attributes.getSize()) {
+                if(local.attributes().getSize() >= attributes.getSize()) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with local size %d", file, local));
+                        log.info(String.format("Skip file %s with local size %d", file, local.attributes().getSize()));
                     }
                     // No need to resume completed transfers
                     return false;
                 }
             }
         }
-        return super.accept(file, parent);
+        return super.accept(file, local, parent);
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, parent);
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, local, parent);
         if(read.append(file)) {
-            if(file.attributes().isFile()) {
-                final Local local = file.getLocal();
+            if(local.attributes().isFile()) {
                 if(local.exists()) {
                     if(local.attributes().getSize() > 0) {
                         status.setAppend(true);

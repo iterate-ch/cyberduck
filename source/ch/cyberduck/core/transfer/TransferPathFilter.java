@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,7 +33,7 @@ public interface TransferPathFilter {
      * @param parent Parent transfer status
      * @return True if file should be transferred
      */
-    boolean accept(Path file, TransferStatus parent) throws BackgroundException;
+    boolean accept(Path file, Local local, TransferStatus parent) throws BackgroundException;
 
     /**
      * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.
@@ -41,9 +42,9 @@ public interface TransferPathFilter {
      * @param parent Parent transfer status
      * @return Transfer status
      */
-    TransferStatus prepare(Path file, TransferStatus parent) throws BackgroundException;
+    TransferStatus prepare(Path file, Local local, TransferStatus parent) throws BackgroundException;
 
-    void apply(Path file, TransferStatus status) throws BackgroundException;
+    void apply(Path file, Local local, TransferStatus status) throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
@@ -53,6 +54,6 @@ public interface TransferPathFilter {
      * @param status   Transfer status
      * @param listener Progress callback
      */
-    void complete(Path file, TransferOptions options,
-                  TransferStatus status, final ProgressListener listener) throws BackgroundException;
+    void complete(Path file, Local local, TransferOptions options,
+                  TransferStatus status, ProgressListener listener) throws BackgroundException;
 }

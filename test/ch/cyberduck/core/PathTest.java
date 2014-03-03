@@ -57,8 +57,7 @@ public class PathTest extends AbstractTestCase {
         {
             Path container = new Path("test", Path.DIRECTORY_TYPE);
             container.attributes().setRegion("DFW");
-            Path path = new Path(container, new NullLocal("/", "f"));
-            assertEquals("DFW", path.attributes().getRegion());
+            assertEquals("DFW", container.attributes().getRegion());
         }
     }
 

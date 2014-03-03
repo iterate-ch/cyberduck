@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -52,9 +53,9 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(super.accept(file, parent)) {
-            final Comparison comparison = comparisonService.compare(file);
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(super.accept(file, local, parent)) {
+            final Comparison comparison = comparisonService.compare(file, local);
             switch(comparison) {
                 case local:
                 case equal:

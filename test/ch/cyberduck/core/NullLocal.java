@@ -17,9 +17,35 @@ public class NullLocal extends Local {
         super(parent + "/" + name);
     }
 
+    public NullLocal(final Local parent, final String name) {
+        super(parent.getAbsolute() + "/" + name);
+    }
+
+    public NullLocal(final String name) {
+        super(name);
+    }
+
     @Override
     public boolean exists() {
         return true;
+    }
+
+    @Override
+    public LocalAttributes attributes() {
+        return new LocalAttributes(path) {
+            @Override
+            public boolean isSymbolicLink() {
+                return false;
+            }
+
+            @Override
+            public boolean isFile() {
+                if(!NullLocal.super.exists()) {
+                    return true;
+                }
+                return super.isFile();
+            }
+        };
     }
 
     @Override

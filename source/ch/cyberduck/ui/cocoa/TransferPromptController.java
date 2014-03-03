@@ -33,6 +33,7 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -86,8 +87,8 @@ public abstract class TransferPromptController extends SheetController
 
     private TransferAction action;
 
-    protected Cache<Path> cache
-            = new Cache<Path>(Integer.MAX_VALUE);
+    protected Cache<TransferItem> cache
+            = new Cache<TransferItem>(Integer.MAX_VALUE);
 
     public TransferPromptController(final WindowController parent, final Transfer transfer, final Session session) {
         super(parent);
@@ -264,31 +265,31 @@ public abstract class TransferPromptController extends SheetController
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final Path file = cache.lookup(new NSObjectPathReference(
+                    final TransferItem file = cache.lookup(new NSObjectPathReference(
                             browserView.itemAtRow(browserView.selectedRow())));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            file.getLocal().getAbsolute(),
+                            file.local.getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    if(file.getLocal().attributes().getSize() == -1) {
+                    if(file.local.attributes().getSize() == -1) {
                         localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.get().format(file.getLocal().attributes().getSize()),
+                                SizeFormatterFactory.get().format(file.local.attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
-                    if(file.getLocal().attributes().getModificationDate() == -1) {
+                    if(file.local.attributes().getModificationDate() == -1) {
                         localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
                         localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                UserDateFormatterFactory.get().getLongFormat(file.getLocal().attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(file.local.attributes().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            new DefaultUrlProvider(transfer.getHost()).toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(transfer.getHost()).toUrl(file.remote).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    final TransferStatus status = browserModel.getStatus(file);
+                    final TransferStatus status = browserModel.getStatus(file.remote);
                     if(status.getRemote().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
@@ -314,19 +315,19 @@ public abstract class TransferPromptController extends SheetController
             }
 
             public String tableView_typeSelectStringForTableColumn_row(final NSTableView view, final NSTableColumn column, final NSInteger row) {
-                return cache.lookup(new NSObjectPathReference(browserView.itemAtRow(row))).getName();
+                return cache.lookup(new NSObjectPathReference(browserView.itemAtRow(row))).remote.getName();
             }
 
             public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSCell cell,
                                                                         final NSTableColumn column, final NSObject item) {
                 final String identifier = column.identifier();
-                final Path file = cache.lookup(new NSObjectPathReference(item));
-                final boolean filtered = browserModel.isFiltered(file);
+                final TransferItem file = cache.lookup(new NSObjectPathReference(item));
+                final boolean filtered = browserModel.isFiltered(file.remote);
                 if(identifier.equals(TransferPromptModel.Column.include.name())) {
                     cell.setEnabled(!filtered);
                 }
                 if(identifier.equals(TransferPromptModel.Column.filename.name())) {
-                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file, 16));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(filtered) {

@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -23,15 +22,10 @@ public class SkipFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         SkipFilter f = new SkipFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertTrue(f.accept(new Path("a", Path.FILE_TYPE) {
+        assertTrue(f.accept(new Path("a", Path.FILE_TYPE), new NullLocal("a") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+            public boolean exists() {
+                return true;
             }
         }, new TransferStatus()));
     }
@@ -39,15 +33,10 @@ public class SkipFilterTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         SkipFilter f = new SkipFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertFalse(f.accept(new Path("a", Path.FILE_TYPE) {
+        assertFalse(f.accept(new Path("a", Path.FILE_TYPE), new NullLocal("a") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "a") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
-                };
+            public boolean exists() {
+                return false;
             }
         }, new TransferStatus()
         ));

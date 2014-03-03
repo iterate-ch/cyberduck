@@ -1,13 +1,15 @@
 package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,43 +22,34 @@ public class UploadRootPathsNormalizerTest extends AbstractTestCase {
     @Test
     public void testNormalize() throws Exception {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
-        final List<Path> list = new ArrayList<Path>();
-        list.add(new Path("/a", Path.DIRECTORY_TYPE) {
+        final List<TransferItem> list = new ArrayList<TransferItem>();
+        list.add(new TransferItem(new Path("/a", Path.DIRECTORY_TYPE), new NullLocal("/f/a") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "/f/a");
+            public LocalAttributes attributes() {
+                return new LocalAttributes("/f/a") {
+                    @Override
+                    public boolean isDirectory() {
+                        return true;
+                    }
+                };
             }
-        });
-        list.add(new Path("/a", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "/f/a/b");
-            }
-        });
-        final List<Path> normalized = n.normalize(list);
+        }));
+        list.add(new TransferItem(new Path("/a", Path.FILE_TYPE), new NullLocal("/f/a/b")));
+        final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
-        assertEquals(new Path("/a", Path.DIRECTORY_TYPE), normalized.get(0));
+        assertEquals(new Path("/a", Path.DIRECTORY_TYPE), normalized.iterator().next().remote);
     }
 
     @Test
     public void testNameClash() throws Exception {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
-        final List<Path> list = new ArrayList<Path>();
-        list.add(new Path("/a", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "/f/a");
-            }
-        });
-        list.add(new Path("/a", Path.FILE_TYPE) {
-            @Override
-            public Local getLocal() {
-                return new NullLocal(null, "/g/a");
-            }
-        });
-        final List<Path> normalized = n.normalize(list);
+        final List<TransferItem> list = new ArrayList<TransferItem>();
+        list.add(new TransferItem(new Path("/a", Path.FILE_TYPE), new NullLocal("/f/a")));
+        list.add(new TransferItem(new Path("/a", Path.FILE_TYPE), new NullLocal("/g/a")));
+        final List<TransferItem> normalized = n.normalize(list);
         assertEquals(2, normalized.size());
-        assertEquals(new Path("/a", Path.FILE_TYPE), normalized.get(0));
-        assertEquals(new Path("/a-1", Path.FILE_TYPE), normalized.get(1));
+        final Iterator<TransferItem> iterator = normalized.iterator();
+        assertEquals(new Path("/a", Path.FILE_TYPE), iterator.next().remote);
+        assertEquals(new Path("/a-1", Path.FILE_TYPE), iterator.next().remote);
     }
 }

@@ -17,63 +17,66 @@ package ch.cyberduck.core.transfer.normalizer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Path>> {
+public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(DownloadRootPathsNormalizer.class);
 
     @Override
-    public List<Path> normalize(final List<Path> roots) {
-        final List<Path> normalized = new Collection<Path>();
-        for(final Path download : roots) {
+    public List<TransferItem> normalize(final List<TransferItem> roots) {
+        final List<TransferItem> normalized = new ArrayList<TransferItem>();
+        for(final TransferItem download : roots) {
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
-                Path n = iter.next();
-                if(download.isChild(n)) {
+            for(Iterator<TransferItem> iter = normalized.iterator(); iter.hasNext(); ) {
+                TransferItem n = iter.next();
+                if(download.remote.isChild(n.remote)) {
                     // The selected file is a child of a directory already included
                     duplicate = true;
                     break;
                 }
-                if(n.isChild(download)) {
+                if(n.remote.isChild(download.remote)) {
                     iter.remove();
                 }
-                if(download.getLocal().equals(n.getLocal())) {
+                if(download.local.equals(n.local)) {
                     // The selected file has the same name; if downloaded as a root element
                     // it would overwrite the earlier
-                    final String parent = download.getLocal().getParent().getAbsolute();
-                    final String filename = download.getName();
+                    final String parent = download.local.getParent().getAbsolute();
+                    final String filename = download.remote.getName();
                     String proposal;
                     int no = 0;
+                    Local local;
                     do {
                         no++;
                         proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
-                        download.setLocal(LocalFactory.createLocal(parent, proposal));
+                        local = LocalFactory.createLocal(parent, proposal);
                     }
-                    while(download.getLocal().exists());
+                    while(local.exists());
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Changed local name from %s to %s", filename, download.getName()));
+                        log.info(String.format("Changed local name from %s to %s", filename, local.getName()));
                     }
+                    download.local = local;
                 }
             }
             // Prunes the list of selected files. Files which are a child of an already included directory
             // are removed from the returned list.
             if(!duplicate) {
-                normalized.add(download);
+                normalized.add(new TransferItem(download.remote, download.local));
             }
         }
         return normalized;

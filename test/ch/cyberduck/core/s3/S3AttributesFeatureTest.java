@@ -89,13 +89,9 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
         // Retrieve latest object version
-        assertEquals("DoedXkQ9DR.GDKwS7AICUvKOBIpazl.M", new S3AttributesFeature(session).find(
-                new Path("/versioning.test.cyberduck.ch/test", attributes)).getVersionId());
-        attributes.setVersionId("DoedXkQ9DR.GDKwS7AICUvKOBIpazl.M");
         attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
         assertEquals("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh", new S3AttributesFeature(session).find(
                 new Path("/versioning.test.cyberduck.ch/test", attributes)).getVersionId());
-        attributes.setVersionId(null);
         session.close();
     }
 }

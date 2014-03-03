@@ -67,8 +67,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
     }
 
     @Override
-    public Comparison compare(final Path file) throws BackgroundException {
-        final Local local = file.getLocal();
+    public Comparison compare(final Path file, final Local local) throws BackgroundException {
         if(local.exists()) {
             if(finder.find(file)) {
                 if(file.attributes().isDirectory()) {

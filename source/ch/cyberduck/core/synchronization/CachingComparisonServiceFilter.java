@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -44,12 +45,12 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
     }
 
     @Override
-    public Comparison compare(final Path file) throws BackgroundException {
+    public Comparison compare(final Path file, final Local local) throws BackgroundException {
         if(!cache.containsKey(file)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Compare file %s", file));
             }
-            cache.put(file, delegate.compare(file));
+            cache.put(file, delegate.compare(file, local));
         }
         return cache.get(file);
     }

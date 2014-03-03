@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -33,13 +34,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CompareFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptEqual() throws Exception {
-        final CompareFilter filter = new CompareFilter(new SymlinkResolver() {
+        final CompareFilter filter = new CompareFilter(new SymlinkResolver<Path>() {
             @Override
             public boolean resolve(final Path file) {
                 return false;
@@ -56,13 +57,12 @@ public class CompareFilterTest extends AbstractTestCase {
             }
         }, new NullSession(new Host("t")), new UploadFilterOptions(), new ComparisionServiceFilter(new NullSession(new Host("t")), null) {
             @Override
-            public Comparison compare(final Path file) throws BackgroundException {
+            public Comparison compare(final Path file, final Local local) throws BackgroundException {
                 return Comparison.equal;
             }
         }
         );
         final Path file = new Path("/", Path.FILE_TYPE);
-        file.setLocal(new NullLocal("t", "t"));
-        assertFalse(filter.accept(file, new TransferStatus().exists(true)));
+        assertFalse(filter.accept(file, new NullLocal("t"), new TransferStatus().exists(true)));
     }
 }

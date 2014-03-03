@@ -3,7 +3,6 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -70,30 +69,25 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
+            public LocalAttributes attributes() {
+                return new LocalAttributes("/t") {
                     @Override
-                    public LocalAttributes attributes() {
-                        return new LocalAttributes("/t") {
-                            @Override
-                            public String getChecksum() {
-                                return "a";
-                            }
-
-                            @Override
-                            public boolean isFile() {
-                                return true;
-                            }
-                        };
+                    public String getChecksum() {
+                        return "a";
                     }
 
                     @Override
-                    public boolean exists() {
+                    public boolean isFile() {
                         return true;
                     }
                 };
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         }));
         assertTrue(found.get());
@@ -123,15 +117,10 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.DIRECTORY_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+            public boolean exists() {
+                return true;
             }
         }));
         assertTrue(found.get());
@@ -160,15 +149,10 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.local, s.compare(new Path("t", Path.DIRECTORY_TYPE) {
+        assertEquals(Comparison.local, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                };
+            public boolean exists() {
+                return true;
             }
         }));
         assertTrue(found.get());
@@ -197,15 +181,10 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.remote, s.compare(new Path("t", Path.DIRECTORY_TYPE) {
+        assertEquals(Comparison.remote, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
-                };
+            public boolean exists() {
+                return false;
             }
         }));
         assertTrue(found.get());
@@ -266,35 +245,30 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE) {
+        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE), new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
+            public LocalAttributes attributes() {
+                return new LocalAttributes("t") {
                     @Override
-                    public LocalAttributes attributes() {
-                        return new LocalAttributes("t") {
-                            @Override
-                            public String getChecksum() {
-                                return "a";
-                            }
-
-                            @Override
-                            public long getSize() {
-                                return 1L;
-                            }
-
-                            @Override
-                            public long getModificationDate() {
-                                return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-                            }
-                        };
+                    public String getChecksum() {
+                        return "a";
                     }
 
                     @Override
-                    public boolean exists() {
-                        return true;
+                    public long getSize() {
+                        return 1L;
+                    }
+
+                    @Override
+                    public long getModificationDate() {
+                        return Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
                     }
                 };
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         }));
         assertTrue(found.get());

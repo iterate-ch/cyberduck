@@ -55,7 +55,7 @@ public class ODBEditor extends BrowserBackgroundEditor {
     public void edit() throws IOException {
         // Important, should always be run on the main thread; otherwise applescript crashes
         final UrlProvider provider = session.getFeature(UrlProvider.class);
-        final Path file = this.getEdited();
+        final Path file = this.getRemote();
         if(!this.edit(local.getAbsolute(), provider.toUrl(file).find(DescriptiveUrl.Type.provider).getUrl(), this.getApplication().getIdentifier())) {
             throw new IOException(String.format("Edit failed for %s", local));
         }

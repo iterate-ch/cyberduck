@@ -33,55 +33,47 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path p = new Path("t", Path.FILE_TYPE) {
+        final NullLocal local = new NullLocal("t") {
             @Override
-            public Local getLocal() {
-                return new NullLocal(null, "t") {
-                    @Override
-                    public boolean exists() {
-                        return false;
-                    }
+            public boolean exists() {
+                return false;
+            }
 
-                    @Override
-                    public void rename(final Local renamed) {
-                        fail();
-                    }
-                };
+            @Override
+            public void rename(final Local renamed) {
+                fail();
             }
         };
-        final TransferStatus status = f.prepare(p, new TransferStatus());
-        assertNull(status.getLocal());
-        f.apply(p, new TransferStatus());
+        final Path p = new Path("t", Path.FILE_TYPE);
+        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        assertNull(status.getRename().local);
+        f.apply(p, local, new TransferStatus());
     }
 
     @Test
     public void testPrepareRename() throws Exception {
         final AtomicBoolean r = new AtomicBoolean();
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path p = new Path("t", Path.FILE_TYPE) {
-            final NullLocal local = new NullLocal(null, "t") {
-                @Override
-                public boolean exists() {
-                    return "t".equals(this.getName());
-                }
-
-                @Override
-                public void rename(final Local renamed) {
-                    assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
-                    r.set(true);
-                }
-            };
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+            @Override
+            public boolean exists() {
+                return "t".equals(this.getName());
+            }
 
             @Override
-            public Local getLocal() {
-                return local;
+            public void rename(final Local renamed) {
+                assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
+                r.set(true);
             }
         };
-        final TransferStatus status = f.prepare(p, new TransferStatus());
-        assertNotNull(status.getLocal());
+        final Path p = new Path("t", Path.FILE_TYPE);
+        final TransferStatus status = f.prepare(p, local, new TransferStatus());
+        assertNotNull(status.getRename().local);
         assertFalse(r.get());
-        f.apply(p, status);
-        assertEquals("t", p.getLocal().getName());
+        f.apply(p, local, status);
+        assertEquals("t", local.getName());
+        assertEquals("t", local.getName());
+        assertNotEquals("t", status.getRename().local.getName());
         assertTrue(r.get());
     }
 }

@@ -47,7 +47,7 @@ public class CopyTransferTest extends AbstractTestCase {
         t.addTransferred(3L);
         final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
-        assertEquals(t.getRoots(), serialized.getRoots());
+        assertEquals(t.roots, serialized.getRoots());
         assertEquals(t.files, serialized.files);
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize());

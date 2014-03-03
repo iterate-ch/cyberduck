@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -42,6 +44,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -78,7 +81,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
     /**
      * Workload
      */
-    private Cache<Path> cache = new Cache<Path>(Integer.MAX_VALUE);
+    private Cache<TransferItem> cache
+            = new Cache<TransferItem>(Integer.MAX_VALUE);
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error) {
@@ -155,13 +159,13 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                 // Reset the cached size of the transfer and progress value
                 transfer.reset();
                 // Calculate information about the files in advance to give progress information
-                for(Path next : transfer.getRoots()) {
-                    this.prepare(next, new TransferStatus().exists(true), filter);
+                for(TransferItem next : transfer.getRoots()) {
+                    this.prepare(next.remote, next.local, new TransferStatus().exists(true), filter);
                 }
                 this.complete();
                 // Transfer all files sequentially
-                for(Path next : transfer.getRoots()) {
-                    this.transfer(next, filter);
+                for(TransferItem next : transfer.getRoots()) {
+                    this.transfer(next.remote, next.local, filter);
                 }
                 this.complete();
             }
@@ -186,7 +190,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
      * @param file   File
      * @param filter Filter to apply to exclude files from transfer
      */
-    public void prepare(final Path file, final TransferStatus parent, final TransferPathFilter filter) throws BackgroundException {
+    public void prepare(final Path file, final Local local,
+                        final TransferStatus parent, final TransferPathFilter filter) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
@@ -195,7 +200,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
         }
         if(prompt.isSelected(file)) {
             // Only prepare the path it will be actually transferred
-            if(filter.accept(file, parent)) {
+            if(filter.accept(file, local, parent)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Accepted file %s in transfer %s", file, this));
                 }
@@ -207,10 +212,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                         session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                         try {
                             // Determine transfer status
-                            final TransferStatus status = filter.prepare(file, parent);
+                            final TransferStatus status = filter.prepare(file, local, parent);
                             table.put(file, status);
                             // Apply filter
-                            filter.apply(file, status);
+                            filter.apply(file, local, status);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
                             // Add skipped bytes
@@ -218,12 +223,14 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             // Recursive
                             if(file.attributes().isDirectory()) {
                                 // Call recursively for all children
-                                final AttributedList<Path> children = transfer.list(session, file, new ActionListProgressListener(AbstractTransferWorker.this));
+                                final List<TransferItem> children
+                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this));
                                 // Put into cache for later reference when transferring
-                                cache.put(file.getReference(), children);
+                                cache.put(file.getReference(), new AttributedList<TransferItem>(children));
                                 // Call recursively
-                                for(Path f : children) {
-                                    prepare(f, status, filter);
+                                for(TransferItem f : children) {
+                                    // Change download path relative to parent local folder
+                                    prepare(f.remote, f.local, status, filter);
                                 }
                             }
                             if(log.isInfoEnabled()) {
@@ -266,7 +273,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
      * @param file   File
      * @param filter Filter to apply to exclude files from transfer
      */
-    public void transfer(final Path file, final TransferPathFilter filter) throws BackgroundException {
+    public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -283,10 +290,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                         try {
                             if(status.isRename()) {
                                 // Save with different name
-                                transfer.transfer(session, status.getRenamed(), options, status);
+                                transfer.transfer(session, status.getRename().remote, local, options, status);
                             }
                             else {
-                                transfer.transfer(session, file, options, status);
+                                transfer.transfer(session, file, local, options, status);
                             }
                         }
                         catch(ConnectionCanceledException e) {
@@ -305,16 +312,16 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                         }
                         // Recursive
                         if(file.attributes().isDirectory()) {
-                            for(Path f : cache.get(file.getReference())) {
+                            for(TransferItem f : cache.get(file.getReference())) {
                                 // Recursive
-                                transfer(f, filter);
+                                transfer(f.remote, f.local, filter);
                             }
                             cache.remove(file.getReference());
                         }
                         if(!failure) {
                             // Post process of file.
                             try {
-                                filter.complete(file, options, status, session);
+                                filter.complete(file, local, options, status, session);
                             }
                             catch(BackgroundException e) {
                                 log.warn(String.format("Ignore failure in completion filter for %s", file));

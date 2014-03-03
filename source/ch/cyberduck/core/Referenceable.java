@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Referenceable {
 

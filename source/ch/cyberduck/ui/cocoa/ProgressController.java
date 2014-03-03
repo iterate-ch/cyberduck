@@ -19,16 +19,25 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferProgress;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -227,10 +236,10 @@ public class ProgressController extends BundleController implements TransferList
         this.filesPopup = p;
         this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
-        for(Path path : transfer.getRoots()) {
-            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
-            item.setRepresentedObject(path.getAbsolute());
-            item.setImage(IconCacheFactory.<NSImage>get().fileIcon(path, 16));
+        for(TransferItem i : transfer.getRoots()) {
+            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(i.remote.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
+            item.setRepresentedObject(i.remote.getAbsolute());
+            item.setImage(IconCacheFactory.<NSImage>get().fileIcon(i.remote, 16));
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());

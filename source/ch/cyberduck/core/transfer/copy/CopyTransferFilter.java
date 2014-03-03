@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -77,12 +78,12 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public boolean accept(final Path source, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         return true;
     }
 
     @Override
-    public TransferStatus prepare(final Path source, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes
         final PathAttributes attributes = attribute.find(source);
@@ -114,12 +115,12 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
         //
     }
 
     @Override
-    public void complete(final Path source, final TransferOptions options,
+    public void complete(final Path source, final Local local, final TransferOptions options,
                          final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));

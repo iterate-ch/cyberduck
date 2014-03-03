@@ -61,8 +61,8 @@ public class WatchEditorTest extends AbstractTestCase {
             }
         }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), path);
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
-        assertEquals("t.txt", editor.getEdited().getName());
-        final Local local = editor.getEdited().getLocal();
+        assertEquals("t.txt", editor.getRemote().getName());
+        final Local local = editor.getLocal();
         assertEquals("t.txt", local.getName());
         assertEquals("1", local.getParent().getName());
         assertEquals("f2", local.getParent().getParent().getName());

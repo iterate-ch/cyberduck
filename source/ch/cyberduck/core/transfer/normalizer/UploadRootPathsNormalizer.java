@@ -17,44 +17,45 @@ package ch.cyberduck.core.transfer.normalizer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>> {
+public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(UploadRootPathsNormalizer.class);
 
     @Override
-    public List<Path> normalize(final List<Path> roots) {
-        final List<Path> normalized = new Collection<Path>();
-        for(final Path root : roots) {
-            Path upload = root;
+    public List<TransferItem> normalize(final List<TransferItem> roots) {
+        final List<TransferItem> normalized = new ArrayList<TransferItem>();
+        for(TransferItem upload : roots) {
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
-                Path n = iter.next();
-                if(upload.getLocal().isChild(n.getLocal())) {
+            for(Iterator<TransferItem> iter = normalized.iterator(); iter.hasNext(); ) {
+                TransferItem n = iter.next();
+                if(upload.local.isChild(n.local)) {
                     // The selected file is a child of a directory already included
                     duplicate = true;
                     break;
                 }
-                if(n.getLocal().isChild(upload.getLocal())) {
+                if(n.local.isChild(upload.local)) {
                     iter.remove();
                 }
-                if(upload.equals(n)) {
+                if(upload.remote.equals(n.remote)) {
                     // The selected file has the same name; if uploaded as a root element
                     // it would overwrite the earlier
-                    final Path parent = upload.getParent();
-                    final String filename = upload.getName();
+                    final Path parent = upload.remote.getParent();
+                    final String filename = upload.remote.getName();
                     String proposal;
                     int no = 0;
                     int index = filename.lastIndexOf('.');
+                    Path remote;
                     do {
                         no++;
                         if(index != -1 && index != 0) {
@@ -63,18 +64,19 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>
                         else {
                             proposal = String.format("%s-%d", filename, no);
                         }
-                        upload = new Path(parent, proposal, upload.attributes(), upload.getLocal());
+                        remote = new Path(parent, proposal, upload.remote.attributes());
                     }
                     while(false);//(upload.exists());
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Changed name from %s to %s", filename, upload.getName()));
+                        log.info(String.format("Changed name from %s to %s", filename, remote.getName()));
                     }
+                    upload.remote = remote;
                 }
             }
             // Prunes the list of selected files. Files which are a child of an already included directory
             // are removed from the returned list.
             if(!duplicate) {
-                normalized.add(upload);
+                normalized.add(new TransferItem(upload.remote, upload.local));
             }
         }
         return normalized;

@@ -18,12 +18,12 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
@@ -51,7 +51,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Files and folders initially selected to be part of this transfer
      */
-    private List<Path> roots;
+    protected List<TransferItem> roots;
 
     /**
      * The sum of the file length of all files in the <code>queue</code>
@@ -149,15 +149,15 @@ public abstract class Transfer implements Serializable {
      * @param host Connection details
      * @param root File or directory
      */
-    public Transfer(final Host host, final Path root, final BandwidthThrottle bandwidth) {
-        this(host, new Collection<Path>(Collections.<Path>singletonList(root)), bandwidth);
+    public Transfer(final Host host, final Path root, final Local folder, final BandwidthThrottle bandwidth) {
+        this(host, Collections.singletonList(new TransferItem(root, folder)), bandwidth);
     }
 
     /**
      * @param host  Connection details
      * @param roots List of files to add to transfer
      */
-    public Transfer(final Host host, final List<Path> roots, final BandwidthThrottle bandwidth) {
+    public Transfer(final Host host, final List<TransferItem> roots, final BandwidthThrottle bandwidth) {
         this.host = host;
         this.roots = roots;
         this.bandwidth = bandwidth;
@@ -170,12 +170,33 @@ public abstract class Transfer implements Serializable {
         if(hostObj != null) {
             this.host = new Host(hostObj);
         }
-        final List rootsObj = dict.listForKey("Roots");
+        final List<T> itemsObj = dict.listForKey("Items");
+        if(itemsObj != null) {
+            roots = new ArrayList<TransferItem>();
+            for(T rootDict : itemsObj) {
+                roots.add(new TransferItem(rootDict));
+            }
+        }
+        // Legacy
+        final List<T> rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
-            roots = new ArrayList<Path>();
-            for(Object rootDict : rootsObj) {
-                final Path root = new Path(rootDict);
-                roots.add(root);
+            roots = new ArrayList<TransferItem>();
+            for(T rootDict : rootsObj) {
+                final TransferItem item = new TransferItem(new Path(rootDict));
+                // Legacy
+                final String localObjDeprecated
+                        = DeserializerFactory.createDeserializer(serialized).stringForKey("Local");
+                if(localObjDeprecated != null) {
+                    Local local = LocalFactory.createLocal(localObjDeprecated);
+                    item.setLocal(local);
+                }
+                final Object localObj
+                        = DeserializerFactory.createDeserializer(serialized).objectForKey("Local Dictionary");
+                if(localObj != null) {
+                    Local local = LocalFactory.createLocal(localObj);
+                    item.setLocal(local);
+                }
+                roots.add(item);
             }
         }
         Object sizeObj = dict.stringForKey("Size");
@@ -199,7 +220,7 @@ public abstract class Transfer implements Serializable {
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
         dict.setObjectForKey(host, "Host");
-        dict.setListForKey(roots, "Roots");
+        dict.setListForKey(roots, "Items");
         dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
@@ -243,29 +264,30 @@ public abstract class Transfer implements Serializable {
     /**
      * @return The first <code>root</code> added to this transfer
      */
-    public Path getRoot() {
-        return roots.get(0);
+    public TransferItem getRoot() {
+        return roots.iterator().next();
     }
 
     public String getRemote() {
-        if(this.getRoots().size() == 1) {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot()).find(DescriptiveUrl.Type.provider).getUrl();
+        if(this.roots.size() == 1) {
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote).find(DescriptiveUrl.Type.provider).getUrl();
         }
         else {
-            return new DefaultUrlProvider(host).toUrl(this.getRoot().getParent()).find(DescriptiveUrl.Type.provider).getUrl();
+            return new DefaultUrlProvider(host).toUrl(this.getRoot().remote.getParent()).find(DescriptiveUrl.Type.provider).getUrl();
         }
     }
 
     public String getLocal() {
-        if(this.getRoots().size() == 1) {
-            return this.getRoot().getLocal().getAbbreviatedPath();
+        final Local local = roots.iterator().next().local;
+        if(roots.size() == 1) {
+            return local.getAbbreviatedPath();
         }
         else {
-            return this.getRoot().getLocal().getParent().getAbbreviatedPath();
+            return local.getParent().getAbbreviatedPath();
         }
     }
 
-    public List<Path> getRoots() {
+    public List<TransferItem> getRoots() {
         return roots;
     }
 
@@ -278,7 +300,7 @@ public abstract class Transfer implements Serializable {
             return LocaleFactory.localizedString("None");
         }
         final StringBuilder name = new StringBuilder();
-        name.append(roots.get(0).getName());
+        name.append(roots.iterator().next().remote.getName());
         if(roots.size() > 1) {
             name.append("… (").append(roots.size()).append(")");
         }
@@ -307,20 +329,23 @@ public abstract class Transfer implements Serializable {
      *
      * @param session   Session
      * @param directory The directory to list the children
-     * @param listener  Listener
-     * @return A list of child items
+     * @param local     Local directory
+     * @param listener  Listener  @return A list of child items
      */
-    public abstract AttributedList<Path> list(Session<?> session, Path directory, ListProgressListener listener) throws BackgroundException;
+    public abstract List<TransferItem> list(Session<?> session, Path directory, Local local,
+                                            ListProgressListener listener) throws BackgroundException;
 
     /**
      * The actual transfer implementation
      *
      * @param session Session
-     * @param file    File
+     * @param file    Remote
+     * @param local   Local
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    public abstract void transfer(Session<?> session, Path file, TransferOptions options, TransferStatus status) throws BackgroundException;
+    public abstract void transfer(Session<?> session, Path file, Local local,
+                                  TransferOptions options, TransferStatus status) throws BackgroundException;
 
     public void start() {
         state = State.running;

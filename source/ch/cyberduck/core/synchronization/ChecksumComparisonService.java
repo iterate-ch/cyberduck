@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class ChecksumComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(ComparisonService.class);
+    private static final Logger log = Logger.getLogger(ChecksumComparisonService.class);
 
     @Override
     public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
@@ -41,7 +41,7 @@ public class ChecksumComparisonService implements ComparisonService {
                 return Comparison.notequal;
             }
             if(null == local.getChecksum()) {
-                log.warn(String.format("No local checksum available for comparison %s", remote));
+                log.warn(String.format("No local checksum available for comparison %s", local));
                 return Comparison.notequal;
             }
             if(remote.getChecksum().equals(local.getChecksum())) {

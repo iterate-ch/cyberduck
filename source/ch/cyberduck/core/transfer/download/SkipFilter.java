@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,13 +42,13 @@ public class SkipFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public boolean accept(final Path file, final TransferStatus parent) throws BackgroundException {
-        if(file.getLocal().exists()) {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        if(local.exists()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip file %s", file));
             }
             return false;
         }
-        return super.accept(file, parent);
+        return super.accept(file, local, parent);
     }
 }

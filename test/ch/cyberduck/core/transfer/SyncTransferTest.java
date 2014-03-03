@@ -32,6 +32,7 @@ import ch.cyberduck.core.SerializerFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -43,7 +44,7 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new SyncTransfer(new Host("t"), new Path("t", Path.FILE_TYPE));
+        Transfer t = new SyncTransfer(new Host("t"), new Path("t", Path.FILE_TYPE), new NullLocal("/", "t"));
         t.addSize(4L);
         t.addTransferred(3L);
         final SyncTransfer serialized = new SyncTransfer(t.serialize(SerializerFactory.get()));
@@ -57,7 +58,7 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testAction() throws Exception {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal("p", "t") {
+        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return true;
@@ -68,7 +69,6 @@ public class SyncTransferTest extends AbstractTestCase {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
         });
-        Transfer t = new SyncTransfer(new Host("t"), p);
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(null, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
@@ -83,72 +83,71 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testFilterDownload() throws Exception {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        Transfer t = new SyncTransfer(new Host("t"), p);
+        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.download);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
-        test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        assertFalse(filter.accept(test, new TransferStatus().exists(true)));
+        assertFalse(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
+                new TransferStatus().exists(true)));
     }
 
     @Test
     public void testFilterUpload() throws Exception {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        Transfer t = new SyncTransfer(new Host("t"), p);
+        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.upload);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
-        test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        assertTrue(filter.accept(test, new TransferStatus().exists(true)));
+        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
+                new TransferStatus().exists(true)));
     }
 
     @Test
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", Path.DIRECTORY_TYPE);
-        p.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        Transfer t = new SyncTransfer(new Host("t"), p);
+        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.mirror);
         final Path test = new Path(p, "a", Path.FILE_TYPE);
-        test.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
-        assertTrue(filter.accept(test, new TransferStatus().exists(true)));
+        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
+                new TransferStatus().exists(true)));
     }
 
     @Test
     public void testChildrenLocalOnly() throws Exception {
         final Path root = new Path("t", Path.DIRECTORY_TYPE);
-        root.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
-            @Override
-            public AttributedList<Local> list() {
-                final AttributedList<Local> list = new AttributedList<Local>();
-                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a"));
-                return list;
-            }
-        });
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return AttributedList.emptyList();
             }
         };
-        Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root, new DisabledListProgressListener());
+        final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+            @Override
+            public AttributedList<Local> list() {
+                final AttributedList<Local> list = new AttributedList<Local>();
+                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a"));
+                return list;
+            }
+        };
+        directory.mkdir();
+        Transfer t = new SyncTransfer(new Host("t"), root, directory);
+        final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
-        assertFalse(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, TransferAction.mirror).accept(root, new TransferStatus().exists(true)));
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a");
+        assertFalse(t.filter(session, TransferAction.download).accept(root, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.upload).accept(root, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.mirror).accept(root, local, new TransferStatus().exists(true)));
     }
 
     @Test
     public void testChildrenRemoteOnly() throws Exception {
         final Path root = new Path("t", Path.DIRECTORY_TYPE);
-        root.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+        final Path a = new Path(root, "a", Path.FILE_TYPE);
+        final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {
                 return new AttributedList<Local>();
             }
-        });
-        final Path a = new Path(root, "a", Path.FILE_TYPE);
-        a.setLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
+        };
+        directory.mkdir();
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -162,15 +161,21 @@ public class SyncTransferTest extends AbstractTestCase {
                 return list;
             }
         };
-        Transfer t = new SyncTransfer(new Host("t"), root);
-        final AttributedList<Path> list = t.list(session, root, new DisabledListProgressListener());
+        final Transfer t = new SyncTransfer(new Host("t"), root, directory);
+        final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
-        assertTrue(t.filter(session, TransferAction.download).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, TransferAction.mirror).accept(root, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, TransferAction.download).accept(a, new TransferStatus().exists(true)));
+        final NullLocal local = new NullLocal(directory, "a") {
+            @Override
+            public boolean exists() {
+                return false;
+            }
+        };
+        assertTrue(t.filter(session, TransferAction.download).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.upload).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.mirror).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.download).accept(a, local, new TransferStatus().exists(true)));
         // Because root is directory
-        assertTrue(t.filter(session, TransferAction.upload).accept(root, new TransferStatus().exists(true)));
-        assertFalse(t.filter(session, TransferAction.upload).accept(a, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, TransferAction.upload).accept(root, directory, new TransferStatus().exists(true)));
+        assertFalse(t.filter(session, TransferAction.upload).accept(a, local, new TransferStatus().exists(true)));
     }
 }

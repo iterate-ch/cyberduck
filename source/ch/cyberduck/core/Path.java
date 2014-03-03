@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -40,11 +39,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     protected Path parent;
 
     /**
-     * The local path to be used if file is copied
-     */
-    private Local local;
-
-    /**
      * An absolute reference here the symbolic link is pointing to
      */
     private Path symlink;
@@ -61,15 +55,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     public <T> Path(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        // Legacy
-        final String localObjDeprecated = dict.stringForKey("Local");
-        if(localObjDeprecated != null) {
-            this.local = LocalFactory.createLocal(localObjDeprecated);
-        }
-        final Object localObj = dict.objectForKey("Local Dictionary");
-        if(localObj != null) {
-            this.local = LocalFactory.createLocal(localObj);
-        }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
             this.symlink = new Path(symlinkObj);
@@ -85,19 +70,11 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         if(pathObj != null) {
             this.setPath(pathObj);
         }
-        if(this.local == null) {
-            this.local = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"),
-                    FilenameUtils.getName(this.path));
-        }
     }
 
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Remote");
-        if(local != null) {
-            dict.setStringForKey(local.getAbsolute(), "Local");
-            dict.setObjectForKey(local, "Local Dictionary");
-        }
         if(symlink != null) {
             dict.setObjectForKey(symlink, "Symbolic Link");
         }
@@ -106,8 +83,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * A remote path where nothing is known about a local equivalent.
-     *
      * @param parent the absolute directory
      * @param name   the file relative to param path
      * @param type   File type
@@ -119,8 +94,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * A remote path where nothing is known about a local equivalent.
-     *
      * @param absolute The absolute path of the remote file
      * @param type     File type
      */
@@ -130,8 +103,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * A remote path where nothing is known about a local equivalent.
-     *
      * @param absolute   The absolute path of the remote file
      * @param attributes File type
      */
@@ -141,39 +112,12 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * Create a new path where you know the local file already exists
-     * and the remote equivalent might be created later.
-     * The remote filename will be extracted from the local file.
-     *
-     * @param parent Parent path reference
-     * @param file   The associated local file
-     */
-    public Path(final Path parent, final Local file) {
-        this.local = file;
-        this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
-        this.attributes.setRegion(parent.attributes.getRegion());
-        this._setPath(parent, file.getName());
-    }
-
-    /**
      * @param parent     Parent path reference
      * @param name       Filename
      * @param attributes Attributes
      */
     public Path(final Path parent, final String name, final PathAttributes attributes) {
         this.attributes = attributes;
-        this._setPath(parent, name);
-    }
-
-    /**
-     * @param parent     Parent path reference
-     * @param name       Filename
-     * @param attributes Attributes
-     * @param file       The associated local file
-     */
-    public Path(final Path parent, final String name, final PathAttributes attributes, final Local file) {
-        this.attributes = attributes;
-        this.local = file;
         this._setPath(parent, name);
     }
 
@@ -260,22 +204,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     @Override
     public String getAbsolute() {
         return path;
-    }
-
-    /**
-     * Set the local equivalent of this path
-     *
-     * @param file Send <code>null</code> to reset the local path to the default value
-     */
-    public void setLocal(final Local file) {
-        this.local = file;
-    }
-
-    /**
-     * @return The local alias of this path
-     */
-    public Local getLocal() {
-        return local;
     }
 
     public void setSymlinkTarget(final Path name) {

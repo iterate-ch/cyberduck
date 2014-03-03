@@ -27,6 +27,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.action.TransferPromptFilterWorker;
 import ch.cyberduck.ui.action.TransferPromptListWorker;
@@ -45,6 +46,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,7 +66,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      */
     private TransferAction action;
 
-    private Cache<Path> cache;
+    private Cache<TransferItem> cache;
 
     /**
      * Selection status map in the prompt
@@ -89,7 +91,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(final TransferPromptController c, final Session session, final Transfer transfer, final Cache cache) {
+    public TransferPromptModel(final TransferPromptController c, final Session session,
+                               final Transfer transfer, final Cache cache) {
         this.controller = c;
         this.session = session;
         this.transfer = transfer;
@@ -127,7 +130,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return !status.containsKey(file);
     }
 
-    protected AttributedList<Path> get(final Path directory) {
+    protected AttributedList<TransferItem> get(final TransferItem directory) {
         // Return list with filtered files included
         return cache.get(null == directory ? null : directory.getReference());
     }
@@ -141,20 +144,20 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return status.get(file);
     }
 
-    protected AttributedList<Path> children(final Path directory) {
+    protected AttributedList<TransferItem> children(final TransferItem directory) {
         if(null == directory) {
             // Root
             if(!cache.isCached(null)) {
-                cache.put(null, new AttributedList<Path>(transfer.getRoots()));
+                cache.put(null, new AttributedList<TransferItem>(transfer.getRoots()));
                 this.filter();
             }
         }
         else if(!cache.isCached(directory.getReference())) {
             controller.background(new WorkerBackgroundAction(controller, session,
-                    new TransferPromptListWorker(session, transfer, directory) {
+                    new TransferPromptListWorker(session, transfer, directory.remote, directory.local) {
                         @Override
-                        public void cleanup(final AttributedList<Path> list) {
-                            cache.put(directory.getReference(), list);
+                        public void cleanup(final List<TransferItem> list) {
+                            cache.put(directory.getReference(), new AttributedList<TransferItem>(list));
                             filter();
                         }
                     }));
@@ -206,15 +209,15 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                                                                  final NSTableColumn tableColumn, final NSObject item) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(Column.include.name())) {
-            final Path file = cache.lookup(new NSObjectPathReference(item));
+            final TransferItem file = cache.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
-            this.setSelected(file, state == NSCell.NSOnState);
+            this.setSelected(file.remote, state == NSCell.NSOnState);
         }
     }
 
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        return cache.lookup(new NSObjectPathReference(item)).attributes().isDirectory();
+        return cache.lookup(new NSObjectPathReference(item)).remote.attributes().isDirectory();
     }
 
     @Override
@@ -224,12 +227,12 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
-        final AttributedList<Path> children = this.get(null == item ? null : cache.lookup(new NSObjectPathReference(item)));
+        final AttributedList<TransferItem> children = this.get(null == item ? null : cache.lookup(new NSObjectPathReference(item)));
         return (NSObject) children.get(index.intValue()).getReference().unique();
     }
 
     @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
-        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
+        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)).remote, tableColumn.identifier());
     }
 }

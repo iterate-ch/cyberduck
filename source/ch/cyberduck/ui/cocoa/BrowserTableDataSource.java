@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -40,6 +39,7 @@ import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.action.SessionListWorker;
@@ -287,10 +287,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final List<Path> roots = new Collection<Path>();
+                    final List<TransferItem> roots = new ArrayList<TransferItem>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        Path p = new Path(destination, LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                        roots.add(p);
+                        roots.add(new TransferItem(
+                                new Path(destination),
+                                LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString())));
                     }
                     controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                     return true;
@@ -522,21 +523,22 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(null != url) {
             final Local destination = LocalFactory.createLocal(url.path());
             final PathPasteboard pasteboard = controller.getPasteboard();
+            final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path p : pasteboard) {
-                final Local local = LocalFactory.createLocal(destination, p.getName());
-                p.setLocal(local);
+                downloads.add(new TransferItem(p, LocalFactory.createLocal(destination, p.getName())));
                 // Add to returned path names
-                promisedDragNames.addObject(NSString.stringWithString(local.getName()));
+                promisedDragNames.addObject(NSString.stringWithString(p.getName()));
             }
-            if(pasteboard.size() == 1) {
-                final Local file = pasteboard.get(0).getLocal();
-                if(pasteboard.get(0).attributes().isFile()) {
+            if(downloads.size() == 1) {
+                if(downloads.iterator().next().remote.attributes().isFile()) {
+                    final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
                         file.touch();
                         IconServiceFactory.get().set(file, new TransferStatus());
                     }
                 }
-                if(pasteboard.get(0).attributes().isDirectory()) {
+                if(downloads.iterator().next().remote.attributes().isDirectory()) {
+                    final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
                         file.mkdir();
                     }
@@ -558,7 +560,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             else {
-                final DownloadTransfer transfer = new DownloadTransfer(controller.getSession().getHost(), pasteboard);
+                final DownloadTransfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads);
                 controller.transfer(transfer, Collections.<Path>emptyList());
             }
             pasteboard.clear();

@@ -17,24 +17,22 @@ package ch.cyberduck.core.transfer.symlink;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-
 /**
  * @version $Id$
  */
-public interface SymlinkResolver {
+public interface SymlinkResolver<T> {
 
     /**
      * @param file Symbolic link
      * @return True if the symbolic link target can be resolved on transfer target
      */
-    boolean resolve(Path file);
+    boolean resolve(T file);
 
     /**
      * @param file Symbolic link
      * @return False if symlink target is already included as a child in the root files
      */
-    boolean include(Path file);
+    boolean include(T file);
 
     String relativize(String base, String name);
 }

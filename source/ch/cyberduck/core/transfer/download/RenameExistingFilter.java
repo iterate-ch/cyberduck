@@ -52,30 +52,28 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
      * Rename existing file on disk if there is a conflict.
      */
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, parent);
-        final Local local = file.getLocal();
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, local, parent);
         if(local.exists()) {
             do {
                 String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                status.setLocal(LocalFactory.createLocal(local.getParent().getAbsolute(), proposal));
+                status.rename(LocalFactory.createLocal(local.getParent().getAbsolute(), proposal));
             }
-            while(status.getLocal().exists());
+            while(status.getRename().local.exists());
         }
         return status;
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
-        final Local local = file.getLocal();
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
         if(local.exists()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Rename existing file %s to %s", local, status.getLocal()));
+                log.info(String.format("Rename existing file %s to %s", local, status.getRename().local));
             }
-            local.rename(status.getLocal());
+            local.rename(status.getRename().local);
         }
     }
 }

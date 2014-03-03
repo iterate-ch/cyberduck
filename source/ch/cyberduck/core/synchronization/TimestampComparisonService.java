@@ -32,7 +32,7 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class TimestampComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(ComparisionServiceFilter.class);
+    private static final Logger log = Logger.getLogger(TimestampComparisonService.class);
 
     private CalendarService calendarService;
 
@@ -43,14 +43,14 @@ public class TimestampComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s", remote));
+            log.debug(String.format("Compare timestamp for %s with %s", remote, local));
         }
         if(-1 == remote.getModificationDate()) {
             log.warn(String.format("No remote modification date available for comparison for %s", remote));
             return Comparison.local;
         }
         if(-1 == local.getModificationDate()) {
-            log.warn(String.format("No local modification date available for comparison for %s", remote));
+            log.warn(String.format("No local modification date available for comparison for %s", local));
             return Comparison.remote;
         }
         if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).before(

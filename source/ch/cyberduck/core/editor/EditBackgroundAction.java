@@ -52,7 +52,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
     public EditBackgroundAction(final AbstractEditor editor, final Session session) {
         this.editor = editor;
         this.session = session;
-        this.download = new DownloadTransfer(session.getHost(), editor.getEdited()) {
+        this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
             @Override
             public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt) throws BackgroundException {
@@ -64,7 +64,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
 
     @Override
     public Transfer run() throws BackgroundException {
-        final Path file = editor.getEdited();
+        final Path file = editor.getRemote();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run edit action for editor %s", file));
         }
@@ -76,7 +76,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
                 = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
         if(!download.isComplete()) {
-            log.warn(String.format("File size changed for %s", file.getLocal()));
+            log.warn(String.format("File size changed for %s", file));
         }
         try {
             editor.edit();
@@ -90,7 +90,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                editor.getEdited().getName());
+                editor.getRemote().getName());
     }
 
     @Override

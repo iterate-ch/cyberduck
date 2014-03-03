@@ -1,8 +1,7 @@
 package ch.cyberduck.core.transfer;
 
 /*
- * Copyright (c) 2002-2011 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,8 +14,7 @@ package ch.cyberduck.core.transfer;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -25,6 +23,7 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
@@ -69,7 +68,8 @@ public class CopyTransfer extends Transfer {
     /**
      * Mapping source to destination files
      */
-    protected Map<Path, Path> files = Collections.emptyMap();
+    protected Map<Path, Path> files
+            = Collections.emptyMap();
 
     private Session<?> destination;
 
@@ -83,9 +83,12 @@ public class CopyTransfer extends Transfer {
 
     private CopyTransfer(final Host host, final Host target,
                          final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
-        super(host, new ArrayList<Path>(selected.keySet()), bandwidth);
+        super(host, new ArrayList<TransferItem>(), bandwidth);
         this.destination = SessionFactory.create(target);
         this.files = selected;
+        for(Path source : selected.keySet()) {
+            roots.add(new TransferItem(source));
+        }
     }
 
     public <T> CopyTransfer(final T serialized) {
@@ -95,13 +98,16 @@ public class CopyTransfer extends Transfer {
         if(hostObj != null) {
             destination = SessionFactory.create(new Host(hostObj));
         }
-        final List destinationsObj = dict.listForKey("Destinations");
-        if(destinationsObj != null) {
-            this.files = new HashMap<Path, Path>();
-            final List<Path> roots = this.getRoots();
-            if(destinationsObj.size() == roots.size()) {
-                for(int i = 0; i < roots.size(); i++) {
-                    this.files.put(roots.get(i), new Path(destinationsObj.get(i)));
+        final List<T> rootsObj = dict.listForKey("Roots");
+        final List<T> destinationsObj = dict.listForKey("Destinations");
+        if(rootsObj != null && destinationsObj != null) {
+            if(rootsObj.size() == destinationsObj.size()) {
+                roots = new ArrayList<TransferItem>();
+                files = new HashMap<Path, Path>();
+                for(int i = 0; i < rootsObj.size(); i++) {
+                    final Path root = new Path(rootsObj.get(i));
+                    roots.add(new TransferItem(root));
+                    files.put(root, new Path(destinationsObj.get(i)));
                 }
             }
         }
@@ -128,14 +134,8 @@ public class CopyTransfer extends Transfer {
         if(destination != null) {
             dict.setObjectForKey(destination.getHost(), "Destination");
         }
-        List<Path> targets = new ArrayList<Path>();
-        for(Path root : this.getRoots()) {
-            if(files.containsKey(root)) {
-                targets.add(files.get(root));
-            }
-        }
-        dict.setListForKey(new ArrayList<Serializable>(targets), "Destinations");
-        dict.setListForKey(this.getRoots(), "Roots");
+        dict.setListForKey(new ArrayList<Serializable>(files.values()), "Destinations");
+        dict.setListForKey(new ArrayList<Serializable>(files.keySet()), "Roots");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(this.getTimestamp() != null) {
@@ -165,16 +165,17 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> list(final Session<?> session, final Path directory, ListProgressListener listener) throws BackgroundException {
+    public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
+                                   final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
         if(directory.attributes().isSymbolicLink()
-                && new DownloadSymlinkResolver(this.getRoots()).resolve(directory)) {
+                && new DownloadSymlinkResolver(roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
-            return AttributedList.emptyList();
+            return Collections.emptyList();
         }
         else {
             final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
@@ -182,13 +183,17 @@ public class CopyTransfer extends Transfer {
             for(Path p : list) {
                 files.put(p, new Path(copy, p.getName(), p.attributes()));
             }
-            return list;
+            final List<TransferItem> nullified = new ArrayList<TransferItem>();
+            for(Path p : files.keySet()) {
+                nullified.add(new TransferItem(p));
+            }
+            return nullified;
         }
     }
 
     @Override
     public void transfer(final Session<?> session, final Path source,
-                         final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                         final Local n, final TransferOptions options, final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }

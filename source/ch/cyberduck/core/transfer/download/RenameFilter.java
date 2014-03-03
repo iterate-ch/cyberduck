@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -44,35 +45,33 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final TransferStatus parent) throws BackgroundException {
-        final TransferStatus status = super.prepare(file, parent);
-        if(file.getLocal().exists()) {
-            final String parentPath = file.getLocal().getParent().getAbsolute();
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        final TransferStatus status = super.prepare(file, local, parent);
+        if(local.exists()) {
+            final String parentPath = local.getParent().getAbsolute();
             final String filename = file.getName();
             int no = 0;
-            if(file.getLocal().exists()) {
-                do {
-                    no++;
-                    String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
-                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                        proposal += "." + FilenameUtils.getExtension(filename);
-                    }
-                    status.setLocal(LocalFactory.createLocal(parentPath, proposal));
+            do {
+                no++;
+                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                    proposal += "." + FilenameUtils.getExtension(filename);
                 }
-                while(status.getLocal().exists());
+                status.rename(LocalFactory.createLocal(parentPath, proposal));
             }
+            while(status.getRename().local.exists());
             if(log.isInfoEnabled()) {
-                log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
+                log.info(String.format("Changed local name from %s to %s", filename, status.getRename().local.getName()));
             }
         }
         return status;
     }
 
     @Override
-    public void apply(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.getLocal().exists()) {
+    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+        if(local.exists()) {
             // Set renamed target
-            file.setLocal(status.getLocal());
+            status.rename(status.getRename().local);
         }
     }
 }

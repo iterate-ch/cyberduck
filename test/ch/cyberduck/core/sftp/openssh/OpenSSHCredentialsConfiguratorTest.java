@@ -43,7 +43,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
                 new OpenSshConfig(
                         LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config")));
         Credentials credentials = new DefaultCredentials("user", " ");
-        credentials.setIdentity(new NullLocal(null, "t"));
+        credentials.setIdentity(new NullLocal("t"));
         assertEquals("t", c.configure(new Host(new SFTPProtocol(), "t", credentials)).getIdentity().getName());
     }
 

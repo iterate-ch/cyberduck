@@ -18,9 +18,9 @@ package ch.cyberduck.core.transfer.symlink;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
 
@@ -29,32 +29,31 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class UploadSymlinkResolver extends AbstractSymlinkResolver {
+public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
     private static final Logger log = Logger.getLogger(UploadSymlinkResolver.class);
 
     private Symlink feature;
 
-    private List<Path> files;
+    private List<TransferItem> files;
 
-    public UploadSymlinkResolver(final Symlink feature, final List<Path> files) {
+    public UploadSymlinkResolver(final Symlink feature, final List<TransferItem> files) {
         this.feature = feature;
         this.files = files;
     }
 
     @Override
-    public boolean resolve(final Path file) {
-        final Local local = file.getLocal();
-        if(local.attributes().isSymbolicLink()) {
+    public boolean resolve(final Local file) {
+        if(file.attributes().isSymbolicLink()) {
             if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
                 // Resolve links instead
                 return false;
             }
             // Create symbolic link only if supported by the host
             if(feature != null) {
-                final Local target = local.getSymlinkTarget();
+                final Local target = file.getSymlinkTarget();
                 // Only create symbolic link if target is included in the upload
-                for(Path root : files) {
-                    if(this.findTarget(target, root)) {
+                for(TransferItem root : files) {
+                    if(this.findTarget(target, root.local)) {
                         return true;
                     }
                 }
@@ -64,13 +63,12 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
     }
 
     @Override
-    public boolean include(final Path file) {
-        final Local local = file.getLocal();
-        if(local.attributes().isSymbolicLink()) {
-            final Local target = local.getSymlinkTarget();
+    public boolean include(final Local file) {
+        if(file.attributes().isSymbolicLink()) {
+            final Local target = file.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
-            for(Path root : files) {
-                if(this.findTarget(target, root)) {
+            for(TransferItem root : files) {
+                if(this.findTarget(target, root.local)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with target %s already included", file, target));
                     }
@@ -81,7 +79,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
         return true;
     }
 
-    private boolean findTarget(final Local target, final Path root) {
-        return target.equals(root.getLocal()) || target.isChild(root.getLocal());
+    private boolean findTarget(final Local target, final Local root) {
+        return target.equals(root) || target.isChild(root);
     }
 }

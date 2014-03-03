@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-public abstract class AbstractSymlinkResolver implements SymlinkResolver {
+public abstract class AbstractSymlinkResolver<T> implements SymlinkResolver<T> {
 
     @Override
     public String relativize(final String base, final String name) {

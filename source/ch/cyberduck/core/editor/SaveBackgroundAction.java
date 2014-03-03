@@ -52,7 +52,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
     public SaveBackgroundAction(final AbstractEditor editor, final Session session) {
         this.editor = editor;
         this.session = session;
-        this.upload = new UploadTransfer(session.getHost(), editor.getEdited()) {
+        this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
             @Override
             public TransferAction action(final Session<?> session,
                                          final boolean resumeRequested, final boolean reloadRequested,
@@ -79,11 +79,11 @@ public class SaveBackgroundAction extends Worker<Transfer> {
                 new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
         worker.run();
         if(!upload.isComplete()) {
-            log.warn(String.format("File size changed for %s", editor.getEdited()));
+            log.warn(String.format("File size changed for %s", editor.getRemote()));
         }
         else {
             // Update known remote file size
-            editor.getEdited().attributes().setSize(upload.getTransferred());
+            editor.getRemote().attributes().setSize(upload.getTransferred());
         }
         return upload;
     }
@@ -99,7 +99,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                editor.getEdited().getName());
+                editor.getRemote().getName());
     }
 
     @Override

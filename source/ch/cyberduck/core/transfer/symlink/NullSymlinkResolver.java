@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class NullSymlinkResolver extends AbstractSymlinkResolver {
+public class NullSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override
     public boolean resolve(final Path file) {

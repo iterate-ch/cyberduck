@@ -1,6 +1,15 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -40,7 +49,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        test.setLocal(local);
         final String random = RandomStringUtils.random(1000);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
@@ -75,7 +83,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        test.setLocal(local);
         final TransferStatus status = new TransferStatus();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
     }
@@ -94,7 +101,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        test.setLocal(local);
         final byte[] random = new byte[5242881];
         new Random().nextBytes(random);
         IOUtils.write(random, local.getOutputStream(false));
@@ -122,7 +128,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        test.setLocal(local);
         final byte[] random = new byte[10485760];
         new Random().nextBytes(random);
         IOUtils.write(random, local.getOutputStream(false));
@@ -179,7 +184,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        test.setLocal(local);
         final byte[] random = new byte[32769];
         new Random().nextBytes(random);
         IOUtils.write(random, local.getOutputStream(false));
