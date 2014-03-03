@@ -38,9 +38,22 @@ import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -148,8 +161,8 @@ public class MainController extends BundleController implements NSApplication.De
             final Host h = HostParser.parse(url);
             if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), Path.FILE_TYPE);
-                file.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
-                TransferControllerFactory.get().start(new DownloadTransfer(h, file));
+                TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                        LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName())));
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {
@@ -746,9 +759,9 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     private void upload(final Host bookmark, final List<Local> files, final Path destination) {
-        List<Path> roots = new ArrayList<Path>();
+        final List<TransferItem> roots = new ArrayList<TransferItem>();
         for(Local file : files) {
-            roots.add(new Path(destination, file));
+            roots.add(new TransferItem(new Path(destination), file));
         }
         final TransferController t = TransferControllerFactory.get();
         t.start(new UploadTransfer(bookmark, roots));
