@@ -17,10 +17,13 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -35,15 +38,24 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     private Read read;
 
+    private Attributes attribute;
+
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
         this.read = session.getFeature(Read.class);
+        this.attribute = session.getFeature(Attributes.class);
     }
 
     public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
                         final DownloadFilterOptions options, final Read read) {
         super(symlinkResolver, session, options);
         this.read = read;
+        this.attribute = session.getFeature(Attributes.class);
+    }
+
+    public AbstractDownloadFilter withCache(final Cache cache) {
+        attribute.withCache(cache);
+        return super.withCache(cache);
     }
 
     @Override
@@ -51,7 +63,9 @@ public class ResumeFilter extends AbstractDownloadFilter {
         if(file.attributes().isFile()) {
             if(file.getLocal().exists()) {
                 final long local = file.getLocal().attributes().getSize();
-                if(local >= file.attributes().getSize()) {
+                // Read remote attributes
+                final PathAttributes attributes = attribute.find(file);
+                if(local >= attributes.getSize()) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with local size %d", file, local));
                     }
