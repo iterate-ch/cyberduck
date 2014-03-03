@@ -386,9 +386,10 @@ public class BookmarkTableDataSource extends ListDataSource {
             Host host = null;
             for(int i = 0; i < filesList.count().intValue(); i++) {
                 final String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
+                final Local local = LocalFactory.createLocal(filename);
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
-                    Host bookmark = HostReaderFactory.get().read(LocalFactory.createLocal(filename));
+                    Host bookmark = HostReaderFactory.get().read(local);
                     if(null == bookmark) {
                         continue;
                     }
@@ -403,8 +404,10 @@ public class BookmarkTableDataSource extends ListDataSource {
                         host = h;
                     }
                     // Upload to the remote host this bookmark points to
-                    uploads.add(new TransferItem(new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), Path.DIRECTORY_TYPE), filename, Path.FILE_TYPE),
-                            LocalFactory.createLocal(filename)));
+                    uploads.add(new TransferItem(
+                            new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), Path.DIRECTORY_TYPE),
+                                    local.getName(), Path.FILE_TYPE),
+                            local));
                 }
             }
             if(!uploads.isEmpty()) {
