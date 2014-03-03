@@ -40,6 +40,11 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
             public LocalAttributes attributes() {
                 return new LocalAttributes(this.getAbsolute()) {
                     @Override
+                    public boolean isSymbolicLink() {
+                        return false;
+                    }
+
+                    @Override
                     public long getSize() {
                         return 1L;
                     }
