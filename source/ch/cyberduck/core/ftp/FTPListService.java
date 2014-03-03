@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
@@ -29,14 +28,10 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.net.ProtocolCommandEvent;
-import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.log4j.Logger;
@@ -132,12 +127,10 @@ public class FTPListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final ProtocolCommandListener pl = new ChunkProtocolCommandListener(listener);
-        session.getClient().addProtocolCommandListener(pl);
         try {
             if(implementations.containsKey(Command.stat)) {
                 try {
-                    return this.post(directory, implementations.get(Command.stat).list(directory, new DisabledListProgressListener()));
+                    return this.post(directory, implementations.get(Command.stat).list(directory, listener));
                 }
                 catch(FTPInvalidListException e) {
                     this.remove(Command.stat);
@@ -162,7 +155,7 @@ public class FTPListService implements ListService {
                 // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                 if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
                     try {
-                        return this.post(directory, implementations.get(Command.mlsd).list(directory, new DisabledListProgressListener()));
+                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
                     }
                     catch(InteroperabilityException e) {
                         this.remove(Command.mlsd);
@@ -177,7 +170,7 @@ public class FTPListService implements ListService {
             }
             if(implementations.containsKey(Command.lista)) {
                 try {
-                    return this.post(directory, implementations.get(Command.lista).list(directory, new DisabledListProgressListener()));
+                    return this.post(directory, implementations.get(Command.lista).list(directory, listener));
                 }
                 catch(InteroperabilityException e) {
                     this.remove(Command.lista);
@@ -187,25 +180,15 @@ public class FTPListService implements ListService {
                 }
             }
             try {
-                return this.post(directory, implementations.get(Command.list).list(directory, new DisabledListProgressListener()));
+                return this.post(directory, implementations.get(Command.list).list(directory, listener));
             }
             catch(FTPInvalidListException f) {
                 // Empty directory listing
                 return this.post(directory, f.getParsed());
             }
         }
-        catch(RuntimeException e) {
-            final Throwable cause = ExceptionUtils.getRootCause(e);
-            if(cause instanceof ConnectionCanceledException) {
-                throw (ConnectionCanceledException) cause;
-            }
-            throw e;
-        }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
-        }
-        finally {
-            session.getClient().removeProtocolCommandListener(pl);
         }
     }
 
@@ -237,45 +220,6 @@ public class FTPListService implements ListService {
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
-        }
-    }
-
-    private static final class ChunkProtocolCommandListener implements ProtocolCommandListener {
-        private final ListProgressListener listener;
-
-        /**
-         * Counter
-         */
-        private int size;
-
-        final AttributedList<Path> chunks;
-
-        public ChunkProtocolCommandListener(final ListProgressListener listener) {
-            this.listener = listener;
-            chunks = new AttributedList<Path>() {
-                private static final long serialVersionUID = -4271788509709103098L;
-
-                @Override
-                public int size() {
-                    return size;
-                }
-            };
-        }
-
-        @Override
-        public void protocolCommandSent(ProtocolCommandEvent event) {
-            //
-        }
-
-        @Override
-        public void protocolReplyReceived(ProtocolCommandEvent event) {
-            try {
-                size++;
-                listener.chunk(chunks);
-            }
-            catch(ConnectionCanceledException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }

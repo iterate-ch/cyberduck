@@ -61,6 +61,7 @@ public class FTPListServiceTest extends AbstractTestCase {
             @Override
             public void chunk(AttributedList<Path> list) throws ListCanceledException {
                 assertEquals(++size, list.size());
+                assertNotNull(list.get(list.size() - 1));
             }
         });
         assertTrue(list.contains(
