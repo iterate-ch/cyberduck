@@ -93,7 +93,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        final URI url = URI.create(String.format("%s/%s", origin.getWebURL(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
+        final URI url = URI.create(String.format("%s%s", origin.getWebURL(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use origin %s for distribution %s", url, method));
         }
