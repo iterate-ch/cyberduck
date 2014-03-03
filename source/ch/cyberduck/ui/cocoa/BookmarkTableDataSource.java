@@ -403,7 +403,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                         host = h;
                     }
                     // Upload to the remote host this bookmark points to
-                    uploads.add(new TransferItem(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE)),
+                    uploads.add(new TransferItem(new Path(new Path(h.getDefaultPath(), Path.DIRECTORY_TYPE), filename, Path.FILE_TYPE),
                             LocalFactory.createLocal(filename)));
                 }
             }

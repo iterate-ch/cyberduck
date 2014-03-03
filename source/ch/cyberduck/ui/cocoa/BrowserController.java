@@ -3094,8 +3094,9 @@ public class BrowserController extends WindowController
                 final Path workdir = this.workdir();
                 final List<TransferItem> uploads = new ArrayList<TransferItem>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    uploads.add(new TransferItem(
-                            new Path(workdir), LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString())));
+                    final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                    uploads.add(new TransferItem(new Path(workdir, local.getName(),
+                            local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
                 }
                 this.transfer(new UploadTransfer(session.getHost(), uploads));
             }

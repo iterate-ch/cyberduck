@@ -761,7 +761,8 @@ public class MainController extends BundleController implements NSApplication.De
     private void upload(final Host bookmark, final List<Local> files, final Path destination) {
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         for(Local file : files) {
-            roots.add(new TransferItem(new Path(destination), file));
+            roots.add(new TransferItem(new Path(destination, file.getName(),
+                    file.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), file));
         }
         final TransferController t = TransferControllerFactory.get();
         t.start(new UploadTransfer(bookmark, roots));

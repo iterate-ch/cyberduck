@@ -289,9 +289,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     final List<TransferItem> roots = new ArrayList<TransferItem>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        roots.add(new TransferItem(
-                                new Path(destination),
-                                LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString())));
+                        final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                        roots.add(new TransferItem(new Path(destination, local.getName(),
+                                local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
                     }
                     controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                     return true;
