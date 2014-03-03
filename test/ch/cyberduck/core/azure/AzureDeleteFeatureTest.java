@@ -17,8 +17,11 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureDeleteFeatureTest extends AbstractTestCase {
 
@@ -45,5 +48,38 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
         final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+    }
+
+    @Test
+    public void testDeletePlaceholder() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
+                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+        ));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        test.attributes().setPlaceholder(true);
+        new AzureDirectoryFeature(session).mkdir(test);
+        assertTrue(new AzureFindFeature(session).find(test));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        assertFalse(new AzureFindFeature(session).find(test));
+    }
+
+    @Test
+    public void testDeleteKey() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
+                properties.getProperty("azure.account"), properties.getProperty("azure.key")
+        ));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        new AzureTouchFeature(session).touch(test);
+        assertTrue(new AzureFindFeature(session).find(test));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        assertFalse(new AzureFindFeature(session).find(test));
     }
 }
