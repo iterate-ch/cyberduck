@@ -17,8 +17,20 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.junit.Test;
 
@@ -43,7 +55,14 @@ public class FTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = session.workdir();
-        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
+            int size = 0;
+
+            @Override
+            public void chunk(AttributedList<Path> list) throws ListCanceledException {
+                assertEquals(++size, list.size());
+            }
+        });
         assertTrue(list.contains(
                 new Path(directory, "test", Path.FILE_TYPE).getReference()));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
@@ -64,7 +83,14 @@ public class FTPListServiceTest extends AbstractTestCase {
         service.remove(FTPListService.Command.stat);
         service.remove(FTPListService.Command.mlsd);
         final Path directory = session.workdir();
-        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
+        final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
+            int size = 0;
+
+            @Override
+            public void chunk(AttributedList<Path> list) throws ListCanceledException {
+                assertEquals(++size, list.size());
+            }
+        });
         assertTrue(list.contains(
                 new Path(directory, "test", Path.FILE_TYPE).getReference()));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
