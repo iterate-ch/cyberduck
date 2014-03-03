@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -102,9 +103,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected Cache<Path> cache;
 
+    private ListProgressListener listener;
+
     protected BrowserTableDataSource(final BrowserController controller, final Cache cache) {
         this.controller = controller;
         this.cache = cache;
+        this.listener = new PromptLimitedListProgressListener(controller);
     }
 
     /**
@@ -118,7 +122,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
             controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new SessionListWorker(controller.getSession(), cache, directory, new PromptLimitedListProgressListener(controller)) {
+                    new SessionListWorker(controller.getSession(), cache, directory, listener) {
                         @Override
                         public void cleanup(final AttributedList<Path> list) {
                             if(controller.getActions().isEmpty()) {
