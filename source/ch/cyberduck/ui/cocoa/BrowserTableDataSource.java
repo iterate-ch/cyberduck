@@ -100,7 +100,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected BrowserController controller;
 
-    protected Cache cache;
+    protected Cache<Path> cache;
 
     protected BrowserTableDataSource(final BrowserController controller, final Cache cache) {
         this.controller = controller;

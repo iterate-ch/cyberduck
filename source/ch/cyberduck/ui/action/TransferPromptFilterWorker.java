@@ -51,7 +51,7 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
 
     private TransferAction action;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
                                       final Cache cache) {

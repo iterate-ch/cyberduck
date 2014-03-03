@@ -41,7 +41,7 @@ import com.ibm.icu.text.Normalizer;
 /**
  * @version $Id$
  */
-public abstract class Local extends AbstractPath implements Serializable {
+public abstract class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
     /**
@@ -88,7 +88,6 @@ public abstract class Local extends AbstractPath implements Serializable {
         return dict.getSerialized();
     }
 
-    @Override
     public LocalAttributes attributes() {
         return attributes;
     }

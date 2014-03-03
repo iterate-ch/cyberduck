@@ -46,7 +46,7 @@ public class GotoController extends AlertController {
 
     private ProxyController folderComboboxModel;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 

@@ -86,8 +86,8 @@ public abstract class TransferPromptController extends SheetController
 
     private TransferAction action;
 
-    protected Cache cache
-            = new Cache(Integer.MAX_VALUE);
+    protected Cache<Path> cache
+            = new Cache<Path>(Integer.MAX_VALUE);
 
     public TransferPromptController(final WindowController parent, final Transfer transfer, final Session session) {
         super(parent);

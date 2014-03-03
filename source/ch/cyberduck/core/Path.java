@@ -27,7 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 /**
  * @version $Id$
  */
-public class Path extends AbstractPath implements Serializable {
+public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * The absolute remote path
@@ -237,7 +237,6 @@ public class Path extends AbstractPath implements Serializable {
         return PathReferenceFactory.createPathReference(this);
     }
 
-    @Override
     public PathAttributes attributes() {
         return attributes;
     }

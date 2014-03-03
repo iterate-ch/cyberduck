@@ -31,15 +31,15 @@ import java.util.Set;
  *
  * @version $Id$
  */
-public class Cache {
+public class Cache<T extends Referenceable> {
     private static final Logger log = Logger.getLogger(Cache.class);
 
-    private final Map<PathReference, AttributedList<Path>> impl;
+    private final Map<PathReference, AttributedList<T>> impl;
 
-    public static Cache empty() {
-        return new Cache(0) {
+    public static <T extends Referenceable> Cache<T> empty() {
+        return new Cache<T>(0) {
             @Override
-            public AttributedList<Path> put(PathReference reference, AttributedList<Path> children) {
+            public AttributedList<T> put(PathReference reference, AttributedList<T> children) {
                 return AttributedList.emptyList();
             }
         };
@@ -52,14 +52,14 @@ public class Cache {
     public Cache(int size) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            impl = new LinkedHashMap<PathReference, AttributedList<Path>>();
+            impl = new LinkedHashMap<PathReference, AttributedList<T>>();
         }
         else if(size == 0) {
             impl = Collections.emptyMap();
         }
         else {
             // Will inflate to the given size
-            impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(size));
+            impl = Collections.<PathReference, AttributedList<T>>synchronizedMap(new LRUMap(size));
         }
     }
 
@@ -71,9 +71,9 @@ public class Cache {
      * @return Null if the path is not in the cache
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
-    public Path lookup(final PathReference reference) {
-        for(AttributedList<Path> list : impl.values().toArray(new AttributedList[impl.size()])) {
-            final Path path = list.get(reference);
+    public T lookup(final PathReference reference) {
+        for(AttributedList<T> list : impl.values().toArray(new AttributedList[impl.size()])) {
+            final T path = list.get(reference);
             if(null == path) {
                 continue;
             }
@@ -105,7 +105,7 @@ public class Cache {
      * @param reference Reference to the path in cache.
      * @return The previuosly cached directory listing
      */
-    public AttributedList<Path> remove(final PathReference reference) {
+    public AttributedList<T> remove(final PathReference reference) {
         return impl.remove(reference);
     }
 
@@ -116,8 +116,8 @@ public class Cache {
      *          If the caller is iterating of the cache himself
      *          and requests a new filter here.
      */
-    public AttributedList<Path> get(final PathReference reference) {
-        AttributedList<Path> children = impl.get(reference);
+    public AttributedList<T> get(final PathReference reference) {
+        AttributedList<T> children = impl.get(reference);
         if(null == children) {
             log.warn(String.format("No cache for %s", reference));
             return AttributedList.emptyList();
@@ -134,7 +134,7 @@ public class Cache {
      * @param children  Cached directory listing
      * @return Previous cached version
      */
-    public AttributedList<Path> put(final PathReference reference, final AttributedList<Path> children) {
+    public AttributedList<T> put(final PathReference reference, final AttributedList<T> children) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Caching %s", reference));
         }

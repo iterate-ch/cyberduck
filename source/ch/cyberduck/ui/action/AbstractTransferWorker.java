@@ -78,7 +78,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
     /**
      * Workload
      */
-    private Cache cache = new Cache(Integer.MAX_VALUE);
+    private Cache<Path> cache = new Cache<Path>(Integer.MAX_VALUE);
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error) {

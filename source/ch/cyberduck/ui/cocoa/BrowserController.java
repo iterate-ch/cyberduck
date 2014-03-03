@@ -41,7 +41,18 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.transfer.*;
+import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferAdapter;
+import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
@@ -180,7 +191,7 @@ public class BrowserController extends WindowController
     /**
      * Caching files listings of previously listed directories
      */
-    private Cache cache = new Cache();
+    private Cache<Path> cache = new Cache<Path>();
 
     public BrowserController() {
         this.loadBundle();
@@ -2950,7 +2961,7 @@ public class BrowserController extends WindowController
      * @param sendType   The pasteboard type the application needs to send.
      * @param returnType The pasteboard type the application needs to receive.
      * @return The object that can send and receive the specified types or nil
-     * if the receiver knows of no object that can send and receive data of that type.
+     *         if the receiver knows of no object that can send and receive data of that type.
      */
     public ID validRequestorForSendType_returnType(String sendType, String returnType) {
         log.debug("validRequestorForSendType_returnType:" + sendType + "," + returnType);
@@ -3333,7 +3344,7 @@ public class BrowserController extends WindowController
     /**
      * @param disconnected Callback after the session has been disconnected
      * @return True if the unmount process has finished, false if the user has to agree first
-     * to close the connection
+     *         to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
         return this.unmount(new SheetCallback() {

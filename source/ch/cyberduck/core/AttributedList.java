@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @version $Id$
  */
-public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
+public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     private static final Logger log = Logger.getLogger(AttributedList.class);
 
     private static final long serialVersionUID = 8900332123622028341L;
@@ -58,7 +58,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         this.addAll(collection);
     }
 
-    public static <T extends AbstractPath> AttributedList<T> emptyList() {
+    public static <T extends Referenceable> AttributedList<T> emptyList() {
         return new AttributedList<T>();
     }
 
@@ -128,12 +128,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         if(null == comparator) {
             return;
         }
-        // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
-        E[] sorted = (E[]) this.toArray(new AbstractPath[this.size()]);
-        Arrays.sort(sorted, comparator);
-        for(int i = 0; i < sorted.length; i++) {
-            this.set(i, sorted[i]);
-        }
+        Collections.sort(this, comparator);
     }
 
     /**
@@ -144,7 +139,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         return this.filter(null, filter);
     }
 
-    public AttributedList<E> filter(final Comparator comparator) {
+    public AttributedList<E> filter(final Comparator<E> comparator) {
         return this.filter(comparator, null);
     }
 
@@ -153,7 +148,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
      * @param filter     Filter
      * @return Filtered list sorted with comparator
      */
-    public AttributedList<E> filter(final Comparator comparator, final Filter filter) {
+    public AttributedList<E> filter(final Comparator<E> comparator, final Filter<E> filter) {
         boolean needsSorting = false;
         if(null != comparator) {
             needsSorting = !attributes.getComparator().equals(comparator);

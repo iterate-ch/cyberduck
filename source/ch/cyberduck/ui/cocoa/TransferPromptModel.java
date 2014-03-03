@@ -64,7 +64,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      */
     private TransferAction action;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     /**
      * Selection status map in the prompt

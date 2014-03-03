@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @see Filter
  */
-public class AttributedListAttributes<E extends AbstractPath> {
+public class AttributedListAttributes<E> {
 
     /**
      * Sort the file listing using this comparator.
