@@ -735,8 +735,7 @@ public class MainController extends BundleController implements NSApplication.De
                             else {
                                 // No mounted browser
                                 if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    upload(bookmark, files, new Path(
-                                            bookmark.getDefaultPath(), Path.DIRECTORY_TYPE));
+                                    upload(bookmark, files, new Path(bookmark.getDefaultPath(), Path.DIRECTORY_TYPE));
                                 }
                                 else {
                                     upload(bookmark, files, destination);

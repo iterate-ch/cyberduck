@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -74,7 +75,7 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Host host = HostParser.parse(urlField.stringValue());
-            final Path file = new Path(host.getDefaultPath(), detector.detect(host.getDefaultPath()));
+            final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true), detector.detect(host.getDefaultPath()));
             final Transfer transfer = new DownloadTransfer(host, file,
                     LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);

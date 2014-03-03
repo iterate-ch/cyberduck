@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -92,7 +93,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     protected URI getOrigin(final Path container, final Distribution.Method method) {
-        final URI url = URI.create(String.format("%s/%s", origin.getWebURL(), origin.getDefaultPath()));
+        final URI url = URI.create(String.format("%s/%s", origin.getWebURL(), PathNormalizer.normalize(origin.getDefaultPath(), true)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use origin %s for distribution %s", url, method));
         }
