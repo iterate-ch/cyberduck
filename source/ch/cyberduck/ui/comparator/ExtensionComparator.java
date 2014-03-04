@@ -40,10 +40,10 @@ public class ExtensionComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(final Path p1, final Path p2) {
-        if(p1.attributes().isDirectory() && p2.attributes().isDirectory()) {
+        if(p1.isDirectory() && p2.isDirectory()) {
             return 0;
         }
-        if(p1.attributes().isFile() && p2.attributes().isFile()) {
+        if(p1.isFile() && p2.isFile()) {
             if(StringUtils.isBlank(p1.getExtension()) && StringUtils.isBlank(p2.getExtension())) {
                 return 0;
             }
@@ -58,7 +58,7 @@ public class ExtensionComparator extends BrowserComparator {
             }
             return -impl.compare(p1.getExtension(), p2.getExtension());
         }
-        if(p1.attributes().isFile()) {
+        if(p1.isFile()) {
             return ascending ? 1 : -1;
         }
         return ascending ? -1 : 1;

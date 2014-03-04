@@ -87,7 +87,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes
         final PathAttributes attributes = attribute.find(source);
-        if(attributes.isFile()) {
+        if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
         }

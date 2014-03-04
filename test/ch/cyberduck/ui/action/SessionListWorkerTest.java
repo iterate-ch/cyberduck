@@ -14,11 +14,13 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SessionListWorkerTest extends AbstractTestCase {
 
@@ -31,8 +33,8 @@ public class SessionListWorkerTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Cache cache = new Cache();
-        final SessionListWorker worker = new SessionListWorker(session, cache, new Path("/home/jenkins", Path.DIRECTORY_TYPE), new DisabledListProgressListener());
+        final SessionListWorker worker = new SessionListWorker(session, cache, new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(worker.run().isEmpty());
-        assertTrue(cache.containsKey(new Path("/home/jenkins", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)).getReference()));
     }
 }

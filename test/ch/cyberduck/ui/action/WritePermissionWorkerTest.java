@@ -31,6 +31,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -43,12 +44,12 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final Permission permission = new Permission(744);
-        final Path path = new Path("a", Path.DIRECTORY_TYPE);
+        final Path path = new Path("a", EnumSet.of(Path.Type.directory));
         final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", Path.FILE_TYPE));
+                children.add(new Path("b", EnumSet.of(Path.Type.file)));
                 return children;
             }
         }, new UnixPermission() {
@@ -83,16 +84,16 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     @Test
     public void testRunRecursiveRetainDirectoryExecute() throws Exception {
         final Permission permission = new Permission(644);
-        final Path a = new Path("a", Path.DIRECTORY_TYPE);
+        final Path a = new Path("a", EnumSet.of(Path.Type.directory));
         final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(a)) {
                     final AttributedList<Path> children = new AttributedList<Path>();
-                    final Path d = new Path("d", Path.DIRECTORY_TYPE);
+                    final Path d = new Path("d", EnumSet.of(Path.Type.directory));
                     d.attributes().setPermission(new Permission(744));
                     children.add(d);
-                    children.add(new Path("f", Path.FILE_TYPE));
+                    children.add(new Path("f", EnumSet.of(Path.Type.file)));
                     return children;
                 }
                 return AttributedList.emptyList();
@@ -132,14 +133,14 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
     @Test
     public void testRetainStickyBit() throws Exception {
         final Permission permission = new Permission(744);
-        final Path path = new Path("a", Path.DIRECTORY_TYPE);
+        final Path path = new Path("a", EnumSet.of(Path.Type.directory));
         path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none,
                 true, false, false));
         final WritePermissionWorker worker = new WritePermissionWorker(new FTPSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", Path.FILE_TYPE));
+                children.add(new Path("b", EnumSet.of(Path.Type.file)));
                 return children;
             }
         }, new UnixPermission() {

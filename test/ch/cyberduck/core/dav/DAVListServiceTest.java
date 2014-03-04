@@ -17,10 +17,21 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
+
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +50,7 @@ public class DAVListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new DAVListService(session).list(new Path("/notfound", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+        new DAVListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         session.close();
     }
@@ -54,11 +65,11 @@ public class DAVListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
-            assertEquals(new Path("/trunk", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE), p.getParent());
+            assertEquals(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getCreationDate());
             assertNotNull(p.attributes().getSize());

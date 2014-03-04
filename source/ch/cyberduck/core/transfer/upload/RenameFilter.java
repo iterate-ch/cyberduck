@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,8 +57,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                     }
-                    final Path renamed = new Path(parentPath, proposal,
-                            new PathAttributes(file.attributes().getType()));
+                    final Path renamed = new Path(parentPath, proposal, file.getType());
                     status.rename(renamed);
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Change filename from %s to %s", file, renamed));

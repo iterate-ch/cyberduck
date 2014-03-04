@@ -77,7 +77,7 @@ public class SwiftUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             Region region = null;
             try {
                 region = new SwiftRegionService(session).lookup(containerService.getContainer(file));

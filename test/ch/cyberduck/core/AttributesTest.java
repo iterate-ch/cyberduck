@@ -20,28 +20,16 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AttributesTest extends AbstractTestCase {
 
     @Test
     public void testClone() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        PathAttributes attributes = new PathAttributes();
         PathAttributes clone = new PathAttributes(attributes.serialize(SerializerFactory.get()));
 
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
-    }
-
-    @Test
-    public void testSetGetType() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        assertTrue(attributes.isFile());
-        assertTrue(attributes.isSymbolicLink());
-        assertFalse(attributes.isDirectory());
-        attributes.setType(Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        assertFalse(attributes.isFile());
-        assertTrue(attributes.isSymbolicLink());
-        assertTrue(attributes.isDirectory());
     }
 }

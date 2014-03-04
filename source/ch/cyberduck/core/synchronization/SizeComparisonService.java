@@ -35,25 +35,20 @@ public class SizeComparisonService implements ComparisonService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare size for %s with %s", remote, local));
         }
-        if(remote.isDirectory()) {
-            return Comparison.notequal;
+        //fist make sure both files are larger than 0 bytes
+        if(remote.getSize() == 0 && local.getSize() == 0) {
+            return Comparison.equal;
         }
-        else {
-            //fist make sure both files are larger than 0 bytes
-            if(remote.getSize() == 0 && local.getSize() == 0) {
-                return Comparison.equal;
-            }
-            if(remote.getSize() == 0) {
-                return Comparison.local;
-            }
-            if(local.getSize() == 0) {
-                return Comparison.remote;
-            }
-            if(remote.getSize() == local.getSize()) {
-                return Comparison.equal;
-            }
-            // Different file size
-            return Comparison.notequal;
+        if(remote.getSize() == 0) {
+            return Comparison.local;
         }
+        if(local.getSize() == 0) {
+            return Comparison.remote;
+        }
+        if(remote.getSize() == local.getSize()) {
+            return Comparison.equal;
+        }
+        // Different file size
+        return Comparison.notequal;
     }
 }

@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        final Path test = new Path("t", Path.FILE_TYPE);
+        final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host("t"), test,
                 LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         t.addSize(4L);
@@ -51,7 +52,7 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildrenEmpty() throws Exception {
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory)) {
         };
         Transfer t = new UploadTransfer(new Host("t"), root,
                 LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
@@ -65,8 +66,8 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverrideRootExists() throws Exception {
-        final Path child = new Path("/t/c", Path.FILE_TYPE);
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("l") {
             @Override
             public AttributedList<Local> list() {
@@ -90,7 +91,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", Path.DIRECTORY_TYPE)));
+                return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
@@ -115,11 +116,11 @@ public class UploadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverrideRootDoesNotExist() throws Exception {
-        final Path child = new Path("/t/c", Path.FILE_TYPE);
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE) {
+        final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory)) {
             @Override
             public Path getParent() {
-                return new Path("/", Path.DIRECTORY_TYPE);
+                return new Path("/", EnumSet.of(Path.Type.directory));
             }
         };
         final NullLocal local = new NullLocal("l") {
@@ -172,9 +173,9 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Path root = new Path("/t", Path.FILE_TYPE);
+        final Path root = new Path("/t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host("t"), root, local);
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", Path.FILE_TYPE), new NullLocal("t/c"))),
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t/c"))),
                 t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener()));
     }
 
@@ -191,7 +192,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -232,7 +233,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -262,7 +263,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "transfer");
         local.touch();
@@ -281,7 +282,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
         final TransferStatus expected = new TransferStatus();
-        assertEquals(expected, table.get(new Path("/transfer/" + name, Path.FILE_TYPE)));
+        assertEquals(expected, table.get(new Path("/transfer/" + name, EnumSet.of(Path.Type.file))));
     }
 
     @Test
@@ -292,7 +293,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer", name);
         local.touch();
@@ -325,13 +326,13 @@ public class UploadTransferTest extends AbstractTestCase {
         expected.setCurrent(5L);
         // Local size
         expected.setLength(bytes.length);
-        assertEquals(expected, table.get(new Path("/transfer/" + name, Path.FILE_TYPE)));
+        assertEquals(expected, table.get(new Path("/transfer/" + name, EnumSet.of(Path.Type.file))));
         local.delete();
     }
 
     @Test
     public void testUploadTemporaryName() throws Exception {
-        final Path test = new Path("/f", Path.FILE_TYPE);
+        final Path test = new Path("/f", EnumSet.of(Path.Type.file));
         final AtomicBoolean moved = new AtomicBoolean();
         final Host host = new Host("t");
         final Session session = new NullSession(host) {
@@ -368,7 +369,7 @@ public class UploadTransferTest extends AbstractTestCase {
                     return (T) new ch.cyberduck.core.features.Attributes() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes(Path.FILE_TYPE);
+                            return new PathAttributes();
                         }
 
                         @Override

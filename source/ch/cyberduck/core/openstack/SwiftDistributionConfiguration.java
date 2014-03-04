@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +132,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+                distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
                 cache.put(container, distribution);
                 return distribution;
             }

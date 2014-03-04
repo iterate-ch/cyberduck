@@ -69,12 +69,12 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         }
         session.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
-        if(p.attributes().isDirectory()) {
+        if(p.isDirectory()) {
             for(Path next : session.list(p, new ActionListProgressListener(this))) {
                 size += this.calculateSize(next);
             }
         }
-        else if(p.attributes().isFile()) {
+        else if(p.isFile()) {
             size += p.attributes().getSize();
             total += size;
             this.update(total);

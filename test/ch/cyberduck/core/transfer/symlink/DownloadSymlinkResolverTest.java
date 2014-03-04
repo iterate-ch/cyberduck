@@ -1,5 +1,6 @@
 package ch.cyberduck.core.transfer.symlink;
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -8,6 +9,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -19,29 +21,29 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
     @Test
     public void testNoSymbolicLink() throws Exception {
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(Collections.<TransferItem>emptyList());
-        Path p = new Path("a", Path.FILE_TYPE);
+        Path p = new Path("a", EnumSet.of(Path.Type.file));
         assertFalse(resolver.resolve(p));
     }
 
     @Test
     public void testResolve() throws Exception {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
-        files.add(new TransferItem(new Path("/a", Path.DIRECTORY_TYPE)));
+        files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
-        Path p = new Path("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        p.setSymlinkTarget(new Path("/a/c", Path.FILE_TYPE));
+        Path p = new Path("/a/b", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        p.setSymlinkTarget(new Path("/a/c", EnumSet.of(Path.Type.file)));
         assertTrue(resolver.resolve(p));
-        p.setSymlinkTarget(new Path("/b/c", Path.FILE_TYPE));
+        p.setSymlinkTarget(new Path("/b/c", EnumSet.of(Path.Type.file)));
         assertFalse(resolver.resolve(p));
     }
 
     @Test
     public void testResolveRoot() throws Exception {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
-        files.add(new TransferItem(new Path("/a", Path.DIRECTORY_TYPE)));
+        files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
-        Path p = new Path("/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        p.setSymlinkTarget(new Path("/a", Path.DIRECTORY_TYPE));
+        Path p = new Path("/b", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        p.setSymlinkTarget(new Path("/a", EnumSet.of(Path.Type.directory)));
         assertTrue(resolver.resolve(p));
     }
 

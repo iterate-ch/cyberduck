@@ -16,6 +16,7 @@ import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -28,8 +29,8 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectoryNew() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        final Path source = new Path("a", Path.DIRECTORY_TYPE);
-        files.put(source, new Path("a", Path.DIRECTORY_TYPE));
+        final Path source = new Path("a", EnumSet.of(Path.Type.directory));
+        files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")),
                 new NullSession(new Host("target")), files);
         assertTrue(f.accept(source, null, new TransferStatus()));
@@ -38,8 +39,8 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectoryExists() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        final Path source = new Path("a", Path.DIRECTORY_TYPE);
-        files.put(source, new Path("a", Path.DIRECTORY_TYPE));
+        final Path source = new Path("a", EnumSet.of(Path.Type.directory));
+        files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
@@ -67,9 +68,9 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareFile() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        final Path source = new Path("a", Path.FILE_TYPE);
+        final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
-        files.put(source, new Path("a", Path.FILE_TYPE));
+        files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")), new NullSession(new Host("target")), files);
         final TransferStatus status = f.prepare(source, null, new TransferStatus());
         assertEquals(1L, status.getLength());
@@ -78,9 +79,9 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareDirectory() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        final Path source = new Path("a", Path.DIRECTORY_TYPE);
+        final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         source.attributes().setSize(1L);
-        final Path target = new Path("a", Path.DIRECTORY_TYPE) {
+        final Path target = new Path("a", EnumSet.of(Path.Type.directory)) {
 
             NullSession session = new NullSession(new Host("t"));
 
@@ -94,14 +95,14 @@ public class CopyTransferFilterTest extends AbstractTestCase {
     @Test
     public void testComplete() throws Exception {
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        final Path source = new Path("a", Path.FILE_TYPE);
+        final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         source.attributes().setPermission(new Permission(777));
         final Long time = System.currentTimeMillis();
         source.attributes().setModificationDate(time);
         final boolean[] timestampWrite = new boolean[1];
         final boolean[] permissionWrite = new boolean[1];
-        final Path target = new Path("a", Path.FILE_TYPE);
+        final Path target = new Path("a", EnumSet.of(Path.Type.file));
         files.put(source, target);
         CopyTransferFilter f = new CopyTransferFilter(new NullSession(new Host("source")), new NullSession(new Host("target")) {
             @Override

@@ -23,12 +23,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureWriteFeatureTest extends AbstractTestCase {
 
@@ -44,8 +45,8 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final OutputStream out = new AzureWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);

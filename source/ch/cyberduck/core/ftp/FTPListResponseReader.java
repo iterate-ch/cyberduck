@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -76,20 +77,20 @@ public class FTPListResponseReader {
                 }
                 continue;
             }
-            final Path parsed = new Path(parent, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+            final Path parsed = new Path(parent, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file));
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
-                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                    parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                     // Symbolic link target may be an absolute or relative path
                     if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new Path(f.getLink(), parsed.attributes().getType()));
+                        parsed.setSymlinkTarget(new Path(f.getLink(), parsed.getType()));
                     }
                     else {
-                        parsed.setSymlinkTarget(new Path(parent, f.getLink(), parsed.attributes().getType()));
+                        parsed.setSymlinkTarget(new Path(parent, f.getLink(), parsed.getType()));
                     }
                     break;
             }
-            if(parsed.attributes().isFile()) {
+            if(parsed.isFile()) {
                 parsed.attributes().setSize(f.getSize());
             }
             parsed.attributes().setOwner(f.getUser());

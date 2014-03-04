@@ -62,11 +62,10 @@ public class AzureObjectListService implements ListService {
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
                         Preferences.instance().getInteger("azure.listing.chunksize"), token, options, null);
                 for(ListBlobItem object : result.getResults()) {
-                    if(new Path(object.getUri().getPath(), Path.DIRECTORY_TYPE).equals(directory)) {
+                    if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes(
-                            object instanceof CloudBlobDirectory ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    final PathAttributes attributes = new PathAttributes();
                     if(object instanceof CloudBlob) {
                         final CloudBlob blob = (CloudBlob) object;
                         attributes.setSize(blob.getProperties().getLength());
@@ -77,7 +76,8 @@ public class AzureObjectListService implements ListService {
                     if(object instanceof CloudBlobDirectory) {
                         attributes.setPlaceholder(true);
                     }
-                    final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), attributes);
+                    final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()),
+                            object instanceof CloudBlobDirectory ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes);
                     children.add(child);
                 }
                 listener.chunk(children);

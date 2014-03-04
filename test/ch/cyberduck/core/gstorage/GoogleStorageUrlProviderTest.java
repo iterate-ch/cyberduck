@@ -25,6 +25,8 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -39,7 +41,7 @@ public class GoogleStorageUrlProviderTest extends AbstractTestCase {
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/c/f", new GoogleStorageUrlProvider(session).toUrl(
-                new Path("/c/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.authenticated).getUrl());
+                new Path("/c/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.authenticated).getUrl());
     }
 
     @Test
@@ -49,6 +51,6 @@ public class GoogleStorageUrlProviderTest extends AbstractTestCase {
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/container/Screen%20Shot%202013-07-18%20at%2023.55.10.png", new GoogleStorageUrlProvider(session).toUrl(
-                new Path("/container/Screen Shot 2013-07-18 at 23.55.10.png", Path.FILE_TYPE)).find(DescriptiveUrl.Type.authenticated).getUrl());
+                new Path("/container/Screen Shot 2013-07-18 at 23.55.10.png", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.authenticated).getUrl());
     }
 }

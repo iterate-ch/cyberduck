@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -29,10 +30,10 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
-        final Path renamed = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertTrue(new S3FindFeature(session).find(test));
         new S3MoveFeature(session).move(test, renamed, false);
         assertFalse(new S3FindFeature(session).find(test));
@@ -43,7 +44,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new S3MoveFeature(null).isSupported(new Path("/c", Path.DIRECTORY_TYPE)));
-        assertTrue(new S3MoveFeature(null).isSupported(new Path("/c/f", Path.DIRECTORY_TYPE)));
+        assertFalse(new S3MoveFeature(null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
+        assertTrue(new S3MoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
     }
 }

@@ -28,12 +28,13 @@ import ch.cyberduck.ui.action.Worker;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AbstractEditorTest extends AbstractTestCase {
 
@@ -62,16 +63,16 @@ public class AbstractEditorTest extends AbstractTestCase {
     public void testEquals() throws Exception {
         final NullSession session = new NullSession(new Host("h"));
         assertEquals(
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", Path.FILE_TYPE)),
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", Path.FILE_TYPE))
+                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", Path.FILE_TYPE)),
-                new DisabledEditor(new Application("i"), session, new Path("/p/g", Path.FILE_TYPE))
+                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), session, new Path("/p/g", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("a"), session, new Path("/p/f", Path.FILE_TYPE)),
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", Path.FILE_TYPE))
+                new DisabledEditor(new Application("a"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
     }
 }

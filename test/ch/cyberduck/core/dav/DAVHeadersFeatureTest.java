@@ -31,6 +31,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk", Path.DIRECTORY_TYPE));
+        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk", EnumSet.of(Path.Type.directory)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
@@ -64,7 +65,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk/README.txt", Path.FILE_TYPE));
+        final Map<String, String> metadata = new DAVHeadersFeature(session).getMetadata(new Path("/trunk/README.txt", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("repository-uuid"));
         assertEquals("9e2dff1d-8f06-0410-b5b1-4d70b6340adc", metadata.get("repository-uuid"));
@@ -82,7 +83,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
@@ -104,7 +105,7 @@ public class DAVHeadersFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null);
         final String v = UUID.randomUUID().toString();
         new DAVHeadersFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));

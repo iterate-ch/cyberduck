@@ -32,6 +32,7 @@ import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
@@ -52,7 +53,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
         final Path directory = session.workdir();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
         session.close();
     }
 
@@ -68,7 +69,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);
         final Path directory = session.workdir();
-        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", Path.FILE_TYPE).getReference()));
+        assertTrue(list.list(directory, new DisabledListProgressListener()).contains(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
         session.close();
     }
 }

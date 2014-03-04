@@ -74,6 +74,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,14 +151,14 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(Column.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = new Path(
-                        item.getParent(), value.toString(), item.attributes().getType());
+                        item.getParent(), value.toString(), item.getType());
                 controller.renamePath(item, renamed);
             }
         }
     }
 
     protected NSImage iconForPath(final Path item) {
-        if(item.attributes().isVolume()) {
+        if(item.isVolume()) {
             return IconCacheFactory.<NSImage>get().volumeIcon(controller.getSession().getHost().getProtocol(), 16);
         }
         return IconCacheFactory.<NSImage>get().fileIcon(item, 16);
@@ -212,7 +213,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(Column.extension.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
+                    item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.region.name())) {
@@ -291,7 +292,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
                         roots.add(new TransferItem(new Path(destination, local.getName(),
-                                local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
+                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                     }
                     controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
                     return true;
@@ -309,7 +310,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path file : pasteboard) {
-                        files.put(file, new Path(destination, file.getName(), file.attributes().getType()));
+                        files.put(file, new Path(destination, file.getName(), file.getType()));
                     }
                     controller.transfer(new CopyTransfer(pasteboard.getSession().getHost(),
                             controller.getSession().getHost(),
@@ -320,7 +321,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
                         Path renamed = new Path(
-                                destination, next.getName(), next.attributes().getType());
+                                destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
                     controller.renamePaths(files);
@@ -387,11 +388,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // Do not allow dragging onto myself
                     return NSDraggingInfo.NSDragOperationNone;
                 }
-                if(next.attributes().isDirectory() && destination.isChild(next)) {
+                if(next.isDirectory() && destination.isChild(next)) {
                     // Do not allow dragging a directory into its own containing items
                     return NSDraggingInfo.NSDragOperationNone;
                 }
-                if(next.attributes().isFile() && next.getParent().equals(destination)) {
+                if(next.isFile() && next.getParent().equals(destination)) {
                     // Moving a file to the same destination makes no sense
                     return NSDraggingInfo.NSDragOperationNone;
                 }
@@ -429,7 +430,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // entire table view to be highlighted rather than a specific row.
             view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
         }
-        else if(destination.attributes().isDirectory()) {
+        else if(destination.isDirectory()) {
             log.debug("setDropRowAndDropOperation:" + row.intValue());
             view.setDropRow(row, NSTableView.NSTableViewDropOn);
         }
@@ -448,7 +449,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final NSMutableArray fileTypes = NSMutableArray.array();
                 final PathPasteboard pasteboard = controller.getPasteboard();
                 for(final Path f : selected) {
-                    if(f.attributes().isFile()) {
+                    if(f.isFile()) {
                         if(StringUtils.isNotEmpty(f.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(f.getExtension()));
                         }
@@ -456,7 +457,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
                         }
                     }
-                    else if(f.attributes().isDirectory()) {
+                    else if(f.isDirectory()) {
                         fileTypes.addObject(NSString.stringWithString("'fldr'")); //NSFileTypeForHFSTypeCode('fldr')
                     }
                     else {
@@ -530,14 +531,14 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 promisedDragNames.addObject(NSString.stringWithString(p.getName()));
             }
             if(downloads.size() == 1) {
-                if(downloads.iterator().next().remote.attributes().isFile()) {
+                if(downloads.iterator().next().remote.isFile()) {
                     final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
                         file.touch();
                         IconServiceFactory.get().set(file, new TransferStatus());
                     }
                 }
-                if(downloads.iterator().next().remote.attributes().isDirectory()) {
+                if(downloads.iterator().next().remote.isDirectory()) {
                     final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
                         file.mkdir();

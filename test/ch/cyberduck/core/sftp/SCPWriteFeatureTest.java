@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -40,7 +41,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new SCPWriteFeature(session).write(test, status);
         assertNotNull(out);
         IOUtils.write(content, out);
@@ -68,7 +69,7 @@ public class SCPWriteFeatureTest extends AbstractTestCase {
             public Find withCache(final Cache cache) {
                 return this;
             }
-        }).append(new Path("/p", Path.FILE_TYPE), 0L, null);
+        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, null);
         assertFalse(append.append);
         assertTrue(append.override);
     }

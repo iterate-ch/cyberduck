@@ -11,13 +11,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftRegionServiceTest extends AbstractTestCase {
 
@@ -31,7 +33,7 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Region lookup = new SwiftRegionService(session).lookup((String) null);
         assertTrue(lookup.isDefault());
         assertEquals("DFW", lookup.getRegionId());

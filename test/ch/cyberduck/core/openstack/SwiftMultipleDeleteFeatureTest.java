@@ -13,6 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -25,7 +26,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeleteHP() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("region-a.geo-1");
         this.delete(new Host(new SwiftProtocol() {
             @Override
@@ -39,7 +40,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDeleteRAX() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("DFW");
         this.delete(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
@@ -50,8 +51,8 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test1 = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
-        final Path test2 = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test1);
         new SwiftTouchFeature(session).touch(test2);
         assertTrue(new SwiftFindFeature(session).find(test1));
@@ -72,10 +73,10 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
-                new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE),
-                new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE)
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ), new DisabledLoginController());
     }
 }

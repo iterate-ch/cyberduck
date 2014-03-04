@@ -2,7 +2,6 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -13,6 +12,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,21 +31,16 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
     @Test
     public void testResolve() throws Exception {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
-        final Path a = new Path("/a", Path.DIRECTORY_TYPE);
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         files.add(new TransferItem(a, new NullLocal("/a") {
             @Override
-            public LocalAttributes attributes() {
-                return new LocalAttributes("/a") {
-                    @Override
-                    public boolean isFile() {
-                        return false;
-                    }
+            public boolean isFile() {
+                return false;
+            }
 
-                    @Override
-                    public boolean isDirectory() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean isDirectory() {
+                return true;
             }
         }));
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(new Symlink() {
@@ -56,18 +51,13 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
         }, files);
         assertTrue(resolver.resolve(new NullLocal("/a/b") {
             @Override
-            public LocalAttributes attributes() {
-                return new LocalAttributes("/a/b") {
-                    @Override
-                    public boolean isSymbolicLink() {
-                        return true;
-                    }
+            public boolean isSymbolicLink() {
+                return true;
+            }
 
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean isFile() {
+                return true;
             }
 
             @Override
@@ -76,19 +66,13 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
             }
         }));
         assertFalse(resolver.resolve(new NullLocal("/a/b") {
-            @Override
-            public LocalAttributes attributes() {
-                return new LocalAttributes("/a/b") {
-                    @Override
-                    public boolean isSymbolicLink() {
-                        return true;
-                    }
+            public boolean isSymbolicLink() {
+                return true;
+            }
 
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean isFile() {
+                return true;
             }
 
             @Override

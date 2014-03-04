@@ -35,6 +35,7 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -205,7 +206,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return The current working directory
      */
     public Path workdir() throws BackgroundException {
-        return new Path(String.valueOf(Path.DELIMITER), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));
     }
 
     /**

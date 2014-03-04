@@ -12,13 +12,13 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPAttributesFeatureTest extends AbstractTestCase {
 
@@ -30,7 +30,7 @@ public class SFTPAttributesFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new SFTPAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new SFTPAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -43,7 +43,6 @@ public class SFTPAttributesFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final PathAttributes attributes = new SFTPAttributesFeature(session).find(session.workdir());
         assertNotNull(attributes);
-        assertEquals(Path.DIRECTORY_TYPE, attributes.getType());
         session.close();
     }
 }

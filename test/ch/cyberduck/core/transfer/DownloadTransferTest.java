@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        final Path test = new Path("t", Path.FILE_TYPE);
+        final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         t.addSize(4L);
         t.addTransferred(3L);
@@ -47,7 +48,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
-        Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), new NullLocal("t") {
+        Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -67,17 +68,17 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildren() throws Exception {
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("/t/c", Path.FILE_TYPE));
+                children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", Path.FILE_TYPE), new NullLocal("t/c"))),
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t/c"))),
                 t.list(session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
@@ -88,7 +89,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildrenEmpty() throws Exception {
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), root, null);
         final NullSession session = new NullSession(new Host("t")) {
             @Override
@@ -106,8 +107,8 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testPrepareOverride() throws Exception {
-        final Path child = new Path("/t/c", Path.FILE_TYPE);
-        final Path root = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final Cache cache = new Cache(Integer.MAX_VALUE);
         final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l") {
             @Override
@@ -168,7 +169,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/transfer", Path.DIRECTORY_TYPE);
+        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
@@ -189,7 +190,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         expected.setAppend(false);
         expected.setLength(5L);
         expected.setCurrent(0L);
-        assertEquals(expected, table.get(new Path("/transfer/test", Path.FILE_TYPE)));
+        assertEquals(expected, table.get(new Path("/transfer/test", EnumSet.of(Path.Type.file))));
     }
 
     @Test
@@ -200,7 +201,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/transfer/test", Path.FILE_TYPE);
+        final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
         local.touch();
@@ -234,7 +235,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testActionFileExistsTrue() throws Exception {
-        final Path root = new Path("t", Path.FILE_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
@@ -259,7 +260,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testActionFileExistsFalse() throws Exception {
-        final Path root = new Path("t", Path.FILE_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
@@ -284,7 +285,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testActionDirectoryExistsTrue() throws Exception {
-        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
@@ -309,7 +310,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testActionDirectoryExistsFalse() throws Exception {
-        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
@@ -334,7 +335,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testActionResume() throws Exception {
-        final Path root = new Path("t", Path.FILE_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertEquals(TransferAction.resume, t.action(new NullSession(new Host("t")), true, false, new DisabledTransferPrompt() {
             @Override
@@ -347,7 +348,7 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testStatus() throws Exception {
-        final Path parent = new Path("t", Path.FILE_TYPE);
+        final Path parent = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());
         assertFalse(t.isReset());
@@ -356,21 +357,21 @@ public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
     public void testRegexFilter() throws Exception {
-        final Path parent = new Path("t", Path.DIRECTORY_TYPE);
+        final Path parent = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> l = new AttributedList<Path>();
-                l.add(new Path("/t/.DS_Store", Path.FILE_TYPE));
-                l.add(new Path("/t/t", Path.FILE_TYPE));
+                l.add(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)));
+                l.add(new Path("/t/t", EnumSet.of(Path.Type.file)));
                 return l;
             }
         };
         final List<TransferItem> list = t.list(session, parent,
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(1, list.size());
-        assertFalse(list.contains(new TransferItem(new Path("/t/.DS_Store", Path.FILE_TYPE))));
-        assertTrue(list.contains(new TransferItem(new Path("/t/t", Path.FILE_TYPE), new NullLocal(System.getProperty("java.io.tmpdir"), "t"))));
+        assertFalse(list.contains(new TransferItem(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)))));
+        assertTrue(list.contains(new TransferItem(new Path("/t/t", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "t"))));
     }
 }

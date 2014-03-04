@@ -16,6 +16,8 @@ import ch.cyberduck.core.s3.S3Session;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -28,17 +30,17 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
         assertTrue(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
         assertTrue(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
         assertTrue(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
         assertTrue(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
     }
 
     @Test
@@ -46,17 +48,17 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final S3Session session = new S3Session(new Host("custom"));
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session);
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.DOWNLOAD));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.STREAMING));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.STREAMING));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.CUSTOM));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.CUSTOM));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE_CDN));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE_CDN));
         assertTrue(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
         assertFalse(configuration.getMethods(
-                new Path(new Path("/", Path.VOLUME_TYPE), "/bbb_b", Path.VOLUME_TYPE)).contains(Distribution.WEBSITE));
+                new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb_b", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.WEBSITE));
     }
 
     @Test
@@ -79,10 +81,10 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
                 session
         );
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD).getHost());
+                configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.DOWNLOAD).getHost());
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.WEBSITE).getHost());
-        final Path container = new Path("/bbb", Path.VOLUME_TYPE);
+                configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.WEBSITE).getHost());
+        final Path container = new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("US");
         assertEquals("bbb.s3-website-us-east-1.amazonaws.com",
                 configuration.getOrigin(container, Distribution.WEBSITE_CDN).getHost());
@@ -99,7 +101,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         session.open(new DefaultHostKeyController());
         final WebsiteCloudFrontDistributionConfiguration configuration
                 = new WebsiteCloudFrontDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginController());
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }

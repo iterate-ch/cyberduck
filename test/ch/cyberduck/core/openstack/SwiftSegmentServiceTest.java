@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -32,9 +33,9 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
-        assertTrue(new SwiftSegmentService(session).list(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE)).isEmpty());
+        assertTrue(new SwiftSegmentService(session).list(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))).isEmpty());
         session.close();
     }
 
@@ -46,7 +47,7 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");
         a.setSize(1L);
@@ -65,8 +66,8 @@ public class SwiftSegmentServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString();
-        assertEquals(".prefix/" + name + "/3", service.basename(new Path(container, name, Path.FILE_TYPE), 3L));
+        assertEquals(".prefix/" + name + "/3", service.basename(new Path(container, name, EnumSet.of(Path.Type.file)), 3L));
     }
 }

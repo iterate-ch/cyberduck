@@ -39,7 +39,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override
     public boolean resolve(final Path file) {
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             if(Preferences.instance().getBoolean("path.symboliclink.resolve")) {
                 // Resolve links instead
                 return false;
@@ -58,7 +58,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override
     public boolean include(final Path file) {
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             final Path target = file.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
             for(TransferItem root : files) {

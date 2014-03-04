@@ -60,7 +60,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        if(local.attributes().isFile()) {
+        if(local.isFile()) {
             if(local.exists()) {
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
@@ -80,7 +80,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
         if(read.append(file)) {
-            if(local.attributes().isFile()) {
+            if(local.isFile()) {
                 if(local.exists()) {
                     if(local.attributes().getSize() > 0) {
                         status.setAppend(true);

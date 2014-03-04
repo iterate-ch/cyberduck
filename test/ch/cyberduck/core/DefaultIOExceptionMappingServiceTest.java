@@ -26,6 +26,7 @@ import org.junit.Test;
 import javax.net.ssl.SSLHandshakeException;
 import java.net.SocketException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -53,7 +54,7 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testPlaceholder() throws Exception {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
-                new Path("/n", AbstractPath.VOLUME_TYPE));
+                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertEquals("n message (/n).", e.getMessage());
     }
 }

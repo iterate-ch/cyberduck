@@ -15,6 +15,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -36,7 +37,7 @@ public class FTPUnixPermissionFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
         assertEquals("666", session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getPermission().getMode());

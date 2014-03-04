@@ -24,6 +24,8 @@ import ch.cyberduck.core.serializer.Serializer;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -34,7 +36,7 @@ public class HostTest extends AbstractTestCase {
     @Test
     public void testDictionaryWorkdirRegion() {
         final Host h = new Host(new DAVProtocol(), "h", 66);
-        final Path container = new Path("/container", Path.DIRECTORY_TYPE);
+        final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
         container.attributes().setRegion("r");
         h.setWorkdir(container);
         final Host deserialized = new Host(h.serialize(SerializerFactory.get()));

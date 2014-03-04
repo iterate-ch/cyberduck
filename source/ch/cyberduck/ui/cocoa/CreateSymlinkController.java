@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 
 /**
  * @version $Id$
@@ -66,7 +67,7 @@ public class CreateSymlinkController extends FileController {
     protected void createSymlink(final Path selected, final String symlink, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         final Session<?> session = this.getSession();
-        final Path link = new Path(this.getWorkdir(), symlink, Path.FILE_TYPE);
+        final Path link = new Path(this.getWorkdir(), symlink, EnumSet.of(Path.Type.file));
         c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {

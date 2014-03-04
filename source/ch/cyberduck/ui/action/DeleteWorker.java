@@ -67,10 +67,10 @@ public abstract class DeleteWorker extends Worker<Boolean> {
     protected List<Path> compile(final Path file) throws BackgroundException {
         // Compile recursive list
         final List<Path> recursive = new ArrayList<Path>();
-        if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+        if(file.isFile() || file.isSymbolicLink()) {
             recursive.add(file);
         }
-        else if(file.attributes().isDirectory()) {
+        else if(file.isDirectory()) {
             for(Path child : session.list(file, new ActionListProgressListener(this))) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();

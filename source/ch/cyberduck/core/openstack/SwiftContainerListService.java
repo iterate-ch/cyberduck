@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 
@@ -87,9 +88,10 @@ public class SwiftContainerListService implements RootListService {
                 do {
                     chunk = client.listContainers(region, limit, marker);
                     for(final Container f : chunk) {
-                        final PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        final PathAttributes attributes = new PathAttributes();
                         attributes.setRegion(f.getRegion().getRegionId());
-                        final Path container = new Path(String.format("/%s", f.getName()), attributes);
+                        final Path container = new Path(String.format("/%s", f.getName()),
+                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes);
                         if(cdn) {
                             final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
                             if(feature != null) {

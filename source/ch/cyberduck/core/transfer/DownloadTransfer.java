@@ -93,7 +93,7 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.attributes().isSymbolicLink()
+        if(directory.isSymbolicLink()
                 && new DownloadSymlinkResolver(this.getRoots()).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
@@ -163,13 +163,13 @@ public class DownloadTransfer extends Transfer {
             for(TransferItem download : roots) {
                 final Local local = download.local;
                 if(local.exists()) {
-                    if(local.attributes().isDirectory()) {
+                    if(local.isDirectory()) {
                         if(local.list().isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    if(local.attributes().isFile()) {
+                    if(local.isFile()) {
                         if(local.attributes().getSize() == 0) {
                             // Dragging a file to the local volume creates the file already
                             continue;
@@ -192,7 +192,7 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final SymlinkResolver symlinkResolver = new DownloadSymlinkResolver(roots);
-        if(file.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
+        if(file.isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getAbsolute(),
                     file.getSymlinkTarget().getAbsolute());
@@ -201,7 +201,7 @@ public class DownloadTransfer extends Transfer {
             }
             local.symlink(target);
         }
-        else if(file.attributes().isFile()) {
+        else if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             local.getParent().mkdir();
@@ -215,7 +215,7 @@ public class DownloadTransfer extends Transfer {
                 }
             }, status);
         }
-        else if(file.attributes().isDirectory()) {
+        else if(file.isDirectory()) {
             if(!status.isExists()) {
                 local.mkdir();
                 status.setComplete();

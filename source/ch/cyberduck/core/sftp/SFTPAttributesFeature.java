@@ -60,8 +60,7 @@ public class SFTPAttributesFeature implements Attributes {
     }
 
     public PathAttributes convert(final SFTPv3FileAttributes stat) {
-        final PathAttributes attributes = new PathAttributes(stat.isDirectory() ? stat.isSymlink() ?
-                (Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE) : Path.DIRECTORY_TYPE : stat.isSymlink() ? (Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) : Path.FILE_TYPE);
+        final PathAttributes attributes = new PathAttributes();
         if(null != stat.size) {
             if(stat.isRegularFile()) {
                 attributes.setSize(stat.size);

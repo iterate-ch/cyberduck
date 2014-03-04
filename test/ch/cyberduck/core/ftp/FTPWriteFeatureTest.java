@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -44,7 +45,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new FTPWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
@@ -80,7 +81,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPWriteFeature(session).write(test, new TransferStatus());
     }
 
@@ -93,9 +94,9 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals(false, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), 0L, Cache.empty()).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
         assertEquals(true, new FTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", Path.FILE_TYPE), 0L, Cache.empty()).append);
+                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
 
     }
 }

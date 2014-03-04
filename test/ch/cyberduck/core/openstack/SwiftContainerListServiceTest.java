@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -31,7 +32,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final List<Path> list = new SwiftContainerListService(session, false, false).list(new DisabledListProgressListener());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD");

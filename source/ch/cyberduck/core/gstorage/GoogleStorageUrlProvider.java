@@ -50,7 +50,7 @@ public class GoogleStorageUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DefaultUrlProvider(session.getHost()).toUrl(file);
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
             list.add(new DescriptiveUrl(URI.create(String.format("https://storage.cloud.google.com%s",
                     URIEncoder.encode(file.getAbsolute()))), DescriptiveUrl.Type.authenticated,

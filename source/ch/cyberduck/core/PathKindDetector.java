@@ -22,5 +22,5 @@ package ch.cyberduck.core;
  */
 public interface PathKindDetector {
 
-    public int detect(String path);
+    public Path.Type detect(String path);
 }

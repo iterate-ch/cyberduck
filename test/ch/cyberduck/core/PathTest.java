@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 public class PathTest extends AbstractTestCase {
@@ -31,14 +33,27 @@ public class PathTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDictionary() {
-        Path path = new Path("/path", Path.DIRECTORY_TYPE);
+    public void testDictionaryDirectory() {
+        Path path = new Path("/path", EnumSet.of(Path.Type.directory));
         assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
     }
 
     @Test
+    public void testDictionaryFile() {
+        Path path = new Path("/path", EnumSet.of(Path.Type.file));
+        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
+    }
+
+    @Test
+    public void testDictionaryFileSymbolicLink() {
+        Path path = new Path("/path", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
+        assertEquals(EnumSet.of(Path.Type.file, Path.Type.symboliclink), new Path(path.serialize(SerializerFactory.get())).getType());
+    }
+
+    @Test
     public void testDictionaryRegion() {
-        Path path = new Path("/path/f", Path.FILE_TYPE);
+        Path path = new Path("/path/f", EnumSet.of(Path.Type.file));
         path.attributes().setRegion("r");
         final Path deserialized = new Path(path.serialize(SerializerFactory.get()));
         assertEquals(path, deserialized);
@@ -49,13 +64,13 @@ public class PathTest extends AbstractTestCase {
     @Test
     public void testPopulateRegion() {
         {
-            Path container = new Path("test", Path.DIRECTORY_TYPE);
+            Path container = new Path("test", EnumSet.of(Path.Type.directory));
             container.attributes().setRegion("DFW");
-            Path path = new Path(container, "f", Path.FILE_TYPE);
+            Path path = new Path(container, "f", EnumSet.of(Path.Type.file));
             assertEquals("DFW", path.attributes().getRegion());
         }
         {
-            Path container = new Path("test", Path.DIRECTORY_TYPE);
+            Path container = new Path("test", EnumSet.of(Path.Type.directory));
             container.attributes().setRegion("DFW");
             assertEquals("DFW", container.attributes().getRegion());
         }
@@ -63,7 +78,7 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testDictionaryRegionParentOnly() {
-        Path path = new Path("/root/path", Path.FILE_TYPE);
+        Path path = new Path("/root/path", EnumSet.of(Path.Type.file));
         path.getParent().attributes().setRegion("r");
         assertEquals(path, new Path(path.serialize(SerializerFactory.get())));
     }
@@ -72,52 +87,52 @@ public class PathTest extends AbstractTestCase {
     public void testNormalize() throws Exception {
         {
             final Path path = new Path(
-                    "/path/to/remove/..", Path.DIRECTORY_TYPE);
+                    "/path/to/remove/..", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path/to/remove/.././", Path.DIRECTORY_TYPE);
+                    "/path/to/remove/.././", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path/remove/../to/remove/.././", Path.DIRECTORY_TYPE);
+                    "/path/remove/../to/remove/.././", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path/to/remove/remove/../../", Path.DIRECTORY_TYPE);
+                    "/path/to/remove/remove/../../", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path/././././to", Path.DIRECTORY_TYPE);
+                    "/path/././././to", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "./.path/to", Path.DIRECTORY_TYPE);
+                    "./.path/to", EnumSet.of(Path.Type.directory));
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    ".path/to", Path.DIRECTORY_TYPE);
+                    ".path/to", EnumSet.of(Path.Type.directory));
             assertEquals("/.path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path/.to", Path.DIRECTORY_TYPE);
+                    "/path/.to", EnumSet.of(Path.Type.directory));
             assertEquals("/path/.to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path//to", Path.DIRECTORY_TYPE);
+                    "/path//to", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
         {
             final Path path = new Path(
-                    "/path///to////", Path.DIRECTORY_TYPE);
+                    "/path///to////", EnumSet.of(Path.Type.directory));
             assertEquals("/path/to", path.getAbsolute());
         }
     }
@@ -126,13 +141,13 @@ public class PathTest extends AbstractTestCase {
     public void testName() throws Exception {
         {
             Path path = new Path(
-                    "/path/to/file/", Path.DIRECTORY_TYPE);
+                    "/path/to/file/", EnumSet.of(Path.Type.directory));
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
         {
             Path path = new Path(
-                    "/path/to/file", Path.DIRECTORY_TYPE);
+                    "/path/to/file", EnumSet.of(Path.Type.directory));
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
@@ -140,22 +155,22 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testSymlink() {
-        Path p = new Path("t", Path.FILE_TYPE);
-        assertFalse(p.attributes().isSymbolicLink());
+        Path p = new Path("t", EnumSet.of(Path.Type.file));
+        assertFalse(p.isSymbolicLink());
         assertNull(p.getSymlinkTarget());
-        p.attributes().setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        assertTrue(p.attributes().isSymbolicLink());
-        p.setSymlinkTarget(new Path("s", Path.FILE_TYPE));
+        p.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        assertTrue(p.isSymbolicLink());
+        p.setSymlinkTarget(new Path("s", EnumSet.of(Path.Type.file)));
         assertEquals("/s", p.getSymlinkTarget().getAbsolute());
     }
 
     @Test
     public void testIsChild() {
-        Path p = new Path("/a/t", Path.FILE_TYPE);
-        assertTrue(p.isChild(new Path("/a", Path.DIRECTORY_TYPE)));
-        assertTrue(p.isChild(new Path("/", Path.DIRECTORY_TYPE)));
-        assertFalse(p.isChild(new Path("/a", Path.FILE_TYPE)));
-        final Path d = new Path("/a", Path.DIRECTORY_TYPE);
+        Path p = new Path("/a/t", EnumSet.of(Path.Type.file));
+        assertTrue(p.isChild(new Path("/a", EnumSet.of(Path.Type.directory))));
+        assertTrue(p.isChild(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(p.isChild(new Path("/a", EnumSet.of(Path.Type.file))));
+        final Path d = new Path("/a", EnumSet.of(Path.Type.directory));
         d.attributes().setVersionId("1");
         d.attributes().setDuplicate(true);
         assertFalse(p.isChild(d));
@@ -163,13 +178,13 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testGetParent() {
-        assertEquals(new Path("/b/t", Path.DIRECTORY_TYPE), new Path("/b/t/f.type", Path.FILE_TYPE).getParent());
+        assertEquals(new Path("/b/t", EnumSet.of(Path.Type.directory)), new Path("/b/t/f.type", EnumSet.of(Path.Type.file)).getParent());
     }
 
     @Test
     public void testCreatePath() throws Exception {
         for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
-            final Path path = new Path("p", Path.FILE_TYPE);
+            final Path path = new Path("p", EnumSet.of(Path.Type.file));
             assertNotNull(path);
             assertEquals("/p", path.getAbsolute());
             assertEquals("/", path.getParent().getAbsolute());
@@ -178,10 +193,10 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testCreateRelative() throws Exception {
-        final Path path = new Path(".CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path path = new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
-        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());
+        assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), path.getType());
         assertNotNull(path.getParent());
         assertEquals("/", path.getParent().getAbsolute());
         assertTrue(new PathContainerService().isContainer(path));
@@ -190,10 +205,10 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testCreateAbsolute() throws Exception {
-        final Path path = new Path("/.CDN_ACCESS_LOGS", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path path = new Path("/.CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
-        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, path.attributes().getType());
+        assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), path.getType());
         assertNotNull(path.getParent());
         assertEquals("/", path.getParent().getAbsolute());
         assertTrue(new PathContainerService().isContainer(path));
@@ -202,7 +217,20 @@ public class PathTest extends AbstractTestCase {
 
     @Test
     public void testPathContainer() throws Exception {
-        final Path path = new Path(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "/test", Path.DIRECTORY_TYPE);
+        final Path path = new Path(new Path("test.cyberduck.ch",
+                EnumSet.of(Path.Type.volume, Path.Type.directory)), "/test", EnumSet.of(Path.Type.directory));
         assertEquals("/test.cyberduck.ch/test", path.getAbsolute());
+    }
+
+    @Test
+    public void testSetGetType() throws Exception {
+        Path attributes = new Path("/", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        assertTrue(attributes.isFile());
+        assertTrue(attributes.isSymbolicLink());
+        assertFalse(attributes.isDirectory());
+        attributes.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+        assertFalse(attributes.isFile());
+        assertTrue(attributes.isSymbolicLink());
+        assertTrue(attributes.isDirectory());
     }
 }

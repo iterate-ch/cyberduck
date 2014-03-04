@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -46,7 +47,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, null);
         assertTrue(new SwiftFindFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
@@ -61,9 +62,9 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());

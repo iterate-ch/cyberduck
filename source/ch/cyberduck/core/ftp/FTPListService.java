@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -197,19 +198,19 @@ public class FTPListService implements ListService {
             final List<Path> symlinks = new ArrayList<Path>();
             for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
-                if(file.attributes().isSymbolicLink()) {
+                if(file.isSymbolicLink()) {
                     iter.remove();
                     if(session.getClient().changeWorkingDirectory(file.getAbsolute())) {
-                        file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        file.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
                     }
                     else {
                         // Try if change working directory to symbolic link target succeeds
                         if(session.getClient().changeWorkingDirectory(file.getSymlinkTarget().getAbsolute())) {
                             // Workdir change succeeded
-                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            file.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
                         }
                         else {
-                            file.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            file.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                         }
                     }
                     symlinks.add(file);

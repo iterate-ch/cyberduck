@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.AclPermission;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +58,7 @@ public class ReadAclWorkerTest extends AbstractTestCase {
             public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                 throw new UnsupportedOperationException();
             }
-        }, Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {
+        }, Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
             @Override
             public void cleanup(final List<Acl.UserAndRole> result) {
                 throw new UnsupportedOperationException();

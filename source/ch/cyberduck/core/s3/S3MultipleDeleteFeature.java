@@ -33,6 +33,7 @@ import org.jets3t.service.model.container.ObjectKeyAndVersion;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         file.getName()));
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-                if(file.attributes().isDirectory()) {
+                if(file.isDirectory()) {
                     // Because we normalize paths and remove a trailing delimiter we add it here again as the
                     // default directory placeholder formats has the format `/placeholder/' as a key.
                     keys.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
@@ -134,7 +135,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
                         throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
-                                new Path(container, error.getKey(), Path.FILE_TYPE));
+                                new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                     }
                 }
             }
@@ -151,7 +152,7 @@ public class S3MultipleDeleteFeature implements Delete {
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
                             throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
-                                    new Path(container, error.getKey(), Path.FILE_TYPE));
+                                    new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                         }
                     }
                 }

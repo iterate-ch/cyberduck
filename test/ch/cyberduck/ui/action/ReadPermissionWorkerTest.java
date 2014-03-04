@@ -24,6 +24,7 @@ import ch.cyberduck.core.Permission;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +38,7 @@ public class ReadPermissionWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final ReadPermissionWorker worker = new ReadPermissionWorker(
-                Arrays.<Path>asList(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE))) {
+                Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
             @Override
             public void cleanup(final List<Permission> result) {
                 //

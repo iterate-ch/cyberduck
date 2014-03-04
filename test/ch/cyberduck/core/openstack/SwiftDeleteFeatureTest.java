@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 /**
@@ -46,7 +47,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
     }
 
@@ -59,8 +60,8 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

@@ -108,6 +108,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -285,7 +286,7 @@ public class BrowserController extends WindowController
                         // Matching filename
                         return true;
                     }
-                    if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
+                    if(file.isDirectory() && getSelectedBrowserView() == browserOutlineView) {
                         // #471. Expanded item children may match search string
                         return cache.isCached(file.getReference());
                     }
@@ -431,7 +432,7 @@ public class BrowserController extends WindowController
         if(quicklook.isAvailable()) {
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path path : selected) {
-                if(!path.attributes().isFile()) {
+                if(!path.isFile()) {
                     continue;
                 }
                 downloads.add(new TransferItem(
@@ -1889,7 +1890,7 @@ public class BrowserController extends WindowController
         final Host bookmark;
         if(this.isMounted()) {
             Path selected = this.getSelectedPath();
-            if(null == selected || !selected.attributes().isDirectory()) {
+            if(null == selected || !selected.isDirectory()) {
                 selected = this.workdir();
             }
             bookmark = new Host(this.session.getHost().serialize(SerializerFactory.get()));
@@ -2269,7 +2270,7 @@ public class BrowserController extends WindowController
     @Action
     public void newBrowserButtonClicked(final ID sender) {
         Path selected = this.getSelectedPath();
-        if(null == selected || !selected.attributes().isDirectory()) {
+        if(null == selected || !selected.isDirectory()) {
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
@@ -2528,7 +2529,7 @@ public class BrowserController extends WindowController
             if(session.getHost().getCredentials().isAnonymousLogin()) {
                 return false;
             }
-            return selected.attributes().isFile();
+            return selected.isFile();
         }
         return false;
     }
@@ -2700,16 +2701,16 @@ public class BrowserController extends WindowController
     public void syncButtonClicked(final ID sender) {
         final Path selection;
         if(this.getSelectionCount() == 1 &&
-                this.getSelectedPath().attributes().isDirectory()) {
+                this.getSelectedPath().isDirectory()) {
             selection = this.getSelectedPath();
         }
         else {
             selection = this.workdir();
         }
         syncPanel = NSOpenPanel.openPanel();
-        syncPanel.setCanChooseDirectories(selection.attributes().isDirectory());
+        syncPanel.setCanChooseDirectories(selection.isDirectory());
         syncPanel.setTreatsFilePackagesAsDirectories(true);
-        syncPanel.setCanChooseFiles(selection.attributes().isFile());
+        syncPanel.setCanChooseFiles(selection.isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
@@ -2726,7 +2727,7 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filenames().count().intValue() > 0) {
                 final Path selected;
-                if(this.getSelectionCount() == 1 && this.getSelectedPath().attributes().isDirectory()) {
+                if(this.getSelectionCount() == 1 && this.getSelectedPath().isDirectory()) {
                     selected = this.getSelectedPath();
                 }
                 else {
@@ -2789,7 +2790,7 @@ public class BrowserController extends WindowController
             if(null == destination) {
                 destination = this.workdir();
             }
-            else if(!destination.attributes().isDirectory()) {
+            else if(!destination.isDirectory()) {
                 destination = destination.getParent();
             }
             // Selected files on the local filesystem
@@ -2801,7 +2802,7 @@ public class BrowserController extends WindowController
                 final Local local = LocalFactory.createLocal(next.toString());
                 downloads.add(new TransferItem(
                         new Path(destination, local.getName(),
-                                local.attributes().isFile() ? Path.FILE_TYPE : Path.DIRECTORY_TYPE), local));
+                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
             }
             transfer(new UploadTransfer(session.getHost(), downloads));
         }
@@ -2870,10 +2871,10 @@ public class BrowserController extends WindowController
         if(null == selected) {
             return;
         }
-        if(selected.attributes().isDirectory()) {
+        if(selected.isDirectory()) {
             this.setWorkdir(selected);
         }
-        else if(selected.attributes().isFile() || this.getSelectionCount() > 1) {
+        else if(selected.isFile() || this.getSelectionCount() > 1) {
             if(Preferences.instance().getBoolean("browser.doubleclick.edit")) {
                 this.editButtonClicked(null);
             }
@@ -3066,7 +3067,7 @@ public class BrowserController extends WindowController
             final Map<Path, Path> files = new HashMap<Path, Path>();
             final Path parent = this.workdir();
             for(final Path next : pasteboard) {
-                Path renamed = new Path(parent, next.getName(), next.attributes().getType());
+                Path renamed = new Path(parent, next.getName(), next.getType());
                 files.put(next, renamed);
             }
             pasteboard.clear();
@@ -3096,7 +3097,7 @@ public class BrowserController extends WindowController
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
                     uploads.add(new TransferItem(new Path(workdir, local.getName(),
-                            local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
+                            local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                 }
                 this.transfer(new UploadTransfer(session.getHost(), uploads));
             }
@@ -3109,7 +3110,7 @@ public class BrowserController extends WindowController
         Path workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
-            if(selected.attributes().isDirectory()) {
+            if(selected.isDirectory()) {
                 workdir = selected;
             }
         }
@@ -3261,7 +3262,7 @@ public class BrowserController extends WindowController
     private void addNavigation(final Path p) {
         pathPopupButton.addItemWithTitle(p.getAbsolute());
         pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
-        if(p.attributes().isVolume()) {
+        if(p.isVolume()) {
             pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 16));
         }
         else {
@@ -3823,7 +3824,7 @@ public class BrowserController extends WindowController
                 }
                 if(this.getSelectionCount() > 0) {
                     for(Path s : this.getSelectedPaths()) {
-                        if(s.attributes().isFile() && Archive.isArchive(s.getName())) {
+                        if(s.isFile() && Archive.isArchive(s.getName())) {
                             // At least one file selected is already an archive. No distinct action possible
                             return false;
                         }
@@ -3840,7 +3841,7 @@ public class BrowserController extends WindowController
                 }
                 if(this.getSelectionCount() > 0) {
                     for(Path s : this.getSelectedPaths()) {
-                        if(s.attributes().isDirectory()) {
+                        if(s.isDirectory()) {
                             return false;
                         }
                         if(!Archive.isArchive(s.getName())) {

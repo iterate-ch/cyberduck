@@ -14,6 +14,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -43,7 +44,7 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledLoginController());
-        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());

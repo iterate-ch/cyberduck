@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -31,39 +33,36 @@ public abstract class AbstractPath {
      */
     public static final String HOME = "~";
 
-    public static final int FILE_TYPE = 1;
-    public static final int DIRECTORY_TYPE = 2;
-    public static final int SYMBOLIC_LINK_TYPE = 4;
-    public static final int VOLUME_TYPE = 8;
+    public abstract EnumSet<Type> getType();
 
-//    public enum Type {
-//        file {
-//            @Override
-//            public int legacy() {
-//                return 1;
-//            }
-//        },
-//        directory {
-//            @Override
-//            public int legacy() {
-//                return 2;
-//            }
-//        },
-//        symboliclink {
-//            @Override
-//            public int legacy() {
-//                return 4;
-//            }
-//        },
-//        volume {
-//            @Override
-//            public int legacy() {
-//                return 8;
-//            }
-//        };
-//
-//        public abstract int legacy();
-//    }
+    public enum Type {
+        file {
+            @Override
+            public int legacy() {
+                return 1;
+            }
+        },
+        directory {
+            @Override
+            public int legacy() {
+                return 2;
+            }
+        },
+        symboliclink {
+            @Override
+            public int legacy() {
+                return 4;
+            }
+        },
+        volume {
+            @Override
+            public int legacy() {
+                return 8;
+            }
+        };
+
+        public abstract int legacy();
+    }
 
     public abstract char getDelimiter();
 

@@ -10,6 +10,7 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -28,7 +29,7 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE)));
+        assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         session.close();
     }
 
@@ -46,6 +47,6 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SFTPFindFeature(new SFTPSession(new Host("h"))).find(new Path("/", Path.DIRECTORY_TYPE)));
+        assertTrue(new SFTPFindFeature(new SFTPSession(new Host("h"))).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

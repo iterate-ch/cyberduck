@@ -28,6 +28,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -49,7 +50,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);
         for(String region : ProtocolFactory.S3_SSL.getRegions()) {
-            final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+            final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             create.create(bucket, region);
             bucket.attributes().setRegion(region);
             assertTrue(find.find(bucket));

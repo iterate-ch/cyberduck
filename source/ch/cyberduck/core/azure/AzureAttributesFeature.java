@@ -53,7 +53,7 @@ public class AzureAttributesFeature implements Attributes {
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
-                final PathAttributes attributes = new PathAttributes(Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 container.downloadAttributes();
                 final BlobContainerProperties properties = container.getProperties();
@@ -75,8 +75,7 @@ public class AzureAttributesFeature implements Attributes {
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 blob.downloadAttributes(null, options, null);
                 final BlobProperties properties = blob.getProperties();
-                final PathAttributes attributes = new PathAttributes(
-                        "application/directory".equals(properties.getContentType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(properties.getLength());
                 attributes.setModificationDate(properties.getLastModified().getTime());
                 attributes.setChecksum(properties.getContentMD5());

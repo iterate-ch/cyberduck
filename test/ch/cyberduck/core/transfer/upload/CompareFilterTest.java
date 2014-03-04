@@ -31,6 +31,8 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertFalse;
 
 /**
@@ -62,7 +64,7 @@ public class CompareFilterTest extends AbstractTestCase {
             }
         }
         );
-        final Path file = new Path("/", Path.FILE_TYPE);
+        final Path file = new Path("/", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(file, new NullLocal("t"), new TransferStatus().exists(true)));
     }
 }

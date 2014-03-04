@@ -5,10 +5,12 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathTooltipServiceTest extends AbstractTestCase {
 
@@ -17,6 +19,6 @@ public class PathTooltipServiceTest extends AbstractTestCase {
         final PathTooltipService s = new PathTooltipService();
         assertEquals("/p\n" +
                 "--\n" +
-                "Unknown", s.getTooltip(new Path("/p", Path.FILE_TYPE)));
+                "Unknown", s.getTooltip(new Path("/p", EnumSet.of(Path.Type.file))));
     }
 }

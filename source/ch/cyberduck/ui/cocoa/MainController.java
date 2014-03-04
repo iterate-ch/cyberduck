@@ -90,6 +90,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,8 +160,8 @@ public class MainController extends BundleController implements NSApplication.De
         }
         else {
             final Host h = HostParser.parse(url);
-            if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
-                final Path file = new Path(h.getDefaultPath(), Path.FILE_TYPE);
+            if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
                         LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName())));
             }
@@ -735,7 +736,7 @@ public class MainController extends BundleController implements NSApplication.De
                             else {
                                 // No mounted browser
                                 if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    upload(bookmark, files, new Path(bookmark.getDefaultPath(), Path.DIRECTORY_TYPE));
+                                    upload(bookmark, files, new Path(bookmark.getDefaultPath(), EnumSet.of(Path.Type.directory)));
                                 }
                                 else {
                                     upload(bookmark, files, destination);
@@ -761,7 +762,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         for(Local file : files) {
             roots.add(new TransferItem(new Path(destination, file.getName(),
-                    file.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), file));
+                    file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), file));
         }
         final TransferController t = TransferControllerFactory.get();
         t.start(new UploadTransfer(bookmark, roots));

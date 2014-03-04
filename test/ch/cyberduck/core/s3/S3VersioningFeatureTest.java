@@ -17,12 +17,22 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -42,7 +52,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final VersioningConfiguration configuration
-                = new S3VersioningFeature(session).getConfiguration(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+                = new S3VersioningFeature(session).getConfiguration(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());
@@ -59,7 +69,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final VersioningConfiguration configuration
-                = new S3VersioningFeature(session).getConfiguration(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE));
+                = new S3VersioningFeature(session).getConfiguration(new Path("versioning.test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertTrue(configuration.isEnabled());
         session.close();
@@ -74,7 +84,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3DirectoryFeature(session).mkdir(container, null);
         final Versioning feature = new S3VersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginController(), new VersioningConfiguration(true, false));
@@ -91,7 +101,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         assertEquals(VersioningConfiguration.empty(),
-                new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE)));
+                new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }

@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _region = region;
-                _folder = new Path(_workdir, _filename, AbstractPath.DIRECTORY_TYPE);
+                _folder = new Path(_workdir, _filename, EnumSet.of(Path.Type.directory));
             }
 
             public override object run()

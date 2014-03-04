@@ -59,7 +59,7 @@ public class SwiftAttributesFeature implements Attributes {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName());
-                final PathAttributes attributes = new PathAttributes(Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(info.getTotalSize());
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
@@ -67,8 +67,7 @@ public class SwiftAttributesFeature implements Attributes {
             else {
                 final ObjectMetadata metadata = session.getClient().getObjectMetaData(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
-                final PathAttributes attributes = new PathAttributes(
-                        "application/directory".equals(metadata.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(Long.valueOf(metadata.getContentLength()));
                 try {
                     attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());

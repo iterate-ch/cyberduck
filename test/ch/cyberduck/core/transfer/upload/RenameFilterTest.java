@@ -15,6 +15,7 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -27,14 +28,14 @@ public class RenameFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         RenameFilter f = new RenameFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         f.prepare(t, new NullLocal("t"), new TransferStatus());
         assertNotSame("t", t.getName());
     }
 
     @Test
     public void testDirectoryUpload() throws Exception {
-        final Path file = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
         final NullSession session = new NullSession(new Host("h")) {
@@ -61,7 +62,7 @@ public class RenameFilterTest extends AbstractTestCase {
                     return (T) new Attributes() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes(Path.FILE_TYPE);
+                            return new PathAttributes();
                         }
 
                         @Override

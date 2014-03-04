@@ -36,6 +36,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -54,14 +55,14 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("static.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("static.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("EU");
         final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             assertNotNull(p.attributes().getRegion());
-            if(p.attributes().isFile()) {
+            if(p.isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum());
@@ -79,8 +80,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", Path.DIRECTORY_TYPE),
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "test", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
@@ -95,7 +96,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
     }
@@ -109,13 +110,13 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE),
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", Path.FILE_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", EnumSet.of(Path.Type.file)).getReference()));
         session.close();
     }
 
@@ -127,13 +128,13 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE),
+                = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", Path.FILE_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", EnumSet.of(Path.Type.file)).getReference()));
         session.close();
     }
 
@@ -145,11 +146,11 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        assertEquals(new Path("/dist.springframework.org/release", Path.DIRECTORY_TYPE), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         final AttributedList<Path> list
                 = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", Path.DIRECTORY_TYPE).getReference()));
+        assertTrue(list.contains(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory)).getReference()));
         session.close();
     }
 
@@ -162,12 +163,13 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE),
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch",
+                EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
-        final PathAttributes att = new PathAttributes(Path.FILE_TYPE);
-        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", att).getReference()));
+        final PathAttributes att = new PathAttributes();
+        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att).getReference()));
         att.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", att).getReference()));
+        assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att).getReference()));
         session.close();
     }
 }

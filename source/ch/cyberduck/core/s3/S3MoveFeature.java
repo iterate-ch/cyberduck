@@ -47,7 +47,7 @@ public class S3MoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
-            if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+            if(file.isFile() || file.attributes().isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
@@ -65,9 +65,9 @@ public class S3MoveFeature implements Move {
                 }
                 session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            else if(file.attributes().isDirectory()) {
+            else if(file.isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.attributes().getType()), false);
+                    this.move(i, new Path(renamed, i.getName(), i.getType()), false);
                 }
             }
         }

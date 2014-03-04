@@ -26,6 +26,8 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -43,10 +45,10 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertEquals(31, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
+                new Path("lifecycle-cyberduck-test", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
         assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("lifecycle-cyberduck-test", Path.DIRECTORY_TYPE)
+                new Path("lifecycle-cyberduck-test", EnumSet.of(Path.Type.directory))
         ).getTransition(), 0L);
         session.close();
     }
@@ -60,7 +62,7 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("bucket", Path.DIRECTORY_TYPE)
+                new Path("bucket", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }

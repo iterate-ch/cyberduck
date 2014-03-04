@@ -11,7 +11,7 @@ public class PathAttributesTest extends AbstractTestCase {
 
     @Test
     public void testGetAsDictionary() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        PathAttributes attributes = new PathAttributes();
         attributes.setSize(3L);
         attributes.setModificationDate(5343L);
         assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
@@ -19,26 +19,8 @@ public class PathAttributesTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTypeVolume() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        assertTrue(attributes.isVolume());
-        assertTrue(attributes.isDirectory());
-        assertFalse(attributes.isFile());
-        assertFalse(attributes.isSymbolicLink());
-    }
-
-    @Test
-    public void testTypeFile() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
-        assertFalse(attributes.isVolume());
-        assertFalse(attributes.isDirectory());
-        assertTrue(attributes.isFile());
-        assertTrue(attributes.isSymbolicLink());
-    }
-
-    @Test
     public void testPermissions() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        PathAttributes attributes = new PathAttributes();
         assertNull(attributes.getOwner());
         assertNull(attributes.getGroup());
         assertNotNull(attributes.getPermission());
@@ -48,7 +30,7 @@ public class PathAttributesTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        PathAttributes attributes = new PathAttributes();
         attributes.setPermission(new Permission(644));
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
@@ -59,11 +41,10 @@ public class PathAttributesTest extends AbstractTestCase {
 
     @Test
     public void testEquals() throws Exception {
-        assertTrue(new PathAttributes(Path.FILE_TYPE).equals(new PathAttributes(Path.FILE_TYPE)));
-        assertFalse(new PathAttributes(Path.FILE_TYPE).equals(new PathAttributes(Path.DIRECTORY_TYPE)));
-        final PathAttributes r1 = new PathAttributes(Path.FILE_TYPE);
+        assertTrue(new PathAttributes().equals(new PathAttributes()));
+        final PathAttributes r1 = new PathAttributes();
         r1.setRegion("r1");
-        final PathAttributes r2 = new PathAttributes(Path.FILE_TYPE);
+        final PathAttributes r2 = new PathAttributes();
         r2.setRegion("r2");
         assertFalse(r1.equals(r2));
     }

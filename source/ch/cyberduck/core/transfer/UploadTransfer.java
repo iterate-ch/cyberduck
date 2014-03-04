@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.attributes().isSymbolicLink()
+        if(directory.isSymbolicLink()
                 && new UploadSymlinkResolver(session.getFeature(Symlink.class), roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
@@ -105,7 +106,7 @@ public class UploadTransfer extends Transfer {
             final List<TransferItem> children = new ArrayList<TransferItem>();
             for(Local local : directory.list().filter(filter)) {
                 children.add(new TransferItem(new Path(remote, local.getName(),
-                        local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE), local));
+                        local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
             }
             return children;
         }
@@ -159,7 +160,7 @@ public class UploadTransfer extends Transfer {
                 final Write.Append append = write.append(f.remote, f.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
-                    if(f.remote.attributes().isDirectory()) {
+                    if(f.remote.isDirectory()) {
                         if(this.list(session, f.remote, f.local, new DisabledListProgressListener()).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
@@ -183,7 +184,7 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = session.getFeature(Symlink.class);
         final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, roots);
-        if(local.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
+        if(local.isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(local.getAbsolute(),
                     local.getSymlinkTarget().getAbsolute());
@@ -192,7 +193,7 @@ public class UploadTransfer extends Transfer {
             }
             symlink.symlink(file, target);
         }
-        else if(file.attributes().isFile()) {
+        else if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
@@ -204,7 +205,7 @@ public class UploadTransfer extends Transfer {
                 }
             }, status);
         }
-        else if(file.attributes().isDirectory()) {
+        else if(file.isDirectory()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
             if(!status.isExists()) {

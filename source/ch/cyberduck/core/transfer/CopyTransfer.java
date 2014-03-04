@@ -170,7 +170,7 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.attributes().isSymbolicLink()
+        if(directory.isSymbolicLink()
                 && new DownloadSymlinkResolver(roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
@@ -181,7 +181,7 @@ public class CopyTransfer extends Transfer {
             final AttributedList<Path> list = session.list(directory, new DisabledListProgressListener());
             final Path copy = files.get(directory);
             for(Path p : list) {
-                files.put(p, new Path(copy, p.getName(), p.attributes()));
+                files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
             }
             final List<TransferItem> nullified = new ArrayList<TransferItem>();
             for(Path p : files.keySet()) {
@@ -200,12 +200,12 @@ public class CopyTransfer extends Transfer {
         final Path copy = files.get(source);
         session.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
-        if(source.attributes().isFile()) {
+        if(source.isFile()) {
             if(session.getHost().equals(destination.getHost())) {
                 final Copy feature = session.getFeature(Copy.class);
                 if(feature != null) {
                     feature.copy(source, copy);
-                    addTransferred(source.attributes().getSize());
+                    addTransferred(status.getLength());
                 }
                 else {
                     this.copy(session, source, destination, copy, bandwidth, status);
@@ -237,7 +237,7 @@ public class CopyTransfer extends Transfer {
         InputStream in = null;
         OutputStream out = null;
         try {
-            if(file.attributes().isFile()) {
+            if(file.isFile()) {
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status).transfer(in, 0, out, new DisabledStreamListener() {

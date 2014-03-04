@@ -1,6 +1,16 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -16,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
@@ -38,7 +49,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
         status.setLength(content.length);
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new SFTPWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
@@ -72,11 +83,11 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path target = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
         assertTrue(new SFTPFindFeature(session).find(target));
         final String name = UUID.randomUUID().toString();
-        final Path symlink = new Path(session.workdir(), name, Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        final Path symlink = new Path(session.workdir(), name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
         assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
@@ -101,7 +112,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
             assertArrayEquals(new byte[0], buffer);
         }
         final AttributedList<Path> list = new SFTPListService(session).list(session.workdir(), new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(session.workdir(), name, Path.FILE_TYPE)));
+        assertTrue(list.contains(new Path(session.workdir(), name, EnumSet.of(Path.Type.file))));
         assertFalse(list.contains(symlink));
         new SFTPDeleteFeature(session).delete(Arrays.asList(target, symlink), new DisabledLoginController());
     }
@@ -114,7 +125,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPWriteFeature(session).write(test, new TransferStatus());
     }
 
@@ -126,10 +137,10 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), Path.FILE_TYPE), 0L, Cache.empty()).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", Path.FILE_TYPE), 0L, Cache.empty()).append);
+                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
     }
 }

@@ -23,6 +23,8 @@ import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -49,12 +51,24 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     public static final char DELIMITER = '/';
 
     /**
+     * The file type
+     */
+    private EnumSet<Type> type
+            = EnumSet.noneOf(Type.class);
+
+    /**
      * Attributes denoting this path
      */
     private PathAttributes attributes;
 
     public <T> Path(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final String typeObj = dict.stringForKey("Type");
+        if(typeObj != null) {
+            for(String t : typeObj.replace("[", "").replace("]", "").split(", ")) {
+                this.type.add(Type.valueOf(t));
+            }
+        }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
             this.symlink = new Path(symlinkObj);
@@ -62,9 +76,25 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
             this.attributes = new PathAttributes(attributesObj);
+            // Legacy
+            String legacyTypeObj = DeserializerFactory.createDeserializer(attributesObj).stringForKey("Type");
+            if(legacyTypeObj != null) {
+                if((Integer.valueOf(legacyTypeObj) & Type.file.legacy()) == Type.file.legacy()) {
+                    this.type.add(Type.file);
+                }
+                if((Integer.valueOf(legacyTypeObj) & Type.directory.legacy()) == Type.directory.legacy()) {
+                    this.type.add(Type.directory);
+                }
+                if((Integer.valueOf(legacyTypeObj) & Type.symboliclink.legacy()) == Type.symboliclink.legacy()) {
+                    this.type.add(Type.symboliclink);
+                }
+                if((Integer.valueOf(legacyTypeObj) & Type.volume.legacy()) == Type.volume.legacy()) {
+                    this.type.add(Type.volume);
+                }
+            }
         }
         else {
-            this.attributes = new PathAttributes(Path.FILE_TYPE);
+            this.attributes = new PathAttributes();
         }
         final String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
@@ -74,6 +104,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public <T> T serialize(final Serializer dict) {
+        dict.setStringForKey(String.valueOf(type), "Type");
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(symlink != null) {
             dict.setObjectForKey(symlink, "Symbolic Link");
@@ -87,8 +118,9 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param name   the file relative to param path
      * @param type   File type
      */
-    public Path(final Path parent, final String name, final int type) {
-        this.attributes = new PathAttributes(type);
+    public Path(final Path parent, final String name, final EnumSet<Type> type) {
+        this.type = type;
+        this.attributes = new PathAttributes();
         this.attributes.setRegion(parent.attributes.getRegion());
         this._setPath(parent, name);
     }
@@ -97,8 +129,9 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param absolute The absolute path of the remote file
      * @param type     File type
      */
-    public Path(final String absolute, final int type) {
-        this.attributes = new PathAttributes(type);
+    public Path(final String absolute, final EnumSet<Type> type) {
+        this.type = type;
+        this.attributes = new PathAttributes();
         this.setPath(absolute);
     }
 
@@ -106,7 +139,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param absolute   The absolute path of the remote file
      * @param attributes File type
      */
-    public Path(final String absolute, final PathAttributes attributes) {
+    public Path(final String absolute, final EnumSet<Type> type, final PathAttributes attributes) {
+        this.type = type;
         this.attributes = attributes;
         this.setPath(absolute);
     }
@@ -116,7 +150,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @param name       Filename
      * @param attributes Attributes
      */
-    public Path(final Path parent, final String name, final PathAttributes attributes) {
+    public Path(final Path parent, final String name, final EnumSet<Type> type, final PathAttributes attributes) {
+        this.type = type;
         this.attributes = attributes;
         this._setPath(parent, name);
     }
@@ -127,10 +162,10 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         }
         else {
             final Path parent = new Path(PathNormalizer.parent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
-                    Path.DIRECTORY_TYPE);
+                    EnumSet.of(Type.directory));
             parent.attributes().setRegion(attributes.getRegion());
             if(parent.isRoot()) {
-                parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                parent.setType(EnumSet.of(Type.volume, Type.directory));
             }
             this._setPath(parent, PathNormalizer.name(absolute));
         }
@@ -154,6 +189,31 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
                 }
             }
         }
+    }
+
+    @Override
+    public EnumSet<Type> getType() {
+        return type;
+    }
+
+    public void setType(final EnumSet<Type> type) {
+        this.type = type;
+    }
+
+    public boolean isVolume() {
+        return type.contains(Type.volume);
+    }
+
+    public boolean isDirectory() {
+        return type.contains(Type.directory);
+    }
+
+    public boolean isFile() {
+        return type.contains(Type.file);
+    }
+
+    public boolean isSymbolicLink() {
+        return type.contains(Type.symboliclink);
     }
 
     @Override
@@ -212,7 +272,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * @return The target of the symbolic link if this path denotes a symbolic link
-     * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
+     * @see #isSymbolicLink
      */
     public Path getSymlinkTarget() {
         return symlink;
@@ -247,7 +307,11 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     @Override
     public String toString() {
-        return this.getAbsolute();
+        final StringBuilder sb = new StringBuilder("Path{");
+        sb.append("path='").append(path).append('\'');
+        sb.append(", type=").append(type);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**
@@ -255,7 +319,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Path directory) {
-        if(directory.attributes().isFile()) {
+        if(directory.isFile()) {
             // If a file we don't have any children at all
             return false;
         }

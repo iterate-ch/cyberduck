@@ -32,6 +32,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -45,7 +46,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
     public void testGetMethods() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
-                new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", Path.VOLUME_TYPE)));
+                new CloudFrontDistributionConfiguration(session).getMethods(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
@@ -63,7 +64,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final CloudFrontDistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
         assertEquals("bbb.s3.amazonaws.com",
-                configuration.getOrigin(new Path("/bbb", Path.VOLUME_TYPE), Distribution.DOWNLOAD).getHost());
+                configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.DOWNLOAD).getHost());
     }
 
     @Test
@@ -75,7 +76,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertEquals("E2N9XG26504TZI", distribution.getId());
         assertEquals(Distribution.DOWNLOAD, distribution.getMethod());
@@ -95,7 +96,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginController());
         assertEquals("EB86EC8N0TBBE", distribution.getId());
         assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin().getHost());
@@ -110,7 +111,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
     }
 
@@ -129,7 +130,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController() {
             @Override
@@ -162,7 +163,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
                 return null;
             }
         };
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginController());
         assertTrue(set.get());
     }
@@ -187,7 +188,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
                 return null;
             }
         };
-        final Path container = new Path("test2.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test2.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.write(container, new Distribution(Distribution.STREAMING, true), new DisabledLoginController());
         assertTrue(set.get());
     }

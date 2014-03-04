@@ -31,6 +31,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -52,7 +53,7 @@ public class SFTPTouchFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
-        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test);
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test.getReference()));

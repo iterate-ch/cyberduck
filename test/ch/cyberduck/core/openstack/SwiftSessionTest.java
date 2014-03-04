@@ -26,6 +26,8 @@ import ch.cyberduck.core.features.Versioning;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -59,9 +61,9 @@ public class SwiftSessionTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
-        final Path container = new Path("/test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
-        assertEquals(DescriptiveUrl.EMPTY, session.getFeature(UrlProvider.class).toUrl(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn));
+        assertEquals(DescriptiveUrl.EMPTY, session.getFeature(UrlProvider.class).toUrl(new Path(container, "d/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.cdn));
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         assertNotNull(cdn);
         session.close();

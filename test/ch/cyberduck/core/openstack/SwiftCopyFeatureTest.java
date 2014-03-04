@@ -28,6 +28,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
@@ -46,11 +47,11 @@ public class SwiftCopyFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("ORD");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
-        final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftCopyFeature(session).copy(test, copy);
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));

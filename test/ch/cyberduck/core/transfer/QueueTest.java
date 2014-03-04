@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,7 +39,7 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testAddRemove() throws Exception {
         final Queue queue = new Queue();
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null);
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), null);
         queue.add(transfer, new DisabledProgressListener());
         queue.remove(transfer);
     }
@@ -46,14 +47,14 @@ public class QueueTest extends AbstractTestCase {
     @Test
     public void testConcurrent() throws Exception {
         final Queue queue = new Queue(1);
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null);
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), null);
         queue.add(transfer, new DisabledProgressListener());
         final AtomicBoolean added = new AtomicBoolean();
         final CyclicBarrier wait = new CyclicBarrier(2);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                queue.add(new DownloadTransfer(new Host("t"), new Path("/t", Path.DIRECTORY_TYPE), null), new DisabledProgressListener());
+                queue.add(new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), null), new DisabledProgressListener());
                 added.set(true);
                 try {
                     wait.await();

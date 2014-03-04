@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
-        new SFTPReadFeature(session).read(new Path(session.workdir(), "nosuchname", Path.FILE_TYPE), status);
+        new SFTPReadFeature(session).read(new Path(session.workdir(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -71,7 +72,7 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = new byte[39865];
         new Random().nextBytes(content);
@@ -105,7 +106,7 @@ public class SFTPReadFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path test = new Path(home, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);

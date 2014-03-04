@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.SFTPv3DirectoryEntry;
@@ -57,21 +58,32 @@ public class SFTPListService implements ListService {
                     continue;
                 }
                 final PathAttributes attributes = feature.convert(f.attributes);
-                final Path file = new Path(directory, f.filename, attributes);
-                if(attributes.isSymbolicLink()) {
+
+                final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+                if(f.attributes.isDirectory()) {
+                    type.add(Path.Type.directory);
+                }
+                if(f.attributes.isRegularFile()) {
+                    type.add(Path.Type.file);
+                }
+                if(f.attributes.isSymlink()) {
+                    type.add(Path.Type.symboliclink);
+                }
+                final Path file = new Path(directory, f.filename, type, attributes);
+                if(file.isSymbolicLink()) {
                     try {
                         final String target = session.sftp().readLink(file.getAbsolute());
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            file.setSymlinkTarget(new Path(target, Path.FILE_TYPE));
+                            file.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                         }
                         else {
-                            file.setSymlinkTarget(new Path(directory, target, Path.FILE_TYPE));
+                            file.setSymlinkTarget(new Path(directory, target, EnumSet.of(Path.Type.file)));
                         }
                         if(session.sftp().stat(file.getSymlinkTarget().getAbsolute()).isDirectory()) {
-                            attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.directory));
                         }
                         else {
-                            attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.file));
                         }
                     }
                     catch(SFTPException e) {

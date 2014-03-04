@@ -14,6 +14,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -32,7 +33,7 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new AzureDirectoryFeature(session).mkdir(container, null);
         assertTrue(new AzureFindFeature(session).find(container));
         new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
@@ -48,8 +49,8 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path("/cyberduck", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         placeholder.attributes().setPlaceholder(true);
         new AzureDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new AzureFindFeature(session).find(placeholder));

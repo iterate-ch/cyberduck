@@ -54,6 +54,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 
 import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
 import com.microsoft.windowsazure.services.blob.client.CloudBlobClient;
@@ -142,10 +143,11 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                             Preferences.instance().getInteger("azure.listing.chunksize"), token,
                             options, null);
                     for(CloudBlobContainer container : result.getResults()) {
-                        final PathAttributes attributes = new PathAttributes(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        final PathAttributes attributes = new PathAttributes();
                         attributes.setETag(container.getProperties().getEtag());
                         attributes.setModificationDate(container.getProperties().getLastModified().getTime());
-                        containers.add(new Path(String.format("/%s", container.getName()), attributes));
+                        containers.add(new Path(String.format("/%s", container.getName()),
+                                EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                     }
                     listener.chunk(containers);
                     token = result.getContinuationToken();

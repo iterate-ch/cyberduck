@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +47,7 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
 
                         @Override
                         public boolean append(final Path file) {
-                            assertEquals(new Path("/f", Path.FILE_TYPE), file);
+                            assertEquals(new Path("/f", EnumSet.of(Path.Type.file)), file);
                             return false;
                         }
                     };
@@ -63,7 +64,7 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
             }
         };
         final AtomicBoolean e = new AtomicBoolean();
-        final Path file = new Path("/f", Path.FILE_TYPE);
+        final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
         final BrowserBackgroundEditor editor = new BrowserBackgroundEditor(new AbstractController() {
             @Override

@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.TimeZone;
 
 import static org.junit.Assert.*;
@@ -33,27 +34,27 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        final Path test = new Path("/t/a", Path.FILE_TYPE);
+        final Path test = new Path("/t/a", EnumSet.of(Path.Type.file));
         Session session = new NullSession(new Host("t"));
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+            @Override
+            public boolean isSymbolicLink() {
+                return false;
+            }
+
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes(this.getAbsolute()) {
                     @Override
-                    public boolean isSymbolicLink() {
-                        return false;
-                    }
-
-                    @Override
                     public long getSize() {
                         return 1L;
                     }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
                 };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
             }
         };
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparisionServiceFilter(session, TimeZone.getDefault()),
@@ -88,6 +89,6 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.mirror
         );
-        assertTrue(mirror.accept(new Path("/p", Path.DIRECTORY_TYPE), null, new TransferStatus().exists(true)));
+        assertTrue(mirror.accept(new Path("/p", EnumSet.of(Path.Type.directory)), null, new TransferStatus().exists(true)));
     }
 }

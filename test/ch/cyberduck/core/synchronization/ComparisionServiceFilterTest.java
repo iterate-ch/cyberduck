@@ -15,6 +15,7 @@ import ch.cyberduck.core.features.Find;
 import org.junit.Test;
 
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,7 +53,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             attr.set(true);
-                            return new PathAttributes(Path.FILE_TYPE) {
+                            return new PathAttributes() {
                                 @Override
                                 public String getChecksum() {
                                     return "a";
@@ -69,18 +70,13 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.FILE_TYPE), new NullLocal("t") {
+        assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("/t") {
                     @Override
                     public String getChecksum() {
                         return "a";
-                    }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
                     }
                 };
             }
@@ -117,7 +113,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.equal, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
+        assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -149,7 +145,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.local, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
+        assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -181,7 +177,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.remote, s.compare(new Path("t", Path.DIRECTORY_TYPE), new NullLocal("t") {
+        assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
                 return false;
@@ -216,7 +212,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             attr.set(true);
-                            return new PathAttributes(Path.FILE_TYPE) {
+                            return new PathAttributes() {
                                 @Override
                                 public String getChecksum() {
                                     return "b";
@@ -245,7 +241,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
                 return super.getFeature(type);
             }
         }, TimeZone.getDefault());
-        assertEquals(Comparison.local, s.compare(new Path("t", Path.FILE_TYPE), new NullLocal("t") {
+        assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {

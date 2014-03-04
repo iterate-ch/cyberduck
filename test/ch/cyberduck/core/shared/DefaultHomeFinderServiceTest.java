@@ -14,6 +14,8 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -29,7 +31,7 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DefaultHomeFinderService(session).find());
         session.close();
     }
 
@@ -42,7 +44,7 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals(new Path("/test.d", Path.DIRECTORY_TYPE), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path("/test.d", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         session.close();
     }
 
@@ -54,15 +56,15 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        assertEquals(new Path("/home/jenkins", Path.DIRECTORY_TYPE), new DefaultHomeFinderService(session).find());
+        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         session.close();
     }
 
     @Test
     public void testFind() throws Exception {
-        assertEquals(new Path("/sandbox", Path.DIRECTORY_TYPE),
-                new DefaultHomeFinderService(null).find(new Path("/", Path.DIRECTORY_TYPE), "sandbox"));
-        assertEquals(new Path("/sandbox", Path.DIRECTORY_TYPE),
-                new DefaultHomeFinderService(null).find(new Path("/", Path.DIRECTORY_TYPE), "/sandbox"));
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
+                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
+                new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 }

@@ -54,11 +54,6 @@ public class PathAttributes extends Attributes implements Serializable {
     private String owner;
     private String group;
 
-    /**
-     * The file type
-     */
-    private int type = Path.FILE_TYPE;
-
     private Permission permission = Permission.EMPTY;
 
     private Acl acl = Acl.EMPTY;
@@ -113,17 +108,12 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private Map<String, String> metadata;
 
-    public PathAttributes(int filetype) {
+    public PathAttributes() {
         metadata = Collections.emptyMap();
-        type = filetype;
     }
 
     public <T> PathAttributes(final T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        String typeObj = dict.stringForKey("Type");
-        if(typeObj != null) {
-            type = Integer.parseInt(typeObj);
-        }
         String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             size = Long.parseLong(sizeObj);
@@ -148,7 +138,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(type), "Type");
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }
@@ -237,35 +226,6 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setAcl(final Acl acl) {
         this.acl = acl;
-    }
-
-    public void setType(final int type) {
-        this.type = type;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    @Override
-    public boolean isVolume() {
-        return (type & Path.VOLUME_TYPE) == Path.VOLUME_TYPE;
-    }
-
-    @Override
-    public boolean isDirectory() {
-        return (type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE
-                || this.isVolume();
-    }
-
-    @Override
-    public boolean isFile() {
-        return (type & Path.FILE_TYPE) == Path.FILE_TYPE;
-    }
-
-    @Override
-    public boolean isSymbolicLink() {
-        return (type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
     }
 
     public void setOwner(final String o) {
@@ -414,9 +374,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(size != that.size) {
             return false;
         }
-        if(type != that.type) {
-            return false;
-        }
         if(checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
             return false;
         }
@@ -439,7 +396,6 @@ public class PathAttributes extends Attributes implements Serializable {
     public int hashCode() {
         int result = (int) (size ^ (size >>> 32));
         result = 31 * result + (int) (modified ^ (modified >>> 32));
-        result = 31 * result + type;
         result = 31 * result + (permission != null ? permission.hashCode() : 0);
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (etag != null ? etag.hashCode() : 0);
@@ -457,7 +413,6 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", created=").append(created);
         sb.append(", owner='").append(owner).append('\'');
         sb.append(", group='").append(group).append('\'');
-        sb.append(", type=").append(type);
         sb.append(", permission=").append(permission);
         sb.append(", acl=").append(acl);
         sb.append(", checksum='").append(checksum).append('\'');

@@ -12,6 +12,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -28,7 +30,7 @@ public class SkipFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         SkipFilter f = new SkipFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertTrue(f.accept(new Path("a", Path.FILE_TYPE) {
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                             }, new NullLocal("a", "b") {
                                 @Override
                                 public boolean exists() {
@@ -36,7 +38,7 @@ public class SkipFilterTest extends AbstractTestCase {
                                 }
                             }, new TransferStatus()
         ));
-        assertFalse(f.accept(new Path("a", Path.FILE_TYPE) {
+        assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                              }, new NullLocal("a", "b") {
                                  @Override
                                  public boolean exists() {

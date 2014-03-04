@@ -53,7 +53,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, local, parent)) {
-            if(local.attributes().isFile()) {
+            if(local.isFile()) {
                 if(parent.isExists()) {
                     final Write.Append append = write.append(file, local.attributes().getSize(), cache);
                     if(append.append && append.size >= local.attributes().getSize()) {
@@ -73,7 +73,7 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(local.attributes().isFile()) {
+        if(local.isFile()) {
             if(parent.isExists()) {
                 final Write.Append append = write.append(file, status.getLength(), cache);
                 if(append.append && append.size <= local.attributes().getSize()) {

@@ -31,21 +31,16 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public LocalAttributes attributes() {
-        return new LocalAttributes(path) {
-            @Override
-            public boolean isSymbolicLink() {
-                return false;
-            }
+    public boolean isSymbolicLink() {
+        return false;
+    }
 
-            @Override
-            public boolean isFile() {
-                if(!NullLocal.super.exists()) {
-                    return true;
-                }
-                return super.isFile();
-            }
-        };
+    @Override
+    public boolean isFile() {
+        if(!NullLocal.super.exists()) {
+            return true;
+        }
+        return super.isFile();
     }
 
     @Override

@@ -82,10 +82,10 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
             file.attributes().setAcl(acl);
         }
         if(recursive) {
-            if(file.attributes().isVolume()) {
+            if(file.isVolume()) {
                 // No recursion when changing container ACL
             }
-            else if(file.attributes().isDirectory()) {
+            else if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this))) {
                     this.write(child);
                 }

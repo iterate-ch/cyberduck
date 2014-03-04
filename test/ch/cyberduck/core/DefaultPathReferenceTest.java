@@ -19,6 +19,8 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -28,31 +30,31 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
 
     @Test
     public void testUnique() throws Exception {
-        final Path t = new Path("/", Path.DIRECTORY_TYPE);
-        assertEquals("2-/", new DefaultPathReference(t).unique());
+        final Path t = new Path("/", EnumSet.of(Path.Type.directory));
+        assertEquals("[directory]-/", new DefaultPathReference(t).unique());
         t.attributes().setVersionId("1");
-        assertEquals("2-1/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/", new DefaultPathReference(t).unique());
         t.attributes().setRegion("r");
-        assertEquals("2-1/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/", new DefaultPathReference(t).unique());
         t.attributes().setVersionId(null);
-        assertEquals("2-/", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-/", new DefaultPathReference(t).unique());
     }
 
     @Test
     public void testUniqueContainer() throws Exception {
-        final Path t = new Path("/container", Path.DIRECTORY_TYPE);
-        assertEquals("2-/container", new DefaultPathReference(t).unique());
+        final Path t = new Path("/container", EnumSet.of(Path.Type.directory));
+        assertEquals("[directory]-/container", new DefaultPathReference(t).unique());
         t.attributes().setVersionId("1");
-        assertEquals("2-1/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-1/container", new DefaultPathReference(t).unique());
         t.attributes().setRegion("r");
-        assertEquals("2-r1/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-r1/container", new DefaultPathReference(t).unique());
         t.attributes().setVersionId(null);
-        assertEquals("2-r/container", new DefaultPathReference(t).unique());
+        assertEquals("[directory]-r/container", new DefaultPathReference(t).unique());
     }
 
     @Test
     public void testAttributes() throws Exception {
-        final Path t = new Path("/f", Path.FILE_TYPE);
+        final Path t = new Path("/f", EnumSet.of(Path.Type.file));
         t.attributes().setRegion("r");
         assertEquals("r", new DefaultPathReference(t).attributes());
         t.attributes().setVersionId("1");

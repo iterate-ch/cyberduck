@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,7 +44,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-a.geo-1");
         this.test(host, container);
     }
@@ -58,7 +59,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         }, "region-a.geo-1.identity.hpcloudsvc.com", 35357, new Credentials(
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
-        final Path container = new Path("t.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("t.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-b.geo-1");
         this.test(host, container);
     }
@@ -68,7 +69,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(
                         properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")));
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         this.test(host, container);
     }
@@ -78,7 +79,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
 
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
 
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
 

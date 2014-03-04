@@ -42,7 +42,7 @@ public class DAVCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            if(source.attributes().isFile()) {
+            if(source.isFile()) {
                 final String target = session.getFeature(UrlProvider.class).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
                 session.getClient().copy(new DAVPathEncoder().encode(source), target);
             }

@@ -27,6 +27,8 @@ import ch.cyberduck.core.features.Home;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -62,17 +64,17 @@ public class DefaultHomeFinderService implements Home {
             // Mount absolute path
             final String normalized = PathNormalizer.normalize(path);
             return new Path(normalized,
-                    normalized.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+                    normalized.equals(String.valueOf(Path.DELIMITER)) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
         else {
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
                 return new Path(workdir, PathNormalizer.normalize(StringUtils.removeStart(
-                        StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), Path.DIRECTORY_TYPE);
+                        StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
             }
             else {
                 // Relative path
-                return new Path(workdir, PathNormalizer.normalize(path, false), Path.DIRECTORY_TYPE);
+                return new Path(workdir, PathNormalizer.normalize(path, false), EnumSet.of(Path.Type.directory));
             }
         }
     }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
@@ -43,10 +44,10 @@ public class S3CopyFeatureTest extends AbstractTestCase {
         );
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
-        final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session).copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());

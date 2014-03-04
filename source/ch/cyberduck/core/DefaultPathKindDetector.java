@@ -26,16 +26,16 @@ import org.apache.commons.lang3.StringUtils;
 public class DefaultPathKindDetector implements PathKindDetector {
 
     @Override
-    public int detect(final String path) {
+    public Path.Type detect(final String path) {
         if(StringUtils.isBlank(path)) {
-            return Path.DIRECTORY_TYPE;
+            return Path.Type.directory;
         }
         if(path.endsWith(String.valueOf(Path.DELIMITER))) {
-            return Path.DIRECTORY_TYPE;
+            return Path.Type.directory;
         }
         if(StringUtils.isBlank(FilenameUtils.getExtension(path))) {
-            return Path.DIRECTORY_TYPE;
+            return Path.Type.directory;
         }
-        return Path.FILE_TYPE;
+        return Path.Type.file;
     }
 }

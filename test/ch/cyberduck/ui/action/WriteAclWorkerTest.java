@@ -11,6 +11,7 @@ import ch.cyberduck.core.features.AclPermission;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,7 +58,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
     @Test
     public void testRunEmpty() throws Exception {
         final Acl acl = new Acl();
-        final Path t = new Path("/t", Path.FILE_TYPE);
+        final Path t = new Path("/t", EnumSet.of(Path.Type.file));
         final WriteAclWorker worker = new WriteAclWorker(new NullSession(new Host("h")), new AclPermission() {
             @Override
             public Acl getPermission(final Path file) throws BackgroundException {
@@ -91,7 +92,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
     @Test
     public void testRunNew() throws Exception {
         final Acl acl = new Acl(new Acl.EmailUser(), new Acl.Role("r"));
-        final Path t = new Path("/t", Path.FILE_TYPE);
+        final Path t = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean set = new AtomicBoolean();
         final WriteAclWorker worker = new WriteAclWorker(new NullSession(new Host("h")), new AclPermission() {
             @Override

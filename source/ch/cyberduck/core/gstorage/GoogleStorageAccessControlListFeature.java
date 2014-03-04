@@ -147,7 +147,7 @@ public class GoogleStorageAccessControlListFeature extends S3AccessControlListFe
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()))
         );
         for(Path file : files) {
-            if(file.attributes().isVolume()) {
+            if(file.isVolume()) {
                 // When applied to a bucket, this permission lets a user create objects, overwrite objects, and
                 // delete objects in a bucket. This permission also lets a user list the contents of a bucket.
                 // You cannot apply this permission to objects because bucket ACLs control who can upload,

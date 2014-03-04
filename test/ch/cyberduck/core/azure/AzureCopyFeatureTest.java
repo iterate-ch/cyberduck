@@ -14,12 +14,13 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureCopyFeatureTest extends AbstractTestCase {
 
@@ -31,10 +32,10 @@ public class AzureCopyFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(test);
-        final Path copy = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session).copy(test, copy);
         assertTrue(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(copy));

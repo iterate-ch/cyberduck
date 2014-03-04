@@ -14,6 +14,8 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -33,9 +35,9 @@ public class MountWorkerTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Cache cache = new Cache();
         final MountWorker worker = new MountWorker(session, cache, new DisabledListProgressListener());
-        assertEquals(new Path("/home/jenkins", Path.DIRECTORY_TYPE), worker.run());
-        assertTrue(cache.containsKey(new Path("/home/jenkins", Path.DIRECTORY_TYPE).getReference()));
-        assertTrue(cache.containsKey(new Path("/notfound", Path.DIRECTORY_TYPE).getReference()));
+        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), worker.run());
+        assertTrue(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)).getReference()));
+        assertTrue(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory)).getReference()));
         session.close();
     }
 }

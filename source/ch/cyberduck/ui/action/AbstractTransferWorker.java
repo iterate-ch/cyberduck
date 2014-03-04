@@ -221,7 +221,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             // Add skipped bytes
                             transfer.addTransferred(status.getCurrent());
                             // Recursive
-                            if(file.attributes().isDirectory()) {
+                            if(file.isDirectory()) {
                                 // Call recursively for all children
                                 final List<TransferItem> children
                                         = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this));
@@ -311,7 +311,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             }
                         }
                         // Recursive
-                        if(file.attributes().isDirectory()) {
+                        if(file.isDirectory()) {
                             for(TransferItem f : cache.get(file.getReference())) {
                                 // Recursive
                                 transfer(f.remote, f.local, filter);

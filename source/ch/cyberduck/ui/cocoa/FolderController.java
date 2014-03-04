@@ -33,6 +33,7 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -100,7 +101,7 @@ public class FolderController extends FileController {
 
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
-        final Path folder = new Path(workdir, filename, Path.DIRECTORY_TYPE);
+        final Path folder = new Path(workdir, filename, EnumSet.of(Path.Type.directory));
         c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {

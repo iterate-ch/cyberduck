@@ -19,6 +19,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,7 +38,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        new DefaultAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new DefaultAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Cache cache = new Cache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
-        final Path file = new Path(session.workdir(), "test", Path.FILE_TYPE);
+        final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());

@@ -32,6 +32,7 @@ import ch.cyberduck.core.SerializerFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,7 +45,7 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new SyncTransfer(new Host("t"), new Path("t", Path.FILE_TYPE), new NullLocal("/", "t"));
+        Transfer t = new SyncTransfer(new Host("t"), new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("/", "t"));
         t.addSize(4L);
         t.addTransferred(3L);
         final SyncTransfer serialized = new SyncTransfer(t.serialize(SerializerFactory.get()));
@@ -57,7 +58,7 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testAction() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
@@ -82,37 +83,37 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testFilterDownload() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.download);
-        final Path test = new Path(p, "a", Path.FILE_TYPE);
+        final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
                 new TransferStatus().exists(true)));
     }
 
     @Test
     public void testFilterUpload() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.upload);
-        final Path test = new Path(p, "a", Path.FILE_TYPE);
+        final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
                 new TransferStatus().exists(true)));
     }
 
     @Test
     public void testFilterMirror() throws Exception {
-        final Path p = new Path("t", Path.DIRECTORY_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.mirror);
-        final Path test = new Path(p, "a", Path.FILE_TYPE);
+        final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
                 new TransferStatus().exists(true)));
     }
 
     @Test
     public void testChildrenLocalOnly() throws Exception {
-        final Path root = new Path("t", Path.DIRECTORY_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -139,8 +140,8 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testChildrenRemoteOnly() throws Exception {
-        final Path root = new Path("t", Path.DIRECTORY_TYPE);
-        final Path a = new Path(root, "a", Path.FILE_TYPE);
+        final Path root = new Path("t", EnumSet.of(Path.Type.directory));
+        final Path a = new Path(root, "a", EnumSet.of(Path.Type.file));
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {

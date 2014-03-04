@@ -15,6 +15,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -34,10 +35,10 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.getFeature(Find.class).find(test));
-        new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), Path.FILE_TYPE));
+        new DefaultTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
@@ -52,7 +53,7 @@ public class DAVDeleteFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }

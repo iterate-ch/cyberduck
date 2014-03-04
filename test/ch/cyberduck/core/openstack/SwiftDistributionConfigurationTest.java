@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -58,13 +59,13 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
-                configuration.toUrl(new Path(container, "d/f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.cdn).getUrl());
+                configuration.toUrl(new Path(container, "d/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.cdn).getUrl());
         assertArrayEquals(new String[]{}, test.getCNAMEs());
         assertEquals("index.html", test.getIndexDocument());
         assertNull(test.getErrorDocument());
@@ -88,7 +89,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         new SwiftDirectoryFeature(session).mkdir(container, "ORD");
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginController());
@@ -112,7 +113,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
-                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), "test.cyberduck.ch", Path.VOLUME_TYPE);
+                EnumSet.of(Path.Type.volume, Path.Type.directory)), "test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-a.geo-1");
         final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
         assertNotNull(test);

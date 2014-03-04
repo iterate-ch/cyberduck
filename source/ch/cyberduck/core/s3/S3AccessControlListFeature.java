@@ -70,7 +70,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 // for that bucket (in S3) allows you to do so.
                 return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
-            else if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+            else if(file.isFile() || file.attributes().isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
                 if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
@@ -111,7 +111,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
             }
             else {
-                if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+                if(file.isFile() || file.attributes().isPlaceholder()) {
                     session.getClient().putObjectAcl(container.getName(), containerService.getKey(file), this.convert(acl));
                 }
             }

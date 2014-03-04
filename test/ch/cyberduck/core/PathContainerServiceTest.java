@@ -19,6 +19,8 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -29,29 +31,29 @@ public class PathContainerServiceTest extends AbstractTestCase {
     @Test
     public void testIsContainer() throws Exception {
         final PathContainerService s = new PathContainerService();
-        assertFalse(s.isContainer(new Path("/", Path.VOLUME_TYPE)));
-        assertTrue(s.isContainer(new Path("/t", Path.VOLUME_TYPE)));
-        assertTrue(s.isContainer(new Path("/t/", Path.VOLUME_TYPE)));
-        assertFalse(s.isContainer(new Path("/t/a", Path.VOLUME_TYPE)));
+        assertFalse(s.isContainer(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(s.isContainer(new Path("/t", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(s.isContainer(new Path("/t/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertFalse(s.isContainer(new Path("/t/a", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testGetContainerName() throws Exception {
         final PathContainerService s = new PathContainerService();
-        assertEquals("t", s.getContainer(new Path("/t", Path.DIRECTORY_TYPE)).getName());
-        assertEquals("t", s.getContainer(new Path("/t/a", Path.FILE_TYPE)).getName());
+        assertEquals("t", s.getContainer(new Path("/t", EnumSet.of(Path.Type.directory))).getName());
+        assertEquals("t", s.getContainer(new Path("/t/a", EnumSet.of(Path.Type.file))).getName());
     }
 
     @Test
     public void testGetContainer() throws Exception {
         final PathContainerService s = new PathContainerService();
-        assertEquals("/t", s.getContainer(new Path("/t", Path.DIRECTORY_TYPE)).getAbsolute());
-        assertNull(s.getContainer(new Path("/", Path.DIRECTORY_TYPE)));
+        assertEquals("/t", s.getContainer(new Path("/t", EnumSet.of(Path.Type.directory))).getAbsolute());
+        assertNull(s.getContainer(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testGetKey() throws Exception {
-        assertEquals("d/f", new PathContainerService().getKey(new Path("/c/d/f", Path.DIRECTORY_TYPE)));
-        assertNull(new PathContainerService().getKey(new Path("/", Path.DIRECTORY_TYPE)));
+        assertEquals("d/f", new PathContainerService().getKey(new Path("/c/d/f", EnumSet.of(Path.Type.directory))));
+        assertNull(new PathContainerService().getKey(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

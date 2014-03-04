@@ -86,7 +86,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                     // Allow drags to icon and filename column
                     if(row.intValue() != -1) {
                         Path p = this.get(this.controller.workdir()).get(row.intValue());
-                        if(p.attributes().isDirectory()) {
+                        if(p.isDirectory()) {
                             destination = p;
                         }
                     }

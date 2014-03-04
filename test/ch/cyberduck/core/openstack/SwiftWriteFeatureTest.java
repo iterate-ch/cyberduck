@@ -1,6 +1,17 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -16,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,9 +51,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final OutputStream out = new SwiftWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
@@ -68,7 +80,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final AtomicBoolean list = new AtomicBoolean();
         final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
@@ -77,7 +89,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 2L * 1024L * 1024L * 1024L, Cache.empty());
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, Cache.empty());
         assertTrue(list.get());
         assertFalse(append.append);
         assertFalse(append.override);
@@ -90,18 +102,18 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftSegmentService segments = new SwiftSegmentService(session, ".test");
         final AtomicBoolean list = new AtomicBoolean();
         final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
             @Override
             public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
                 list.set(true);
-                final Path segment1 = new Path(container, segments.name(file, 0L, 1), Path.FILE_TYPE);
+                final Path segment1 = new Path(container, segments.name(file, 0L, 1), EnumSet.of(Path.Type.file));
                 segment1.attributes().setSize(1L);
-                final Path segment2 = new Path(container, segments.name(file, 0L, 2), Path.FILE_TYPE);
+                final Path segment2 = new Path(container, segments.name(file, 0L, 2), EnumSet.of(Path.Type.file));
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
@@ -117,9 +129,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();
         final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
@@ -140,7 +152,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 1024L, Cache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.empty());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(Write.override, append);
@@ -154,9 +166,9 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
         final AtomicBoolean find = new AtomicBoolean();
         final Write.Append append = new SwiftWriteFeature(session, new SwiftObjectListService(session) {
@@ -177,7 +189,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 1024L, Cache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.empty());
         assertFalse(append.append);
         assertFalse(append.override);
         assertEquals(Write.notfound, append);

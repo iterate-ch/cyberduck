@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 
 import com.github.sardine.DavResource;
@@ -54,7 +55,7 @@ public class DAVListService implements ListService {
                 if(href.equals(directory.getAbsolute())) {
                     continue;
                 }
-                final PathAttributes attributes = new PathAttributes(resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }
@@ -66,8 +67,9 @@ public class DAVListService implements ListService {
                 }
                 attributes.setChecksum(resource.getEtag());
                 attributes.setETag(resource.getEtag());
-                final Path p = new Path(directory, PathNormalizer.name(href), attributes);
-                children.add(p);
+                children.add(new Path(directory, PathNormalizer.name(href),
+                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
+                        attributes));
                 listener.chunk(children);
             }
             return children;

@@ -15,6 +15,7 @@ import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -43,8 +44,8 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 return null;
             }
         }, new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = new Acl();
@@ -75,7 +76,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 return null;
             }
         }, new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);
         assertTrue(acl.containsKey(new Acl.GroupUser("cloud-storage-analytics@google.com")));

@@ -13,6 +13,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -31,9 +32,9 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftAttributesFeature f = new SwiftAttributesFeature(session);
         f.find(test);
     }
@@ -47,14 +48,14 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
-        assertEquals(Path.FILE_TYPE, attributes.getType());
+        assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());
         assertNotNull(attributes.getModificationDate());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
@@ -70,11 +71,11 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(container);
         assertTrue(attributes.getSize() > 0);
-        assertEquals(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE, attributes.getType());
+        assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), container.getType());
         session.close();
     }
 }

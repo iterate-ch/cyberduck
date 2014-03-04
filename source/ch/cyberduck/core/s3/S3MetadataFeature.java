@@ -45,7 +45,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+        if(file.isFile() || file.attributes().isPlaceholder()) {
             final StorageObject target = new S3ObjectDetailService(session).getDetails(file);
             final HashMap<String, String> metadata = new HashMap<String, String>();
             final Map<String, Object> source = target.getModifiableMetadata();
@@ -59,7 +59,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        if(file.attributes().isFile() || file.attributes().isPlaceholder()) {
+        if(file.isFile() || file.attributes().isPlaceholder()) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Write metadata %s for file %s", metadata, file));
             }

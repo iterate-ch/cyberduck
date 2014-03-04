@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,8 +52,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
@@ -69,8 +70,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.DIRECTORY_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(new S3FindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
@@ -87,7 +88,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(container, null);
         assertTrue(new S3FindFeature(session).find(container));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
@@ -104,7 +105,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
         for(int i = 0; i < 1010; i++) {
             keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
@@ -122,7 +123,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
     }
 }

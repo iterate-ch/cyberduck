@@ -60,13 +60,13 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
         for(Local child : folder.list().filter(new Filter<Local>() {
             @Override
             public boolean accept(Local file) {
-                if(file.attributes().isDirectory()) {
+                if(file.isDirectory()) {
                     return true;
                 }
                 return "xml".equals(file.getExtension());
             }
         })) {
-            if(child.attributes().isDirectory()) {
+            if(child.isDirectory()) {
                 this.parse(child);
             }
             else {

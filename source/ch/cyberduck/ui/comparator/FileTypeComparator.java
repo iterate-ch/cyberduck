@@ -42,14 +42,14 @@ public class FileTypeComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(final Path p1, final Path p2) {
-        if((p1.attributes().isDirectory() && p2.attributes().isDirectory())
-                || p1.attributes().isFile() && p2.attributes().isFile()) {
+        if((p1.isDirectory() && p2.isDirectory())
+                || p1.isFile() && p2.isFile()) {
             if(ascending) {
                 return impl.compare(descriptor.getKind(p1), descriptor.getKind(p2));
             }
             return -impl.compare(descriptor.getKind(p1), descriptor.getKind(p2));
         }
-        if(p1.attributes().isFile()) {
+        if(p1.isFile()) {
             return ascending ? 1 : -1;
         }
         return ascending ? -1 : 1;

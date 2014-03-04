@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -70,8 +71,7 @@ public class SwiftObjectListService implements ListService {
                 list = session.getClient().listObjectsStartingWith(new SwiftRegionService(session).lookup(container), container.getName(),
                         containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final PathAttributes attributes = new PathAttributes(
-                            "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    final PathAttributes attributes = new PathAttributes();
                     attributes.setOwner(container.attributes().getOwner());
                     attributes.setRegion(container.attributes().getRegion());
                     if(object.getSize() != null) {
@@ -92,8 +92,9 @@ public class SwiftObjectListService implements ListService {
                     if("application/directory".equals(object.getMimeType())) {
                         attributes.setPlaceholder(true);
                     }
-                    final Path child = new Path(directory, PathNormalizer.name(object.getName()), attributes);
-                    if(attributes.isDirectory()) {
+                    final Path child = new Path(directory, PathNormalizer.name(object.getName()),
+                            "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes);
+                    if(child.isDirectory()) {
                         if(children.contains(child.getReference())) {
                             // There is already a placeholder object
                             continue;

@@ -45,7 +45,7 @@ public class S3AttributesFeature implements Attributes {
     @Override
     public PathAttributes find(Path file) throws BackgroundException {
         if(containerService.isContainer(file)) {
-            return new PathAttributes(Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+            return new PathAttributes();
         }
         else {
             return this.find(new S3ObjectDetailService(session).getDetails(file));
@@ -58,18 +58,16 @@ public class S3AttributesFeature implements Attributes {
     }
 
     protected PathAttributes find(final StorageObject object) {
-        final PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
+        final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
         attributes.setModificationDate(object.getLastModifiedDate().getTime());
         attributes.setStorageClass(object.getStorageClass());
         // Directory placeholders
         if(object.isDirectoryPlaceholder()) {
-            attributes.setType(Path.DIRECTORY_TYPE);
             attributes.setPlaceholder(true);
         }
         else if(0 == object.getContentLength()) {
             if("application/x-directory".equals(object.getContentType())) {
-                attributes.setType(Path.DIRECTORY_TYPE);
                 attributes.setPlaceholder(true);
             }
         }
@@ -79,7 +77,6 @@ public class S3AttributesFeature implements Attributes {
             attributes.setChecksum(checksum);
             if(checksum.equals("d66759af42f282e1ba19144df2d405d0")) {
                 // Fix #5374 s3sync.rb interoperability
-                attributes.setType(Path.DIRECTORY_TYPE);
                 attributes.setPlaceholder(true);
             }
         }

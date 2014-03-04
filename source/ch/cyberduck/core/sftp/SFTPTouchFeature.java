@@ -40,7 +40,7 @@ public class SFTPTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file) throws BackgroundException {
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             try {
                 final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));

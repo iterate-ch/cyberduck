@@ -239,7 +239,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<Path> toUpdate = new List<Path>();
             foreach (Path path in View.VisiblePaths)
             {
-                if (path.attributes().isDirectory())
+                if (path.isDirectory())
                 {
                     View.RefreshBrowserObject(path);
                 }

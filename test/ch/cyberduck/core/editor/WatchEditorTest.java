@@ -30,6 +30,7 @@ import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +42,7 @@ public class WatchEditorTest extends AbstractTestCase {
 
     @Test
     public void testTemporaryPath() throws Exception {
-        final Path path = new Path("/f1/f2/t.txt", Path.FILE_TYPE);
+        final Path path = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final WatchEditor editor = new WatchEditor(new AbstractController() {

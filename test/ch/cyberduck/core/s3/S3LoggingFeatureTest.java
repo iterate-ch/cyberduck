@@ -28,6 +28,8 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -45,7 +47,7 @@ public class S3LoggingFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final LoggingConfiguration configuration = new S3LoggingFeature(session).getConfiguration(
-                new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
+                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
         );
         assertNotNull(configuration);
         assertEquals("log.cyberduck.ch", configuration.getLoggingTarget());

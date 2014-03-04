@@ -4,6 +4,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
@@ -23,18 +25,18 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
 
     @Test
     public void testEqualConstructors() throws Exception {
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("1-/b")), new NSObjectPathReference(
-                new Path("/b", Path.FILE_TYPE)
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("[file]-/b")), new NSObjectPathReference(
+                new Path("/b", EnumSet.of(Path.Type.file))
         ));
-        assertEquals(new NSObjectPathReference(NSString.stringWithString("6-/d")), new NSObjectPathReference(
-                new Path("/d", Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE)
+        assertEquals(new NSObjectPathReference(NSString.stringWithString("[directory, symboliclink]-/d")), new NSObjectPathReference(
+                new Path("/d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))
         ));
     }
 
     @Test
     public void testUniquePath() throws Exception {
-        Path one = new Path("a", Path.FILE_TYPE);
-        Path second = new Path("a", Path.FILE_TYPE);
+        Path one = new Path("a", EnumSet.of(Path.Type.file));
+        Path second = new Path("a", EnumSet.of(Path.Type.file));
         assertEquals(new NSObjectPathReference(one), new NSObjectPathReference(second));
     }
 }

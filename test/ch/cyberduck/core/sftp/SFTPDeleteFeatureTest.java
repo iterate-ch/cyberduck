@@ -30,6 +30,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +47,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), "t", Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
         }

@@ -36,6 +36,8 @@ import ch.cyberduck.ui.cocoa.application.NSTextField;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -75,7 +77,8 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Host host = HostParser.parse(urlField.stringValue());
-            final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true), detector.detect(host.getDefaultPath()));
+            final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
+                    EnumSet.of(detector.detect(host.getDefaultPath())));
             final Transfer transfer = new DownloadTransfer(host, file,
                     LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);

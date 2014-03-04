@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool CanExpand(object path)
         {
-            return ((Path) path).attributes().isDirectory();
+            return ((Path) path).isDirectory();
         }
 
         public IEnumerable<Path> ChildrenGetter(object p)

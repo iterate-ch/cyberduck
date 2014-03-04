@@ -47,7 +47,7 @@ public class DefaultUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.attributes().isVolume()) {
+        if(file.isVolume()) {
             return list;
         }
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",

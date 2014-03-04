@@ -23,13 +23,25 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.EnumSet;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
@@ -192,7 +204,8 @@ public class SFTPSession extends Session<Connection> {
             throw new SFTPExceptionMappingService().map(e);
         }
         return new Path(directory,
-                directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+                directory.equals(String.valueOf(Path.DELIMITER)) ?
+                        EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
     }
 
     @Override

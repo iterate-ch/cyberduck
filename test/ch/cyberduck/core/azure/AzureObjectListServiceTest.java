@@ -15,6 +15,8 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -30,7 +32,7 @@ public class AzureObjectListServiceTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new AzureObjectListService(session).list(container, new DisabledListProgressListener());
         assertNotNull(list);
     }

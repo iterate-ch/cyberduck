@@ -83,12 +83,6 @@ public class LocalAttributesTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIsSymbolicLink() throws Exception {
-        LocalAttributes a = new LocalAttributes("/t");
-        assertFalse(a.isSymbolicLink());
-    }
-
-    @Test
     public void testGetChecksum() throws Exception {
         assertNull(new LocalAttributes(UUID.randomUUID().toString()).getChecksum());
     }

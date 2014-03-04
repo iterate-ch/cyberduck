@@ -43,7 +43,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
 
     @Override
     public boolean resolve(final Local file) {
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
                 // Resolve links instead
                 return false;
@@ -64,7 +64,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
 
     @Override
     public boolean include(final Local file) {
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             final Local target = file.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
             for(TransferItem root : files) {

@@ -68,7 +68,7 @@ public class DuplicateFileController extends FileController {
 
     private void duplicateFile(final Path selected, final String filename) {
         final Path duplicate = new Path(
-                selected.getParent(), filename, selected.attributes().getType());
+                selected.getParent(), filename, selected.getType());
         ((BrowserController) parent).duplicatePath(selected, duplicate);
     }
 }

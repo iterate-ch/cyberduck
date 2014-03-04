@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +123,8 @@ public class S3ObjectListService implements ListService {
         }
     }
 
-    private AttributedList<Path> listObjects(final Path bucket, final Path parent, final String prefix, final String delimiter,
+    private AttributedList<Path> listObjects(final Path bucket, final Path parent,
+                                             final String prefix, final String delimiter,
                                              final ListProgressListener listener)
             throws IOException, ServiceException, BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -137,10 +140,12 @@ public class S3ObjectListService implements ListService {
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
                 final String key = PathNormalizer.normalize(object.getKey());
-                if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, PathNormalizer.name(key), attributes.find(object));
+                final PathAttributes attr = attributes.find(object);
+                final Path p = new Path(parent, PathNormalizer.name(key),
+                        attr.isPlaceholder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
                 // Copy bucket location
                 p.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(p);
@@ -152,10 +157,10 @@ public class S3ObjectListService implements ListService {
                     continue;
                 }
                 final String key = PathNormalizer.normalize(common);
-                if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, PathNormalizer.name(key), Path.DIRECTORY_TYPE);
+                final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
                 if(children.contains(p.getReference())) {
                     // There is already a placeholder object
                     continue;
@@ -187,10 +192,10 @@ public class S3ObjectListService implements ListService {
             if((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest()) {
                 // Latest version already in default listing
                 final String key = PathNormalizer.normalize(marker.getKey());
-                if(new Path(bucket, key, Path.DIRECTORY_TYPE).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, PathNormalizer.name(key), Path.FILE_TYPE);
+                final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
                 // Versioning is enabled if non null.
                 p.attributes().setVersionId(marker.getVersionId());
                 p.attributes().setRevision(++i);

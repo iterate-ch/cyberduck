@@ -42,7 +42,7 @@ public class DefaultPathReference implements PathReference<String> {
     @Override
     public String unique() {
         return String.format("%s-%s%s",
-                String.valueOf(path.attributes().getType()), this.attributes(), path.getAbsolute());
+                String.valueOf(path.getType()), this.attributes(), path.getAbsolute());
     }
 
     @Override

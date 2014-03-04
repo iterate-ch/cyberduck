@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertTrue(f.accept(new Path("t", Path.FILE_TYPE), new NullLocal("a") {
+        assertTrue(f.accept(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("a") {
             @Override
             public boolean exists() {
                 return true;
@@ -50,7 +51,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testSkip() throws Exception {
-        final Path file = new Path("t", Path.FILE_TYPE);
+        final Path file = new Path("t", EnumSet.of(Path.Type.file));
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
@@ -88,7 +89,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepareFalse() throws Exception {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
@@ -100,12 +101,12 @@ public class ResumeFilterTest extends AbstractTestCase {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final Path f = new Path("t", Path.FILE_TYPE);
+                final Path f = new Path("t", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
             }
         }, new UploadFilterOptions().withTemporary(true));
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -114,12 +115,12 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return 8L;
                     }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
                 };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
             }
         }, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
@@ -131,7 +132,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepare0() throws Exception {
         final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(0L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
@@ -159,7 +160,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         });
         final long size = 3L;
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -168,12 +169,12 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
                 };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
             }
         }, new TransferStatus().exists(true)));
     }
@@ -198,7 +199,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         });
         final long size = 3L;
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         final NullLocal l = new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -207,12 +208,12 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
                 };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
             }
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
@@ -240,7 +241,7 @@ public class ResumeFilterTest extends AbstractTestCase {
             }
         });
         final long size = 3L;
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -249,12 +250,12 @@ public class ResumeFilterTest extends AbstractTestCase {
                     public long getSize() {
                         return size;
                     }
-
-                    @Override
-                    public boolean isFile() {
-                        return true;
-                    }
                 };
+            }
+
+            @Override
+            public boolean isFile() {
+                return true;
             }
         }, new TransferStatus().exists(true)));
     }

@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.EnumSet;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -86,6 +87,71 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Path");
         return dict.getSerialized();
+    }
+
+    @Override
+    public EnumSet<Type> getType() {
+        final EnumSet<Type> set = EnumSet.noneOf(Type.class);
+        if(this.isFile()) {
+            set.add(Type.file);
+        }
+        if(this.isDirectory()) {
+            set.add(Type.directory);
+        }
+        if(this.isVolume()) {
+            set.add(Type.volume);
+        }
+        if(this.isSymbolicLink()) {
+            set.add(Type.symboliclink);
+        }
+        return set;
+    }
+
+    public boolean isVolume() {
+        return null == new File(path).getParent();
+    }
+
+    /**
+     * This is only returning the correct result if the file already exists.
+     *
+     * @see Local#exists()
+     */
+    public boolean isDirectory() {
+        return new File(path).isDirectory();
+    }
+
+    /**
+     * This is only returning the correct result if the file already exists.
+     *
+     * @see Local#exists()
+     */
+    public boolean isFile() {
+        return new File(path).isFile();
+    }
+
+    /**
+     * Checks whether a given file is a symbolic link.
+     * <p/>
+     * <p>It doesn't really test for symbolic links but whether the
+     * canonical and absolute paths of the file are identical - this
+     * may lead to false positives on some platforms.</p>
+     *
+     * @return true if the file is a symbolic link.
+     */
+    public boolean isSymbolicLink() {
+        final File f = new File(path);
+        if(!f.exists()) {
+            return false;
+        }
+        // For a link that actually points to something (either a file or a directory),
+        // the absolute path is the path through the link, whereas the canonical path
+        // is the path the link references.
+        try {
+            return !f.getAbsolutePath().equals(f.getCanonicalPath());
+        }
+        catch(IOException e) {
+            return false;
+        }
     }
 
     public LocalAttributes attributes() {
@@ -348,7 +414,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Local directory) {
-        if(directory.attributes().isFile()) {
+        if(directory.isFile()) {
             // If a file we don't have any children at all
             return false;
         }

@@ -64,7 +64,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
                         else {
                             proposal = String.format("%s-%d", filename, no);
                         }
-                        remote = new Path(parent, proposal, upload.remote.attributes());
+                        remote = new Path(parent, proposal, upload.remote.getType());
                     }
                     while(false);//(upload.exists());
                     if(log.isInfoEnabled()) {

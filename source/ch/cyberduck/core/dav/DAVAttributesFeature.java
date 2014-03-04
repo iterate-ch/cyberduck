@@ -32,7 +32,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVAttributesFeature implements Attributes {
 
@@ -47,8 +47,7 @@ public class DAVAttributesFeature implements Attributes {
         try {
             final List<DavResource> resources = session.getClient().getResources(new DAVPathEncoder().encode(file));
             for(final DavResource resource : resources) {
-                final PathAttributes attributes = new PathAttributes(
-                        resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final PathAttributes attributes = new PathAttributes();
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());
                 }

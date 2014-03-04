@@ -5,22 +5,24 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FileTypeComparatorTest extends AbstractTestCase {
 
     @Test
     public void testCompareFirst() throws Exception {
         assertEquals(0,
-                new FileTypeComparator(true).compareFirst(new Path("/a", Path.FILE_TYPE), new Path("/a", Path.FILE_TYPE)));
+                new FileTypeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/a", EnumSet.of(Path.Type.file))));
         assertEquals(0,
-                new FileTypeComparator(true).compareFirst(new Path("/a", Path.DIRECTORY_TYPE), new Path("/b", Path.DIRECTORY_TYPE)));
+                new FileTypeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.directory)), new Path("/b", EnumSet.of(Path.Type.directory))));
         assertEquals(1,
-                new FileTypeComparator(true).compareFirst(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.DIRECTORY_TYPE)));
+                new FileTypeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.directory))));
         assertEquals(-1,
-                new FileTypeComparator(true).compareFirst(new Path("/a", Path.DIRECTORY_TYPE), new Path("/b", Path.FILE_TYPE)));
+                new FileTypeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.directory)), new Path("/b", EnumSet.of(Path.Type.file))));
     }
 }

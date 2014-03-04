@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -100,7 +102,7 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(inputField.stringValue())) {
-            Path file = new Path(this.getWorkdir(), inputField.stringValue(), Path.FILE_TYPE);
+            Path file = new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file));
             return cache.lookup(file.getReference()) == null;
         }
         return false;

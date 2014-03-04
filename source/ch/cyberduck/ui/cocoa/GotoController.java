@@ -61,7 +61,7 @@ public class GotoController extends AlertController {
         private final Filter<Path> filter = new Filter<Path>() {
             @Override
             public boolean accept(Path p) {
-                return p.attributes().isDirectory();
+                return p.isDirectory();
             }
         };
 

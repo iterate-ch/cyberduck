@@ -2,7 +2,6 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.junit.Test;
@@ -21,7 +20,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
     public void testCompareEqual() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-        assertEquals(Comparison.equal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override
                                                      public long getModificationDate() {
                                                          return timestmap;
@@ -34,7 +33,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
                                                  }
         ));
 
-        assertEquals(Comparison.equal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override
                                                      public long getModificationDate() {
                                                          return timestmap;
@@ -52,7 +51,7 @@ public class TimestampComparisonServiceTest extends AbstractTestCase {
     public void testCompareLocal() throws Exception {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestmap = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
-        assertEquals(Comparison.local, s.compare(new PathAttributes(Path.FILE_TYPE) {
+        assertEquals(Comparison.local, s.compare(new PathAttributes() {
                                                      @Override
                                                      public long getModificationDate() {
                                                          final Calendar c = Calendar.getInstance(TimeZone.getDefault());

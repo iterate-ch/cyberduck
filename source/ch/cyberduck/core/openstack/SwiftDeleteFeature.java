@@ -60,7 +60,7 @@ public class SwiftDeleteFeature implements Delete {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
-                if(file.attributes().isFile()) {
+                if(file.isFile()) {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     final List<Path> segments = segmentService.list(file);
                     session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
@@ -70,7 +70,7 @@ public class SwiftDeleteFeature implements Delete {
                         new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController());
                     }
                 }
-                else if(file.attributes().isDirectory()) {
+                else if(file.isDirectory()) {
                     if(containerService.isContainer(file)) {
                         session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName());

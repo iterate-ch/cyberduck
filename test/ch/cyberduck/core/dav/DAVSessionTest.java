@@ -1,6 +1,19 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -18,6 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -38,10 +52,10 @@ public class DAVSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertNotNull(session.workdir());
-        final AttributedList<Path> list = session.list(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE), new DisabledListProgressListener());
-        assertNotNull(list.get(new Path("/trunk", Path.DIRECTORY_TYPE).getReference()));
-        assertNotNull(list.get(new Path("/branches", Path.DIRECTORY_TYPE).getReference()));
-        assertNotNull(list.get(new Path("/tags", Path.DIRECTORY_TYPE).getReference()));
+        final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory)).getReference()));
+        assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory)).getReference()));
+        assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory)).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -151,7 +165,7 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());

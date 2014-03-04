@@ -9,6 +9,7 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -34,7 +35,7 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         final List<Path> list = new S3BucketListService(session).list(new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE)));
+        assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 }

@@ -66,7 +66,7 @@ public class S3FindFeature implements Find {
         }
         try {
             final boolean found;
-            if(file.attributes().isDirectory() && !file.attributes().isVolume()) {
+            if(file.isDirectory() && !file.isVolume()) {
                 found = session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
                         containerService.getKey(file) + Path.DELIMITER);
             }

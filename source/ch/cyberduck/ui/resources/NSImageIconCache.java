@@ -254,15 +254,15 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage fileIcon(final Path path, final Integer size) {
-        if(path.attributes().isSymbolicLink()) {
+        if(path.isSymbolicLink()) {
             final NSImage badge = this.iconNamed("aliasbadge.tiff", size);
             badge.setName("aliasbadge");
-            if(path.attributes().isDirectory()) {
+            if(path.isDirectory()) {
                 return this.folderIcon(size, badge);
             }
             return this.documentIcon(StringUtils.lowerCase(path.getExtension()), size, badge);
         }
-        if(path.attributes().isFile()) {
+        if(path.isFile()) {
             if(StringUtils.isEmpty(path.getExtension())) {
                 if(path.attributes().getPermission().isExecutable()) {
                     return this.iconNamed("executable.tiff", size);
@@ -270,7 +270,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             }
             return this.documentIcon(StringUtils.lowerCase(path.getExtension()), size);
         }
-        if(path.attributes().isDirectory()) {
+        if(path.isDirectory()) {
             if(!Permission.EMPTY.equals(path.attributes().getPermission())) {
                 if(!path.attributes().getPermission().isExecutable()) {
                     final NSImage badge = this.iconNamed("privatefolderbadge.tiff", size);

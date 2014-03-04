@@ -29,7 +29,16 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -356,7 +365,7 @@ public class InfoController extends ToolbarWindowController {
                 public Boolean run() throws BackgroundException {
                     final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
                     for(Path next : files) {
-                        if(next.attributes().isFile()) {
+                        if(next.isFile()) {
                             feature.setClass(next, sender.selectedItem().representedObject());
                         }
                     }
@@ -396,7 +405,7 @@ public class InfoController extends ToolbarWindowController {
                 public Boolean run() throws BackgroundException {
                     final Encryption feature = controller.getSession().getFeature(Encryption.class);
                     for(Path next : files) {
-                        if(next.attributes().isFile()) {
+                        if(next.isFile()) {
                             feature.setEncryption(next, encryptionButton.state() == NSCell.NSOnState ?
                                     feature.getAlgorithms().iterator().next() : null);
                         }
@@ -1647,7 +1656,7 @@ public class InfoController extends ToolbarWindowController {
                     && controller.getSession().getFeature(Move.class).isSupported(file));
             // Where
             String path;
-            if(file.attributes().isSymbolicLink()) {
+            if(file.isSymbolicLink()) {
                 path = file.getSymlinkTarget().getAbsolute();
             }
             else {
@@ -1697,7 +1706,7 @@ public class InfoController extends ToolbarWindowController {
                 iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
             }
             else {
-                if(this.getSelected().attributes().isVolume()) {
+                if(this.getSelected().isVolume()) {
                     iconImageView.setImage(IconCacheFactory.<NSImage>get().volumeIcon(controller.getSession().getHost().getProtocol(), 32));
                 }
                 else {
@@ -1982,7 +1991,7 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.removeItemWithTitle(LocaleFactory.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                 }
-                if(file.attributes().isFile()) {
+                if(file.isFile()) {
                     final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
                     if(!signed.equals(DescriptiveUrl.EMPTY)) {
                         s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
@@ -2208,7 +2217,7 @@ public class InfoController extends ToolbarWindowController {
             }
             else {
                 for(Path file : files) {
-                    if(file.attributes().isFile()) {
+                    if(file.isFile()) {
                         final DescriptiveUrl authenticated = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.authenticated);
                         if(!authenticated.equals(DescriptiveUrl.EMPTY)) {
                             aclUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(authenticated));
@@ -2253,7 +2262,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     final Path renamed = new Path(
-                            current.getParent(), filenameField.stringValue(), current.attributes().getType());
+                            current.getParent(), filenameField.stringValue(), current.getType());
                     controller.renamePath(current, renamed);
                     this.initWebUrl();
                 }
@@ -2391,7 +2400,7 @@ public class InfoController extends ToolbarWindowController {
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
         recursiveButton.setEnabled(stop && enable);
         for(Path next : files) {
-            if(next.attributes().isFile()) {
+            if(next.isFile()) {
                 recursiveButton.setEnabled(false);
                 break;
             }
@@ -2652,7 +2661,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         for(Path next : rootDocuments) {
-                            if(next.attributes().isFile()) {
+                            if(next.isFile()) {
                                 distributionDefaultRootPopup.addItemWithTitle(next.getName());
                                 distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
                             }
@@ -2765,7 +2774,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         sizeButton.setEnabled(false);
         for(Path next : files) {
-            if(next.attributes().isDirectory()) {
+            if(next.isDirectory()) {
                 sizeButton.setEnabled(stop);
                 break;
             }

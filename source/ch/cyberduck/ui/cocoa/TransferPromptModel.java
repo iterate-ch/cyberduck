@@ -194,7 +194,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(Column.warning.name())) {
-            if(file.attributes().isFile()) {
+            if(file.isFile()) {
                 if(this.getStatus(file).getLength() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
@@ -217,7 +217,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
-        return cache.lookup(new NSObjectPathReference(item)).remote.attributes().isDirectory();
+        return cache.lookup(new NSObjectPathReference(item)).remote.isDirectory();
     }
 
     @Override

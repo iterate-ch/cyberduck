@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +46,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void test3243() throws Exception {
         final FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        Path path = new Path("/SunnyD", Path.DIRECTORY_TYPE);
+        Path path = new Path("/SunnyD", EnumSet.of(Path.Type.directory));
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
         final AttributedList<Path> list = new AttributedList<Path>();
@@ -58,7 +59,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         final FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
 
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        Path path = new Path("/", Path.DIRECTORY_TYPE);
+        Path path = new Path("/", EnumSet.of(Path.Type.directory));
         assertEquals("/", path.getName());
         assertEquals("/", path.getAbsolute());
 
@@ -67,7 +68,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
 
         assertFalse(list.isEmpty());
         final Path parsed = list.get(0);
-        assertTrue(parsed.attributes().isSymbolicLink());
+        assertTrue(parsed.isSymbolicLink());
         assertEquals("/www/basic/mk", parsed.getSymlinkTarget().getAbsolute());
         assertEquals(new Permission("rwxrwxrwx"), parsed.attributes().getPermission());
     }
@@ -76,7 +77,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void test3763() throws Exception {
         final FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        Path path = new Path("/www", Path.DIRECTORY_TYPE);
+        Path path = new Path("/www", EnumSet.of(Path.Type.directory));
         assertEquals("www", path.getName());
         assertEquals("/www", path.getAbsolute());
         final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), path, parser,
@@ -87,9 +88,9 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testStickyBit() throws Exception {
         final FTPFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), new Path("/", Path.DIRECTORY_TYPE), parser,
+        final AttributedList<Path> list = new FTPListResponseReader().read(s, new DisabledListProgressListener(), new Path("/", EnumSet.of(Path.Type.directory)), parser,
                 Collections.singletonList("-rwsrwSr-T 1 dkocher dkocher         0 Sep  6 22:27 t"));
-        final Path parsed = list.get(new Path("/t", Path.FILE_TYPE).getReference());
+        final Path parsed = list.get(new Path("/t", EnumSet.of(Path.Type.file)).getReference());
         assertNotNull(parsed);
         assertTrue(parsed.attributes().getPermission().isSticky());
         assertTrue(parsed.attributes().getPermission().isSetuid());
@@ -102,7 +103,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testParseHardlinkCountBadFormat() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/store/public/brain", Path.DIRECTORY_TYPE);
+                "/store/public/brain", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "drwx------+111 mi       public       198 Dec 17 12:29 unsorted"
@@ -120,7 +121,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
     public void testParseAbsolutePaths() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/data/FTP_pub", Path.DIRECTORY_TYPE);
+                "/data/FTP_pub", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
@@ -146,7 +147,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
                         throw new ListCanceledException(AttributedList.<Path>emptyList());
                     }
                 },
-                new Path("/", Path.DIRECTORY_TYPE), new FTPParserSelector().getParser("NETWARE  Type : L8"),
+                new Path("/", EnumSet.of(Path.Type.directory)), new FTPParserSelector().getParser("NETWARE  Type : L8"),
                 Arrays.asList("lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"));
     }
 }

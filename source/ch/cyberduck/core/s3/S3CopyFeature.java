@@ -42,7 +42,7 @@ public class S3CopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
-        if(source.attributes().isFile()) {
+        if(source.isFile()) {
             // Keep same storage class
             final String storageClass = source.attributes().getStorageClass();
             // Keep encryption setting
@@ -56,7 +56,7 @@ public class S3CopyFeature implements Copy {
 
     protected void copy(final Path source, final Path copy, final String storageClass, final String encryptionAlgorithm,
                         final Acl acl) throws BackgroundException {
-        if(source.attributes().isFile()) {
+        if(source.isFile()) {
             final StorageObject destination = new StorageObject(containerService.getKey(copy));
             destination.setStorageClass(storageClass);
             destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);

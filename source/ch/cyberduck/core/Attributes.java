@@ -48,24 +48,6 @@ public abstract class Attributes {
      */
     public abstract Permission getPermission();
 
-    /**
-     * @return True if this path denotes a directory or is a symbolic link pointing to a directory
-     */
-    public abstract boolean isDirectory();
-
-    public abstract boolean isVolume();
-
-    /**
-     * @return True if this path denotes a regular file or is a symbolic link pointing to a regular file
-     */
-    public abstract boolean isFile();
-
-    /**
-     * @return True if this path denotes a symbolic link.
-     *         Warning! Returns false for Mac OS Classic Alias
-     */
-    public abstract boolean isSymbolicLink();
-
     public abstract String getOwner();
 
     public abstract String getGroup();

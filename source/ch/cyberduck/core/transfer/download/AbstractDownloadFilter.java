@@ -92,7 +92,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);
             }
@@ -114,13 +114,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
         }
         final PathAttributes attributes;
-        if(file.attributes().isSymbolicLink()) {
+        if(file.isSymbolicLink()) {
             // A server will resolve the symbolic link when the file is requested.
             final Path target = file.getSymlinkTarget();
             // Read remote attributes of symlink target
             attributes = attribute.find(target);
             if(!symlinkResolver.resolve(file)) {
-                if(file.attributes().isFile()) {
+                if(file.isFile()) {
                     // Content length
                     status.setLength(attributes.getSize());
                 }
@@ -130,7 +130,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         else {
             // Read remote attributes
             attributes = attribute.find(file);
-            if(file.attributes().isFile()) {
+            if(file.isFile()) {
                 // Content length
                 status.setLength(attributes.getSize());
             }
@@ -142,11 +142,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         if(this.options.permissions) {
             Permission permission = Permission.EMPTY;
             if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
-                if(file.attributes().isFile()) {
+                if(file.isFile()) {
                     permission = new Permission(
                             Preferences.instance().getInteger("queue.download.permissions.file.default"));
                 }
-                if(file.attributes().isDirectory()) {
+                if(file.isDirectory()) {
                     permission = new Permission(
                             Preferences.instance().getInteger("queue.download.permissions.folder.default"));
                 }
@@ -162,7 +162,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             // No icon update if disabled
             if(options.icon) {
                 icon.set(local, new TransferStatus());
@@ -181,7 +181,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(file.attributes().isFile()) {
+            if(file.isFile()) {
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);
@@ -207,11 +207,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(!Permission.EMPTY.equals(status.getPermission())) {
-                if(file.attributes().isDirectory()) {
+                if(file.isDirectory()) {
                     // Make sure we can read & write files to directory created.
                     status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
                 }
-                if(file.attributes().isFile()) {
+                if(file.isFile()) {
                     // Make sure the owner can always read and write.
                     status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
                 }

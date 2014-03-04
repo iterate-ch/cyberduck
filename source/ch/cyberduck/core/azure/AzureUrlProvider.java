@@ -61,7 +61,7 @@ public class AzureUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             list.add(this.createSignedUrl(file, 60 * 60));
             // Default signed URL expiring in 24 hours.
             list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));

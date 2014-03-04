@@ -34,6 +34,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public class S3BucketListService implements RootListService {
                 if(StringUtils.isEmpty(this.getContainer(session.getHost()))) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
                         final Path container = new PathContainerService().getContainer(
-                                new Path(session.getHost().getDefaultPath(), Path.DIRECTORY_TYPE)
+                                new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory))
                         );
                         log.info(String.format("Using default %s path to determine bucket name %s",
                                 session.getHost().getDefaultPath(), container));
@@ -67,24 +68,24 @@ public class S3BucketListService implements RootListService {
                     }
                     else {
                         log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
-                        return Collections.singletonList(new Path(session.getHost().getHostname(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE));
+                        return Collections.singletonList(new Path(session.getHost().getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory)));
                     }
                 }
                 else {
-                    return Collections.singletonList(new Path(this.getContainer(session.getHost()), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE));
+                    return Collections.singletonList(new Path(this.getContainer(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory)));
                 }
             }
             else {
                 // If bucket is specified in hostname, try to connect to this particular bucket only.
                 final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
-                    return Collections.singletonList(new Path(bucketname, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE));
+                    return Collections.singletonList(new Path(bucketname, EnumSet.of(Path.Type.volume, Path.Type.directory)));
                 }
                 else {
                     final List<Path> buckets = new ArrayList<Path>();
                     // List all buckets owned
                     for(StorageBucket b : session.getClient().listAllBucketsImpl()) {
-                        final Path bucket = new Path(b.getName(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        final Path bucket = new Path(b.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
                         if(b.getOwner() != null) {
                             // Null if the owner is not available
                             bucket.attributes().setOwner(b.getOwner().getId());

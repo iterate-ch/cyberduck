@@ -57,7 +57,7 @@ public class SFTPWriteFeature implements Write {
             }
             else {
                 if(status.isExists() && !status.isRename()) {
-                    if(file.attributes().isSymbolicLink()) {
+                    if(file.isSymbolicLink()) {
                         // Workaround for #7327
                         session.sftp().rm(file.getAbsolute());
                     }

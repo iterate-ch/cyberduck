@@ -39,6 +39,7 @@ import ch.cyberduck.ui.AbstractController;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -64,10 +65,10 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 };
             }
         };
-        final Path test = new Path("/home/jenkins/transfer/test", Path.FILE_TYPE);
+        final Path test = new Path("/home/jenkins/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
 
-        final Path copy = new Path(new Path("/home/jenkins/transfer", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CopyTransfer t = new CopyTransfer(host, host, Collections.<Path, Path>singletonMap(test, copy));
 
         final AbstractController controller = new AbstractController() {
@@ -116,10 +117,10 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         )));
 
-        final Path test = new Path("/home/jenkins/transfer/test", Path.FILE_TYPE);
+        final Path test = new Path("/home/jenkins/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
 
-        final Path copy = new Path(new Path("/transfer", Path.DIRECTORY_TYPE), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
                 Collections.<Path, Path>singletonMap(test, copy));
 

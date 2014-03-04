@@ -25,13 +25,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureReadFeatureTest extends AbstractTestCase {
 
@@ -44,8 +45,8 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final TransferStatus status = new TransferStatus();
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
-        new AzureReadFeature(session).read(new Path(container, "nosuchname", Path.FILE_TYPE), status);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        new AzureReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
 
     @Test
@@ -56,8 +57,8 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().length(content.length));

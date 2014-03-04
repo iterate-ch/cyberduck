@@ -29,6 +29,8 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -47,7 +49,7 @@ public class SFTPTimestampFeatureTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path test = new Path(home, "test", Path.FILE_TYPE);
+        final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test.getReference()).attributes().getModificationDate());

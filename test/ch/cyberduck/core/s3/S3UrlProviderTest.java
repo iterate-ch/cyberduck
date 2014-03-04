@@ -10,6 +10,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -22,7 +23,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
     @Test
     public void testToHttpURL() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
-        Path p = new Path("/bucket/f/key f", Path.FILE_TYPE);
+        Path p = new Path("/bucket/f/key f", EnumSet.of(Path.Type.file));
         assertEquals("https://bucket.s3.amazonaws.com/f/key%20f",
                 new S3UrlProvider(session).toUrl(p).find(DescriptiveUrl.Type.http).getUrl());
         assertTrue(new S3UrlProvider(session).toUrl(p).filter(DescriptiveUrl.Type.http).contains(
@@ -40,9 +41,9 @@ public class S3UrlProviderTest extends AbstractTestCase {
     public void testUri() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals("https://s3.amazonaws.com/test.cyberduck.ch/key",
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/key",
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", Path.FILE_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/key", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
@@ -50,7 +51,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
         assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.signed));
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
     }
 
     @Test
@@ -58,7 +59,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s.greenqloud.com",
                 new Credentials("k", "s")));
         assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE)).find(DescriptiveUrl.Type.signed));
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), null
         )));
         assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).createSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE), 30));
+                new S3UrlProvider(session).createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
             public String find(final Host host) {
                 return "k";
             }
-        }).createSignedUrl(new Path("/test.cyberduck.ch/test", Path.FILE_TYPE), 30).getUrl().startsWith(
+        }).createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
                 "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
     }
 
@@ -89,7 +90,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
         assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.torrent));
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
     @Test
@@ -98,6 +99,6 @@ public class S3UrlProviderTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), null
         )));
         assertTrue(
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", Path.DIRECTORY_TYPE)).filter(DescriptiveUrl.Type.signed).isEmpty());
+                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.directory))).filter(DescriptiveUrl.Type.signed).isEmpty());
     }
 }

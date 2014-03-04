@@ -171,6 +171,11 @@ public class FinderLocal extends Local {
     }
 
     @Override
+    public boolean isSymbolicLink() {
+        return attributes.isSymbolicLink();
+    }
+
+    @Override
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
             bookmark = this.createBookmark();

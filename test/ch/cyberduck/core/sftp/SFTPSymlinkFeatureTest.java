@@ -1,5 +1,6 @@
 package ch.cyberduck.core.sftp;
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
@@ -13,6 +14,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -30,13 +32,13 @@ public class SFTPSymlinkFeatureTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target);
-        final Path link = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        final Path link = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));
-        assertEquals(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE,
-                session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link.getReference()).attributes().getType());
+        assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
+                session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link.getReference()).getType());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginController());
         assertFalse(new SFTPFindFeature(session).find(link));
         assertTrue(new SFTPFindFeature(session).find(target));

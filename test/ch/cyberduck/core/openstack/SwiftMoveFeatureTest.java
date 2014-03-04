@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -48,13 +49,13 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(test);
         assertTrue(new SwiftFindFeature(session).find(test));
-        final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
         new SwiftMoveFeature(session).move(test, target, false);
         assertFalse(new SwiftFindFeature(session).find(test));
@@ -71,12 +72,12 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(test);
-        final Path target = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(target);
         new SwiftMoveFeature(session).move(test, target, false);
@@ -94,16 +95,16 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), false);
+        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false);
     }
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new SwiftMoveFeature(null).isSupported(new Path("/c", Path.DIRECTORY_TYPE)));
-        assertTrue(new SwiftMoveFeature(null).isSupported(new Path("/c/f", Path.DIRECTORY_TYPE)));
+        assertFalse(new SwiftMoveFeature(null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SwiftMoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
     }
 }

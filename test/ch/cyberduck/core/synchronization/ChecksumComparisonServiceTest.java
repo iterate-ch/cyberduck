@@ -2,7 +2,6 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class ChecksumComparisonServiceTest extends AbstractTestCase {
     @Test
     public void testCompare() throws Exception {
         ComparisonService s = new ChecksumComparisonService();
-        assertEquals(Comparison.equal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+        assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override
                                                      public String getChecksum() {
                                                          return "a";
@@ -30,7 +29,7 @@ public class ChecksumComparisonServiceTest extends AbstractTestCase {
                                                  }
         ));
 
-        assertEquals(Comparison.notequal, s.compare(new PathAttributes(Path.FILE_TYPE) {
+        assertEquals(Comparison.notequal, s.compare(new PathAttributes() {
                                                         @Override
                                                         public String getChecksum() {
                                                             return "b";
@@ -47,7 +46,7 @@ public class ChecksumComparisonServiceTest extends AbstractTestCase {
     @Test
     public void testDirectory() throws Exception {
         ComparisonService s = new ChecksumComparisonService();
-        assertEquals(Comparison.notequal, s.compare(new PathAttributes(Path.DIRECTORY_TYPE),
+        assertEquals(Comparison.notequal, s.compare(new PathAttributes(),
                 new LocalAttributes("/t")));
     }
 }

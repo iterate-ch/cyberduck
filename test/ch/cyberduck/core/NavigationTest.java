@@ -2,6 +2,8 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -23,8 +25,8 @@ public class NavigationTest extends AbstractTestCase {
     public void testBack() throws Exception {
         Navigation n = new Navigation();
         assertNull(n.back());
-        n.add(new Path("a", Path.DIRECTORY_TYPE));
-        n.add(new Path("b", Path.DIRECTORY_TYPE));
+        n.add(new Path("a", EnumSet.of(Path.Type.directory)));
+        n.add(new Path("b", EnumSet.of(Path.Type.directory)));
         assertEquals("a", n.back().getName());
         assertEquals("b", n.forward().getName());
     }

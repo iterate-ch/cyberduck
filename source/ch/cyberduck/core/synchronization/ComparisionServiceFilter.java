@@ -70,7 +70,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
     public Comparison compare(final Path file, final Local local) throws BackgroundException {
         if(local.exists()) {
             if(finder.find(file)) {
-                if(file.attributes().isDirectory()) {
+                if(file.isDirectory()) {
                     // Do not compare timestamp for directories
                     return Comparison.equal;
                 }

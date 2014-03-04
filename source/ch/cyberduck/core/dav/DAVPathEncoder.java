@@ -21,13 +21,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVPathEncoder {
 
     public String encode(final Path file) {
         final String encoded = URIEncoder.encode(file.getAbsolute());
-        if(file.attributes().isDirectory()) {
+        if(file.isDirectory()) {
             if(file.isRoot()) {
                 return encoded;
             }

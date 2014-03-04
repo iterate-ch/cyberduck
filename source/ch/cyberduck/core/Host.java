@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -301,7 +302,7 @@ public class Host implements Serializable, Comparable<Host> {
         // Legacy
         Object workdirObjDeprecated = dict.stringForKey("Workdir");
         if(workdirObjDeprecated != null) {
-            this.workdir = new Path(workdirObjDeprecated.toString(), Path.DIRECTORY_TYPE);
+            this.workdir = new Path(workdirObjDeprecated.toString(), EnumSet.of(Path.Type.directory));
         }
         Object workdirObj = dict.objectForKey("Workdir Dictionary");
         if(workdirObj != null) {

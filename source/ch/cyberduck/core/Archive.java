@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -175,11 +176,11 @@ public abstract class Archive {
         if(files.size() == 1) {
             return new Path(files.get(0).getParent(),
                     String.format("%s.%s", files.get(0).getName(), this.getIdentifier()),
-                    Path.FILE_TYPE);
+                    EnumSet.of(Path.Type.file));
         }
         return new Path(files.get(0).getParent(),
                 String.format("%s.%s", LocaleFactory.localizedString("Archive", "Archive"), this.getIdentifier()),
-                Path.FILE_TYPE);
+                EnumSet.of(Path.Type.file));
     }
 
     /**
@@ -190,7 +191,7 @@ public abstract class Archive {
         final List<Path> expanded = new ArrayList<Path>();
         for(Path file : files) {
             expanded.add(new Path(file.getParent(),
-                    StringUtils.remove(file.getName(), String.format(".%s", this.getIdentifier())), Path.FILE_TYPE));
+                    StringUtils.remove(file.getName(), String.format(".%s", this.getIdentifier())), EnumSet.of(Path.Type.file)));
         }
         return expanded;
     }

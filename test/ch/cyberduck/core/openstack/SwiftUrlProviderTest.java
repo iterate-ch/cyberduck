@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,10 +55,10 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         ));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
-                new SwiftUrlProvider(session).toUrl(new Path(container, "f", Path.FILE_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
+                new SwiftUrlProvider(session).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
         session.close();
     }
 
@@ -67,8 +68,8 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
         ));
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path file = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
@@ -93,8 +94,8 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         final Region region = new Region("DFW", URI.create("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), URI.create("http://m"));
         Map accounts = new HashMap();
         accounts.put(region, new AccountInfo(1L, 1, "k"));
-        final Path container = new Path("test w.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path file = new Path(container, "key", Path.FILE_TYPE);
+        final Path container = new Path("test w.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, "key", EnumSet.of(Path.Type.file));
         final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Iterator<DescriptiveUrl> iterator = provider.createTempUrl(region, file, 1379500716L).iterator();
         assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key?temp_url_sig=0b08dd5b2b48aff5c0269cf4e3ca3afdeaf9c7a5&temp_url_expires=1379500716",

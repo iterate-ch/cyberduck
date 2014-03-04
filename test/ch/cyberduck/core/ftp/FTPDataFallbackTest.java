@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.junit.Test;
 
 import java.net.SocketTimeoutException;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -56,7 +57,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         };
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path path = new Path("/pub/debian/README.html", Path.FILE_TYPE);
+        final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
@@ -106,7 +107,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return super.fallback(action);
             }
         };
-        f.data(new Path("test", Path.FILE_TYPE), action);
+        f.data(new Path("test", EnumSet.of(Path.Type.file)), action);
         assertEquals(1, count.get());
         session.close();
     }

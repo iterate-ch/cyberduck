@@ -14,6 +14,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -29,7 +31,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path p = new Path("a", Path.FILE_TYPE);
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus()));
     }
@@ -37,13 +39,13 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectory() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE), new NullLocal("/", "a") {
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a") {
             @Override
             public boolean exists() {
                 return false;
             }
         }, new TransferStatus()));
-        assertTrue(f.accept(new Path("a", Path.DIRECTORY_TYPE), new NullLocal("/", "a") {
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a") {
             @Override
             public boolean exists() {
                 return true;
@@ -54,7 +56,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path p = new Path("a", Path.FILE_TYPE);
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         final TransferStatus status = f.prepare(p, new NullLocal("a"), new TransferStatus());
         assertEquals(8L, status.getLength(), 0L);
@@ -63,7 +65,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareAttributes() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path p = new Path("a", Path.FILE_TYPE);
+        final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         p.attributes().setModificationDate(1L);
         p.attributes().setPermission(new Permission(777));

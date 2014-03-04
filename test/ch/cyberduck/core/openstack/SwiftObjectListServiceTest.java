@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,18 +51,18 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
-            if(p.attributes().isFile()) {
+            if(p.isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
                 assertNotNull(p.attributes().getChecksum());
                 assertNotNull(p.attributes().getETag());
             }
-            else if(p.attributes().isDirectory()) {
+            else if(p.isDirectory()) {
                 assertTrue(p.attributes().isPlaceholder());
             }
             else {
@@ -79,7 +80,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("notfound.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
     }
 
@@ -92,20 +93,20 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
-        final Path base = new Path(container, basename, Path.FILE_TYPE);
+        final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(base);
-        final Path child = new Path(container, childname, Path.FILE_TYPE);
+        final Path child = new Path(container, childname, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(child);
         final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         assertTrue(list.contains(base));
-        assertEquals(Path.FILE_TYPE, list.get(base.getReference()).attributes().getType());
-        final Path placeholder = new Path(container, basename, Path.DIRECTORY_TYPE);
+        assertEquals(EnumSet.of(Path.Type.file), list.get(base.getReference()).getType());
+        final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory));
         assertTrue(list.contains(placeholder));
-        assertEquals(Path.DIRECTORY_TYPE, list.get(placeholder.getReference()).attributes().getType());
+        assertEquals(EnumSet.of(Path.Type.directory), list.get(placeholder.getReference()).getType());
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
     }
 }

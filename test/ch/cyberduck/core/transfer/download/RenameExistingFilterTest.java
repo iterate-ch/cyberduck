@@ -15,6 +15,7 @@ import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -44,7 +45,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 fail();
             }
         };
-        final Path p = new Path("t", Path.FILE_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertNull(status.getRename().local);
         f.apply(p, local, new TransferStatus());
@@ -66,7 +67,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 r.set(true);
             }
         };
-        final Path p = new Path("t", Path.FILE_TYPE);
+        final Path p = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertNotNull(status.getRename().local);
         assertFalse(r.get());

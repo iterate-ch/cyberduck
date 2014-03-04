@@ -14,6 +14,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 
@@ -30,9 +31,9 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
-        f.getPermission(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE));
+        f.getPermission(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test(expected = NotfoundException.class)
@@ -43,7 +44,7 @@ public class AzureAclPermissionFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path(UUID.randomUUID().toString(), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
         f.getPermission(container);
     }

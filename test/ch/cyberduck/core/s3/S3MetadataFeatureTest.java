@@ -29,6 +29,7 @@ import org.jets3t.service.Constants;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(container);
         assertTrue(metadata.isEmpty());
         session.close();
@@ -63,8 +64,8 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(new Path(container, "test.txt", Path.FILE_TYPE));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(new Path(container, "test.txt", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
@@ -85,8 +86,8 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
         new S3MetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));

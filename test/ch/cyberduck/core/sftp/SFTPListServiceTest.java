@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
@@ -30,6 +31,8 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
+
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -50,14 +53,14 @@ public class SFTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final Path home = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
-        assertTrue(list.contains(new Path(home, "test", Path.FILE_TYPE).getReference()));
+        assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file)).getReference()));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(home, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
-        assertTrue(list.contains(new Path(home, "test.directory", Path.FILE_TYPE).getReference()));
-        assertTrue(list.contains(new Path(home, "test.symlink", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()));
-        assertEquals(new Path(home, "test", Path.FILE_TYPE), list.get(new Path(home, "test.symlink", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()).getSymlinkTarget());
-        assertTrue(list.contains(new Path(home, "test.symlink-absolute", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()));
-        assertEquals(new Path(home, "test", Path.FILE_TYPE), list.get(new Path(home, "test.symlink-absolute", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE).getReference()).getSymlinkTarget());
+                list.get(new Path(home, "test", EnumSet.of(Path.Type.file)).getReference()).attributes().getPermission());
+        assertTrue(list.contains(new Path(home, "test.directory", EnumSet.of(Path.Type.file)).getReference()));
+        assertTrue(list.contains(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
+        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()).getSymlinkTarget());
+        assertTrue(list.contains(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
+        assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()).getSymlinkTarget());
         session.close();
     }
 }

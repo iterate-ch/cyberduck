@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +46,9 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testDifferent() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new Path("a", Path.FILE_TYPE));
-        files.add(new Path("b", Path.FILE_TYPE));
-        files.add(new Path("c", Path.FILE_TYPE));
+        files.add(new Path("a", EnumSet.of(Path.Type.file)));
+        files.add(new Path("b", EnumSet.of(Path.Type.file)));
+        files.add(new Path("c", EnumSet.of(Path.Type.file)));
         ReadMetadataWorker worker = new ReadMetadataWorker(new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {
@@ -84,9 +85,9 @@ public class ReadMetadataWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        files.add(new Path("a", Path.FILE_TYPE));
-        files.add(new Path("b", Path.FILE_TYPE));
-        files.add(new Path("c", Path.FILE_TYPE));
+        files.add(new Path("a", EnumSet.of(Path.Type.file)));
+        files.add(new Path("b", EnumSet.of(Path.Type.file)));
+        files.add(new Path("c", EnumSet.of(Path.Type.file)));
         ReadMetadataWorker worker = new ReadMetadataWorker(new Headers() {
             @Override
             public Map<String, String> getMetadata(final Path file) throws BackgroundException {

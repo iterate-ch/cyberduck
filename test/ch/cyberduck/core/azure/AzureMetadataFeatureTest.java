@@ -14,13 +14,14 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureMetadataFeatureTest extends AbstractTestCase {
 
@@ -33,8 +34,8 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
-        final Path container = new Path("cyberduck", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
         new AzureMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));

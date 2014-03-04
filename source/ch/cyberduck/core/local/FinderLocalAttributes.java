@@ -85,9 +85,6 @@ public class FinderLocalAttributes extends LocalAttributes {
 
     @Override
     public long getSize() {
-        if(this.isDirectory()) {
-            return -1;
-        }
         final NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
         if(null == size) {
             return -1;
@@ -198,7 +195,6 @@ public class FinderLocalAttributes extends LocalAttributes {
         return NSWorkspace.sharedWorkspace().isFilePackageAtPath(local.getAbsolute());
     }
 
-    @Override
     public boolean isSymbolicLink() {
         final NSObject object = this.getNativeAttribute(NSFileManager.NSFileType);
         if(null == object) {

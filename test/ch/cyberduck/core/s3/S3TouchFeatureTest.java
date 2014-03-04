@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,8 +25,8 @@ public class S3TouchFeatureTest extends AbstractTestCase {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "h"));
-        assertFalse(new S3TouchFeature(session).isSupported(new Path("/", Path.VOLUME_TYPE)));
-        assertTrue(new S3TouchFeature(session).isSupported(new Path(new Path("/", Path.VOLUME_TYPE), "/container", Path.VOLUME_TYPE)));
+        assertFalse(new S3TouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume))));
+        assertTrue(new S3TouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume))));
     }
 
     @Test
@@ -36,8 +37,8 @@ public class S3TouchFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);

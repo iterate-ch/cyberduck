@@ -155,7 +155,7 @@ public class S3VersioningFeature implements Versioning {
      */
     @Override
     public void revert(final Path file) throws BackgroundException {
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             try {
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class

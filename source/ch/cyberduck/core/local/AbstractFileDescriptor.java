@@ -28,10 +28,10 @@ public abstract class AbstractFileDescriptor implements FileDescriptor {
 
     @Override
     public String getKind(final Path file) {
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             return this.getKind(file.getName());
         }
-        if(file.attributes().isDirectory()) {
+        if(file.isDirectory()) {
             return LocaleFactory.localizedString("Folder");
         }
         return LocaleFactory.localizedString("Unknown");

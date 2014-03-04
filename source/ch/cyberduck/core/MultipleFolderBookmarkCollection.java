@@ -73,7 +73,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
                     new Filter<Local>() {
                         @Override
                         public boolean accept(final Local file) {
-                            return file.attributes().isDirectory();
+                            return file.isDirectory();
                         }
                     }
             );

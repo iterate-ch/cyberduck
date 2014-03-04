@@ -12,6 +12,8 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertNotSame;
 
 /**
@@ -33,7 +35,7 @@ public class RenameFilterTest extends AbstractTestCase {
                 return this.getName().equals("/t");
             }
         };
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         f.prepare(t, local, new TransferStatus());
         assertNotSame("/t", t.getName());
     }

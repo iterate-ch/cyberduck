@@ -32,22 +32,17 @@ public class ChecksumComparisonService implements ComparisonService {
 
     @Override
     public Comparison compare(final PathAttributes remote, final LocalAttributes local) throws BackgroundException {
-        if(remote.isDirectory()) {
+        if(null == remote.getChecksum()) {
+            log.warn(String.format("No remote checksum available for comparison %s", remote));
             return Comparison.notequal;
         }
-        else {
-            if(null == remote.getChecksum()) {
-                log.warn(String.format("No remote checksum available for comparison %s", remote));
-                return Comparison.notequal;
-            }
-            if(null == local.getChecksum()) {
-                log.warn(String.format("No local checksum available for comparison %s", local));
-                return Comparison.notequal;
-            }
-            if(remote.getChecksum().equals(local.getChecksum())) {
-                return Comparison.equal;
-            }
+        if(null == local.getChecksum()) {
+            log.warn(String.format("No local checksum available for comparison %s", local));
             return Comparison.notequal;
         }
+        if(remote.getChecksum().equals(local.getChecksum())) {
+            return Comparison.equal;
+        }
+        return Comparison.notequal;
     }
 }

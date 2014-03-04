@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import org.junit.Test;
 
 import java.net.SocketTimeoutException;
+import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -65,9 +67,9 @@ public class FTPListServiceTest extends AbstractTestCase {
             }
         });
         assertTrue(list.contains(
-                new Path(directory, "test", Path.FILE_TYPE).getReference()));
+                new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
+                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()).attributes().getPermission());
         session.close();
     }
 
@@ -93,9 +95,9 @@ public class FTPListServiceTest extends AbstractTestCase {
             }
         });
         assertTrue(list.contains(
-                new Path(directory, "test", Path.FILE_TYPE).getReference()));
+                new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
         assertEquals(new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write),
-                list.get(new Path(directory, "test", Path.FILE_TYPE).getReference()).attributes().getPermission());
+                list.get(new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()).attributes().getPermission());
         session.close();
     }
 
@@ -111,7 +113,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(session.workdir(), "test.d", Path.DIRECTORY_TYPE), new DisabledListProgressListener()).isEmpty());
+        assertTrue(list.list(new Path(session.workdir(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 
@@ -127,7 +129,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(session.workdir(), "test.d", Path.DIRECTORY_TYPE), new DisabledListProgressListener()).isEmpty());
+        assertTrue(list.list(new Path(session.workdir(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
         session.close();
     }
 
@@ -141,11 +143,11 @@ public class FTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         final AttributedList<Path> list = new AttributedList<Path>();
-        list.add(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE));
-        assertTrue(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE).getReference()));
-        service.post(new Path("/", Path.DIRECTORY_TYPE), list);
-        assertFalse(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE).getReference()));
-        assertTrue(list.contains(new Path("/test.d", Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE).getReference()));
+        list.add(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)));
+        assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
+        service.post(new Path("/", EnumSet.of(Path.Type.directory)), list);
+        assertFalse(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
+        assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)).getReference()));
         session.close();
     }
 
@@ -177,7 +179,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertTrue(list.contains(
-                new Path(directory, "test", Path.FILE_TYPE).getReference()));
+                new Path(directory, "test", EnumSet.of(Path.Type.file)).getReference()));
         service.list(directory, new DisabledListProgressListener());
     }
 }

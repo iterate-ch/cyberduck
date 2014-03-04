@@ -37,6 +37,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +142,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             if(Preferences.instance().getBoolean("openstack.upload.largeobject")) {
                 Long size = 0L;
                 final List<Path> segments = listService.list(
-                        new Path(containerService.getContainer(file), segmentService.basename(file, length), Path.DIRECTORY_TYPE),
+                        new Path(containerService.getContainer(file), segmentService.basename(file, length), EnumSet.of(Path.Type.directory)),
                         new DisabledListProgressListener());
                 if(segments.isEmpty()) {
                     return Write.notfound;

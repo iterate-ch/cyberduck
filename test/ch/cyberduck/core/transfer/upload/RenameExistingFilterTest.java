@@ -6,7 +6,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -23,6 +22,7 @@ import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 import org.junit.Test;
 
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +36,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testAccept() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
-        final Path t = new Path("t", Path.FILE_TYPE);
+        final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertTrue(f.accept(t, new NullLocal("/", "t"), new TransferStatus().exists(true)));
     }
 
@@ -66,14 +66,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> l = new AttributedList<Path>();
-                l.add(new Path("t", Path.FILE_TYPE));
+                l.add(new Path("t", EnumSet.of(Path.Type.file)));
                 return l;
             }
         });
-        final Path p = new Path("t", Path.FILE_TYPE) {
+        final Path p = new Path("t", EnumSet.of(Path.Type.file)) {
             @Override
             public Path getParent() {
-                return new Path("p", Path.DIRECTORY_TYPE);
+                return new Path("p", EnumSet.of(Path.Type.directory));
             }
         };
         f.prepare(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
@@ -84,7 +84,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testTemporaryFileUpload() throws Exception {
-        final Path file = new Path("/t", Path.FILE_TYPE);
+        final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicInteger moved = new AtomicInteger();
         final NullSession session = new NullSession(new Host("h")) {
@@ -132,7 +132,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     return (T) new Attributes() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes(Path.FILE_TYPE);
+                            return new PathAttributes();
                         }
 
                         @Override
@@ -183,7 +183,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testTemporaryDirectoryUpload() throws Exception {
-        final Path file = new Path("/t", Path.DIRECTORY_TYPE);
+        final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
         final NullSession session = new NullSession(new Host("h")) {
@@ -225,7 +225,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     return (T) new Attributes() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
-                            return new PathAttributes(Path.DIRECTORY_TYPE);
+                            return new PathAttributes();
                         }
 
                         @Override
@@ -261,18 +261,13 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 new UploadFilterOptions().withTemporary(true));
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override
-            public LocalAttributes attributes() {
-                return new LocalAttributes("/t") {
-                    @Override
-                    public boolean isDirectory() {
-                        return true;
-                    }
+            public boolean isDirectory() {
+                return true;
+            }
 
-                    @Override
-                    public boolean isFile() {
-                        return false;
-                    }
-                };
+            @Override
+            public boolean isFile() {
+                return false;
             }
         }, new TransferStatus().exists(true));
         assertTrue(found.get());
@@ -281,13 +276,8 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         assertFalse(moved.get());
         f.apply(file, new NullLocal("/t") {
             @Override
-            public LocalAttributes attributes() {
-                return new LocalAttributes("/t") {
-                    @Override
-                    public boolean isDirectory() {
-                        return true;
-                    }
-                };
+            public boolean isDirectory() {
+                return true;
             }
         }, new TransferStatus().exists(true));
         assertTrue(moved.get());

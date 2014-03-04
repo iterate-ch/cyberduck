@@ -28,6 +28,7 @@ import ch.cyberduck.core.Scheme;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.Iterator;
 
 import ch.iterate.openstack.swift.model.Region;
@@ -51,8 +52,8 @@ public class SwiftHpUrlProviderTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path file = new Path(container, "a", Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, "a", EnumSet.of(Path.Type.file));
         final SwiftHpUrlProvider provider = new SwiftHpUrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {

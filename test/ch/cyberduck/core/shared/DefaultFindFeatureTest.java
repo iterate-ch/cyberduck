@@ -10,13 +10,14 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultFindFeatureTest extends AbstractTestCase {
 
@@ -30,9 +31,9 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
                 return AttributedList.emptyList();
             }
         });
-        assertFalse(feature.find(new Path("/t", Path.DIRECTORY_TYPE)));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
-        assertFalse(feature.find(new Path("/t", Path.DIRECTORY_TYPE)));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(2, count.get());
     }
 
@@ -46,9 +47,9 @@ public class DefaultFindFeatureTest extends AbstractTestCase {
                 return AttributedList.emptyList();
             }
         }, new Cache(2));
-        assertFalse(feature.find(new Path("/t", Path.DIRECTORY_TYPE)));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
-        assertFalse(feature.find(new Path("/t", Path.DIRECTORY_TYPE)));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
     }
 }

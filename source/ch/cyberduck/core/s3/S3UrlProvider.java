@@ -69,7 +69,7 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             // Publicly accessible URL of given object
             list.add(this.createBucketUrl(file, session.getHost().getProtocol().getScheme()));
             list.add(this.createBucketUrl(file, Scheme.http));

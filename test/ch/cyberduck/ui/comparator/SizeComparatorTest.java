@@ -5,6 +5,8 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -15,6 +17,6 @@ public class SizeComparatorTest extends AbstractTestCase {
     @Test
     public void testCompareFirst() throws Exception {
         assertEquals(0,
-                new SizeComparator(true).compareFirst(new Path("/a", Path.FILE_TYPE), new Path("/b", Path.FILE_TYPE)));
+                new SizeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
     }
 }

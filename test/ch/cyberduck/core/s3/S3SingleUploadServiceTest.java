@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,9 +58,9 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
         final S3SingleUploadService service = new S3SingleUploadService(session, write);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
-        final Path test = new Path(container, name, Path.FILE_TYPE);
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
@@ -101,8 +102,8 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
             }
         }, new DisabledLoginController());
         final S3SingleUploadService m = new S3SingleUploadService(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
@@ -130,8 +131,8 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final S3SingleUploadService m = new S3SingleUploadService(session);
-        final Path container = new Path("nosuchcontainer.cyberduck.ch", Path.VOLUME_TYPE);
-        final Path test = new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE);
+        final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         local.touch();
         final TransferStatus status = new TransferStatus();

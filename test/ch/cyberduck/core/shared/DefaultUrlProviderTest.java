@@ -10,6 +10,8 @@ import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -24,9 +26,9 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/my/documentroot");
         assertEquals("http://test.cyberduck.ch/my/documentroot/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
+                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("http://test.cyberduck.ch/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
+                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
@@ -35,7 +37,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
                 "u", "p"
         ));
         assertEquals("http://test.cyberduck.ch/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
+                new DefaultUrlProvider(host).toUrl(new Path("/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
@@ -45,9 +47,9 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/my/documentroot");
         assertEquals("sftp://test.cyberduck.ch/my/documentroot/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.provider).getUrl());
+                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl());
         assertEquals("http://test.cyberduck.ch/f",
-                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", Path.DIRECTORY_TYPE)).find(DescriptiveUrl.Type.http).getUrl());
+                new DefaultUrlProvider(host).toUrl(new Path("/my/documentroot/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
@@ -55,7 +57,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         Host host = new Host("localhost");
         host.setDefaultPath("/usr/home/dkocher/public_html");
         Path path = new Path(
-                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+                "/usr/home/dkocher/public_html/file", EnumSet.of(Path.Type.directory));
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -66,7 +68,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         Host host = new Host("localhost");
         host.setDefaultPath("public_html");
         Path path = new Path(
-                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+                "/usr/home/dkocher/public_html/file", EnumSet.of(Path.Type.directory));
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
@@ -77,7 +79,7 @@ public class DefaultUrlProviderTest extends AbstractTestCase {
         Host host = new Host("localhost");
         host.setDefaultPath("/");
         Path path = new Path(
-                "/file", Path.DIRECTORY_TYPE);
+                "/file", EnumSet.of(Path.Type.directory));
         assertEquals("http://localhost/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", new DefaultUrlProvider(host).toUrl(path).find(DescriptiveUrl.Type.http).getUrl());

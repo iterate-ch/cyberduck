@@ -63,6 +63,7 @@ import org.rococoa.cocoa.foundation.NSError;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -248,7 +249,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         public NSArray contentsOfDirectoryAtPath_error(final String path, long/*ObjCObjectByReference*/ error) {
             log.debug("contentsOfDirectoryAtPath_error:" + path);
             final Future<NSArray> future = background(new FilesystemBackgroundAction<NSArray>(session, cache) {
-                final Path directory = new Path(path, Path.DIRECTORY_TYPE);
+                final Path directory = new Path(path, EnumSet.of(Path.Type.directory));
 
                 @Override
                 public NSArray run() throws BackgroundException {
@@ -283,7 +284,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<NSDictionary> future = background(new FilesystemBackgroundAction<NSDictionary>(session, cache) {
                 @Override
                 public NSDictionary run() throws BackgroundException {
-                    final Path selected = new Path(path, Path.DIRECTORY_TYPE);
+                    final Path selected = new Path(path, EnumSet.of(Path.Type.directory));
                     if(selected.isRoot()) {
                         attributes.setObjectForKey(NSFileManager.NSFileTypeDirectory,
                                 NSFileManager.NSFileType);
@@ -291,7 +292,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     }
                     final Path directory = selected.getParent();
                     final Path file = session.list(directory, new DisabledListProgressListener()).get(new NSObjectPathReference(NSString.stringWithString(path)));
-                    attributes.setObjectForKey(file.attributes().isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
+                    attributes.setObjectForKey(file.isDirectory() ? NSFileManager.NSFileTypeDirectory : NSFileManager.NSFileTypeRegular,
                             NSFileManager.NSFileType);
                     attributes.setObjectForKey(NSNumber.numberWithFloat(file.attributes().getSize()),
                             NSFileManager.NSFileSize);
@@ -324,7 +325,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path selected = new Path(path, Path.DIRECTORY_TYPE);
+                    final Path selected = new Path(path, EnumSet.of(Path.Type.directory));
                     if(selected.isRoot()) {
                         return false;
                     }
@@ -367,7 +368,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path directory = new Path(path, Path.DIRECTORY_TYPE);
+                    final Path directory = new Path(path, EnumSet.of(Path.Type.directory));
                     final Directory feature = session.getFeature(Directory.class);
                     feature.mkdir(directory);
                     return true;
@@ -390,7 +391,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path file = new Path(path, Path.DIRECTORY_TYPE);
+                    final Path file = new Path(path, EnumSet.of(Path.Type.directory));
                     final Touch feature = session.getFeature(Touch.class);
                     if(feature.isSupported(file.getParent())) {
                         feature.touch(file);
@@ -416,7 +417,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path directory = new Path(path, Path.DIRECTORY_TYPE);
+                    final Path directory = new Path(path, EnumSet.of(Path.Type.directory));
                     session.getFeature(Delete.class).delete(
                             Collections.singletonList(directory), new DisabledLoginController());
                     return true;
@@ -439,7 +440,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path file = new Path(path, Path.FILE_TYPE);
+                    final Path file = new Path(path, EnumSet.of(Path.Type.file));
                     session.getFeature(Delete.class).delete(
                             Collections.singletonList(file), new DisabledLoginController());
                     return true;
@@ -462,11 +463,11 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path file = new Path(source, Path.FILE_TYPE);
+                    final Path file = new Path(source, EnumSet.of(Path.Type.file));
                     if(!session.getFeature(Move.class).isSupported(file)) {
                         return false;
                     }
-                    session.getFeature(Move.class).move(file, new Path(destination, Path.FILE_TYPE), false);
+                    session.getFeature(Move.class).move(file, new Path(destination, EnumSet.of(Path.Type.file)), false);
                     return true;
                 }
             });

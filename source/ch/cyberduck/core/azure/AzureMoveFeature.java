@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Move;
 import java.util.Collections;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureMoveFeature implements Move {
 
@@ -47,13 +47,13 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public void move(Path file, Path renamed, boolean exists) throws BackgroundException {
-        if(file.attributes().isFile()) {
+        if(file.isFile()) {
             new AzureCopyFeature(session).copy(file, renamed);
             new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
         }
-        else if(file.attributes().isDirectory()) {
+        else if(file.isDirectory()) {
             for(Path i : session.list(file, new DisabledListProgressListener())) {
-                this.move(i, new Path(renamed, i.getName(), i.attributes().getType()), false);
+                this.move(i, new Path(renamed, i.getName(), i.getType()), false);
             }
         }
     }

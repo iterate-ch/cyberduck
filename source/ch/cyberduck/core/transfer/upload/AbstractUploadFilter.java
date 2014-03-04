@@ -107,8 +107,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             // Local file is no more here
             throw new NotfoundException(local.getAbsolute());
         }
-        if(local.attributes().isFile()) {
-            if(local.attributes().isSymbolicLink()) {
+        if(local.isFile()) {
+            if(local.isSymbolicLink()) {
                 if(!symlinkResolver.resolve(local)) {
                     return symlinkResolver.include(local);
                 }
@@ -129,9 +129,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 status.setRemote(attributes);
             }
         }
-        if(local.attributes().isFile()) {
+        if(local.isFile()) {
             // Set content length from local file
-            if(local.attributes().isSymbolicLink()) {
+            if(local.isSymbolicLink()) {
                 if(!symlinkResolver.resolve(local)) {
                     // Will resolve the symbolic link when the file is requested.
                     final Local target = local.getSymlinkTarget();
@@ -146,8 +146,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), UUID.randomUUID().toString()),
-                        new PathAttributes(file.attributes().getType()));
+                                file.getName(), UUID.randomUUID().toString()), file.getType());
                 status.rename(renamed);
                 // File attributes should not change after calculate the hash code of the file reference
                 temporary.put(file, renamed);
@@ -161,7 +160,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             else {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-                    if(local.attributes().isFile()) {
+                    if(local.isFile()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
@@ -189,7 +188,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             else {
                 final Permission permission;
                 if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
-                    if(local.attributes().isFile()) {
+                    if(local.isFile()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
@@ -236,7 +235,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(local.attributes().isFile()) {
+            if(local.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
                     move.move(temporary.get(file), file, status.isExists());

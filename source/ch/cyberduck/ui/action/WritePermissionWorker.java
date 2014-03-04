@@ -74,7 +74,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(recursive && file.attributes().isFile()) {
+        if(recursive && file.isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory. See #1787
             final Permission modified = new Permission(permission.getMode());
             if(!file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -90,7 +90,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
                 this.write(file, modified);
             }
         }
-        else if(recursive && file.attributes().isDirectory()) {
+        else if(recursive && file.isDirectory()) {
             // Do not remove executable bit for folders. See #7316
             final Permission modified = new Permission(permission.getMode());
             if(file.attributes().getPermission().getUser().implies(Permission.Action.execute)) {
@@ -112,7 +112,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
             }
         }
         if(recursive) {
-            if(file.attributes().isDirectory()) {
+            if(file.isDirectory()) {
                 for(Path child : session.list(file, new ActionListProgressListener(this))) {
                     this.write(child);
                 }

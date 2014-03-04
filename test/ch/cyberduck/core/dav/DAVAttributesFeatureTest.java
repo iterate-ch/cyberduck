@@ -13,12 +13,14 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVAttributesFeatureTest extends AbstractTestCase {
 
@@ -30,7 +32,7 @@ public class DAVAttributesFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path(UUID.randomUUID().toString() + ".txt", Path.FILE_TYPE);
+        final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFeature f = new DAVAttributesFeature(session);
         f.find(test);
     }
@@ -43,12 +45,11 @@ public class DAVAttributesFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path test = new Path("/trunk/LICENSE.txt", Path.FILE_TYPE);
+        final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFeature f = new DAVAttributesFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(923, attributes.getSize());
         assertNotNull(attributes.getModificationDate());
         assertNotNull(attributes.getETag());
-        assertTrue(attributes.isFile());
     }
 }

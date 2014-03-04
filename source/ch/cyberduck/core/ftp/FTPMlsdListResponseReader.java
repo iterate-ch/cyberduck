@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +59,7 @@ public class FTPMlsdListResponseReader {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = new Path(parent, PathNormalizer.name(name), Path.FILE_TYPE);
+                final Path parsed = new Path(parent, PathNormalizer.name(name), EnumSet.of(Path.Type.file));
                 // size       -- Size in octets
                 // modify     -- Last modification time
                 // create     -- Creation time
@@ -74,19 +75,19 @@ public class FTPMlsdListResponseReader {
                         continue;
                     }
                     if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                        parsed.attributes().setType(Path.DIRECTORY_TYPE);
+                        parsed.setType(EnumSet.of(Path.Type.directory));
                     }
                     else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                        parsed.attributes().setType(Path.FILE_TYPE);
+                        parsed.setType(EnumSet.of(Path.Type.file));
                     }
                     else if(facts.get("type").toLowerCase(Locale.ROOT).startsWith("os.unix=slink")) {
-                        parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                         final String target = facts.get("type").split(":")[1];
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            parsed.setSymlinkTarget(new Path(target, parsed.attributes().getType()));
+                            parsed.setSymlinkTarget(new Path(target, parsed.getType()));
                         }
                         else {
-                            parsed.setSymlinkTarget(new Path(parent, target, parsed.attributes().getType()));
+                            parsed.setSymlinkTarget(new Path(parent, target, parsed.getType()));
                         }
                     }
                     else {

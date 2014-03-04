@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import java.util.EnumSet;
+
 /**
  * @version $Id$
  */
@@ -38,7 +40,7 @@ public class SwiftHomeFinderService extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(containerService.isContainer(home)) {
-            home.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            home.setType(EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }
@@ -47,7 +49,7 @@ public class SwiftHomeFinderService extends DefaultHomeFinderService {
     public Path find(final Path workdir, final String path) {
         final Path home = super.find(workdir, path);
         if(containerService.isContainer(home)) {
-            home.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            home.setType(EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }

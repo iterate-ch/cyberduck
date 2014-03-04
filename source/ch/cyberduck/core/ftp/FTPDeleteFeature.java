@@ -44,12 +44,12 @@ public class FTPDeleteFeature implements Delete {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
-                if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
+                if(file.isFile() || file.isSymbolicLink()) {
                     if(!session.getClient().deleteFile(file.getAbsolute())) {
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }
                 }
-                else if(file.attributes().isDirectory()) {
+                else if(file.isDirectory()) {
                     if(!session.getClient().removeDirectory(file.getAbsolute())) {
                         throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
                     }

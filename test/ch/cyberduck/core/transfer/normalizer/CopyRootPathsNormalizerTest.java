@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +38,7 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
     public void testNormalizeNone() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
+        files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
         assertEquals(files, normalizer.normalize(files));
     }
 
@@ -45,17 +46,17 @@ public class CopyRootPathsNormalizerTest extends AbstractTestCase {
     public void testNormalize() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
-        files.put(new Path("/p/child", Path.DIRECTORY_TYPE), new Path("/d/child", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
+        files.put(new Path("/p/child", EnumSet.of(Path.Type.directory)), new Path("/d/child", EnumSet.of(Path.Type.directory)));
+        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
     }
 
     @Test
     public void testNormalize2() throws Exception {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
-        files.put(new Path("/p/child", Path.DIRECTORY_TYPE), new Path("/d/child", Path.DIRECTORY_TYPE));
-        files.put(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE));
-        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", Path.DIRECTORY_TYPE), new Path("/d", Path.DIRECTORY_TYPE)), normalizer.normalize(files));
+        files.put(new Path("/p/child", EnumSet.of(Path.Type.directory)), new Path("/d/child", EnumSet.of(Path.Type.directory)));
+        files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
+        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
     }
 }

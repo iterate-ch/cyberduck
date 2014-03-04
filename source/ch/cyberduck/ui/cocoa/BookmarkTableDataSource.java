@@ -53,6 +53,7 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -405,8 +406,8 @@ public class BookmarkTableDataSource extends ListDataSource {
                     }
                     // Upload to the remote host this bookmark points to
                     uploads.add(new TransferItem(
-                            new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), Path.DIRECTORY_TYPE),
-                                    local.getName(), Path.FILE_TYPE),
+                            new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), EnumSet.of(Path.Type.directory)),
+                                    local.getName(), EnumSet.of(Path.Type.file)),
                             local));
                 }
             }

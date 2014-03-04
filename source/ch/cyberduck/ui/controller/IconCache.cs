@@ -107,17 +107,17 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns></returns>
         public Bitmap IconForPath(Path path, IconSize size)
         {
-            if (path.attributes().isSymbolicLink())
+            if (path.isSymbolicLink())
             {
                 Bitmap overlay = IconForName("aliasbadge", size);
-                if (path.attributes().isDirectory())
+                if (path.isDirectory())
                 {
                     return IconForFolder(overlay, size);
                 }
                 Bitmap symlink = IconForFilename(path.getName(), size);
                 return OverlayImages(symlink, overlay);
             }
-            if (path.attributes().isFile())
+            if (path.isFile())
             {
                 if (String.IsNullOrEmpty(path.getExtension()))
                 {
@@ -128,7 +128,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return IconForFilename(path.getName(), size);
             }
-            if (path.attributes().isDirectory())
+            if (path.isDirectory())
             {
                 if(!Permission.EMPTY.equals(path.attributes().getPermission())) {
                     if (!path.attributes().getPermission().isExecutable())

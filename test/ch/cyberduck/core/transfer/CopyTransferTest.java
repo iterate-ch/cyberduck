@@ -29,6 +29,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -40,9 +41,9 @@ public class CopyTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        final Path test = new Path("t", Path.FILE_TYPE);
+        final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
         final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()));
@@ -56,9 +57,9 @@ public class CopyTransferTest extends AbstractTestCase {
 
     @Test
     public void testAction() throws Exception {
-        final Path test = new Path("t", Path.FILE_TYPE);
+        final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
-                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", Path.FILE_TYPE)));
+                new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         assertEquals(TransferAction.overwrite, t.action(new SFTPSession(new Host(new SFTPProtocol(), "t")), false, true, new DisabledTransferPrompt()));
     }
 }

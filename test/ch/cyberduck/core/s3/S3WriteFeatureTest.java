@@ -13,6 +13,7 @@ import ch.cyberduck.core.features.Find;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -34,7 +35,7 @@ public class S3WriteFeatureTest extends AbstractTestCase {
             public Find withCache(final Cache cache) {
                 return this;
             }
-        }).append(new Path("/p", Path.FILE_TYPE), 0L, Cache.empty()).append);
+        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
     }
 
     @Test
@@ -45,8 +46,8 @@ public class S3WriteFeatureTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE);
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE), 10L * 1024L * 1024L, Cache.empty()).append);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 10L * 1024L * 1024L, Cache.empty()).append);
         session.close();
     }
 }

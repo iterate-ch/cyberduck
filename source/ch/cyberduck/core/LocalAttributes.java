@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  *
@@ -75,9 +74,6 @@ public class LocalAttributes extends Attributes {
 
     @Override
     public long getSize() {
-        if(this.isDirectory()) {
-            return -1;
-        }
         final File file = new File(path);
         if(file.exists()) {
             return new File(path).length();
@@ -99,57 +95,6 @@ public class LocalAttributes extends Attributes {
      */
     public boolean isBundle() {
         return false;
-    }
-
-    @Override
-    public boolean isVolume() {
-        return null == new File(path).getParent();
-    }
-
-    /**
-     * This is only returning the correct result if the file already exists.
-     *
-     * @see Local#exists()
-     */
-    @Override
-    public boolean isDirectory() {
-        return new File(path).isDirectory();
-    }
-
-    /**
-     * This is only returning the correct result if the file already exists.
-     *
-     * @see Local#exists()
-     */
-    @Override
-    public boolean isFile() {
-        return new File(path).isFile();
-    }
-
-    /**
-     * Checks whether a given file is a symbolic link.
-     * <p/>
-     * <p>It doesn't really test for symbolic links but whether the
-     * canonical and absolute paths of the file are identical - this
-     * may lead to false positives on some platforms.</p>
-     *
-     * @return true if the file is a symbolic link.
-     */
-    @Override
-    public boolean isSymbolicLink() {
-        final File f = new File(path);
-        if(!f.exists()) {
-            return false;
-        }
-        // For a link that actually points to something (either a file or a directory),
-        // the absolute path is the path through the link, whereas the canonical path
-        // is the path the link references.
-        try {
-            return !f.getAbsolutePath().equals(f.getCanonicalPath());
-        }
-        catch(IOException e) {
-            return false;
-        }
     }
 
     @Override

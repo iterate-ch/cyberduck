@@ -13,6 +13,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 /**
@@ -30,7 +31,7 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginController());
         session.close();
     }
@@ -45,8 +46,8 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
-        final Path container = new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(new Path(container, UUID.randomUUID().toString(), Path.FILE_TYPE)), new DisabledLoginController());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginController());
         session.close();
     }
 }

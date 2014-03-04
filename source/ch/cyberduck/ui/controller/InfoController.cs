@@ -280,7 +280,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path file in _files)
                 {
                     enable = enable &&
-                             (file.attributes().isVolume() || file.attributes().isFile() ||
+                             (file.isVolume() || file.isFile() ||
                               file.attributes().isPlaceholder());
                 }
             }
@@ -479,7 +479,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     foreach (Path file in _files)
                     {
-                        if (file.attributes().isFile())
+                        if (file.isFile())
                         {
                             DescriptiveUrl authenticated =
                                 ((UrlProvider) _controller.Session.getFeature(typeof (UrlProvider))).toUrl(file)
@@ -603,7 +603,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        Path renamed = new Path(current.getParent(), View.Filename, current.attributes().getType());
+                        Path renamed = new Path(current.getParent(), View.Filename, current.getType());
                         _controller.RenamePath(current, renamed);
                         InitWebUrl();
                     }
@@ -1121,7 +1121,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.FilenameEnabled = (1 == count &&
                                         ((Move) _controller.Session.getFeature(typeof (Move))).isSupported(file));
                 string path;
-                if (file.attributes().isSymbolicLink())
+                if (file.isSymbolicLink())
                 {
                     path = file.getSymlinkTarget().getAbsolute();
                 }
@@ -1250,7 +1250,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         View.PopulateStorageClass(classes);
                         View.StorageClass = redundancy;
                     }
-                    if (file.attributes().isFile())
+                    if (file.isFile())
                     {
                         if (session.getHost().getProtocol().getType() == Protocol.Type.s3)
                         {
@@ -1437,7 +1437,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RecursivePermissionsEnabled = stop && enable;
             foreach (Path next in _files)
             {
-                if (next.attributes().isFile())
+                if (next.isFile())
                 {
                     View.RecursivePermissionsEnabled = false;
                     break;
@@ -1534,7 +1534,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SizeButtonEnabled = false;
             foreach (Path aPath in _files)
             {
-                if (aPath.attributes().isDirectory())
+                if (aPath.isDirectory())
                 {
                     View.SizeButtonEnabled = stop;
                     break;
@@ -2144,7 +2144,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             };
                         foreach (Path next in Utils.ConvertFromJavaList<Path>(_rootDocuments))
                         {
-                            if (next.attributes().isFile())
+                            if (next.isFile())
                             {
                                 defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
                             }
@@ -2451,7 +2451,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 S3Session session = (S3Session) _controller.Session;
                 foreach (Path next in _infoController._files)
                 {
-                    if (next.attributes().isFile())
+                    if (next.isFile())
                     {
                         feature.setEncryption(next,
                                               _infoController.View.Encryption
@@ -2493,7 +2493,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Redundancy feature = (Redundancy) BrowserController.Session.getFeature(typeof (Redundancy));
                 foreach (Path next in _infoController._files)
                 {
-                    if (next.attributes().isFile())
+                    if (next.isFile())
                     {
                         feature.setClass(next, _storageClass);
                     }

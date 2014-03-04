@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +42,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testMlsd() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=file;Perm=awr;Unique=keVO1+8G4; writable",
@@ -53,17 +54,17 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
-        assertTrue(children.get(0).attributes().isFile());
+        assertTrue(children.get(0).isFile());
         assertEquals(" leading space", children.get(1).getName());
-        assertTrue(children.get(1).attributes().isFile());
-        assertTrue(children.get(2).attributes().isDirectory());
+        assertTrue(children.get(1).isFile());
+        assertTrue(children.get(2).isDirectory());
     }
 
     @Test(expected = FTPInvalidListException.class)
     public void testMlsdCdir1() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
@@ -75,7 +76,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testMlsdCdir2() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
@@ -89,7 +90,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
@@ -102,7 +103,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=dir;Unique=aaaaacUYqaaa;Perm=cpmel; /", //skipped
@@ -114,7 +115,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testSkipParentDir() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=pdir;Unique=aaaaacUYqaaa;Perm=cpmel; /",
@@ -131,7 +132,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testSize() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
                 "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
@@ -146,7 +147,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testTimestamp() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
 
         // Tuesday, January 12, 1999 3:30:45 AM GMT
         String[] replies = new String[]{
@@ -178,7 +179,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testBrokenMlsd() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
+                "/Dummies_Infoblaetter", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
                 "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
         };
@@ -188,7 +189,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testDir() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
+                "/Dummies_Infoblaetter", EnumSet.of(Path.Type.directory));
         {
             String[] replies = new String[]{
                     "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
@@ -213,7 +214,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testParseMlsdMode664() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
                 "modify=19990307234236;perm=adfr;size=60;type=file;unique=FE03U10001724;UNIX.group=1001;UNIX.mode=0664;UNIX.owner=2000; kalahari.diz"
         };
@@ -227,7 +228,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testParseMlsdMode775() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
                 "modify=20090210192929;perm=fle;type=dir;unique=FE03U10006D95;UNIX.group=1001;UNIX.mode=02775;UNIX.owner=2000; tangerine"
         };
@@ -241,7 +242,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     public void testParseMlsdSymbolic() throws Exception {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
-                "/www", Path.DIRECTORY_TYPE);
+                "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
                 "Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar"
         };

@@ -61,7 +61,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      */
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
-        if(!options.temporary || local.attributes().isDirectory()) {
+        if(!options.temporary || local.isDirectory()) {
             // Rename existing file before putting new file in place
             if(status.isExists()) {
                 this.rename(file);
@@ -76,7 +76,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                     FilenameUtils.getBaseName(file.getName()),
                     UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                     StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-            renamed = new Path(renamed.getParent(), proposal, file.attributes());
+            renamed = new Path(renamed.getParent(), proposal, file.getType());
         }
         if(!renamed.equals(file)) {
             if(log.isInfoEnabled()) {
@@ -89,7 +89,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     @Override
     public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        if(local.attributes().isFile()) {
+        if(local.isFile()) {
             if(this.options.temporary) {
                 // If uploaded with temporary name rename existing file after upload
                 // is complete but before temporary upload is renamed

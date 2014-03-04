@@ -28,6 +28,8 @@ import ch.cyberduck.core.Preferences;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -45,7 +47,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         assertEquals("EU", new S3LocationFeature(session).getLocation(
-                new Path("test.cyberduck.ch", Path.DIRECTORY_TYPE)
+                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }
@@ -57,7 +59,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        assertNull(new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", Path.DIRECTORY_TYPE)));
+        assertNull(new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }

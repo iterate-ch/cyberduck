@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -43,8 +44,8 @@ public class S3SessionTest extends AbstractTestCase {
         Cache cache = new Cache();
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
         assertNotNull(session.workdir());
-        assertTrue(cache.containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertNotNull(cache.lookup(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
+        assertNotNull(cache.lookup(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -66,8 +67,8 @@ public class S3SessionTest extends AbstractTestCase {
         session.open(new DefaultHostKeyController());
         Cache cache = new Cache();
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
-        assertFalse(cache.containsKey(new Path("/", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
-        assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", Path.DIRECTORY_TYPE | Path.VOLUME_TYPE).getReference()));
+        assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
+        assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         session.close();
     }
 

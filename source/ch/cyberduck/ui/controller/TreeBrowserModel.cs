@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool CanExpand(object path)
         {
-            return ((Path) path).attributes().isDirectory();
+            return ((Path) path).isDirectory();
         }
 
         public IEnumerable<Path> ChildrenGetter(object p)
@@ -73,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(Path path)
         {
-            if (path.attributes().isVolume())
+            if (path.isVolume())
             {
                 return IconCache.Instance.VolumeIcon(_controller.Session.getHost().getProtocol(),
                                                      IconCache.IconSize.Small);
@@ -147,7 +147,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetExtension(Path path)
         {
-            return path.attributes().isFile()
+            return path.isFile()
                        ? Utils.IsNotBlank(path.getExtension())
                              ? path.getExtension()
                              : LocaleFactory.localizedString("None")

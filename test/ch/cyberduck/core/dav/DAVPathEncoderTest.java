@@ -22,6 +22,8 @@ import ch.cyberduck.core.Path;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,9 +33,9 @@ public class DAVPathEncoderTest extends AbstractTestCase {
 
     @Test
     public void testEncode() throws Exception {
-        assertEquals("/", new DAVPathEncoder().encode(new Path("/", Path.DIRECTORY_TYPE)));
-        assertEquals("/dav/", new DAVPathEncoder().encode(new Path("/dav", Path.DIRECTORY_TYPE)));
-        assertEquals("/dav", new DAVPathEncoder().encode(new Path("/dav", Path.FILE_TYPE)));
-        assertEquals("/dav/file%20path", new DAVPathEncoder().encode(new Path("/dav/file path", Path.FILE_TYPE)));
+        assertEquals("/", new DAVPathEncoder().encode(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertEquals("/dav/", new DAVPathEncoder().encode(new Path("/dav", EnumSet.of(Path.Type.directory))));
+        assertEquals("/dav", new DAVPathEncoder().encode(new Path("/dav", EnumSet.of(Path.Type.file))));
+        assertEquals("/dav/file%20path", new DAVPathEncoder().encode(new Path("/dav/file path", EnumSet.of(Path.Type.file))));
     }
 }

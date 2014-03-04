@@ -8,6 +8,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,10 +21,10 @@ public class CalculateSizeWorkerTest extends AbstractTestCase {
     @Test
     public void testRun() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        final Path a = new Path("a", Path.FILE_TYPE);
+        final Path a = new Path("a", EnumSet.of(Path.Type.file));
         a.attributes().setSize(1L);
         files.add(a);
-        final Path b = new Path("a", Path.FILE_TYPE);
+        final Path b = new Path("a", EnumSet.of(Path.Type.file));
         b.attributes().setSize(3L);
         files.add(b);
         assertEquals(4L, new CalculateSizeWorker(new FTPSession(new Host("h")), files) {

@@ -483,7 +483,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (SelectedPaths.Count == 1)
             {
                 Path selected = SelectedPath;
-                if (selected.attributes().isDirectory())
+                if (selected.isDirectory())
                 {
                     workdir = selected;
                 }
@@ -509,7 +509,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Path p = SelectedPath;
             if (null != p)
             {
-                if (p.attributes().isFile())
+                if (p.isFile())
                 {
                     return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()), null);
                 }
@@ -704,7 +704,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 host = destination;
                             }
                             // Upload to the remote host this bookmark points to
-                            roots.Add(new Path(new Path(destination.getDefaultPath(), AbstractPath.DIRECTORY_TYPE),
+                            roots.Add(new Path(new Path(destination.getDefaultPath(), EnumSet.of(Path.Type.directory)),
                                                LocalFactory.createLocal(filename)));
                         }
                     }
@@ -876,7 +876,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     case DropTargetLocation.Item:
                         destination = (Path) args.DropTargetItem.RowObject;
-                        if (!destination.attributes().isDirectory())
+                        if (!destination.isDirectory())
                         {
                             //dragging over file
                             destination = destination.getParent();
@@ -908,21 +908,21 @@ namespace Ch.Cyberduck.Ui.Controller
                         // If copying between sessions is supported
                         args.Effect = DragDropEffects.Copy;
                     }
-                    if (sourcePath.attributes().isDirectory() && sourcePath.equals(destination))
+                    if (sourcePath.isDirectory() && sourcePath.equals(destination))
                     {
                         // Do not allow dragging onto myself.
                         args.Effect = DragDropEffects.None;
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
-                    if (sourcePath.attributes().isDirectory() && destination.isChild(sourcePath))
+                    if (sourcePath.isDirectory() && destination.isChild(sourcePath))
                     {
                         // Do not allow dragging a directory into its own containing items
                         args.Effect = DragDropEffects.None;
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
-                    if (sourcePath.attributes().isFile() && sourcePath.getParent().equals(destination))
+                    if (sourcePath.isFile() && sourcePath.getParent().equals(destination))
                     {
                         // Moving file to the same destination makes no sense
                         args.Effect = DragDropEffects.None;
@@ -965,7 +965,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
                 foreach (Path next in dropargs.SourceModels)
                 {
-                    Path renamed = new Path(destination, next.getName(), next.attributes().getType());
+                    Path renamed = new Path(destination, next.getName(), next.getType());
                     files.Add(next, renamed);
                 }
                 if (dropargs.Effect == DragDropEffects.Copy)
@@ -1158,7 +1158,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted())
             {
                 Path selected = SelectedPath;
-                if (null == selected || !selected.attributes().isDirectory())
+                if (null == selected || !selected.isDirectory())
                 {
                     selected = Workdir;
                 }
@@ -1392,11 +1392,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return;
             }
-            if (selected.attributes().isDirectory())
+            if (selected.isDirectory())
             {
                 SetWorkdir(selected);
             }
-            else if (selected.attributes().isFile() || View.SelectedPaths.Count > 1)
+            else if (selected.isFile() || View.SelectedPaths.Count > 1)
             {
                 if (Preferences.instance().getBoolean("browser.doubleclick.edit"))
                 {
@@ -1478,7 +1478,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path) _pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.attributes().getType());
+                Path renamed = new Path(parent, next.getName(), next.getType());
                 files.Add(next, renamed);
             }
             _pasteboard.clear();
@@ -1564,7 +1564,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     foreach (Path selected in SelectedPaths)
                     {
-                        if (selected.attributes().isDirectory())
+                        if (selected.isDirectory())
                         {
                             return false;
                         }
@@ -1608,7 +1608,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     foreach (Path selected in SelectedPaths)
                     {
-                        if (selected.attributes().isFile() && Archive.isArchive(selected.getName()))
+                        if (selected.isFile() && Archive.isArchive(selected.getName()))
                         {
                             // At least one file selected is already an archive. No distinct action possible
                             return false;
@@ -1643,7 +1643,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Synchronize()
         {
             Path selected;
-            if (SelectedPaths.Count == 1 && SelectedPath.attributes().isDirectory())
+            if (SelectedPaths.Count == 1 && SelectedPath.isDirectory())
             {
                 selected = SelectedPath;
             }
@@ -1680,7 +1680,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 destination = Workdir;
             }
-            else if (!destination.attributes().isDirectory())
+            else if (!destination.isDirectory())
             {
                 destination = destination.getParent();
             }
@@ -1759,7 +1759,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return false;
             }
-            return selected.attributes().isFile();
+            return selected.isFile();
         }
 
         private bool View_ValidateDuplicateFile()
@@ -1840,7 +1840,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(newName) && !newName.Equals(path.getName()))
             {
-                Path renamed = new Path(path.getParent(), newName, path.attributes().getType());
+                Path renamed = new Path(path.getParent(), newName, path.getType());
                 RenamePath(path, renamed);
             }
             return false;
@@ -1975,7 +1975,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         case DropTargetLocation.Item:
                             destination = (Path) args.DropTargetItem.RowObject;
-                            if (!destination.attributes().isDirectory())
+                            if (!destination.isDirectory())
                             {
                                 //dragging over file
                                 destination = destination.getParent();
@@ -2194,7 +2194,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (newBrowserEventArgs.SelectedAsWorkingDir)
             {
                 Path selected = SelectedPath;
-                if (null == selected || !selected.attributes().isDirectory())
+                if (null == selected || !selected.isDirectory())
                 {
                     selected = Workdir;
                 }
@@ -2342,7 +2342,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 List<Path> toUpdate = new List<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
-                    if (path.attributes().isDirectory())
+                    if (path.isDirectory())
                     {
                         toUpdate.Add(path);
                     }
@@ -2429,7 +2429,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                if (!path.attributes().isDirectory())
+                if (!path.isDirectory())
                 {
                     View.RefreshBrowserObject(path.getParent());
                 }
@@ -3032,7 +3032,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Matching filename
                     return true;
                 }
-                if (path.attributes().isDirectory())
+                if (path.isDirectory())
                 {
                     // #471. Expanded item childs may match search string
                     return _controller._cache.isCached(path.getReference());

@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -37,7 +38,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
-        assertEquals(Arrays.asList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", Path.VOLUME_TYPE)));
+        assertEquals(Arrays.asList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
@@ -53,9 +54,9 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
-        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", Path.FILE_TYPE)).find(
+        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
                 DescriptiveUrl.Type.origin).getUrl());
-        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", Path.FILE_TYPE)).find(
+        assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
                 DescriptiveUrl.Type.cdn).getUrl());
     }
 
@@ -83,11 +84,11 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Distribution website = configuration.read(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE), Distribution.WEBSITE,
+        final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
                 new DisabledLoginController());
         assertTrue(website.isEnabled());
         assertEquals(URI.create("http://test.cyberduck.ch.storage.googleapis.com"), website.getUrl());
-        assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", Path.VOLUME_TYPE | Path.DIRECTORY_TYPE)));
+        assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory))));
     }
 
     @Test
@@ -111,7 +112,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         }, new DisabledLoginController());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Path bucket = new Path(UUID.randomUUID().toString(), Path.DIRECTORY_TYPE | Path.VOLUME_TYPE);
+        final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginController());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginController()).isEnabled());
