@@ -70,14 +70,6 @@ public class SwiftAuthenticationService {
         if(!(host.getProtocol().getScheme().getPort() == host.getPort())) {
             url.append(":").append(host.getPort());
         }
-        if(host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
-            // Fix access to *.identity.api.rackspacecloud.com
-            url.append("/v2.0/tokens");
-            return Collections.singleton(new Authentication20RAXUsernameKeyRequest(
-                    URI.create(url.toString()),
-                    credentials.getUsername(), credentials.getPassword(), null)
-            );
-        }
         final String context;
         if(StringUtils.isBlank(host.getProtocol().getContext())) {
             // Default to 1.0
@@ -88,6 +80,12 @@ public class SwiftAuthenticationService {
         }
         // Custom authentication context
         url.append(context);
+        if(host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
+            return Collections.singleton(new Authentication20RAXUsernameKeyRequest(
+                    URI.create(url.toString()),
+                    credentials.getUsername(), credentials.getPassword(), null)
+            );
+        }
         if(context.contains("1.0")) {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword()));
