@@ -80,7 +80,8 @@ public class SwiftAuthenticationService {
         }
         // Custom authentication context
         url.append(context);
-        if(host.getProtocol().getDefaultHostname().endsWith("identity.api.rackspacecloud.com")) {
+        if(host.getProtocol().getDefaultHostname().endsWith("identity.api.rackspacecloud.com")
+                || host.getHostname().endsWith("identity.api.rackspacecloud.com")) {
             return Collections.singleton(new Authentication20RAXUsernameKeyRequest(
                     URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword(), null)
