@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
@@ -35,7 +36,7 @@ import java.util.Map;
 public class CachingComparisonServiceFilter implements ComparePathFilter {
     private static final Logger log = Logger.getLogger(CachingComparisonServiceFilter.class);
 
-    private Map<Path, Comparison> cache = Collections.<Path, Comparison>synchronizedMap(new LRUMap(
+    private Map<TransferItem, Comparison> cache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("transfer.cache.size")));
 
     private ComparisionServiceFilter delegate;
@@ -46,18 +47,18 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
 
     @Override
     public Comparison compare(final Path file, final Local local) throws BackgroundException {
-        if(!cache.containsKey(file)) {
+        if(!cache.containsKey(new TransferItem(file, local))) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Compare file %s", file));
             }
-            cache.put(file, delegate.compare(file, local));
+            cache.put(new TransferItem(file, local), delegate.compare(file, local));
         }
-        return cache.get(file);
+        return cache.get(new TransferItem(file, local));
     }
 
-    public Comparison get(final Path file) {
-        if(cache.containsKey(file)) {
-            return cache.get(file);
+    public Comparison get(final TransferItem item) {
+        if(cache.containsKey(item)) {
+            return cache.get(item);
         }
         return Comparison.notequal;
     }

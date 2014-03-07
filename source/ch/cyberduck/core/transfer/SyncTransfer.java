@@ -150,14 +150,14 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
-     * @param file The path to compare
+     * @param item The path to compare
      */
-    public Comparison compare(final Path file) {
+    public Comparison compare(final TransferItem item) {
         if(null == comparison) {
             log.warn("No comparison filter initialized");
             return Comparison.equal;
         }
-        return comparison.get(file);
+        return comparison.get(item);
     }
 
     @Override
