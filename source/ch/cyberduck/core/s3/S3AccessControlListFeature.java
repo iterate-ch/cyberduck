@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Versioning;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -72,7 +73,8 @@ public class S3AccessControlListFeature implements AclPermission {
             }
             else if(file.isFile() || file.attributes().isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
-                if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                if(session.getFeature(Versioning.class) != null
+                        && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                     list = session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                 }

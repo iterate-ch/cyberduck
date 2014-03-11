@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Versioning;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -96,7 +97,8 @@ public class S3ObjectListService implements ListService {
             children.addAll(this.listObjects(container,
                     directory, prefix, String.valueOf(Path.DELIMITER), listener));
             if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(container).isEnabled()) {
+                if(session.getFeature(Versioning.class) != null
+                        && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
                     String priorLastVersionId = null;
                     do {

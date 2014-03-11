@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -55,7 +56,8 @@ public class S3ObjectDetailService {
     public StorageObject getDetails(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+            if(session.getFeature(Versioning.class) != null
+                    && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
                         container, containerService.getKey(file));
             }

@@ -18,9 +18,11 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.s3.VersioningConfiguration;
 
 import java.util.Map;
@@ -37,4 +39,6 @@ public interface Versioning {
     void setConfiguration(Path container, LoginCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
     void revert(Path file) throws BackgroundException;
+
+    Credentials getToken(LoginCallback controller) throws ConnectionCanceledException;
 }

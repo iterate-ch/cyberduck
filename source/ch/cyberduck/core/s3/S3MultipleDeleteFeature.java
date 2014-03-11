@@ -26,6 +26,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Versioning;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipleDeleteResult;
@@ -48,11 +49,11 @@ public class S3MultipleDeleteFeature implements Delete {
     private PathContainerService containerService
             = new PathContainerService();
 
-    private S3VersioningFeature versioning;
+    private Versioning versioning;
 
     public S3MultipleDeleteFeature(final S3Session session) {
         this.session = session;
-        this.versioning = new S3VersioningFeature(session);
+        this.versioning = session.getFeature(Versioning.class);
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
@@ -121,7 +122,8 @@ public class S3MultipleDeleteFeature implements Delete {
     protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
             throws BackgroundException {
         try {
-            if(versioning.getConfiguration(container).isMultifactor()) {
+            if(versioning != null
+                    && versioning.getConfiguration(container).isMultifactor()) {
                 final Credentials factor = versioning.getToken(prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),

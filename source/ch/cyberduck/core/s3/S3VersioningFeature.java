@@ -182,7 +182,8 @@ public class S3VersioningFeature implements Versioning {
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException
      *          Prompt dismissed
      */
-    protected Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
+    @Override
+    public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         final Credentials credentials = new MultifactorCredentials();
         // Prompt for multi factor authentication credentials.
         controller.prompt(session.getHost().getProtocol(), credentials,

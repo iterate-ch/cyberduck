@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -54,7 +55,8 @@ public class S3ReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final S3Object object;
-            if(new S3VersioningFeature(session).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+            if(session.getFeature(Versioning.class) != null
+                    && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
                 object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         null, // ifModifiedSince
