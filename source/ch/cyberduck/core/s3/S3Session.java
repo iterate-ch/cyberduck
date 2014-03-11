@@ -396,6 +396,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LocationFeature(this);
             }
+            return null;
         }
         if(type == AnalyticsProvider.class) {
             // Only for AWS
@@ -423,6 +424,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new S3LifecycleConfiguration(this);
             }
+            return null;
         }
         if(type == Encryption.class) {
             // Only for AWS
@@ -443,6 +445,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
                 return (T) new AmazonIdentityConfiguration(host);
             }
+            return null;
         }
         if(type == DistributionConfiguration.class) {
             return (T) cdn;
