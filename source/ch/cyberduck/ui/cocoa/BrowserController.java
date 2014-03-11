@@ -454,7 +454,7 @@ public class BrowserController extends WindowController
                             }
 
                             @Override
-                            public boolean isSelected(final Path file) {
+                            public boolean isSelected(final TransferItem file) {
                                 return true;
                             }
 

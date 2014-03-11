@@ -198,7 +198,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(prompt.isSelected(file)) {
+        if(prompt.isSelected(new TransferItem(file, local))) {
             // Only prepare the path it will be actually transferred
             if(filter.accept(file, local, parent)) {
                 if(log.isInfoEnabled()) {

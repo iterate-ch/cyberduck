@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -52,7 +53,7 @@ public class SyncPromptModel extends TransferPromptModel {
     }
 
     @Override
-    protected NSObject objectValueForItem(final Path file, final String identifier) {
+    protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
         if(identifier.equals(Column.sync.name())) {
             final Comparison compare = transfer.compare(file);
             if(compare.equals(Comparison.remote)) {

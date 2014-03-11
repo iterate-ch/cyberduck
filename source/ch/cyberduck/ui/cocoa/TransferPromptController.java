@@ -167,7 +167,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     @Override
-    public boolean isSelected(final Path file) {
+    public boolean isSelected(final TransferItem file) {
         return browserModel.isSelected(file);
     }
 
@@ -289,7 +289,7 @@ public abstract class TransferPromptController extends SheetController
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             new DefaultUrlProvider(transfer.getHost()).toUrl(file.remote).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    final TransferStatus status = browserModel.getStatus(file.remote);
+                    final TransferStatus status = browserModel.getStatus(file);
                     if(status.getRemote().getSize() == -1) {
                         remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
@@ -322,7 +322,7 @@ public abstract class TransferPromptController extends SheetController
                                                                         final NSTableColumn column, final NSObject item) {
                 final String identifier = column.identifier();
                 final TransferItem file = cache.lookup(new NSObjectPathReference(item));
-                final boolean filtered = browserModel.isFiltered(file.remote);
+                final boolean filtered = browserModel.isFiltered(file);
                 if(identifier.equals(TransferPromptModel.Column.include.name())) {
                     cell.setEnabled(!filtered);
                 }

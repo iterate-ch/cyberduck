@@ -71,14 +71,14 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     /**
      * Selection status map in the prompt
      */
-    protected Map<Path, Boolean> selected
-            = new HashMap<Path, Boolean>();
+    protected Map<TransferItem, Boolean> selected
+            = new HashMap<TransferItem, Boolean>();
 
     /**
      * Transfer status determined by filters
      */
-    protected Map<Path, TransferStatus> status
-            = new HashMap<Path, TransferStatus>();
+    protected Map<TransferItem, TransferStatus> status
+            = new HashMap<TransferItem, TransferStatus>();
 
     public enum Column {
         include,
@@ -111,23 +111,23 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         this.filter();
     }
 
-    public boolean isSelected(final Path file) {
+    public boolean isSelected(final TransferItem file) {
         if(selected.containsKey(file)) {
             return selected.get(file);
         }
         return true;
     }
 
-    public void setSelected(final Path file, boolean state) {
+    public void setSelected(final TransferItem file, boolean state) {
         selected.put(file, state);
     }
 
     /**
-     * @param file File
+     * @param item File
      * @return False if transfer filter rejected file
      */
-    public boolean isFiltered(final Path file) {
-        return !status.containsKey(file);
+    public boolean isFiltered(final TransferItem item) {
+        return !status.containsKey(item);
     }
 
     protected AttributedList<TransferItem> get(final TransferItem directory) {
@@ -135,7 +135,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return cache.get(null == directory ? null : directory.getReference());
     }
 
-    public TransferStatus getStatus(final Path file) {
+    public TransferStatus getStatus(final TransferItem file) {
         if(!status.containsKey(file)) {
             // Transfer filter background task has not yet finished
             log.warn(String.format("Unknown transfer status for %s", file));
@@ -169,7 +169,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         controller.background(new WorkerBackgroundAction(controller, session,
                 new TransferPromptFilterWorker(session, transfer, action, cache) {
                     @Override
-                    public void cleanup(final Map<Path, TransferStatus> accepted) {
+                    public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                         status = accepted;
                         controller.reloadData();
                     }
@@ -177,7 +177,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         );
     }
 
-    protected NSObject objectValueForItem(final Path file, final String identifier) {
+    protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
         if(identifier.equals(Column.include.name())) {
             if(this.isFiltered(file)) {
                 return NSNumber.numberWithBoolean(false);
@@ -185,7 +185,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             return NSNumber.numberWithBoolean(this.isSelected(file));
         }
         if(identifier.equals(Column.filename.name())) {
-            return NSAttributedString.attributedStringWithAttributes(file.getName(),
+            return NSAttributedString.attributedStringWithAttributes(file.remote.getName(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.size.name())) {
@@ -194,7 +194,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(Column.warning.name())) {
-            if(file.isFile()) {
+            if(file.remote.isFile()) {
                 if(this.getStatus(file).getLength() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
@@ -211,7 +211,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(identifier.equals(Column.include.name())) {
             final TransferItem file = cache.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
-            this.setSelected(file.remote, state == NSCell.NSOnState);
+            this.setSelected(file, state == NSCell.NSOnState);
         }
     }
 
@@ -233,6 +233,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
-        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)).remote, tableColumn.identifier());
+        return this.objectValueForItem(cache.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
     }
 }

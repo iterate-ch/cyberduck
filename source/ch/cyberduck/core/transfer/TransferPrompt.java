@@ -35,5 +35,5 @@ public interface TransferPrompt extends ProgressListener {
      * @param file File
      * @return True if file is selected in transfer prompt
      */
-    boolean isSelected(Path file);
+    boolean isSelected(TransferItem file);
 }

@@ -31,7 +31,7 @@ public class DisabledTransferPrompt implements TransferPrompt {
     }
 
     @Override
-    public boolean isSelected(final Path file) {
+    public boolean isSelected(final TransferItem file) {
         return true;
     }
 

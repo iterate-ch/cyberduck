@@ -29,7 +29,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferItem implements Referenceable, Serializable {
 
@@ -52,6 +52,10 @@ public class TransferItem implements Referenceable, Serializable {
     public TransferItem(final Path remote, final Local local) {
         this.remote = remote;
         this.local = local;
+    }
+
+    public TransferItem getParent() {
+        return new TransferItem(remote.getParent(), local.getParent());
     }
 
     @Override

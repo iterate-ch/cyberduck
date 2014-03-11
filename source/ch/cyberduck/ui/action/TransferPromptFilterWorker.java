@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>> {
+public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
 
     private Transfer transfer;
@@ -63,13 +63,13 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     }
 
     @Override
-    public Map<Path, TransferStatus> run() throws BackgroundException {
-        final Map<Path, TransferStatus> status = new HashMap<Path, TransferStatus>();
+    public Map<TransferItem, TransferStatus> run() throws BackgroundException {
+        final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
         for(TransferItem file : transfer.getRoots()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            status.put(file.remote.getParent(), new TransferStatus().exists(true));
+            status.put(file.getParent(), new TransferStatus().exists(true));
         }
         final TransferPathFilter filter = transfer.filter(session, action);
         if(log.isDebugEnabled()) {
@@ -84,8 +84,8 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                if(filter.accept(file.remote, file.local, status.get(file.remote.getParent()))) {
-                    status.put(file.remote, filter.prepare(file.remote, file.local, status.get(file.remote.getParent())));
+                if(filter.accept(file.remote, file.local, status.get(file.getParent()))) {
+                    status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent())));
                 }
             }
         }
@@ -99,7 +99,7 @@ public class TransferPromptFilterWorker extends Worker<Map<Path, TransferStatus>
     }
 
     @Override
-    public Map<Path, TransferStatus> initialize() {
+    public Map<TransferItem, TransferStatus> initialize() {
         return Collections.emptyMap();
     }
 
