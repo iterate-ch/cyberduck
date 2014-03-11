@@ -91,9 +91,14 @@ public class Distribution {
     private URI sslUrl;
 
     /**
-     * CDN Streaming (iOS) URL
+     * X-CDN-Streaming-URI
      */
     private URI streamingUrl;
+
+    /**
+     * X-Cdn-Ios-Uri
+     */
+    private URI iOSstreamingUrl;
 
     /**
      * Deployment status description
@@ -367,6 +372,14 @@ public class Distribution {
 
     public URI getStreamingUrl() {
         return streamingUrl;
+    }
+
+    public URI getiOSstreamingUrl() {
+        return iOSstreamingUrl;
+    }
+
+    public void setiOSstreamingUrl(URI iOSstreamingUrl) {
+        this.iOSstreamingUrl = iOSstreamingUrl;
     }
 
     /**

@@ -125,6 +125,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(StringUtils.isNotBlank(info.getStreamingURL())) {
                     distribution.setStreamingUrl(URI.create(info.getStreamingURL()));
                 }
+                if(StringUtils.isNotBlank(info.getiOSStreamingURL())) {
+                    distribution.setiOSstreamingUrl(URI.create(info.getiOSStreamingURL()));
+                }
                 distribution.setLogging(info.getRetainLogs());
                 distribution.setLoggingContainer(".CDN_ACCESS_LOGS");
                 final ContainerMetadata metadata = session.getClient().getContainerMetaData(new SwiftRegionService(session).lookup(container),

@@ -64,6 +64,10 @@ public class DistributionUrlProvider implements UrlProvider {
             list.add(new DescriptiveUrl(this.toUrl(file, distribution.getStreamingUrl()), DescriptiveUrl.Type.cdn,
                     String.format("%s (Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
         }
+        if(distribution.getiOSstreamingUrl() != null) {
+            list.add(new DescriptiveUrl(this.toUrl(file, distribution.getiOSstreamingUrl()), DescriptiveUrl.Type.cdn,
+                    String.format("%s (iOS Streaming)", MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString(distribution.getMethod().toString(), "S3")))));
+        }
         list.addAll(this.toCnameUrl(file));
         return list;
     }
