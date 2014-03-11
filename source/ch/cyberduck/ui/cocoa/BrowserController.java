@@ -2734,7 +2734,7 @@ public class BrowserController extends WindowController
                     selected = this.workdir();
                 }
                 this.transfer(new SyncTransfer(session.getHost(), selected,
-                        LocalFactory.createLocal(sheet.filenames().lastObject().toString()).getParent()));
+                        LocalFactory.createLocal(sheet.filenames().lastObject().toString())));
             }
         }
     }
