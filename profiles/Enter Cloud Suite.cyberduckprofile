@@ -15,7 +15,7 @@
     <key>Context</key>
     <string>/v2.0/tokens</string>
 	<key>Username Placeholder</key>
-	<string>Email</string>
+	<string>Tenant ID:Email</string>
 	<key>Password Placeholder</key>
 	<string>Password</string>
 </dict>
