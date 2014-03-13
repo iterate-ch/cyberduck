@@ -230,8 +230,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
         /**
          * Rate limit for notifications
          */
-        private TimedSemaphore limit
-                = new TimedSemaphore(1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit"));
+        private TimedSemaphore limit = new TimedSemaphore(
+                1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit"));
 
         public void quit() {
             limit.shutdown();
