@@ -19,7 +19,6 @@
 using System.Collections.Generic;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -28,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         string Title { set; }
         TransferAction SelectedAction { get; set; }
-        Path SelectedPath { get; set; }
+        TransferItem SelectedItem { get; set; }
         string LocalFileUrl { set; }
         string LocalFileSize { set; }
         string LocalFileModificationDate { set; }
@@ -44,18 +43,18 @@ namespace Ch.Cyberduck.Ui.Controller
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
         TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
 
-        TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter { set; }
-        TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
-        TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter { set; }
+        TypedColumn<TransferItem>.TypedImageGetterDelegate ModelIconGetter { set; }
+        TypedColumn<TransferItem>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
+        TypedColumn<TransferItem>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
-        TypedColumn<Path>.TypedImageGetterDelegate ModelWarningGetter { set; }
-        TypedColumn<Path>.TypedImageGetterDelegate ModelCreateGetter { set; }
-        TypedColumn<Path>.TypedImageGetterDelegate ModelSyncGetter { set; }
-        MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
+        TypedColumn<TransferItem>.TypedImageGetterDelegate ModelWarningGetter { set; }
+        TypedColumn<TransferItem>.TypedImageGetterDelegate ModelCreateGetter { set; }
+        TypedColumn<TransferItem>.TypedImageGetterDelegate ModelSyncGetter { set; }
+        MulticolorTreeListView.ActiveGetterTransferItemDelegate ModelActiveGetter { set; }
         string StatusLabel { set; }
-        IList<Path> VisiblePaths { get; }
-        void SetModel(IEnumerable<Path> model);
-        void RefreshBrowserObject(Path path);
+        IList<TransferItem> VisibleItems { get; }
+        void SetModel(IEnumerable<TransferItem> model);
+        void RefreshBrowserObject(TransferItem item);
         void PopulateActions(IDictionary<TransferAction, string> actions);
 
         event VoidHandler ChangedActionEvent;

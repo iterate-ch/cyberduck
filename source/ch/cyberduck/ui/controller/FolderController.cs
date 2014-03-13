@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -63,8 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (DialogResult.OK == result && !String.IsNullOrEmpty(View.InputText) &&
                 !View.InputText.Trim().Equals(String.Empty))
             {
-                BrowserController.background(new CreateFolderAction(BrowserController, Workdir,
-                                                                    View.InputText,
+                BrowserController.background(new CreateFolderAction(BrowserController, Workdir, View.InputText,
                                                                     HasLocation() ? _view.Region : null));
             }
         }
@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _region = region;
-                _folder = new Path(_workdir, _filename, EnumSet.of(Path.Type.directory));
+                _folder = new Path(_workdir, _filename, EnumSet.of(AbstractPath.Type.directory));
             }
 
             public override object run()

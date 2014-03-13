@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             for (int i = 0; i < Transfer.getRoots().size(); i++)
             {
-                Path next = (Path) Transfer.getRoots().get(i);
+                TransferItem next = (TransferItem) Transfer.getRoots().get(i);
                 TransferPromptModel.Add(next);
             }
 
@@ -107,10 +107,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             View.SetModel(TransferPromptModel.ChildrenGetter(null));
                             //select first one if there is any
-                            IEnumerator<Path> en = TransferPromptModel.ChildrenGetter(null).GetEnumerator();
+                            IEnumerator<TransferItem> en = TransferPromptModel.ChildrenGetter(null).GetEnumerator();
                             if (en.MoveNext())
                             {
-                                View.SelectedPath = en.Current;
+                                View.SelectedItem = en.Current;
                             }
                         };
                     DialogResult result = View.ShowDialog(_parent.View);
@@ -124,9 +124,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return Action;
         }
 
-        public bool isSelected(Path p)
+        public bool isSelected(TransferItem i)
         {
-            return TransferPromptModel.IsSelected(p);
+            return TransferPromptModel.IsSelected(i);
         }
 
         public override void start(BackgroundAction action)
@@ -152,22 +152,21 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSelectionEvent()
         {
-            if (View.SelectedPath != null)
+            if (View.SelectedItem != null)
             {
-                Path selected = View.SelectedPath;
+                TransferItem selected = View.SelectedItem;
                 if (null != selected)
                 {
-                    View.LocalFileUrl = selected.getLocal().getAbsolute();
-                    if (selected.getLocal().attributes().getSize() == -1)
+                    View.LocalFileUrl = selected.local.getAbsolute();
+                    if (selected.local.attributes().getSize() == -1)
                     {
                         View.LocalFileSize = UnknownString;
                     }
                     else
                     {
-                        View.LocalFileSize =
-                            SizeFormatterFactory.get().format(selected.getLocal().attributes().getSize());
+                        View.LocalFileSize = SizeFormatterFactory.get().format(selected.local.attributes().getSize());
                     }
-                    if (selected.getLocal().attributes().getModificationDate() == -1)
+                    if (selected.local.attributes().getModificationDate() == -1)
                     {
                         View.LocalFileModificationDate = UnknownString;
                     }
@@ -177,10 +176,10 @@ namespace Ch.Cyberduck.Ui.Controller
                             UserDateFormatterFactory.get()
                                                     .getLongFormat(
                                                         UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                            selected.getLocal().attributes().getModificationDate()));
+                                                            selected.local.attributes().getModificationDate()));
                     }
                     View.RemoteFileUrl =
-                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected)
+                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected.remote)
                                                                   .find(DescriptiveUrl.Type.provider)
                                                                   .getUrl();
                     TransferStatus status = TransferPromptModel.GetStatus(selected);
@@ -232,16 +231,15 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateStatusLabel();
         }
 
-        public void ReloadData(List<Path> roots)
+        public void ReloadData(List<TransferItem> roots)
         {
             //clear selection before resetting model. Otherwise we have weird selection effects.
             View.SetModel(roots);
-            List<Path> toUpdate = new List<Path>();
-            foreach (Path path in View.VisiblePaths)
+            foreach (TransferItem item in View.VisibleItems)
             {
-                if (path.isDirectory())
+                if (item.remote.isDirectory())
                 {
-                    View.RefreshBrowserObject(path);
+                    View.RefreshBrowserObject(item);
                 }
             }
             UpdateStatusLabel();
@@ -270,9 +268,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return actions;
         }
 
-        public void RefreshObject(Path path)
+        public void RefreshObject(TransferItem item)
         {
-            AsyncDelegate refreshAction = () => View.RefreshBrowserObject(path);
+            AsyncDelegate refreshAction = () => View.RefreshBrowserObject(item);
             Invoke(refreshAction);
         }
     }

@@ -2362,7 +2362,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // browser
             // 
             this.browser.ActiveForegroudColor = System.Drawing.SystemColors.ControlText;
-            this.browser.ActiveGetter = null;
+            this.browser.ActiveGetterPath = null;
+            this.browser.ActiveGetterTransferItem = null;
             this.browser.AllColumns.Add(this.treeColumnName);
             this.browser.AllColumns.Add(this.treeColumnSize);
             this.browser.AllColumns.Add(this.treeColumnModified);

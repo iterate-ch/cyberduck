@@ -19,6 +19,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -73,7 +74,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (!string.IsNullOrEmpty(t))
             {
-                Path file = new Path(Workdir, t, AbstractPath.FILE_TYPE);
+                Path file = new Path(Workdir, t, EnumSet.of(AbstractPath.Type.file));
                 return BrowserController.Lookup(file.getReference()) == null;
             }
             return false;

@@ -534,12 +534,13 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 UrlProvider urlProvider = ((UrlProvider) _session.getFeature(typeof (UrlProvider)));
-                if(urlProvider != null) {
+                if (urlProvider != null)
+                {
                     for (int i = 0; i < urlProvider.toUrl(SelectedPath).size(); i++)
                     {
                         DescriptiveUrl descUrl = (DescriptiveUrl) urlProvider.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
-                            descUrl.getHelp(), new List<string>());
+                        KeyValuePair<String, List<String>> entry =
+                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                         items.Add(entry);
                         foreach (Path path in selected)
                         {
@@ -549,16 +550,19 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 UrlProvider distributionConfiguration =
                     ((UrlProvider) _session.getFeature(typeof (DistributionConfiguration)));
-                if(distributionConfiguration != null) {
+                if (distributionConfiguration != null)
+                {
                     for (int i = 0; i < distributionConfiguration.toUrl(SelectedPath).size(); i++)
                     {
-                        DescriptiveUrl descUrl = (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
-                            descUrl.getHelp(), new List<string>());
+                        DescriptiveUrl descUrl =
+                            (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
+                        KeyValuePair<String, List<String>> entry =
+                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                         items.Add(entry);
                         foreach (Path path in selected)
                         {
-                            entry.Value.Add(((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
+                            entry.Value.Add(
+                                ((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
                         }
                     }
                 }
@@ -690,7 +694,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (e.DropTargetLocation == DropTargetLocation.Item)
                 {
-                    IList<Path> roots = new List<Path>();
+                    IList<TransferItem> roots = new List<TransferItem>();
                     Host host = null;
                     foreach (string filename in data.GetFileDropList())
                     {
@@ -703,9 +707,13 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 host = destination;
                             }
+                            Local local = LocalFactory.createLocal(filename);
                             // Upload to the remote host this bookmark points to
-                            roots.Add(new Path(new Path(destination.getDefaultPath(), EnumSet.of(Path.Type.directory)),
-                                               LocalFactory.createLocal(filename)));
+                            roots.Add(
+                                new TransferItem(
+                                    new Path(
+                                        new Path(destination.getDefaultPath(), EnumSet.of(AbstractPath.Type.directory)),
+                                        local.getName(), EnumSet.of(AbstractPath.Type.file)), local));
                         }
                     }
                     if (roots.Count > 0)
@@ -1412,11 +1420,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Download(IList<Path> downloads, Local downloadFolder)
         {
+            IList<TransferItem> items = new List<TransferItem>();
             foreach (Path selected in downloads)
             {
-                selected.setLocal(LocalFactory.createLocal(downloadFolder, selected.getName()));
+                items.Add(new TransferItem(selected, LocalFactory.createLocal(downloadFolder, selected.getName())));
             }
-            Transfer q = new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(downloads));
+            Transfer q = new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(items));
             transfer(q, new List<Path>());
         }
 
@@ -1657,8 +1666,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Environment.SpecialFolder.Desktop, null);
             if (null != folder)
             {
-                selected.setLocal(LocalFactory.createLocal(folder));
-                transfer(new SyncTransfer(_session.getHost(), selected));
+                transfer(new SyncTransfer(_session.getHost(), selected, LocalFactory.createLocal(folder)));
             }
         }
 
@@ -1684,8 +1692,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 destination = destination.getParent();
             }
-            List roots = Utils.ConvertToJavaList(paths, path => new Path(destination, LocalFactory.createLocal(path)));
-            transfer(new UploadTransfer(_session.getHost(), roots));
+            List downloads = Utils.ConvertToJavaList(paths, delegate(string path)
+                {
+                    Local local = LocalFactory.createLocal(path);
+                    return
+                        new TransferItem(
+                            new Path(destination, local.getName(),
+                                     local.isDirectory()
+                                         ? EnumSet.of(AbstractPath.Type.directory)
+                                         : EnumSet.of(AbstractPath.Type.file)), local);
+                });
+            transfer(new UploadTransfer(_session.getHost(), downloads));
         }
 
         private void View_DownloadTo()
@@ -1694,13 +1711,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   Environment.SpecialFolder.Desktop, null);
             if (null != folder)
             {
-                IList<Path> selected = SelectedPaths;
-
-                foreach (Path file in selected)
+                IList<TransferItem> downloads = new List<TransferItem>();
+                foreach (Path file in SelectedPaths)
                 {
-                    file.setLocal(LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName()));
+                    downloads.Add(new TransferItem(file,
+                                                   LocalFactory.createLocal(LocalFactory.createLocal(folder),
+                                                                            file.getName())));
                 }
-                transfer(new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(selected)), new List<Path>());
+                transfer(new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
             }
         }
 
@@ -1715,8 +1733,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != filename)
             {
                 Path selected = SelectedPath;
-                selected.setLocal(LocalFactory.createLocal(filename));
-                transfer(new DownloadTransfer(_session.getHost(), selected), new List<Path>());
+                transfer(new DownloadTransfer(_session.getHost(), selected, LocalFactory.createLocal(filename)),
+                         new List<Path>());
             }
         }
 
@@ -1939,7 +1957,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     IList<Path> roots = new List<Path>();
                     foreach (string file in dropList)
                     {
-                        Path p = new Path(destination, LocalFactory.createLocal(file));
+                        //TODO wie unterscheiden ob File oder Directory?
+                        Path p = new Path(destination, file,
+                                          true
+                                              ? EnumSet.of(AbstractPath.Type.directory)
+                                              : EnumSet.of(AbstractPath.Type.file));
                         roots.Add(p);
                     }
                     UploadDroppedPath(roots, destination);
@@ -2287,7 +2309,7 @@ namespace Ch.Cyberduck.Ui.Controller
             RefreshParentPaths(changed, new List<Path>());
         }
 
-        public Path Lookup(PathReference reference)
+        public Referenceable Lookup(PathReference reference)
         {
             if (IsMounted())
             {
@@ -3026,7 +3048,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public bool accept(object p)
             {
-                AbstractPath path = (AbstractPath) p;
+                Path path = (Path) p;
                 if (path.getName().ToLower().IndexOf(_searchString.ToLower()) != -1)
                 {
                     // Matching filename

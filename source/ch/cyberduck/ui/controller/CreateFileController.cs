@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -35,8 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void Callback(DialogResult result)
         {
-            if (!String.IsNullOrEmpty(View.InputText) &&
-                !View.InputText.Trim().Equals(string.Empty))
+            if (!String.IsNullOrEmpty(View.InputText) && !View.InputText.Trim().Equals(string.Empty))
             {
                 if (DialogResult.OK == result)
                 {
@@ -62,7 +62,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _edit = edit;
-                _file = new Path(_workdir, _filename, AbstractPath.FILE_TYPE);
+                _file = new Path(_workdir, _filename, EnumSet.of(AbstractPath.Type.file));
             }
 
             public override object run()
@@ -73,8 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (_edit)
                 {
                     _file.attributes().setSize(0L);
-                    Editor editor = EditorFactory.instance()
-                                                 .create(BrowserController, BrowserController.Session, _file);
+                    Editor editor = EditorFactory.instance().create(BrowserController, BrowserController.Session, _file);
                     editor.open();
                 }
                 return true;

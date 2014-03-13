@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
 
@@ -31,19 +32,28 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     /// </summary>
     public class MulticolorTreeListView : TreeListView
     {
-        public delegate bool ActiveGetterDelegate(Path path);
+        public delegate bool ActiveGetterPathDelegate(Path path);
+
+        public delegate bool ActiveGetterTransferItemDelegate(TransferItem path);
 
         private const int IconSize = 16;
 
         private Color _activeForegroudColor = DefaultForeColor;
 
-        private ActiveGetterDelegate _activeGetter = reference => true;
+        private ActiveGetterPathDelegate _activeGetterPath = reference => true;
+        private ActiveGetterTransferItemDelegate _activeGetterTransferItem = reference => true;
         private Color _inactiveForegroudColor = Color.Gray;
 
-        public ActiveGetterDelegate ActiveGetter
+        public ActiveGetterTransferItemDelegate ActiveGetterTransferItem
         {
-            get { return _activeGetter; }
-            set { _activeGetter = value; }
+            get { return _activeGetterTransferItem; }
+            set { _activeGetterTransferItem = value; }
+        }
+
+        public ActiveGetterPathDelegate ActiveGetterPath
+        {
+            get { return _activeGetterPath; }
+            set { _activeGetterPath = value; }
         }
 
         public Color ActiveForegroudColor
@@ -61,10 +71,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void OnDrawSubItem(DrawListViewSubItemEventArgs e)
         {
             object o = ((OLVListItem) e.Item).RowObject;
+            if (o is TransferItem)
+            {
+                TransferItem item = (TransferItem) o;
+                e.Item.ForeColor = ActiveGetterTransferItem(item) ? ActiveForegroudColor : InactiveForegroudColor;
+            }
             if (o is Path)
             {
                 Path path = (Path) o;
-                e.Item.ForeColor = ActiveGetter(path) ? ActiveForegroudColor : InactiveForegroudColor;
+                e.Item.ForeColor = ActiveGetterPath(path) ? ActiveForegroudColor : InactiveForegroudColor;
             }
             base.OnDrawSubItem(e);
         }
@@ -87,10 +102,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void OnCellEditStarting(CellEditEventArgs e)
         {
             e.Control.AutoSize = false;
-            e.Control.Bounds = new Rectangle(e.Control.Bounds.X + IconSize,
-                                             e.Control.Bounds.Y,
-                                             e.Control.Bounds.Width - IconSize,
-                                             e.Control.Bounds.Height);
+            e.Control.Bounds = new Rectangle(e.Control.Bounds.X + IconSize, e.Control.Bounds.Y,
+                                             e.Control.Bounds.Width - IconSize, e.Control.Bounds.Height);
             if (e.Control is TextBox)
             {
                 //Only select filename part w/o extension (Explorer like behavior)

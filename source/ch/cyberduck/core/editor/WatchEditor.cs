@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         protected override void edit()
         {
-            Path path = getEdited();
+            ch.cyberduck.core.Local local = getLocal();
             Application application = getApplication();
 
             Process process = new Process();
@@ -50,17 +50,17 @@ namespace Ch.Cyberduck.Core.Editor
                 if (application != null && Utils.IsNotBlank(application.getIdentifier()))
                 {
                     process.StartInfo.FileName = application.getIdentifier();
-                    process.StartInfo.Arguments = "\"" + getEdited().getLocal().getAbsolute() + "\"";
+                    process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
                 }
                 else
                 {
-                    process.StartInfo.FileName = getEdited().getLocal().getAbsolute();
+                    process.StartInfo.FileName = local.getAbsolute();
                 }
             }
             else
             {
                 process.StartInfo.FileName = application.getIdentifier();
-                process.StartInfo.Arguments = "\"" + getEdited().getLocal().getAbsolute() + "\"";
+                process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
             }
             if (Utils.StartProcess(process))
             {
@@ -71,10 +71,10 @@ namespace Ch.Cyberduck.Core.Editor
         private void Watch()
         {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = getEdited().getLocal().getParent().getAbsolute();
-            _watcher.Filter = getEdited().getLocal().getName();
-            _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            _watcher.Path = getLocal().getParent().getAbsolute();
+            _watcher.Filter = getLocal().getName();
+            _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
+                                    NotifyFilters.DirectoryName;
             RegisterHandlers();
             // Begin watching.
             _watcher.EnableRaisingEvents = true;

@@ -672,9 +672,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { new TypedColumn<Path>(treeColumnRegion) {AspectGetter = value}; }
         }
 
-        public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
+        public MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter
         {
-            set { browser.ActiveGetter = value; }
+            set { browser.ActiveGetterPath = value; }
         }
 
         public void AddTranscriptEntry(bool request, string entry)

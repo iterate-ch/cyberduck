@@ -96,18 +96,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new[] {"Prompt"}; }
         }
 
-        public void SetModel(IEnumerable<Path> model)
+        public void SetModel(IEnumerable<TransferItem> model)
         {
             browser.ClearCachedInfo();
             browser.SetObjects(model);
             //browser.Roots = model;            
         }
 
-        public void RefreshBrowserObject(Path path)
+        public void RefreshBrowserObject(TransferItem item)
         {
-            if (path != null)
+            if (item != null)
             {
-                browser.RefreshObject(path);
+                browser.RefreshObject(item);
             }
             else
             {
@@ -115,17 +115,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        public IList<Path> VisiblePaths
+        public IList<TransferItem> VisibleItems
         {
             get
             {
                 int count = browser.GetItemCount();
-                IList<Path> paths = new List<Path>(count);
+                IList<TransferItem> items = new List<TransferItem>(count);
                 for (int i = 0; i < browser.GetItemCount(); i++)
                 {
-                    paths.Add((Path) browser.GetModelObject(i));
+                    items.Add((TransferItem) browser.GetModelObject(i));
                 }
-                return paths;
+                return items;
             }
         }
 
@@ -185,9 +185,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxAction.SelectedValue = value; }
         }
 
-        public Path SelectedPath
+        public TransferItem SelectedItem
         {
-            get { return (Path) browser.SelectedObject; }
+            get { return (TransferItem) browser.SelectedObject; }
             set { browser.SelectedObject = value; }
         }
 
@@ -241,19 +241,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.ChildrenGetter = value; }
         }
 
-        public TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter
+        public TypedColumn<TransferItem>.TypedAspectGetterDelegate ModelFilenameGetter
         {
-            set { new TypedColumn<Path>(treeColumnName) {AspectGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnName) {AspectGetter = value}; }
         }
 
-        public TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter
+        public TypedColumn<TransferItem>.TypedImageGetterDelegate ModelIconGetter
         {
-            set { new TypedColumn<Path>(treeColumnName) {ImageGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnName) {ImageGetter = value}; }
         }
 
-        public TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter
+        public TypedColumn<TransferItem>.TypedAspectGetterDelegate ModelSizeGetter
         {
-            set { new TypedColumn<Path>(treeColumnSize) {AspectGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnSize) {AspectGetter = value}; }
         }
 
         public AspectToStringConverterDelegate ModelSizeAsStringGetter
@@ -261,24 +261,24 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { treeColumnSize.AspectToStringConverter = value; }
         }
 
-        public TypedColumn<Path>.TypedImageGetterDelegate ModelWarningGetter
+        public TypedColumn<TransferItem>.TypedImageGetterDelegate ModelWarningGetter
         {
-            set { new TypedColumn<Path>(treeColumnWarning) {ImageGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnWarning) {ImageGetter = value}; }
         }
 
-        public TypedColumn<Path>.TypedImageGetterDelegate ModelCreateGetter
+        public TypedColumn<TransferItem>.TypedImageGetterDelegate ModelCreateGetter
         {
-            set { new TypedColumn<Path>(treeColumnCreate) {ImageGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnCreate) {ImageGetter = value}; }
         }
 
-        public TypedColumn<Path>.TypedImageGetterDelegate ModelSyncGetter
+        public TypedColumn<TransferItem>.TypedImageGetterDelegate ModelSyncGetter
         {
-            set { new TypedColumn<Path>(treeColumnSync) {ImageGetter = value}; }
+            set { new TypedColumn<TransferItem>(treeColumnSync) {ImageGetter = value}; }
         }
 
-        public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
+        public MulticolorTreeListView.ActiveGetterTransferItemDelegate ModelActiveGetter
         {
-            set { browser.ActiveGetter = value; }
+            set { browser.ActiveGetterTransferItem = value; }
         }
 
         public event VoidHandler ChangedActionEvent = delegate { };

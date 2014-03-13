@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -54,12 +55,11 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly string _target;
             private readonly Path _workdir;
 
-            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink)
-                : base(controller)
+            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink) : base(controller)
             {
                 _workdir = workdir;
                 _symlink = symlink;
-                _link = new Path(_workdir, _symlink, AbstractPath.FILE_TYPE);
+                _link = new Path(_workdir, _symlink, EnumSet.of(AbstractPath.Type.file));
                 _target = BrowserController.SelectedPath.getName();
             }
 

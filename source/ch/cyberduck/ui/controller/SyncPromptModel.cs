@@ -29,18 +29,18 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        public virtual object GetCreateImage(Path path)
+        public virtual object GetCreateImage(TransferItem item)
         {
-            if (!GetStatus(path).isExists())
+            if (!GetStatus(item).isExists())
             {
                 return IconCache.Instance.IconForName("plus");
             }
             return null;
         }
 
-        public override object GetSyncGetter(Path path)
+        public override object GetSyncGetter(TransferItem item)
         {
-            Comparison compare = ((SyncTransfer) Transfer).compare(path);
+            Comparison compare = ((SyncTransfer) Transfer).compare(item);
             if (compare.equals(Comparison.remote))
             {
                 return IconCache.Instance.IconForName("transfer-download", 16);

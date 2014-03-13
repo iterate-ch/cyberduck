@@ -41,12 +41,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Cache _cache = new Cache(int.MaxValue);
         private readonly TransferPromptController _controller;
 
-        private readonly List<Path> _roots = new List<Path>();
+        private readonly List<TransferItem> _roots = new List<TransferItem>();
 
         /**
          * Selection status map in the prompt
          */
-        private readonly IDictionary<Path, CheckState> _selected = new Dictionary<Path, CheckState>();
+        private readonly IDictionary<TransferItem, CheckState> _selected = new Dictionary<TransferItem, CheckState>();
         private readonly Session _session;
 
         /**
@@ -54,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Controller
           */
         protected Bitmap AlertIcon = IconCache.Instance.IconForName("alert");
         private TransferAction _action;
-        protected IDictionary<Path, TransferStatus> _status = new Dictionary<Path, TransferStatus>();
+        protected IDictionary<TransferItem, TransferStatus> _status = new Dictionary<TransferItem, TransferStatus>();
 
 
         protected TransferPromptModel(TransferPromptController controller, Session session, Transfer transfer)
@@ -68,9 +68,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                .getProperty(String.Format("queue.prompt.{0}.action.default", transfer.getType().name())));
         }
 
-        public virtual void Add(Path p)
+        public virtual void Add(TransferItem item)
         {
-            _roots.Add(p);
+            _roots.Add(item);
         }
 
         public bool CanExpand(object path)
@@ -78,9 +78,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return ((Path) path).isDirectory();
         }
 
-        public IEnumerable<Path> ChildrenGetter(object p)
+        public IEnumerable<TransferItem> ChildrenGetter(object p)
         {
-            Path directory = ((Path) p);
+            TransferItem directory = ((TransferItem) p);
             if (null == directory)
             {
                 // Root
@@ -99,18 +99,18 @@ namespace Ch.Cyberduck.Ui.Controller
             AttributedList list = _cache.get(null == directory ? null : directory.getReference());
             for (int i = 0; i < list.size(); i++)
             {
-                yield return (Path) list.get(i);
+                yield return (TransferItem) list.get(i);
             }
         }
 
-        public object GetName(Path path)
+        public object GetName(TransferItem path)
         {
-            return path.getName();
+            return path.remote.getName();
         }
 
-        public object GetModified(Path path)
+        public object GetModified(TransferItem path)
         {
-            long modificationDate = path.attributes().getModificationDate();
+            long modificationDate = path.remote.attributes().getModificationDate();
             if (modificationDate != -1)
             {
                 return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
@@ -118,15 +118,16 @@ namespace Ch.Cyberduck.Ui.Controller
             return UNKNOWN;
         }
 
-        public object GetSize(Path path)
+        public object GetSize(TransferItem path)
         {
             TransferStatus status = GetStatus(path);
             return status.getLength();
         }
 
-        public TransferStatus GetStatus(Path path)
+        public TransferStatus GetStatus(TransferItem path)
         {
-            if(!_status.ContainsKey(path)) {
+            if (!_status.ContainsKey(path))
+            {
                 // Transfer filter background task has not yet finished
                 return new TransferStatus();
             }
@@ -139,45 +140,45 @@ namespace Ch.Cyberduck.Ui.Controller
             return SizeFormatterFactory.get().format((long) size);
         }
 
-        public object GetIcon(Path path)
+        public object GetIcon(TransferItem item)
         {
-            return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
+            return IconCache.Instance.IconForPath(item.remote, IconCache.IconSize.Small);
         }
 
-        private bool IsFiltered(Path p)
+        private bool IsFiltered(TransferItem item)
         {
-            return !_status.ContainsKey(p);
+            return !_status.ContainsKey(item);
         }
 
-        public bool IsSelected(Path p)
+        public bool IsSelected(TransferItem item)
         {
-            if (_selected.ContainsKey(p))
+            if (_selected.ContainsKey(item))
             {
-                return _selected[p] == CheckState.Checked;
+                return _selected[item] == CheckState.Checked;
             }
             return true;
         }
 
-        public CheckState GetCheckState(Object p)
+        public CheckState GetCheckState(Object i)
         {
-            Path path = (Path) p;
-            if (IsFiltered(path))
+            TransferItem item = (TransferItem) i;
+            if (IsFiltered(item))
             {
                 return CheckState.Unchecked;
             }
-            return IsSelected(path) ? CheckState.Checked : CheckState.Unchecked;
+            return IsSelected(item) ? CheckState.Checked : CheckState.Unchecked;
         }
 
-        public CheckState SetCheckState(object p, CheckState newValue)
+        public CheckState SetCheckState(object i, CheckState newValue)
         {
-            _selected[(Path) p] = newValue;
+            _selected[(TransferItem) i] = newValue;
             return newValue;
         }
 
-        public object GetWarningImage(Path path)
+        public object GetWarningImage(TransferItem item)
         {
-            TransferStatus status = GetStatus(path);
-            if (path.attributes().isFile())
+            TransferStatus status = GetStatus(item);
+            if (item.remote.isFile())
             {
                 if (status.getLength() == 0)
                 {
@@ -187,19 +188,19 @@ namespace Ch.Cyberduck.Ui.Controller
             return null;
         }
 
-        public virtual object GetCreateImage(Path path)
+        public virtual object GetCreateImage(TransferItem item)
         {
             return null;
         }
 
-        public virtual object GetSyncGetter(Path path)
+        public virtual object GetSyncGetter(TransferItem item)
         {
             return null;
         }
 
-        public bool IsActive(Path path)
+        public bool IsActive(TransferItem item)
         {
-            return _status.ContainsKey(path);
+            return _status.ContainsKey(item);
         }
 
         /// <summary>
@@ -242,7 +243,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    IDictionary<Path, TransferStatus> map = Utils.ConvertFromJavaMap<Path, TransferStatus>((Map) result);
+                    IDictionary<TransferItem, TransferStatus> map =
+                        Utils.ConvertFromJavaMap<TransferItem, TransferStatus>((Map) result);
                     _model._status = map;
                     _controller.ReloadData(_model._roots);
                 }
@@ -253,7 +255,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
-                                            Session session, Path directory, Transfer transfer, Cache cache)
+                                            Session session, TransferItem directory, Transfer transfer, Cache cache)
                 : base(
                     controller, session, new InnerTransferPromptListWorker(model, session, transfer, directory, cache))
             {
@@ -262,11 +264,12 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerTransferPromptListWorker : TransferPromptListWorker
             {
                 private readonly Cache _cache;
-                private readonly Path _directory;
+                private readonly TransferItem _directory;
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, Session session, Transfer transfer,
-                                                     Path directory, Cache cache) : base(session, transfer, directory)
+                                                     TransferItem directory, Cache cache)
+                    : base(session, transfer, directory.remote, directory.local)
                 {
                     _model = model;
                     _directory = directory;

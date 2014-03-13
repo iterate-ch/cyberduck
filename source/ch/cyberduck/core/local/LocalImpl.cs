@@ -79,15 +79,6 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        public override LocalAttributes attributes()
-        {
-            if (null == _info)
-            {
-                _info = new FileInfoAttributes(getAbsolute());
-            }
-            return _info;
-        }
-
         /// <summary>
         /// Delete to trash is not supported yet.
         /// </summary>
@@ -96,6 +87,11 @@ namespace Ch.Cyberduck.Core.Local
         public override void trash()
         {
             delete();
+        }
+
+        public override bool isSymbolicLink()
+        {
+            return false;
         }
 
         private static string MakeValidPath(string path)
@@ -177,18 +173,6 @@ namespace Ch.Cyberduck.Core.Local
             protected override object create()
             {
                 return new LocalImpl(Environment.GetEnvironmentVariable("HOME"));
-            }
-        }
-
-        private class FileInfoAttributes : LocalAttributes
-        {
-            public FileInfoAttributes(String path) : base(path)
-            {
-            }
-
-            public override bool isSymbolicLink()
-            {
-                return false;
             }
         }
     }

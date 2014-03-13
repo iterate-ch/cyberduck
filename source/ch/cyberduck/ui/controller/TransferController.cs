@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
@@ -52,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Transfer transfer in TransferCollection.defaultCollection())
                 {
                     collectionItemAdded(transfer);
-                }                
+                }
             }
             Init();
         }
@@ -222,8 +221,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         for (int i = 0; i < transfer.getRoots().size(); i++)
                         {
-                            Path p = (Path) transfer.getRoots().get(i);
-                            if (p.getLocal().exists())
+                            TransferItem t = (TransferItem) transfer.getRoots().get(i);
+                            if (t.local.exists())
                             {
                                 return true;
                             }
@@ -247,8 +246,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             for (int i = 0; i < transfer.getRoots().size(); i++)
                             {
-                                Path p = (Path) transfer.getRoots().get(i);
-                                if (p.getLocal().exists())
+                                TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                                if (item.local.exists())
                                 {
                                     return true;
                                 }
@@ -408,12 +407,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (transfer.getLocal() != null)
                     {
-                        View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().getLocal().getAbsolute(),
+                        View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().local.getAbsolute(),
                                                                            IconCache.IconSize.Large);
                     }
                     else
                     {
-                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot(), IconCache.IconSize.Large);
+                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot().remote,
+                                                                       IconCache.IconSize.Large);
                     }
                 }
                 else
@@ -458,8 +458,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 for (int i = 0; i < transfer.getRoots().size(); i++)
                 {
-                    Path path = (Path) transfer.getRoots().get(i);
-                    RevealServiceFactory.get().reveal(path.getLocal());
+                    TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                    RevealServiceFactory.get().reveal(item.local);
                 }
             }
         }
@@ -473,8 +473,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 for (int i = 0; i < transfer.getRoots().size(); i++)
                 {
-                    Path path = (Path) transfer.getRoots().get(i);
-                    Local l = path.getLocal();
+                    TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                    Local l = item.local;
                     if (ApplicationLauncherFactory.get().open(l))
                     {
                         break;
