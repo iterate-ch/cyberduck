@@ -712,8 +712,9 @@ namespace Ch.Cyberduck.Ui.Controller
                             roots.Add(
                                 new TransferItem(
                                     new Path(
-                                        new Path(destination.getDefaultPath(), EnumSet.of(AbstractPath.Type.directory)),
-                                        local.getName(), EnumSet.of(AbstractPath.Type.file)), local));
+                                        new Path(PathNormalizer.normalize(destination.getDefaultPath(), true),
+                                                 EnumSet.of(AbstractPath.Type.directory)), local.getName(),
+                                        EnumSet.of(AbstractPath.Type.file)), local));
                         }
                     }
                     if (roots.Count > 0)
