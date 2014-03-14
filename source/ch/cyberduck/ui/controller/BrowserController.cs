@@ -1954,22 +1954,23 @@ namespace Ch.Cyberduck.Ui.Controller
                 StringCollection dropList = (e.DataObject as DataObject).GetFileDropList();
                 if (dropList.Count > 0)
                 {
-                    IList<Path> roots = new List<Path>();
+                    IList<TransferItem> roots = new List<TransferItem>();
                     foreach (string file in dropList)
                     {
-                        //TODO wie unterscheiden ob File oder Directory?
-                        Path p = new Path(destination, file,
-                                          true
-                                              ? EnumSet.of(AbstractPath.Type.directory)
-                                              : EnumSet.of(AbstractPath.Type.file));
-                        roots.Add(p);
+                        Local local = LocalFactory.createLocal(file);
+                        roots.Add(
+                            new TransferItem(
+                                new Path(destination, local.getName(),
+                                         local.isDirectory()
+                                             ? EnumSet.of(AbstractPath.Type.directory)
+                                             : EnumSet.of(AbstractPath.Type.file)), local));
                     }
                     UploadDroppedPath(roots, destination);
                 }
             }
         }
 
-        public void UploadDroppedPath(IList<Path> roots, Path destination)
+        public void UploadDroppedPath(IList<TransferItem> roots, Path destination)
         {
             if (IsMounted())
             {
@@ -2235,7 +2236,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected void transfer(Transfer transfer)
         {
-            this.transfer(transfer, (IList<Path>) Utils.ConvertFromJavaList<Path>(transfer.getRoots()));
+            this.transfer(transfer, Utils.ConvertFromJavaList(transfer.getRoots(), delegate(object o)
+                {
+                    TransferItem item = (TransferItem) o;
+                    return item.remote;
+                }));
         }
 
         /// <summary>
