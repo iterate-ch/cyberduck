@@ -73,9 +73,9 @@ namespace Ch.Cyberduck.Ui.Controller
             _roots.Add(item);
         }
 
-        public bool CanExpand(object path)
+        public bool CanExpand(object t)
         {
-            return ((Path) path).isDirectory();
+            return ((TransferItem) t).remote.isDirectory();
         }
 
         public IEnumerable<TransferItem> ChildrenGetter(object p)

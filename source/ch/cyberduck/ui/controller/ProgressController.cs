@@ -181,8 +181,8 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<string> roots = new List<string>();
             for (int i = 0; i < srcRoots.size(); i++)
             {
-                Path p = (Path) srcRoots.get(i);
-                roots.Add(p.getName());
+                TransferItem item = (TransferItem) srcRoots.get(i);
+                roots.Add(item.remote.getName());
             }
             View.PopulateRoots(roots);
         }
