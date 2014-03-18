@@ -132,7 +132,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 47C421D4085658DB00FDBB79 /* Build configuration list for PBXProject "Spotlight Importer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -211,6 +211,7 @@
 		47C421D2085658DB00FDBB79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -243,12 +244,6 @@
 		47C421D6085658DB00FDBB79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc7400,
-					i386,
-					x86_64,
-				);
-				GCC_ENABLE_OBJC_GC = supported;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
