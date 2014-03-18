@@ -40,7 +40,7 @@ public class AzureHomeFinderService extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(containerService.isContainer(home)) {
-            home.setType(EnumSet.of(Path.Type.volume, Path.Type.directory));
+            return new Path(home.getAbsolute(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }
@@ -49,7 +49,7 @@ public class AzureHomeFinderService extends DefaultHomeFinderService {
     public Path find(final Path workdir, final String path) {
         final Path home = super.find(workdir, path);
         if(containerService.isContainer(home)) {
-            home.setType(EnumSet.of(Path.Type.volume, Path.Type.directory));
+            return new Path(home.getAbsolute(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }
