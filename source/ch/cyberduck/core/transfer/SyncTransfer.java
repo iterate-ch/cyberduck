@@ -21,7 +21,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullPathFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -67,8 +66,8 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        upload = new UploadTransfer(host, roots, new NullPathFilter<Local>());
-        download = new DownloadTransfer(host, roots, new NullPathFilter<Path>());
+        upload = new UploadTransfer(host, roots);
+        download = new DownloadTransfer(host, roots);
     }
 
     @Override
