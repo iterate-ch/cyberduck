@@ -326,7 +326,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("transfer.toolbar.open", true.ToString());
             defaults.put("transfer.toolbar.show", true.ToString());
 
-            // Resolve symbolic links downloading target file instead
+            // Resolve symbolic links downloading target file instead. Cannot create symbolic links on FAT.
             defaults.put("path.symboliclink.resolve", true.ToString());
             // Resolve local links uploading target file instead. Currently not supporting shortcuts on Windows.
             defaults.put("local.symboliclink.resolve", true.ToString());
