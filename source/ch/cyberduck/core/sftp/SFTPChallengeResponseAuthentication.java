@@ -33,7 +33,7 @@ import ch.ethz.ssh2.InteractiveCallback;
 /**
  * @version $Id$
  */
-public class SFTPChallengeResponseAuthentication {
+public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
     private SFTPSession session;
@@ -42,6 +42,7 @@ public class SFTPChallengeResponseAuthentication {
         this.session = session;
     }
 
+    @Override
     public boolean authenticate(final Host host, final LoginCallback controller) throws IOException, LoginCanceledException {
         return this.authenticate(host, host.getCredentials(), controller);
     }

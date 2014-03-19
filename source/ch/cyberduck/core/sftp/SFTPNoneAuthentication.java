@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class SFTPNoneAuthentication {
+public class SFTPNoneAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 
     private SFTPSession session;
@@ -37,6 +37,7 @@ public class SFTPNoneAuthentication {
         this.session = session;
     }
 
+    @Override
     public boolean authenticate(final Host host, final LoginCallback controller)
             throws IOException, LoginCanceledException {
         if(log.isDebugEnabled()) {

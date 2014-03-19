@@ -40,7 +40,7 @@ import ch.ethz.ssh2.crypto.PEMDecryptException;
 /**
  * @version $Id$
  */
-public class SFTPPublicKeyAuthentication {
+public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
 
     private SFTPSession session;
@@ -49,6 +49,7 @@ public class SFTPPublicKeyAuthentication {
         this.session = session;
     }
 
+    @Override
     public boolean authenticate(final Host host, final LoginCallback prompt)
             throws IOException, LoginCanceledException, AccessDeniedException {
         if(log.isDebugEnabled()) {
