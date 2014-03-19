@@ -36,7 +36,6 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
@@ -117,7 +116,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final SymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), roots);
+        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), roots);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session).withCache(cache);
         }
@@ -183,8 +182,8 @@ public class UploadTransfer extends Transfer {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Symlink symlink = session.getFeature(Symlink.class);
-        final SymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, roots);
-        if(local.isSymbolicLink() && symlinkResolver.resolve(file)) {
+        final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, roots);
+        if(local.isSymbolicLink() && symlinkResolver.resolve(local)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(local.getAbsolute(),
                     local.getSymlinkTarget().getAbsolute());
