@@ -34,7 +34,7 @@ public abstract class AbstractSymlinkResolver<T> implements SymlinkResolver<T> {
             return StringUtils.substring(name, parent.length() + 1);
         }
         else {
-            return String.format("../%s", this.relativize(parent, name));
+            return String.format("..%s%s", Path.DELIMITER, this.relativize(parent, name));
         }
     }
 }
