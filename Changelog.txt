@@ -63,6 +63,7 @@ Changelog. Last modified: $Date$
 - [Feature] Enable website configuration for buckets (GreenQloud)
 - [Feature] Option to change default port for custom origin (CloudFront) (#5460)
 - [Feature] Upload with temporary name when saving from external editor
+- [Feature] CDN (Akamai) configuration for HP Cloud (Openstack)
 - [Bugfix] Cannot edit non prefixed headers (OpenStack) (#7209)
 - [Bugfix] Quick Look does not display preview (Mac) (#7231)
 - [Bugfix] Failure duplicating files (FTP) (#7224)
