@@ -57,6 +57,7 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
+import ch.cyberduck.ui.action.DisconnectWorker;
 import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.action.RevertWorker;
@@ -3439,7 +3440,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new BrowserControllerBackgroundAction<Void>(this) {
+            this.background(new WorkerBackgroundAction<Void>(this, session, new DisconnectWorker(session)) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {
@@ -3449,9 +3450,8 @@ public class BrowserController extends WindowController
                 }
 
                 @Override
-                public Void run() throws BackgroundException {
-                    session.close();
-                    return null;
+                protected boolean connect(Session session) throws BackgroundException {
+                    return false;
                 }
 
                 @Override
@@ -3459,12 +3459,6 @@ public class BrowserController extends WindowController
                     super.cleanup();
                     window.setDocumentEdited(false);
                     disconnected.run();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                            session.getHost().getHostname());
                 }
             });
         }
