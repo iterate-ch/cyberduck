@@ -9,7 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
 import org.junit.BeforeClass;
@@ -33,7 +33,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final NullLocal local = new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -54,7 +54,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepareRename() throws Exception {
         final AtomicBoolean r = new AtomicBoolean();
-        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public boolean exists() {

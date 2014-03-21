@@ -11,7 +11,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public class RenameFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        RenameFilter f = new RenameFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         f.prepare(t, new NullLocal("t"), new TransferStatus());
         assertNotSame("t", t.getName());
@@ -74,7 +74,7 @@ public class RenameFilterTest extends AbstractTestCase {
                 return null;
             }
         };
-        final RenameFilter f = new RenameFilter(new NullSymlinkResolver(), session);
+        final RenameFilter f = new RenameFilter(new DisabledUploadSymlinkResolver(), session);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
         assertTrue(found.get());
         assertNotNull(status.getRename());

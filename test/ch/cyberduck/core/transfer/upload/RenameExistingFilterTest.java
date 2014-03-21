@@ -17,7 +17,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertTrue(f.accept(t, new NullLocal("/", "t"), new TransferStatus().exists(true)));
     }
@@ -43,7 +43,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     @Test
     public void testPrepare() throws Exception {
         final AtomicBoolean c = new AtomicBoolean();
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
+        final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Move.class) {
@@ -165,7 +165,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             }
         };
         final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
+        final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
                 options);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
@@ -257,7 +257,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 return null;
             }
         };
-        final RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver(), session,
+        final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true));
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override

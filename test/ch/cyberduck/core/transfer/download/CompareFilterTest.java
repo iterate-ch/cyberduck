@@ -49,11 +49,6 @@ public class CompareFilterTest extends AbstractTestCase {
             }
 
             @Override
-            public boolean include(final Path file) {
-                return false;
-            }
-
-            @Override
             public String relativize(final String base, final String name) {
                 return null;
             }

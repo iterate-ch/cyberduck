@@ -42,14 +42,9 @@ public class CompareFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptEqual() throws Exception {
-        final CompareFilter filter = new CompareFilter(new SymlinkResolver<Path>() {
+        final CompareFilter filter = new CompareFilter(new SymlinkResolver<Local>() {
             @Override
-            public boolean resolve(final Path file) {
-                return false;
-            }
-
-            @Override
-            public boolean include(final Path file) {
+            public boolean resolve(final Local file) {
                 return false;
             }
 

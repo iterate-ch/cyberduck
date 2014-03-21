@@ -13,7 +13,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
         assertTrue(f.accept(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("a") {
             @Override
             public boolean exists() {
@@ -52,7 +52,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     @Test
     public void testSkip() throws Exception {
         final Path file = new Path("t", EnumSet.of(Path.Type.file));
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -87,7 +87,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareFalse() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(7L);
@@ -98,7 +98,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")) {
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final Path f = new Path("t", EnumSet.of(Path.Type.file));
@@ -130,7 +130,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare0() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         t.attributes().setSize(0L);
@@ -142,7 +142,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendEqualSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true), new Write() {
             @Override
             public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
@@ -181,7 +181,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendSmallerSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true), new Write() {
             @Override
             public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
@@ -223,7 +223,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAppendLargerSize() throws Exception {
-        final ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")),
+        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")),
                 new UploadFilterOptions().withTemporary(true), new Write() {
             @Override
             public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {

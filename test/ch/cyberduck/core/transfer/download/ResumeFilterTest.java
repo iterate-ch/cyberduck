@@ -7,7 +7,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptDirectory() throws Exception {
-        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
         assertTrue(f.accept(p, new NullLocal("d", "a") {
             @Override
@@ -39,7 +39,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptExistsFalse() throws Exception {
-        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(2L);
         assertTrue(f.accept(p, new NullLocal("~/Downloads", "a") {
@@ -52,7 +52,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareFile() throws Exception {
-        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.file));
         final NullLocal local = new NullLocal("~/Downloads", "a") {
             @Override
@@ -79,7 +79,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDirectoryExists() throws Exception {
-        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("a");
         final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
@@ -88,7 +88,7 @@ public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareDirectoryExistsFalse() throws Exception {
-        ResumeFilter f = new ResumeFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("a") {
             @Override

@@ -7,7 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class RenameFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        RenameFilter f = new RenameFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        RenameFilter f = new RenameFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final NullLocal local = new NullLocal("t") {
             @Override
             public boolean exists() {

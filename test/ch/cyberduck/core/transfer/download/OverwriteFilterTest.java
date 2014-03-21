@@ -9,7 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         assertTrue(f.accept(p, new NullLocal("a"), new TransferStatus()));
@@ -38,7 +38,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptDirectory() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("/", "a") {
             @Override
             public boolean exists() {
@@ -55,7 +55,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         final TransferStatus status = f.prepare(p, new NullLocal("a"), new TransferStatus());
@@ -64,7 +64,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepareAttributes() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         p.attributes().setModificationDate(1L);

@@ -7,7 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class SkipFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        SkipFilter f = new SkipFilter(new NullSymlinkResolver(), new NullSession(new Host("h")));
+        SkipFilter f = new SkipFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                             }, new NullLocal("a", "b") {
                                 @Override
