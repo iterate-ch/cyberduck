@@ -107,13 +107,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             // Local file is no more here
             throw new NotfoundException(local.getAbsolute());
         }
-        if(local.isFile()) {
-            if(local.isSymbolicLink()) {
-                if(!symlinkResolver.resolve(local)) {
-                    return symlinkResolver.include(local);
-                }
-            }
-        }
         return true;
     }
 

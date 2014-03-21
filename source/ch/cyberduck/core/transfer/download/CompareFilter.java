@@ -41,12 +41,12 @@ public class CompareFilter extends AbstractDownloadFilter {
     protected Cache cache
             = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
 
-    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
         this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
-    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session, final DownloadFilterOptions options,
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options,
                          final ComparisionServiceFilter comparisonService) {
         super(symlinkResolver, session, options);
         this.comparisonService = comparisonService;

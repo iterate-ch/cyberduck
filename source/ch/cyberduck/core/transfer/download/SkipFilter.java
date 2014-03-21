@@ -32,11 +32,11 @@ import org.apache.log4j.Logger;
 public class SkipFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
-    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
-    public SkipFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public SkipFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                       final DownloadFilterOptions options) {
         super(symlinkResolver, session, options);
     }

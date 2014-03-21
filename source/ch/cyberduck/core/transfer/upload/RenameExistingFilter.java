@@ -45,11 +45,11 @@ public class RenameExistingFilter extends AbstractUploadFilter {
 
     private UploadFilterOptions options;
 
-    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public RenameExistingFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
         this.move = session.getFeature(Move.class);

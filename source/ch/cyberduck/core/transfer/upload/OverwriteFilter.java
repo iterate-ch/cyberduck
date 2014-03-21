@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -25,11 +26,11 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
  */
 public class OverwriteFilter extends AbstractUploadFilter {
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public OverwriteFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public OverwriteFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public OverwriteFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                            final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
     }

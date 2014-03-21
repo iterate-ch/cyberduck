@@ -34,11 +34,11 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                         final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
     }

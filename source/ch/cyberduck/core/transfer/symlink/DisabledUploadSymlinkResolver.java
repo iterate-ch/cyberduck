@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer.symlink;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,21 +17,15 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.core.Local;
 
 /**
  * @version $Id$
  */
-public class OverwriteFilter extends AbstractDownloadFilter {
+public class DisabledUploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
 
-    public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
-    }
-
-    public OverwriteFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                           final DownloadFilterOptions options) {
-        super(symlinkResolver, session, options);
+    @Override
+    public boolean resolve(final Local file) {
+        return false;
     }
 }

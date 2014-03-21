@@ -35,11 +35,11 @@ import org.apache.log4j.Logger;
 public class RenameFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
-    public RenameFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                         final DownloadFilterOptions options) {
         super(symlinkResolver, session, options);
     }

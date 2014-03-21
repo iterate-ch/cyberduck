@@ -39,38 +39,20 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override
     public boolean resolve(final Path file) {
-        if(file.isSymbolicLink()) {
-            if(Preferences.instance().getBoolean("path.symboliclink.resolve")) {
-                // Resolve links instead
-                return false;
-            }
-            // Create symbolic link only if choosen in the preferences. Otherwise download target file
-            final Path target = file.getSymlinkTarget();
-            // Only create symbolic link if target is included in the download
-            for(TransferItem root : files) {
-                if(this.findTarget(target, root.remote)) {
-                    return true;
-                }
+        if(Preferences.instance().getBoolean("path.symboliclink.resolve")) {
+            // Follow links instead
+            return false;
+        }
+        final Path target = file.getSymlinkTarget();
+        // Only create symbolic link if target is included in the download
+        for(TransferItem root : files) {
+            if(this.findTarget(target, root.remote)) {
+                // Create symbolic link
+                return true;
             }
         }
+        // Otherwise download target file
         return false;
-    }
-
-    @Override
-    public boolean include(final Path file) {
-        if(file.isSymbolicLink()) {
-            final Path target = file.getSymlinkTarget();
-            // Do not transfer files referenced from symlinks pointing to files also included
-            for(TransferItem root : files) {
-                if(this.findTarget(target, root.remote)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with target %s already included", file, target));
-                    }
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private boolean findTarget(final Path target, final Path root) {

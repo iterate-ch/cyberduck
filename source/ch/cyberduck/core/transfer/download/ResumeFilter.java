@@ -40,13 +40,13 @@ public class ResumeFilter extends AbstractDownloadFilter {
 
     private Attributes attribute;
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
         this.read = session.getFeature(Read.class);
         this.attribute = session.getFeature(Attributes.class);
     }
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                         final DownloadFilterOptions options, final Read read) {
         super(symlinkResolver, session, options);
         this.read = read;

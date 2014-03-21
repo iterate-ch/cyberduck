@@ -92,11 +92,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
-        if(file.isSymbolicLink()) {
-            if(!symlinkResolver.resolve(file)) {
-                return symlinkResolver.include(file);
-            }
-        }
         final Local volume = local.getVolume();
         if(!volume.exists()) {
             throw new NotfoundException(String.format("Volume %s not mounted", volume.getAbsolute()));

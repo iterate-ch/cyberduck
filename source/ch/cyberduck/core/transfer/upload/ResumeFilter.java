@@ -35,16 +35,16 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     private Write write;
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                         final UploadFilterOptions options) {
         this(symlinkResolver, session, options, session.getFeature(Write.class));
     }
 
-    public ResumeFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                         final UploadFilterOptions options, final Write write) {
         super(symlinkResolver, session, options);
         this.write = write;

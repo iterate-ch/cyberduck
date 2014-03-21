@@ -36,12 +36,12 @@ public class CompareFilter extends AbstractUploadFilter {
 
     private ComparisionServiceFilter comparisonService;
 
-    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new UploadFilterOptions());
         this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
-    public CompareFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final UploadFilterOptions options,
                          final ComparisionServiceFilter comparisonService) {
         super(symlinkResolver, session, options);

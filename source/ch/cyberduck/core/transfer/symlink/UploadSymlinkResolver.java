@@ -43,40 +43,21 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
 
     @Override
     public boolean resolve(final Local file) {
-        if(file.isSymbolicLink()) {
-            if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
-                // Resolve links instead
-                return false;
-            }
-            // Create symbolic link only if supported by the host
-            if(feature != null) {
-                final Local target = file.getSymlinkTarget();
-                // Only create symbolic link if target is included in the upload
-                for(TransferItem root : files) {
-                    if(this.findTarget(target, root.local)) {
-                        return true;
-                    }
-                }
-            }
+        if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
+            // Follow links instead
+            return false;
         }
-        return false;
-    }
-
-    @Override
-    public boolean include(final Local file) {
-        if(file.isSymbolicLink()) {
+        // Create symbolic link only if supported by the host
+        if(feature != null) {
             final Local target = file.getSymlinkTarget();
-            // Do not transfer files referenced from symlinks pointing to files also included
+            // Only create symbolic link if target is included in the upload
             for(TransferItem root : files) {
                 if(this.findTarget(target, root.local)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Skip file %s with target %s already included", file, target));
-                    }
-                    return false;
+                    return true;
                 }
             }
         }
-        return true;
+        return false; //Follow links instead
     }
 
     private boolean findTarget(final Local target, final Local root) {

@@ -93,7 +93,7 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("List children for %s", directory));
         }
         if(directory.isSymbolicLink()
-                && new DownloadSymlinkResolver(this.getRoots()).resolve(directory)) {
+                && new DownloadSymlinkResolver(roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
@@ -115,7 +115,7 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
+        final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session).withCache(cache);
         }

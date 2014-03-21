@@ -32,11 +32,11 @@ import org.apache.log4j.Logger;
 public class TrashFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 
-    public TrashFilter(final SymlinkResolver symlinkResolver, final Session<?> session) {
+    public TrashFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
     }
 
-    public TrashFilter(final SymlinkResolver symlinkResolver, final Session<?> session,
+    public TrashFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                        final DownloadFilterOptions options) {
         super(symlinkResolver, session, options);
     }

@@ -94,21 +94,23 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        if(directory.isSymbolicLink()
-                && new UploadSymlinkResolver(session.getFeature(Symlink.class), roots).resolve(directory)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Do not list children for symbolic link %s", directory));
+        if(directory.isSymbolicLink()) {
+            final Symlink symlink = session.getFeature(Symlink.class);
+            if(new UploadSymlinkResolver(symlink, roots).resolve(directory)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Do not list children for symbolic link %s", directory));
+                }
+                // We can resolve the target of the symbolic link and will create a link on the remote system
+                // using the symlink feature of the session
+                return Collections.emptyList();
             }
-            return Collections.emptyList();
         }
-        else {
-            final List<TransferItem> children = new ArrayList<TransferItem>();
-            for(Local local : directory.list().filter(filter)) {
-                children.add(new TransferItem(new Path(remote, local.getName(),
-                        local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
-            }
-            return children;
+        final List<TransferItem> children = new ArrayList<TransferItem>();
+        for(Local local : directory.list().filter(filter)) {
+            children.add(new TransferItem(new Path(remote, local.getName(),
+                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
         }
+        return children;
     }
 
     @Override
@@ -116,7 +118,8 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(session.getFeature(Symlink.class), roots);
+        final Symlink symlink = session.getFeature(Symlink.class);
+        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session).withCache(cache);
         }
