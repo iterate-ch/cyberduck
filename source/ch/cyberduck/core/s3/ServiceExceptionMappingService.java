@@ -39,6 +39,9 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
 
     @Override
     public BackgroundException map(final ServiceException e) {
+        if(e.getCause() instanceof ServiceException) {
+            return this.map((ServiceException) e.getCause());
+        }
         final int code = e.getResponseCode();
         if(StringUtils.isNotBlank(e.getErrorMessage())) {
             // S3 protocol message parsed from XML

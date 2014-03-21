@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.junit.Test;
 
@@ -114,5 +115,12 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
         final ServiceException f = new ServiceException();
         f.setResponseCode(403);
         assertTrue(new ServiceExceptionMappingService().map(f) instanceof AccessDeniedException);
+    }
+
+    @Test
+    public void testWrapped() {
+        assertEquals("Access Denied.", new ServiceExceptionMappingService().map(new ServiceException(new S3ServiceException("m",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
+        );
     }
 }
