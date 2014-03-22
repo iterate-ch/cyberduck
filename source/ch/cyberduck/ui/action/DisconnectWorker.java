@@ -26,10 +26,9 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DisconnectWorker extends Worker<Void> {
-    private static final Logger log = Logger.getLogger(DisconnectWorker.class);
 
     private Session<?> session;
 
