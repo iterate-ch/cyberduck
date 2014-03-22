@@ -42,11 +42,4 @@ public class SizeComparisonServiceTest extends AbstractTestCase {
                                                     }
         ));
     }
-
-    @Test
-    public void testDirectory() throws Exception {
-        ComparisonService s = new SizeComparisonService();
-        assertEquals(Comparison.notequal, s.compare(new PathAttributes(),
-                new LocalAttributes("/t")));
-    }
 }
