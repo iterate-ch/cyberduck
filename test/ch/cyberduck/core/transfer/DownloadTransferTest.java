@@ -11,6 +11,7 @@ import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -46,6 +47,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
         Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
