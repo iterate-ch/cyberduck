@@ -21,7 +21,6 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;

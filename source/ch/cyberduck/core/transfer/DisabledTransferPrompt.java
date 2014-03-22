@@ -18,8 +18,6 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-
 /**
  * @version $Id$
  */
