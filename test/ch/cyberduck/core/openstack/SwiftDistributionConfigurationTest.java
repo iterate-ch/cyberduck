@@ -127,7 +127,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertFalse(test.isLogging());
         assertEquals("test.cyberduck.ch", test.getId());
         assertEquals(URI.create("http://h2c0a3c89b6b2779528b78c25aeab0958.cdn.hpcloudsvc.com"), test.getUrl());
-        assertEquals(URI.create("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2"), test.getSslUrl());
+        assertEquals(URI.create("https://a248.e.akamai.net/cdn.hpcloudsvc.com/h2c0a3c89b6b2779528b78c25aeab0958/prodaw2/"), test.getSslUrl());
         assertEquals(1, test.getContainers().size());
         assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch"),
                 test.getOrigin());
