@@ -266,8 +266,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         return path;
     }
 
-    public void setSymlinkTarget(final Path name) {
-        this.symlink = name;
+    public void setSymlinkTarget(final Path target) {
+        this.symlink = target;
     }
 
     /**
