@@ -24,7 +24,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -52,7 +52,7 @@ public class CompareFilterTest extends AbstractTestCase {
             public String relativize(final String base, final String name) {
                 return null;
             }
-        }, new NullSession(new Host("t")), new DownloadFilterOptions(), new ComparisionServiceFilter(new NullSession(new Host("t")), null) {
+        }, new NullSession(new Host("t")), new DownloadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
             @Override
             public Comparison compare(final Path file, final Local local) throws BackgroundException {
                 return Comparison.equal;

@@ -10,7 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
-import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -57,7 +57,7 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
                 return true;
             }
         };
-        final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparisionServiceFilter(session, TimeZone.getDefault()),
+        final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparisonServiceFilter(session, TimeZone.getDefault()),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.mirror);
@@ -65,12 +65,12 @@ public class SynchronizationPathFilterTest extends AbstractTestCase {
         final TransferStatus status = mirror.prepare(test, local, new TransferStatus().exists(true));
         assertNotNull(status);
         assertEquals(1L, status.getLength());
-        final SynchronizationPathFilter download = new SynchronizationPathFilter(new ComparisionServiceFilter(session, TimeZone.getDefault()),
+        final SynchronizationPathFilter download = new SynchronizationPathFilter(new ComparisonServiceFilter(session, TimeZone.getDefault()),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.download);
         assertFalse(download.accept(test, local, new TransferStatus().exists(true)));
-        final SynchronizationPathFilter upload = new SynchronizationPathFilter(new ComparisionServiceFilter(session, TimeZone.getDefault()),
+        final SynchronizationPathFilter upload = new SynchronizationPathFilter(new ComparisonServiceFilter(session, TimeZone.getDefault()),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),
                 new ch.cyberduck.core.transfer.upload.OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session),
                 TransferAction.upload);

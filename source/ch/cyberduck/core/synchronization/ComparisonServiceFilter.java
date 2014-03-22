@@ -39,7 +39,7 @@ import java.util.TimeZone;
 /**
  * @version $Id$
  */
-public class ComparisionServiceFilter implements ComparePathFilter {
+public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Find finder;
 
@@ -53,11 +53,11 @@ public class ComparisionServiceFilter implements ComparePathFilter {
 
     private ProgressListener progress;
 
-    public ComparisionServiceFilter(final Session<?> session, final TimeZone tz) {
+    public ComparisonServiceFilter(final Session<?> session, final TimeZone tz) {
         this(session, Cache.empty(), tz);
     }
 
-    public ComparisionServiceFilter(final Session<?> session, final Cache cache, final TimeZone tz) {
+    public ComparisonServiceFilter(final Session<?> session, final Cache cache, final TimeZone tz) {
         this.finder = session.getFeature(Find.class).withCache(cache);
         this.attribute = session.getFeature(Attributes.class).withCache(cache);
         this.timestamp = new TimestampComparisonService(tz);
@@ -71,7 +71,7 @@ public class ComparisionServiceFilter implements ComparePathFilter {
         if(local.exists()) {
             if(finder.find(file)) {
                 if(file.isDirectory()) {
-                    // Do not compare timestamp for directories
+                    // Do not compare directories
                     return Comparison.equal;
                 }
                 final PathAttributes attributes = attribute.find(file);

@@ -21,7 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -34,16 +34,16 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private ComparisionServiceFilter comparisonService;
+    private ComparisonServiceFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new UploadFilterOptions());
-        this.comparisonService = new ComparisionServiceFilter(session, cache, session.getHost().getTimezone());
+        this.comparisonService = new ComparisonServiceFilter(session, cache, session.getHost().getTimezone());
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final UploadFilterOptions options,
-                         final ComparisionServiceFilter comparisonService) {
+                         final ComparisonServiceFilter comparisonService) {
         super(symlinkResolver, session, options);
         this.comparisonService = comparisonService;
     }

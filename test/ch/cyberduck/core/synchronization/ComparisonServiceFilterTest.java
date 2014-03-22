@@ -25,13 +25,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
-public class ComparisionServiceFilterTest extends AbstractTestCase {
+public class ComparisonServiceFilterTest extends AbstractTestCase {
 
     @Test
     public void testCompareEqualResultFile() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean attr = new AtomicBoolean();
-        ComparisionServiceFilter s = new ComparisionServiceFilter(new NullSession(new Host("t")) {
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -93,7 +93,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareEqualResultDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisionServiceFilter s = new ComparisionServiceFilter(new NullSession(new Host("t")) {
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -125,7 +125,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareLocalOnlytDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisionServiceFilter s = new ComparisionServiceFilter(new NullSession(new Host("t")) {
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -157,7 +157,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
     @Test
     public void testCompareRemoteOnlyDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
-        ComparisionServiceFilter s = new ComparisionServiceFilter(new NullSession(new Host("t")) {
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {
@@ -190,7 +190,7 @@ public class ComparisionServiceFilterTest extends AbstractTestCase {
     public void testCompareLocalResult() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean attr = new AtomicBoolean();
-        ComparisionServiceFilter s = new ComparisionServiceFilter(new NullSession(new Host("t")) {
+        ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
             public <T> T getFeature(final Class<T> type) {
                 if(type == Find.class) {

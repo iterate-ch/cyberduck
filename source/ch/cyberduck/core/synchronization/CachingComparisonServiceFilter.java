@@ -39,9 +39,9 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
     private Map<TransferItem, Comparison> cache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("transfer.cache.size")));
 
-    private ComparisionServiceFilter delegate;
+    private ComparisonServiceFilter delegate;
 
-    public CachingComparisonServiceFilter(final ComparisionServiceFilter delegate) {
+    public CachingComparisonServiceFilter(final ComparisonServiceFilter delegate) {
         this.delegate = delegate;
     }
 

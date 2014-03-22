@@ -28,7 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
-import ch.cyberduck.core.synchronization.ComparisionServiceFilter;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
@@ -100,7 +100,7 @@ public class SyncTransfer extends Transfer {
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
-                comparison = new CachingComparisonServiceFilter(new ComparisionServiceFilter(session, session.getHost().getTimezone())),
+                comparison = new CachingComparisonServiceFilter(new ComparisonServiceFilter(session, session.getHost().getTimezone())),
                 download.filter(session, TransferAction.overwrite),
                 upload.filter(session, TransferAction.overwrite),
                 action
