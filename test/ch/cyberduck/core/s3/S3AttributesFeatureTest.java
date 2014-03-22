@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
@@ -90,8 +91,8 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
         final PathAttributes attributes = new PathAttributes();
         // Retrieve latest object version
         attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertEquals("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh", new S3AttributesFeature(session).find(
-                new Path("/versioning.test.cyberduck.ch/test")).getVersionId());
+        assertEquals("L.FLqQnz7SqF99O4QELsdknKY4Kwj2DU", new S3AttributesFeature(session).find(
+                new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
         session.close();
     }
 }
