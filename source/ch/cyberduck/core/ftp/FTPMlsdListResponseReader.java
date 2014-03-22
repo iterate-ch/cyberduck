@@ -84,10 +84,11 @@ public class FTPMlsdListResponseReader {
                         parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                         final String target = facts.get("type").split(":")[1];
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            parsed.setSymlinkTarget(new Path(target, parsed.getType()));
+                            parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                         }
                         else {
-                            parsed.setSymlinkTarget(new Path(parent, target, parsed.getType()));
+                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target),
+                                    EnumSet.of(Path.Type.file)));
                         }
                     }
                     else {

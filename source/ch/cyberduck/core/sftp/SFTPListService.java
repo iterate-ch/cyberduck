@@ -77,13 +77,17 @@ public class SFTPListService implements ListService {
                             file.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                         }
                         else {
-                            file.setSymlinkTarget(new Path(directory, target, EnumSet.of(Path.Type.file)));
+                            file.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target),
+                                    EnumSet.of(Path.Type.file)));
                         }
-                        if(session.sftp().stat(file.getSymlinkTarget().getAbsolute()).isDirectory()) {
+                        final Path symlinkTarget = file.getSymlinkTarget();
+                        if(session.sftp().stat(symlinkTarget.getAbsolute()).isDirectory()) {
                             file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.directory));
+                            file.getSymlinkTarget().setType(EnumSet.of(Path.Type.directory));
                         }
                         else {
                             file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.file));
+                            file.getSymlinkTarget().setType(EnumSet.of(Path.Type.file));
                         }
                     }
                     catch(SFTPException e) {

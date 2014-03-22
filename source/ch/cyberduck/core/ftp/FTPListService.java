@@ -199,18 +199,23 @@ public class FTPListService implements ListService {
             for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
                 if(file.isSymbolicLink()) {
+                    // Make sure we remove and add because hash code will change
                     iter.remove();
+                    final Path target = file.getSymlinkTarget();
                     if(session.getClient().changeWorkingDirectory(file.getAbsolute())) {
                         file.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+                        target.setType(EnumSet.of(Path.Type.directory));
                     }
                     else {
                         // Try if change working directory to symbolic link target succeeds
-                        if(session.getClient().changeWorkingDirectory(file.getSymlinkTarget().getAbsolute())) {
+                        if(session.getClient().changeWorkingDirectory(target.getAbsolute())) {
                             // Workdir change succeeded
                             file.setType(EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+                            target.setType(EnumSet.of(Path.Type.directory));
                         }
                         else {
                             file.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+                            target.setType(EnumSet.of(Path.Type.file));
                         }
                     }
                     symlinks.add(file);

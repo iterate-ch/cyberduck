@@ -82,11 +82,13 @@ public class FTPListResponseReader {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                     // Symbolic link target may be an absolute or relative path
-                    if(f.getLink().startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new Path(f.getLink(), parsed.getType()));
+                    final String target = f.getLink();
+                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                        parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                     }
                     else {
-                        parsed.setSymlinkTarget(new Path(parent, f.getLink(), parsed.getType()));
+                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target),
+                                EnumSet.of(Path.Type.file)));
                     }
                     break;
             }
