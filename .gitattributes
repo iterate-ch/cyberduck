@@ -1870,7 +1870,7 @@ lib/httpmime-4.3.2.jar -text svneol=unset#application/zip
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
-lib/java-xmlbuilder-0.6.jar -text svneol=unset#application/zip
+lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.1.jar -text
 lib/jna-4.0.1.jar -text svneol=unset#application/zip
 lib/jul-to-slf4j-1.7.1.jar -text
