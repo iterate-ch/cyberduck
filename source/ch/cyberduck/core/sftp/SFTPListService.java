@@ -58,7 +58,6 @@ public class SFTPListService implements ListService {
                     continue;
                 }
                 final PathAttributes attributes = feature.convert(f.attributes);
-
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
                 if(f.attributes.isDirectory()) {
                     type.add(Path.Type.directory);
@@ -70,39 +69,7 @@ public class SFTPListService implements ListService {
                     type.add(Path.Type.symboliclink);
                 }
                 final Path file = new Path(directory, f.filename, type, attributes);
-                if(file.isSymbolicLink()) {
-                    try {
-                        final String target = session.sftp().readLink(file.getAbsolute());
-                        if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            file.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
-                        }
-                        else {
-                            file.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target),
-                                    EnumSet.of(Path.Type.file)));
-                        }
-                        final Path symlinkTarget = file.getSymlinkTarget();
-                        if(session.sftp().stat(symlinkTarget.getAbsolute()).isDirectory()) {
-                            file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.directory));
-                            file.getSymlinkTarget().setType(EnumSet.of(Path.Type.directory));
-                        }
-                        else {
-                            file.setType(EnumSet.of(Path.Type.symboliclink, Path.Type.file));
-                            file.getSymlinkTarget().setType(EnumSet.of(Path.Type.file));
-                        }
-                    }
-                    catch(SFTPException e) {
-                        final BackgroundException reason = new SFTPExceptionMappingService().map(e);
-                        if(reason instanceof NotfoundException) {
-                            log.warn(String.format("Cannot find symbolic link target of %s", file));
-                        }
-                        else if(reason instanceof AccessDeniedException) {
-                            log.warn(String.format("Cannot read symbolic link target of %s", file));
-                        }
-                        else {
-                            throw e;
-                        }
-                    }
-                }
+                this.post(file);
                 children.add(file);
                 listener.chunk(children);
             }
@@ -110,6 +77,47 @@ public class SFTPListService implements ListService {
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Listing directory failed", e, directory);
+        }
+    }
+
+    protected void post(final Path file) throws BackgroundException {
+        if(file.isSymbolicLink()) {
+            try {
+                final String link = session.sftp().readLink(file.getAbsolute());
+                final Path target;
+                final Path.Type type;
+                if(link.startsWith(String.valueOf(Path.DELIMITER))) {
+                    target = new Path(link, EnumSet.of(Path.Type.file));
+                }
+                else {
+                    target = new Path(String.format("%s/%s", file.getParent().getAbsolute(), link),
+                            EnumSet.of(Path.Type.file));
+                }
+                if(session.sftp().stat(target.getAbsolute()).isDirectory()) {
+                    type = Path.Type.directory;
+                }
+                else {
+                    type = Path.Type.file;
+                }
+                file.setType(EnumSet.of(Path.Type.symboliclink, type));
+                target.setType(EnumSet.of(type));
+                file.setSymlinkTarget(target);
+            }
+            catch(SFTPException e) {
+                final BackgroundException reason = new SFTPExceptionMappingService().map(e);
+                if(reason instanceof NotfoundException) {
+                    log.warn(String.format("Cannot find symbolic link target of %s", file));
+                }
+                else if(reason instanceof AccessDeniedException) {
+                    log.warn(String.format("Cannot read symbolic link target of %s", file));
+                }
+                else {
+                    throw reason;
+                }
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
         }
     }
 }
