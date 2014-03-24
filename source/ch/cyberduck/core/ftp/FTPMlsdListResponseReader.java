@@ -58,8 +58,8 @@ public class FTPMlsdListResponseReader {
                 log.error(String.format("Error parsing line %s", line));
                 continue;
             }
-            for(String name : file.keySet()) {
-                final Path parsed = new Path(parent, PathNormalizer.name(name), EnumSet.of(Path.Type.file));
+            for(Map.Entry<String, Map<String, String>> f : file.entrySet()) {
+                final String name = f.getKey();
                 // size       -- Size in octets
                 // modify     -- Last modification time
                 // create     -- Creation time
@@ -69,76 +69,68 @@ public class FTPMlsdListResponseReader {
                 // lang       -- Language of the file name per IANA [11] registry.
                 // media-type -- MIME media-type of file contents per IANA registry.
                 // charset    -- Character set per IANA registry (if not UTF-8)
-                for(Map<String, String> facts : file.values()) {
-                    if(!facts.containsKey("type")) {
-                        log.error(String.format("No type fact in line %s", line));
-                        continue;
-                    }
-                    if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                        parsed.setType(EnumSet.of(Path.Type.directory));
-                    }
-                    else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                        parsed.setType(EnumSet.of(Path.Type.file));
-                    }
-                    else if(facts.get("type").toLowerCase(Locale.ROOT).startsWith("os.unix=slink")) {
-                        parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
-                        final String target = facts.get("type").split(":")[1];
-                        if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
-                        }
-                        else {
-                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target),
-                                    EnumSet.of(Path.Type.file)));
-                        }
+                final Map<String, String> facts = f.getValue();
+                if(!facts.containsKey("type")) {
+                    log.error(String.format("No type fact in line %s", line));
+                    continue;
+                }
+                final Path parsed;
+                if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
+                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.directory));
+                }
+                else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
+                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file));
+                }
+                else if(facts.get("type").toLowerCase(Locale.ROOT).startsWith("os.unix=slink")) {
+                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+                    final String target = facts.get("type").split(":")[1];
+                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                        parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                     }
                     else {
-                        log.warn(String.format("Ignored type %s in line %s", facts.get("type"), line));
-                        break;
+                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target), EnumSet.of(Path.Type.file)));
                     }
-                    if(name.contains(String.valueOf(Path.DELIMITER))) {
-                        if(!name.startsWith(parent.getAbsolute() + Path.DELIMITER)) {
-                            // Workaround for #2434.
-                            log.warn("Skip listing entry with delimiter:" + name);
-                            continue;
-                        }
-                    }
-                    if(!success) {
-                        if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT)) && parent.getName().equals(name)) {
-                            log.warn(String.format("Possibly bogus response line %s", line));
-                        }
-                        else {
-                            success = true;
-                        }
-                    }
-                    if(facts.containsKey("size")) {
-                        parsed.attributes().setSize(Long.parseLong(facts.get("size")));
-                    }
-                    if(facts.containsKey("unix.uid")) {
-                        parsed.attributes().setOwner(facts.get("unix.uid"));
-                    }
-                    if(facts.containsKey("unix.owner")) {
-                        parsed.attributes().setOwner(facts.get("unix.owner"));
-                    }
-                    if(facts.containsKey("unix.gid")) {
-                        parsed.attributes().setGroup(facts.get("unix.gid"));
-                    }
-                    if(facts.containsKey("unix.group")) {
-                        parsed.attributes().setGroup(facts.get("unix.group"));
-                    }
-                    if(facts.containsKey("unix.mode")) {
-                        parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
-                    }
-                    if(facts.containsKey("modify")) {
-                        // Time values are always represented in UTC
-                        parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
-                    }
-                    if(facts.containsKey("create")) {
-                        // Time values are always represented in UTC
-                        parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
-                    }
-                    children.add(parsed);
-                    listener.chunk(children);
                 }
+                else {
+                    log.warn(String.format("Ignored type %s in line %s", facts.get("type"), line));
+                    break;
+                }
+                if(!success) {
+                    if(parsed.isDirectory() && parent.getName().equals(name)) {
+                        log.warn(String.format("Possibly bogus response line %s", line));
+                    }
+                    else {
+                        success = true;
+                    }
+                }
+                if(facts.containsKey("size")) {
+                    parsed.attributes().setSize(Long.parseLong(facts.get("size")));
+                }
+                if(facts.containsKey("unix.uid")) {
+                    parsed.attributes().setOwner(facts.get("unix.uid"));
+                }
+                if(facts.containsKey("unix.owner")) {
+                    parsed.attributes().setOwner(facts.get("unix.owner"));
+                }
+                if(facts.containsKey("unix.gid")) {
+                    parsed.attributes().setGroup(facts.get("unix.gid"));
+                }
+                if(facts.containsKey("unix.group")) {
+                    parsed.attributes().setGroup(facts.get("unix.group"));
+                }
+                if(facts.containsKey("unix.mode")) {
+                    parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
+                }
+                if(facts.containsKey("modify")) {
+                    // Time values are always represented in UTC
+                    parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
+                }
+                if(facts.containsKey("create")) {
+                    // Time values are always represented in UTC
+                    parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
+                }
+                children.add(parsed);
+                listener.chunk(children);
             }
         }
         if(!success) {

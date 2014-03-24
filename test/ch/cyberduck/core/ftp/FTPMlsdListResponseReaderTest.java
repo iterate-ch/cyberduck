@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -94,19 +95,6 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
 
         String[] replies = new String[]{
                 "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
-        };
-        new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
-    }
-
-    @Test(expected = FTPInvalidListException.class)
-    public void testMlsdDirInvalid() throws Exception {
-
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
-        Path path = new Path(
-                "/www", EnumSet.of(Path.Type.directory));
-
-        String[] replies = new String[]{
-                "Type=dir;Unique=aaaaacUYqaaa;Perm=cpmel; /", //skipped
         };
         new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
     }
@@ -251,5 +239,20 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         assertEquals(1, children.size());
         assertEquals("/www/foobar", children.get(0).getAbsolute());
         assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
+    }
+
+    @Test
+    @Ignore
+    public void testParseSlashInFilename() throws Exception {
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
+        Path path = new Path("/www", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+                "type=dir;modify=20140315210350; Gozo 2013/2014",
+                "type=dir;modify=20140315210350; Tigger & Friends"
+        };
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        assertEquals(2, children.size());
+        assertEquals("/www/Gozo 2013/2014", children.get(0).getAbsolute());
+        assertEquals("Gozo 2013/2014", children.get(0).getName());
     }
 }
