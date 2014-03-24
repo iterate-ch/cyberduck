@@ -143,7 +143,9 @@ public class FTPListServiceTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         final AttributedList<Path> list = new AttributedList<Path>();
-        list.add(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)));
+        final Path l = new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        l.setSymlinkTarget(new Path("/test.s", EnumSet.of(Path.Type.file)));
+        list.add(l);
         assertTrue(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
         service.post(new Path("/", EnumSet.of(Path.Type.directory)), list);
         assertFalse(list.contains(new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
