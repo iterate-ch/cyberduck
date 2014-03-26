@@ -59,31 +59,52 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                      * supported.
                      */
                     new InteractiveCallback() {
-                        private int promptCount = 0;
-
                         /**
                          * The callback may be invoked several times, depending on how
                          * many questions-sets the server sends
                          */
                         @Override
-                        public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
+                        public String[] replyToChallenge(final String name, final String instruction,
+                                                         final int numPrompts, final String[] prompt,
                                                          boolean[] echo) throws LoginCanceledException {
-                            log.debug("replyToChallenge:" + name);
-                            // In its first callback the server prompts for the password
-                            if(0 == promptCount) {
-                                if(log.isDebugEnabled()) {
-                                    log.debug("First callback returning provided credentials");
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
+                            }
+                            final String[] response = new String[numPrompts];
+                            // The num-prompts field may be `0', in which case there will be no
+                            // prompt/echo fields in the message, but the client should still
+                            // display the name and instruction fields
+                            if(0 == numPrompts) {
+                                // In the case that the server sends a `0' num-prompts field in the request message, the
+                                // client must send a response message with a `0' num-responses field to complete the exchange.
+                                controller.warn(host.getProtocol(), "", instruction,
+                                        LocaleFactory.localizedString("Continue", "Credentials"),
+                                        LocaleFactory.localizedString("Disconnect", "Credentials"),
+                                        String.format("connection.unsecure.%s", host.getHostname()));
+                            }
+                            else {
+                                for(int i = 0; i < numPrompts; i++) {
+                                    // For each prompt, the corresponding echo field indicates whether the user input should
+                                    // be echoed as characters are typed
+                                    if(0 == i && !echo[i]) {
+                                        // In its first callback the server prompts for the password
+                                        if(log.isDebugEnabled()) {
+                                            log.debug("First callback returning provided credentials");
+                                        }
+                                        response[i] = credentials.getPassword();
+                                    }
+                                    else {
+                                        // Properly handle an instruction field with embedded newlines.  They should also
+                                        // be able to display at least 30 characters for the name and prompts.
+                                        controller.prompt(host.getProtocol(), credentials,
+                                                String.format("%s. %s",
+                                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                                        name), instruction, new LoginOptions());
+                                        response[i] = credentials.getPassword();
+                                    }
                                 }
-                                promptCount++;
-                                return new String[]{credentials.getPassword()};
                             }
-                            String[] response = new String[numPrompts];
-                            for(int i = 0; i < numPrompts; i++) {
-                                controller.prompt(host.getProtocol(), credentials,
-                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), prompt[i], new LoginOptions());
-                                response[i] = credentials.getPassword();
-                                promptCount++;
-                            }
+                            // Responses are encoded in ISO-10646 UTF-8.
                             return response;
                         }
                     });
