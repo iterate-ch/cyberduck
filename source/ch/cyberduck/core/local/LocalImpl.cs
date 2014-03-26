@@ -79,16 +79,6 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        /// <summary>
-        /// Delete to trash is not supported yet.
-        /// </summary>
-        /// <see cref="http://social.msdn.microsoft.com/forums/en-US/netfxbcl/thread/f2411a7f-34b6-4f30-a25f-9d456fe1c47b/"/>
-        /// <see cref="http://stackoverflow.com/questions/222463/is-it-possible-with-java-to-delete-to-the-recycle-bin"/>
-        public override void trash()
-        {
-            delete();
-        }
-
         public override bool isSymbolicLink()
         {
             return false;
