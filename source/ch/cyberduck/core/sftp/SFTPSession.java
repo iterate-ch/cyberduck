@@ -120,6 +120,9 @@ public class SFTPSession extends Session<Connection> {
                 if(new SFTPPublicKeyAuthentication(this).authenticate(host, prompt)) {
                     log.info("Login successful");
                 }
+                else {
+                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                }
             }
             else if(new SFTPChallengeResponseAuthentication(this).authenticate(host, prompt)) {
                 log.info("Login successful");
