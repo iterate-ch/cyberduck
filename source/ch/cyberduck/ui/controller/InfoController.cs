@@ -1892,8 +1892,10 @@ namespace Ch.Cyberduck.Ui.Controller
             public override object run()
             {
                 Session session = BrowserController.Session;
-                Purge cdn = (Purge) session.getFeature(typeof (Purge));
-                cdn.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath), _method,
+                DistributionConfiguration cdn =
+                    (DistributionConfiguration) _session.getFeature(typeof (DistributionConfiguration));
+                Purge feature = (Purge) cdn.getFeature(typeof (Purge));
+                feature.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath), _method,
                                Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
                 return true;
             }
