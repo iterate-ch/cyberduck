@@ -99,7 +99,12 @@ public class BackgroundException extends Exception {
 
     @Override
     public String toString() {
-        return String.format("%s %s", message, detail);
+        final StringBuilder sb = new StringBuilder("BackgroundException{");
+        sb.append("detail='").append(detail).append('\'');
+        sb.append(", cause='").append(this.getCause()).append('\'');
+        sb.append(", message='").append(message).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override

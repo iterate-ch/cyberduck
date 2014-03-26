@@ -34,7 +34,6 @@ public class BackgroundExceptionTest extends AbstractTestCase {
         final BackgroundException e = new BackgroundException(new SocketException("s"));
         e.setMessage("m.");
         assertEquals("s.", e.getDetail());
-        assertEquals("m. s", e.toString());
     }
 
     @Test
