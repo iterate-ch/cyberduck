@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -47,7 +48,7 @@ public class TrashFilter extends AbstractDownloadFilter {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Trash file %s", local));
             }
-            local.trash();
+            LocalTrashFactory.get().trash(local);
         }
     }
 }

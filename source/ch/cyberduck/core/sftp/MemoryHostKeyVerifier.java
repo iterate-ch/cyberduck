@@ -23,6 +23,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -49,11 +50,11 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
     }
 
     public MemoryHostKeyVerifier(final Local file) {
-        if(!file.exists()) {
-            file.touch();
-        }
         InputStream in = null;
         try {
+            if(!file.exists()) {
+                LocalTouchFactory.get().touch(file);
+            }
             in = file.getInputStream();
             database = new KnownHosts(file.getAbsolute());
         }

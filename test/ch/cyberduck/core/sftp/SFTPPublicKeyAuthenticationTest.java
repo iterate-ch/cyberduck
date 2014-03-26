@@ -6,6 +6,7 @@ import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import java.io.StringReader;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
 
@@ -26,7 +27,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         );
         final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
-        key.touch();
+        LocalTouchFactory.get().touch(key);
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);

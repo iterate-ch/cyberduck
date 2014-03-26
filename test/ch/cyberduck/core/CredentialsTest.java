@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class CredentialsTest extends AbstractTestCase {
         c.setIdentity(LocalFactory.createLocal("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
         final Local t = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "id_rsa");
-        assertTrue(t.touch());
+        LocalTouchFactory.get().touch(t);
         c.setIdentity(t);
         assertTrue(c.isPublicKeyAuthentication());
         t.delete();

@@ -163,32 +163,6 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         return '/';
     }
 
-    /**
-     * Creates a new file and sets its resource fork to feature a custom progress icon
-     */
-    public boolean touch() {
-        try {
-            final File file = new File(path);
-            final File parent = file.getParentFile();
-            if(!parent.mkdirs()) {
-                log.debug(String.format("Create directory %s failed", parent));
-            }
-            if(!file.createNewFile()) {
-                log.warn(String.format("Create file %s failed", path));
-                return false;
-            }
-            return true;
-        }
-        catch(IOException e) {
-            log.error(String.format("Error creating new file %s", e.getMessage()));
-            return false;
-        }
-    }
-
-    public void symlink(String target) {
-        //
-    }
-
     public void mkdir() {
         if(!new File(path).mkdirs()) {
             log.debug(String.format("Create directory %s failed", path));
@@ -216,13 +190,6 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         else {
             this.delete();
         }
-    }
-
-    /**
-     * Move file to trash.
-     */
-    public void trash() {
-        this.delete();
     }
 
     public AttributedList<Local> list() throws AccessDeniedException {

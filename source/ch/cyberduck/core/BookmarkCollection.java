@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.LocalTrashFactory;
+
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -235,7 +238,12 @@ public class BookmarkCollection extends AbstractHostCollection {
                 if(log.isInfoEnabled()) {
                     log.info("Moving deprecated bookmarks file to Trash");
                 }
-                file.trash();
+                try {
+                    LocalTrashFactory.get().trash(file);
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Failure trashing bookmark %s %s", file, e.getMessage()));
+                }
             }
             else {
                 favorites.load();

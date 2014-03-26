@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
@@ -32,7 +34,7 @@ import java.util.ListIterator;
 /**
  * @version $Id$
  */
-public final class TransferCollection extends Collection<Transfer> {
+public class TransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(TransferCollection.class);
 
     private static final long serialVersionUID = -6879481152545265228L;
@@ -192,13 +194,10 @@ public final class TransferCollection extends Collection<Transfer> {
             final FolderTransferCollection favorites = FolderTransferCollection.defaultCollection();
             if(file.exists()) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Found queue file %s", file.getAbsolute()));
+                    log.info(String.format("Found queue file %s", file));
                 }
                 favorites.load(reader.readCollection(file));
-                if(log.isInfoEnabled()) {
-                    log.info("Moving deprecated queue file to Trash");
-                }
-                file.trash();
+                this.trash();
             }
             else {
                 favorites.load();
@@ -208,6 +207,18 @@ public final class TransferCollection extends Collection<Transfer> {
             this.unlock();
         }
         super.load();
+    }
+
+    protected void trash() {
+        if(log.isInfoEnabled()) {
+            log.info("Moving deprecated queue file to Trash");
+        }
+        try {
+            LocalTrashFactory.get().trash(file);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure trashing bookmark %s %s", file, e.getMessage()));
+        }
     }
 
     /**

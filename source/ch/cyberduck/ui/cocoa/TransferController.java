@@ -29,9 +29,11 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -1002,7 +1004,12 @@ public final class TransferController extends WindowController implements NSTool
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
                 for(TransferItem l : transfer.getRoots()) {
-                    l.local.trash();
+                    try {
+                        LocalTrashFactory.get().trash(l.local);
+                    }
+                    catch(AccessDeniedException e) {
+                        log.warn(String.format("Failure trashing file %s %s", l.local, e.getMessage()));
+                    }
                 }
             }
         }

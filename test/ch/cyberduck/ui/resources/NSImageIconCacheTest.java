@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
 import org.junit.Test;
@@ -204,7 +205,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
 //        assertEquals(icon, cache.iconNamed("notfound.tiff"));
-        assertTrue(f.touch());
+        LocalTouchFactory.get().touch(f);
         icon = cache.fileIcon(f, 16);
         assertNotNull(icon);
         assertTrue(icon.isValid());

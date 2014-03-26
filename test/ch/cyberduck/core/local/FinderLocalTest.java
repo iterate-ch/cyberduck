@@ -22,11 +22,11 @@ public class FinderLocalTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
-        l.touch();
+        LocalTouchFactory.get().touch(l);
         assertEquals(new FinderLocal(System.getProperty("java.io.tmpdir"), name), l);
         final FinderLocal other = new FinderLocal(System.getProperty("java.io.tmpdir"), name + "-");
         assertNotSame(other, l);
-        other.touch();
+        LocalTouchFactory.get().touch(other);
         assertNotSame(other, l);
     }
 
@@ -54,36 +54,12 @@ public class FinderLocalTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTrash() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.touch();
-        assertTrue(l.exists());
-        l.trash();
-        assertFalse(l.exists());
-    }
-
-    @Test
-    public void testTrashRepeated() throws Exception {
-        this.repeat(new Callable<Local>() {
-            @Override
-            public Local call() throws Exception {
-                Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                l.touch();
-                assertTrue(l.exists());
-                l.trash();
-                assertFalse(l.exists());
-                return l;
-            }
-        }, 10);
-    }
-
-    @Test
     public void testWriteUnixPermission() throws Exception {
         this.repeat(new Callable<Local>() {
             @Override
             public Local call() throws Exception {
                 Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-                l.touch();
+                new DefaultLocalTouchFeature().touch(l);
                 final Permission permission = new Permission(644);
                 l.attributes().setPermission(permission);
                 assertEquals(permission, l.attributes().getPermission());
@@ -91,16 +67,6 @@ public class FinderLocalTest extends AbstractTestCase {
                 return l;
             }
         }, 10);
-    }
-
-    @Test
-    public void testTouch() {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.touch();
-        assertTrue(l.exists());
-        l.touch();
-        assertTrue(l.exists());
-        l.delete();
     }
 
     @Test
@@ -122,7 +88,7 @@ public class FinderLocalTest extends AbstractTestCase {
     public void testBookmark() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertNull(l.getBookmark());
-        assertTrue(l.touch());
+        LocalTouchFactory.get().touch(l);
         assertNotNull(l.getBookmark());
         assertEquals(l.getBookmark(), l.getBookmark());
         assertSame(l.getBookmark(), l.getBookmark());

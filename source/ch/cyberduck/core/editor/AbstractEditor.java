@@ -22,9 +22,11 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.action.Worker;
@@ -126,7 +128,12 @@ public abstract class AbstractEditor implements Editor {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Delete edited file %s", local));
         }
-        local.trash();
+        try {
+            LocalTrashFactory.get().trash(local);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure trashing edited file %s %s", local, e.getMessage()));
+        }
     }
 
     /**

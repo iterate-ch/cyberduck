@@ -5,6 +5,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
@@ -206,7 +207,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
-        local.touch();
+        LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write("test", out);
         IOUtils.closeQuietly(out);

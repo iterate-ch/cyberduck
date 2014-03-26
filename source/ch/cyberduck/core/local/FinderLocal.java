@@ -28,7 +28,6 @@ import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -328,15 +327,6 @@ public class FinderLocal extends Local {
         return NSFileManager.defaultManager().fileExistsAtPath(this.getAbsolute());
     }
 
-    @Override
-    public void symlink(String target) {
-        final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(
-                this.getAbsolute(), target);
-        if(!success) {
-            log.error(String.format("File attribute changed failed for file %s", this));
-        }
-    }
-
     /**
      * @param absolute The absolute path of the alias file.
      * @return The absolute path this alias is pointing to.
@@ -352,26 +342,6 @@ public class FinderLocal extends Local {
     public Local getSymlinkTarget() {
         return new FinderLocal(this.getParent().getAbsolute(),
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
-    }
-
-    /**
-     * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
-     */
-    @Override
-    public void trash() {
-        if(this.exists()) {
-            synchronized(NSWorkspace.class) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Move %s to Trash", this));
-                }
-                if(!NSWorkspace.sharedWorkspace().performFileOperation(
-                        NSWorkspace.RecycleOperation,
-                        this.getParent().getAbsolute(), StringUtils.EMPTY,
-                        NSArray.arrayWithObject(this.getName()))) {
-                    log.warn(String.format("Failed to move %s to Trash", this));
-                }
-            }
-        }
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {

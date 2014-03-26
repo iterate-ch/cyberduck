@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.symlink;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;
@@ -19,9 +20,11 @@ import static org.junit.Assert.*;
 public class DownloadSymlinkResolverTest extends AbstractTestCase {
 
     @Test
-    public void testNoSymbolicLink() throws Exception {
-        DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(Collections.<TransferItem>emptyList());
-        Path p = new Path("a", EnumSet.of(Path.Type.file));
+    public void testNotSupported() throws Exception {
+        DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(null, Collections.<TransferItem>singletonList(
+                new TransferItem(new Path("/", EnumSet.of(Path.Type.directory)), new FinderLocal(System.getProperty("java.io.tmpdir")))
+        ));
+        Path p = new Path("/a", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         assertFalse(resolver.resolve(p));
     }
 

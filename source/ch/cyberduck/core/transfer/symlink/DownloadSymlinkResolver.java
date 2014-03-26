@@ -19,6 +19,8 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.LocalSymlinkFactory;
+import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
@@ -33,7 +35,15 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     private List<TransferItem> files;
 
+    private Symlink feature;
+
     public DownloadSymlinkResolver(final List<TransferItem> files) {
+        this.files = files;
+        this.feature = LocalSymlinkFactory.get();
+    }
+
+    public DownloadSymlinkResolver(final Symlink feature, final List<TransferItem> files) {
+        this.feature = feature;
         this.files = files;
     }
 
@@ -43,15 +53,18 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
             // Follow links instead
             return false;
         }
-        final Path target = file.getSymlinkTarget();
-        // Only create symbolic link if target is included in the download
-        for(TransferItem root : files) {
-            if(this.findTarget(target, root.remote)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Resolved target %s for %s", target, file));
+        // Create symbolic link only if supported by the local file system
+        if(feature != null) {
+            final Path target = file.getSymlinkTarget();
+            // Only create symbolic link if target is included in the download
+            for(TransferItem root : files) {
+                if(this.findTarget(target, root.remote)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Resolved target %s for %s", target, file));
+                    }
+                    // Create symbolic link
+                    return true;
                 }
-                // Create symbolic link
-                return true;
             }
         }
         // Otherwise download target file

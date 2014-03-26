@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.serializer.Writer;
 
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
                 "\t<string>anonymous</string>\n" +
                 "</dict>\n" +
                 "</plist>\n";
-        b.touch();
+        LocalTouchFactory.get().touch(b);
         b.getOutputStream(false).write(bookmark.getBytes("UTF-8"));
         assertTrue(source.exists());
         final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);

@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
@@ -198,7 +199,7 @@ public class DownloadTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create symbolic link from %s to %s", local, target));
             }
-            local.symlink(target);
+            LocalSymlinkFactory.get().symlink(local, target);
         }
         else if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),

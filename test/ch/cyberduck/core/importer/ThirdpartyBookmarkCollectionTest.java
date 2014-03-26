@@ -6,6 +6,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,7 +26,7 @@ public class ThirdpartyBookmarkCollectionTest extends AbstractTestCase {
     @Test
     public void testLoad() throws Exception {
         final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        source.touch();
+        LocalTouchFactory.get().touch(source);
         IOUtils.write(RandomStringUtils.random(1000), source.getOutputStream(false));
         final AtomicBoolean r = new AtomicBoolean();
         final ThirdpartyBookmarkCollection c = new ThirdpartyBookmarkCollection() {

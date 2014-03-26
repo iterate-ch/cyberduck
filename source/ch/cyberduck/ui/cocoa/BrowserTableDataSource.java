@@ -32,11 +32,13 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.editor.WatchEditor;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -534,8 +536,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(downloads.iterator().next().remote.isFile()) {
                     final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
-                        file.touch();
-                        IconServiceFactory.get().set(file, new TransferStatus());
+                        try {
+                            LocalTouchFactory.get().touch(file);
+                            IconServiceFactory.get().set(file, new TransferStatus());
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Failure creating file %s %s", file, e.getMessage()));
+                        }
                     }
                 }
                 if(downloads.iterator().next().remote.isDirectory()) {

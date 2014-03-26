@@ -9,6 +9,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
@@ -266,8 +267,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "transfer");
-        local.touch();
-        new NullLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"), name).touch();
+        LocalTouchFactory.get().touch(local);
+        LocalTouchFactory.get().touch(new NullLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"), name));
         final Transfer transfer = new UploadTransfer(host, test, new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"));
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
@@ -296,7 +297,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer", name);
-        local.touch();
+        LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         final byte[] bytes = RandomStringUtils.random(1000).getBytes();
         IOUtils.write(bytes, out);
@@ -405,7 +406,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        local.touch();
+        LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
