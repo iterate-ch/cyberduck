@@ -92,11 +92,9 @@ public class BackgroundException extends Exception {
      * @return Detailed message from the underlying cause.
      */
     public String getDetail() {
-        final StringBuilder buffer = new StringBuilder();
         final StringAppender appender = new StringAppender();
-        appender.append(buffer, detail);
-        appender.append(buffer, this.getHelp());
-        return buffer.toString();
+        appender.append(detail).append(this.getHelp());
+        return appender.toString();
     }
 
     @Override

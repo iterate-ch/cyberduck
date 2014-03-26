@@ -29,9 +29,6 @@ import java.text.MessageFormat;
  */
 public abstract class AbstractIOExceptionMappingService<T extends Exception> implements IOExceptionMappingService<T> {
 
-    private StringAppender appender
-            = new StringAppender();
-
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);
         final StringBuilder m = new StringBuilder();
@@ -58,7 +55,9 @@ public abstract class AbstractIOExceptionMappingService<T extends Exception> imp
     public abstract BackgroundException map(T exception);
 
     public StringBuilder append(final StringBuilder buffer, final String message) {
-        return appender.append(buffer, message);
+        final StringAppender appender = new StringAppender(buffer);
+        appender.append(message);
+        return buffer;
     }
 
     protected BackgroundException wrap(final T e, final StringBuilder buffer) {

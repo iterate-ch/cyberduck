@@ -213,7 +213,7 @@ public final class PromptLoginController implements LoginCallback {
                     this.textField.setSelectable(true);
                 }
                 else {
-                    this.updateField(this.textField, new StringAppender().append(new StringBuilder(), reason).toString());
+                    this.updateField(this.textField, new StringAppender().append(reason).toString());
                 }
             }
 

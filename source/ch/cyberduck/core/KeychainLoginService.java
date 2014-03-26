@@ -36,9 +36,6 @@ public class KeychainLoginService implements LoginService {
 
     private HostPasswordStore keychain;
 
-    private StringAppender appender
-            = new StringAppender();
-
     public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
         this.controller = prompt;
         this.keychain = keychain;
@@ -118,12 +115,12 @@ public class KeychainLoginService implements LoginService {
                     final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
                         if(!credentials.isPublicKeyAuthentication()) {
-                            final StringBuilder reason = new StringBuilder();
-                            appender.append(reason, message);
-                            appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                            final StringAppender appender = new StringAppender();
+                            appender.append(message);
+                            appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                             controller.prompt(bookmark.getProtocol(), credentials,
                                     LocaleFactory.localizedString("Login", "Login"),
-                                    reason.toString(),
+                                    appender.toString(),
                                     options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
@@ -136,23 +133,23 @@ public class KeychainLoginService implements LoginService {
                 }
                 else {
                     if(!credentials.isPublicKeyAuthentication()) {
-                        final StringBuilder reason = new StringBuilder();
-                        appender.append(reason, message);
-                        appender.append(reason, LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
+                        final StringAppender appender = new StringAppender();
+                        appender.append(message);
+                        appender.append(LocaleFactory.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
                         controller.prompt(bookmark.getProtocol(), credentials,
                                 LocaleFactory.localizedString("Login", "Login"),
-                                reason.toString(), options);
+                                appender.toString(), options);
                     }
                     // We decide later if the key is encrypted and a password must be known to decrypt.
                 }
             }
             else {
-                final StringBuilder reason = new StringBuilder();
-                appender.append(reason, message);
-                appender.append(reason, LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                final StringAppender appender = new StringAppender();
+                appender.append(message);
+                appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 controller.prompt(bookmark.getProtocol(), credentials,
                         LocaleFactory.localizedString("Login", "Login"),
-                        reason.toString(), options);
+                        appender.toString(), options);
             }
         }
     }
