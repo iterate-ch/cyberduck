@@ -20,8 +20,11 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.junit.Test;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,7 +36,39 @@ import static org.junit.Assert.*;
 public class S3SessionTest extends AbstractTestCase {
 
     @Test
-    public void testConnect() throws Exception {
+    public void testHttpProfile() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                LocalFactory.createLocal("profiles/S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        assertFalse(host.getProtocol().isSecure());
+        final S3Session session = new S3Session(host, new X509TrustManager() {
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                fail();
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                fail();
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                fail();
+                return null;
+            }
+        });
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testConnectUnsecured() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));

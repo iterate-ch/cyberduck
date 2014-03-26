@@ -81,7 +81,7 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public boolean isSecure() {
-        return parent.isSecure();
+        return this.getScheme().isSecure();
     }
 
     @Override
