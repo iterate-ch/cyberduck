@@ -1,6 +1,6 @@
 4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
 - [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
-- [Bugfix] Two-factor authentication (SFTP) (#7573)
+- [Feature] Two-factor authentication (SFTP, Google Authenticator) (#7573)
 - [Bugfix] Support TLS 1.1 and TLS 1.2 (Windows) (#7637)
 - [Bugfix] File segments not deleted when a large object is overwritten or manifest is deleted (Openstack Swift) (#7682, #7679)
 - [Bugfix] Re-authentication failure (Openstack Swift) (#7608)
