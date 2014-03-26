@@ -103,11 +103,12 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
                                                 .append(instruction).append(prompt[i]);
                                         // Properly handle an instruction field with embedded newlines.  They should also
                                         // be able to display at least 30 characters for the name and prompts.
-                                        controller.prompt(host.getProtocol(), credentials,
+                                        final Credentials additional = new Credentials();
+                                        controller.prompt(host.getProtocol(), additional,
                                                 String.format("%s. %s",
                                                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                                                         name), message.toString(), new LoginOptions().user(false).keychain(false));
-                                        response[i] = credentials.getPassword();
+                                        response[i] = additional.getPassword();
                                     }
                                 }
                             }
