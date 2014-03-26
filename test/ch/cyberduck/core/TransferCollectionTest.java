@@ -63,9 +63,11 @@ public class TransferCollectionTest extends AbstractTestCase {
         c.load();
         assertEquals(1, c.size());
         assertTrue(c.get(0) instanceof CopyTransfer);
+        assertNull(c.get(0).getLocal());
         c.save();
         assertEquals(1, c.size());
         assertTrue(c.get(0) instanceof CopyTransfer);
+        assertNull(c.get(0).getLocal());
     }
 
     @Test
@@ -81,9 +83,11 @@ public class TransferCollectionTest extends AbstractTestCase {
         c.load();
         assertEquals(1, c.size());
         assertTrue(c.get(0) instanceof CopyTransfer);
+        assertNull(c.get(0).getLocal());
         c.save();
         assertEquals(1, c.size());
         assertTrue(c.get(0) instanceof CopyTransfer);
+        assertNull(c.get(0).getLocal());
     }
 
     @Test
