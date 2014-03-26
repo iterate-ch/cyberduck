@@ -87,6 +87,11 @@ public class DAVSession extends HttpSession<DAVClient> {
         super(host, manager);
     }
 
+    public DAVSession(final Host host, final RedirectCallback redirect) {
+        super(host);
+        this.redirect = redirect;
+    }
+
     public DAVSession(final Host host, final X509TrustManager manager, final RedirectCallback redirect) {
         super(host, manager);
         this.redirect = redirect;

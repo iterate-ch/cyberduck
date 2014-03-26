@@ -9,24 +9,31 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.http.RedirectCallback;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -103,6 +110,40 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         assertTrue(feature.append(test, 0L, Cache.empty()).append);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+    }
+
+    @Test
+    public void testUploadRedirect() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("webdav.user"), properties.getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final AtomicBoolean redirected = new AtomicBoolean();
+        final DAVSession session = new DAVSession(host, new RedirectCallback() {
+            @Override
+            public boolean redirect(String method) {
+                if("PUT".equals(method)) {
+                    redirected.set(true);
+                }
+                return true;
+            }
+        });
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        final DAVWriteFeature feature = new DAVWriteFeature(session);
+        final Path test = new Path("/redir-tmp/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        status.setLength(content.length);
+        final ResponseOutputStream<String> out = feature.write(test, status);
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
+        assertEquals(content.length, status.getCurrent());
+        assertTrue(status.isComplete());
+        final PathAttributes attributes = new DAVAttributesFeature(session).find(test);
+        assertEquals(content.length, attributes.getSize());
+        assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
 }
