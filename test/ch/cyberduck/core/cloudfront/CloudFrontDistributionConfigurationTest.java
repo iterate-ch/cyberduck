@@ -83,7 +83,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
         assertEquals("Deployed", distribution.getStatus());
         assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin().getHost());
         assertEquals(URI.create("http://d8s2h7wj83mnt.cloudfront.net"), distribution.getUrl());
-        assertEquals(null, distribution.getIndexDocument());
+        assertEquals("1a0764da-1790-4ca9-a977-e40752ae04cd", distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
     }
 
