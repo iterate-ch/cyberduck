@@ -28,26 +28,33 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultLocalTouchFeature implements Touch {
     private static final Logger log = Logger.getLogger(DefaultLocalTouchFeature.class);
 
     @Override
-    public void touch(Local l) throws AccessDeniedException {
+    public void touch(final Local l) throws AccessDeniedException {
         final File file = new File(l.getAbsolute());
         final File parent = file.getParentFile();
-        if(!parent.mkdirs()) {
-            log.debug(String.format("Create directory %s failed", parent));
+        if(!parent.exists()) {
+            if(!parent.mkdirs()) {
+                throw new AccessDeniedException(String.format("%s %s",
+                        LocaleFactory.localizedString("Cannot create folder", "Error"), l.getAbsolute()));
+            }
+        }
+        if(l.exists()) {
+            return;
         }
         try {
             if(!file.createNewFile()) {
-                throw new AccessDeniedException(String.format("Cannot create file %s", l.getAbsolute()));
+                throw new AccessDeniedException(String.format("%s %s",
+                        LocaleFactory.localizedString("Cannot create file", "Error"), l.getAbsolute()));
             }
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("%s %s",
-                    LocaleFactory.localizedString("Cannot create file", "Error"), l.getAbsolute()));
+                    LocaleFactory.localizedString("Cannot create file", "Error"), l.getAbsolute()), e);
         }
     }
 }

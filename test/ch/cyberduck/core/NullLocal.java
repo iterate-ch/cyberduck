@@ -14,7 +14,7 @@ import java.io.OutputStream;
 public class NullLocal extends Local {
 
     public NullLocal(final String parent, final String name) {
-        super(parent + "/" + name);
+        super(parent.endsWith("/") ? parent + name : parent + "/" + name);
     }
 
     public NullLocal(final Local parent, final String name) {
