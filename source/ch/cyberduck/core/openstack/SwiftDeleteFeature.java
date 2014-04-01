@@ -45,12 +45,15 @@ public class SwiftDeleteFeature implements Delete {
 
     private SwiftSegmentService segmentService;
 
+    private SwiftRegionService regionService;
+
     public SwiftDeleteFeature(final SwiftSession session) {
-        this(session, new SwiftSegmentService(session));
+        this(session, new SwiftSegmentService(session), new SwiftRegionService(session));
     }
 
-    public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService) {
+    public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService, final SwiftRegionService regionService) {
         this.segmentService = segmentService;
+        this.regionService = regionService;
         this.session = session;
     }
 
@@ -63,7 +66,8 @@ public class SwiftDeleteFeature implements Delete {
                 if(file.isFile()) {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     final List<Path> segments = segmentService.list(file);
-                    session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                    regionService = new SwiftRegionService(session);
+                    session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(!segments.isEmpty()) {
                         // Clean up any old segments
@@ -72,11 +76,11 @@ public class SwiftDeleteFeature implements Delete {
                 }
                 else if(file.isDirectory()) {
                     if(containerService.isContainer(file)) {
-                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                        session.getClient().deleteContainer(regionService.lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName());
                     }
                     else {
-                        session.getClient().deleteObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                        session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                     }
                 }
