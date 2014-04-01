@@ -50,6 +50,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             = new PathContainerService();
 
     private SwiftSegmentService segmentService;
+
     private SwiftRegionService regionService;
 
     public SwiftMultipleDeleteFeature(final SwiftSession session) {
