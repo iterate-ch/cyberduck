@@ -1370,20 +1370,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected void setSelectedTab(int tab) {
-        if(-1 == tab) {
-            tab = 0;
-        }
-        String identifier = tabView.tabViewItemAtIndex(tab).identifier();
-        if(!this.validateTabWithIdentifier(identifier)) {
-            tab = 0;
-            identifier = tabView.tabViewItemAtIndex(tab).identifier();
-        }
-        super.setSelectedTab(tab);
-        this.initTab(identifier);
-    }
-
-    private void initTab(final String identifier) {
+    protected void initializePanel(final String identifier) {
         switch(InfoToolbarItem.valueOf(identifier)) {
             case info:
                 this.initGeneral();
@@ -1548,7 +1535,7 @@ public class InfoController extends ToolbarWindowController {
             return;
         }
         this.files = files;
-        this.initTab(this.getSelectedTab());
+        this.initializePanel(this.getSelectedTab());
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
     }
 

@@ -190,20 +190,53 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected List<String> getPanelIdentifiers() {
         List<String> views = new ArrayList<String>();
-        views.add("general");
-        views.add("browser");
-        views.add("queue");
-        views.add("pencil");
-        views.add("ftp");
-        views.add("sftp");
-        views.add("s3");
-        views.add("bandwidth");
-        views.add("connection");
+        views.add(PreferencesToolbarItem.general.name());
+        views.add(PreferencesToolbarItem.browser.name());
+        views.add(PreferencesToolbarItem.queue.name());
+        views.add(PreferencesToolbarItem.pencil.name());
+        views.add(PreferencesToolbarItem.ftp.name());
+        views.add(PreferencesToolbarItem.sftp.name());
+        views.add(PreferencesToolbarItem.s3.name());
+        views.add(PreferencesToolbarItem.bandwidth.name());
+        views.add(PreferencesToolbarItem.connection.name());
         if(null != Updater.getFeed()) {
-            views.add("update");
+            views.add(PreferencesToolbarItem.update.name());
         }
-        views.add("language");
+        views.add(PreferencesToolbarItem.language.name());
         return views;
+    }
+
+    private enum PreferencesToolbarItem {
+        general,
+        browser,
+        queue,
+        pencil,
+        ftp,
+        sftp,
+        s3,
+        bandwidth,
+        connection,
+        update,
+        language
+    }
+
+    @Override
+    protected void initializePanel(final String identifier) {
+        switch(PreferencesToolbarItem.valueOf(identifier)) {
+            case general:
+                break;
+            case browser:
+                break;
+            case pencil:
+                this.updateEditorCombobox();
+                break;
+            case ftp:
+                this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Scheme.ftp);
+                break;
+            case sftp:
+                this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Scheme.sftp);
+                break;
+        }
     }
 
     @Override
@@ -304,7 +337,6 @@ public class PreferencesController extends ToolbarWindowController {
     public void setEditorCombobox(NSPopUpButton b) {
         this.editorCombobox = b;
         this.editorCombobox.setAutoenablesItems(false);
-        this.updateEditorCombobox();
     }
 
     private void updateEditorCombobox() {
@@ -1682,7 +1714,7 @@ public class PreferencesController extends ToolbarWindowController {
         Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject());
     }
 
-    private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Scheme protocol) {
+    private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
         final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
         if(null == defaultHandler) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
@@ -1711,7 +1743,6 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultFTPHandlerCombobox.setTarget(this.id());
         this.defaultFTPHandlerCombobox.setAction(Foundation.selector("defaultFTPHandlerComboboxClicked:"));
         this.defaultFTPHandlerCombobox.removeAllItems();
-        this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Scheme.ftp);
     }
 
     @Action
@@ -1731,7 +1762,6 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultSFTPHandlerCombobox.setTarget(this.id());
         this.defaultSFTPHandlerCombobox.setAction(Foundation.selector("defaultSFTPHandlerComboboxClicked:"));
         this.defaultSFTPHandlerCombobox.removeAllItems();
-        this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Scheme.sftp);
     }
 
     @Action

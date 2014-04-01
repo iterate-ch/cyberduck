@@ -101,7 +101,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
-        this.setSelectedTab(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
+        this.setSelectedPanel(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
 
         super.awakeFromNib();
@@ -110,11 +110,17 @@ public abstract class ToolbarWindowController extends WindowController implement
     /**
      * Change the toolbar selection and display the tab index.
      *
-     * @param tab The index of the tab to be selected
+     * @param selected The index of the tab to be selected
      */
-    protected void setSelectedTab(int tab) {
+    protected void setSelectedPanel(final int selected) {
+        int tab = selected;
         if(-1 == tab) {
             tab = 0;
+        }
+        String identifier = tabView.tabViewItemAtIndex(tab).identifier();
+        if(!this.validateTabWithIdentifier(identifier)) {
+            tab = 0;
+            identifier = tabView.tabViewItemAtIndex(tab).identifier();
         }
         tabView.selectTabViewItemAtIndex(tab);
         NSTabViewItem page = tabView.selectedTabViewItem();
@@ -122,7 +128,10 @@ public abstract class ToolbarWindowController extends WindowController implement
             page = tabView.tabViewItemAtIndex(0);
         }
         toolbar.setSelectedItemIdentifier(page.identifier());
+        this.initializePanel(identifier);
     }
+
+    protected abstract void initializePanel(final String identifier);
 
     /**
      * @return The item identifier of the tab selected.
@@ -226,7 +235,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     public void select(final NSToolbarItem sender) {
-        this.setSelectedTab(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
+        this.setSelectedPanel(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
     }
 
     /**
