@@ -25,7 +25,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -37,6 +40,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
  * @version $Id$
  */
 public class SwiftDeleteFeature implements Delete {
+    private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 
     private SwiftSession session;
 
@@ -80,8 +84,18 @@ public class SwiftDeleteFeature implements Delete {
                                 containerService.getContainer(file).getName());
                     }
                     else {
-                        session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
-                                containerService.getContainer(file).getName(), containerService.getKey(file));
+                        try {
+                            session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
+                                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                        }
+                        catch(GenericException e) {
+                            if(new SwiftExceptionMappingService().map(e) instanceof NotfoundException) {
+                                log.warn(String.format("Ignore missing placeholder object %s", file));
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
                     }
                 }
             }
