@@ -50,13 +50,16 @@ public class SwiftMultipleDeleteFeature implements Delete {
             = new PathContainerService();
 
     private SwiftSegmentService segmentService;
+    private SwiftRegionService regionService;
 
     public SwiftMultipleDeleteFeature(final SwiftSession session) {
-        this(session, new SwiftSegmentService(session));
+        this(session, new SwiftSegmentService(session), new SwiftRegionService(session));
     }
 
-    public SwiftMultipleDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService) {
+    public SwiftMultipleDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService,
+                                      final SwiftRegionService regionService) {
         this.segmentService = segmentService;
+        this.regionService = regionService;
         this.session = session;
     }
 
@@ -89,7 +92,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             try {
                 for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
-                    final Region region = new SwiftRegionService(session).lookup(container.getKey());
+                    final Region region = regionService.lookup(container.getKey());
                     final List<String> keys = container.getValue();
                     for(List<String> partition : new Partition<String>(keys, Preferences.instance().getInteger("openstack.delete.multiple.partition"))) {
                         session.getClient().deleteObjects(region, container.getKey().getName(), partition);

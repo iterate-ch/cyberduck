@@ -51,7 +51,8 @@ public class SwiftDeleteFeature implements Delete {
         this(session, new SwiftSegmentService(session), new SwiftRegionService(session));
     }
 
-    public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService, final SwiftRegionService regionService) {
+    public SwiftDeleteFeature(final SwiftSession session, final SwiftSegmentService segmentService,
+                              final SwiftRegionService regionService) {
         this.segmentService = segmentService;
         this.regionService = regionService;
         this.session = session;
@@ -66,7 +67,6 @@ public class SwiftDeleteFeature implements Delete {
                 if(file.isFile()) {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     final List<Path> segments = segmentService.list(file);
-                    regionService = new SwiftRegionService(session);
                     session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(!segments.isEmpty()) {
