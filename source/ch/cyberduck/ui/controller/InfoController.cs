@@ -184,8 +184,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.Session;
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session.getHost().getProtocol().getType() == Protocol.Type.s3
-                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
+            if (session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
+                session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
@@ -279,9 +279,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path file in _files)
                 {
-                    enable = enable &&
-                             (file.isVolume() || file.isFile() ||
-                              file.attributes().isPlaceholder());
+                    enable = enable && (file.isVolume() || file.isFile() || file.attributes().isPlaceholder());
                 }
             }
             View.MetadataTableEnabled = stop && enable;
@@ -1293,8 +1291,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
-            bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
-                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+            bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
+                          session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             if (enable)
             {
                 enable = !credentials.isAnonymousLogin();
@@ -1893,10 +1891,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session session = BrowserController.Session;
                 DistributionConfiguration cdn =
-                    (DistributionConfiguration) _session.getFeature(typeof (DistributionConfiguration));
-                Purge feature = (Purge) cdn.getFeature(typeof (Purge));
+                    (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration));
+                Purge feature = (Purge) cdn.getFeature(typeof (Purge), _method);
                 feature.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath), _method,
-                               Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
+                                   Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
                 return true;
             }
 
