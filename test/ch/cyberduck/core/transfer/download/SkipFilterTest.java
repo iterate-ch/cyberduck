@@ -36,15 +36,41 @@ public class SkipFilterTest extends AbstractTestCase {
                                 public boolean exists() {
                                     return false;
                                 }
-                            }, new TransferStatus()
-        ));
+                            }, new TransferStatus().exists(true)
+        )
+        );
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)) {
                              }, new NullLocal("a", "b") {
                                  @Override
                                  public boolean exists() {
                                      return true;
                                  }
-                             }, new TransferStatus()
-        ));
+                             }, new TransferStatus().exists(true)
+        )
+        );
+    }
+
+    @Test
+    public void testAcceptDirectory() throws Exception {
+        SkipFilter f = new SkipFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
+        assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)) {
+                            }, new NullLocal("a", "b") {
+                                @Override
+                                public boolean isFile() {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean isDirectory() {
+                                    return true;
+                                }
+
+                                @Override
+                                public boolean exists() {
+                                    return true;
+                                }
+                            }, new TransferStatus().exists(true)
+        )
+        );
     }
 }
