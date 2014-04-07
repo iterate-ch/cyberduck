@@ -224,7 +224,7 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources/Java</string>
             <key>VMOptions</key>
-            <string>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xmx512m -Djava.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.boot.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.nounpack=true -Djava.awt.headless=false -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none -XX:-UsePerfData -XX:+ReduceSignalUsage -Xincgc -XX:-OptimizeStringConcat</string>
+            <string>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xmx512m -Djava.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.boot.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.nounpack=true -Djava.awt.headless=false -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none -XX:-UsePerfData -XX:+ReduceSignalUsage -XX:-OptimizeStringConcat</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
