@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui.cocoa;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -14,16 +14,12 @@ package ch.cyberduck.core;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
-
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.CancelCallback;
 
 /**
  * @version $Id$
  */
-public interface LoginService {
-    void login(Session session, Cache cache, ProgressListener listener, CancelCallback cancel)
-            throws BackgroundException;
+public abstract class HostController  {
 }

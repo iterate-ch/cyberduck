@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -46,7 +47,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());

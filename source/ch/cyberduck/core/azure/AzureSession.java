@@ -47,6 +47,7 @@ import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -116,7 +117,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
         // Update credentials
         credentials.setCredentials(new Credentials(
                 host.getCredentials().getUsername(), host.getCredentials().getPassword()));

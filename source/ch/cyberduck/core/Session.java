@@ -31,6 +31,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
@@ -128,8 +129,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
-    public void login(final PasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
-        this.login(keychain, prompt, Cache.empty());
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+            throws BackgroundException {
+        this.login(keychain, prompt, cancel, Cache.empty());
     }
 
     /**
@@ -137,9 +139,11 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      *
      * @param keychain Password store
      * @param prompt   Prompt
+     * @param cancel   Cancel callback
      * @param cache    Directory listing cache
      */
-    public abstract void login(PasswordStore keychain, LoginCallback prompt, Cache cache) throws BackgroundException;
+    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache cache)
+            throws BackgroundException;
 
     /**
      * Logout and close client connection

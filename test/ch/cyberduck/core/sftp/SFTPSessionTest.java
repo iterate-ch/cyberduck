@@ -3,6 +3,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -43,7 +44,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
@@ -60,7 +61,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test(expected = BackgroundException.class)

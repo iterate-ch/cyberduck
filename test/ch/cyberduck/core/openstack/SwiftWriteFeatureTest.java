@@ -5,6 +5,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -46,7 +47,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");

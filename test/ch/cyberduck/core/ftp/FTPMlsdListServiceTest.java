@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -47,7 +48,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -62,7 +63,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());

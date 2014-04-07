@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -56,7 +57,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
             }
         };
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
@@ -89,7 +90,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         final AtomicInteger count = new AtomicInteger();
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override

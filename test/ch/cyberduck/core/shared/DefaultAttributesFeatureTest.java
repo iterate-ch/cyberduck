@@ -6,6 +6,7 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -37,7 +38,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         new DefaultAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -57,7 +58,7 @@ public class DefaultAttributesFeatureTest extends AbstractTestCase {
             }
         };
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Cache cache = new Cache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
         final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));

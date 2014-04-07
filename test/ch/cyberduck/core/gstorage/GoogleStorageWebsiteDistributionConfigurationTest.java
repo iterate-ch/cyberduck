@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -80,7 +81,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
@@ -109,7 +110,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));

@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -41,7 +42,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
@@ -80,7 +81,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPWriteFeature(session).write(test, new TransferStatus());
     }
@@ -92,7 +93,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals(false, new FTPWriteFeature(session).append(
                 new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
         assertEquals(true, new FTPWriteFeature(session).append(

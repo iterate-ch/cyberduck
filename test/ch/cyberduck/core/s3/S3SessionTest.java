@@ -77,7 +77,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         Cache cache = new Cache();
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
         assertNotNull(session.workdir());
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         assertNotNull(cache.lookup(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
@@ -101,7 +101,7 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
         Cache cache = new Cache();
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), cache);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
         assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         session.close();
@@ -114,7 +114,7 @@ public class S3SessionTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class S3SessionTest extends AbstractTestCase {
         final S3Session session = new S3Session(host);
         try {
             session.open(new DefaultHostKeyController());
-            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);
@@ -177,7 +177,7 @@ public class S3SessionTest extends AbstractTestCase {
                 return true;
             }
         });
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(set.get());
         session.close();
     }

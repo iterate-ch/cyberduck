@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -45,7 +46,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DefaultHostKeyController()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals("EU", new S3LocationFeature(session).getLocation(
                 new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
         ));

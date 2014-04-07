@@ -44,6 +44,7 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
@@ -199,7 +200,8 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
         try {
             if(super.alert() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.

@@ -20,6 +20,7 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -61,7 +62,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
         assertTrue(new S3FindFeature(session).find(test));
@@ -87,7 +88,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
         assertTrue(session.getFeature(Find.class).find(test));

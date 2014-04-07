@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,7 +50,8 @@ public class KeychainLoginService implements LoginService {
      * @param cache   Directory listing cache
      */
     @Override
-    public void login(final Session session, final Cache cache, final ProgressListener listener) throws BackgroundException {
+    public void login(final Session session, final Cache cache,
+                      final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         this.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
@@ -71,7 +73,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(keychain, controller, cache);
+            session.login(keychain, controller, cancel, cache);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -93,7 +95,7 @@ public class KeychainLoginService implements LoginService {
                 bookmark.getCredentials().setPassword(null);
                 throw c;
             }
-            this.login(session, cache, listener);
+            this.login(session, cache, listener, null);
         }
     }
 

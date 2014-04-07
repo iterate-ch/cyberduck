@@ -3,6 +3,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -30,7 +31,7 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DefaultHomeFinderService(session).find());
         session.close();
     }
@@ -43,7 +44,7 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         host.setDefaultPath("/test.d");
         final FTPSession session = new FTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals(new Path("/test.d", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         session.close();
     }
@@ -55,7 +56,7 @@ public class DefaultHomeFinderServiceTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         session.close();
     }

@@ -19,6 +19,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -42,6 +45,9 @@ public class LoginConnectionService implements ConnectionService {
     private LoginService login;
 
     private Proxy proxy;
+
+    private AtomicBoolean canceled
+            = new AtomicBoolean();
 
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
@@ -140,7 +146,14 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            login.login(session, cache, listener);
+            login.login(session, cache, listener, new CancelCallback() {
+                @Override
+                public void verify() throws LoginCanceledException {
+                    if(canceled.get()) {
+                        throw new LoginCanceledException();
+                    }
+                }
+            });
         }
         catch(BackgroundException e) {
             session.interrupt();
@@ -150,6 +163,7 @@ public class LoginConnectionService implements ConnectionService {
 
     @Override
     public void cancel() {
+        canceled.set(true);
         resolver.cancel();
     }
 }

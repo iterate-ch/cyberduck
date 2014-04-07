@@ -3,6 +3,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -50,7 +51,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
     protected void delete(final Host host, final Path container) throws ch.cyberduck.core.exception.BackgroundException {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test1);
@@ -72,7 +73,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DefaultHostKeyController());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),

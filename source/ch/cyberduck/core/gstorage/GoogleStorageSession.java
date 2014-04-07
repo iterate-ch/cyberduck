@@ -47,6 +47,7 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -121,7 +122,8 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback controller, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback controller,
+                      final CancelCallback cancel, final Cache cache) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(
@@ -180,7 +182,7 @@ public class GoogleStorageSession extends S3Session {
             }
         }
         else {
-            super.login(keychain, controller, cache);
+            super.login(keychain, controller, cancel, cache);
         }
     }
 

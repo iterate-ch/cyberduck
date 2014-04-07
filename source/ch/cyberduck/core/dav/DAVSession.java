@@ -49,6 +49,7 @@ import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -137,7 +138,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 Preferences.instance().getProperty("webdav.ntlm.workstation"),
@@ -163,6 +165,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                         || e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
                     log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
                             host, e.getResponsePhrase()));
+                    cancel.verify();
                     // Possibly only HEAD requests are not allowed
                     cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
                 }
@@ -170,6 +173,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
                         log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
                                 host, e.getResponsePhrase()));
+                        cancel.verify();
                         client.disablePreemptiveAuthentication();
                         client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
                     }

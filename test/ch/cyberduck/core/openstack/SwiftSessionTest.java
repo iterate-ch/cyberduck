@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -58,7 +59,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -82,7 +83,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -99,7 +100,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test
@@ -116,7 +117,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -139,7 +140,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DefaultHostKeyController()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();

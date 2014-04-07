@@ -3,6 +3,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPClient;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.threading.CancelCallback;
 
 /**
  * @version $Id$
@@ -24,7 +25,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
         //
     }
 

@@ -3,6 +3,7 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -49,7 +50,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         session.close();
     }
@@ -74,7 +75,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -96,7 +97,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                     }
                     return null;
                 }
-            }, new DisabledLoginController());
+            }, new DisabledLoginController(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
 //            assertEquals("Access denied. 4082461033721 is not a valid project id spec. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -122,7 +123,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        });
+        }, null);
     }
 
     @Test(expected = LoginFailureException.class)
@@ -135,7 +136,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginController());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
             fail();
         }
         catch(LoginFailureException e) {

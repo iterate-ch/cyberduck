@@ -36,12 +36,15 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.ConnectionMonitor;
@@ -106,29 +109,34 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
         try {
+            final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
             if(host.getCredentials().isAnonymousLogin()) {
-                if(new SFTPNoneAuthentication(this).authenticate(host, prompt)) {
-                    log.info("Login successful");
+                methods.add(new SFTPNoneAuthentication(this));
+            }
+            else {
+                if(host.getCredentials().isPublicKeyAuthentication()) {
+                    methods.add(new SFTPPublicKeyAuthentication(this));
                 }
                 else {
-                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                    methods.add(new SFTPChallengeResponseAuthentication(this));
+                    methods.add(new SFTPPasswordAuthentication(this));
                 }
             }
-            else if(host.getCredentials().isPublicKeyAuthentication()) {
-                if(new SFTPPublicKeyAuthentication(this).authenticate(host, prompt)) {
-                    log.info("Login successful");
+            for(SFTPAuthentication auth : methods) {
+                if(!auth.authenticate(host, prompt)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Login failed with authentication method %s", auth));
+                    }
+                    cancel.verify();
+                    continue;
                 }
-                else {
-                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Login successful with authentication method %s", auth));
                 }
-            }
-            else if(new SFTPChallengeResponseAuthentication(this).authenticate(host, prompt)) {
-                log.info("Login successful");
-            }
-            else if(new SFTPPasswordAuthentication(this).authenticate(host, prompt)) {
-                log.info("Login successful");
+                break;
             }
             // Check if authentication is partial
             if(!client.isAuthenticationComplete()) {
@@ -138,11 +146,13 @@ public class SFTPSession extends Session<Connection> {
                             LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                             LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
                     if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
-                        throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                        throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                                "Login {0} with username and password", "Credentials"), host.getHostname()));
                     }
                 }
                 else {
-                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString("Login {0} with username and password", "Credentials"), host.getHostname()));
+                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Login {0} with username and password", "Credentials"), host.getHostname()));
                 }
             }
             try {

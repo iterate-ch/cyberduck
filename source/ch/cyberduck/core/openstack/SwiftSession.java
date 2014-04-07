@@ -49,6 +49,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
@@ -108,7 +109,8 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {
@@ -132,6 +134,7 @@ public class SwiftSession extends HttpSession<Client> {
                         throw failure;
                     }
                 }
+                cancel.verify();
             }
             threadFactory.newThread(new Runnable() {
                 @Override

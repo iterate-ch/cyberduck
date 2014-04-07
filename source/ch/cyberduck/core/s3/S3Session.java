@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -333,7 +334,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final Cache cache) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache cache)
+            throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         try {
