@@ -83,9 +83,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                if(filter.accept(file.remote, file.local, status.get(file.getParent()))) {
-                    status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent())));
-                }
+                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent())));
             }
         }
         return status;
