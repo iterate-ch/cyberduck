@@ -120,7 +120,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     private Comparator<String> comparator = new NaturalOrderComparator();
 
     public synchronized void sortByNickname() {
-        this.sort(new Comparator<Host>() {
+        this.doSort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getNickname(), o2.getNickname());
@@ -129,7 +129,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     public synchronized void sortByHostname() {
-        this.sort(new Comparator<Host>() {
+        this.doSort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getHostname(), o2.getHostname());
@@ -138,7 +138,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     public synchronized void sortByProtocol() {
-        this.sort(new Comparator<Host>() {
+        this.doSort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getProtocol().getProvider(), o2.getProtocol().getProvider());
@@ -146,7 +146,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         });
     }
 
-    public synchronized void sort(final Comparator<Host> comparator) {
+    public synchronized void doSort(final Comparator<Host> comparator) {
         Collections.sort(FolderBookmarkCollection.favoritesCollection(), comparator);
         // Save new index
         this.save();

@@ -124,7 +124,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
-    private void sort(Comparator<E> comparator) {
+    private void doSort(Comparator<E> comparator) {
         if(null == comparator) {
             return;
         }
@@ -160,7 +160,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
-                this.sort(comparator);
+                this.doSort(comparator);
             }
             // Saving last sorting comparator
             attributes.setComparator(comparator);
@@ -183,7 +183,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
             // Saving last filter
             attributes.setFilter(filter);
             // Sort again because the list has changed
-            this.sort(comparator);
+            this.doSort(comparator);
         }
         return this;
     }
