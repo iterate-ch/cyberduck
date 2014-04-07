@@ -2293,7 +2293,7 @@ public class BrowserController extends WindowController
      *                 files as the value
      */
     protected void duplicatePaths(final Map<Path, Path> selected) {
-        this.checkOverwrite(selected.values(), new DefaultMainAction() {
+        this.checkOverwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
             @Override
             public void run() {
                 transfer(new CopyTransfer(session.getHost(), session.getHost(), selected),
@@ -2315,7 +2315,7 @@ public class BrowserController extends WindowController
      *                 files as the value
      */
     protected void renamePaths(final Map<Path, Path> selected) {
-        this.checkMove(selected.values(), new DefaultMainAction() {
+        this.checkMove(selected, new DefaultMainAction() {
             @Override
             public void run() {
                 final ArrayList<Path> changed = new ArrayList<Path>();
@@ -2338,46 +2338,44 @@ public class BrowserController extends WindowController
      *
      * @param selected The files to check for existance
      */
-    private void checkOverwrite(final java.util.Collection<Path> selected, final MainAction action) {
-        if(selected.size() > 0) {
-            StringBuilder alertText = new StringBuilder(
-                    LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
-            int i = 0;
-            Iterator<Path> iter;
-            boolean shouldWarn = false;
-            for(iter = selected.iterator(); iter.hasNext(); ) {
-                final Path item = iter.next();
-                if(cache.lookup(item.getReference()) != null) {
-                    if(i < 10) {
-                        alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
-                    }
-                    shouldWarn = true;
+    private void checkOverwrite(final List<Path> selected, final MainAction action) {
+        StringBuilder alertText = new StringBuilder(
+                LocaleFactory.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
+        int i = 0;
+        Iterator<Path> iter;
+        boolean shouldWarn = false;
+        for(iter = selected.iterator(); iter.hasNext(); ) {
+            final Path item = iter.next();
+            if(cache.lookup(item.getReference()) != null) {
+                if(i < 10) {
+                    alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                 }
-                i++;
+                shouldWarn = true;
             }
-            if(i >= 10) {
-                alertText.append("\n").append(Character.toString('\u2022')).append(" ...)");
-            }
-            if(shouldWarn) {
-                NSAlert alert = NSAlert.alert(
-                        LocaleFactory.localizedString("Overwrite"), //title
-                        alertText.toString(),
-                        LocaleFactory.localizedString("Overwrite"), // defaultbutton
-                        LocaleFactory.localizedString("Cancel"), //alternative button
-                        null //other button
-                );
-                this.alert(alert, new SheetCallback() {
-                    @Override
-                    public void callback(final int returncode) {
-                        if(returncode == DEFAULT_OPTION) {
-                            action.run();
-                        }
+            i++;
+        }
+        if(i >= 10) {
+            alertText.append("\n").append(Character.toString('\u2022')).append(" ...)");
+        }
+        if(shouldWarn) {
+            NSAlert alert = NSAlert.alert(
+                    LocaleFactory.localizedString("Overwrite"), //title
+                    alertText.toString(),
+                    LocaleFactory.localizedString("Overwrite"), // defaultbutton
+                    LocaleFactory.localizedString("Cancel"), //alternative button
+                    null //other button
+            );
+            this.alert(alert, new SheetCallback() {
+                @Override
+                public void callback(final int returncode) {
+                    if(returncode == DEFAULT_OPTION) {
+                        action.run();
                     }
-                });
-            }
-            else {
-                action.run();
-            }
+                }
+            });
+        }
+        else {
+            action.run();
         }
     }
 
@@ -2386,46 +2384,48 @@ public class BrowserController extends WindowController
      *
      * @param selected The files to check for existence
      */
-    private void checkMove(final java.util.Collection<Path> selected, final MainAction action) {
-        if(selected.size() > 0) {
-            if(Preferences.instance().getBoolean("browser.move.confirm")) {
-                StringBuilder alertText = new StringBuilder(
-                        LocaleFactory.localizedString("Do you want to move the selected files?"));
-                int i = 0;
-                Iterator<Path> iter;
-                for(iter = selected.iterator(); i < 10 && iter.hasNext(); ) {
-                    Path item = iter.next();
-                    alertText.append(String.format("\n%s %s", Character.toString('\u2022'), item.getName()));
-                    i++;
+    private void checkMove(final Map<Path, Path> selected, final MainAction action) {
+        if(Preferences.instance().getBoolean("browser.move.confirm")) {
+            StringBuilder alertText = new StringBuilder(
+                    LocaleFactory.localizedString("Do you want to move the selected files?"));
+            int i = 0;
+            boolean rename = false;
+            Iterator<Map.Entry<Path, Path>> iter;
+            for(iter = selected.entrySet().iterator(); i < 10 && iter.hasNext(); ) {
+                final Map.Entry<Path, Path> next = iter.next();
+                if(next.getKey().getParent().equals(next.getValue().getParent())) {
+                    rename = true;
                 }
-                if(iter.hasNext()) {
-                    alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
-                }
-                final NSAlert alert = NSAlert.alert(
-                        LocaleFactory.localizedString("Move"), //title
-                        alertText.toString(),
-                        LocaleFactory.localizedString("Move"), // defaultbutton
-                        LocaleFactory.localizedString("Cancel"), //alternative button
-                        null //other button
-                );
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new SheetCallback() {
-                    @Override
-                    public void callback(final int returncode) {
-                        if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                            // Never show again.
-                            Preferences.instance().setProperty("browser.move.confirm", false);
-                        }
-                        if(returncode == DEFAULT_OPTION) {
-                            checkOverwrite(selected, action);
-                        }
+                alertText.append(String.format("\n%s %s", Character.toString('\u2022'), next.getKey().getName()));
+                i++;
+            }
+            if(iter.hasNext()) {
+                alertText.append(String.format("\n%s ...)", Character.toString('\u2022')));
+            }
+            final NSAlert alert = NSAlert.alert(
+                    rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move"), //title
+                    alertText.toString(),
+                    rename ? LocaleFactory.localizedString("Rename") : LocaleFactory.localizedString("Move"), // default button
+                    LocaleFactory.localizedString("Cancel"), //alternative button
+                    null //other button
+            );
+            alert.setShowsSuppressionButton(true);
+            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
+            this.alert(alert, new SheetCallback() {
+                @Override
+                public void callback(final int returncode) {
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        // Never show again.
+                        Preferences.instance().setProperty("browser.move.confirm", false);
                     }
-                });
-            }
-            else {
-                this.checkOverwrite(selected, action);
-            }
+                    if(returncode == DEFAULT_OPTION) {
+                        checkOverwrite(new ArrayList<Path>(selected.values()), action);
+                    }
+                }
+            });
+        }
+        else {
+            this.checkOverwrite(new ArrayList<Path>(selected.values()), action);
         }
     }
 
