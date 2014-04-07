@@ -267,6 +267,7 @@
                 <exclude name="Contents/Home/lib/libAppleScriptEngine.dylib"/>
                 <exclude name="Contents/Home/lib/fontconfig.*"/>
                 <exclude name="Contents/Home/lib/libawt.dylib"/>
+                <exclude name="Contents/Home/lib/libawt_lwawt.dylib"/>
                 <exclude name="Contents/Home/lib/libjawt.dylib"/>
                 <exclude name="Contents/Home/lib/libhprof.dylib"/>
                 <exclude name="Contents/Home/lib/libinstrument.dylib"/>
@@ -425,6 +426,7 @@
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
+            <param name="jvm.runtime.home" value="${lib}/1.8.0.jre"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-_REVISION_.tar.gz"/>
@@ -460,6 +462,7 @@
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
+            <param name="jvm.runtime.home" value="${lib}/1.8.0.jre"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-_REVISION_.tar.gz"/>
