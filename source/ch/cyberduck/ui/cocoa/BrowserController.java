@@ -2430,31 +2430,6 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Prunes the list of selected files. Files which are a child of an already included directory
-     * are removed from the returned list.
-     *
-     * @param selected Selected files for transfer
-     * @return Normalized
-     */
-    protected List<Path> checkHierarchy(final List<Path> selected) {
-        final List<Path> normalized = new Collection<Path>();
-        for(Path f : selected) {
-            boolean duplicate = false;
-            for(Path n : normalized) {
-                if(f.isChild(n)) {
-                    // The selected file is a child of a directory already included for deletion
-                    duplicate = true;
-                    break;
-                }
-            }
-            if(!duplicate) {
-                normalized.add(f);
-            }
-        }
-        return normalized;
-    }
-
-    /**
      * Recursively deletes the file
      *
      * @param file File or directory
@@ -2469,7 +2444,7 @@ public class BrowserController extends WindowController
      * @param selected The files selected in the browser to delete
      */
     public void deletePaths(final List<Path> selected) {
-        final List<Path> normalized = this.checkHierarchy(selected);
+        final List<Path> normalized = PathNormalizer.normalize(selected);
         if(normalized.isEmpty()) {
             return;
         }

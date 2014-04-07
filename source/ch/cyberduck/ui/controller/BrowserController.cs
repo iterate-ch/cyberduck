@@ -2722,42 +2722,12 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// Prunes the list of selected files. Files which are a child of an already included directory
-        /// are removed from the returned list.
-        /// </summary>
-        /// <param name="selected"></param>
-        /// <returns></returns>
-        protected List<Path> CheckHierarchy(ICollection<Path> selected)
-        {
-            List<Path> normalized = new List<Path>();
-            foreach (Path f in selected)
-            {
-                bool duplicate = false;
-                foreach (Path n in normalized)
-                {
-                    if (f.isChild(n))
-                    {
-                        // The selected file is a child of a directory
-                        // already included for deletion
-                        duplicate = true;
-                        break;
-                    }
-                }
-                if (!duplicate)
-                {
-                    normalized.Add(f);
-                }
-            }
-            return normalized;
-        }
-
-        /// <summary>
         /// Recursively deletes the files
         /// </summary>
         /// <param name="selected">The files selected in the browser to delete</param>
         public void DeletePaths(ICollection<Path> selected)
         {
-            List<Path> normalized = CheckHierarchy(selected);
+            List<Path> normalized = PathNormalizer.normalize(selected);
             if (normalized.Count == 0)
             {
                 return;

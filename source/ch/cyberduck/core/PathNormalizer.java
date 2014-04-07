@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 import com.ibm.icu.text.Normalizer;
 
 /**
@@ -142,6 +144,31 @@ public final class PathNormalizer {
             }
         }
         // Return the normalized path that we have completed
+        return normalized;
+    }
+
+    /**
+     * Prunes the list of selected files. Files which are a child of an already included directory
+     * are removed from the returned list.
+     *
+     * @param selected Selected files for transfer
+     * @return Normalized
+     */
+    public static List<Path> normalize(final List<Path> selected) {
+        final List<Path> normalized = new Collection<Path>();
+        for(Path f : selected) {
+            boolean duplicate = false;
+            for(Path n : normalized) {
+                if(f.isChild(n)) {
+                    // The selected file is a child of a directory already included
+                    duplicate = true;
+                    break;
+                }
+            }
+            if(!duplicate) {
+                normalized.add(f);
+            }
+        }
         return normalized;
     }
 }
