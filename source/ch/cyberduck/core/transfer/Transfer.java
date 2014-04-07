@@ -349,6 +349,8 @@ public abstract class Transfer implements Serializable {
 
     public void start() {
         state = State.running;
+        // Will be set to true in #reset when transfer action is determined
+        reset = false;
     }
 
     public void stop() {
