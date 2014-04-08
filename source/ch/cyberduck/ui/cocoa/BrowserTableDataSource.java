@@ -97,7 +97,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         permission,
         kind,
         extension,
-        region
+        region,
+        version
     }
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
@@ -221,6 +222,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(Column.region.name())) {
             return NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
+                    TableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(Column.version.name())) {
+            return NSAttributedString.attributedStringWithAttributes(
+                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() : LocaleFactory.localizedString("Unknown"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));

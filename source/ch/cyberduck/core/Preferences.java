@@ -277,6 +277,8 @@ public abstract class Preferences {
         defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.permission.name()), String.valueOf(100));
         defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()), String.valueOf(false));
         defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.region.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", BrowserTableDataSource.Column.version.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", BrowserTableDataSource.Column.version.name()), String.valueOf(80));
 
         defaults.put("browser.sort.column", BrowserTableDataSource.Column.filename.name());
         defaults.put("browser.sort.ascending", String.valueOf(true));

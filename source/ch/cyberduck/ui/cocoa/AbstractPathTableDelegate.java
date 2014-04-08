@@ -31,6 +31,7 @@ import ch.cyberduck.ui.comparator.PermissionsComparator;
 import ch.cyberduck.ui.comparator.RegionComparator;
 import ch.cyberduck.ui.comparator.SizeComparator;
 import ch.cyberduck.ui.comparator.TimestampComparator;
+import ch.cyberduck.ui.comparator.VersionComparator;
 
 import org.apache.log4j.Logger;
 
@@ -80,6 +81,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
                 return new PermissionsComparator(ascending);
             case region:
                 return new RegionComparator(ascending);
+            case version:
+                return new VersionComparator(ascending);
             default:
                 log.error(String.format("Unknown column identifier %s", identifier));
                 return new NullComparator<Path>();

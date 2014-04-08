@@ -2665,6 +2665,7 @@ source/ch/cyberduck/ui/comparator/PermissionsComparator.java -text
 source/ch/cyberduck/ui/comparator/RegionComparator.java -text
 source/ch/cyberduck/ui/comparator/SizeComparator.java -text
 source/ch/cyberduck/ui/comparator/TimestampComparator.java -text
+source/ch/cyberduck/ui/comparator/VersionComparator.java -text
 source/ch/cyberduck/ui/controller/ActivityController.cs -text
 source/ch/cyberduck/ui/controller/AsyncController.cs -text
 source/ch/cyberduck/ui/controller/BaseController.cs -text

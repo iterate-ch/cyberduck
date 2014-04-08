@@ -61,6 +61,8 @@ import ch.cyberduck.ui.action.DisconnectWorker;
 import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.action.RevertWorker;
+import ch.cyberduck.ui.browser.RegexFilter;
+import ch.cyberduck.ui.browser.SearchFilter;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -131,7 +133,7 @@ public class BrowserController extends WindowController
     /**
      * Filter hidden files.
      */
-    private static final Filter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter();
+    private static final Filter<Path> HIDDEN_FILTER = new RegexFilter();
 
     /**
      *
@@ -158,7 +160,7 @@ public class BrowserController extends WindowController
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesPathFilter();
+            this.filenameFilter = new RegexFilter();
             this.showHiddenFiles = false;
         }
     }
@@ -280,20 +282,7 @@ public class BrowserController extends WindowController
         }
         else {
             // Setting up a custom filter for the directory listing
-            this.filenameFilter = new Filter<Path>() {
-                @Override
-                public boolean accept(Path file) {
-                    if(file.getName().toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT))) {
-                        // Matching filename
-                        return true;
-                    }
-                    if(file.isDirectory() && getSelectedBrowserView() == browserOutlineView) {
-                        // #471. Expanded item children may match search string
-                        return cache.isCached(file.getReference());
-                    }
-                    return false;
-                }
-            };
+            this.filenameFilter = new SearchFilter(cache, search);
         }
     }
 
@@ -1532,6 +1521,18 @@ public class BrowserController extends WindowController
             c.setMinWidth(50);
             c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.region.name())));
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            table.addTableColumn(c);
+        }
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.version.name()));
+        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.version.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.version.name());
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Version"));
+            c.setMinWidth(50);
+            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+                    BrowserTableDataSource.Column.version.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);

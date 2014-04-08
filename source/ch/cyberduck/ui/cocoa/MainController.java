@@ -254,6 +254,7 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()), LocaleFactory.localizedString("Group"));
         columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()), LocaleFactory.localizedString("Permissions"));
         columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()), LocaleFactory.localizedString("Region"));
+        columns.put(String.format("browser.column.%s", BrowserTableDataSource.Column.version.name()), LocaleFactory.localizedString("Version"));
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);

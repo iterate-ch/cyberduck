@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui.browser;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,12 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+
 import java.util.regex.Pattern;
 
 /**
  * @version $Id$
  */
-public class HiddenFilesPathFilter implements Filter<Path> {
+public class RegexFilter implements Filter<Path> {
 
     private Pattern pattern = Pattern.compile(
             Preferences.instance().getProperty("browser.hidden.regex"));
