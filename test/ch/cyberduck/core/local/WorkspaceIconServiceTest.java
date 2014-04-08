@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -26,28 +25,27 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testSetProgressNoFile() throws Exception {
+        final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.get();
+        final Local file = new FinderLocal(Preferences.instance().getProperty("tmp.dir"),
+                UUID.randomUUID().toString());
+        assertFalse(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+    }
+
+    @Test
     public void testSetProgress() throws Exception {
         final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.get();
-        final Callable<Local> c = new Callable<Local>() {
-            @Override
-            public Local call() throws Exception {
-                final NullLocal file = new NullLocal(Preferences.instance().getProperty("tmp.dir"),
-                        UUID.randomUUID().toString());
-                assertFalse(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
-                LocalTouchFactory.get().touch(file);
-                assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
-                file.delete();
-                return file;
-            }
-        };
-        // Test concurrency as set icon is not thread safe
-        repeat(c, 50);
+        final Local file = new FinderLocal(Preferences.instance().getProperty("tmp.dir"),
+                UUID.randomUUID().toString());
+        LocalTouchFactory.get().touch(file);
+        assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
+        file.delete();
     }
 
     @Test
     public void testRemove() throws Exception {
         final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.get();
-        final NullLocal file = new NullLocal(Preferences.instance().getProperty("tmp.dir"),
+        final Local file = new FinderLocal(Preferences.instance().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(s.remove(file));
         LocalTouchFactory.get().touch(file);
