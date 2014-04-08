@@ -161,6 +161,13 @@ namespace Ch.Cyberduck.Ui.Controller
                        : LocaleFactory.localizedString("Unknown");
         }
 
+        public object GetVersion(Path path)
+        {
+            return Utils.IsNotBlank(path.attributes().getVersionId())
+                       ? path.attributes().getVersionId()
+                       : LocaleFactory.localizedString("None");
+        }
+
         public bool GetActive(Path path)
         {
             return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);

@@ -40,6 +40,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
+using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using ch.cyberduck.ui.pasteboard;
 using ch.cyberduck.ui.threading;
@@ -63,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate bool DialogCallbackDelegate(DialogResult result);
 
-        internal static readonly Filter HiddenFilter = new HiddenFilesPathFilter();
+        internal static readonly Filter HiddenFilter = new RegexFilter();
 
         private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
         private static readonly Filter NullFilter = new NullPathFilter();
@@ -269,6 +270,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelActiveGetter = _browserModel.GetActive;
             View.ModelExtensionGetter = _browserModel.GetExtension;
             View.ModelRegionGetter = _browserModel.GetRegion;
+            View.ModelVersionGetter = _browserModel.GetVersion;
 
             #endregion
 
@@ -2780,13 +2782,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    FilenameFilter = new HiddenFilesPathFilter();
+                    FilenameFilter = new RegexFilter();
                 }
             }
             else
             {
                 // Setting up a custom filter for the directory listing
-                FilenameFilter = new CustomPathFilter(searchString, this);
+                FilenameFilter = new CustomPathFilter(searchString, _cache);
             }
             ReloadData(true);
         }
@@ -3005,31 +3007,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CustomPathFilter : Filter, IModelFilter
+        private class CustomPathFilter : SearchFilter, IModelFilter
         {
-            private readonly BrowserController _controller;
-            private readonly String _searchString;
-
-            public CustomPathFilter(String searchString, BrowserController controller)
+            public CustomPathFilter(String searchString, Cache cache)
+                : base(cache, searchString)
             {
-                _searchString = searchString;
-                _controller = controller;
-            }
-
-            public bool accept(object p)
-            {
-                Path path = (Path)p;
-                if (path.getName().ToLower().IndexOf(_searchString.ToLower()) != -1)
-                {
-                    // Matching filename
-                    return true;
-                }
-                if (path.isDirectory())
-                {
-                    // #471. Expanded item childs may match search string
-                    return _controller._cache.isCached(path.getReference());
-                }
-                return false;
             }
 
             public bool Filter(object modelObject)

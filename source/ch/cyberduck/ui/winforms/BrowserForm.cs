@@ -672,6 +672,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { new TypedColumn<Path>(treeColumnRegion) {AspectGetter = value}; }
         }
 
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter
+        {
+            set { new TypedColumn<Path>(treeColumnVersion) { AspectGetter = value }; }
+        }
+
         public MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter
         {
             set { browser.ActiveGetterPath = value; }
@@ -1010,6 +1015,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             treeColumnExtension.ComparatorGetter =
                 (SortOrder order) => new ExtensionComparator(order == SortOrder.Ascending);
             treeColumnRegion.ComparatorGetter = (SortOrder order) => new RegionComparator(order == SortOrder.Ascending);
+            treeColumnVersion.ComparatorGetter = (SortOrder order) => new VersionComparator(order == SortOrder.Ascending);
         }
 
         private void BeforeSorting(object sender, BeforeSortingEventArgs args)

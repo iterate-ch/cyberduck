@@ -88,6 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<Path>.TypedAspectGetterDelegate ModelKindGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelExtensionGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelRegionGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter { set; }
 
         MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter { set; }
         event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
