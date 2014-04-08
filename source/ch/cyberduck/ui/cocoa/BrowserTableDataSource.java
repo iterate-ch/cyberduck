@@ -226,7 +226,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(Column.version.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() : LocaleFactory.localizedString("Unknown"),
+                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() : LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
