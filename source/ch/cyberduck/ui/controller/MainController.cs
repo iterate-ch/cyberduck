@@ -608,27 +608,24 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return; //No default bookmark given
             }
-
-            foreach (Host bookmark in BookmarkCollection.defaultCollection())
+            Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
+            if(null == bookmark) {
+                Logger.info("Default bookmark no more available");
+                return;
+            }
+            foreach (BrowserController browser in Browsers)
             {
-                if (bookmark.getNickname().Equals(defaultBookmark))
+                if (browser.HasSession())
                 {
-                    foreach (BrowserController browser in Browsers)
+                    if (browser.Session.getHost().equals(bookmark))
                     {
-                        if (browser.HasSession())
-                        {
-                            if (browser.Session.getHost().equals(bookmark))
-                            {
-                                Logger.debug("Default bookmark already mounted");
-                                return;
-                            }
-                        }
+                        Logger.debug("Default bookmark already mounted");
+                        return;
                     }
-                    Logger.debug("Mounting default bookmark " + bookmark);
-                    controller.Mount(bookmark);
-                    return;
                 }
             }
+            Logger.debug("Mounting default bookmark " + bookmark);
+            controller.Mount(bookmark);
         }
 
         /// <summary>
