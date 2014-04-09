@@ -6,6 +6,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
@@ -38,7 +39,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         Transfer t = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         t.addSize(4L);
         t.addTransferred(3L);
-        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -64,7 +65,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback()).run();
         assertTrue(t.isComplete());
-        final DownloadTransfer serialized = new DownloadTransfer(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertTrue(serialized.isComplete());
     }

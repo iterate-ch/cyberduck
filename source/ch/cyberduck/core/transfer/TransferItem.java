@@ -36,15 +36,6 @@ public class TransferItem implements Referenceable, Serializable {
     public Path remote;
     public Local local;
 
-    public <T> TransferItem(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        remote = new Path(dict.objectForKey("Remote"));
-        final Object localObj = dict.objectForKey("Local Dictionary");
-        if(localObj != null) {
-            local = LocalFactory.createLocal(localObj);
-        }
-    }
-
     public TransferItem(final Path remote) {
         this(remote, null);
     }

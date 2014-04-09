@@ -19,24 +19,20 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -161,60 +157,6 @@ public abstract class Transfer implements Serializable {
         this.host = host;
         this.roots = roots;
         this.bandwidth = bandwidth;
-    }
-
-    public <T> Transfer(final T serialized, final BandwidthThrottle bandwidth) {
-        this.bandwidth = bandwidth;
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        final Object hostObj = dict.objectForKey("Host");
-        if(hostObj != null) {
-            this.host = new Host(hostObj);
-        }
-        final List<T> itemsObj = dict.listForKey("Items");
-        if(itemsObj != null) {
-            roots = new ArrayList<TransferItem>();
-            for(T rootDict : itemsObj) {
-                roots.add(new TransferItem(rootDict));
-            }
-        }
-        // Legacy
-        final List<T> rootsObj = dict.listForKey("Roots");
-        if(rootsObj != null) {
-            roots = new ArrayList<TransferItem>();
-            for(T rootDict : rootsObj) {
-                final TransferItem item = new TransferItem(new Path(rootDict));
-                // Legacy
-                final String localObjDeprecated
-                        = DeserializerFactory.createDeserializer(serialized).stringForKey("Local");
-                if(localObjDeprecated != null) {
-                    Local local = LocalFactory.createLocal(localObjDeprecated);
-                    item.setLocal(local);
-                }
-                final Object localObj
-                        = DeserializerFactory.createDeserializer(serialized).objectForKey("Local Dictionary");
-                if(localObj != null) {
-                    Local local = LocalFactory.createLocal(localObj);
-                    item.setLocal(local);
-                }
-                roots.add(item);
-            }
-        }
-        Object sizeObj = dict.stringForKey("Size");
-        if(sizeObj != null) {
-            size = (long) Double.parseDouble(sizeObj.toString());
-        }
-        Object timestampObj = dict.stringForKey("Timestamp");
-        if(timestampObj != null) {
-            timestamp = new Date(Long.parseLong(timestampObj.toString()));
-        }
-        Object currentObj = dict.stringForKey("Current");
-        if(currentObj != null) {
-            transferred = (long) Double.parseDouble(currentObj.toString());
-        }
-        Object bandwidthObj = dict.stringForKey("Bandwidth");
-        if(bandwidthObj != null) {
-            bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
-        }
     }
 
     public <T> T serialize(final Serializer dict) {
@@ -421,6 +363,18 @@ public abstract class Transfer implements Serializable {
 
     public void setUuid(final String uuid) {
         this.uuid = uuid;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public void setTransferred(long transferred) {
+        this.transferred = transferred;
     }
 
     @Override

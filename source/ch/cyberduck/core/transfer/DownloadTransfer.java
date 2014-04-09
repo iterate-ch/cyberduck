@@ -77,11 +77,6 @@ public class DownloadTransfer extends Transfer {
         this.filter = f;
     }
 
-    public <T> DownloadTransfer(final T serialized) {
-        super(serialized, new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-    }
-
     @Override
     public Type getType() {
         return Type.download;

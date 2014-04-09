@@ -59,10 +59,4 @@ public abstract class LocalFactory extends Factory<Local> {
     public static Local createLocal(String path) {
         return getFactory().create(path);
     }
-
-    protected abstract <T> Local create(T serialized);
-
-    public static <T> Local createLocal(T serialized) {
-        return getFactory().create(serialized);
-    }
 }

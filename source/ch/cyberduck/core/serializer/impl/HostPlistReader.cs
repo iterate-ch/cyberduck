@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 
         public override Host deserialize(XmlNode dictNode)
         {
-            return new Host(dictNode);
+            return new HostDictionary().deserialize(dictNode);
         }
 
         private class Factory : HostReaderFactory

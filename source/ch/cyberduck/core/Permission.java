@@ -125,14 +125,6 @@ public class Permission implements Serializable {
         }
     };
 
-    public <T> Permission(final T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        final String maskObj = dict.stringForKey("Mask");
-        if(maskObj != null) {
-            this.fromSymbol(maskObj);
-        }
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getSymbol(), "Mask");

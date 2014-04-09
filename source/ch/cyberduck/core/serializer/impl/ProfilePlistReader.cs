@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 
         public override Profile deserialize(XmlNode dictNode)
         {
-            return new Profile(dictNode);
+            return new ProfileDictionary().deserialize(dictNode);
         }
 
         private class Factory : ProfileReaderFactory

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.Controller;
 
@@ -61,7 +62,7 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
             final Host bookmark = session.getHost();
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
-            history.add(new Host(bookmark.serialize(SerializerFactory.get())));
+            history.add(new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get())));
 
             // Notify changed bookmark
             if(BookmarkCollection.defaultCollection().contains(bookmark)) {

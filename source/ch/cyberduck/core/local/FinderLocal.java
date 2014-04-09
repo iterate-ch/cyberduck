@@ -19,14 +19,12 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
@@ -84,11 +82,6 @@ public class FinderLocal extends Local {
         protected Local create(final String path) {
             return new FinderLocal(path);
         }
-
-        @Override
-        protected <T> Local create(final T serialized) {
-            return new FinderLocal(serialized);
-        }
     }
 
     /**
@@ -109,15 +102,6 @@ public class FinderLocal extends Local {
 
     public FinderLocal(final String path) {
         super(path);
-    }
-
-    public <T> FinderLocal(final T serialized) {
-        super(serialized);
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        final String data = dict.stringForKey("Bookmark");
-        if(StringUtils.isNotBlank(data)) {
-            this.bookmark = data;
-        }
     }
 
     @Override

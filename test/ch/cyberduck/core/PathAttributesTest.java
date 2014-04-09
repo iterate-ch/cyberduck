@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -14,8 +16,8 @@ public class PathAttributesTest extends AbstractTestCase {
         PathAttributes attributes = new PathAttributes();
         attributes.setSize(3L);
         attributes.setModificationDate(5343L);
-        assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
-        assertEquals(attributes.hashCode(), new PathAttributes(attributes.serialize(SerializerFactory.get())).hashCode());
+        assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 
     @Test
@@ -35,8 +37,8 @@ public class PathAttributesTest extends AbstractTestCase {
         attributes.setDuplicate(true);
         attributes.setVersionId("v-1");
         attributes.setModificationDate(System.currentTimeMillis());
-        assertEquals(attributes, new PathAttributes(attributes.serialize(SerializerFactory.get())));
-        assertEquals(attributes.hashCode(), new PathAttributes(attributes.serialize(SerializerFactory.get())).hashCode());
+        assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 
     @Test

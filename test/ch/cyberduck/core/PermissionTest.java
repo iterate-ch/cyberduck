@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.PermissionDictionary;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -29,9 +31,9 @@ public class PermissionTest extends AbstractTestCase {
 
     @Test
     public void testGetAsDictionary() throws Exception {
-        assertEquals(new Permission(777), new Permission(new Permission(777).serialize(SerializerFactory.get())));
-        assertEquals(new Permission(700), new Permission(new Permission(700).serialize(SerializerFactory.get())));
-        assertEquals(new Permission(400), new Permission(new Permission(400).serialize(SerializerFactory.get())));
+        assertEquals(new Permission(777), new PermissionDictionary().deserialize(new Permission(777).serialize(SerializerFactory.get())));
+        assertEquals(new Permission(700), new PermissionDictionary().deserialize(new Permission(700).serialize(SerializerFactory.get())));
+        assertEquals(new Permission(400), new PermissionDictionary().deserialize(new Permission(400).serialize(SerializerFactory.get())));
     }
 
     @Test

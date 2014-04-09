@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class HostTest extends AbstractTestCase {
         final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
         container.attributes().setRegion("r");
         h.setWorkdir(container);
-        final Host deserialized = new Host(h.serialize(SerializerFactory.get()));
+        final Host deserialized = new HostDictionary().deserialize(h.serialize(SerializerFactory.get()));
         assertEquals(h, deserialized);
         assertEquals("r", deserialized.getWorkdir().attributes().getRegion());
     }
@@ -50,7 +51,7 @@ public class HostTest extends AbstractTestCase {
         dict.setStringForKey("swift", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
-        final Host host = new Host(dict.getSerialized());
+        final Host host = new HostDictionary().deserialize(dict.getSerialized());
         assertEquals(new SwiftProtocol(), host.getProtocol());
     }
 

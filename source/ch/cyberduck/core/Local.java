@@ -59,11 +59,6 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         this.setPath(name);
     }
 
-    public <T> Local(final T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        this.setPath(dict.stringForKey("Path"));
-    }
-
     protected void setPath(final String name) {
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {

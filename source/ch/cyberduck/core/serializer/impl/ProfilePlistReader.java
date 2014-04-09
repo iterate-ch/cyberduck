@@ -21,6 +21,7 @@ package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.serializer.ProfileDictionary;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -42,6 +43,6 @@ public class ProfilePlistReader extends PlistReader<Profile> {
 
     @Override
     public Profile deserialize(final NSDictionary dict) {
-        return new Profile(dict);
+        return new ProfileDictionary().deserialize(dict);
     }
 }

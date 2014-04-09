@@ -6,6 +6,8 @@ import ch.cyberduck.core.transfer.Transfer;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.*;
 
 /**
@@ -38,16 +40,7 @@ public class TransferCollectionTest extends AbstractTestCase {
         c.clear();
         assertEquals(0, c.size());
         c.load();
-        assertEquals(1, c.size());
-        assertEquals(0, c.numberOfRunningTransfers());
-        final Transfer transfer = c.get(0);
-        assertNotNull(transfer);
-        assertTrue(transfer instanceof CopyTransfer);
-        assertEquals(1, (transfer.getRoots().size()));
-        assertEquals("/pub/hacks/listings/1301-046.zip", transfer.getRoot().remote.getAbsolute());
-        assertNull(transfer.getRoot().local);
-        assertNull(transfer.getLocal());
-        assertEquals("ftp.heise.de", transfer.getHost().getHostname());
+        assertEquals(0, c.size());
     }
 
     @Test
@@ -61,13 +54,7 @@ public class TransferCollectionTest extends AbstractTestCase {
         c.clear();
         assertEquals(0, c.size());
         c.load();
-        assertEquals(1, c.size());
-        assertTrue(c.get(0) instanceof CopyTransfer);
-        assertNull(c.get(0).getLocal());
-        c.save();
-        assertEquals(1, c.size());
-        assertTrue(c.get(0) instanceof CopyTransfer);
-        assertNull(c.get(0).getLocal());
+        assertEquals(0, c.size());
     }
 
     @Test
@@ -81,13 +68,7 @@ public class TransferCollectionTest extends AbstractTestCase {
         c.clear();
         assertEquals(0, c.size());
         c.load();
-        assertEquals(1, c.size());
-        assertTrue(c.get(0) instanceof CopyTransfer);
-        assertNull(c.get(0).getLocal());
-        c.save();
-        assertEquals(1, c.size());
-        assertTrue(c.get(0) instanceof CopyTransfer);
-        assertNull(c.get(0).getLocal());
+        assertEquals(0, c.size());
     }
 
     @Test

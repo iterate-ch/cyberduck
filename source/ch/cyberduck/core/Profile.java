@@ -48,8 +48,8 @@ public final class Profile implements Protocol, Serializable {
 
     private Local image;
 
-    public <T> Profile(final T serialized) {
-        dict = DeserializerFactory.createDeserializer(serialized);
+    public Profile(final Deserializer dict) {
+        this.dict = dict;
         final String protocol = this.value("Protocol");
         if(StringUtils.isBlank(protocol)) {
             log.error("Missing protocol in profile");

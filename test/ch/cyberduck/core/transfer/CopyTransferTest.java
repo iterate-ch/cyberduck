@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 
@@ -46,10 +47,10 @@ public class CopyTransferTest extends AbstractTestCase {
                 new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
-        final CopyTransfer serialized = new CopyTransfer(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
-        assertEquals(t.files, serialized.files);
+        assertEquals(t.files, ((CopyTransfer)serialized).files);
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize());
         assertEquals(3L, serialized.getTransferred());

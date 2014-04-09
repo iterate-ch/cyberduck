@@ -78,11 +78,6 @@ public class UploadTransfer extends Transfer {
         filter = f;
     }
 
-    public <T> UploadTransfer(final T dict) {
-        super(dict, new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-    }
-
     @Override
     public Type getType() {
         return Type.upload;

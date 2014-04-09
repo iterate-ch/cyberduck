@@ -18,16 +18,8 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.serializer.TransferDictionary;
 
 import org.junit.Test;
 
@@ -45,10 +37,11 @@ public class SyncTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new SyncTransfer(new Host("t"), new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("/", "t"));
+        Transfer t = new SyncTransfer(new Host("t"),
+                new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("/", "t")));
         t.addSize(4L);
         t.addTransferred(3L);
-        final SyncTransfer serialized = new SyncTransfer(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -59,7 +52,7 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testAction() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal("p", "t") {
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal("p", "t") {
             @Override
             public boolean exists() {
                 return true;
@@ -69,7 +62,7 @@ public class SyncTransferTest extends AbstractTestCase {
             public AttributedList<Local> list() {
                 return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
             }
-        });
+        }));
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(null, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
@@ -84,7 +77,7 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testFilterDownload() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.download);
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
@@ -94,7 +87,7 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testFilterUpload() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.upload);
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
@@ -104,7 +97,7 @@ public class SyncTransferTest extends AbstractTestCase {
     @Test
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
-        Transfer t = new SyncTransfer(new Host("t"), p, new NullLocal(System.getProperty("java.io.tmpdir"), "t"));
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.mirror);
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
@@ -129,7 +122,7 @@ public class SyncTransferTest extends AbstractTestCase {
             }
         };
         directory.mkdir();
-        Transfer t = new SyncTransfer(new Host("t"), root, directory);
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(root, directory));
         final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a");
@@ -162,7 +155,7 @@ public class SyncTransferTest extends AbstractTestCase {
                 return list;
             }
         };
-        final Transfer t = new SyncTransfer(new Host("t"), root, directory);
+        final Transfer t = new SyncTransfer(new Host("t"), new TransferItem(root, directory));
         final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
         final NullLocal local = new NullLocal(directory, "a") {

@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -439,7 +440,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
                 for(Host bookmark : HostPasteboard.getPasteboard()) {
-                    final Host duplicate = new Host(bookmark.serialize(SerializerFactory.get()));
+                    final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
                     duplicate.setUuid(null);
                     source.add(row.intValue(), duplicate);

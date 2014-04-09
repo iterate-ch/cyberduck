@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +29,7 @@ public class AttributesTest extends AbstractTestCase {
     @Test
     public void testClone() throws Exception {
         PathAttributes attributes = new PathAttributes();
-        PathAttributes clone = new PathAttributes(attributes.serialize(SerializerFactory.get()));
+        PathAttributes clone = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
 
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());

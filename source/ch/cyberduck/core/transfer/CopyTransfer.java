@@ -91,28 +91,6 @@ public class CopyTransfer extends Transfer {
         }
     }
 
-    public <T> CopyTransfer(final T serialized) {
-        super(serialized, new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        Object hostObj = dict.objectForKey("Destination");
-        if(hostObj != null) {
-            destination = SessionFactory.create(new Host(hostObj));
-        }
-        final List<T> rootsObj = dict.listForKey("Roots");
-        final List<T> destinationsObj = dict.listForKey("Destinations");
-        if(rootsObj != null && destinationsObj != null) {
-            if(rootsObj.size() == destinationsObj.size()) {
-                roots = new ArrayList<TransferItem>();
-                files = new HashMap<Path, Path>();
-                for(int i = 0; i < rootsObj.size(); i++) {
-                    final Path root = new Path(rootsObj.get(i));
-                    roots.add(new TransferItem(root));
-                    files.put(root, new Path(destinationsObj.get(i)));
-                }
-            }
-        }
-    }
-
     @Override
     public Type getType() {
         return Type.copy;

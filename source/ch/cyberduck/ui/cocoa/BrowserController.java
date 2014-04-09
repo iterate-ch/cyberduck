@@ -36,6 +36,7 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -1865,7 +1866,7 @@ public class BrowserController extends WindowController
     public void duplicateBookmarkButtonClicked(final ID sender) {
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.selectBookmarks();
-        final Host duplicate = new Host(selected.serialize(SerializerFactory.get()));
+        final Host duplicate = new HostDictionary().deserialize(selected.serialize(SerializerFactory.get()));
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
@@ -1888,7 +1889,7 @@ public class BrowserController extends WindowController
             if(null == selected || !selected.isDirectory()) {
                 selected = this.workdir();
             }
-            bookmark = new Host(this.session.getHost().serialize(SerializerFactory.get()));
+            bookmark = new HostDictionary().deserialize(this.session.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
@@ -2275,7 +2276,7 @@ public class BrowserController extends WindowController
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
-        final Host host = new Host(session.getHost().serialize(SerializerFactory.get()));
+        final Host host = new HostDictionary().deserialize(session.getHost().serialize(SerializerFactory.get()));
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
     }
@@ -2712,8 +2713,9 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                this.transfer(new SyncTransfer(session.getHost(), selected,
-                        LocalFactory.createLocal(sheet.filenames().lastObject().toString())));
+                this.transfer(new SyncTransfer(session.getHost(),
+                        new TransferItem(selected, LocalFactory.createLocal(sheet.filenames().lastObject().toString())))
+                );
             }
         }
     }

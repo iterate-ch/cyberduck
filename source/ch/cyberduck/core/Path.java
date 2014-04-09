@@ -61,47 +61,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     private PathAttributes attributes;
 
-    public <T> Path(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        final String typeObj = dict.stringForKey("Type");
-        if(typeObj != null) {
-            for(String t : typeObj.replace("[", "").replace("]", "").split(", ")) {
-                this.type.add(Type.valueOf(t));
-            }
-        }
-        final Object symlinkObj = dict.objectForKey("Symbolic Link");
-        if(symlinkObj != null) {
-            this.symlink = new Path(symlinkObj);
-        }
-        final Object attributesObj = dict.objectForKey("Attributes");
-        if(attributesObj != null) {
-            this.attributes = new PathAttributes(attributesObj);
-            // Legacy
-            String legacyTypeObj = DeserializerFactory.createDeserializer(attributesObj).stringForKey("Type");
-            if(legacyTypeObj != null) {
-                if((Integer.valueOf(legacyTypeObj) & Type.file.legacy()) == Type.file.legacy()) {
-                    this.type.add(Type.file);
-                }
-                if((Integer.valueOf(legacyTypeObj) & Type.directory.legacy()) == Type.directory.legacy()) {
-                    this.type.add(Type.directory);
-                }
-                if((Integer.valueOf(legacyTypeObj) & Type.symboliclink.legacy()) == Type.symboliclink.legacy()) {
-                    this.type.add(Type.symboliclink);
-                }
-                if((Integer.valueOf(legacyTypeObj) & Type.volume.legacy()) == Type.volume.legacy()) {
-                    this.type.add(Type.volume);
-                }
-            }
-        }
-        else {
-            this.attributes = new PathAttributes();
-        }
-        final String pathObj = dict.stringForKey("Remote");
-        if(pathObj != null) {
-            this.setPath(pathObj);
-        }
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(type), "Type");

@@ -621,7 +621,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DuplicateBookmark()
         {
             ToggleView(BrowserView.Bookmark);
-            Host duplicate = new Host(View.SelectedBookmark.serialize(SerializerFactory.get()));
+            Host duplicate = new HostDictionary().deserialize(View.SelectedBookmark.serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             duplicate.setUuid(null);
             AddBookmark(duplicate);
@@ -637,7 +637,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (dropargs.Effect == DragDropEffects.Copy)
             {
-                Host host = new Host(((Host)dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
+                Host host = new HostDictionary().deserialize(((Host)dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
                 host.setUuid(null);
                 AddBookmark(host, destIndex);
             }
@@ -1173,7 +1173,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     selected = Workdir;
                 }
-                bookmark = new Host(_session.getHost().serialize(SerializerFactory.get()));
+                bookmark = new HostDictionary().deserialize(_session.getHost().serialize(SerializerFactory.get()));
                 bookmark.setUuid(null);
                 bookmark.setDefaultPath(selected.getAbsolute());
             }
@@ -1669,7 +1669,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     Environment.SpecialFolder.Desktop, null);
             if (null != folder)
             {
-                transfer(new SyncTransfer(_session.getHost(), selected, LocalFactory.createLocal(folder)));
+                transfer(new SyncTransfer(_session.getHost(),
+                    new TransferItem(selected, LocalFactory.createLocal(folder)))
+                );
             }
         }
 
@@ -2226,7 +2228,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 BrowserController c = MainController.NewBrowser(true);
 
-                Host host = new Host(Session.getHost().serialize(SerializerFactory.get()));
+                Host host = new HostDictionary().deserialize(Session.getHost().serialize(SerializerFactory.get()));
                 host.setDefaultPath(selected.getAbsolute());
                 c.Mount(host);
             }

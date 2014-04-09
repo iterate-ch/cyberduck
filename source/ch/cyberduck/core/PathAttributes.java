@@ -112,30 +112,6 @@ public class PathAttributes extends Attributes implements Serializable {
         metadata = Collections.emptyMap();
     }
 
-    public <T> PathAttributes(final T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
-        String sizeObj = dict.stringForKey("Size");
-        if(sizeObj != null) {
-            size = Long.parseLong(sizeObj);
-        }
-        String modifiedObj = dict.stringForKey("Modified");
-        if(modifiedObj != null) {
-            modified = Long.parseLong(modifiedObj);
-        }
-        Object permissionObj = dict.objectForKey("Permission");
-        if(permissionObj != null) {
-            permission = new Permission(permissionObj);
-        }
-        versionId = dict.stringForKey("Version");
-        String duplicateObj = dict.stringForKey("Duplicate");
-        if(duplicateObj != null) {
-            duplicate = Boolean.valueOf(duplicateObj);
-        }
-        metadata = Collections.emptyMap();
-        region = dict.stringForKey("Region");
-        storageClass = dict.stringForKey("Storage Class");
-    }
-
     @Override
     public <T> T serialize(final Serializer dict) {
         if(size != -1) {

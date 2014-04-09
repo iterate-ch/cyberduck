@@ -34,6 +34,7 @@ import ch.cyberduck.core.importer.TransmitBookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -1233,7 +1234,8 @@ public class MainController extends BundleController implements NSApplication.De
             if(Preferences.instance().getBoolean("browser.serialize")) {
                 if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
-                    final Host serialized = new Host(browser.getSession().getHost().serialize(SerializerFactory.get()));
+                    final Host serialized
+                            = new HostDictionary().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
                     serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
                     browser.window().saveFrameUsingName(serialized.getUuid());

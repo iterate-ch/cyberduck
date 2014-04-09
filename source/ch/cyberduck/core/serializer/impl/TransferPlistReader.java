@@ -20,13 +20,9 @@ package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.TransferReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
-import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DownloadTransfer;
-import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /**
  * @version $Id$
@@ -46,19 +42,6 @@ public class TransferPlistReader extends PlistReader<Transfer> {
 
     @Override
     public Transfer deserialize(final NSDictionary dict) {
-        NSObject kindObj = dict.objectForKey("Kind");
-        if(kindObj != null) {
-            switch(Transfer.Type.values()[Integer.parseInt(kindObj.toString())]) {
-                case download:
-                    return new DownloadTransfer(dict);
-                case upload:
-                    return new UploadTransfer(dict);
-                case sync:
-                    return new SyncTransfer(dict);
-                case copy:
-                    return new CopyTransfer(dict);
-            }
-        }
-        throw new IllegalArgumentException("Unknown transfer");
+        return new TransferDictionary().deserialize(dict);
     }
 }

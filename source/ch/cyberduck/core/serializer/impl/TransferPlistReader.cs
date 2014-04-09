@@ -35,35 +35,7 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 
         public override Transfer deserialize(XmlNode dictNode)
         {
-            XmlNode transferDict = dictNode.SelectSingleNode("dict");
-            if (null != transferDict)
-            {
-                XmlNode kindKeyNode = dictNode.SelectSingleNode("key[.='Kind']");
-                if (null != kindKeyNode)
-                {
-                    int kind = int.Parse(kindKeyNode.NextSibling.InnerText);
-                    Transfer.Type type = Transfer.Type.values()[kind];
-                    if (type == Transfer.Type.download)
-                    {
-                        return new DownloadTransfer(dictNode);
-                    }
-                    if (type == Transfer.Type.upload)
-                    {
-                        return new UploadTransfer(dictNode);
-                    }
-                    if (type == Transfer.Type.sync)
-                    {
-                        return new SyncTransfer(dictNode);
-                    }
-                    if (type == Transfer.Type.copy)
-                    {
-                        return new CopyTransfer(dictNode);
-                    }
-                    Log.error("Unknown transfer:" + kind);
-                    throw new ArgumentException("Unknown transfer");
-                }
-            }
-            return null;
+            return new TransferDictionary().deserialize(dictNode);
         }
 
         private class Factory : TransferReaderFactory

@@ -28,13 +28,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,13 +56,9 @@ public class SyncTransfer extends Transfer {
 
     private CachingComparisonServiceFilter comparison;
 
-    public SyncTransfer(final Host host, final Path root, final Local folder) {
-        super(host, root, folder, new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-        this.init();
-    }
-
-    public <T> SyncTransfer(final T dict) {
-        super(dict, new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+    public SyncTransfer(final Host host, final TransferItem item) {
+        super(host, Collections.singletonList(item),
+                new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
     }
 
