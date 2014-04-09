@@ -819,11 +819,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (null == View.DefaultBookmark)
             {
-                Preferences.instance().deleteProperty("browser.defaultBookmark");
+                Preferences.instance().deleteProperty("browser.open.bookmark.default");
             }
             else
             {
-                Preferences.instance().setProperty("browser.defaultBookmark", View.DefaultBookmark.getNickname());
+                Preferences.instance().setProperty("browser.open.bookmark.default", View.DefaultBookmark.getUuid());
             }
         }
 
@@ -850,7 +850,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 bool bookmarkFound = false;
                 foreach (Host host in BookmarkCollection.defaultCollection())
                 {
-                    if (nickname.Equals(host.getNickname()))
+                    if (nickname.Equals(host.getUuid()))
                     {
                         View.DefaultBookmark = host;
                         bookmarkFound = true;
@@ -883,7 +883,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateBookmarks();
             BookmarkCollection.defaultCollection().addListener(this);
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
-            SelectDefaultBookmark(Preferences.instance().getProperty("browser.defaultBookmark"));
+            SelectDefaultBookmark(Preferences.instance().getProperty("browser.open.bookmark.default"));
             View.ConfirmDisconnect = Preferences.instance().getBoolean("browser.confirmDisconnect");
             View.UseKeychain = Preferences.instance().getBoolean("connection.login.useKeychain");
             PopulateDefaultProtocols();
