@@ -45,6 +45,9 @@ public final class StringAppender {
         if(buffer.charAt(buffer.length() - 1) == '.') {
             return this;
         }
+        if(buffer.charAt(buffer.length() - 1) == ':') {
+            buffer.deleteCharAt(buffer.length() - 1);
+        }
         buffer.append(".");
         return this;
     }
