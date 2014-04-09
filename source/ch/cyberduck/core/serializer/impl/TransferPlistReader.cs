@@ -16,9 +16,9 @@
 // yves@cyberduck.ch
 // 
 
-using System;
 using System.Xml;
 using ch.cyberduck.core;
+using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
 

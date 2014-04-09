@@ -42,6 +42,7 @@ using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
+using ch.cyberduck.core.serializer;
 using ch.cyberduck.ui.growl;
 using java.util;
 using org.apache.log4j;
@@ -609,7 +610,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 return; //No default bookmark given
             }
             Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
-            if(null == bookmark) {
+            if (null == bookmark)
+            {
                 Logger.info("Default bookmark no more available");
                 return;
             }
@@ -696,7 +698,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (controller.IsMounted())
                     {
                         // The workspace should be saved. Serialize all open browser sessions
-                        Host serialized = new HostDictionary().deserialize(controller.Session.getHost().serialize(SerializerFactory.get()));
+                        Host serialized =
+                            new HostDictionary().deserialize(
+                                controller.Session.getHost().serialize(SerializerFactory.get()));
                         serialized.setWorkdir(controller.Workdir);
                         Application._sessions.add(serialized);
                     }

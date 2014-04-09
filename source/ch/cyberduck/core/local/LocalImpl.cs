@@ -49,10 +49,6 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
-        public LocalImpl(Object serialized) : base(serialized)
-        {
-        }
-
         public override char getDelimiter()
         {
             return '\\';
@@ -153,11 +149,6 @@ namespace Ch.Cyberduck.Core.Local
             protected override ch.cyberduck.core.Local create(string path)
             {
                 return new LocalImpl(path);
-            }
-
-            protected override ch.cyberduck.core.Local create(object obj)
-            {
-                return new LocalImpl(obj);
             }
 
             protected override object create()
