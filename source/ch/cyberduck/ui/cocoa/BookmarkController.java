@@ -18,18 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ReachabilityFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -737,11 +726,11 @@ public class BookmarkController extends WindowController {
     }
 
     private void init() {
-        window.setTitle(host.getNickname());
+        window.setTitle(BookmarkNameProvider.toString(host));
         this.updateField(hostField, host.getHostname());
         hostField.setEnabled(host.getProtocol().isHostnameConfigurable());
         hostField.cell().setPlaceholderString(host.getProtocol().getDefaultHostname());
-        this.updateField(nicknameField, host.getNickname());
+        this.updateField(nicknameField, BookmarkNameProvider.toString(host));
         urlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new HostUrlProvider(true, true).get(host)));
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isPortConfigurable());

@@ -48,7 +48,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     @Override
     public Local getFile(final Host bookmark) {
         return LocalFactory.createLocal(folder, String.format("%s.duck",
-                StringUtils.replace(bookmark.getNickname(), "/", ":")));
+                StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
     }
 
     @Override

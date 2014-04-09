@@ -1261,7 +1261,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bookmarks.Add(NoneBookmark);
             foreach (Host host in BookmarkCollection.defaultCollection())
             {
-                bookmarks.Add(new KeyValueIconTriple<Host, string>(host, host.getNickname(),
+                bookmarks.Add(new KeyValueIconTriple<Host, string>(host, BookmarkNameProvider.toString(host),
                                                                    host.getProtocol().getProvider()));
             }
             View.PopulateBookmarks(bookmarks);

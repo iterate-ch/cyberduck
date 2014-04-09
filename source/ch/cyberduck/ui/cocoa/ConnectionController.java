@@ -193,7 +193,9 @@ public class ConnectionController extends SheetController {
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(BookmarkCollection.defaultCollection().get(row.intValue()).getNickname());
+            return NSString.stringWithString(
+                    BookmarkNameProvider.toString(BookmarkCollection.defaultCollection().get(row.intValue()))
+            );
         }
     }
 
@@ -206,7 +208,7 @@ public class ConnectionController extends SheetController {
         input = input.trim();
         // First look for equivalent bookmarks
         for(Host h : BookmarkCollection.defaultCollection()) {
-            if(h.getNickname().equals(input)) {
+            if(BookmarkNameProvider.toString(h).equals(input)) {
                 this.hostChanged(h);
                 break;
             }

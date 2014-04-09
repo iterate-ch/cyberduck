@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -99,7 +100,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             boolean label = index.intValue() % 2 == 0;
             Host h = collection.get(index.intValue() / 2);
             if(label) {
-                item.setTitle(h.getNickname());
+                item.setTitle(BookmarkNameProvider.toString(h));
                 item.setAction(this.getDefaultAction());
                 item.setRepresentedObject(h.getUuid());
                 item.setTarget(this.id());

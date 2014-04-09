@@ -123,7 +123,9 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.doSort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return comparator.compare(o1.getNickname(), o2.getNickname());
+                return comparator.compare(
+                        BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
+                );
             }
         });
     }

@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.RendezvousCollection;
@@ -57,7 +58,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
         }
         else {
             final Host h = collection.get(index.intValue());
-            item.setTitle(h.getNickname());
+            item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));

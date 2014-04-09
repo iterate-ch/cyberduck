@@ -2139,7 +2139,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             List<ToolStripItem> items = new List<ToolStripItem>();
             foreach (Host bookmark in bookmarks)
             {
-                ToolStripItem item = new ToolStripMenuItem(bookmark.getNickname(),
+                ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(bookmark),
                                                            icons[bookmark.getProtocol().getProvider()]);
                 item.Tag = bookmark;
                 item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
@@ -2160,7 +2160,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)
                 {
-                    ToolStripItem item = new ToolStripMenuItem(h.getNickname(), icons[h.getProtocol().getProvider()]);
+                    ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(h), icons[h.getProtocol().getProvider()]);
                     item.Tag = h;
                     item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                     items.Add(item);
@@ -2284,7 +2284,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         int pos = BookmarkCollection.defaultCollection().indexOf(obj);
                         Host h = (Host) obj;
-                        MenuItem i = new MenuItem(h.getNickname());
+                        MenuItem i = new MenuItem(BookmarkNameProvider.toString(h));
                         i.Tag = h;
                         i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                         _form.menuItem64.MenuItems.Add(_bookmarkStartPosition + pos, i);
@@ -2298,7 +2298,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         int pos = BookmarkCollection.defaultCollection().indexOf(obj);
                         Host h = (Host) obj;
-                        MenuItem i = new MenuItem(h.getNickname());
+                        MenuItem i = new MenuItem(BookmarkNameProvider.toString(h));
                         i.Tag = h;
                         i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                         _form.menuItem64.MenuItems.Add(_bookmarkStartPosition + pos, i);
@@ -2325,7 +2325,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             if (obj.Equals(item.Tag))
                             {
                                 Host h = (Host) obj;
-                                item.Text = h.getNickname();
+                                item.Text = BookmarkNameProvider.toString(h);
                                 _form.vistaMenu1.SetImage(item, _icons[h.getProtocol().getProvider()]);
                                 break;
                             }
@@ -2347,7 +2347,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 List<MenuItem> items = new List<MenuItem>();
                 foreach (Host bookmark in BookmarkCollection.defaultCollection())
                 {
-                    MenuItem item = new MenuItem(bookmark.getNickname());
+                    MenuItem item = new MenuItem(BookmarkNameProvider.toString(bookmark));
                     item.Tag = bookmark;
                     item.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                     items.Add(item);
@@ -2746,7 +2746,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             int pos = _collection.indexOf(obj);
                             Host h = (Host) obj;
-                            MenuItem i = new MenuItem(h.getNickname());
+                            MenuItem i = new MenuItem(BookmarkNameProvider.toString(h));
                             i.Tag = h;
                             i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
                             _menu.MenuItems.Add(pos, i);
@@ -2783,7 +2783,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             if (obj.Equals(item.Tag))
                             {
                                 Host h = (Host) obj;
-                                item.Text = h.getNickname();
+                                item.Text = BookmarkNameProvider.toString(h);
                                 _form.vistaMenu1.SetImage(item, _icons[h.getProtocol().getIdentifier()]);
                                 break;
                             }
@@ -2799,7 +2799,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     List<MenuItem> items = new List<MenuItem>();
                     foreach (Host bookmark in _collection)
                     {
-                        MenuItem item = new MenuItem(bookmark.getNickname());
+                        MenuItem item = new MenuItem(BookmarkNameProvider.toString(bookmark));
                         item.Tag = bookmark;
                         item.Click +=
                             (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));

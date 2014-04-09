@@ -557,7 +557,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
             for(Host bookmark : pasteboard) {
                 final Local file = LocalFactory.createLocal(dropDestination.path(),
-                        String.format("%s.duck", StringUtils.replace(bookmark.getNickname(), "/", ":")));
+                        String.format("%s.duck", StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
                 HostWriterFactory.get().write(bookmark, file);
                 // Adding the filename that is promised to be created at the dropDestination
                 promisedDragNames.addObject(NSString.stringWithString(file.getName()));

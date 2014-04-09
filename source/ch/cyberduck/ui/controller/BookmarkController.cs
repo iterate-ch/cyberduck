@@ -489,10 +489,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Update()
         {
-            View.WindowTitle = _host.getNickname();
+            View.WindowTitle = BookmarkNameProvider.toString(_host);
             View.Hostname = _host.getHostname();
             View.HostFieldEnabled = _host.getProtocol().isHostnameConfigurable();
-            View.Nickname = _host.getNickname();
+            View.Nickname = BookmarkNameProvider.toString(_host);
             View.DownloadFolder = _host.getDownloadFolder().getAbsolute();
             View.URL = new HostUrlProvider(true, true).get(_host);
             View.Port = _host.getPort().ToString();

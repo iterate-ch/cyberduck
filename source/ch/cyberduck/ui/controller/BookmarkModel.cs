@@ -133,7 +133,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetNickname(object host)
         {
-            return ((Host) host).getNickname();
+            return BookmarkNameProvider.toString(((Host) host));
         }
 
         private class BookmarkListener : CollectionListener

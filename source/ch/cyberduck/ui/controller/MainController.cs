@@ -843,7 +843,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _jumpListManager.AddCustomDestination(new ShellLink
                         {
                             Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
-                            Title = host.getNickname(),
+                            Title = BookmarkNameProvider.toString(host, true),
                             Category = LocaleFactory.localizedString("History"),
                             IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
                             IconIndex = 0

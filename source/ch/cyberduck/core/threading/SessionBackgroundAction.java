@@ -241,7 +241,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public String getName() {
-        return session.getHost().getNickname();
+        return BookmarkNameProvider.toString(session.getHost());
     }
 
     /**

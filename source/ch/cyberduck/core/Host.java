@@ -364,7 +364,9 @@ public class Host implements Serializable, Comparable<Host> {
                 dict.setStringForKey(this.getProtocol().getProvider(), "Provider");
             }
         }
-        dict.setStringForKey(this.getNickname(), "Nickname");
+        if(StringUtils.isNotBlank(this.getNickname())) {
+            dict.setStringForKey(this.getNickname(), "Nickname");
+        }
         dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(this.getHostname(), "Hostname");
         dict.setStringForKey(String.valueOf(this.getPort()), "Port");
@@ -495,20 +497,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
-        if(StringUtils.isEmpty(nickname)) {
-            return this.getDefaultNickname();
-        }
         return nickname;
-    }
-
-    /**
-     * @return The default given name of this bookmark
-     */
-    private String getDefaultNickname() {
-        if(StringUtils.isNotBlank(hostname)) {
-            return String.format("%s \u2013 %s", StringUtils.strip(hostname), protocol.getName());
-        }
-        return StringUtils.EMPTY;
     }
 
     /**

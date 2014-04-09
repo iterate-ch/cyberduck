@@ -144,7 +144,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     public String getDisplayedName(final int index) {
         if(index < this.numberOfServices()) {
             Host host = services.values().toArray(new Host[services.size()])[index];
-            return host.getNickname();
+            return BookmarkNameProvider.toString(host);
         }
         return LocaleFactory.localizedString("Unknown");
     }
@@ -159,7 +159,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
         if(null == host) {
             return LocaleFactory.localizedString("Unknown");
         }
-        return host.getNickname();
+        return BookmarkNameProvider.toString(host);
     }
 
     protected void add(final String fullname, final String hostname, final int port,

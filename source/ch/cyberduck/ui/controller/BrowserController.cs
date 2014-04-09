@@ -785,7 +785,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             Host destination = (Host)args.DropTargetItem.RowObject;
                             (args.DataObject as DataObject).SetDropDescription((DropImageType)args.Effect,
-                                                                               "Upload to %1", destination.getNickname());
+                                                                               "Upload to %1", BookmarkNameProvider.toString(destination));
                         }
                         args.DropTargetLocation = DropTargetLocation.Item;
                         return;
@@ -857,8 +857,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                          foreach (Host host in
                                                                              View.SelectedBookmarks)
                                                                          {
-                                                                             string filename = host.getNickname() +
-                                                                                               ".duck";
+                                                                             string filename = BookmarkNameProvider.toString(host) + ".duck";
                                                                              foreach (char c in
                                                                                  System.IO.Path.GetInvalidFileNameChars()
                                                                                  )
@@ -1222,7 +1221,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     alertText.Append("\n");
                 }
-                alertText.Append(Character.toString('\u2022')).Append(" ").Append(host.getNickname());
+                alertText.Append(Character.toString('\u2022')).Append(" ").Append(BookmarkNameProvider.toString(host));
                 i++;
                 if (i > 10)
                 {
@@ -2204,7 +2203,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
             foreach (Host host in bookmarkCollection)
             {
-                if (host.getNickname().Equals(input))
+                if (BookmarkNameProvider.toString(host).Equals(input))
                 {
                     Mount(host);
                     return;
@@ -2639,7 +2638,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<string> nicknames = new List<string>();
             foreach (Host host in _bookmarkCollection)
             {
-                nicknames.Add(host.getNickname());
+                nicknames.Add(BookmarkNameProvider.toString(host));
             }
             View.PopulateQuickConnect(nicknames);
         }
@@ -2941,7 +2940,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public bool accept(Host host)
             {
-                return host.getNickname().ToLower().Contains(_searchString.ToLower()) ||
+                return BookmarkNameProvider.toString(host).ToLower().Contains(_searchString.ToLower()) ||
                        (null == host.getComment()
                             ? false
                             : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
@@ -3106,7 +3105,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void init()
             {
                 base.init();
-                _controller.View.WindowTitle = _host.getNickname();
+                _controller.View.WindowTitle = BookmarkNameProvider.toString(_host, true);
                 _controller.View.RefreshBookmark(_controller.Session.getHost());
             }
 
@@ -3139,7 +3138,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (_controller.IsMounted())
                         {
                             _controller.ToggleView(BrowserView.File);
-                            _controller.View.WindowTitle = _host.getNickname();
                             _controller.View.SecureConnection = _session is SSLSession;
                             _controller.View.CertBasedConnection = _session is SSLSession;
                             _controller.View.SecureConnectionVisible = true;

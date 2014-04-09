@@ -19,18 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
@@ -514,7 +503,7 @@ public class PreferencesController extends ToolbarWindowController {
             invoke(new WindowMainAction(PreferencesController.this) {
                 @Override
                 public void run() {
-                    defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
+                    defaultBookmarkCombobox.addItemWithTitle(BookmarkNameProvider.toString(bookmark));
                     defaultBookmarkCombobox.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns", 16));
                     defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
                 }
@@ -550,7 +539,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
         this.defaultBookmarkCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
-            this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
+            this.defaultBookmarkCombobox.addItemWithTitle(BookmarkNameProvider.toString(bookmark));
             this.defaultBookmarkCombobox.lastItem().setImage(
                     IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().icon(), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());

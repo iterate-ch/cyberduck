@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
@@ -83,7 +84,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
             Host h = collection.get(index.intValue() - (BOOKMARKS_INDEX + 3));
-            item.setTitle(h.getNickname());
+            item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             item.setAction(this.getDefaultAction());
