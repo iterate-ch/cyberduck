@@ -41,87 +41,56 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version $Id$
  */
 public final class TransferStatus implements StreamCancelation, StreamProgress {
-    private static final Logger log = Logger.getLogger(TransferStatus.class);
-
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
-
-    public final class Rename {
-        /**
-         * Upload target
-         */
-        public Path remote;
-        public Local local;
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("Rename{");
-            sb.append("local=").append(local);
-            sb.append(", remote=").append(remote);
-            sb.append('}');
-            return sb.toString();
-        }
-    }
-
+    private static final Logger log = Logger.getLogger(TransferStatus.class);
     private Rename rename
             = new Rename();
-
     /**
      * Target file or directory already exists
      */
     private boolean exists = false;
-
     /**
      * Append to file
      */
     private boolean append = false;
-
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
     private AtomicLong current
             = new AtomicLong(0);
-
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
     private long length = 0L;
-
     /**
      * The transfer has been canceled by the user.
      */
     private AtomicBoolean canceled
             = new AtomicBoolean();
-
     private AtomicBoolean complete
             = new AtomicBoolean();
-
     /**
      * MIME type
      */
     private String mime;
-
     /**
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
     private PathAttributes remote = new PathAttributes();
-
     /**
      * Target UNIX permissions to set when transfer is complete
      */
     private Permission permission = Permission.EMPTY;
-
     /**
      * Target ACL to set when transfer is complete
      */
     private Acl acl = Acl.EMPTY;
-
     /**
      * Target timestamp to set when transfer is complete
      */
     private Long timestamp;
-
     private Map<String, String> parameters
             = Collections.emptyMap();
 
@@ -210,6 +179,10 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public boolean isAppend() {
+        return append;
+    }
+
     /**
      * Mark this path with an append flag when transferred
      *
@@ -223,10 +196,6 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         this.append = append;
     }
 
-    public boolean isAppend() {
-        return append;
-    }
-
     public TransferStatus append(final boolean append) {
         this.append = append;
         return this;
@@ -234,10 +203,6 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
 
     public Rename getRename() {
         return rename;
-    }
-
-    public void setRename(final Rename rename) {
-        this.rename = rename;
     }
 
     public TransferStatus rename(final Path renamed) {
@@ -255,6 +220,10 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         return rename.remote != null;
+    }
+
+    public void setRename(final Rename rename) {
+        this.rename = rename;
     }
 
     public String getMime() {
@@ -346,5 +315,22 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", renamed=").append(rename);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static final class Rename {
+        /**
+         * Upload target
+         */
+        public Path remote;
+        public Local local;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Rename{");
+            sb.append("local=").append(local);
+            sb.append(", remote=").append(remote);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }
