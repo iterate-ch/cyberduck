@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.CharUtils;
@@ -27,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -303,18 +301,18 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
+     * @return Null if no default path is set
+     */
+    public String getDefaultPath() {
+        return defaultpath;
+    }
+
+    /**
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(final String defaultpath) {
         this.defaultpath = StringUtils.isBlank(defaultpath) ? null :
                 StringUtils.remove(StringUtils.remove(defaultpath, CharUtils.LF), CharUtils.CR).trim();
-    }
-
-    /**
-     * @return Null if no default path is set
-     */
-    public String getDefaultPath() {
-        return defaultpath;
     }
 
     public Path getWorkdir() {
@@ -334,12 +332,12 @@ public class Host implements Serializable, Comparable<Host> {
         credentials.setPassword(password);
     }
 
-    private void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
-    }
-
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    private void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
     /**
@@ -349,16 +347,16 @@ public class Host implements Serializable, Comparable<Host> {
         return cloudfront;
     }
 
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
     /**
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
     public void setProtocol(final Protocol protocol) {
         this.protocol = protocol;
         this.configure();
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
     }
 
     public String getUuid() {
@@ -415,6 +413,13 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
+     * @return The port number a socket should be opened to
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
      * @param port The port number to connect to or -1 to use the default port for this protocol
      */
     public void setPort(final int port) {
@@ -422,10 +427,11 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The port number a socket should be opened to
+     * @return The character encoding to be used when connecting to this server or null
+     *         if the default encoding should be used
      */
-    public int getPort() {
-        return port;
+    public String getEncoding() {
+        return encoding;
     }
 
     /**
@@ -438,33 +444,15 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The character encoding to be used when connecting to this server or null
-     *         if the default encoding should be used
-     */
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public void setFTPConnectMode(final FTPConnectMode connectMode) {
-        this.connectMode = connectMode;
-    }
-
-    /**
      * @return The connect mode to be used when connecting
-     *         to this server or null if the default connect mode should be used
+     * to this server or null if the default connect mode should be used
      */
     public FTPConnectMode getFTPConnectMode() {
         return connectMode;
     }
 
-    /**
-     * Set a custom number of concurrent sessions allowed for this host
-     * If not set, connection.pool.max is used.
-     *
-     * @param n null to use the default value or -1 if no limit
-     */
-    public void setMaxConnections(final Integer n) {
-        this.maxConnections = n;
+    public void setFTPConnectMode(final FTPConnectMode connectMode) {
+        this.connectMode = connectMode;
     }
 
     /**
@@ -476,15 +464,13 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * Set a custom download folder instead of queue.download.folder
+     * Set a custom number of concurrent sessions allowed for this host
+     * If not set, connection.pool.max is used.
      *
-     * @param folder Absolute path
+     * @param n null to use the default value or -1 if no limit
      */
-    public void setDownloadFolder(final Local folder) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set download folder for bookmark %s to %s", hostname, folder));
-        }
-        downloadFolder = folder;
+    public void setMaxConnections(final Integer n) {
+        this.maxConnections = n;
     }
 
     /**
@@ -501,10 +487,29 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
+     * Set a custom download folder instead of queue.download.folder
+     *
+     * @param folder Absolute path
+     */
+    public void setDownloadFolder(final Local folder) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set download folder for bookmark %s to %s", hostname, folder));
+        }
+        downloadFolder = folder;
+    }
+
+    /**
      * @return True if no custom download location is set
      */
     public boolean isDefaultDownloadFolder() {
         return null == downloadFolder;
+    }
+
+    /**
+     * @return The custom timezone or null if not set
+     */
+    public TimeZone getTimezone() {
+        return timezone;
     }
 
     /**
@@ -518,10 +523,10 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     /**
-     * @return The custom timezone or null if not set
+     * @return Notice
      */
-    public TimeZone getTimezone() {
-        return timezone;
+    public String getComment() {
+        return comment;
     }
 
     /**
@@ -529,13 +534,6 @@ public class Host implements Serializable, Comparable<Host> {
      */
     public void setComment(final String comment) {
         this.comment = comment;
-    }
-
-    /**
-     * @return Notice
-     */
-    public String getComment() {
-        return comment;
     }
 
     /**
@@ -552,6 +550,15 @@ public class Host implements Serializable, Comparable<Host> {
         return webURL;
     }
 
+    public void setWebURL(final String url) {
+        if(this.getDefaultWebURL().equals(url)) {
+            webURL = null;
+        }
+        else {
+            webURL = url;
+        }
+    }
+
     /**
      * @return True if no custom web URL has been set
      */
@@ -564,15 +571,6 @@ public class Host implements Serializable, Comparable<Host> {
      */
     public String getDefaultWebURL() {
         return String.format("http://%s", StringUtils.strip(hostname));
-    }
-
-    public void setWebURL(final String url) {
-        if(this.getDefaultWebURL().equals(url)) {
-            webURL = null;
-        }
-        else {
-            webURL = url;
-        }
     }
 
     /**

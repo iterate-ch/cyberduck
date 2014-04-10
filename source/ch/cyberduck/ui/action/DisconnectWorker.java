@@ -21,8 +21,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
-
 import java.text.MessageFormat;
 
 /**

@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -31,25 +30,21 @@ import java.util.EnumSet;
 public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**
-     * The absolute remote path
+     * The path delimiter for remote paths
      */
-    private String path;
-
+    public static final char DELIMITER = '/';
     /**
      * Reference to the parent
      */
     protected Path parent;
-
+    /**
+     * The absolute remote path
+     */
+    private String path;
     /**
      * An absolute reference here the symbolic link is pointing to
      */
     private Path symlink;
-
-    /**
-     * The path delimiter for remote paths
-     */
-    public static final char DELIMITER = '/';
-
     /**
      * The file type
      */
@@ -60,17 +55,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * Attributes denoting this path
      */
     private PathAttributes attributes;
-
-    @Override
-    public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(type), "Type");
-        dict.setStringForKey(this.getAbsolute(), "Remote");
-        if(symlink != null) {
-            dict.setObjectForKey(symlink, "Symbolic Link");
-        }
-        dict.setObjectForKey(attributes, "Attributes");
-        return dict.getSerialized();
-    }
 
     /**
      * @param parent the absolute directory
@@ -113,6 +97,17 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         this.type = type;
         this.attributes = attributes;
         this._setPath(parent, name);
+    }
+
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        dict.setStringForKey(String.valueOf(type), "Type");
+        dict.setStringForKey(this.getAbsolute(), "Remote");
+        if(symlink != null) {
+            dict.setObjectForKey(symlink, "Symbolic Link");
+        }
+        dict.setObjectForKey(attributes, "Attributes");
+        return dict.getSerialized();
     }
 
     private void setPath(final String absolute) {
@@ -225,16 +220,16 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         return path;
     }
 
-    public void setSymlinkTarget(final Path target) {
-        this.symlink = target;
-    }
-
     /**
      * @return The target of the symbolic link if this path denotes a symbolic link
      * @see #isSymbolicLink
      */
     public Path getSymlinkTarget() {
         return symlink;
+    }
+
+    public void setSymlinkTarget(final Path target) {
+        this.symlink = target;
     }
 
     /**

@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -137,18 +136,18 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @param size the size of file in bytes.
-     */
-    public void setSize(final long size) {
-        this.size = size;
-    }
-
-    /**
      * @return length the size of file in bytes.
      */
     @Override
     public long getSize() {
         return size;
+    }
+
+    /**
+     * @param size the size of file in bytes.
+     */
+    public void setSize(final long size) {
+        this.size = size;
     }
 
     @Override
@@ -182,18 +181,18 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @param p UNIX permissions
-     */
-    public void setPermission(final Permission p) {
-        this.permission = p;
-    }
-
-    /**
      * @return UNIX permissions
      */
     @Override
     public Permission getPermission() {
         return permission;
+    }
+
+    /**
+     * @param p UNIX permissions
+     */
+    public void setPermission(final Permission p) {
+        this.permission = p;
     }
 
     public Acl getAcl() {
@@ -204,22 +203,22 @@ public class PathAttributes extends Attributes implements Serializable {
         this.acl = acl;
     }
 
-    public void setOwner(final String o) {
-        this.owner = o;
-    }
-
     @Override
     public String getOwner() {
         return owner;
     }
 
-    public void setGroup(final String g) {
-        this.group = g;
+    public void setOwner(final String o) {
+        this.owner = o;
     }
 
     @Override
     public String getGroup() {
         return group;
+    }
+
+    public void setGroup(final String g) {
+        this.group = g;
     }
 
     @Override
@@ -280,15 +279,15 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versionId = versionId;
     }
 
-    public void setRevision(final long revision) {
-        this.revision = revision;
-    }
-
     /**
      * @return The incrementing revision number of the file or null if not versioned.
      */
     public String getRevision() {
         return String.valueOf(revision);
+    }
+
+    public void setRevision(final long revision) {
+        this.revision = revision;
     }
 
     /**

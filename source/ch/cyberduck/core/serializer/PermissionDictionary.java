@@ -20,10 +20,9 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Serializable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PermissionDictionary {
 

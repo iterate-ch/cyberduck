@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,69 +29,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Permission implements Serializable {
-    private static final Logger log = Logger.getLogger(Permission.class);
-
-    /**
-     * POSIX style
-     */
-    public enum Action {
-        none("---"),
-        execute("--x"),
-        write("-w-"),
-        write_execute("-wx"),
-        read("r--"),
-        read_execute("r-x"),
-        read_write("rw-"),
-        all("rwx");
-
-        /**
-         * Retain reference to value array.
-         */
-        private final static Action[] values = values();
-
-        /**
-         * Symbolic representation
-         */
-        public final String symbolic;
-
-        private Action(final String symbol) {
-            symbolic = symbol;
-        }
-
-        /**
-         * Return true if this action implies that action.
-         *
-         * @param that action
-         */
-        public boolean implies(final Action that) {
-            if(that != null) {
-                return (ordinal() & that.ordinal()) == that.ordinal();
-            }
-            return false;
-        }
-
-        /**
-         * AND operation.
-         */
-        public Action and(final Action that) {
-            return values[ordinal() & that.ordinal()];
-        }
-
-        /**
-         * OR operation.
-         */
-        public Action or(final Action that) {
-            return values[ordinal() | that.ordinal()];
-        }
-
-        /**
-         * NOT operation.
-         */
-        public Action not() {
-            return values[7 - ordinal()];
-        }
-    }
-
     public static final Permission EMPTY = new Permission(Action.none, Action.none, Action.none) {
         @Override
         public boolean isExecutable() {
@@ -124,17 +60,10 @@ public class Permission implements Serializable {
             return LocaleFactory.localizedString("--");
         }
     };
-
-    @Override
-    public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(this.getSymbol(), "Mask");
-        return dict.getSerialized();
-    }
-
+    private static final Logger log = Logger.getLogger(Permission.class);
     private Action user;
     private Action group;
     private Action other;
-
     /**
      * set user ID upon execution
      */
@@ -213,6 +142,12 @@ public class Permission implements Serializable {
     public Permission(final Permission other) {
         this.set(other.user, other.group, other.other,
                 other.sticky, other.setuid, other.setgid);
+    }
+
+    @Override
+    public <T> T serialize(final Serializer dict) {
+        dict.setStringForKey(this.getSymbol(), "Mask");
+        return dict.getSerialized();
     }
 
     private void set(final Permission other) {
@@ -311,7 +246,7 @@ public class Permission implements Serializable {
 
     /**
      * @return a thee-dimensional boolean array representing read, write
-     *         and execute permissions (in that order) of the group
+     * and execute permissions (in that order) of the group
      */
     public Action getGroup() {
         return group;
@@ -442,5 +377,66 @@ public class Permission implements Serializable {
 
     public int hashCode() {
         return toInteger();
+    }
+
+    /**
+     * POSIX style
+     */
+    public enum Action {
+        none("---"),
+        execute("--x"),
+        write("-w-"),
+        write_execute("-wx"),
+        read("r--"),
+        read_execute("r-x"),
+        read_write("rw-"),
+        all("rwx");
+
+        /**
+         * Retain reference to value array.
+         */
+        private final static Action[] values = values();
+
+        /**
+         * Symbolic representation
+         */
+        public final String symbolic;
+
+        private Action(final String symbol) {
+            symbolic = symbol;
+        }
+
+        /**
+         * Return true if this action implies that action.
+         *
+         * @param that action
+         */
+        public boolean implies(final Action that) {
+            if(that != null) {
+                return (ordinal() & that.ordinal()) == that.ordinal();
+            }
+            return false;
+        }
+
+        /**
+         * AND operation.
+         */
+        public Action and(final Action that) {
+            return values[ordinal() & that.ordinal()];
+        }
+
+        /**
+         * OR operation.
+         */
+        public Action or(final Action that) {
+            return values[ordinal() | that.ordinal()];
+        }
+
+        /**
+         * NOT operation.
+         */
+        public Action not() {
+            return values[7 - ordinal()];
+        }
     }
 }
