@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @version $Id$
  */
-public class BookmarkNameProvider {
+public final class BookmarkNameProvider {
 
     private BookmarkNameProvider() {
         //
