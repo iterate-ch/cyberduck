@@ -25,10 +25,9 @@ import ch.cyberduck.core.transfer.TransferItem;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferItemDictionary {
-    private static final Logger log = Logger.getLogger(TransferItemDictionary.class);
 
     public <T> TransferItem deserialize(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);

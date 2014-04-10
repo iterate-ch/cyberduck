@@ -44,6 +44,9 @@ public class DefaultLocalTouchFeature implements Touch {
             }
         }
         if(l.exists()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Skip creating file %s", l));
+            }
             return;
         }
         try {
