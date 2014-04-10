@@ -373,7 +373,7 @@ public abstract class Transfer implements Serializable {
         this.size = size;
     }
 
-    public void setTransferred(long transferred) {
+    public synchronized void setTransferred(long transferred) {
         this.transferred = transferred;
     }
 
