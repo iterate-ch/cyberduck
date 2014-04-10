@@ -35,6 +35,6 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testMapReadFailure() throws Exception {
         assertEquals(SocketException.class,
-                new SFTPExceptionMappingService().map(new IOException("Unexpected end of sftp stream.")).getCause().getClass());
+                new SFTPExceptionMappingService().map(new SocketException("Unexpected end of sftp stream.")).getCause().getClass());
     }
 }

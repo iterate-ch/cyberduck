@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 
@@ -30,6 +31,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.io.IOException;
 import java.net.SocketException;
 
+import ch.ethz.ssh2.PacketTypeException;
+import ch.ethz.ssh2.RequestMismatchException;
 import ch.ethz.ssh2.SFTPException;
 import ch.ethz.ssh2.sftp.ErrorCodes;
 
@@ -42,6 +45,12 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
     public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
+        if(e instanceof RequestMismatchException) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(e instanceof PacketTypeException) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         if(e.getMessage().equals("Unexpected end of sftp stream.")) {
             return this.wrap(new SocketException(e.getMessage()), buffer);
         }
