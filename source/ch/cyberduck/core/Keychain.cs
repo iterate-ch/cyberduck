@@ -194,63 +194,41 @@ namespace Ch.Cyberduck.Core
         private string GetErrorFromChainStatus(X509Chain chain, string hostName)
         {
             string error = null;
-            foreach (X509ChainElement element in chain.ChainElements)
+            foreach (X509ChainStatus status in chain.ChainStatus)
             {
-                if (element.ChainElementStatus.Length > 0)
+                if ((status.Status & X509ChainStatusFlags.RevocationStatusUnknown) ==
+                    X509ChainStatusFlags.RevocationStatusUnknown ||
+                    ((status.Status & X509ChainStatusFlags.OfflineRevocation) == X509ChainStatusFlags.OfflineRevocation))
                 {
-                    foreach (X509ChainStatus status in element.ChainElementStatus)
-                    {
-                        if ((status.Status & X509ChainStatusFlags.RevocationStatusUnknown) ==
-                            X509ChainStatusFlags.RevocationStatusUnknown ||
-                            ((status.Status & X509ChainStatusFlags.OfflineRevocation) ==
-                             X509ChainStatusFlags.OfflineRevocation))
-                        {
-                            //due to the offline revocation check
-                            continue;
-                        }
-                        if ((status.Status & X509ChainStatusFlags.NotTimeValid) == X509ChainStatusFlags.NotTimeValid)
-                        {
-                            if (DateTime.Compare(DateTime.Now, element.Certificate.NotAfter) > 0)
-                            {
-                                //certificate is expired, CSSM_CERT_STATUS_EXPIRED
-                                error =
-                                    LocaleFactory.localizedString(
-                                        "The certificate for this server has expired. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                                        "Keychain").Replace("%@", hostName);
-                                return error;
-                            }
-                            if (DateTime.Compare(DateTime.Now, element.Certificate.NotBefore) > 0)
-                            {
-                                //certificate is not valid yet, CSSM_CERT_STATUS_NOT_VALID_YET
-                                error =
-                                    LocaleFactory.localizedString(
-                                        "The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                                        "Keychain").Replace("%@", hostName);
-                                return error;
-                            }
-                        }
-                        if ((status.Status & X509ChainStatusFlags.UntrustedRoot) == X509ChainStatusFlags.UntrustedRoot)
-                        {
-                            if (chain.ChainElements.Count == 1)
-                            {
-                                // untrusted self-signed, !CSSM_CERT_STATUS_IS_IN_ANCHORS && CSSM_CERT_STATUS_IS_ROOT
-                                error =
-                                    LocaleFactory.localizedString(
-                                        "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                                        "Keychain").Replace("%@", hostName);
-                                return error;
-                            }
-                        }
-
-                        //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
-                        Log.debug("Certificate error" + status.StatusInformation);
-                        error =
-                            LocaleFactory.localizedString(
-                                "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                                "Keychain").Replace("%@", hostName);
-                        return error;
-                    }
+                    //due to the offline revocation check
+                    continue;
                 }
+                if ((status.Status & X509ChainStatusFlags.NotTimeValid) == X509ChainStatusFlags.NotTimeValid)
+                {
+                    //certificate is expired, CSSM_CERT_STATUS_EXPIRED
+                    error =
+                        LocaleFactory.localizedString(
+                            "The certificate for this server has expired. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                            "Keychain").Replace("%@", hostName);
+                    return error;
+                }
+                if (((status.Status & X509ChainStatusFlags.UntrustedRoot) == X509ChainStatusFlags.UntrustedRoot) ||
+                    (status.Status & X509ChainStatusFlags.PartialChain) == X509ChainStatusFlags.PartialChain)
+                {
+                    // untrusted self-signed, !CSSM_CERT_STATUS_IS_IN_ANCHORS && CSSM_CERT_STATUS_IS_ROOT
+                    error =
+                        LocaleFactory.localizedString(
+                            "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                            "Keychain").Replace("%@", hostName);
+                    return error;
+                }
+
+                //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
+                Log.debug("Certificate error" + status.StatusInformation);
+                error =
+                    LocaleFactory.localizedString(
+                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                        "Keychain").Replace("%@", hostName);
             }
             return error;
         }
