@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -61,14 +63,14 @@ public class AzureReadFeature implements Read {
                     .getBlockBlobReference(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
-            final BlobInputStream input = blob.openInputStream(null, options, null);
+            final BlobInputStream in = blob.openInputStream(null, options, null);
             try {
-                input.skip(status.getCurrent());
+                StreamCopier.skip(in, status.getCurrent());
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
-            return input;
+            return in;
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Download failed", e, file);

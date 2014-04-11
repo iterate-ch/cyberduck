@@ -63,7 +63,7 @@ public final class StreamCopier {
             return;
         }
         if(offset > 0) {
-            this.skip(in, offset);
+            skip(in, offset);
         }
         try {
             final byte[] buffer = new byte[chunksize];
@@ -109,7 +109,7 @@ public final class StreamCopier {
         }
     }
 
-    private void skip(final InputStream bi, final long offset) throws IOException {
+    public static void skip(final InputStream bi, final long offset) throws IOException {
         long skipped = bi.skip(offset);
         if(log.isInfoEnabled()) {
             log.info(String.format("Skipping %d bytes", skipped));

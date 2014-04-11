@@ -22,6 +22,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -54,10 +55,7 @@ public class SFTPReadFeature implements Read {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                final long skipped = in.skip(status.getCurrent());
-                if(skipped < status.getCurrent()) {
-                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                }
+                StreamCopier.skip(in, status.getCurrent());
             }
             // No parallel requests if the file size is smaller than the buffer.
             session.sftp().setRequestParallelism(
