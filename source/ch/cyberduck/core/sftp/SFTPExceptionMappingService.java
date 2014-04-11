@@ -57,6 +57,9 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
         if(e instanceof SFTPException) {
             final SFTPException failure = (SFTPException) e;
             final int code = failure.getServerErrorCode();
+            if(code == ErrorCodes.SSH_FX_OP_UNSUPPORTED) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
             if(code == ErrorCodes.SSH_FX_NO_SUCH_FILE) {
                 return new NotfoundException(buffer.toString(), e);
             }
