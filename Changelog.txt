@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 - [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
 - [Feature] Two-factor authentication (SFTP, Google Authenticator) (#7573)
 - [Bugfix] Support TLS 1.1 and TLS 1.2 (Windows) (#7637)
+- [Bugfix] Failure validating some certificates with untrusted root certificate authority (SYSS-2014-004) (Windows)
 - [Bugfix] File segments not deleted when a large object is overwritten or manifest is deleted (Openstack Swift) (#7682, #7679)
 - [Bugfix] Re-authentication failure (Openstack Swift) (#7608)
 - [Bugfix] Downloading dynamic large object fails (Openstack Swift) (#7693)
@@ -14,6 +15,13 @@ Changelog. Last modified: $Date$
 - [Bugfix] Could not generate DH keypair (FTP-TLS, Windows) (#7738)
 - [Bugfix] ACL not maintained when replacing files (S3) (#7756)
 - [Bugfix] UNIX permissions not maintained when replacing files (SFTP)
+- [Bugfix] Handle missing directory marker files objects on delete (Openstack Swift) (#7876)
+- [Bugfix] Make "Skip" transfer option only apply to files (#7653)
+- [Bugfix] Regular expression filter ignored for synchronization transfer (#7840)
+- [Bugfix] Interoperability with providers with no versioning support (S3) (#7841)
+- [Bugfix] Provide X-Cdn-Ios-Uri (Rackspace Cloudfiles)
+- [Bugfix] Local file timestamp changed during file compare (#7789)
+- [Bugfix] Option to follow redirects on PUT (WebDAV) (#6586)
 
 4.4.3 [https://trac.cyberduck.io/milestone/4.4.3]
 - [Feature] Support TLS 1.1 and TLS 1.2 (#7637)
