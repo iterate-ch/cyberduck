@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,6 +40,7 @@ import static org.junit.Assert.*;
 public class S3BucketCreateServiceTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testCreate() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
