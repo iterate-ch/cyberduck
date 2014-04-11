@@ -22,8 +22,6 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
