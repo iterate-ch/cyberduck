@@ -97,8 +97,8 @@ public class SFTPSession extends Session<Connection> {
                         throws IOException, ConnectionCanceledException {
                     return key.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
                 }
-            }, timeout, timeout);
-            return connection;
+			}, timeout, 0);
+			return connection;
         }
         catch(IllegalStateException e) {
             throw new ConnectionCanceledException(e);
