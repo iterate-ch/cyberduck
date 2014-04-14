@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import ch.ethz.ssh2.SFTPInputStream;
+import ch.ethz.ssh2.SFTPv3Client;
 import ch.ethz.ssh2.SFTPv3FileHandle;
 
 /**
@@ -49,7 +49,7 @@ public class SFTPReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         InputStream in;
         try {
-            final SFTPv3FileHandle handle = session.sftp().openFileRO(file.getAbsolute());
+            final SFTPv3FileHandle handle = session.sftp().openFile(file.getAbsolute(), SFTPv3Client.SSH_FXF_READ, null);
             in = new SFTPInputStream(handle);
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {
