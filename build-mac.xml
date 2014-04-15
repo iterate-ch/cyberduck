@@ -273,6 +273,7 @@
                 <exclude name="Contents/Home/lib/libinstrument.dylib"/>
                 <exclude name="Contents/Home/lib/libjsound.dylib"/>
                 <exclude name="Contents/Home/lib/rhino.jar"/>
+                <exclude name="Contents/Home/lib/server/*.diz"/>
             </fileset>
         </copy>
         <antcall target="shared-library-install-name">
