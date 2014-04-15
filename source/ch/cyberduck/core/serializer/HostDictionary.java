@@ -33,7 +33,7 @@ import java.util.EnumSet;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
@@ -55,7 +55,8 @@ public class HostDictionary {
                     bookmark.setProtocol(p);
                 }
                 else {
-                    log.warn(String.format("Protocol %s no more available. Default to %s", protocolObj, bookmark.getProtocol()));
+                    log.warn(String.format("Protocol %s no more available", protocolObj));
+                    return null;
                 }
             }
             Object providerObj = dict.stringForKey("Provider");
@@ -65,7 +66,8 @@ public class HostDictionary {
                     bookmark.setProtocol(provider);
                 }
                 else {
-                    log.warn(String.format("Provider %s no more available. Default to %s", providerObj, bookmark.getProtocol()));
+                    log.warn(String.format("Protocol %s no more available", protocolObj));
+                    return null;
                 }
             }
             Object usernameObj = dict.stringForKey("Username");

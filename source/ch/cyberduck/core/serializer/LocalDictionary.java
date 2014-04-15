@@ -23,19 +23,16 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LocalDictionary {
-    private static final Logger log = Logger.getLogger(LocalDictionary.class);
 
     public <T> Local deserialize(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String path = dict.stringForKey("Path");
         if(StringUtils.isBlank(path)) {
-            log.warn("Missing path");
             return null;
         }
         final Local file = LocalFactory.createLocal(path);

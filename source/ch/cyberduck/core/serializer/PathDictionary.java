@@ -26,7 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import java.util.EnumSet;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathDictionary {
 
@@ -59,9 +59,15 @@ public class PathDictionary {
                     type.add(AbstractPath.Type.volume);
                 }
             }
+            if(type.isEmpty()) {
+                return null;
+            }
             path = new Path(dict.stringForKey("Remote"), type, attributes);
         }
         else {
+            if(type.isEmpty()) {
+                return null;
+            }
             path = new Path(dict.stringForKey("Remote"), type);
         }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");

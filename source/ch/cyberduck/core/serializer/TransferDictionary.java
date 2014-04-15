@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
@@ -56,14 +56,24 @@ public class TransferDictionary {
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         if(itemsObj != null) {
             for(T rootDict : itemsObj) {
-                roots.add(new TransferItemDictionary().deserialize(rootDict));
+                final TransferItem item = new TransferItemDictionary().deserialize(rootDict);
+                if(null == item) {
+                    log.warn("Invalid item in transfer");
+                    continue;
+                }
+                roots.add(item);
             }
         }
         // Legacy
         final List<T> rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
             for(T rootDict : rootsObj) {
-                final TransferItem item = new TransferItem(new PathDictionary().deserialize(rootDict));
+                final Path remote = new PathDictionary().deserialize(rootDict);
+                if(null == remote) {
+                    log.warn("Invalid remote in transfer");
+                    continue;
+                }
+                final TransferItem item = new TransferItem(remote);
                 // Legacy
                 final String localObjDeprecated
                         = DeserializerFactory.createDeserializer(serialized).stringForKey("Local");
@@ -75,6 +85,10 @@ public class TransferDictionary {
                         = DeserializerFactory.createDeserializer(serialized).objectForKey("Local Dictionary");
                 if(localObj != null) {
                     Local local = new LocalDictionary().deserialize(localObj);
+                    if(null == local) {
+                        log.warn("Invalid local in transfer item");
+                        continue;
+                    }
                     item.setLocal(local);
                 }
                 roots.add(item);
@@ -86,47 +100,67 @@ public class TransferDictionary {
         }
         final Transfer transfer;
         String kindObj = dict.stringForKey("Kind");
-        if(kindObj != null) {
-            switch(Transfer.Type.values()[Integer.parseInt(kindObj)]) {
-                case download:
-                    transfer = new DownloadTransfer(host, roots);
-                    break;
-                case upload:
-                    transfer = new UploadTransfer(host, roots);
-                    break;
-                case sync:
-                    transfer = new SyncTransfer(host, roots.iterator().next());
-                    break;
-                case copy:
-                    Object destinationObj = dict.objectForKey("Destination");
-                    if(null == destinationObj) {
-                        log.warn("Missing destination for copy transfer");
-                        return null;
-                    }
-                    final List<T> destinationsObj = dict.listForKey("Destinations");
-                    if(rootsObj.size() == destinationsObj.size()) {
-                        final Map<Path, Path> files = new HashMap<Path, Path>();
-                        for(int i = 0; i < rootsObj.size(); i++) {
-                            final Path root = new PathDictionary().deserialize(rootsObj.get(i));
-                            roots.add(new TransferItem(root));
-                            files.put(root, new PathDictionary().deserialize(destinationsObj.get(i)));
-                        }
-                        transfer = new CopyTransfer(host,
-                                new HostDictionary().deserialize(destinationObj), files);
-                    }
-                    else {
-                        log.warn("Invalid file mapping for copy transfer");
-                        return null;
-                    }
-                    break;
-                default:
-                    log.warn(String.format("Unknown transfer type %s", kindObj));
-                    return null;
-            }
-        }
-        else {
-            log.warn(String.format("No transfer type %s", kindObj));
+        if(kindObj == null) {
+            log.warn("Missing transfer type");
             return null;
+        }
+        switch(Transfer.Type.values()[Integer.parseInt(kindObj)]) {
+            case download:
+                transfer = new DownloadTransfer(host, roots);
+                break;
+            case upload:
+                transfer = new UploadTransfer(host, roots);
+                break;
+            case sync:
+                transfer = new SyncTransfer(host, roots.iterator().next());
+                break;
+            case copy:
+                Object destinationObj = dict.objectForKey("Destination");
+                if(null == destinationObj) {
+                    log.warn("Missing destination for copy transfer");
+                    return null;
+                }
+                final List<T> destinations = dict.listForKey("Destinations");
+                if(destinations.isEmpty()) {
+                    log.warn("No destinations in copy transfer");
+                    return null;
+                }
+                if(roots.size() == destinations.size()) {
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    for(int i = 0; i < roots.size(); i++) {
+                        files.put(roots.get(i).remote, new PathDictionary().deserialize(destinations.get(i)));
+                    }
+                    final Host target = new HostDictionary().deserialize(destinationObj);
+                    if(null == target) {
+                        log.warn("Missing target host in copy transfer");
+                        return null;
+                    }
+                    transfer = new CopyTransfer(host, target, files);
+                }
+                else {
+                    log.warn("Invalid file mapping for copy transfer");
+                    return null;
+                }
+                break;
+            default:
+                log.warn(String.format("Unknown transfer type %s", kindObj));
+                return null;
+        }
+        switch(Transfer.Type.values()[Integer.parseInt(kindObj)]) {
+            case download:
+            case upload:
+            case sync:
+                // Verify we have valid items
+                for(TransferItem item : roots) {
+                    if(null == item.remote) {
+                        log.warn(String.format("Missing remote in transfer item %s", item));
+                        return null;
+                    }
+                    if(null == item.local) {
+                        log.warn(String.format("Missing local in transfer item %s", item));
+                        return null;
+                    }
+                }
         }
         Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
