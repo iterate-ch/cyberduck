@@ -160,7 +160,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().ordinal()), "Kind");
+        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(this.getUuid(), "UUID");

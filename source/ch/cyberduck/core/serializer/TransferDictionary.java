@@ -103,12 +103,21 @@ public class TransferDictionary {
             return null;
         }
         final Transfer transfer;
+        Transfer.Type type = null;
         String kindObj = dict.stringForKey("Kind");
-        if(kindObj == null) {
+        if(kindObj != null) {
+            // Legacy
+            type = Transfer.Type.values()[Integer.parseInt(kindObj)];
+        }
+        String typeObj = dict.stringForKey("Type");
+        if(typeObj != null) {
+            type = Transfer.Type.valueOf(typeObj);
+        }
+        if(null == type) {
             log.warn("Missing transfer type");
             return null;
         }
-        switch(Transfer.Type.values()[Integer.parseInt(kindObj)]) {
+        switch(type) {
             case download:
                 transfer = new DownloadTransfer(host, roots);
                 break;
@@ -150,7 +159,7 @@ public class TransferDictionary {
                 log.warn(String.format("Unknown transfer type %s", kindObj));
                 return null;
         }
-        switch(Transfer.Type.values()[Integer.parseInt(kindObj)]) {
+        switch(type) {
             case download:
             case upload:
             case sync:
