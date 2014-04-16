@@ -2963,6 +2963,7 @@ test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
 test/ch/cyberduck/core/serializer/impl/Private[!!-~]Key[!!-~]Legacy.duck -text
 test/ch/cyberduck/core/serializer/impl/Private[!!-~]Key.duck -text
 test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer -text
+test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer -text
 test/ch/cyberduck/core/serializer/impl/s3.amazonaws.com[!!-~]–[!!-~]S3.duck -text
 test/ch/cyberduck/core/sftp/openssh/config -text
 test/ch/cyberduck/core/sftp/putty/PuTTYKeyTest.java -text

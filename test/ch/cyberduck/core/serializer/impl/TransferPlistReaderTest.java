@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TransferReaderFactory;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
@@ -30,12 +31,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserializeUpload() throws Exception {
         final Transfer t = TransferReaderFactory.get().read(
                 new FinderLocal("test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
@@ -44,5 +45,17 @@ public class TransferPlistReaderTest extends AbstractTestCase {
         assertEquals(Protocol.Type.swift, t.getHost().getProtocol().getType());
         assertEquals("/test.cyberduck.ch/bookmarks_en.png", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Pictures\\bookmarks_en.png", t.getRoot().local.getAbsolute());
+    }
+
+    @Test
+    public void testDeserializeDownload() throws Exception {
+        final Transfer t = TransferReaderFactory.get().read(
+                new FinderLocal("test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
+        );
+        assertTrue(t instanceof DownloadTransfer);
+        assertEquals("s3.amazonaws.com", t.getHost().getHostname());
+        assertEquals(Protocol.Type.s3, t.getHost().getProtocol().getType());
+        assertEquals("/cyberduck/Cyberduck-3.3.zip", t.getRoot().remote.getAbsolute());
+        assertEquals("C:\\Users\\Yves Langisch\\Desktop\\Cyberduck-3.3.zip", t.getRoot().local.getAbsolute());
     }
 }
