@@ -52,6 +52,10 @@ public class TransferDictionary {
             return null;
         }
         final Host host = new HostDictionary().deserialize(hostObj);
+        if(null == host) {
+            log.warn("Invalid host in transfer");
+            return null;
+        }
         final List<T> itemsObj = dict.listForKey("Items");
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         if(itemsObj != null) {
@@ -76,13 +80,13 @@ public class TransferDictionary {
                 final TransferItem item = new TransferItem(remote);
                 // Legacy
                 final String localObjDeprecated
-                        = DeserializerFactory.createDeserializer(serialized).stringForKey("Local");
+                        = DeserializerFactory.createDeserializer(rootDict).stringForKey("Local");
                 if(localObjDeprecated != null) {
                     Local local = LocalFactory.createLocal(localObjDeprecated);
                     item.setLocal(local);
                 }
                 final Object localObj
-                        = DeserializerFactory.createDeserializer(serialized).objectForKey("Local Dictionary");
+                        = DeserializerFactory.createDeserializer(rootDict).objectForKey("Local Dictionary");
                 if(localObj != null) {
                     Local local = new LocalDictionary().deserialize(localObj);
                     if(null == local) {

@@ -66,8 +66,7 @@ public class HostDictionary {
                     bookmark.setProtocol(provider);
                 }
                 else {
-                    log.warn(String.format("Protocol %s no more available", protocolObj));
-                    return null;
+                    log.warn(String.format("Provider %s no more available. Default to %s", providerObj, bookmark.getProtocol()));
                 }
             }
             Object usernameObj = dict.stringForKey("Username");
