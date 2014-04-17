@@ -74,23 +74,19 @@ public class SwiftObjectListService implements ListService {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setOwner(container.attributes().getOwner());
                     attributes.setRegion(container.attributes().getRegion());
-                    if(object.getSize() != null) {
-                        attributes.setSize(object.getSize());
+                    if("application/directory".equals(object.getMimeType())) {
+                        attributes.setPlaceholder(true);
                     }
-                    if(object.getMd5sum() != null) {
+                    else {
                         attributes.setChecksum(object.getMd5sum());
                         attributes.setETag(object.getMd5sum());
-                    }
-                    if(object.getLastModified() != null) {
+                        attributes.setSize(object.getSize());
                         try {
                             attributes.setModificationDate(dateParser.parse(object.getLastModified()).getTime());
                         }
                         catch(InvalidDateException e) {
                             log.warn(String.format("%s is not ISO 8601 format %s", object.getLastModified(), e.getMessage()));
                         }
-                    }
-                    if("application/directory".equals(object.getMimeType())) {
-                        attributes.setPlaceholder(true);
                     }
                     final Path child = new Path(directory, PathNormalizer.name(object.getName()),
                             "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes);
