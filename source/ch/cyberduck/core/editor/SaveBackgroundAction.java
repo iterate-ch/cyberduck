@@ -21,10 +21,10 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -49,9 +49,13 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     private Transfer upload;
 
-    public SaveBackgroundAction(final AbstractEditor editor, final Session session) {
+    private TransferErrorCallback callback;
+
+    public SaveBackgroundAction(final AbstractEditor editor, final Session session,
+                                final TransferErrorCallback callback) {
         this.editor = editor;
         this.session = session;
+        this.callback = callback;
         this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
             @Override
             public TransferAction action(final Session<?> session,
@@ -76,7 +80,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
         }
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                new DisabledTransferPrompt(), callback);
         worker.run();
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));

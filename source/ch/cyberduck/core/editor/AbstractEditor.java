@@ -29,6 +29,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.ui.action.Worker;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,11 +77,15 @@ public abstract class AbstractEditor implements Editor {
      */
     private Session<?> session;
 
-    public AbstractEditor(final Application application, final Session session, final Path file) {
+    private TransferErrorCallback callback;
+
+    public AbstractEditor(final Application application, final Session session, final Path file,
+                          final TransferErrorCallback callback) {
         this.application = application;
         this.remote = file;
         this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
+        this.callback = callback;
     }
 
     /**
@@ -141,7 +146,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Worker worker = new EditBackgroundAction(this, session) {
+        final Worker worker = new EditBackgroundAction(this, session, callback) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -192,7 +197,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker worker = new SaveBackgroundAction(this, session);
+            final Worker worker = new SaveBackgroundAction(this, session, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

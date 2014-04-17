@@ -22,11 +22,11 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.action.SingleTransferWorker;
@@ -49,9 +49,13 @@ public class EditBackgroundAction extends Worker<Transfer> {
 
     private Transfer download;
 
-    public EditBackgroundAction(final AbstractEditor editor, final Session session) {
+    private TransferErrorCallback callback;
+
+    public EditBackgroundAction(final AbstractEditor editor, final Session session,
+                                final TransferErrorCallback callback) {
         this.editor = editor;
         this.session = session;
+        this.callback = callback;
         this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
             @Override
             public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
@@ -73,7 +77,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
         options.quarantine = false;
         options.open = false;
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback());
+                = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), callback);
         worker.run();
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
