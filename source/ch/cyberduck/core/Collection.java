@@ -63,7 +63,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
      * Mark collection as loaded and notify listeners.
      */
     public void load() throws AccessDeniedException {
-        //
+        this.collectionLoaded();
     }
 
     @Override

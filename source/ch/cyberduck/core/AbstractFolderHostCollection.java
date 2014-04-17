@@ -44,7 +44,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      *
      * @param f Parent directory to look for bookmarks
      */
-    public AbstractFolderHostCollection(Local f) {
+    public AbstractFolderHostCollection(final Local f) {
         this.folder = f;
     }
 
