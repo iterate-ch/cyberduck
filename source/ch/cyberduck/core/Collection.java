@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -60,9 +62,8 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     /**
      * Mark collection as loaded and notify listeners.
      */
-    public void load() {
-        loaded.set(true);
-        this.collectionLoaded();
+    public void load() throws AccessDeniedException {
+        //
     }
 
     @Override
@@ -157,6 +158,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
 
     @Override
     public void collectionLoaded() {
+        loaded.set(true);
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
             return;

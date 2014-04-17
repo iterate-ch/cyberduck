@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
+
 import org.junit.Test;
 
 import java.util.Collections;
@@ -66,7 +68,12 @@ public class HistoryCollectionTest extends AbstractTestCase {
         new Thread() {
             @Override
             public void run() {
-                c.load();
+                try {
+                    c.load();
+                }
+                catch(AccessDeniedException e) {
+                    //
+                }
             }
         }.start();
         loaded.await();

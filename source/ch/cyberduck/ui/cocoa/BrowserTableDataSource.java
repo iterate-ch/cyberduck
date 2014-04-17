@@ -126,14 +126,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
             controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new SessionListWorker(controller.getSession(), cache, directory, listener) {
-                        @Override
-                        public void cleanup(final AttributedList<Path> list) {
-                            if(controller.getActions().isEmpty()) {
-                                controller.reloadData(true, true);
+                            new SessionListWorker(controller.getSession(), cache, directory, listener) {
+                                @Override
+                                public void cleanup(final AttributedList<Path> list) {
+                                    if(controller.getActions().isEmpty()) {
+                                        controller.reloadData(true, true);
+                                    }
+                                }
                             }
-                        }
-                    })
+                    )
             );
         }
         return this.get(directory);
@@ -191,7 +192,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             return NSAttributedString.attributedStringWithAttributes(
                     UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
                             Preferences.instance().getBoolean("browser.date.natural")),
-                    TableCellAttributes.browserFontLeftAlignment());
+                    TableCellAttributes.browserFontLeftAlignment()
+            );
         }
         if(identifier.equals(Column.owner.name())) {
             return NSAttributedString.attributedStringWithAttributes(
@@ -250,8 +252,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *              image is currently poised) is in the same application as the source, while a NO value indicates that
      *              the destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     *         any dragging operations, it should return NSDragOperationNone.
+     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     * any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -518,10 +520,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     *         blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     * blocking the destination application.
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
@@ -554,7 +556,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(downloads.iterator().next().remote.isDirectory()) {
                     final Local file = downloads.iterator().next().local;
                     if(!file.exists()) {
-                        file.mkdir();
+                        try {
+                            file.mkdir();
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
             }

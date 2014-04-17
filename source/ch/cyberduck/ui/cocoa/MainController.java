@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
@@ -562,6 +563,12 @@ public class MainController extends BundleController implements NSApplication.De
                 final License l = LicenseFactory.create(f);
                 if(l instanceof Donation) {
                     if(l.verify()) {
+                        try {
+                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(e.getMessage());
+                        }
                         final NSAlert alert = NSAlert.alert(
                                 l.toString(),
                                 LocaleFactory.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
@@ -569,11 +576,10 @@ public class MainController extends BundleController implements NSApplication.De
                                         + LocaleFactory.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
                                 LocaleFactory.localizedString("Continue", "License"), //default
                                 null, //other
-                                null);
+                                null
+                        );
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                         if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
-                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"),
-                                    f.getName()));
                             for(BrowserController c : MainController.getBrowsers()) {
                                 c.removeDonateWindowTitle();
                             }
@@ -617,8 +623,13 @@ public class MainController extends BundleController implements NSApplication.De
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
                     final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
-                    profiles.mkdir();
-                    f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                    try {
+                        profiles.mkdir();
+                        f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                    }
+                    catch(AccessDeniedException e) {
+                        log.warn(e.getMessage());
+                    }
                 }
             }
             else {
@@ -720,10 +731,12 @@ public class MainController extends BundleController implements NSApplication.De
         AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
-                                : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))),
+                                : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
+                ),
                 LocaleFactory.localizedString("Upload"),
                 LocaleFactory.localizedString("Cancel"),
-                null)) {
+                null
+        )) {
             @Override
             public void callback(int returncode) {
                 if(DEFAULT_OPTION == returncode) {
@@ -1021,7 +1034,8 @@ public class MainController extends BundleController implements NSApplication.De
                                 "in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
                         LocaleFactory.localizedString("Change", "Configuration"), //default
                         null, //other
-                        LocaleFactory.localizedString("Cancel", "Configuration"));
+                        LocaleFactory.localizedString("Cancel", "Configuration")
+                );
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
@@ -1327,7 +1341,8 @@ public class MainController extends BundleController implements NSApplication.De
                     this.neverShowDonationCheckbox.setState(
                             Preferences.instance().getProperty("donate.reminder").equals(
                                     NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString())
-                                    ? NSCell.NSOnState : NSCell.NSOffState);
+                                    ? NSCell.NSOnState : NSCell.NSOffState
+                    );
                 }
 
                 @Override

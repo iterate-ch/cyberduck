@@ -39,7 +39,7 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     private RendezvousCollection() {
         rendezvous = RendezvousFactory.instance();
         rendezvous.addListener(this);
-        this.load();
+        this.collectionLoaded();
     }
 
     @Override

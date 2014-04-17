@@ -199,8 +199,8 @@ public final class Profile implements Protocol, Serializable {
         final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 String.format("%s.ico", UUID.randomUUID().toString()));
-        file.delete(true);
         try {
+            file.delete(true);
             final OutputStream out = file.getOutputStream(false);
             try {
                 IOUtils.write(favicon, out);

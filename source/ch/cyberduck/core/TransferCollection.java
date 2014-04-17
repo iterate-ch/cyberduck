@@ -188,7 +188,7 @@ public class TransferCollection extends Collection<Transfer> {
      * Migrate the deprecated queue file to the new format.
      */
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         this.lock();
         try {
             final FolderTransferCollection favorites = FolderTransferCollection.defaultCollection();

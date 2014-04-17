@@ -70,7 +70,7 @@ public class FinderLocalTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMkdir() {
+    public void testMkdir() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         l.mkdir();
         assertTrue(l.exists());

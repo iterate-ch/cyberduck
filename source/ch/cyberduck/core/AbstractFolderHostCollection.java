@@ -46,7 +46,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      */
     public AbstractFolderHostCollection(Local f) {
         this.folder = f;
-        this.folder.mkdir();
     }
 
     @Override
@@ -74,8 +73,15 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemRemoved(final Host bookmark) {
-        this.getFile(bookmark).delete();
-        super.collectionItemRemoved(bookmark);
+        try {
+            this.getFile(bookmark).delete();
+        }
+        catch(AccessDeniedException e) {
+            log.error(e.getMessage());
+        }
+        finally {
+            super.collectionItemRemoved(bookmark);
+        }
     }
 
     @Override
@@ -85,12 +91,13 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Reloading %s", folder.getAbsolute()));
         }
         this.lock();
         try {
+            folder.mkdir();
             final AttributedList<Local> bookmarks = folder.list().filter(
                     new Filter<Local>() {
                         @Override
@@ -123,7 +130,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         super.load();
     }
 
-    protected void rename(final Local next, final Host bookmark) {
+    protected void rename(final Local next, final Host bookmark) throws AccessDeniedException {
         // Rename all files previously saved with nickname to UUID.
         next.rename(this.getFile(bookmark));
     }

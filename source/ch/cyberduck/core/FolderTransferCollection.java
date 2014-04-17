@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
@@ -66,7 +66,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     public FolderTransferCollection(final Local folder) {
         this.folder = folder;
-        this.folder.mkdir();
     }
 
     /**
@@ -83,8 +82,15 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     @Override
     public void collectionItemRemoved(final Transfer transfer) {
-        this.getFile(transfer).delete();
-        super.collectionItemRemoved(transfer);
+        try {
+            this.getFile(transfer).delete();
+        }
+        catch(AccessDeniedException e) {
+            log.error(e.getMessage());
+        }
+        finally {
+            super.collectionItemRemoved(transfer);
+        }
     }
 
     @Override
@@ -94,12 +100,13 @@ public class FolderTransferCollection extends Collection<Transfer> {
     }
 
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Reloading %s", folder.getAbsolute()));
         }
         this.lock();
         try {
+            folder.mkdir();
             final AttributedList<Local> transfers = folder.list().filter(
                     new Filter<Local>() {
                         @Override
@@ -116,7 +123,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
                 // Legacy support.
                 if(!this.getFile(transfer).equals(next)) {
                     this.rename(next, transfer);
-
                 }
                 this.add(transfer);
             }
@@ -132,7 +138,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         super.load();
     }
 
-    protected void rename(final Local next, final Transfer transfer) {
+    protected void rename(final Local next, final Transfer transfer) throws AccessDeniedException {
         // Rename all files previously saved with nickname to UUID.
         next.rename(this.getFile(transfer));
     }

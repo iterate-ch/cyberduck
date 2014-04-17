@@ -157,18 +157,28 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         return '/';
     }
 
-    public void mkdir() {
-        if(!new File(path).mkdirs()) {
-            log.debug(String.format("Create directory %s failed", path));
+    public void mkdir() throws AccessDeniedException {
+        final File file = new File(path);
+        if(file.exists()) {
+            log.debug(String.format("Directory %s already exists", path));
+            return;
+        }
+        if(!file.mkdirs()) {
+            throw new AccessDeniedException(String.format("Create directory %s failed", path));
         }
     }
 
     /**
      * Delete the file
      */
-    public void delete() {
-        if(!new File(path).delete()) {
-            log.warn(String.format("Delete %s failed", path));
+    public void delete() throws AccessDeniedException {
+        final File file = new File(path);
+        if(!file.exists()) {
+            log.debug(String.format("File %s does not exists", path));
+            return;
+        }
+        if(!file.delete()) {
+            throw new AccessDeniedException(String.format("Delete %s failed", path));
         }
     }
 
@@ -177,7 +187,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
      *
      * @param deferred On application quit
      */
-    public void delete(boolean deferred) {
+    public void delete(boolean deferred) throws AccessDeniedException {
         if(deferred) {
             new File(path).deleteOnExit();
         }
@@ -285,13 +295,13 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         return new File(path).exists();
     }
 
-    public void rename(final Local renamed) {
+    public void rename(final Local renamed) throws AccessDeniedException {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            log.error(String.format("Rename failed for %s", renamed));
+            throw new AccessDeniedException(String.format("Rename failed for %s", renamed));
         }
     }
 
-    public void copy(final Local copy) {
+    public void copy(final Local copy) throws AccessDeniedException {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }
@@ -304,10 +314,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
                 IOUtils.copy(in, out);
             }
             catch(IOException e) {
-                log.error(e.getMessage());
-            }
-            catch(AccessDeniedException e) {
-                log.error(e.getMessage());
+                throw new AccessDeniedException(e.getMessage(), e);
             }
             finally {
                 IOUtils.closeQuietly(in);

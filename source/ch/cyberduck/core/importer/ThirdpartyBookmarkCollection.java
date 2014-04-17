@@ -53,7 +53,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     }
 
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         final Local file = this.getFile();
         if(file.exists()) {
             if(log.isInfoEnabled()) {

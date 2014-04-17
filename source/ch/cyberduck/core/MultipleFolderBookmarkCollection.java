@@ -60,15 +60,15 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
      */
     public MultipleFolderBookmarkCollection(Local f) {
         this.folder = f;
-        this.folder.mkdir();
     }
 
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         if(log.isInfoEnabled()) {
             log.info("Reloading:" + folder);
         }
         try {
+            folder.mkdir();
             final AttributedList<Local> groups = folder.list().filter(
                     new Filter<Local>() {
                         @Override

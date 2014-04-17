@@ -65,7 +65,6 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     public BookmarkCollection(Local file) {
         this.file = file;
-        this.file.getParent().mkdir();
     }
 
     @Override
@@ -226,7 +225,7 @@ public class BookmarkCollection extends AbstractHostCollection {
      * Migrate the deprecated bookmarks file to the new format.
      */
     @Override
-    public void load() {
+    public void load() throws AccessDeniedException {
         this.lock();
         try {
             final FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();

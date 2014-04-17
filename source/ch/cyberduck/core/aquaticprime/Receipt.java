@@ -57,7 +57,12 @@ public class Receipt extends AbstractLicense {
                 // Copy to Application Support for users switching versions
                 final Local support = LocalFactory.createLocal(
                         Preferences.instance().getProperty("application.support.path"));
-                file.copy(LocalFactory.createLocal(support, String.format("%s.cyberduckreceipt", receipt.getName())));
+                try {
+                    file.copy(LocalFactory.createLocal(support, String.format("%s.cyberduckreceipt", receipt.getName())));
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(e.getMessage());
+                }
                 return receipt;
             }
             else {
