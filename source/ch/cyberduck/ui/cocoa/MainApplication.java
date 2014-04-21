@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.NSObjectPathReference;
@@ -88,9 +89,7 @@ public final class MainApplication {
             // (or sharedApplication) and run methods.
             final NSApplication app = NSApplication.sharedApplication();
 
-            /**
-             * Register factory implementations.
-             */
+            // Register factory implementations.
             {
                 AutoreleaseActionOperationBatcher.register();
                 FinderLocal.register();
@@ -141,6 +140,10 @@ public final class MainApplication {
                 AlertTransferErrorCallback.register();
                 RendezvousResponder.register();
                 ProtocolFactory.register();
+                if(null != Updater.getFeed()) {
+                    // Disabled in App Store
+                    ApplescriptTerminalService.register();
+                }
             }
 
             if(log.isInfoEnabled()) {

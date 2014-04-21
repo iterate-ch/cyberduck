@@ -42,7 +42,19 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.transfer.*;
+import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferAdapter;
+import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
@@ -3099,7 +3111,7 @@ public class BrowserController extends WindowController
         if(null == workdir) {
             workdir = this.workdir();
         }
-        new ApplescriptTerminalService().open(session.getHost(), workdir);
+        TerminalServiceFactory.get().open(session.getHost(), workdir);
     }
 
     @Action
@@ -3791,7 +3803,8 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session instanceof SFTPSession;
+            return this.isBrowser() && this.isMounted()
+                    && session instanceof SFTPSession && TerminalServiceFactory.get() != null;
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted()) {
