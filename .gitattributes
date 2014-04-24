@@ -2000,6 +2000,10 @@ lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/java-xmlbuilder-1.0.jar -text svneol=unset#application/zip
 lib/jets3t-0.9.1.jar -text
 lib/jna-4.0.1.jar -text svneol=unset#application/zip
+lib/jsch.agentproxy.core-0.0.7.jar -text svneol=unset#application/jar
+lib/jsch.agentproxy.pageant-0.0.7.jar -text svneol=unset#application/jar
+lib/jsch.agentproxy.sshagent-0.0.7.jar -text svneol=unset#application/jar
+lib/jsch.agentproxy.usocket-jna-0.0.7.jar -text svneol=unset#application/jar
 lib/jul-to-slf4j-1.7.1.jar -text
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text

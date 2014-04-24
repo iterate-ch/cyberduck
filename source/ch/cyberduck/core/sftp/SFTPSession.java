@@ -35,7 +35,9 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
+import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
@@ -97,8 +99,8 @@ public class SFTPSession extends Session<Connection> {
                         throws IOException, ConnectionCanceledException {
                     return key.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
                 }
-			}, timeout, 0);
-			return connection;
+            }, timeout, 0);
+            return connection;
         }
         catch(IllegalStateException e) {
             throw new ConnectionCanceledException(e);
@@ -121,6 +123,8 @@ public class SFTPSession extends Session<Connection> {
                     methods.add(new SFTPPublicKeyAuthentication(this));
                 }
                 else {
+                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
                     methods.add(new SFTPChallengeResponseAuthentication(this));
                     methods.add(new SFTPPasswordAuthentication(this));
                 }
@@ -218,7 +222,8 @@ public class SFTPSession extends Session<Connection> {
         }
         return new Path(directory,
                 directory.equals(String.valueOf(Path.DELIMITER)) ?
-                        EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+                        EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory)
+        );
     }
 
     @Override
