@@ -34,6 +34,8 @@
     <property name="app.library" value="${app.contents}/Library"/>
     <property name="app.frameworks" value="${app.contents}/Frameworks"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
+    <property name="app.profiles" value="${app.resources}/Profiles"/>
+    <property name="app.bookmarks" value="${app.resources}/Bookmarks"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.runtime" value="${app.java}/Runtime.jre"/>
     <property name="app.runtime.lib"
@@ -118,6 +120,8 @@
             <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
+        <mkdir dir="${app.profiles}"/>
+        <mkdir dir="${app.bookmarks}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="-sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
