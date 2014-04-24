@@ -12,8 +12,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -51,24 +50,28 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                 new Credentials("anonymous", null)));
         assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
+                new S3UrlProvider(session, new DisabledPasswordStore() {
+                    @Override
+                    public String find(final Host host) {
+                        return "k";
+                    }
+                }).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+        );
     }
 
     @Test
     public void testToSignedUrlThirdparty() throws Exception {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s.greenqloud.com",
                 new Credentials("k", "s")));
-        assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed));
-    }
-
-    @Test
-    public void testToSignedUrlNoKeyFound() throws Exception {
-        final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                properties.getProperty("s3.key"), null
-        )));
-        assertEquals(DescriptiveUrl.EMPTY,
-                new S3UrlProvider(session).createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30));
+        final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
+            @Override
+            public String find(final Host host) {
+                return "k";
+            }
+        });
+        assertNotNull(
+                provider.toUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.signed)
+        );
     }
 
     @Test
@@ -76,12 +79,13 @@ public class S3UrlProviderTest extends AbstractTestCase {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), null
         )));
-        assertTrue(new S3UrlProvider(session, new DisabledPasswordStore() {
+        final S3UrlProvider provider = new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String find(final Host host) {
                 return "k";
             }
-        }).createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
+        });
+        assertTrue(provider.createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
                 "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
     }
 
@@ -91,6 +95,14 @@ public class S3UrlProviderTest extends AbstractTestCase {
                 new Credentials("anonymous", null)));
         assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch.s3.amazonaws.com/test%20f?torrent"), DescriptiveUrl.Type.torrent),
                 new S3UrlProvider(session).toUrl(new Path("/test.cyberduck.ch/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
+    }
+
+    @Test
+    public void testToTorrentUrlThirdparty() throws Exception {
+        final S3Session session = new S3Session(new Host(new S3Protocol(), "test.cyberduck.ch",
+                new Credentials("anonymous", null)));
+        assertEquals(new DescriptiveUrl(URI.create("http://test.cyberduck.ch/c/test%20f?torrent"), DescriptiveUrl.Type.torrent),
+                new S3UrlProvider(session).toUrl(new Path("/c/test f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.torrent));
     }
 
     @Test

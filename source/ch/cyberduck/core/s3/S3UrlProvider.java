@@ -82,7 +82,12 @@ public class S3UrlProvider implements UrlProvider {
             }
             // Torrent
             final S3Service service = new RestS3Service(
-                    new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
+                    new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword())) {
+                @Override
+                public String getEndpoint() {
+                    return session.getHost().getHostname();
+                }
+            };
             list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
                     DescriptiveUrl.Type.torrent,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
@@ -133,7 +138,12 @@ public class S3UrlProvider implements UrlProvider {
         expiry.add(Calendar.SECOND, seconds);
         // Generate URL
         final S3Service client = new RestS3Service(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword()));
+                new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword())) {
+            @Override
+            public String getEndpoint() {
+                return session.getHost().getHostname();
+            }
+        };
         final String secret = store.find(session.getHost());
         if(StringUtils.isBlank(secret)) {
             log.warn("No secret found in keychain required to sign temporary URL");
