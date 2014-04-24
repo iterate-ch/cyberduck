@@ -34,9 +34,12 @@ import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.resources.NSImageIconCache;
@@ -120,6 +123,17 @@ public class AbstractTestCase {
         DisabledPasswordStore.register();
         TemporaryFileService.register();
         LaunchServicesFileDescriptor.register();
+        TransferErrorCallbackControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new TransferErrorCallbackControllerFactory() {
+            @Override
+            public TransferErrorCallback create(Controller c) {
+                return new DisabledTransferErrorCallback();
+            }
+
+            @Override
+            protected TransferErrorCallback create() {
+                return new DisabledTransferErrorCallback();
+            }
+        });
         LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
             @Override
             public LoginCallback create(final Controller c) {
