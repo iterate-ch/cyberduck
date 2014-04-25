@@ -87,7 +87,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private DistributionConfiguration cdn
             = new WebsiteCloudFrontDistributionConfiguration(this);
 
-    public S3Session(Host h) {
+    public S3Session(final Host h) {
         super(h);
     }
 

@@ -72,7 +72,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     private FTPListService listService;
 
-    public FTPSession(Host h) {
+    public FTPSession(final Host h) {
         super(h);
     }
 

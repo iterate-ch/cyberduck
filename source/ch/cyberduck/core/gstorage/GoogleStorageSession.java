@@ -83,7 +83,7 @@ import java.util.EnumSet;
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
-    public GoogleStorageSession(Host h) {
+    public GoogleStorageSession(final Host h) {
         super(h);
     }
 

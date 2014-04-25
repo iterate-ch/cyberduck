@@ -85,7 +85,7 @@ public class SwiftSession extends HttpSession<Client> {
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("account");
 
-    public SwiftSession(Host h) {
+    public SwiftSession(final Host h) {
         super(h);
     }
 

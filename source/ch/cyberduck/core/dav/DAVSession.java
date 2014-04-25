@@ -80,7 +80,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     private RedirectCallback redirect
             = new PreferencesRedirectCallback();
 
-    public DAVSession(Host h) {
+    public DAVSession(final Host h) {
         super(h);
     }
 

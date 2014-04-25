@@ -62,7 +62,7 @@ public class SFTPSession extends Session<Connection> {
 
     private SFTPv3Client sftp;
 
-    public SFTPSession(Host h) {
+    public SFTPSession(final Host h) {
         super(h);
     }
 
