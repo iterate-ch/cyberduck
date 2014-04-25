@@ -77,7 +77,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.getFile(bookmark).delete();
         }
         catch(AccessDeniedException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Failure removing bookmark %s", e.getMessage()));
         }
         finally {
             super.collectionItemRemoved(bookmark);

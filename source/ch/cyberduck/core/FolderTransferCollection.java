@@ -86,7 +86,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
             this.getFile(transfer).delete();
         }
         catch(AccessDeniedException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Failure removing transfer %s", e.getMessage()));
         }
         finally {
             super.collectionItemRemoved(transfer);
