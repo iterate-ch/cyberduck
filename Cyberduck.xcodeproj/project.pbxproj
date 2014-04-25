@@ -56,7 +56,6 @@
 		473A701B182259350055C76C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
 		473A701C182259350055C76C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7019182259350055C76C /* NSData+Base64.m */; };
 		473A701D18225B050055C76C /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CB03A5177F798200A6E3B5 /* libcrypto.dylib */; };
-		473BF0861892968E0068B4C1 /* azure.png in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0841892968E0068B4C1 /* azure.png */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
@@ -715,7 +714,6 @@
 		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
 		473A7018182259350055C76C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		473A7019182259350055C76C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
-		473BF0841892968E0068B4C1 /* azure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = azure.png; sourceTree = "<group>"; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1967,7 +1965,6 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				473BF0841892968E0068B4C1 /* azure.png */,
 				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
@@ -2843,7 +2840,6 @@
 				476730D816108E1300B28D35 /* dropfolderbadge.tiff in Resources */,
 				476730D916108E1300B28D35 /* edit.tiff in Resources */,
 				476730DA16108E1300B28D35 /* editPressed.tiff in Resources */,
-				473BF0861892968E0068B4C1 /* azure.png in Resources */,
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
 				476730DE16108E1300B28D35 /* gear.tiff in Resources */,
