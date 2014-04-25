@@ -120,6 +120,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     protected void save(final Transfer transfer) {
         try {
+            folder.mkdir();
             writer.write(transfer, this.getFile(transfer));
         }
         catch(AccessDeniedException e) {

@@ -104,6 +104,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     protected void save(final Host bookmark) {
         try {
+            folder.mkdir();
             writer.write(bookmark, this.getFile(bookmark));
         }
         catch(AccessDeniedException e) {
