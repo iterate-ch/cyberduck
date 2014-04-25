@@ -95,8 +95,30 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     @Override
     public void collectionItemChanged(final Transfer transfer) {
-        writer.write(transfer, this.getFile(transfer));
+        this.save(transfer);
         super.collectionItemChanged(transfer);
+    }
+
+    @Override
+    public void collectionItemAdded(final Transfer transfer) {
+        this.lock();
+        try {
+            this.save(transfer);
+            this.index();
+            super.collectionItemAdded(transfer);
+        }
+        finally {
+            this.unlock();
+        }
+    }
+
+    protected void save(final Transfer transfer) {
+        try {
+            writer.write(transfer, this.getFile(transfer));
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+        }
     }
 
     @Override
@@ -138,23 +160,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
     protected void rename(final Local next, final Transfer transfer) throws AccessDeniedException {
         // Rename all files previously saved with nickname to UUID.
         next.rename(this.getFile(transfer));
-    }
-
-    @Override
-    public void collectionItemAdded(final Transfer transfer) {
-        this.lock();
-        try {
-            this.save(transfer);
-            this.index();
-            super.collectionItemAdded(transfer);
-        }
-        finally {
-            this.unlock();
-        }
-    }
-
-    protected void save(final Transfer transfer) {
-        writer.write(transfer, this.getFile(transfer));
     }
 
     @Override

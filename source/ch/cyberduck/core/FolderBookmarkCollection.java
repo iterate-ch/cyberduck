@@ -81,10 +81,6 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     }
 
-    protected void save(final Host bookmark) {
-        writer.write(bookmark, this.getFile(bookmark));
-    }
-
     @Override
     public boolean addAll(java.util.Collection<? extends Host> c) {
         final List<Host> temporary = new ArrayList<Host>();

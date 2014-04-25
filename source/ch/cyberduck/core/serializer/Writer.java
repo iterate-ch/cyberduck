@@ -18,8 +18,9 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import java.util.Collection;
 
@@ -33,11 +34,11 @@ public interface Writer<S extends Serializable> {
      * @param collection Collection to serialize
      * @param file       Serialized file target
      */
-    void write(Collection<S> collection, Local file);
+    void write(Collection<S> collection, Local file) throws AccessDeniedException;
 
     /**
      * @param item Item to serialize
      * @param file Serialized file target
      */
-    void write(S item, Local file);
+    void write(S item, Local file) throws AccessDeniedException;
 }
