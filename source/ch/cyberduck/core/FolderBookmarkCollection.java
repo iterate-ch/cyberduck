@@ -70,13 +70,15 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        if(this.isLocked()) {
-            log.debug("Do not notify changes of locked collection");
-            return;
+        this.lock();
+        try {
+            this.save(bookmark);
+            this.index();
+            super.collectionItemAdded(bookmark);
         }
-        this.save(bookmark);
-        this.index();
-        super.collectionItemAdded(bookmark);
+        finally {
+            this.unlock();
+        }
     }
 
     protected void save(final Host bookmark) {

@@ -145,14 +145,15 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     @Override
     public void collectionItemAdded(final Transfer transfer) {
-        if(this.isLocked()) {
-            log.debug("Do not notify changes of locked collection");
-            return;
+        this.lock();
+        try {
+            this.save(transfer);
+            this.index();
+            super.collectionItemAdded(transfer);
         }
-        this.save(transfer);
-        this.index();
-        writer.write(transfer, this.getFile(transfer));
-        super.collectionItemAdded(transfer);
+        finally {
+            this.unlock();
+        }
     }
 
     protected void save(final Transfer transfer) {
