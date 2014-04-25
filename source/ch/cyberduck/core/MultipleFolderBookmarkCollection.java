@@ -65,8 +65,9 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
     @Override
     public void load() throws AccessDeniedException {
         if(log.isInfoEnabled()) {
-            log.info("Reloading:" + folder);
+            log.info(String.format("Reloading %s", folder));
         }
+        this.lock();
         try {
             folder.mkdir();
             final AttributedList<Local> groups = folder.list().filter(
@@ -81,8 +82,8 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
                 this.add(new FolderBookmarkCollection(group));
             }
         }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
+        finally {
+            this.unlock();
         }
         super.load();
     }

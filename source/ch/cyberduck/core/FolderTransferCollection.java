@@ -129,9 +129,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
             // Sort using previously built index
             this.sort();
         }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
-        }
         finally {
             this.unlock();
         }
