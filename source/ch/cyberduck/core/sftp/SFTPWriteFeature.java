@@ -31,9 +31,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import ch.ethz.ssh2.SFTPFileHandle;
 import ch.ethz.ssh2.SFTPOutputStream;
 import ch.ethz.ssh2.SFTPv3Client;
-import ch.ethz.ssh2.SFTPv3FileHandle;
 
 /**
  * @version $Id$
@@ -50,10 +50,10 @@ public class SFTPWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            SFTPv3FileHandle handle;
+            SFTPFileHandle handle;
             if(status.isAppend()) {
                 handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
+                        SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND);
             }
             else {
                 if(status.isExists() && !status.isRename()) {
@@ -63,7 +63,7 @@ public class SFTPWriteFeature implements Write {
                     }
                 }
                 handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
+                        SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE);
             }
             final OutputStream out = new SFTPOutputStream(handle);
             if(status.isAppend()) {

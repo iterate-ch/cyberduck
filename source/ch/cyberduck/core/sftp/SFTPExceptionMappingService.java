@@ -31,6 +31,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.io.IOException;
 import java.net.SocketException;
 
+import ch.ethz.ssh2.PacketFormatException;
 import ch.ethz.ssh2.PacketTypeException;
 import ch.ethz.ssh2.RequestMismatchException;
 import ch.ethz.ssh2.SFTPException;
@@ -49,6 +50,9 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
             return new InteroperabilityException(buffer.toString(), e);
         }
         if(e instanceof PacketTypeException) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(e instanceof PacketFormatException) {
             return new InteroperabilityException(buffer.toString(), e);
         }
         if(e.getMessage().equals("Unexpected end of sftp stream.")) {

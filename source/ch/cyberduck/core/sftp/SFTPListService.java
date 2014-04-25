@@ -54,21 +54,21 @@ public class SFTPListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             for(SFTPv3DirectoryEntry f : session.sftp().ls(directory.getAbsolute())) {
-                if(f.filename.equals(".") || f.filename.equals("..")) {
+                if(f.getFilename().equals(".") || f.getFilename().equals("..")) {
                     continue;
                 }
-                final PathAttributes attributes = feature.convert(f.attributes);
+                final PathAttributes attributes = feature.convert(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                if(f.attributes.isDirectory()) {
+                if(f.getAttributes().isDirectory()) {
                     type.add(Path.Type.directory);
                 }
-                if(f.attributes.isRegularFile()) {
+                if(f.getAttributes().isRegularFile()) {
                     type.add(Path.Type.file);
                 }
-                if(f.attributes.isSymlink()) {
+                if(f.getAttributes().isSymlink()) {
                     type.add(Path.Type.symboliclink);
                 }
-                final Path file = new Path(directory, f.filename, type, attributes);
+                final Path file = new Path(directory, f.getFilename(), type, attributes);
                 this.post(file);
                 children.add(file);
                 listener.chunk(children);

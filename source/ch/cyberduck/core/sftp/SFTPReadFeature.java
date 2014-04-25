@@ -29,9 +29,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ch.ethz.ssh2.SFTPFileHandle;
 import ch.ethz.ssh2.SFTPInputStream;
 import ch.ethz.ssh2.SFTPv3Client;
-import ch.ethz.ssh2.SFTPv3FileHandle;
 
 /**
  * @version $Id$
@@ -49,7 +49,7 @@ public class SFTPReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         InputStream in;
         try {
-            final SFTPv3FileHandle handle = session.sftp().openFile(file.getAbsolute(), SFTPv3Client.SSH_FXF_READ, null);
+            final SFTPFileHandle handle = session.sftp().openFile(file.getAbsolute(), SFTPv3Client.SSH_FXF_READ);
             in = new SFTPInputStream(handle);
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {

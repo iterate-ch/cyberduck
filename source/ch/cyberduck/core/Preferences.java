@@ -831,6 +831,11 @@ public abstract class Preferences {
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
         defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
 
+        /**
+         * Enable ZLIB compression
+         */
+        defaults.put("ssh.compression", null);
+
         defaults.put("archive.default", "tar.gz");
 
         /**

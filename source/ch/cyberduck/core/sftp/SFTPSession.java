@@ -83,6 +83,12 @@ public class SFTPSession extends Session<Connection> {
             final Connection connection = new Connection(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
                     host.getPort(),
                     new PreferencesUseragentProvider().get());
+            if("zlib".equals(Preferences.instance().getProperty("ssh.compression"))) {
+                connection.enableCompression();
+            }
+            else {
+                connection.disableCompression();
+            }
             connection.setTCPNoDelay(true);
             connection.addConnectionMonitor(new ConnectionMonitor() {
                 @Override
@@ -204,7 +210,7 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void disconnect() {
         if(client != null) {
-            client.close(null, true);
+            client.close();
         }
         sftp = null;
         super.disconnect();
