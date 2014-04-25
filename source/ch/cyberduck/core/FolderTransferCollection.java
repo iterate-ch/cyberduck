@@ -95,8 +95,14 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     @Override
     public void collectionItemChanged(final Transfer transfer) {
-        this.save(transfer);
-        super.collectionItemChanged(transfer);
+        this.lock();
+        try {
+            this.save(transfer);
+            super.collectionItemChanged(transfer);
+        }
+        finally {
+            this.unlock();
+        }
     }
 
     @Override

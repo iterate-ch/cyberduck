@@ -67,8 +67,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        this.save(bookmark);
-        super.collectionItemAdded(bookmark);
+        this.lock();
+        try {
+            this.save(bookmark);
+            super.collectionItemAdded(bookmark);
+        }
+        finally {
+            this.unlock();
+        }
     }
 
     @Override
@@ -86,8 +92,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemChanged(final Host bookmark) {
-        this.save(bookmark);
-        super.collectionItemChanged(bookmark);
+        this.lock();
+        try {
+            this.save(bookmark);
+            super.collectionItemChanged(bookmark);
+        }
+        finally {
+            this.unlock();
+        }
     }
 
     protected void save(final Host bookmark) {
