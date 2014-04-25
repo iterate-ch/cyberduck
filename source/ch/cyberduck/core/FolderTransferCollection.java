@@ -88,43 +88,37 @@ public class FolderTransferCollection extends Collection<Transfer> {
         catch(AccessDeniedException e) {
             log.error(String.format("Failure removing transfer %s", e.getMessage()));
         }
-        finally {
-            super.collectionItemRemoved(transfer);
-        }
+        super.collectionItemRemoved(transfer);
     }
 
     @Override
     public void collectionItemChanged(final Transfer transfer) {
-        this.lock();
-        try {
-            this.save(transfer);
-            super.collectionItemChanged(transfer);
-        }
-        finally {
-            this.unlock();
-        }
+        this.save(transfer);
+        super.collectionItemChanged(transfer);
     }
 
     @Override
     public void collectionItemAdded(final Transfer transfer) {
-        this.lock();
-        try {
-            this.save(transfer);
-            this.index();
-            super.collectionItemAdded(transfer);
-        }
-        finally {
-            this.unlock();
-        }
+        this.save(transfer);
+        this.index();
+        super.collectionItemAdded(transfer);
     }
 
     protected void save(final Transfer transfer) {
+        this.lock();
         try {
             folder.mkdir();
-            writer.write(transfer, this.getFile(transfer));
+            final Local f = this.getFile(transfer);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save transfer %s", f));
+            }
+            writer.write(transfer, f);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+        }
+        finally {
+            this.unlock();
         }
     }
 
@@ -186,8 +180,14 @@ public class FolderTransferCollection extends Collection<Transfer> {
      * Update index of bookmark positions
      */
     private void index() {
-        for(int i = 0; i < this.size(); i++) {
-            Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+        this.lock();
+        try {
+            for(int i = 0; i < this.size(); i++) {
+                Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+            }
+        }
+        finally {
+            this.unlock();
         }
     }
 

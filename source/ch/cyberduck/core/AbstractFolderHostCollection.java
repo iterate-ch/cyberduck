@@ -67,14 +67,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        this.lock();
-        try {
-            this.save(bookmark);
-            super.collectionItemAdded(bookmark);
-        }
-        finally {
-            this.unlock();
-        }
+        this.save(bookmark);
+        super.collectionItemAdded(bookmark);
+    }
+
+    @Override
+    public void collectionItemChanged(final Host bookmark) {
+        this.save(bookmark);
+        super.collectionItemChanged(bookmark);
     }
 
     @Override
@@ -90,25 +90,21 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         }
     }
 
-    @Override
-    public void collectionItemChanged(final Host bookmark) {
+    protected void save(final Host bookmark) {
         this.lock();
         try {
-            this.save(bookmark);
-            super.collectionItemChanged(bookmark);
-        }
-        finally {
-            this.unlock();
-        }
-    }
-
-    protected void save(final Host bookmark) {
-        try {
             folder.mkdir();
-            writer.write(bookmark, this.getFile(bookmark));
+            final Local f = this.getFile(bookmark);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save bookmark %s", f));
+            }
+            writer.write(bookmark, f);
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+        }
+        finally {
+            this.unlock();
         }
     }
 

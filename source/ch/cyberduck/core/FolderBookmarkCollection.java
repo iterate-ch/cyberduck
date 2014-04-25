@@ -70,15 +70,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        this.lock();
-        try {
-            this.save(bookmark);
-            this.index();
-            super.collectionItemAdded(bookmark);
-        }
-        finally {
-            this.unlock();
-        }
+        super.collectionItemAdded(bookmark);
+        this.index();
     }
 
     @Override
@@ -98,8 +91,14 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * Update index of bookmark positions
      */
     private void index() {
-        for(int i = 0; i < this.size(); i++) {
-            Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+        this.lock();
+        try {
+            for(int i = 0; i < this.size(); i++) {
+                Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+            }
+        }
+        finally {
+            this.unlock();
         }
     }
 
