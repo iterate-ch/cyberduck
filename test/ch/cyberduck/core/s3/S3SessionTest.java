@@ -183,6 +183,20 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
+    public void testConnectEvault() throws Exception {
+        final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
+                properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        Cache cache = new Cache();
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
+        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
+        session.close();
+    }
+
+    @Test
     public void testFeatures() throws Exception {
         final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertNotNull(aws.getFeature(Copy.class));
