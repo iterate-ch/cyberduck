@@ -1,3 +1,8 @@
+4.5 [https://trac.cyberduck.io/milestone/4.5]
+- [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
+- [Feature] Public key authentification using OpenSSH agent (SFTP) (Mac) (#75)
+- [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
+
 4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
 - [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
 - [Feature] Two-factor authentication (SFTP, Google Authenticator) (#7573)
