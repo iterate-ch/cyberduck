@@ -260,6 +260,12 @@
                 <sysproperty key="google.refreshtoken" value="${google.refreshtoken}"/>
                 <sysproperty key="azure.account" value="${azure.account}"/>
                 <sysproperty key="azure.key" value="${azure.key}"/>
+                <sysproperty key="oraclecloud.key" value="${oraclecloud.key}"/>
+                <sysproperty key="oraclecloud.secret" value="${oraclecloud.secret}"/>
+                <sysproperty key="evault.s3.key" value="${evault.s3.key}"/>
+                <sysproperty key="evault.s3.secret" value="${evault.s3.secret}"/>
+                <sysproperty key="evault.openstack.key" value="${evault.openstack.key}"/>
+                <sysproperty key="evault.openstack.secret" value="${evault.openstack.secret}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
