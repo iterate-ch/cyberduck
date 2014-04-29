@@ -7,7 +7,7 @@
         <key>Vendor</key>
         <string>oracle</string>
         <key>Description</key>
-        <string>Oracle Storage Cloud</string>
+        <string>Oracle Storage Cloud (US Commercial 2)</string>
         <key>Default Hostname</key>
         <string>storage.us2.oraclecloud.com</string>
         <key>Hostname Configurable</key>
