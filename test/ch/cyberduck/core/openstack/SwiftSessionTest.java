@@ -1,21 +1,9 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProfileReaderFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
@@ -141,6 +129,52 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        assertNotNull(session.workdir());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
+    }
+
+    @Test
+    public void testConnectOraclecloud() throws Exception {
+        final SwiftProtocol protocol = new SwiftProtocol() {
+            @Override
+            public String getContext() {
+                return "/auth/v1.0";
+            }
+        };
+        final Host host = new Host(protocol, "storage.us2.oraclecloud.com", new Credentials(
+                properties.getProperty("oraclecloud.key"), properties.getProperty("oraclecloud.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        assertNotNull(session.workdir());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+        assertEquals(Session.State.closed, session.getState());
+    }
+
+    @Test
+    public void testConnectEvault() throws Exception {
+        final SwiftProtocol protocol = new SwiftProtocol();
+        final Host host = new Host(protocol, "auth.lts2.evault.com", new Credentials(
+                properties.getProperty("evault.openstack.key"), properties.getProperty("evault.openstack.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host);
+        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                //
+            }
+        }, new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
