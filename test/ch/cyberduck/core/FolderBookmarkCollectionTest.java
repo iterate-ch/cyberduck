@@ -77,13 +77,16 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
                 assertNotNull(bookmark.getUuid());
             }
         };
+        final Host d = new Host("c");
         final Host b = new Host("b");
-        c.add(b);
         final Host a = new Host("a");
         c.add(a);
-        c.set(0, b);
-        c.sort();
-        assertEquals(b, c.get(0));
+        c.add(b);
+        assertEquals(a, c.get(0));
+        assertEquals(b, c.get(1));
+        c.add(0, d);
+        assertEquals(d, c.get(0));
         assertEquals(a, c.get(1));
+        assertEquals(b, c.get(2));
     }
 }

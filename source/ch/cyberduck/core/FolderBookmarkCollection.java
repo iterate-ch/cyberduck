@@ -70,8 +70,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        super.collectionItemAdded(bookmark);
         this.index();
+        super.collectionItemAdded(bookmark);
     }
 
     @Override
