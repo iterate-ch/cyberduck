@@ -1680,7 +1680,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateUpload()
         {
-            return IsMounted();
+            return IsMounted() && ((Touch) _session.getFeature(typeof (Touch))).isSupported(Workdir);
         }
 
         private void View_Upload()
