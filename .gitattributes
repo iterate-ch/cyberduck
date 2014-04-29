@@ -1993,7 +1993,7 @@ lib/ganymed-ssh2-263.jar -text svneol=unset#application/zip
 lib/gson-2.2.4.jar -text svneol=unset#application/zip
 lib/httpclient-4.3.3.jar -text svneol=unset#application/zip
 lib/httpcore-4.3.2.jar -text svneol=unset#application/zip
-lib/httpmime-4.3.2.jar -text svneol=unset#application/zip
+lib/httpmime-4.3.3.jar -text svneol=unset#application/zip
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
 lib/jackson-mapper-asl-1.9.13.jar -text svneol=unset#application/jar
