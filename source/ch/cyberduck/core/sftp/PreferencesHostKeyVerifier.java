@@ -44,13 +44,13 @@ public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
 
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
-    throws ConnectionCanceledException {
+            throws ConnectionCanceledException, IOException {
         return String.valueOf(Base64.encode(serverHostKey)).equals(
                 Preferences.instance().getProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname)));
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws ConnectionCanceledException {
+    protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
         return false;
     }
 

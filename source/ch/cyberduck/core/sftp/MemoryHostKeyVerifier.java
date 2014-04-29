@@ -97,11 +97,10 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
     protected abstract boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
-                                                    byte[] serverHostKey) throws ConnectionCanceledException;
+                                                    byte[] serverHostKey) throws ConnectionCanceledException, IOException;
 
     /**
      * @param hostname               Hostname
@@ -109,20 +108,16 @@ public abstract class MemoryHostKeyVerifier implements HostKeyCallback {
      * @param serverHostKeyAlgorithm Algorithm
      * @param serverHostKey          Key blob
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Canceled by user
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
      */
     protected abstract boolean isChangedKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm,
-                                                    byte[] serverHostKey) throws ConnectionCanceledException;
+                                                    byte[] serverHostKey) throws ConnectionCanceledException, IOException;
 
     protected void allow(final String hostname, final String serverHostKeyAlgorithm,
                          final byte[] serverHostKey, final boolean always) {
-        // The following call will ONLY put the key into the memory cache!
-        // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
-        final String hashedHostname = KnownHosts.createHashedHostname(hostname);
         try {
             // Add the hostkey to the in-memory database
-            database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
+            database.addHostkey(new String[]{KnownHosts.createHashedHostname(hostname)}, serverHostKeyAlgorithm, serverHostKey);
             if(always) {
                 this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
             }

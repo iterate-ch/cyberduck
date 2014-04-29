@@ -85,7 +85,7 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
 
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                           final byte[] serverHostKey) throws ConnectionCanceledException {
+                                           final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
         if(super.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey)) {
             return true;
         }
@@ -126,7 +126,7 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
 
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                           final byte[] serverHostKey) throws ConnectionCanceledException {
+                                           final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
         NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host key supplied is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
