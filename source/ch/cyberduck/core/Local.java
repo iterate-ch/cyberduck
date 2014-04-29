@@ -161,7 +161,9 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
     public void mkdir() throws AccessDeniedException {
         final File file = new File(path);
         if(file.exists()) {
-            log.debug(String.format("Directory %s already exists", path));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Directory %s already exists", path));
+            }
             return;
         }
         if(!file.mkdirs()) {
@@ -175,7 +177,9 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
     public void delete() throws AccessDeniedException {
         final File file = new File(path);
         if(!file.exists()) {
-            log.debug(String.format("File %s does not exists", path));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("File %s does not exists", path));
+            }
             return;
         }
         if(!file.delete()) {
