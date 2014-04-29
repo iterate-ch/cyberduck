@@ -93,8 +93,9 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private void index() {
         this.lock();
         try {
+            final Preferences preferences = Preferences.instance();
             for(int i = 0; i < this.size(); i++) {
-                Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+                preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
             }
         }
         finally {
@@ -129,8 +130,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         Collections.sort(this, new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.valueOf(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
-                        Preferences.instance().getInteger(PREFIX + o2.getUuid())
+                return Integer.valueOf(Preferences.instance().getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
+                        Preferences.instance().getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
                 );
             }
         });
