@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -42,7 +43,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
     }
 
     @Override
-    public boolean resolve(final Local file) {
+    public boolean resolve(final Local file) throws NotfoundException {
         if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
             // Follow links instead
             return false;

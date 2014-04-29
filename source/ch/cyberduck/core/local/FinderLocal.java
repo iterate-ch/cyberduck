@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.serializer.Serializer;
@@ -291,7 +292,6 @@ public class FinderLocal extends Local {
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("Error listing children for folder %s with error %s", this, f));
                 throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
             }
             final NSEnumerator i = files.objectEnumerator();
@@ -323,9 +323,15 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public Local getSymlinkTarget() {
-        return new FinderLocal(this.getParent().getAbsolute(),
-                NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
+    public Local getSymlinkTarget() throws NotfoundException {
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        final String destination = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(
+                this.getAbsolute(), error);
+        if(null == destination) {
+            final NSError f = error.getValueAs(NSError.class);
+            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path));
+        }
+        return new FinderLocal(this.getParent().getAbsolute(), destination);
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {
