@@ -171,7 +171,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     @Override
     public void complete(final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) {
+                         final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

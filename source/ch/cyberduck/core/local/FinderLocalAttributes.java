@@ -110,17 +110,18 @@ public class FinderLocalAttributes extends LocalAttributes {
     }
 
     @Override
-    public void setPermission(final Permission permission) {
+    public void setPermission(final Permission permission) throws AccessDeniedException {
         synchronized(NSWorkspace.class) {
             final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
                             NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                    local.getAbsolute(), error);
+                    local.getAbsolute(), error
+            );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+                throw new AccessDeniedException(String.format("%s", f));
             }
         }
     }
@@ -131,17 +132,18 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @param modified Milliseconds
      */
     @Override
-    public void setModificationDate(final long modified) {
+    public void setModificationDate(final long modified) throws AccessDeniedException {
         synchronized(NSWorkspace.class) {
             final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
                             NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                    local.getAbsolute(), error);
+                    local.getAbsolute(), error
+            );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+                throw new AccessDeniedException(String.format("%s", f));
             }
         }
     }
