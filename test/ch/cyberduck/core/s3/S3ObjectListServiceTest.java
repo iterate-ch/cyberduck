@@ -17,20 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -171,6 +158,24 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att).getReference()));
         att.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
         assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att).getReference()));
+        session.close();
+    }
+
+    @Test
+    public void testSpaceInBucketName() throws Exception {
+        final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
+                properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DefaultHostKeyController());
+        assertTrue(session.isConnected());
+        Cache cache = new Cache();
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
+        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
+        // Test for Illegal character in path at index 40: https://s3.lts2.evault.com:443/cyberduck space/?max-keys=1000&prefix&delimiter=%2F
+        final AttributedList<Path> list
+                = new S3ObjectListService(session).list(new Path("/cyberduck space", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        assertTrue(list.isEmpty());
         session.close();
     }
 }
