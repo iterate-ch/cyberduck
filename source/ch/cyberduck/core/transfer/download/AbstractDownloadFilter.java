@@ -28,6 +28,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
@@ -213,13 +214,25 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Updating permissions of %s to %s", local, status.getPermission()));
                 }
-                local.attributes().setPermission(status.getPermission());
+                try {
+                    local.attributes().setPermission(status.getPermission());
+                }
+                catch(AccessDeniedException e) {
+                    // Ignore
+                    log.warn(e.getMessage());
+                }
             }
             if(status.getTimestamp() != null) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Updating timestamp of %s to %d", local, status.getTimestamp()));
                 }
-                local.attributes().setModificationDate(status.getTimestamp());
+                try {
+                    local.attributes().setModificationDate(status.getTimestamp());
+                }
+                catch(AccessDeniedException e) {
+                    // Ignore
+                    log.warn(e.getMessage());
+                }
             }
         }
     }
