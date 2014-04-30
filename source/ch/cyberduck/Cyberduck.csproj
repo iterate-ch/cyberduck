@@ -155,6 +155,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="IKVM.Runtime.JNI">
+      <HintPath>..\..\..\lib\IKVM.Runtime.JNI.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="ObjectListView, Version=2.4.1.20671, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -666,7 +669,7 @@
       <AdditionalResources Include="..\..\..\en.lproj\License.txt" />
     </ItemGroup>
     <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
-    <MakeDir Directories="$(OutputPath)\bookmarks"/>
+    <MakeDir Directories="$(OutputPath)\bookmarks" />
     <ItemGroup>
       <DefaultBookmarks Include="..\..\..\bookmarks\*.duck" />
     </ItemGroup>
@@ -676,11 +679,11 @@
     <ItemGroup>
       <JNASupport Include="..\..\..\lib\ikvm-native-win32-x86.dll" />
       <JNASupport Include="..\..\..\lib\jnidispatch.dll" />
-	</ItemGroup>
+    </ItemGroup>
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
     <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
-</Target>
+  </Target>
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>

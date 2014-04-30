@@ -1866,6 +1866,7 @@ lib/IKVM.OpenJDK.XML.Bind.dll -text
 lib/IKVM.OpenJDK.XML.Parse.dll -text
 lib/IKVM.OpenJDK.XML.Transform.dll -text
 lib/IKVM.OpenJDK.XML.XPath.dll -text
+lib/IKVM.Runtime.JNI.dll -text
 lib/IKVM.Runtime.dll -text
 lib/ObjectListView.dll -text
 lib/ObjectListView.pdb -text

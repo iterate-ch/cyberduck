@@ -101,6 +101,7 @@
                 <exclude name="dns_sd.jar"/>
                 <exclude name="rococoa-*.jar"/>
             </fileset>
+            <resource name="/com/sun/jna/win32-x86/jnidispatch.dll" path="${lib}/jnidispatch.dll"/>
         </ikvmc>
     </target>
 
