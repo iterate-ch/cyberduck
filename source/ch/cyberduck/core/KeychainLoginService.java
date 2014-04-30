@@ -95,7 +95,7 @@ public class KeychainLoginService implements LoginService {
                 bookmark.getCredentials().setPassword(null);
                 throw c;
             }
-            this.login(session, cache, listener, null);
+            this.login(session, cache, listener, cancel);
         }
     }
 
