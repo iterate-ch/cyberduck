@@ -96,7 +96,6 @@
             <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
-                <exclude name="jna-*.jar"/>
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
                 <exclude name="dns_sd.jar"/>

@@ -673,9 +673,14 @@
     <ItemGroup>
       <DefaultProfiles Include="..\..\..\profiles\Rackspace US.cyberduckprofile" />
     </ItemGroup>
+    <ItemGroup>
+      <JNASupport Include="..\..\..\lib\ikvm-native-win32-x86.dll" />
+      <JNASupport Include="..\..\..\lib\jnidispatch.dll" />
+	</ItemGroup>
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
-  </Target>
+    <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
+</Target>
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>
