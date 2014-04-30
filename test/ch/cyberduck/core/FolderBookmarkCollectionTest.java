@@ -2,11 +2,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.serializer.Writer;
 
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -54,23 +52,7 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIndex() {
-        HostWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new HostWriterFactory() {
-            @Override
-            protected Writer<Host> create() {
-                return new Writer<Host>() {
-                    @Override
-                    public void write(Collection<Host> collection, Local file) {
-                        fail();
-                    }
-
-                    @Override
-                    public void write(Host item, Local file) {
-                        assertNotNull(item.getUuid());
-                    }
-                };
-            }
-        });
+    public void testIndex() throws Exception {
         FolderBookmarkCollection c = new FolderBookmarkCollection(new NullLocal("", "f")) {
             @Override
             protected void save(Host bookmark) {
@@ -88,5 +70,31 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
         assertEquals(d, c.get(0));
         assertEquals(a, c.get(1));
         assertEquals(b, c.get(2));
+    }
+
+    @Test
+    public void testMove() throws Exception {
+        FolderBookmarkCollection f = new FolderBookmarkCollection(new NullLocal("", "f"));
+        final Host a = new Host("a");
+        final Host b = new Host("b");
+        final Host c = new Host("c");
+        f.add(a);
+        f.add(b);
+        f.add(c);
+        f.indexOf(b);
+
+        // Index
+        int insert = 2;
+        int previous = f.indexOf(b);
+        assertEquals(1, previous);
+        f.remove(previous);
+        assertEquals(2, f.size());
+        assertEquals(a, f.get(0));
+        assertEquals(c, f.get(1));
+        f.add(insert, b);
+        assertEquals(3, f.size());
+        assertEquals(a, f.get(0));
+        assertEquals(c, f.get(1));
+        assertEquals(b, f.get(2));
     }
 }
