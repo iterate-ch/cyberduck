@@ -101,8 +101,8 @@ public class SwiftAuthenticationService {
             final String user;
             final String tenant;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
-                tenant = StringUtils.split(credentials.getUsername(), ':')[0];
-                user = StringUtils.split(credentials.getUsername(), ':')[1];
+                tenant = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0];
+                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
             }
             else {
                 user = credentials.getUsername();

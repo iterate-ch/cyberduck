@@ -151,5 +151,11 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
             }
         });
         assertEquals(":u", host.getCredentials().getUsername());
+        s.getRequest(host, new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                fail();
+            }
+        });
     }
 }
