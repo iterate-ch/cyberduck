@@ -105,15 +105,28 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return children;
             }
         };
-        Preferences.instance().setProperty("queue.download.priority.regex", ".*\\.html");
-        final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-        }, new DisabledListProgressListener());
-        assertEquals(new Path("/t/c.html", EnumSet.of(Path.Type.file)), list.get(0).remote);
-        assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(1).remote);
+        {
+            Preferences.instance().setProperty("queue.download.priority.regex", ".*\\.html");
+            final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
+                @Override
+                public boolean exists() {
+                    return true;
+                }
+            }, new DisabledListProgressListener());
+            assertEquals(new Path("/t/c.html", EnumSet.of(Path.Type.file)), list.get(0).remote);
+            assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(1).remote);
+        }
+        {
+            Preferences.instance().deleteProperty("queue.download.priority.regex");
+            final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
+                @Override
+                public boolean exists() {
+                    return true;
+                }
+            }, new DisabledListProgressListener());
+            assertEquals(new Path("/t/c.html", EnumSet.of(Path.Type.file)), list.get(1).remote);
+            assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(0).remote);
+        }
     }
 
     @Test
