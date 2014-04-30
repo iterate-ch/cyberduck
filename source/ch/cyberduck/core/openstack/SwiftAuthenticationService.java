@@ -62,7 +62,8 @@ public class SwiftAuthenticationService {
         this.version = version;
     }
 
-    public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt) throws LoginCanceledException {
+    public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt)
+            throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -118,7 +119,7 @@ public class SwiftAuthenticationService {
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
-                if(StringUtils.isNotBlank(tenant)) {
+                if(tenant != null) {
                     // Save tenant in username
                     credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
                 }
