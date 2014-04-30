@@ -71,7 +71,7 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildren() throws Exception {
+    public void testList() throws Exception {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
         final NullSession session = new NullSession(new Host("t")) {
@@ -88,7 +88,32 @@ public class DownloadTransferTest extends AbstractTestCase {
                     public boolean exists() {
                         return true;
                     }
-                }, new DisabledListProgressListener()));
+                }, new DisabledListProgressListener())
+        );
+    }
+
+    @Test
+    public void testListSorted() throws Exception {
+        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
+        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
+        final NullSession session = new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
+                children.add(new Path("/t/c.html", EnumSet.of(Path.Type.file)));
+                return children;
+            }
+        };
+        Preferences.instance().setProperty("queue.download.priority.regex", ".*\\.html");
+        final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }, new DisabledListProgressListener());
+        assertEquals(new Path("/t/c.html", EnumSet.of(Path.Type.file)), list.get(0).remote);
+        assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(1).remote);
     }
 
     @Test
@@ -186,7 +211,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host("h"))));
+                        new NullSession(new Host("h")))
+        );
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         assertEquals(status, table.get(test));
@@ -224,7 +250,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         }, new DisabledTransferErrorCallback(), table);
         worker.prepare(test, local, new TransferStatus().exists(true),
                 new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host("h"))));
+                        new NullSession(new Host("h")))
+        );
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         final TransferStatus expected = new TransferStatus();

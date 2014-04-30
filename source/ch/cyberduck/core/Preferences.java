@@ -391,6 +391,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.skip.regex",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS");
 
+        defaults.put("queue.upload.priority.regex", "");
+
         /**
          * Create temporary filename with an UUID and rename when upload is complete
          */
@@ -415,6 +417,8 @@ public abstract class Preferences {
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
         defaults.put("queue.download.skip.regex",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
+
+        defaults.put("queue.download.priority.regex", "");
 
         // Security scoped bookmark
         defaults.put("queue.download.folder.bookmark", null);
@@ -726,7 +730,8 @@ public abstract class Preferences {
                         "            \"Resource\": \"*\"\n" +
                         "        }\n" +
                         "    ]\n" +
-                        "}\n");
+                        "}\n"
+        );
 
         /**
          * Maximum concurrent connections to the same host
@@ -988,7 +993,7 @@ public abstract class Preferences {
 
     /**
      * @return The preferred locale of all localizations available
-     *         in this application bundle
+     * in this application bundle
      */
     public String locale() {
         return this.applicationLocales().iterator().next();

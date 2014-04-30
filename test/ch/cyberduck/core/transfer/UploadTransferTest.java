@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -166,7 +167,7 @@ public class UploadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildren() throws Exception {
+    public void testList() throws Exception {
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
@@ -179,6 +180,25 @@ public class UploadTransferTest extends AbstractTestCase {
         Transfer t = new UploadTransfer(new Host("t"), root, local);
         assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t/c"))),
                 t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener()));
+    }
+
+    @Test
+    public void testListSorted() throws Exception {
+        final NullLocal local = new NullLocal("t") {
+            @Override
+            public AttributedList<Local> list() {
+                AttributedList<Local> l = new AttributedList<Local>();
+                l.add(new NullLocal(this.getAbsolute(), "c"));
+                l.add(new NullLocal(this.getAbsolute(), "c.html"));
+                return l;
+            }
+        };
+        final Path root = new Path("/t", EnumSet.of(Path.Type.file));
+        Transfer t = new UploadTransfer(new Host("t"), root, local);
+        Preferences.instance().setProperty("queue.upload.priority.regex", ".*\\.html");
+        final List<TransferItem> list = t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener());
+        assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(0).local);
+        assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(1).local);
     }
 
     @Test

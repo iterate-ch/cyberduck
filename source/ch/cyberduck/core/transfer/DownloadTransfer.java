@@ -26,6 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,6 +51,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -59,6 +61,8 @@ public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
     private Filter<Path> filter;
+
+    private Comparator<Path> comparator;
 
     private Cache cache
             = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
@@ -72,9 +76,26 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f) {
+        this(host, roots, f, new Comparator<Path>() {
+            @Override
+            public int compare(Path o1, Path o2) {
+                final String pattern = Preferences.instance().getProperty("queue.download.priority.regex");
+                if(PathNormalizer.name(o1.getAbsolute()).matches(pattern)) {
+                    return -1;
+                }
+                if(PathNormalizer.name(o2.getAbsolute()).matches(pattern)) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+    }
+
+    public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f, final Comparator<Path> comparator) {
         super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
         this.filter = f;
+        this.comparator = comparator;
     }
 
     @Override
@@ -99,7 +120,7 @@ public class DownloadTransfer extends Transfer {
             final AttributedList<Path> list = session.list(directory, listener);
             final List<TransferItem> children = new ArrayList<TransferItem>();
             // Return copy with filtered result only
-            for(Path f : new AttributedList<Path>(list.filter(filter))) {
+            for(Path f : new AttributedList<Path>(list.filter(comparator, filter))) {
                 children.add(new TransferItem(f, LocalFactory.createLocal(local, f.getName())));
             }
             return children;
