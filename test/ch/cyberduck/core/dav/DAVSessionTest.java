@@ -325,4 +325,11 @@ public class DAVSessionTest extends AbstractTestCase {
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
     }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testUnrecognizedName() throws Exception {
+        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "sds-security.selfhost.eu", 8000));
+        session.open(new DefaultHostKeyController());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+    }
 }

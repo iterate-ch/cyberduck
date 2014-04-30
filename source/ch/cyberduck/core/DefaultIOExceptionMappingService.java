@@ -20,11 +20,14 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLKeyException;
+import javax.net.ssl.SSLProtocolException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.security.cert.CertificateException;
@@ -65,6 +68,15 @@ public class DefaultIOExceptionMappingService extends AbstractIOExceptionMapping
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(null != cause) {
             this.append(buffer, cause.getMessage());
+        }
+        if(failure instanceof SSLProtocolException) {
+            return new InteroperabilityException(buffer.toString(), failure);
+        }
+        if(failure instanceof SSLHandshakeException) {
+            return new InteroperabilityException(buffer.toString(), failure);
+        }
+        if(failure instanceof SSLKeyException) {
+            return new InteroperabilityException(buffer.toString(), failure);
         }
         return this.wrap(failure, buffer);
     }
