@@ -46,7 +46,7 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
     public boolean authenticate(final Host host, final LoginCallback controller)
             throws IOException, LoginCanceledException, AccessDeniedException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using agent authentication with credentials %s", host.getCredentials()));
+            log.debug(String.format("Login using agent %s with credentials %s", agent, host.getCredentials()));
         }
         if(session.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             return session.getClient().authenticateWithAgent(host.getCredentials().getUsername(), agent);

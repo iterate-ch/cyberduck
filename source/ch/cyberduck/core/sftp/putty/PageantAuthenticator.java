@@ -49,6 +49,9 @@ public class PageantAuthenticator extends AgentAuthenticator {
         try {
             final com.jcraft.jsch.agentproxy.AgentProxy agent
                     = new com.jcraft.jsch.agentproxy.AgentProxy(new PageantConnector());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieve identities from proxy %s", agent));
+            }
             final List<AgentIdentity> identities
                     = new ArrayList();
             for(Identity identity : agent.getIdentities()) {
