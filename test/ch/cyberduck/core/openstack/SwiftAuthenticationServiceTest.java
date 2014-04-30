@@ -93,7 +93,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                                 credentials.setUsername("");
                             }
                         }).iterator().next().getVersion());
-        assertEquals("u", host.getCredentials().getUsername());
+        assertEquals(":u", host.getCredentials().getUsername());
     }
 
     @Test
