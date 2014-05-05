@@ -161,7 +161,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void testSpaceInBucketName() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
