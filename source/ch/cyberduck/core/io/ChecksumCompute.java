@@ -18,7 +18,7 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 
 import java.io.InputStream;
 
@@ -27,5 +27,5 @@ import java.io.InputStream;
  */
 public interface ChecksumCompute {
 
-    String compute(InputStream in) throws BackgroundException;
+    String compute(InputStream in) throws ChecksumException;
 }

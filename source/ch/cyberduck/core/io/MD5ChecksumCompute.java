@@ -19,7 +19,6 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 
 import org.jets3t.service.utils.ServiceUtils;
@@ -34,7 +33,7 @@ import java.security.NoSuchAlgorithmException;
 public class MD5ChecksumCompute implements ChecksumCompute {
 
     @Override
-    public String compute(final InputStream in) throws BackgroundException {
+    public String compute(final InputStream in) throws ChecksumException {
         try {
             return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(in));
         }
