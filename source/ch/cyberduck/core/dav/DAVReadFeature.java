@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ import com.github.sardine.impl.io.ContentLengthInputStream;
  * @version $Id$
  */
 public class DAVReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(DAVReadFeature.class);
 
     private DAVSession session;
 
@@ -55,7 +57,12 @@ public class DAVReadFeature implements Read {
         try {
             final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file), headers);
             // Update content length
-            status.setLength(stream.getLength());
+            if(-1 == stream.getLength()) {
+                log.warn(String.format("Unknown content length for %s", file));
+            }
+            else {
+                status.setLength(stream.getLength());
+            }
             return stream;
         }
         catch(SardineException e) {

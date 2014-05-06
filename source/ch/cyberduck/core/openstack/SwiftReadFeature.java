@@ -65,7 +65,12 @@ public class SwiftReadFeature implements Read {
                 log.debug(String.format("Reading stream with content length %d", stream.getLength()));
             }
             // Update content length
-            status.setLength(stream.getLength());
+            if(-1 == stream.getLength()) {
+                log.warn(String.format("Unknown content length for %s", file));
+            }
+            else {
+                status.setLength(stream.getLength());
+            }
             return stream;
         }
         catch(GenericException e) {
