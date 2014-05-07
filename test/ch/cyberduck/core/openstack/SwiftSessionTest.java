@@ -44,7 +44,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -68,7 +68,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -85,7 +85,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -102,7 +102,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.user"), properties.getProperty("hpcloud.password")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -125,7 +125,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -148,7 +148,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("oraclecloud.key"), properties.getProperty("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -166,7 +166,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("evault.openstack.key"), properties.getProperty("evault.openstack.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {

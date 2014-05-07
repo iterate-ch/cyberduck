@@ -19,7 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 
@@ -39,7 +39,7 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
         session.close();
     }
@@ -50,7 +50,7 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), "p"
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
         session.close();
     }

@@ -3,7 +3,7 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -29,7 +29,7 @@ public class AzureUrlProviderTest extends AbstractTestCase {
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         assertNotNull("https://cyberduck.blob.core.windows.net/cyberduck/f%20g?sp=r&sr=b&sv=2012-02-12&se=2014-01-29T14%3A48%3A26Z&sig=HlAF9RjXNic2%2BJa2ghOgs8MTgJva4bZqNZrb7BIv2mI%3D",

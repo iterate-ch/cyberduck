@@ -34,7 +34,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
@@ -53,7 +53,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
 //        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
@@ -73,7 +73,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         session.workdir();
     }
 
@@ -83,7 +83,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -101,7 +101,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 "u", "p"
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -113,7 +113,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -128,7 +128,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath(UUID.randomUUID().toString());
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -154,7 +154,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 return true;
             }
         };
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertEquals(new FTPProtocol(), host.getProtocol());
@@ -187,7 +187,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getFeature(DistributionConfiguration.class));
         assertNull(session.getFeature(UnixPermission.class));
         assertNull(session.getFeature(Timestamp.class));
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertNull(session.getFeature(UnixPermission.class));
         assertNull(session.getFeature(Timestamp.class));
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
@@ -208,7 +208,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 throw failure;
             }
         };
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertEquals(Session.State.open, session.getState());
         try {
             session.close();

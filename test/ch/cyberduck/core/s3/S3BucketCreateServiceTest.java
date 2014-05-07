@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -47,7 +47,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         final S3FindFeature find = new S3FindFeature(session);
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);

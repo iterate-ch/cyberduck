@@ -2,7 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
@@ -57,7 +57,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -87,7 +87,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -110,7 +110,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
         host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),

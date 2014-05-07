@@ -2,7 +2,7 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -36,7 +36,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
@@ -61,7 +61,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
@@ -84,7 +84,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 properties.getProperty("google.projectid") + "1", null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         try {
             session.login(new DisabledPasswordStore() {
                 @Override
@@ -113,7 +113,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 properties.getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {
@@ -132,7 +132,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
