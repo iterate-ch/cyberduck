@@ -2,6 +2,7 @@
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
 - [Feature] Public key authentification using OpenSSH agent (SFTP) (Mac) (#75)
 - [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
+- [Feature] Compression (SFTP) (#123)
 
 4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
 - [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
