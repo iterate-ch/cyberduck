@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -43,27 +44,47 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.ConnectionMonitor;
-import ch.ethz.ssh2.PacketListener;
-import ch.ethz.ssh2.SFTPv3Client;
-import ch.ethz.ssh2.ServerHostKeyVerifier;
+import net.schmizz.concurrent.Promise;
+import net.schmizz.sshj.DefaultConfig;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.DisconnectReason;
+import net.schmizz.sshj.common.Factory;
+import net.schmizz.sshj.sftp.Request;
+import net.schmizz.sshj.sftp.Response;
+import net.schmizz.sshj.sftp.SFTPEngine;
+import net.schmizz.sshj.sftp.SFTPException;
+import net.schmizz.sshj.transport.DisconnectListener;
+import net.schmizz.sshj.transport.compression.Compression;
+import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
+import net.schmizz.sshj.transport.compression.NoneCompression;
+import net.schmizz.sshj.transport.compression.ZlibCompression;
+import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
  * @version $Id$
  */
-public class SFTPSession extends Session<Connection> {
+public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
-    private SFTPv3Client sftp;
+    private SFTPEngine sftp;
 
     public SFTPSession(final Host h) {
         super(h);
+    }
+
+    @Override
+    public boolean isConnected() {
+        if(super.isConnected()) {
+            return client.isConnected();
+        }
+        return false;
     }
 
     /**
@@ -72,44 +93,53 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public boolean isSecured() {
         if(super.isSecured()) {
-            return client.isAuthenticationComplete();
+            return client.isAuthenticated();
         }
         return false;
     }
 
     @Override
-    public Connection connect(final HostKeyCallback key) throws BackgroundException {
+    public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
-            final Connection connection = new Connection(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
-                    host.getPort(),
-                    new PreferencesUseragentProvider().get());
+            final DefaultConfig configuration = new DefaultConfig();
             if("zlib".equals(Preferences.instance().getProperty("ssh.compression"))) {
-                connection.enableCompression();
+                configuration.setCompressionFactories(Arrays.asList(
+                        new DelayedZlibCompression.Factory(),
+                        new ZlibCompression.Factory(),
+                        new NoneCompression.Factory()));
             }
             else {
-                connection.disableCompression();
+                configuration.setCompressionFactories(Arrays.<Factory.Named<Compression>>asList(
+                        new NoneCompression.Factory()));
             }
-            connection.setTCPNoDelay(true);
-            connection.addConnectionMonitor(new ConnectionMonitor() {
+            configuration.setVersion(new PreferencesUseragentProvider().get());
+            final SSHClient connection = new SSHClient(configuration);
+            final int timeout = this.timeout();
+            connection.setTimeout(timeout);
+            connection.setConnectTimeout(timeout);
+            connection.addHostKeyVerifier(new HostKeyVerifier() {
                 @Override
-                public void connectionLost(Throwable reason) {
-                    log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
-                    disconnect();
+                public boolean verify(String hostname, int port, PublicKey publicKey) {
+                    try {
+                        return key.verify(hostname, port, publicKey);
+                    }
+                    catch(ConnectionCanceledException e) {
+                        return false;
+                    }
+                    catch(ChecksumException e) {
+                        return false;
+                    }
                 }
             });
-            final int timeout = this.timeout();
-            connection.connect(new ServerHostKeyVerifier() {
+            connection.getTransport().setDisconnectListener(new DisconnectListener() {
                 @Override
-                public boolean verifyServerHostKey(final String hostname, final int port,
-                                                   final String serverHostKeyAlgorithm, final byte[] serverHostKey)
-                        throws IOException, ConnectionCanceledException {
-                    return key.verify(hostname, port, serverHostKeyAlgorithm, serverHostKey);
+                public void notifyDisconnect(DisconnectReason disconnectReason) {
+                    log.warn(String.format("Disconnected %s", disconnectReason));
                 }
-            }, timeout, 0);
+            });
+            connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
+                    host.getPort());
             return connection;
-        }
-        catch(IllegalStateException e) {
-            throw new ConnectionCanceledException(e);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
@@ -119,79 +149,74 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache cache) throws BackgroundException {
-        try {
-            final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
-            if(host.getCredentials().isAnonymousLogin()) {
-                methods.add(new SFTPNoneAuthentication(this));
+        final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
+        if(host.getCredentials().isAnonymousLogin()) {
+            methods.add(new SFTPNoneAuthentication(this));
+        }
+        else {
+            if(host.getCredentials().isPublicKeyAuthentication()) {
+                methods.add(new SFTPPublicKeyAuthentication(this));
             }
             else {
-                if(host.getCredentials().isPublicKeyAuthentication()) {
-                    methods.add(new SFTPPublicKeyAuthentication(this));
-                }
-                else {
-                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
-                    methods.add(new SFTPChallengeResponseAuthentication(this));
-                    methods.add(new SFTPPasswordAuthentication(this));
-                }
+                methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                methods.add(new SFTPChallengeResponseAuthentication(this));
+                methods.add(new SFTPPasswordAuthentication(this));
             }
-            for(SFTPAuthentication auth : methods) {
-                if(!auth.authenticate(host, prompt)) {
+        }
+        for(SFTPAuthentication auth : methods) {
+            try {
+                if(!auth.authenticate(host, prompt, cancel)) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Login failed with authentication method %s", auth));
+                        log.debug(String.format("Login partial with authentication method %s", auth));
                     }
                     cancel.verify();
                     continue;
                 }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Login successful with authentication method %s", auth));
-                }
-                break;
             }
-            // Check if authentication is partial
-            if(!client.isAuthenticationComplete()) {
-                if(client.isAuthenticationPartialSuccess()) {
-                    final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
-                    prompt.prompt(host.getProtocol(), additional,
-                            LocaleFactory.localizedString("Partial authentication success", "Credentials"),
-                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
-                    if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
-                        throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                                "Login {0} with username and password", "Credentials"), host.getHostname()));
-                    }
-                }
-                else {
+            catch(LoginFailureException e) {
+                log.warn(String.format("Login failed with authentication method %s", auth));
+                cancel.verify();
+                continue;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Login successful with authentication method %s", auth));
+            }
+            break;
+        }
+        // Check if authentication is partial
+        if(!client.isAuthenticated()) {
+            this.log(false, client.getUserAuth().getBanner());
+            if(client.getUserAuth().hadPartialSuccess()) {
+                final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
+                prompt.prompt(host.getProtocol(), additional,
+                        LocaleFactory.localizedString("Partial authentication success", "Credentials"),
+                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
+                if(!new SFTPChallengeResponseAuthentication(this).authenticate(host, additional, prompt)) {
                     throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
                             "Login {0} with username and password", "Credentials"), host.getHostname()));
                 }
             }
-            try {
-                sftp = new SFTPv3Client(client, new PacketListener() {
-                    @Override
-                    public void read(final String packet) {
-                        SFTPSession.this.log(false, packet);
-                    }
-
-                    @Override
-                    public void write(final String packet) {
-                        SFTPSession.this.log(true, packet);
-                    }
-                });
-                sftp.setCharset(this.getEncoding());
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map(e);
+            else {
+                throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), host.getHostname()));
             }
         }
-        catch(IllegalStateException e) {
-            throw new ConnectionCanceledException(e);
+        try {
+            sftp = new SFTPEngine(client) {
+                @Override
+                public Promise<Response, SFTPException> request(final Request req) throws IOException {
+                    SFTPSession.this.log(true, String.format("%d %s", req.getRequestID(), req.getType()));
+                    return super.request(req);
+                }
+            }.init();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
     }
 
-    public SFTPv3Client sftp() throws LoginCanceledException {
+    public SFTPEngine sftp() throws LoginCanceledException {
         if(null == sftp) {
             throw new LoginCanceledException();
         }
@@ -201,16 +226,31 @@ public class SFTPSession extends Session<Connection> {
     @Override
     protected void logout() throws BackgroundException {
         if(sftp != null) {
-            sftp.close();
-            sftp = null;
+            try {
+                sftp.close();
+                sftp = null;
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map(e);
+            }
         }
-        client.close();
+        try {
+            client.close();
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
     }
 
     @Override
     public void disconnect() {
         if(client != null) {
-            client.close();
+            try {
+                client.close();
+            }
+            catch(IOException e) {
+                log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+            }
         }
         sftp = null;
         super.disconnect();
@@ -221,7 +261,7 @@ public class SFTPSession extends Session<Connection> {
         // "." as referring to the current directory
         final String directory;
         try {
-            directory = this.sftp().canonicalPath(".");
+            directory = this.sftp().canonicalize(".");
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
@@ -233,19 +273,6 @@ public class SFTPSession extends Session<Connection> {
     }
 
     @Override
-    public void noop() throws BackgroundException {
-        try {
-            client.sendIgnorePacket();
-        }
-        catch(IllegalStateException e) {
-            throw new ConnectionCanceledException();
-        }
-        catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
-        }
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new SFTPListService(this).list(file, listener);
     }
@@ -253,15 +280,9 @@ public class SFTPSession extends Session<Connection> {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
-            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-                return (T) new SCPReadFeature(this);
-            }
             return (T) new SFTPReadFeature(this);
         }
         if(type == Write.class) {
-            if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-                return (T) new SCPWriteFeature(this);
-            }
             return (T) new SFTPWriteFeature(this);
         }
         if(type == Directory.class) {

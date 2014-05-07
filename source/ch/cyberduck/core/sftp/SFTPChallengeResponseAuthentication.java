@@ -23,14 +23,23 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ch.ethz.ssh2.InteractiveCallback;
+import net.schmizz.sshj.transport.TransportException;
+import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
+import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
+import net.schmizz.sshj.userauth.password.Resource;
 
 /**
  * @version $Id$
@@ -40,83 +49,91 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
 
     private SFTPSession session;
 
+    private static final char[] EMPTY_RESPONSE = new char[0];
+
     public SFTPChallengeResponseAuthentication(final SFTPSession session) {
         this.session = session;
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller) throws IOException, LoginCanceledException {
+    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+            throws BackgroundException {
         return this.authenticate(host, host.getCredentials(), controller);
     }
 
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)
-            throws IOException, LoginCanceledException {
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
         }
-        if(session.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            return session.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(),
-                    /**
-                     * The logic that one has to implement if "keyboard-interactive" authentication shall be
-                     * supported.
-                     */
-                    new InteractiveCallback() {
-                        /**
-                         * Password sent flag
-                         */
-                        private final AtomicBoolean password = new AtomicBoolean();
+        try {
+            session.getClient().auth(credentials.getUsername(), new AuthKeyboardInteractive(new ChallengeResponseProvider() {
+                /**
+                 * Password sent flag
+                 */
+                private final AtomicBoolean password = new AtomicBoolean();
 
-                        /**
-                         * The callback may be invoked several times, depending on how
-                         * many questions-sets the server sends
-                         */
-                        @Override
-                        public String[] replyToChallenge(final String name, final String instruction,
-                                                         final int numPrompts, final String[] prompt,
-                                                         boolean[] echo) throws LoginCanceledException {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
-                            }
-                            final String[] response = new String[numPrompts];
-                            // The num-prompts field may be `0', in which case there will be no
-                            // prompt/echo fields in the message, but the client should still
-                            // display the name and instruction fields
-                            if(0 == numPrompts) {
-                                // In the case that the server sends a `0' num-prompts field in the request message, the
-                                // client must send a response message with a `0' num-responses field to complete the exchange.
-                                return response;
-                            }
-                            else {
-                                for(int i = 0; i < numPrompts; i++) {
-                                    // For each prompt, the corresponding echo field indicates whether the user input should
-                                    // be echoed as characters are typed
-                                    if(!password.get()) {
-                                        // In its first callback the server prompts for the password
-                                        if(log.isDebugEnabled()) {
-                                            log.debug("First callback returning provided credentials");
-                                        }
-                                        response[i] = credentials.getPassword();
-                                        password.set(true);
-                                    }
-                                    else {
-                                        final StringAppender message = new StringAppender()
-                                                .append(instruction).append(prompt[i]);
-                                        // Properly handle an instruction field with embedded newlines.  They should also
-                                        // be able to display at least 30 characters for the name and prompts.
-                                        final Credentials additional = new Credentials();
-                                        controller.prompt(host.getProtocol(), additional,
-                                                String.format("%s. %s",
-                                                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                                        name), message.toString(), new LoginOptions().user(false).keychain(false));
-                                        response[i] = additional.getPassword();
-                                    }
-                                }
-                            }
-                            // Responses are encoded in ISO-10646 UTF-8.
-                            return response;
+                private String name = StringUtils.EMPTY;
+
+                private String instruction = StringUtils.EMPTY;
+
+                @Override
+                public List<String> getSubmethods() {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public void init(final Resource resource, final String name, final String instruction) {
+                    this.name = name;
+                    this.instruction = instruction;
+                }
+
+                @Override
+                public char[] getResponse(final String prompt, final boolean echo) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Reply to challenge name %s with instruction %s", name, instruction));
+                    }
+                    final String response;
+                    // For each prompt, the corresponding echo field indicates whether the user input should
+                    // be echoed as characters are typed
+                    if(!password.get()) {
+                        // In its first callback the server prompts for the password
+                        if(log.isDebugEnabled()) {
+                            log.debug("First callback returning provided credentials");
                         }
-                    });
+                        response = credentials.getPassword();
+                        password.set(true);
+                    }
+                    else {
+                        final StringAppender message = new StringAppender().append(instruction).append(prompt);
+                        // Properly handle an instruction field with embedded newlines.  They should also
+                        // be able to display at least 30 characters for the name and prompts.
+                        final Credentials additional = new Credentials();
+                        try {
+                            controller.prompt(host.getProtocol(), additional,
+                                    String.format("%s. %s",
+                                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                            name), message.toString(), new LoginOptions().user(false).keychain(false)
+                            );
+                        }
+                        catch(LoginCanceledException e) {
+                            return EMPTY_RESPONSE;
+                        }
+                        response = additional.getPassword();
+                    }
+                    // Responses are encoded in ISO-10646 UTF-8.
+                    return response.toCharArray();
+                }
+
+                @Override
+                public boolean shouldRetry() {
+                    return false;
+                }
+            }));
         }
-        return false;
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
+        return session.getClient().isAuthenticated();
     }
 }

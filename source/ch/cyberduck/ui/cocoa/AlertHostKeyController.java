@@ -18,9 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -29,18 +40,16 @@ import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.security.PublicKey;
 import java.text.MessageFormat;
-
-import ch.ethz.ssh2.KnownHosts;
 
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
  *
  * @version $Id$
  */
-public class AlertHostKeyController extends PreferencesHostKeyVerifier {
+public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
 
     public static void register() {
@@ -64,11 +73,6 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
 
     private WindowController parent;
 
-    /**
-     * Path to known_hosts file.
-     */
-    private final Local file;
-
     private NSOpenPanel panel;
 
     public AlertHostKeyController(final WindowController c) {
@@ -79,19 +83,15 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
 
     public AlertHostKeyController(final WindowController parent, final Local file) {
         super(file);
-        this.file = file;
         this.parent = parent;
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                           final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
-        if(super.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey)) {
-            return true;
-        }
+    protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key)
+            throws ConnectionCanceledException, ChecksumException {
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
-                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                        new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
                 LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
@@ -103,7 +103,7 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                    allow(hostname, key,
                             alert.suppressionButton().state() == NSCell.NSOnState);
                 }
                 else {
@@ -125,11 +125,11 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                           final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
+    protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key)
+            throws ConnectionCanceledException, ChecksumException {
         NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                        new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button
@@ -141,7 +141,7 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                    allow(hostname, key,
                             alert.suppressionButton().state() == NSCell.NSOnState);
                 }
                 else {
@@ -159,19 +159,5 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
             throw new ConnectionCanceledException();
         }
         return c.returnCode() == SheetCallback.DEFAULT_OPTION;
-    }
-
-    @Override
-    protected void save(final String hostname,
-                        final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException {
-        if(file.attributes().getPermission().isWritable()) {
-            // Also try to add the key to a known_host file
-            KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
-                    new String[]{KnownHosts.createHashedHostname(hostname)},
-                    serverHostKeyAlgorithm, serverHostKey);
-        }
-        else {
-            super.save(hostname, serverHostKeyAlgorithm, serverHostKey);
-        }
     }
 }

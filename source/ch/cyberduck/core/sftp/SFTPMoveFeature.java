@@ -47,7 +47,7 @@ public class SFTPMoveFeature implements Move {
             if(new SFTPFindFeature(session).find(renamed)) {
                 new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginController());
             }
-            session.sftp().mv(file.getAbsolute(), renamed.getAbsolute());
+            session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot rename {0}", e, file);

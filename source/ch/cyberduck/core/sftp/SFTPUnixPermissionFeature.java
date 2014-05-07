@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.UnixPermission;
 
 import java.io.IOException;
 
-import ch.ethz.ssh2.SFTPv3FileAttributes;
+import net.schmizz.sshj.sftp.FileAttributes;
 
 /**
  * @version $Id$
@@ -39,10 +39,11 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.uid = new Integer(owner);
+        final FileAttributes attr = new FileAttributes.Builder()
+                .withUIDGID(new Integer(owner), 0)
+                .build();
         try {
-            session.sftp().setstat(file.getAbsolute(), attr);
+            session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);
@@ -51,10 +52,11 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-        final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.gid = new Integer(group);
+        final FileAttributes attr = new FileAttributes.Builder()
+                .withUIDGID(0, new Integer(group))
+                .build();
         try {
-            session.sftp().setstat(file.getAbsolute(), attr);
+            session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);
@@ -63,10 +65,11 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
 
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-        final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.permissions = Integer.parseInt(permission.getMode(), 8);
+        final FileAttributes attr = new FileAttributes.Builder()
+                .withPermissions(Integer.parseInt(permission.getMode(), 8))
+                .build();
         try {
-            session.sftp().setstat(file.getAbsolute(), attr);
+            session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);

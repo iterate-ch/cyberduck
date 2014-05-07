@@ -21,8 +21,8 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import org.junit.Test;
 
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
 import java.net.UnknownHostException;
+import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.EnumSet;
@@ -171,8 +171,8 @@ public class S3SessionTest extends AbstractTestCase {
         });
         session.open(new HostKeyCallback() {
             @Override
-            public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
-                    throws IOException, ConnectionCanceledException {
+            public boolean verify(final String hostname, final int port, final PublicKey key)
+                    throws  ConnectionCanceledException {
                 assertEquals("test.cyberduck.ch", hostname);
                 return true;
             }

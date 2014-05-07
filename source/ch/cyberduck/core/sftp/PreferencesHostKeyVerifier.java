@@ -19,45 +19,49 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.encoders.Base64;
 
-import ch.ethz.ssh2.crypto.Base64;
+import java.security.PublicKey;
+
+import net.schmizz.sshj.common.KeyType;
 
 /**
  * Saving accepted host keys in preferences as Base64 encoded strings.
  *
  * @version $Id$
  */
-public class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
+public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback {
 
-    public PreferencesHostKeyVerifier() {
-        //
-    }
-
-    public PreferencesHostKeyVerifier(final Local file) {
-        super(file);
+    @Override
+    public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+        final String lookup = Preferences.instance().getProperty(
+                String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), hostname));
+        if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
+            return true;
+        }
+        final boolean accept;
+        if(null == lookup) {
+            accept = this.isUnknownKeyAccepted(hostname, key);
+        }
+        else {
+            accept = this.isChangedKeyAccepted(hostname, key);
+        }
+        if(accept) {
+            this.allow(hostname, key, true);
+        }
+        return accept;
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey)
-            throws ConnectionCanceledException, IOException {
-        return String.valueOf(Base64.encode(serverHostKey)).equals(
-                Preferences.instance().getProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname)));
-    }
-
-    @Override
-    protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws ConnectionCanceledException, IOException {
-        return false;
-    }
-
-    @Override
-    protected void save(final String hostname, final String serverHostKeyAlgorithm,
-                        final byte[] serverHostKey) throws IOException {
-        Preferences.instance().setProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname),
-                String.valueOf(Base64.encode(serverHostKey)));
+    protected void allow(final String hostname, final PublicKey key, final boolean persist) {
+        if(persist) {
+            Preferences.instance().setProperty(String.format("ssh.hostkey.%s.%s",
+                    KeyType.fromKey(key), hostname), Base64.toBase64String(key.getEncoded()));
+        }
     }
 }

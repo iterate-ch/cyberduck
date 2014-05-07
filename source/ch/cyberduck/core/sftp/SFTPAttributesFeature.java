@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
@@ -27,8 +26,8 @@ import ch.cyberduck.core.features.Attributes;
 
 import java.io.IOException;
 
-import ch.ethz.ssh2.SFTPException;
-import ch.ethz.ssh2.SFTPv3FileAttributes;
+import net.schmizz.sshj.sftp.FileAttributes;
+import net.schmizz.sshj.sftp.FileMode;
 
 /**
  * @version $Id$
@@ -46,11 +45,8 @@ public class SFTPAttributesFeature implements Attributes {
         try {
             return this.convert(session.sftp().stat(file.getAbsolute()));
         }
-        catch(SFTPException e) {
-            throw new SFTPExceptionMappingService().map(e);
-        }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map(e);
         }
     }
 
@@ -59,27 +55,25 @@ public class SFTPAttributesFeature implements Attributes {
         return this;
     }
 
-    public PathAttributes convert(final SFTPv3FileAttributes stat) {
+    public PathAttributes convert(final FileAttributes stat) {
         final PathAttributes attributes = new PathAttributes();
-        if(null != stat.size) {
-            if(stat.isRegularFile()) {
-                attributes.setSize(stat.size);
-            }
+        if(stat.getType().equals(FileMode.Type.REGULAR)) {
+            attributes.setSize(stat.getSize());
         }
-        if(null != stat.permissions) {
-            attributes.setPermission(new Permission(Integer.toString(stat.permissions, 8)));
+        if(0 != stat.getMode().getPermissionsMask()) {
+            attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
         }
-        if(null != stat.uid) {
-            attributes.setOwner(stat.uid.toString());
+        if(0 != stat.getUID()) {
+            attributes.setOwner(String.valueOf(stat.getUID()));
         }
-        if(null != stat.gid) {
-            attributes.setGroup(stat.gid.toString());
+        if(0 != stat.getGID()) {
+            attributes.setGroup(String.valueOf(stat.getGID()));
         }
-        if(null != stat.mtime) {
-            attributes.setModificationDate(stat.mtime * 1000L);
+        if(0 != stat.getMtime()) {
+            attributes.setModificationDate(stat.getMtime() * 1000L);
         }
-        if(null != stat.atime) {
-            attributes.setAccessedDate(stat.atime * 1000L);
+        if(0 != stat.getAtime()) {
+            attributes.setAccessedDate(stat.getAtime() * 1000L);
         }
         return attributes;
     }

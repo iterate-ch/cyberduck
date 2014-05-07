@@ -19,10 +19,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -30,10 +28,10 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.EnumSet;
 
-import ch.ethz.ssh2.SFTPFileHandle;
-import ch.ethz.ssh2.SFTPOutputStream;
-import ch.ethz.ssh2.SFTPv3Client;
+import net.schmizz.sshj.sftp.OpenMode;
+import net.schmizz.sshj.sftp.RemoteFile;
 
 /**
  * @version $Id$
@@ -50,35 +48,31 @@ public class SFTPWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            SFTPFileHandle handle;
+            RemoteFile handle;
             if(status.isAppend()) {
-                handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND);
+                handle = session.sftp().open(file.getAbsolute(),
+                        EnumSet.of(OpenMode.WRITE, OpenMode.APPEND));
             }
             else {
                 if(status.isExists() && !status.isRename()) {
                     if(file.isSymbolicLink()) {
                         // Workaround for #7327
-                        session.sftp().rm(file.getAbsolute());
+                        session.sftp().remove(file.getAbsolute());
                     }
                 }
-                handle = session.sftp().openFile(file.getAbsolute(),
-                        SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE);
+                handle = session.sftp().open(file.getAbsolute(),
+                        EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE));
             }
-            final OutputStream out = new SFTPOutputStream(handle);
+            final OutputStream out;
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                long skipped = ((SFTPOutputStream) out).skip(status.getCurrent());
-                if(skipped < status.getCurrent()) {
-                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
-                }
+                out = handle.new RemoteFileOutputStream(status.getCurrent());
             }
-            // No parallel requests if the file size is smaller than the buffer.
-            session.sftp().setRequestParallelism(
-                    (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
-            );
+            else {
+                out = handle.new RemoteFileOutputStream();
+            }
             return out;
         }
         catch(IOException e) {

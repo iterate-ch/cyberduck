@@ -46,10 +46,10 @@ public class SFTPDeleteFeature implements Delete {
                     file.getName()));
             try {
                 if(file.isFile() || file.isSymbolicLink()) {
-                    session.sftp().rm(file.getAbsolute());
+                    session.sftp().remove(file.getAbsolute());
                 }
                 else if(file.isDirectory()) {
-                    session.sftp().rmdir(file.getAbsolute());
+                    session.sftp().removeDir(file.getAbsolute());
                 }
             }
             catch(IOException e) {

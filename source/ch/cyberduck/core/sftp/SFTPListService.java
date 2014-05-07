@@ -31,8 +31,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import ch.ethz.ssh2.SFTPException;
-import ch.ethz.ssh2.SFTPv3DirectoryEntry;
+import net.schmizz.sshj.sftp.FileMode;
+import net.schmizz.sshj.sftp.RemoteResourceFilter;
+import net.schmizz.sshj.sftp.RemoteResourceInfo;
+import net.schmizz.sshj.sftp.SFTPException;
 
 /**
  * @version $Id$
@@ -53,22 +55,24 @@ public class SFTPListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            for(SFTPv3DirectoryEntry f : session.sftp().ls(directory.getAbsolute())) {
-                if(f.getFilename().equals(".") || f.getFilename().equals("..")) {
-                    continue;
+            for(RemoteResourceInfo f : session.sftp().openDir(directory.getAbsolute()).scan(new RemoteResourceFilter() {
+                @Override
+                public boolean accept(RemoteResourceInfo remoteResourceInfo) {
+                    return true;
                 }
+            })) {
                 final PathAttributes attributes = feature.convert(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                if(f.getAttributes().isDirectory()) {
+                if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
                     type.add(Path.Type.directory);
                 }
-                if(f.getAttributes().isRegularFile()) {
+                if(f.getAttributes().getType().equals(FileMode.Type.REGULAR)) {
                     type.add(Path.Type.file);
                 }
-                if(f.getAttributes().isSymlink()) {
+                if(f.getAttributes().getType().equals(FileMode.Type.SYMKLINK)) {
                     type.add(Path.Type.symboliclink);
                 }
-                final Path file = new Path(directory, f.getFilename(), type, attributes);
+                final Path file = new Path(directory, f.getName(), type, attributes);
                 this.post(file);
                 children.add(file);
                 listener.chunk(children);
@@ -93,7 +97,7 @@ public class SFTPListService implements ListService {
                     target = new Path(String.format("%s/%s", file.getParent().getAbsolute(), link),
                             EnumSet.of(Path.Type.file));
                 }
-                if(session.sftp().stat(target.getAbsolute()).isDirectory()) {
+                if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {
                     type = Path.Type.directory;
                 }
                 else {

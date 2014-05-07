@@ -18,37 +18,17 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.ch
  */
 
-import ch.ethz.ssh2.auth.AgentIdentity;
+import java.util.Collection;
+
 import com.jcraft.jsch.agentproxy.AgentProxy;
-import com.jcraft.jsch.agentproxy.Buffer;
 import com.jcraft.jsch.agentproxy.Identity;
 
 /**
  * @version $Id$
  */
-public abstract class AgentAuthenticator implements ch.ethz.ssh2.auth.AgentProxy {
+public abstract class AgentAuthenticator {
 
-    protected final class WrappedAgentIdentity implements AgentIdentity {
-        AgentProxy proxy;
-        Identity identity;
-        String algorithm;
+    public abstract Collection<Identity> getIdentities();
 
-        public WrappedAgentIdentity(final AgentProxy proxy, final Identity identity) {
-            this.proxy = proxy;
-            this.identity = identity;
-            this.algorithm = new String((new Buffer(identity.getBlob())).getString());
-        }
-
-        public String getAlgName() {
-            return algorithm;
-        }
-
-        public byte[] getPublicKeyBlob() {
-            return identity.getBlob();
-        }
-
-        public byte[] sign(byte[] bytes) {
-            return proxy.sign(getPublicKeyBlob(), bytes);
-        }
-    }
+    public abstract AgentProxy getProxy();
 }

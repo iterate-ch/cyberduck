@@ -44,4 +44,13 @@ public class MD5ChecksumCompute implements ChecksumCompute {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
     }
+
+    public String fingerprint(final InputStream in) throws ChecksumException {
+        final String undelimited = this.compute(in);
+        StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
+        for(int i = 2; i <= undelimited.length() - 2; i += 2) {
+            fp.append(":").append(undelimited.substring(i, i + 2));
+        }
+        return fp.toString();
+    }
 }

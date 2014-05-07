@@ -23,19 +23,16 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.QuotaException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
-import java.net.SocketException;
 
-import ch.ethz.ssh2.PacketFormatException;
-import ch.ethz.ssh2.PacketTypeException;
-import ch.ethz.ssh2.RequestMismatchException;
-import ch.ethz.ssh2.SFTPException;
-import ch.ethz.ssh2.sftp.ErrorCodes;
+import net.schmizz.sshj.common.DisconnectReason;
+import net.schmizz.sshj.sftp.Response;
+import net.schmizz.sshj.sftp.SFTPException;
+import net.schmizz.sshj.transport.TransportException;
+import net.schmizz.sshj.userauth.UserAuthException;
 
 /**
  * @version $Id$
@@ -46,51 +43,31 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
     public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        if(e instanceof RequestMismatchException) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e instanceof PacketTypeException) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e instanceof PacketFormatException) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e.getMessage().equals("Unexpected end of sftp stream.")) {
-            return this.wrap(new SocketException(e.getMessage()), buffer);
-        }
         if(e instanceof SFTPException) {
             final SFTPException failure = (SFTPException) e;
-            final int code = failure.getServerErrorCode();
-            if(code == ErrorCodes.SSH_FX_OP_UNSUPPORTED) {
+            final Response.StatusCode code = failure.getStatusCode();
+            if(code == Response.StatusCode.OP_UNSUPPORTED) {
                 return new InteroperabilityException(buffer.toString(), e);
             }
-            if(code == ErrorCodes.SSH_FX_NO_SUCH_FILE) {
+            if(code == Response.StatusCode.NO_SUCH_FILE) {
                 return new NotfoundException(buffer.toString(), e);
             }
-            if(code == ErrorCodes.SSH_FX_NO_SUCH_PATH) {
-                return new NotfoundException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_INVALID_HANDLE) {
-                return new NotfoundException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_NOT_A_DIRECTORY) {
-                return new NotfoundException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_QUOTA_EXCEEDED) {
-                return new QuotaException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_NO_SPACE_ON_FILESYSTEM) {
-                return new QuotaException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_PERMISSION_DENIED) {
-                return new AccessDeniedException(buffer.toString(), e);
-            }
-            if(code == ErrorCodes.SSH_FX_WRITE_PROTECT) {
+            if(code == Response.StatusCode.PERMISSION_DENIED) {
                 return new AccessDeniedException(buffer.toString(), e);
             }
         }
-        if(ExceptionUtils.getRootCause(e) instanceof ConnectionCanceledException) {
-            return (ConnectionCanceledException) ExceptionUtils.getRootCause(e);
+        if(e instanceof UserAuthException) {
+            return new LoginFailureException(e.getMessage(), e);
+        }
+        if(e instanceof TransportException) {
+            final TransportException failure = (TransportException) e;
+            if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(failure.getDisconnectReason())) {
+                return new ConnectionCanceledException(e);
+            }
+            if(DisconnectReason.UNKNOWN.equals(failure.getDisconnectReason())) {
+                // Too many authentication failures
+                return new LoginFailureException(e.getMessage(), e);
+            }
         }
         return this.wrap(e, buffer);
     }

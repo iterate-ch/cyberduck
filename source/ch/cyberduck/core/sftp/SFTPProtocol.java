@@ -49,7 +49,7 @@ public final class SFTPProtocol extends AbstractProtocol {
 
     @Override
     public boolean isEncodingConfigurable() {
-        return true;
+        return false;
     }
 
     @Override

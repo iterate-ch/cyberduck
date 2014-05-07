@@ -20,8 +20,10 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
@@ -40,18 +42,18 @@ public class SFTPPasswordAuthenticationTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
-        assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
+        assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController(), new DisabledCancelCallback()));
         session.close();
     }
 
-    @Test
+    @Test(expected = LoginFailureException.class)
     public void testAuthenticateFailure() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), "p"
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
-        assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController()));
+        assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginController(), new DisabledCancelCallback()));
         session.close();
     }
 }

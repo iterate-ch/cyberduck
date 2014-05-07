@@ -24,8 +24,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
-import ch.ethz.ssh2.SFTPv3FileAttributes;
+import net.schmizz.sshj.sftp.FileAttributes;
+import net.schmizz.sshj.sftp.OpenMode;
 
 /**
  * @version $Id$
@@ -42,15 +44,14 @@ public class SFTPTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         if(file.isFile()) {
             try {
-                final SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                attr.permissions = Integer.parseInt(permission.getMode(), 8);
-                session.sftp().createFile(file.getAbsolute(), attr);
-
+                final FileAttributes attr = new FileAttributes.Builder()
+                        .withPermissions(Integer.parseInt(permission.getMode(), 8))
+                        .build();
                 // Even if specified above when creating the file handle, we still need to update the
                 // permissions after the creating the file. SSH_FXP_OPEN does not support setting
                 // attributes in version 4 or lower.
-                new SFTPUnixPermissionFeature(session).setUnixPermission(file, permission);
+                session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT), attr);
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);

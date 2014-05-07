@@ -21,9 +21,11 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.core.io.MD5ChecksumCompute;
 using ch.cyberduck.ui;
 using ch.ethz.ssh2;
 using org.apache.log4j;
+using java.security.PublicKey;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -41,10 +43,9 @@ namespace Ch.Cyberduck.Ui.Controller
             _parent = c;
         }
 
-        protected override bool isUnknownKeyAccepted(string hostname, int port, string serverHostKeyAlgorithm,
-                                                     byte[] serverHostKey)
+        protected override bool isUnknownKeyAccepted(string hostname, PublicKey key)
         {
-            if (base.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey))
+            if (base.isUnknownKeyAccepted(hostname, key))
             {
                 return true;
             }
@@ -56,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(
                             LocaleFactory.localizedString(
                                 "The host is currently unknown to the system. The host key fingerprint is {0}."),
-                            KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                            new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded())),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
@@ -78,8 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
-        protected override bool isChangedKeyAccepted(string hostname, int port, string serverHostKeyAlgorithm,
-                                                     byte[] serverHostKey)
+        protected override bool isChangedKeyAccepted(string hostname, PublicKey key)
         {
             AsyncController.AsyncDelegate d = delegate
                 {
@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                                      KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                                      new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded())),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,

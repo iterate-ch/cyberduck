@@ -20,8 +20,10 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
@@ -32,14 +34,14 @@ import static org.junit.Assert.assertFalse;
  */
 public class SFTPChallengeResponseAuthenticationTest extends AbstractTestCase {
 
-    @Test
+    @Test(expected = LoginFailureException.class)
     public void testAuthenticate() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
-        assertFalse(new SFTPChallengeResponseAuthentication(session).authenticate(host, new DisabledLoginController()));
+        assertFalse(new SFTPChallengeResponseAuthentication(session).authenticate(host, new DisabledLoginController(), new DisabledCancelCallback()));
         session.close();
     }
 }

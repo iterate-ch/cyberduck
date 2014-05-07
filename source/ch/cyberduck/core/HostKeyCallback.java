@@ -20,16 +20,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import java.io.IOException;
+import java.security.PublicKey;
 
 /**
  * @version $Id$
  */
 public interface HostKeyCallback {
 
-    boolean verify(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey)
-            throws IOException, ConnectionCanceledException;
+    boolean verify(String hostname, int port, PublicKey key)
+            throws ConnectionCanceledException, ChecksumException;
 
 }

@@ -1,33 +1,45 @@
 package ch.cyberduck.core.sftp.putty;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.DSAPrivateKeySpec;
+import java.security.spec.DSAPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.ethz.ssh2.crypto.Base64;
-import ch.ethz.ssh2.crypto.cipher.AES;
-import ch.ethz.ssh2.crypto.cipher.CBCMode;
+import net.schmizz.sshj.common.KeyType;
+import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
+import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.PasswordUtils;
+import net.schmizz.sshj.userauth.password.PrivateKeyFileResource;
+import net.schmizz.sshj.userauth.password.PrivateKeyReaderResource;
+import net.schmizz.sshj.userauth.password.PrivateKeyStringResource;
+import net.schmizz.sshj.userauth.password.Resource;
 
 /**
- * Interprets PuTTY's ".ppk" file.
- * <p/>
- * <h2>Notes</h2>
- * <ol>
- * <li>
- * The file appears to be a text file but it doesn't have the fixed encoding.
- * So we just use the platform default encoding, which is what PuTTY seems to use.
- * Fortunately, the important part is all ASCII, so this shouldn't really hurt
- * the interpretation of the key.
- * </ol>
- * <p/>
  * <h2>Sample PuTTY file format</h2>
  * <pre>
  * PuTTY-User-Key-File-2: ssh-rsa
@@ -50,13 +62,89 @@ import ch.ethz.ssh2.crypto.cipher.CBCMode;
  * Private-MAC: 50c45751d18d74c00fca395deb7b7695e3ed6f77
  * </pre>
  *
- * @author Kohsuke Kawaguchi
+ * @version $Id:$
  */
-public class PuTTYKey {
-    private static final String PUTTY_SIGNATURE = "PuTTY-User-Key-File-";
+public class PuTTYKey implements FileKeyProvider {
+
+    public static class Factory
+            implements net.schmizz.sshj.common.Factory.Named<FileKeyProvider> {
+
+        @Override
+        public FileKeyProvider create() {
+            return new PuTTYKey();
+        }
+
+        @Override
+        public String getName() {
+            return "PuTTY";
+        }
+    }
 
     private byte[] privateKey;
     private byte[] publicKey;
+
+    private KeyPair kp;
+
+    protected PasswordFinder pwdf;
+
+    protected Resource<?> resource;
+
+    @Override
+    public void init(Reader location) {
+        this.resource = new PrivateKeyReaderResource(location);
+    }
+
+    public void init(Reader location, PasswordFinder pwdf) {
+        this.init(location);
+        this.pwdf = pwdf;
+    }
+
+    @Override
+    public void init(File location) {
+        resource = new PrivateKeyFileResource(location.getAbsoluteFile());
+    }
+
+    @Override
+    public void init(File location, PasswordFinder pwdf) {
+        this.init(location);
+        this.pwdf = pwdf;
+    }
+
+    @Override
+    public void init(String privateKey, String publicKey) {
+        resource = new PrivateKeyStringResource(privateKey);
+    }
+
+    @Override
+    public void init(String privateKey, String publicKey, PasswordFinder pwdf) {
+        init(privateKey, publicKey);
+        this.pwdf = pwdf;
+    }
+
+    @Override
+    public PrivateKey getPrivate()
+            throws IOException {
+        return kp != null ? kp.getPrivate() : (kp = this.readKeyPair()).getPrivate();
+    }
+
+    @Override
+    public PublicKey getPublic()
+            throws IOException {
+        return kp != null ? kp.getPublic() : (kp = this.readKeyPair()).getPublic();
+    }
+
+    /**
+     * Key type. Either "ssh-rsa" for RSA key, or "ssh-dss" for DSA key.
+     */
+    @Override
+    public KeyType getType() throws IOException {
+        return KeyType.fromString(headers.get("PuTTY-User-Key-File-2"));
+    }
+
+    public boolean isEncrypted() {
+        // Currently the only supported encryption types are "aes256-cbc" and "none".
+        return "aes256-cbc".equals(headers.get("Encryption"));
+    }
 
     private Map<String, String> payload
             = new HashMap<String, String>();
@@ -67,12 +155,74 @@ public class PuTTYKey {
     private final Map<String, String> headers
             = new HashMap<String, String>();
 
-    public PuTTYKey(InputStream in) throws IOException {
-        this(new InputStreamReader(in, Charset.forName("UTF-8")));
+
+    protected KeyPair readKeyPair() throws IOException {
+        this.parseKeyPair();
+        if(KeyType.RSA.equals(this.getType())) {
+            final KeyReader publicKeyReader = new KeyReader(publicKey);
+            publicKeyReader.skip();   // skip this
+            // public key exponent
+            BigInteger e = publicKeyReader.readInt();
+            // modulus
+            BigInteger n = publicKeyReader.readInt();
+
+            final KeyReader privateKeyReader = new KeyReader(privateKey);
+            // private key exponent
+            BigInteger d = privateKeyReader.readInt();
+
+            final KeyFactory factory;
+            try {
+                factory = KeyFactory.getInstance("RSA");
+            }
+            catch(NoSuchAlgorithmException s) {
+                throw new IOException(s.getMessage(), s);
+            }
+            try {
+                return new KeyPair(
+                        factory.generatePublic(new RSAPublicKeySpec(n, e)),
+                        factory.generatePrivate(new RSAPrivateKeySpec(n, d))
+                );
+            }
+            catch(InvalidKeySpecException i) {
+                throw new IOException(i.getMessage(), i);
+            }
+        }
+        if(KeyType.DSA.equals(this.getType())) {
+            final KeyReader publicKeyReader = new KeyReader(publicKey);
+            publicKeyReader.skip();   // skip this
+            BigInteger p = publicKeyReader.readInt();
+            BigInteger q = publicKeyReader.readInt();
+            BigInteger g = publicKeyReader.readInt();
+            BigInteger y = publicKeyReader.readInt();
+
+            final KeyReader privateKeyReader = new KeyReader(privateKey);
+            // Private exponent from the private key
+            BigInteger x = privateKeyReader.readInt();
+
+            final KeyFactory factory;
+            try {
+                factory = KeyFactory.getInstance("DSA");
+            }
+            catch(NoSuchAlgorithmException s) {
+                throw new IOException(s.getMessage(), s);
+            }
+            try {
+                return new KeyPair(
+                        factory.generatePublic(new DSAPublicKeySpec(y, p, q, g)),
+                        factory.generatePrivate(new DSAPrivateKeySpec(x, p, q, g))
+                );
+            }
+            catch(InvalidKeySpecException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        }
+        else {
+            throw new IOException(String.format("Unknown key type %s", this.getType()));
+        }
     }
 
-    public PuTTYKey(Reader in) throws IOException {
-        BufferedReader r = new BufferedReader(in);
+    protected void parseKeyPair() throws IOException {
+        BufferedReader r = new BufferedReader(resource.getReader());
         // Parse the text into headers and payloads
         try {
             String headerName = null;
@@ -89,8 +239,10 @@ public class PuTTYKey {
                         s = line;
                     }
                     else {
+                        // Append to previous line
                         s += line;
                     }
+                    // Save payload
                     payload.put(headerName, s);
                 }
             }
@@ -98,39 +250,28 @@ public class PuTTYKey {
         finally {
             r.close();
         }
-        publicKey = decodeBase64(payload.get("Public-Lines"));
-        privateKey = decodeBase64(payload.get("Private-Lines"));
-    }
-
-    public boolean isEncrypted() {
-        return "aes256-cbc".equals(headers.get("Encryption"));
-    }
-
-    /**
-     * Decrypt private key
-     *
-     * @param passphrase To decrypt
-     */
-    private byte[] decrypt(String passphrase) throws IOException {
+        // Retrieve keys from payload
+        publicKey = Base64.decodeBase64(payload.get("Public-Lines"));
         if(this.isEncrypted()) {
-            AES aes = new AES();
-            byte[] key = toKey(passphrase);
-            aes.init(false, key);
-            CBCMode cbc = new CBCMode(aes, new byte[16], false); // initial vector=0
-            byte[] out = new byte[privateKey.length];
-            for(int i = 0; i < privateKey.length / cbc.getBlockSize(); i++) {
-                cbc.transformBlock(privateKey, i * cbc.getBlockSize(), out, i * cbc.getBlockSize());
+            final char[] passphrase;
+            if(pwdf != null) {
+                passphrase = pwdf.reqPassword(resource);
             }
-            return out;
+            else {
+                passphrase = "".toCharArray();
+            }
+            try {
+                privateKey = this.decrypt(Base64.decodeBase64(payload.get("Private-Lines")),
+                        new String(passphrase));
+                this.verify(new String(passphrase));
+            }
+            finally {
+                PasswordUtils.blankOut(passphrase);
+            }
         }
-        return privateKey;
-    }
-
-    /**
-     * Key type. Either "ssh-rsa" for RSA key, or "ssh-dss" for DSA key.
-     */
-    public String getAlgorithm() {
-        return headers.get("PuTTY-User-Key-File-2");
+        else {
+            privateKey = Base64.decodeBase64(payload.get("Private-Lines"));
+        }
     }
 
     /**
@@ -139,14 +280,18 @@ public class PuTTYKey {
      * <p/>
      * This is used to decrypt the private key when it's encrypted.
      */
-    private byte[] toKey(String passphrase) throws IOException {
+    private byte[] toKey(final String passphrase) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
+            // The encryption key is derived from the passphrase by means of a succession of SHA-1 hashes.
+
+            // Sequence number 0
             digest.update(new byte[]{0, 0, 0, 0});
             digest.update(passphrase.getBytes());
             byte[] key1 = digest.digest();
 
+            // Sequence number 1
             digest.update(new byte[]{0, 0, 0, 1});
             digest.update(passphrase.getBytes());
             byte[] key2 = digest.digest();
@@ -162,88 +307,66 @@ public class PuTTYKey {
         }
     }
 
-    private static byte[] decodeBase64(String s) throws IOException {
-        return Base64.decode(s.toCharArray());
-    }
-
     /**
-     * Converts this key into OpenSSH format.
-     *
-     * @return A multi-line string that can be written back to a file.
-     * @throws ch.ethz.ssh2.crypto.PEMDecryptException If the passphrase is wrong
+     * Verify the MAC.
      */
-    public String toOpenSSH(String passphrase) throws IOException {
-        if("ssh-rsa".equals(this.getAlgorithm())) {
-            KeyReader r = new KeyReader(publicKey);
-            r.skip();   // skip this
-            BigInteger e = r.readInt();
-            BigInteger n = r.readInt();
-
-            r = new KeyReader(this.decrypt(passphrase));
-            BigInteger d = r.readInt();
-            BigInteger p = r.readInt();
-            BigInteger q = r.readInt();
-            BigInteger iqmp = r.readInt();
-
-            BigInteger dmp1 = d.mod(p.subtract(BigInteger.ONE));
-            BigInteger dmq1 = d.mod(q.subtract(BigInteger.ONE));
-
-            DEREncoder payload = new DEREncoder().writeSequence(
-                    new DEREncoder().write(BigInteger.ZERO, n, e, d, p, q, dmp1, dmq1, iqmp).toByteArray()
-            );
-
-            StringBuilder buf = new StringBuilder();
-            buf.append("-----BEGIN RSA PRIVATE KEY-----\n");
-            buf.append(payload.toBase64());
-            buf.append("-----END RSA PRIVATE KEY-----\n");
-            return buf.toString();
-        }
-
-        if("ssh-dss".equals(this.getAlgorithm())) {
-            KeyReader r = new KeyReader(publicKey);
-            r.skip();   // skip this
-            BigInteger p = r.readInt();
-            BigInteger q = r.readInt();
-            BigInteger g = r.readInt();
-            BigInteger y = r.readInt();
-
-            r = new KeyReader(this.decrypt(passphrase));
-            BigInteger x = r.readInt();
-
-            DEREncoder payload = new DEREncoder().writeSequence(
-                    new DEREncoder().write(BigInteger.ZERO, p, q, g, y, x).toByteArray()
-            );
-
-            StringBuilder buf = new StringBuilder();
-            buf.append("-----BEGIN DSA PRIVATE KEY-----\n");
-            buf.append(payload.toBase64());
-            buf.append("-----END DSA PRIVATE KEY-----\n");
-            return buf.toString();
-        }
-
-        throw new IllegalArgumentException("Unrecognized key type: " + getAlgorithm());
-    }
-
-    /**
-     * Checks if the given file is a PuTTY's ".ppk" file, by looking at the file contents.
-     */
-    public static boolean isPuTTYKeyFile(InputStream in) throws IOException {
-        return isPuTTYKeyFile(new InputStreamReader(in, Charset.forName("UTF-8")));
-    }
-
-    public static boolean isPuTTYKeyFile(Reader _reader) throws IOException {
-        final BufferedReader r = new BufferedReader(_reader);
+    private void verify(final String passphrase) throws IOException {
         try {
-            String line;
-            while((line = r.readLine()) != null) {
-                if(line.startsWith(PUTTY_SIGNATURE)) {
-                    return true;
-                }
+            // The key to the MAC is itself a SHA-1 hash of:
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.update("putty-private-key-file-mac-key".getBytes());
+            if(StringUtils.isNotBlank(passphrase)) {
+                digest.update(passphrase.getBytes());
             }
-            return false;
+            final byte[] key = digest.digest();
+
+            final Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(new SecretKeySpec(key, 0, 20, mac.getAlgorithm()));
+
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            final DataOutputStream data = new DataOutputStream(out);
+            // name of algorithm
+            data.writeInt(this.getType().toString().length());
+            data.writeBytes(this.getType().toString());
+
+            data.writeInt(headers.get("Encryption").length());
+            data.writeBytes(headers.get("Encryption"));
+
+            data.writeInt(headers.get("Comment").length());
+            data.writeBytes(headers.get("Comment"));
+
+            data.writeInt(publicKey.length);
+            data.write(publicKey);
+
+            data.writeInt(privateKey.length);
+            data.write(privateKey);
+
+            final String encoded = Hex.encodeHexString(mac.doFinal(out.toByteArray()));
+            final String reference = headers.get("Private-MAC");
+            if(!StringUtils.equals(encoded, reference)) {
+                throw new IOException("Invalid passphrase");
+            }
         }
-        finally {
-            r.close();
+        catch(GeneralSecurityException e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Decrypt private key
+     *
+     * @param passphrase To decrypt
+     */
+    private byte[] decrypt(final byte[] key, final String passphrase) throws IOException {
+        try {
+            final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            final byte[] expanded = this.toKey(passphrase);
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(expanded, 0, 32, "AES"),
+                    new IvParameterSpec(new byte[16])); // initial vector=0
+            return cipher.doFinal(key);
+        }
+        catch(GeneralSecurityException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 }

@@ -6,8 +6,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import ch.ethz.ssh2.crypto.PEMDecryptException;
-
 /**
  * Parses the putty key bit vector, which is an encoded sequence
  * of {@link BigInteger}s.
@@ -34,7 +32,7 @@ public class KeyReader {
     private byte[] read() throws IOException {
         int len = di.readInt();
         if(len <= 0 || len > 513) {
-            throw new PEMDecryptException("Invalid length " + len);
+            throw new IOException(String.format("Invalid length %d", len));
         }
         byte[] r = new byte[len];
         di.readFully(r);

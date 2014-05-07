@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import ch.ethz.ssh2.auth.AgentIdentity;
+import com.jcraft.jsch.agentproxy.Identity;
 
 import static org.junit.Assert.assertTrue;
 
@@ -35,7 +35,7 @@ public class PageantAuthenticatorTest extends AbstractTestCase {
 
     @Test
     public void testGetIdentities() throws Exception {
-        final Collection<AgentIdentity> identities = new PageantAuthenticator().getIdentities();
+        final Collection<Identity> identities = new PageantAuthenticator().getIdentities();
         assertTrue(identities.isEmpty());
     }
 }

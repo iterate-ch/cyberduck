@@ -18,20 +18,18 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 
-import ch.ethz.ssh2.SFTPFileHandle;
-import ch.ethz.ssh2.SFTPInputStream;
-import ch.ethz.ssh2.SFTPv3Client;
+import net.schmizz.sshj.sftp.OpenMode;
+import net.schmizz.sshj.sftp.RemoteFile;
 
 /**
  * @version $Id$
@@ -49,18 +47,17 @@ public class SFTPReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         InputStream in;
         try {
-            final SFTPFileHandle handle = session.sftp().openFile(file.getAbsolute(), SFTPv3Client.SSH_FXF_READ);
-            in = new SFTPInputStream(handle);
+            final RemoteFile handle = session.sftp().open(file.getAbsolute(),
+                    EnumSet.of(OpenMode.READ));
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                StreamCopier.skip(in, status.getCurrent());
+                in = handle.new RemoteFileInputStream(status.getCurrent());
             }
-            // No parallel requests if the file size is smaller than the buffer.
-            session.sftp().setRequestParallelism(
-                    (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
-            );
+            else {
+                in = handle.new RemoteFileInputStream();
+            }
             return in;
         }
         catch(IOException e) {

@@ -1,12 +1,20 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
+
+import net.schmizz.sshj.common.SecurityUtils;
+
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -14,16 +22,42 @@ import static org.junit.Assert.assertFalse;
 public class PreferencesHostKeyVerifierTest extends AbstractTestCase {
 
     @Test
-    public void testVerifyServerHostKey() throws Exception {
+    public void testVerifyAcceptServerHostKey() throws Exception {
         PreferencesHostKeyVerifier v = new PreferencesHostKeyVerifier() {
             @Override
-            protected boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws ConnectionCanceledException {
+            public boolean isChangedKeyAccepted(String hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                return false;
+            }
+
+            @Override
+            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) throws ConnectionCanceledException {
+                return true;
+            }
+        };
+        final PublicKey key = SecurityUtils.getKeyFactory("RSA").generatePublic(new RSAPublicKeySpec(new BigInteger("a19f65e93926d9a2f5b52072db2c38c54e6cf0113d31fa92ff827b0f3bec609c45ea84264c88e64adba11ff093ed48ee0ed297757654b0884ab5a7e28b3c463bc9074b32837a2b69b61d914abf1d74ccd92b20fa44db3b31fb208c0dd44edaeb4ab097118e8ee374b6727b89ad6ce43f1b70c5a437ccebc36d2dad8ae973caad15cd89ae840fdae02cae42d241baef8fda8aa6bbaa54fd507a23338da6f06f61b34fb07d560e63fbce4a39c073e28573c2962cedb292b14b80d1b4e67b0465f2be0e38526232d0a7f88ce91a055fde082038a87ed91f3ef5ff971e30ea6cccf70d38498b186621c08f8fdceb8632992b480bf57fc218e91f2ca5936770fe9469", 16),
+                new BigInteger("23", 16)));
+        assertTrue(v.verify("ahostname", 22, key));
+        assertNotNull(Preferences.instance().getProperty("ssh.hostkey.ssh-rsa.ahostname"));
+        assertEquals("MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAoZ9l6Tkm2aL1tSBy2yw4xU5s8BE9MfqS/4J7DzvsYJxF6oQmTIjmStuhH/CT7UjuDtKXdXZUsIhKtafiizxGO8kHSzKDeitpth2RSr8ddMzZKyD6RNs7MfsgjA3UTtrrSrCXEY6O43S2cnuJrWzkPxtwxaQ3zOvDbS2tiulzyq0VzYmuhA/a4CyuQtJBuu+P2oqmu6pU/VB6IzONpvBvYbNPsH1WDmP7zko5wHPihXPCliztspKxS4DRtOZ7BGXyvg44UmIy0Kf4jOkaBV/eCCA4qH7ZHz71/5ceMOpszPcNOEmLGGYhwI+P3OuGMpkrSAv1f8IY6R8spZNncP6UaQIBIw==",
+                Preferences.instance().getProperty("ssh.hostkey.ssh-rsa.ahostname"));
+    }
+
+    @Test
+    public void testVerifyDenyServerHostKey() throws Exception {
+        PreferencesHostKeyVerifier v = new PreferencesHostKeyVerifier() {
+            @Override
+            public boolean isChangedKeyAccepted(String hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                return false;
+            }
+
+            @Override
+            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) throws ConnectionCanceledException {
                 return false;
             }
         };
-        byte[] key = new byte[]{0, 0, 0, 7, 115, 115, 104, 45, 114, 115, 97, 0, 0, 0, 1, 35, 0, 0, 1, 1, 0, -26, 127, 71, 16, -7, 7, -48, 40, 2, -40, 64, 35, 46, 56, -100, -52, -118, -64, -4, 60, -128, 72, 114, -48, -107, 105, 82, 116, 30, -32, -86, -43, -11, 110, -89, 95, -76, 58, 34, -11, -100, -68, -45, 44, 84, 124, 53, -57, -63, 66, -94, -122, -16, -99, 71, 121, -37, 81, -21, 97, 70, 90, 87, -5, -116, 90, -77, -43, 18, 22, -49, -4, -33, -12, 11, 65, -9, 17, -98, 56, 78, 41, 125, -36, -83, 102, 75, -40, 34, 89, -83, -19, 84, -48, -47, 106, -14, -53, 114, -71, 28, -105, -117, 26, -77, 63, -119, -43, -58, -48, 33, -32, 71, 7, 105, 50, 104, -5, 65, 2, 29, -26, 57, -74, 42, 55, 69, 27, -43, 92, 20, -91, 27, -102, 7, 89, 55, -111, -31, 36, -1, -96, -96, -114, -35, -121, 82, -70, -87, -22, -80, -60, -19, 14, 88, -102, 52, -37, 16, -52, -93, -13, -123, 32, 100, -75, -7, 56, 105, 70, -58, -117, 7, -111, 114, 17, 113, -18, 62, -27, 74, -51, 26, 43, -89, -91, 98, -48, 124, 34, -94, -10, -3, 32, -51, -94, 101, -87, -109, -126, -119, 16, 117, 121, -110, 84, -25, -75, 5, 109, 68, 57, -62, 73, -5, -49, -96, -29, -71, 65, -73, 45, 88, -35, 21, 116, 4, -101, 29, 106, -64, -45, -69, 87, -39, 14, -19, -72, -64, -45, 115, 48, 80, -41, -88, 91, 1, -36, 110, 59, -11, 22, -55, 100, 81, 33};
-        assertFalse(v.verify("ahostname", 9999, "ssh-rsa", key));
-        v.allow("ahostname", "ssh-rsa", key, true);
-        assertTrue(v.verify("ahostname", 9999, "ssh-rsa", key));
+        final PublicKey key = SecurityUtils.getKeyFactory("RSA").generatePublic(new RSAPublicKeySpec(new BigInteger("a19f65e93926d9a2f5b52072db2c38c54e6cf0113d31fa92ff827b0f3bec609c45ea84264c88e64adba11ff093ed48ee0ed297757654b0884ab5a7e28b3c463bc9074b32837a2b69b61d914abf1d74ccd92b20fa44db3b31fb208c0dd44edaeb4ab097118e8ee374b6727b89ad6ce43f1b70c5a437ccebc36d2dad8ae973caad15cd89ae840fdae02cae42d241baef8fda8aa6bbaa54fd507a23338da6f06f61b34fb07d560e63fbce4a39c073e28573c2962cedb292b14b80d1b4e67b0465f2be0e38526232d0a7f88ce91a055fde082038a87ed91f3ef5ff971e30ea6cccf70d38498b186621c08f8fdceb8632992b480bf57fc218e91f2ca5936770fe9469", 16),
+                new BigInteger("23", 16)));
+        assertFalse(v.verify("bhostname", 22, key));
+        assertNull(Preferences.instance().getProperty("ssh.hostkey.ssh-rsa.bhostname"));
     }
 }

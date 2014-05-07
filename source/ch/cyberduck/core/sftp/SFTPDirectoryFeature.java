@@ -25,6 +25,8 @@ import ch.cyberduck.core.features.Directory;
 
 import java.io.IOException;
 
+import net.schmizz.sshj.sftp.FileAttributes;
+
 /**
  * @version $Id$
  */
@@ -44,8 +46,10 @@ public class SFTPDirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
-            session.sftp().mkdir(file.getAbsolute(),
-                    Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getMode(), 8));
+            final FileAttributes attrs = new FileAttributes.Builder().withPermissions(
+                    Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getMode(), 8)
+            ).build();
+            session.sftp().makeDir(file.getAbsolute(), attrs);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, file);

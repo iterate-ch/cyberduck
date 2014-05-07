@@ -19,11 +19,16 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+
+import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.userauth.method.AuthNone;
 
 /**
  * @version $Id$
@@ -38,11 +43,17 @@ public class SFTPNoneAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller)
-            throws IOException, LoginCanceledException {
+    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using none authentication with credentials %s", host.getCredentials()));
         }
-        return session.getClient().authenticateWithNone(host.getCredentials().getUsername());
+        try {
+            session.getClient().auth(host.getCredentials().getUsername(), new AuthNone());
+            return session.getClient().isAuthenticated();
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
     }
 }

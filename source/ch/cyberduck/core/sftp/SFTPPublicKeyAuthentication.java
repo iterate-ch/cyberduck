@@ -22,20 +22,25 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.sftp.putty.PuTTYKey;
+import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
+import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
+import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
+import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
+import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
+import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
+import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.Resource;
 
 /**
  * @version $Id$
@@ -50,67 +55,61 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt)
-            throws IOException, LoginCanceledException, AccessDeniedException {
+    public boolean authenticate(final Host host, final LoginCallback prompt, CancelCallback cancel)
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using public key authentication with credentials %s", host.getCredentials()));
         }
-        if(session.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            if(host.getCredentials().isPublicKeyAuthentication()) {
-                final Local identity = host.getCredentials().getIdentity();
-                final CharArrayWriter privatekey = new CharArrayWriter();
-                if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
-                    final PuTTYKey putty = new PuTTYKey(identity.getInputStream());
-                    if(putty.isEncrypted()) {
-                        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
-                            prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)",
-                                            LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                            identity.getAbbreviatedPath()),
-                                    new LoginOptions(host.getProtocol()));
-                        }
-                    }
-                    try {
-                        IOUtils.copy(new StringReader(putty.toOpenSSH(host.getCredentials().getPassword())), privatekey);
-                    }
-                    catch(PEMDecryptException e) {
-                        prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
-                                String.format("%s (%s)",
-                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                        identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
-                        return this.authenticate(host, prompt);
-                    }
+        if(host.getCredentials().isPublicKeyAuthentication()) {
+            final Local identity = host.getCredentials().getIdentity();
+            final FileKeyProvider provider;
+            try {
+                final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
+                        new InputStreamReader(identity.getInputStream()), true);
+                if(format.equals(KeyFormat.OpenSSH)) {
+                    provider = new OpenSSHKeyFile.Factory().create();
+                }
+                else if(format.equals(KeyFormat.PKCS8)) {
+                    provider = new PKCS8KeyFile.Factory().create();
+                }
+                else if(format.equals(KeyFormat.PuTTY)) {
+                    provider = new PuTTYKey.Factory().create();
                 }
                 else {
-                    IOUtils.copy(identity.getInputStream(), privatekey);
-                    if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
-                        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
-                            prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)",
-                                            LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                            identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
-                        }
-                    }
-                    try {
-                        PEMDecoder.decode(privatekey.toCharArray(), host.getCredentials().getPassword());
-                    }
-                    catch(PEMDecryptException e) {
-                        prompt.prompt(host.getProtocol(), host.getCredentials(),
-                                LocaleFactory.localizedString("Invalid passphrase", "Credentials"),
-                                String.format("%s (%s)",
-                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                        identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol()));
-                        return this.authenticate(host, prompt);
-                    }
+                    throw new IOException(String.format("Unknown key format %s", identity.getName()));
                 }
-                return session.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(),
-                        privatekey.toCharArray(), host.getCredentials().getPassword());
+                provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
+                    @Override
+                    public char[] reqPassword(Resource<?> resource) {
+                        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
+                            try {
+                                prompt.prompt(host.getProtocol(), host.getCredentials(),
+                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                        String.format("%s (%s)",
+                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol())
+                                );
+                            }
+                            catch(LoginCanceledException e) {
+                                // Return null if user cancels
+                                return null;
+                            }
+                        }
+                        return host.getCredentials().getPassword().toCharArray();
+                    }
+
+                    @Override
+                    public boolean shouldRetry(Resource<?> resource) {
+                        return false;
+                    }
+                });
+                session.getClient().authPublickey(host.getCredentials().getUsername(), provider);
+                return session.getClient().isAuthenticated();
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map(e);
             }
         }
         return false;
-
     }
 }

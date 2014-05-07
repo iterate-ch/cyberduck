@@ -19,11 +19,15 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+
+import net.schmizz.sshj.userauth.UserAuthException;
 
 /**
  * @version $Id$
@@ -38,14 +42,17 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt)
-            throws IOException, LoginCanceledException {
+    public boolean authenticate(final Host host, final LoginCallback prompt, CancelCallback cancel)
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using password authentication with credentials %s", host.getCredentials()));
         }
-        if(session.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
-            return session.getClient().authenticateWithPassword(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+        try {
+            session.getClient().authPassword(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+            return session.getClient().isAuthenticated();
         }
-        return false;
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map(e);
+        }
     }
 }

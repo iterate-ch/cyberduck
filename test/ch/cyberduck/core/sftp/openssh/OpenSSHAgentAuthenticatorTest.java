@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import ch.ethz.ssh2.auth.AgentIdentity;
+import com.jcraft.jsch.agentproxy.Identity;
 
 import static org.junit.Assert.assertFalse;
 
@@ -35,7 +35,7 @@ public class OpenSSHAgentAuthenticatorTest extends AbstractTestCase {
 
     @Test
     public void testGetIdentities() throws Exception {
-        final Collection<AgentIdentity> identities = new OpenSSHAgentAuthenticator().getIdentities();
+        final Collection<Identity> identities = new OpenSSHAgentAuthenticator().getIdentities();
         assertFalse(identities.isEmpty());
     }
 }

@@ -827,11 +827,6 @@ public abstract class Preferences {
         defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
         defaults.put("ssh.knownhosts.bookmark", StringUtils.EMPTY);
 
-        /**
-         * Use the SFTP subsystem or a SCP channel for file transfers over SSH
-         */
-        defaults.put("ssh.transfer", Scheme.sftp.name()); //
-
         defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(false));
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
         defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
@@ -839,7 +834,7 @@ public abstract class Preferences {
         /**
          * Enable ZLIB compression
          */
-        defaults.put("ssh.compression", null);
+        defaults.put("ssh.compression", "zlib");
 
         defaults.put("archive.default", "tar.gz");
 

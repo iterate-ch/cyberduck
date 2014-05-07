@@ -18,9 +18,10 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import java.io.IOException;
+import java.security.PublicKey;
 
 /**
  * @version $Id$
@@ -28,8 +29,7 @@ import java.io.IOException;
 public class DisabledHostKeyCallback implements HostKeyCallback {
 
     @Override
-    public boolean verify(final String hostname, final int port,
-                          final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+    public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException, ChecksumException {
         return true;
     }
 }

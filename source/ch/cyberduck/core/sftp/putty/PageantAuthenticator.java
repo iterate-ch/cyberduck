@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.ethz.ssh2.auth.AgentIdentity;
+import com.jcraft.jsch.agentproxy.AgentProxy;
 import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.connector.PageantConnector;
@@ -40,28 +40,37 @@ import com.jcraft.jsch.agentproxy.connector.PageantConnector;
 public class PageantAuthenticator extends AgentAuthenticator {
     private static final Logger log = Logger.getLogger(PageantAuthenticator.class);
 
+    private AgentProxy proxy;
+
+    public PageantAuthenticator() {
+        try {
+            this.proxy = new AgentProxy(new PageantConnector());
+        }
+        catch(AgentProxyException e) {
+            log.warn(String.format("Agent proxy %s failed with %s", this, e));
+        }
+    }
+
     @Override
-    public Collection<AgentIdentity> getIdentities() {
+    public AgentProxy getProxy() {
+        return proxy;
+    }
+
+    @Override
+    public Collection<Identity> getIdentities() {
         if(!PageantConnector.isConnectorAvailable()) {
             log.warn(String.format("Disabled agent %s", this));
             return Collections.emptyList();
         }
-        try {
-            final com.jcraft.jsch.agentproxy.AgentProxy agent
-                    = new com.jcraft.jsch.agentproxy.AgentProxy(new PageantConnector());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Retrieve identities from proxy %s", agent));
-            }
-            final List<AgentIdentity> identities
-                    = new ArrayList();
-            for(Identity identity : agent.getIdentities()) {
-                identities.add(new WrappedAgentIdentity(agent, identity));
-            }
-            return identities;
-        }
-        catch(AgentProxyException e) {
-            log.warn(String.format("Agent proxy %s failed with %s", this, e));
+        if(null == proxy) {
             return Collections.emptyList();
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Retrieve identities from proxy %s", proxy));
+        }
+        final List<Identity> identities
+                = new ArrayList<Identity>();
+        Collections.addAll(identities, proxy.getIdentities());
+        return identities;
     }
 }

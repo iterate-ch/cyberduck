@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(new Host("unknownhost.local"));
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new HostKeyCallback() {
             @Override
-            public boolean verify(final String hostname, final int port, final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+            public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException {
                 assertEquals(Session.State.opening, session.getState());
                 return true;
             }

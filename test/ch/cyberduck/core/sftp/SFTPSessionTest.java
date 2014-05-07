@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -95,7 +96,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         try {
             session.open(new HostKeyCallback() {
                 @Override
-                public boolean verify(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+                public boolean verify(String hostname, int port, PublicKey key) throws  ConnectionCanceledException {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }

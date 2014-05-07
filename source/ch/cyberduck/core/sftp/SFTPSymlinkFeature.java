@@ -37,7 +37,7 @@ public class SFTPSymlinkFeature implements Symlink {
     @Override
     public void symlink(final Path file, String target) throws BackgroundException {
         try {
-            session.sftp().createSymlink(file.getAbsolute(), target);
+            session.sftp().symlink(target, file.getAbsolute());
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);

@@ -18,14 +18,19 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import com.jcraft.jsch.agentproxy.Identity;
+import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
+import net.schmizz.sshj.common.Buffer;
+import net.schmizz.sshj.transport.TransportException;
+import net.schmizz.sshj.userauth.UserAuthException;
 
 /**
  * @version $Id$
@@ -43,14 +48,26 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller)
-            throws IOException, LoginCanceledException, AccessDeniedException {
+    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s with credentials %s", agent, host.getCredentials()));
         }
-        if(session.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            return session.getClient().authenticateWithAgent(host.getCredentials().getUsername(), agent);
+        for(Identity identity : agent.getIdentities()) {
+            try {
+                session.getClient().auth(host.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
+            }
+            catch(UserAuthException e) {
+                cancel.verify();
+                // continue;
+            }
+            catch(Buffer.BufferException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            catch(TransportException e) {
+                throw new SFTPExceptionMappingService().map(e);
+            }
         }
-        return false;
+        return session.getClient().isAuthenticated();
     }
 }

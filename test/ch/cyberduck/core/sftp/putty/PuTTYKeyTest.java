@@ -1,12 +1,15 @@
 package ch.cyberduck.core.sftp.putty;
 
-import ch.cyberduck.core.sftp.putty.PuTTYKey;
-
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringReader;
 
-import ch.ethz.ssh2.crypto.PEMDecryptException;
+import net.schmizz.sshj.userauth.password.PasswordFinder;
+import net.schmizz.sshj.userauth.password.Resource;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class PuTTYKeyTest {
 
@@ -103,29 +106,113 @@ public class PuTTYKeyTest {
             "oYhmT2+0DKBuBVCAM4qRdA==\n" +
             "Private-MAC: 40ccc8b9a7291ec64e5be0c99badbc8a012bf220\n";
 
+    final static String ppkdsa_passphrase = "PuTTY-User-Key-File-2: ssh-dss\n" +
+            "Encryption: aes256-cbc\n" +
+            "Comment: dsa-key-20140507\n" +
+            "Public-Lines: 10\n" +
+            "AAAAB3NzaC1kc3MAAACBAN6eo/Yh8ih26sKRAHAta/UqKesrXRS83GN7YqAxQzsP\n" +
+            "2tJ00UzOqZCdBoHIXLXC07QRJ9SkXOMnILw/KuaZ3paJ6ym92FzKi3BRfpzujIdo\n" +
+            "qBAEGSGOWbz2oYPDDSi0bsL84P4O8WD7ZxKhgTb4JAxlVJiW20vPfZA8Ft6xKJyd\n" +
+            "AAAAFQD1pnKWpSyHzi6RcVPn16FwmGIgmwAAAIEAiFPw87HVijatNOBeuxoU5PHH\n" +
+            "80kMl0TtxoI7rhB8fKO9bu7wLcT79h6xYS4Np6nHv9ajWwwVSLh8NjKgMbCXCz2j\n" +
+            "qD4ajvnusS7yz7TbTumeaGqFXEEzqzG4Xe6KXkv7kd7Yg+Dnw29zucgeAvPfuJFW\n" +
+            "Gtr4CWPoHSBgpTeyemEAAACBAJYvGi5gIMJQQUhIErKbtZ64V2L0zZtYkzlms03R\n" +
+            "cTBFN9++xV8zUvTPAAM8imsoxZ/5JNtNjJCAD+Ghrzyav24gxYG9v/YXtd2WsYa5\n" +
+            "0E/5wxcPor82SAqU2fd3IEQ5y9KHamXBuX/5KFDOTMC6cnGsutFkeo5rXQ0fI55C\n" +
+            "VSTq\n" +
+            "Private-Lines: 1\n" +
+            "nLEIBzB8WEaMMgDz5qwlqq7eBxLPIIi9uHyjMf7NOsQ=\n" +
+            "Private-MAC: b200c6d801fc8dd8f84a14afc3b94d9f9bb2df90\n";
+
     @Test
     public void test2048() throws Exception {
-        PuTTYKey key = new PuTTYKey(new StringReader(ppk2048));
-        key.toOpenSSH(null);
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppk2048));
+        assertNotNull(key.getPrivate());
+        assertNotNull(key.getPublic());
     }
 
     @Test
     public void test4096() throws Exception {
-        PuTTYKey key = new PuTTYKey(new StringReader(ppk4096));
-        key.toOpenSSH(null);
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppk4096));
+        assertNotNull(key.getPrivate());
+        assertNotNull(key.getPublic());
     }
 
     @Test
-    public void testCorrectPassphrase() throws Exception {
-        PuTTYKey key = new PuTTYKey(new StringReader(ppk1024_passphrase));
-        // correct passphrase
-        key.toOpenSSH("123456");
+    public void testCorrectPassphraseRsa() throws Exception {
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
+            @Override
+            public char[] reqPassword(Resource<?> resource) {
+                // correct passphrase
+                return "123456".toCharArray();
+            }
+
+            @Override
+            public boolean shouldRetry(Resource<?> resource) {
+                return false;
+            }
+        });
+        assertNotNull(key.getPrivate());
+        assertNotNull(key.getPublic());
     }
 
-    @Test(expected = PEMDecryptException.class)
-    public void testWrongPassphrase() throws Exception {
-        PuTTYKey key = new PuTTYKey(new StringReader(ppk1024_passphrase));
-        // wrong passphrase
-        key.toOpenSSH("egfsdgdfgsdfsdfasfs523534dgdsgdfa");
+    @Test(expected = IOException.class)
+    public void testWrongPassphraseRsa() throws Exception {
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
+            @Override
+            public char[] reqPassword(Resource<?> resource) {
+                // wrong passphrase
+                return "egfsdgdfgsdfsdfasfs523534dgdsgdfa".toCharArray();
+            }
+
+            @Override
+            public boolean shouldRetry(Resource<?> resource) {
+                return false;
+            }
+        });
+        assertNotNull(key.getPublic());
+        assertNull(key.getPrivate());
+    }
+
+    @Test
+    public void testCorrectPassphraseDsa() throws Exception {
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppkdsa_passphrase), new PasswordFinder() {
+            @Override
+            public char[] reqPassword(Resource<?> resource) {
+                // correct passphrase
+                return "secret".toCharArray();
+            }
+
+            @Override
+            public boolean shouldRetry(Resource<?> resource) {
+                return false;
+            }
+        });
+        assertNotNull(key.getPrivate());
+        assertNotNull(key.getPublic());
+    }
+
+    @Test(expected = IOException.class)
+    public void testWrongPassphraseDsa() throws Exception {
+        PuTTYKey key = new PuTTYKey();
+        key.init(new StringReader(ppkdsa_passphrase), new PasswordFinder() {
+            @Override
+            public char[] reqPassword(Resource<?> resource) {
+                // wrong passphrase
+                return "egfsdgdfgsdfsdfasfs523534dgdsgdfa".toCharArray();
+            }
+
+            @Override
+            public boolean shouldRetry(Resource<?> resource) {
+                return false;
+            }
+        });
+        assertNotNull(key.getPublic());
+        assertNull(key.getPrivate());
     }
 }
