@@ -46,4 +46,20 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
             l.delete();
         }
     }
+
+    @Test
+    public void testVerifyIndexError() throws Exception {
+        final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
+                LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/known_hosts.invalidline")) {
+            @Override
+            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+                return false;
+            }
+
+            @Override
+            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+                return false;
+            }
+        };
+    }
 }
