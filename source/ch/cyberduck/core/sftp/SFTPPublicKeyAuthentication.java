@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.sftp.putty.PuTTYKey;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
+import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
@@ -73,7 +73,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                     provider = new PKCS8KeyFile.Factory().create();
                 }
                 else if(format.equals(KeyFormat.PuTTY)) {
-                    provider = new PuTTYKey.Factory().create();
+                    provider = new PuTTYKeyFile.Factory().create();
                 }
                 else {
                     throw new IOException(String.format("Unknown key format %s", identity.getName()));

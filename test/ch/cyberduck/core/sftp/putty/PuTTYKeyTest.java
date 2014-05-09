@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
+import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
@@ -126,7 +127,7 @@ public class PuTTYKeyTest {
 
     @Test
     public void test2048() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk2048));
         assertNotNull(key.getPrivate());
         assertNotNull(key.getPublic());
@@ -134,7 +135,7 @@ public class PuTTYKeyTest {
 
     @Test
     public void test4096() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk4096));
         assertNotNull(key.getPrivate());
         assertNotNull(key.getPublic());
@@ -142,7 +143,7 @@ public class PuTTYKeyTest {
 
     @Test
     public void testCorrectPassphraseRsa() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
             @Override
             public char[] reqPassword(Resource<?> resource) {
@@ -161,7 +162,7 @@ public class PuTTYKeyTest {
 
     @Test(expected = IOException.class)
     public void testWrongPassphraseRsa() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppk1024_passphrase), new PasswordFinder() {
             @Override
             public char[] reqPassword(Resource<?> resource) {
@@ -180,7 +181,7 @@ public class PuTTYKeyTest {
 
     @Test
     public void testCorrectPassphraseDsa() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppkdsa_passphrase), new PasswordFinder() {
             @Override
             public char[] reqPassword(Resource<?> resource) {
@@ -199,7 +200,7 @@ public class PuTTYKeyTest {
 
     @Test(expected = IOException.class)
     public void testWrongPassphraseDsa() throws Exception {
-        PuTTYKey key = new PuTTYKey();
+        PuTTYKeyFile key = new PuTTYKeyFile();
         key.init(new StringReader(ppkdsa_passphrase), new PasswordFinder() {
             @Override
             public char[] reqPassword(Resource<?> resource) {
