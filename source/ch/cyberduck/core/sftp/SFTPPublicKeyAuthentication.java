@@ -76,7 +76,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                     provider = new PuTTYKeyFile.Factory().create();
                 }
                 else {
-                    throw new IOException(String.format("Unknown key format %s", identity.getName()));
+                    throw new IOException(String.format("Unknown key format for file %s", identity.getName()));
                 }
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
