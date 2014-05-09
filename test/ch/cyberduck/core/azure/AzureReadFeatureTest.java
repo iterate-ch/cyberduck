@@ -11,7 +11,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -63,7 +62,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new AzureWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -72,7 +71,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         final InputStream in = new AzureReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
+        new StreamCopier(status, status).transfer(in, buffer);
         final byte[] reference = new byte[content.length - 100];
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());

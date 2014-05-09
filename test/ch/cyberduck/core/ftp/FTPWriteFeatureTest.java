@@ -3,8 +3,8 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -12,7 +12,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -49,7 +48,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new FTPWriteFeature(session).write(test, status);
         assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         IOUtils.closeQuietly(out);
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
@@ -57,7 +56,7 @@ public class FTPWriteFeatureTest extends AbstractTestCase {
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length));
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
+            new StreamCopier(status, status).transfer(in, buffer);
             IOUtils.closeQuietly(in);
             assertArrayEquals(content, buffer.toByteArray());
         }

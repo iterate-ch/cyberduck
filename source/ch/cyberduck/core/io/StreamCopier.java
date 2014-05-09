@@ -36,29 +36,58 @@ public final class StreamCopier {
 
     private StreamProgress progress;
 
-    private Integer chunksize;
+    private StreamListener listener
+            = new DisabledStreamListener();
+
+    /**
+     * Buffer size
+     */
+    private Integer chunksize
+            = Preferences.instance().getInteger("connection.chunksize");
+
+    private Long offset = 0L;
+
+    private Long limit = -1L;
+
+    private boolean keepFlushing;
 
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
-        this(cancel, progress, Preferences.instance().getInteger("connection.chunksize"));
-    }
-
-    public StreamCopier(final StreamCancelation cancel, final StreamProgress progress, final Integer chunksize) {
         this.cancel = cancel;
         this.progress = progress;
+    }
+
+    public StreamCopier withFlushing(boolean keepFlushing) {
+        this.keepFlushing = keepFlushing;
+        return this;
+    }
+
+    public StreamCopier withChunksize(final Integer chunksize) {
         this.chunksize = chunksize;
+        return this;
+    }
+
+    public StreamCopier withListener(final StreamListener listener) {
+        this.listener = listener;
+        return this;
+    }
+
+    public StreamCopier withLimit(final Long limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public StreamCopier withOffset(final Long offset) {
+        this.offset = offset;
+        return this;
     }
 
     /**
      * Updates the current number of bytes transferred in the status reference.
      *
-     * @param in       The stream to read from
-     * @param offset   Skip bytes from input
-     * @param out      The stream to write to
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param limit    Transfer only up to this length
+     * @param in  The stream to read from
+     * @param out The stream to write to
      */
-    public void transfer(final InputStream in, final long offset, final OutputStream out,
-                         final StreamListener listener, final long limit) throws IOException, ConnectionCanceledException {
+    public void transfer(final InputStream in, final OutputStream out) throws IOException, ConnectionCanceledException {
         if(limit == 0) {
             return;
         }
@@ -71,7 +100,7 @@ public final class StreamCopier {
             int len = chunksize;
             if(limit > 0 && limit < chunksize) {
                 // Cast will work because chunk size is int
-                len = (int) limit;
+                len = limit.intValue();
             }
             while(len > 0 && !cancel.isCanceled()) {
                 final int read = in.read(buffer, 0, len);
@@ -85,6 +114,9 @@ public final class StreamCopier {
                 else {
                     listener.recv(read);
                     out.write(buffer, 0, read);
+                    if(keepFlushing) {
+                        out.flush();
+                    }
                     progress.progress(read);
                     listener.sent(read);
                     total += read;
@@ -102,7 +134,9 @@ public final class StreamCopier {
             }
         }
         finally {
-            out.flush();
+            if(!keepFlushing) {
+                out.flush();
+            }
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();

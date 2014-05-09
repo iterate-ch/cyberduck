@@ -31,8 +31,7 @@ public class StreamCopierTest extends AbstractTestCase {
         final byte[] bytes = random.getBytes();
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
-        new StreamCopier(status, status).transfer(IOUtils.toInputStream(random), -1, out,
-                new DisabledStreamListener(), bytes.length);
+        new StreamCopier(status, status).withLimit(new Long(bytes.length)).transfer(IOUtils.toInputStream(random), out);
         assertEquals(bytes.length, status.getCurrent(), 0L);
         assertArrayEquals(bytes, out.toByteArray());
         assertTrue(status.isComplete());
@@ -41,27 +40,26 @@ public class StreamCopierTest extends AbstractTestCase {
     @Test
     public void testTransferUnknownLength() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
-                new StreamListener() {
-                    long sent;
-                    long received;
+        new StreamCopier(status, status).withListener(new StreamListener() {
+            long sent;
+            long received;
 
-                    @Override
-                    public void sent(long bytes) {
-                        assertTrue(bytes > 0L);
-                        assertTrue(bytes <= 32768L);
-                        sent += bytes;
-                        assertTrue(sent == received);
-                    }
+            @Override
+            public void sent(long bytes) {
+                assertTrue(bytes > 0L);
+                assertTrue(bytes <= 32768L);
+                sent += bytes;
+                assertTrue(sent == received);
+            }
 
-                    @Override
-                    public void recv(long bytes) {
-                        assertTrue(bytes > 0L);
-                        assertTrue(bytes <= 32768L);
-                        received += bytes;
-                        assertTrue(received > sent);
-                    }
-                }, -1);
+            @Override
+            public void recv(long bytes) {
+                assertTrue(bytes > 0L);
+                assertTrue(bytes <= 32768L);
+                received += bytes;
+                assertTrue(received > sent);
+            }
+        }).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getCurrent(), 0L);
     }
@@ -70,24 +68,24 @@ public class StreamCopierTest extends AbstractTestCase {
     public void testTransferIncorrectLength() throws Exception {
         final TransferStatus status = new TransferStatus();
         final AtomicBoolean write = new AtomicBoolean();
-        new StreamCopier(status, status).transfer(new NullInputStream(5L), -1, new NullOutputStream() {
-                    @Override
-                    public void write(final byte[] b, final int off, final int len) {
-                        assertEquals(0, off);
-                        assertEquals(5, len);
-                        write.set(true);
-                    }
-                }, new DisabledStreamListener() {
-                    @Override
-                    public void sent(final long bytes) {
-                        assertEquals(5L, bytes);
-                    }
+        new StreamCopier(status, status).withLimit(10L).withListener(new DisabledStreamListener() {
+            @Override
+            public void sent(final long bytes) {
+                assertEquals(5L, bytes);
+            }
 
-                    @Override
-                    public void recv(final long bytes) {
-                        assertEquals(5L, bytes);
-                    }
-                }, 10L
+            @Override
+            public void recv(final long bytes) {
+                assertEquals(5L, bytes);
+            }
+        }).transfer(new NullInputStream(5L), new NullOutputStream() {
+            @Override
+            public void write(final byte[] b, final int off, final int len) {
+                assertEquals(0, off);
+                assertEquals(5, len);
+                write.set(true);
+            }
+        }
         );
         assertTrue(write.get());
         assertTrue(status.isComplete());
@@ -97,8 +95,7 @@ public class StreamCopierTest extends AbstractTestCase {
     @Test
     public void testTransferFixedLength() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
-                new DisabledStreamListener(), 432768L);
+        new StreamCopier(status, status).withLimit(432768L).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertTrue(status.isComplete());
         assertEquals(432768L, status.getCurrent(), 0L);
     }
@@ -106,8 +103,7 @@ public class StreamCopierTest extends AbstractTestCase {
     @Test
     public void testTransferFixedLengthIncomplete() throws Exception {
         final TransferStatus status = new TransferStatus();
-        new StreamCopier(status, status).transfer(new NullInputStream(432768L), -1, new NullOutputStream(),
-                new DisabledStreamListener(), 432767L);
+        new StreamCopier(status, status).withLimit(432767L).transfer(new NullInputStream(432768L), new NullOutputStream());
         assertEquals(432767L, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
     }
@@ -116,15 +112,13 @@ public class StreamCopierTest extends AbstractTestCase {
     public void testSkipInput() throws Exception {
         {
             final TransferStatus status = new TransferStatus();
-            new StreamCopier(status, status).transfer(new NullInputStream(432768L), 1, new NullOutputStream(),
-                    new DisabledStreamListener(), 432768L);
+            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
             assertEquals(432767L, status.getCurrent(), 0L);
             assertTrue(status.isComplete());
         }
         {
             final TransferStatus status = new TransferStatus();
-            new StreamCopier(status, status).transfer(new NullInputStream(432768L), 1, new NullOutputStream(),
-                    new DisabledStreamListener(), -1);
+            new StreamCopier(status, status).withOffset(1L).transfer(new NullInputStream(432768L), new NullOutputStream());
             assertEquals(432767L, status.getCurrent(), 0L);
             assertTrue(status.isComplete());
         }
@@ -163,8 +157,7 @@ public class StreamCopierTest extends AbstractTestCase {
                                 public void setComplete() {
 
                                 }
-                            }).transfer(new NullInputStream(status.getLength()), -1, new NullOutputStream(),
-                                    new DisabledStreamListener(), -1);
+                            }).transfer(new NullInputStream(status.getLength()), new NullOutputStream());
                         }
                         catch(IOException e) {
                             fail();

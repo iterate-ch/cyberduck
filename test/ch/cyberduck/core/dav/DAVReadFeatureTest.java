@@ -2,8 +2,8 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -80,7 +80,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         final InputStream in = new DAVReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
-        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
+        new StreamCopier(status, status).transfer(in, buffer);
         final byte[] reference = new byte[content.length - 100];
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());

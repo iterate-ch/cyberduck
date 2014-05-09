@@ -3,8 +3,8 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -139,7 +139,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         status.setLength(content.length);
         final ResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), 0, out, new DisabledStreamListener(), -1);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertEquals(content.length, status.getCurrent());
         assertTrue(status.isComplete());
         final PathAttributes attributes = new DAVAttributesFeature(session).find(test);

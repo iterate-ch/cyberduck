@@ -64,7 +64,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             try {
                 in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
-                new StreamCopier(cancel, progress).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, status.getLength());
+                new StreamCopier(cancel, progress).withOffset(status.getCurrent()).withLimit(status.getLength()).withListener(listener)
+                        .transfer(in, new ThrottledOutputStream(out, throttle));
             }
             finally {
                 IOUtils.closeQuietly(in);
