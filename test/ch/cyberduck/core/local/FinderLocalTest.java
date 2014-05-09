@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
@@ -40,6 +41,12 @@ public class FinderLocalTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         assertFalse(new FinderLocal("profiles").list().isEmpty());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testListNotFound() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        l.list();
     }
 
     @Test
@@ -102,5 +109,23 @@ public class FinderLocalTest extends AbstractTestCase {
         assertEquals("a", l.getBookmark());
         assertNotNull(l.getOutputStream(false));
         assertNotNull(l.getInputStream());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testSymlinkTargetNotfound() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        try {
+            assertNull(l.getSymlinkTarget());
+        }
+        catch(NotfoundException e) {
+            assertEquals("File not found", e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test
+    public void testSymlinkTarget() throws Exception {
+        FinderLocal l = new FinderLocal("/var");
+        assertNotNull(l.getSymlinkTarget());
     }
 }
