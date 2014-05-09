@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
@@ -63,15 +64,17 @@ public class SFTPWriteFeature implements Write {
                 handle = session.sftp().open(file.getAbsolute(),
                         EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE));
             }
+            final int maxUnconfirmedWrites
+                    = (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1;
             final OutputStream out;
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                out = handle.new RemoteFileOutputStream(status.getCurrent());
+                out = handle.new RemoteFileOutputStream(status.getCurrent(), maxUnconfirmedWrites);
             }
             else {
-                out = handle.new RemoteFileOutputStream();
+                out = handle.new RemoteFileOutputStream(0L, maxUnconfirmedWrites);
             }
             return out;
         }
