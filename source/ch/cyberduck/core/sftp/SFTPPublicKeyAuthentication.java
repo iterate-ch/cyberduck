@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -63,9 +64,9 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
         if(host.getCredentials().isPublicKeyAuthentication()) {
             final Local identity = host.getCredentials().getIdentity();
             final FileKeyProvider provider;
+            final InputStreamReader key = new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8"));
             try {
-                final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
-                        new InputStreamReader(identity.getInputStream()), true);
+                final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(key, true);
                 if(format.equals(KeyFormat.OpenSSH)) {
                     provider = new OpenSSHKeyFile.Factory().create();
                 }
@@ -78,7 +79,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                 else {
                     throw new IOException(String.format("Unknown key format for file %s", identity.getName()));
                 }
-                provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
+                provider.init(key, new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
@@ -108,6 +109,9 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map(e);
+            }
+            finally {
+                IOUtils.closeQuietly(key);
             }
         }
         return false;
