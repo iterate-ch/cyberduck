@@ -9,7 +9,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -367,6 +370,45 @@ public class PuTTYKey implements FileKeyProvider {
         }
         catch(GeneralSecurityException e) {
             throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Parses the putty key bit vector, which is an encoded sequence
+     * of {@link java.math.BigInteger}s.
+     */
+    private final static class KeyReader {
+        private final DataInput di;
+
+        public KeyReader(byte[] key) {
+            this.di = new DataInputStream(new ByteArrayInputStream(key));
+        }
+
+        /**
+         * Skips an integer without reading it.
+         */
+        public void skip() throws IOException {
+            final int read = di.readInt();
+            if(read != di.skipBytes(read)) {
+                throw new IOException(String.format("Failed to skip %d bytes", read));
+            }
+        }
+
+        private byte[] read() throws IOException {
+            int len = di.readInt();
+            if(len <= 0 || len > 513) {
+                throw new IOException(String.format("Invalid length %d", len));
+            }
+            byte[] r = new byte[len];
+            di.readFully(r);
+            return r;
+        }
+
+        /**
+         * Reads the next integer.
+         */
+        public BigInteger readInt() throws IOException {
+            return new BigInteger(read());
         }
     }
 }
