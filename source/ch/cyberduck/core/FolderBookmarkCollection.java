@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Writer;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -49,8 +47,6 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final String PREFIX = "bookmark.";
 
     private static final long serialVersionUID = -675342412129904735L;
-
-    private final Writer<Host> writer = HostWriterFactory.get();
 
     /**
      * @return Singleton instance
