@@ -31,119 +31,106 @@ import java.io.InterruptedIOException;
  * @author Christian Plattner
  * @version $Id$
  */
-public class StreamGobbler extends InputStream
-{
-	class GobblerThread extends Thread
-	{
-		@Override
-		public void run()
-		{
-			byte[] buff = new byte[8192];
+public class StreamGobbler extends InputStream {
+    class GobblerThread extends Thread {
+        @Override
+        public void run() {
+            byte[] buff = new byte[8192];
 
-			while (true)
-			{
-				try
-				{
-					int avail = is.read(buff);
+            while(true) {
+                try {
+                    int avail = is.read(buff);
 
-					synchronized (synchronizer)
-					{
-						if (avail <= 0)
-						{
-							isEOF = true;
-							synchronizer.notifyAll();
-							break;
-						}
+                    synchronized(synchronizer) {
+                        if(avail <= 0) {
+                            isEOF = true;
+                            synchronizer.notifyAll();
+                            break;
+                        }
 
-						int space_available = buffer.length - write_pos;
+                        int space_available = buffer.length - write_pos;
 
-						if (space_available < avail)
-						{
-							/* compact/resize buffer */
+                        if(space_available < avail) {
+                            /* compact/resize buffer */
 
-							int unread_size = write_pos - read_pos;
-							int need_space = unread_size + avail;
+                            int unread_size = write_pos - read_pos;
+                            int need_space = unread_size + avail;
 
-							byte[] new_buffer = buffer;
+                            byte[] new_buffer = buffer;
 
-							if (need_space > buffer.length)
-							{
-								int inc = need_space / 3;
-								inc = (inc < 256) ? 256 : inc;
-								inc = (inc > 8192) ? 8192 : inc;
-								new_buffer = new byte[need_space + inc];
-							}
+                            if(need_space > buffer.length) {
+                                int inc = need_space / 3;
+                                inc = (inc < 256) ? 256 : inc;
+                                inc = (inc > 8192) ? 8192 : inc;
+                                new_buffer = new byte[need_space + inc];
+                            }
 
-							if (unread_size > 0)
-								System.arraycopy(buffer, read_pos, new_buffer, 0, unread_size);
+                            if(unread_size > 0) {
+                                System.arraycopy(buffer, read_pos, new_buffer, 0, unread_size);
+                            }
 
-							buffer = new_buffer;
+                            buffer = new_buffer;
 
-							read_pos = 0;
-							write_pos = unread_size;
-						}
+                            read_pos = 0;
+                            write_pos = unread_size;
+                        }
 
-						System.arraycopy(buff, 0, buffer, write_pos, avail);
-						write_pos += avail;
+                        System.arraycopy(buff, 0, buffer, write_pos, avail);
+                        write_pos += avail;
 
-						synchronizer.notifyAll();
-					}
-				}
-				catch (IOException e)
-				{
-					synchronized (synchronizer)
-					{
-						exception = e;
-						synchronizer.notifyAll();
-						break;
-					}
-				}
-			}
-		}
-	}
+                        synchronizer.notifyAll();
+                    }
+                }
+                catch(IOException e) {
+                    synchronized(synchronizer) {
+                        exception = e;
+                        synchronizer.notifyAll();
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
-	private InputStream is;
+    private InputStream is;
 
-	private final Object synchronizer = new Object();
+    private final Object synchronizer = new Object();
 
-	private boolean isEOF = false;
-	private boolean isClosed = false;
-	private IOException exception = null;
+    private boolean isEOF = false;
+    private boolean isClosed = false;
+    private IOException exception = null;
 
-	private byte[] buffer = new byte[2048];
-	private int read_pos = 0;
-	private int write_pos = 0;
+    private byte[] buffer = new byte[2048];
+    private int read_pos = 0;
+    private int write_pos = 0;
 
-	public StreamGobbler(InputStream is)
-	{
-		this.is = is;
-		GobblerThread t = new GobblerThread();
-		t.setDaemon(true);
-		t.start();
-	}
+    public StreamGobbler(InputStream is) {
+        this.is = is;
+        GobblerThread t = new GobblerThread();
+        t.setDaemon(true);
+        t.start();
+    }
 
-	@Override
-	public int read() throws IOException
-	{
-        synchronized (synchronizer)
-        {
-            if (isClosed)
+    @Override
+    public int read() throws IOException {
+        synchronized(synchronizer) {
+            if(isClosed) {
                 throw new IOException("This StreamGobbler is closed.");
+            }
 
-            while (read_pos == write_pos)
-            {
-                if (exception != null)
+            while(read_pos == write_pos) {
+                if(exception != null) {
                     throw exception;
+                }
 
-                if (isEOF)
+                if(isEOF) {
                     return -1;
+                }
 
-                try
-                {
+                try {
                     synchronizer.wait();
                 }
-                catch (InterruptedException e)
-                {
+                catch(InterruptedException e) {
                     throw new InterruptedIOException();
                 }
             }
@@ -152,67 +139,65 @@ public class StreamGobbler extends InputStream
     }
 
     @Override
-	public int available() throws IOException
-	{
-		synchronized (synchronizer)
-		{
-			if (isClosed)
-				throw new IOException("This StreamGobbler is closed.");
-
-			return write_pos - read_pos;
-		}
-	}
-
-	@Override
-	public int read(byte[] b) throws IOException
-	{
-		return read(b, 0, b.length);
-	}
-
-	@Override
-	public void close() throws IOException
-	{
-		synchronized (synchronizer)
-		{
-			if (isClosed)
-				return;
-			isClosed = true;
-			isEOF = true;
-			synchronizer.notifyAll();
-			is.close();
-		}
-	}
-
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException
-	{
-		if (b == null)
-			throw new NullPointerException();
-
-		if ((off < 0) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0) || (off > b.length))
-			throw new IndexOutOfBoundsException();
-
-        if (len == 0)
-            return 0;
-        synchronized (synchronizer)
-        {
-            if (isClosed)
+    public int available() throws IOException {
+        synchronized(synchronizer) {
+            if(isClosed) {
                 throw new IOException("This StreamGobbler is closed.");
+            }
 
-            while (read_pos == write_pos)
-            {
-                if (exception != null)
+            return write_pos - read_pos;
+        }
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        return read(b, 0, b.length);
+    }
+
+    @Override
+    public void close() throws IOException {
+        synchronized(synchronizer) {
+            if(isClosed) {
+                return;
+            }
+            isClosed = true;
+            isEOF = true;
+            synchronizer.notifyAll();
+            is.close();
+        }
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        if(b == null) {
+            throw new NullPointerException();
+        }
+
+        if((off < 0) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0) || (off > b.length)) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if(len == 0) {
+            return 0;
+        }
+        synchronized(synchronizer) {
+            if(isClosed) {
+                throw new IOException("This StreamGobbler is closed.");
+            }
+
+            while(read_pos == write_pos) {
+                if(exception != null) {
                     throw exception;
+                }
 
-                if (isEOF)
+                if(isEOF) {
                     return -1;
+                }
 
-                try
-                {
+                try {
                     synchronizer.wait();
                 }
-                catch (InterruptedException e)
-                {
+                catch(InterruptedException e) {
                     throw new InterruptedIOException();
                 }
             }
@@ -227,5 +212,5 @@ public class StreamGobbler extends InputStream
 
             return avail;
         }
-	}
+    }
 }
