@@ -80,7 +80,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh")), key.getOutputStream(false));
+        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
@@ -92,6 +92,28 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
             }
         }, new DisabledCancelCallback()));
         assertTrue(p.get());
+        session.close();
+        key.delete();
+    }
+
+    @Test
+    public void testAuthenticateECDSA() throws Exception {
+        final Credentials credentials = new Credentials(
+                properties.getProperty("sftp.user"), "", false
+        );
+        final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
+        credentials.setIdentity(key);
+        LocalTouchFactory.get().touch(key);
+        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.ecdsa")), key.getOutputStream(false));
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                fail();
+            }
+        }, new DisabledCancelCallback()));
         session.close();
         key.delete();
     }
