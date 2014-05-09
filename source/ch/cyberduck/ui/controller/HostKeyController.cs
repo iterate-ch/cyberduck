@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return new HostKeyController(c as WindowController);
                 }
-                return new DefaultHostKeyController();
+                return new DisabledHostKeyCallback();
             }
         }
     }
