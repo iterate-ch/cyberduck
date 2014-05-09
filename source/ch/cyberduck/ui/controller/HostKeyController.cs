@@ -20,12 +20,12 @@ using System;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
+using ch.cyberduck.core.io;
 using ch.cyberduck.core.sftp;
-using ch.cyberduck.core.io.MD5ChecksumCompute;
 using ch.cyberduck.ui;
-using ch.ethz.ssh2;
+using java.io;
+using java.security;
 using org.apache.log4j;
-using java.security.PublicKey;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -45,10 +45,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override bool isUnknownKeyAccepted(string hostname, PublicKey key)
         {
-            if (base.isUnknownKeyAccepted(hostname, key))
-            {
-                return true;
-            }
             AsyncController.AsyncDelegate d = delegate
                 {
                     _parent.CommandBox(
@@ -57,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(
                             LocaleFactory.localizedString(
                                 "The host is currently unknown to the system. The host key fingerprint is {0}."),
-                            new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded())),
+                                new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
@@ -67,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 0:
-                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, verificationChecked);
+                                        allow(hostname, key, verificationChecked);
                                         break;
                                     case 1:
                                         Log.warn("Cannot continue without a valid host key");
@@ -87,7 +83,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                                      new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded())),
+                                                                    new MD5ChecksumCompute().fingerprint(
+                                                                        new ByteArrayInputStream(key.getEncoded()))),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,
@@ -97,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 0:
-                                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, verificationChecked);
+                                        allow(hostname, key, verificationChecked);
                                         break;
                                     case 1:
                                         Log.warn("Cannot continue without a valid host key");
