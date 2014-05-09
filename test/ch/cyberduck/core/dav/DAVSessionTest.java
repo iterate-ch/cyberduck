@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -331,5 +332,39 @@ public class DAVSessionTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "sds-security.selfhost.eu", 8000));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+    }
+
+    @Test
+    public void testLoginChangeUsername() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"),
+                Preferences.instance().getProperty("connection.login.anon.pass"))
+        );
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host);
+        final AtomicBoolean prompt = new AtomicBoolean();
+        final LoginConnectionService c = new LoginConnectionService(new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                if(prompt.get()) {
+                    fail();
+                }
+                credentials.setUsername(properties.getProperty("webdav.user"));
+                credentials.setPassword(properties.getProperty("webdav.password"));
+                prompt.set(true);
+            }
+
+            @Override
+            public void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
+                //
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        c.connect(session, Cache.empty());
+        assertTrue(prompt.get());
+        assertTrue(session.isConnected());
+        assertTrue(session.isSecured());
+        assertNotNull(session.workdir());
+        session.close();
     }
 }
