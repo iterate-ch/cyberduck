@@ -255,6 +255,8 @@
                 <sysproperty key="sftp.user" value="${sftp.user}"/>
                 <sysproperty key="sftp.password" value="${sftp.password}"/>
                 <sysproperty key="sftp.key" value="${sftp.key}"/>
+                <sysproperty key="sftp.key.openssh" value="${sftp.key.openssh}"/>
+                <sysproperty key="sftp.key.putty" value="${sftp.key.putty}"/>
                 <sysproperty key="google.projectid" value="${google.projectid}"/>
                 <sysproperty key="google.accesstoken" value="${google.accesstoken}"/>
                 <sysproperty key="google.refreshtoken" value="${google.refreshtoken}"/>
