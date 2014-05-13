@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -60,12 +61,14 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     @Override
     public boolean open(final Local file, final Application application) {
         synchronized(NSWorkspace.class) {
-            if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(),
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))) {
-                log.warn(String.format("Error opening file %s with application %s", file, application));
-                return false;
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier());
+            if(StringUtils.isNotBlank(path)) {
+                if(NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(), path)) {
+                    return true;
+                }
             }
-            return true;
+            log.warn(String.format("Error opening file %s with application %s", file, application));
+            return false;
         }
     }
 
