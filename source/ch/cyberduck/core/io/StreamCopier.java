@@ -72,12 +72,16 @@ public final class StreamCopier {
     }
 
     public StreamCopier withLimit(final Long limit) {
-        this.limit = limit;
+        if(limit > 0) {
+            this.limit = limit;
+        }
         return this;
     }
 
     public StreamCopier withOffset(final Long offset) {
-        this.offset = offset;
+        if(offset > 0) {
+            this.offset = offset;
+        }
         return this;
     }
 
@@ -88,9 +92,6 @@ public final class StreamCopier {
      * @param out The stream to write to
      */
     public void transfer(final InputStream in, final OutputStream out) throws IOException, ConnectionCanceledException {
-        if(limit == 0) {
-            return;
-        }
         if(offset > 0) {
             skip(in, offset);
         }
