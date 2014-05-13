@@ -24,6 +24,16 @@ import ch.cyberduck.core.threading.CancelCallback;
  * @version $Id$
  */
 public interface LoginService {
+
+    /**
+     * Attempts to login using the credentials provided from the login controller. Repeat failed
+     * login attempts until canceled by the user.
+     *
+     * @param session  Session
+     * @param cache    Directory listing cache
+     * @param listener Authentication message callback
+     * @param cancel   Cancel callback while authentication is in progress
+     */
     void login(Session session, Cache cache, ProgressListener listener, CancelCallback cancel)
             throws BackgroundException;
 }

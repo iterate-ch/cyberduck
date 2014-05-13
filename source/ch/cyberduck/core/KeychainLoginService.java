@@ -42,13 +42,6 @@ public class KeychainLoginService implements LoginService {
         this.keychain = keychain;
     }
 
-    /**
-     * Attempts to login using the credentials provided from the login controller. Repeat failed
-     * login attempts until canceled by the user.
-     *
-     * @param session Session
-     * @param cache   Directory listing cache
-     */
     @Override
     public void login(final Session session, final Cache cache,
                       final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
