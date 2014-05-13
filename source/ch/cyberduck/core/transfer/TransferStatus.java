@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @version $Id$
  */
-public final class TransferStatus implements StreamCancelation, StreamProgress {
+public class TransferStatus implements StreamCancelation, StreamProgress {
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
