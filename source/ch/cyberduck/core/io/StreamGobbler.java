@@ -32,7 +32,7 @@ import java.io.InterruptedIOException;
  * @version $Id$
  */
 public class StreamGobbler extends InputStream {
-    class GobblerThread extends Thread {
+    private final class GobblerThread extends Thread {
         @Override
         public void run() {
             byte[] buff = new byte[8192];
@@ -114,19 +114,13 @@ public class StreamGobbler extends InputStream {
     @Override
     public int read() throws IOException {
         synchronized(synchronizer) {
-            if(isClosed) {
-                throw new IOException("This StreamGobbler is closed.");
-            }
-
             while(read_pos == write_pos) {
                 if(exception != null) {
                     throw exception;
                 }
-
                 if(isEOF) {
                     return -1;
                 }
-
                 try {
                     synchronizer.wait();
                 }
@@ -141,10 +135,6 @@ public class StreamGobbler extends InputStream {
     @Override
     public int available() throws IOException {
         synchronized(synchronizer) {
-            if(isClosed) {
-                throw new IOException("This StreamGobbler is closed.");
-            }
-
             return write_pos - read_pos;
         }
     }
@@ -157,10 +147,6 @@ public class StreamGobbler extends InputStream {
     @Override
     public void close() throws IOException {
         synchronized(synchronizer) {
-            if(isClosed) {
-                return;
-            }
-            isClosed = true;
             isEOF = true;
             synchronizer.notifyAll();
             is.close();
@@ -169,31 +155,17 @@ public class StreamGobbler extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if(b == null) {
-            throw new NullPointerException();
-        }
-
-        if((off < 0) || (len < 0) || ((off + len) > b.length) || ((off + len) < 0) || (off > b.length)) {
-            throw new IndexOutOfBoundsException();
-        }
-
         if(len == 0) {
             return 0;
         }
         synchronized(synchronizer) {
-            if(isClosed) {
-                throw new IOException("This StreamGobbler is closed.");
-            }
-
             while(read_pos == write_pos) {
                 if(exception != null) {
                     throw exception;
                 }
-
                 if(isEOF) {
                     return -1;
                 }
-
                 try {
                     synchronizer.wait();
                 }
