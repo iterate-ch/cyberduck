@@ -363,7 +363,7 @@ public class DAVSessionTest extends AbstractTestCase {
         c.connect(session, Cache.empty());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
-        assertTrue(session.isSecured());
+        assertFalse(session.isSecured());
         assertNotNull(session.workdir());
         session.close();
     }
