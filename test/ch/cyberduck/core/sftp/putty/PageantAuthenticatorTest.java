@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import com.jcraft.jsch.agentproxy.Identity;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -35,7 +36,9 @@ public class PageantAuthenticatorTest extends AbstractTestCase {
 
     @Test
     public void testGetIdentities() throws Exception {
-        final Collection<Identity> identities = new PageantAuthenticator().getIdentities();
+        final PageantAuthenticator authenticator = new PageantAuthenticator();
+        final Collection<Identity> identities = authenticator.getIdentities();
+        assertNull(authenticator.getProxy());
         assertTrue(identities.isEmpty());
     }
 }
