@@ -60,7 +60,7 @@ public class S3FindFeature implements Find {
             // Previously found
             return true;
         }
-        if(list.attributes().getHidden().contains(file)) {
+        if(cache.isHidden(file)) {
             // Previously not found
             return false;
         }

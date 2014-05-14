@@ -55,7 +55,7 @@ public class AzureFindFeature implements Find {
             // Previously found
             return true;
         }
-        if(list.attributes().getHidden().contains(file)) {
+        if(cache.isHidden(file)) {
             // Previously not found
             return false;
         }
