@@ -44,6 +44,7 @@ public class SFTPFindFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(new SFTPFindFeature(session).find(session.workdir()));
+        assertTrue(new SFTPFindFeature(session).find(new Path(session.workdir(), ".ssh", EnumSet.of(AbstractPath.Type.directory))));
         session.close();
     }
 
