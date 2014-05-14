@@ -23,15 +23,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import java.io.IOException;
+
 /**
  * @version $Id$
  */
 public class SFTPFindFeature implements Find {
 
-    private SFTPAttributesFeature attributes;
+    private SFTPSession session;
 
     public SFTPFindFeature(final SFTPSession session) {
-        this.attributes = new SFTPAttributesFeature(session);
+        this.session = session;
     }
 
     @Override
@@ -40,7 +42,12 @@ public class SFTPFindFeature implements Find {
             return true;
         }
         try {
-            return attributes.find(file) != null;
+            try {
+                return session.sftp().canonicalize(file.getAbsolute()) != null;
+            }
+            catch(IOException e) {
+                throw new SFTPExceptionMappingService().map(e);
+            }
         }
         catch(NotfoundException e) {
             // We expect SSH_FXP_STATUS if the file is not found
@@ -50,7 +57,6 @@ public class SFTPFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache cache) {
-        this.attributes.withCache(cache);
         return this;
     }
 }
