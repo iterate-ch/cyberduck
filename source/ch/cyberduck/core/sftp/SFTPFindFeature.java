@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,8 +33,11 @@ public class SFTPFindFeature implements Find {
 
     private SFTPSession session;
 
+    private Cache cache;
+
     public SFTPFindFeature(final SFTPSession session) {
         this.session = session;
+        this.cache = Cache.empty();
     }
 
     @Override
@@ -41,9 +45,27 @@ public class SFTPFindFeature implements Find {
         if(file.isRoot()) {
             return true;
         }
+        final AttributedList<Path> list;
+        if(cache.containsKey(file.getParent().getReference())) {
+            list = cache.get(file.getParent().getReference());
+        }
+        else {
+            list = new AttributedList<Path>();
+            cache.put(file.getParent().getReference(), list);
+        }
+        if(list.contains(file.getReference())) {
+            // Previously found
+            return true;
+        }
+        if(list.attributes().getHidden().contains(file)) {
+            // Previously not found
+            return false;
+        }
         try {
             try {
-                return session.sftp().canonicalize(file.getAbsolute()) != null;
+                session.sftp().canonicalize(file.getAbsolute());
+                list.add(file);
+                return true;
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map(e);
@@ -51,12 +73,14 @@ public class SFTPFindFeature implements Find {
         }
         catch(NotfoundException e) {
             // We expect SSH_FXP_STATUS if the file is not found
+            list.attributes().addHidden(file);
             return false;
         }
     }
 
     @Override
     public Find withCache(final Cache cache) {
+        this.cache = cache;
         return this;
     }
 }
