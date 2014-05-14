@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import net.schmizz.sshj.sftp.FileMode;
+import net.schmizz.sshj.sftp.RemoteDirectory;
 import net.schmizz.sshj.sftp.RemoteResourceFilter;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPException;
@@ -55,7 +56,8 @@ public class SFTPListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            for(RemoteResourceInfo f : session.sftp().openDir(directory.getAbsolute()).scan(new RemoteResourceFilter() {
+            final RemoteDirectory handle = session.sftp().openDir(directory.getAbsolute());
+            for(RemoteResourceInfo f : handle.scan(new RemoteResourceFilter() {
                 @Override
                 public boolean accept(RemoteResourceInfo remoteResourceInfo) {
                     return true;
@@ -77,6 +79,7 @@ public class SFTPListService implements ListService {
                 children.add(file);
                 listener.chunk(children);
             }
+            handle.close();
             return children;
         }
         catch(IOException e) {
