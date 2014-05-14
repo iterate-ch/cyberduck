@@ -226,7 +226,10 @@ public class SFTPSession extends Session<SSHClient> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            this.sftp().close();
+            if(null == sftp) {
+                return;
+            }
+            sftp.close();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
