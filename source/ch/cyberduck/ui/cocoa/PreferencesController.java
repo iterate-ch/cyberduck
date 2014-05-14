@@ -1679,30 +1679,6 @@ public class PreferencesController extends ToolbarWindowController {
         Preferences.instance().setProperty("browser.disconnect.confirm", enabled);
     }
 
-    @Outlet
-    private NSPopUpButton sshTransfersCombobox;
-
-    public void setSshTransfersCombobox(NSPopUpButton b) {
-        this.sshTransfersCombobox = b;
-        this.sshTransfersCombobox.setTarget(this.id());
-        this.sshTransfersCombobox.setAction(Foundation.selector("sshTransfersComboboxClicked:"));
-        this.sshTransfersCombobox.removeAllItems();
-        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(ProtocolFactory.SFTP.getDescription(), LocaleFactory.localizedString("SCP (Secure Copy)")));
-        this.sshTransfersCombobox.itemWithTitle(ProtocolFactory.SFTP.getDescription()).setRepresentedObject(Scheme.sftp.name());
-        this.sshTransfersCombobox.itemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)")).setRepresentedObject(Scheme.scp.name());
-        if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.sftp.name())) {
-            this.sshTransfersCombobox.selectItemWithTitle(ProtocolFactory.SFTP.getDescription());
-        }
-        else if(Preferences.instance().getProperty("ssh.transfer").equals(Scheme.scp.name())) {
-            this.sshTransfersCombobox.selectItemWithTitle(LocaleFactory.localizedString("SCP (Secure Copy)"));
-        }
-    }
-
-    @Action
-    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject());
-    }
-
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
         final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
         if(null == defaultHandler) {
