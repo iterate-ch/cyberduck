@@ -225,17 +225,8 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     protected void logout() throws BackgroundException {
-        if(sftp != null) {
-            try {
-                sftp.close();
-                sftp = null;
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map(e);
-            }
-        }
         try {
-            client.close();
+            this.sftp().close();
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
@@ -244,15 +235,12 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void disconnect() {
-        if(client != null) {
-            try {
-                client.close();
-            }
-            catch(IOException e) {
-                log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
-            }
+        try {
+            client.close();
         }
-        sftp = null;
+        catch(IOException e) {
+            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
+        }
         super.disconnect();
     }
 
