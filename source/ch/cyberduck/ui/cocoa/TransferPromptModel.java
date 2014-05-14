@@ -126,7 +126,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param item File
      * @return False if transfer filter rejected file
      */
-    public boolean isFiltered(final TransferItem item) {
+    protected boolean isFiltered(final TransferItem item) {
         return !status.containsKey(item);
     }
 

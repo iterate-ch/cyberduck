@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -145,7 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconCache.Instance.IconForPath(item.remote, IconCache.IconSize.Small);
         }
 
-        private bool IsFiltered(TransferItem item)
+        protected bool IsFiltered(TransferItem item)
         {
             return !_status.ContainsKey(item);
         }

@@ -52,10 +52,18 @@ public class SyncPromptModel extends TransferPromptModel {
         create
     }
 
+    protected boolean isFiltered(final TransferItem item) {
+        if(super.isFiltered(item)) {
+            return true;
+        }
+        final Comparison compare = transfer.compare(item);
+        return compare.equals(Comparison.equal);
+    }
+
     @Override
-    protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
+    protected NSObject objectValueForItem(final TransferItem item, final String identifier) {
         if(identifier.equals(Column.sync.name())) {
-            final Comparison compare = transfer.compare(file);
+            final Comparison compare = transfer.compare(item);
             if(compare.equals(Comparison.remote)) {
                 return IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16);
             }
@@ -65,12 +73,12 @@ public class SyncPromptModel extends TransferPromptModel {
             return null;
         }
         if(identifier.equals(Column.create.name())) {
-            final TransferStatus status = this.getStatus(file);
+            final TransferStatus status = this.getStatus(item);
             if(!status.isExists()) {
                 return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
             }
             return null;
         }
-        return super.objectValueForItem(file, identifier);
+        return super.objectValueForItem(item, identifier);
     }
 }
