@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -122,14 +121,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         selected.put(file, state);
     }
 
-    /**
-     * @param item File
-     * @return False if transfer filter rejected file
-     */
-    protected boolean isFiltered(final TransferItem item) {
-        return !status.containsKey(item);
-    }
-
     protected AttributedList<TransferItem> get(final TransferItem directory) {
         // Return list with filtered files included
         return cache.get(null == directory ? null : directory.getReference());
@@ -178,8 +169,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
+        final TransferStatus status = this.getStatus(file);
         if(identifier.equals(Column.include.name())) {
-            if(this.isFiltered(file)) {
+            if(status.isSkipped()) {
                 return NSNumber.numberWithBoolean(false);
             }
             return NSNumber.numberWithBoolean(this.isSelected(file));
@@ -190,12 +182,12 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         }
         if(identifier.equals(Column.size.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    SizeFormatterFactory.get().format(this.getStatus(file).getLength()),
+                    SizeFormatterFactory.get().format(status.getLength()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(Column.warning.name())) {
             if(file.remote.isFile()) {
-                if(this.getStatus(file).getLength() == 0) {
+                if(status.getLength() == 0) {
                     return IconCacheFactory.<NSImage>get().iconNamed("alert.tiff");
                 }
             }

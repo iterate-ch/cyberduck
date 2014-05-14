@@ -145,11 +145,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconCache.Instance.IconForPath(item.remote, IconCache.IconSize.Small);
         }
 
-        protected virtual bool IsFiltered(TransferItem item)
-        {
-            return !_status.ContainsKey(item);
-        }
-
         public bool IsSelected(TransferItem item)
         {
             if (_selected.ContainsKey(item))
@@ -162,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public CheckState GetCheckState(Object i)
         {
             TransferItem item = (TransferItem) i;
-            if (IsFiltered(item))
+            if (item.isSkipped())
             {
                 return CheckState.Unchecked;
             }

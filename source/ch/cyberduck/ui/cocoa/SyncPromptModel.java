@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -50,14 +49,6 @@ public class SyncPromptModel extends TransferPromptModel {
          * A column indicating if the file is missing and will be created
          */
         create
-    }
-
-    protected boolean isFiltered(final TransferItem item) {
-        if(super.isFiltered(item)) {
-            return true;
-        }
-        final Comparison compare = transfer.compare(item);
-        return compare.equals(Comparison.equal);
     }
 
     @Override

@@ -29,16 +29,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        protected override bool IsFiltered(TransferItem item)
-        {
-            if(base.IsFiltered(item))
-            {
-                return true;
-            }
-            Comparison compare = ((SyncTransfer) Transfer).compare(item);
-            return compare.equals(Comparison.equal);
-        }
-
         public virtual object GetCreateImage(TransferItem item)
         {
             if (!GetStatus(item).isExists())

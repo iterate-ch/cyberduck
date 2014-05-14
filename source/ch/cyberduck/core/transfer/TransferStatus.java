@@ -55,6 +55,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Append to file
      */
     private boolean append = false;
+
+    /**
+     * Not accepted
+     */
+    private boolean skipped = false;
+
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
@@ -199,6 +205,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public TransferStatus append(final boolean append) {
         this.append = append;
         return this;
+    }
+
+    public void setSkipped(boolean skip) {
+        this.skipped = skip;
+    }
+
+    public TransferStatus skip(final boolean skip) {
+        this.skipped = skip;
+        return this;
+    }
+
+    public boolean isSkipped() {
+        return skipped;
     }
 
     public Rename getRename() {
