@@ -172,8 +172,6 @@
 				<string>NSButton</string>
 				<key>spreadsheetExportFormatPopup</key>
 				<string>NSPopUpButton</string>
-				<key>sshTransfersCombobox</key>
-				<string>NSPopUpButton</string>
 				<key>tabView</key>
 				<string>NSTabView</string>
 				<key>transferPopup</key>

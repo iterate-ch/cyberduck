@@ -77,7 +77,6 @@
         returnKeyCheckbox = NSButton;
         showHiddenCheckbox = NSButton;
         spreadsheetExportFormatPopup = NSPopUpButton;
-        sshTransfersCombobox = NSPopUpButton;
         tabView = NSTabView;
         transferPopup = NSPopUpButton;
         ugroupr = NSButton;
