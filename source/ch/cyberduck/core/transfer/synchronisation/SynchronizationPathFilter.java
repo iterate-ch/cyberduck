@@ -73,8 +73,8 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.local)) {
             return uploadFilter.prepare(file, local, parent);
         }
-        // Directory with equal comparison
-        return new TransferStatus().exists(true);
+        // Equal comparison
+        return uploadFilter.prepare(file, local, parent);
     }
 
     @Override
