@@ -145,7 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconCache.Instance.IconForPath(item.remote, IconCache.IconSize.Small);
         }
 
-        protected bool IsFiltered(TransferItem item)
+        protected virtual bool IsFiltered(TransferItem item)
         {
             return !_status.ContainsKey(item);
         }
