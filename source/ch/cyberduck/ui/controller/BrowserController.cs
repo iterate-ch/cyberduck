@@ -3143,13 +3143,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
                         _controller.View.RefreshBookmark(_session.getHost());
-                        if (_controller.IsMounted())
-                        {
-                            _controller.ToggleView(BrowserView.File);
-                            _controller.View.SecureConnection = _session is SSLSession;
-                            _controller.View.CertBasedConnection = _session is SSLSession;
-                            _controller.View.SecureConnectionVisible = true;
-                        }
+                        _controller.ToggleView(BrowserView.File);
+                        _controller.View.SecureConnection = _session is SSLSession;
+                        _controller.View.CertBasedConnection = _session is SSLSession;
+                        _controller.View.SecureConnectionVisible = true;
                     }
                 }
             }
