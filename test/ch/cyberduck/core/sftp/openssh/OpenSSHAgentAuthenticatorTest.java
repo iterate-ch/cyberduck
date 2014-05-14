@@ -20,12 +20,14 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.AbstractTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
 
 import com.jcraft.jsch.agentproxy.Identity;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -34,10 +36,11 @@ import static org.junit.Assert.assertNotNull;
 public class OpenSSHAgentAuthenticatorTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testGetIdentities() throws Exception {
         final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator();
         final Collection<Identity> identities = authenticator.getIdentities();
         assertNotNull(authenticator.getProxy());
-//        assertFalse(identities.isEmpty());
+        assertFalse(identities.isEmpty());
     }
 }
