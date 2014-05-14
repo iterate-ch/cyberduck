@@ -88,8 +88,12 @@ namespace Ch.Cyberduck.Ui.Controller
             invoke(mainAction);
         }
 
-        public override void invoke(MainAction mainAction, bool wait)
+        public override void invoke(MainAction runnable, bool wait)
         {
+            if (!runnable.isValid())
+            {
+                return;
+            }
             try
             {
                 if (!View.IsHandleCreated)
@@ -102,16 +106,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     //currently only sync
                     if (true)
                     {
-                        View.Invoke(new AsyncDelegate(mainAction.run), null);
+                        View.Invoke(new AsyncDelegate(runnable.run), null);
                     }
                     else
                     {
-                        View.BeginInvoke(new AsyncDelegate(mainAction.run), null);
+                        View.BeginInvoke(new AsyncDelegate(runnable.run), null);
                     }
                 }
                 else
                 {
-                    mainAction.run();
+                    runnable.run();
                 }
             }
             catch (ObjectDisposedException)
