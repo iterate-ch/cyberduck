@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
@@ -52,9 +53,9 @@ public class FinderLocalAttributes extends LocalAttributes {
     /**
      * @return Null if no such file.
      */
-    private NSDictionary getNativeAttributes() throws AccessDeniedException {
+    private NSDictionary getNativeAttributes() throws AccessDeniedException, NotfoundException {
         if((!local.exists())) {
-            return null;
+            throw new NotfoundException(local.getAbsolute());
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
@@ -73,12 +74,8 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @param name File manager attribute name
      * @return Null if no such file or attribute.
      */
-    private NSObject getNativeAttribute(final String name) throws AccessDeniedException {
+    private NSObject getNativeAttribute(final String name) throws AccessDeniedException, NotfoundException {
         final NSDictionary dict = this.getNativeAttributes();
-        if(null == dict) {
-            log.warn(String.format("No file at %s", local));
-            return null;
-        }
         // Returns an entry’s value given its key, or null if no value is associated with key.
         return dict.objectForKey(name);
     }
@@ -93,6 +90,9 @@ public class FinderLocalAttributes extends LocalAttributes {
         catch(AccessDeniedException e) {
             return -1;
         }
+        catch(NotfoundException e) {
+            return -1;
+        }
     }
 
     @Override
@@ -104,6 +104,9 @@ public class FinderLocalAttributes extends LocalAttributes {
                 return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
             }
             catch(AccessDeniedException e) {
+                return Permission.EMPTY;
+            }
+            catch(NotfoundException e) {
                 return Permission.EMPTY;
             }
         }
@@ -166,6 +169,9 @@ public class FinderLocalAttributes extends LocalAttributes {
         catch(AccessDeniedException e) {
             return -1;
         }
+        catch(NotfoundException e) {
+            return -1;
+        }
     }
 
     @Override
@@ -177,6 +183,9 @@ public class FinderLocalAttributes extends LocalAttributes {
         catch(AccessDeniedException e) {
             return null;
         }
+        catch(NotfoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -186,6 +195,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             return object.toString();
         }
         catch(AccessDeniedException e) {
+            return null;
+        }
+        catch(NotfoundException e) {
             return null;
         }
     }
@@ -202,6 +214,9 @@ public class FinderLocalAttributes extends LocalAttributes {
         catch(AccessDeniedException e) {
             return null;
         }
+        catch(NotfoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -215,6 +230,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             return NSFileManager.NSFileTypeSymbolicLink.equals(object.toString());
         }
         catch(AccessDeniedException e) {
+            return false;
+        }
+        catch(NotfoundException e) {
             return false;
         }
     }
