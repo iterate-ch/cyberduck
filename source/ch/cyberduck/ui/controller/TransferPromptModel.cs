@@ -157,7 +157,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public CheckState GetCheckState(Object i)
         {
             TransferItem item = (TransferItem) i;
-            if (item.isSkipped())
+            TransferStatus status = GetStatus(item);
+            if (status.isSkipped())
             {
                 return CheckState.Unchecked;
             }
