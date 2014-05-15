@@ -75,8 +75,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private AtomicBoolean canceled
             = new AtomicBoolean();
+
     private AtomicBoolean complete
             = new AtomicBoolean();
+
+    private AtomicBoolean failure
+            = new AtomicBoolean();
+
     /**
      * MIME type
      */
@@ -109,6 +114,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         complete.set(true);
     }
 
+    public void setFailure() {
+        failure.set(true);
+        complete.set(false);
+    }
+
     /**
      * If this path is currently transferred, interrupt it as soon as possible
      */
@@ -121,6 +131,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean isCanceled() {
         return canceled.get();
+    }
+
+    public boolean isFailure() {
+        return failure.get();
     }
 
     /**
