@@ -34,7 +34,6 @@ import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
@@ -167,7 +166,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
-     * given by the comparision with the HostFilter
+     *         given by the comparision with the HostFilter
      * @see HostFilter
      */
     protected AbstractHostCollection getSource() {
@@ -254,7 +253,9 @@ public class BookmarkTableDataSource extends ListDataSource {
                     Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(Column.bookmark.name())) {
-            final NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>serialize(SerializerFactory.get()));
+            final NSMutableDictionary dict = NSMutableDictionary.dictionary();
+            dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
+            dict.setObjectForKey(host.getHostname(), "Hostname");
             dict.setObjectForKey(new HostUrlProvider(true, true).get(host), "URL");
             final String comment = this.getSource().getComment(host);
             if(StringUtils.isNotBlank(comment)) {
@@ -359,7 +360,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      * @param row  The proposed location is row and action is operation.
      *             The data source should incorporate the data from the dragging pasteboard at this time.
      * @see NSTableView.DataSource
-     * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
+     *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info,
@@ -504,8 +505,8 @@ public class BookmarkTableDataSource extends ListDataSource {
      *              image is currently poised) is in the same application as the source, while a NO value indicates that
      *              the destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     * any dragging operations, it should return NSDragOperationNone.
+     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     *         any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -519,11 +520,11 @@ public class BookmarkTableDataSource extends ListDataSource {
     /**
      * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
-     * the drag data onto pboard (data, owner, and so on).
+     *         the drag data onto pboard (data, owner, and so on).
      * @see NSTableView.DataSource
-     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
-     * The drag image and other drag-related information will be set up and provided by the table view once this call
-     * returns with true.
+     *      Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
+     *      The drag image and other drag-related information will be set up and provided by the table view once this call
+     *      returns with true.
      */
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
@@ -543,11 +544,11 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination,
-     * in the case of another Cocoa application, invokes the NSDraggingInfo method
-     * namesOfPromisedFilesDroppedAtDestination.
-     * For long operations, you can cache dropDestination and defer the creation of the files until the
-     * finishedDraggingImage method to avoid blocking the destination application.
+     *         This method is invoked when the drop has been accepted by the destination and the destination,
+     *         in the case of another Cocoa application, invokes the NSDraggingInfo method
+     *         namesOfPromisedFilesDroppedAtDestination.
+     *         For long operations, you can cache dropDestination and defer the creation of the files until the
+     *         finishedDraggingImage method to avoid blocking the destination application.
      * @see NSTableView.DataSource
      */
     @Override
