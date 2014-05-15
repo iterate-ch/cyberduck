@@ -52,6 +52,7 @@ public class WatchEditorFactory extends EditorFactory {
         this.add(new Application("com.macromates.textmate", "TextMate"));
         this.add(new Application("com.macromates.TextMate.preview", "TextMate 2"));
         this.add(new Application("com.sublimetext.2", "Sublime Text 2"));
+        this.add(new Application("com.sublimetext.3", "Sublime Text 3"));
         this.add(new Application("com.transtex.texeditplus", "Tex-Edit Plus"));
         this.add(new Application("jp.co.artman21.JeditX", "Jedit X"));
         this.add(new Application("net.mimikaki.mi", "mi"));
