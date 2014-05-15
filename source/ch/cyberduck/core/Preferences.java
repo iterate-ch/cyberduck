@@ -831,6 +831,8 @@ public abstract class Preferences {
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
         defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
 
+        defaults.put("ssh.authentication.agent.enable", String.valueOf(true));
+
         /**
          * Enable ZLIB compression
          */
@@ -988,7 +990,7 @@ public abstract class Preferences {
 
     /**
      * @return The preferred locale of all localizations available
-     * in this application bundle
+     *         in this application bundle
      */
     public String locale() {
         return this.applicationLocales().iterator().next();
