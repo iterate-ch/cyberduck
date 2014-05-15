@@ -40,6 +40,7 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -173,6 +174,9 @@ public class SFTPSession extends Session<SSHClient> {
                     continue;
                 }
             }
+            catch(IllegalStateException e) {
+                throw new ConnectionCanceledException(e);
+            }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with authentication method %s", auth));
                 cancel.verify();
@@ -183,9 +187,12 @@ public class SFTPSession extends Session<SSHClient> {
             }
             break;
         }
+        final String banner = client.getUserAuth().getBanner();
+        if(StringUtils.isNotBlank(banner)) {
+            this.log(false, banner);
+        }
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
-            this.log(false, client.getUserAuth().getBanner());
             if(client.getUserAuth().hadPartialSuccess()) {
                 final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
                 prompt.prompt(host.getProtocol(), additional,
