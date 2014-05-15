@@ -56,7 +56,10 @@ public class DefaultDownloadFeature implements Download {
             try {
                 in = reader.read(file, status);
                 out = local.getOutputStream(status.isAppend());
-                new StreamCopier(status, status).withOffset(0L).withLimit(status.getLength()).withListener(listener)
+                new StreamCopier(status, status)
+                        .withOffset(0L)
+                        .withLimit(status.getLength())
+                        .withListener(listener)
                         .transfer(new ThrottledInputStream(in, throttle), out);
             }
             finally {

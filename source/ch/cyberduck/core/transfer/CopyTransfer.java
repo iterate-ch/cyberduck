@@ -215,12 +215,14 @@ public class CopyTransfer extends Transfer {
             if(file.isFile()) {
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
-                new StreamCopier(status, status).withLimit(status.getLength()).withListener(new DisabledStreamListener() {
-                    @Override
-                    public void sent(long bytes) {
-                        addTransferred(bytes);
-                    }
-                }).transfer(in, out);
+                new StreamCopier(status, status)
+                        .withLimit(status.getLength())
+                        .withListener(new DisabledStreamListener() {
+                            @Override
+                            public void sent(long bytes) {
+                                addTransferred(bytes);
+                            }
+                        }).transfer(in, out);
             }
         }
         catch(IOException e) {
