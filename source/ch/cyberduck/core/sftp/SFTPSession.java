@@ -209,6 +209,7 @@ public class SFTPSession extends Session<SSHClient> {
                     return super.request(req);
                 }
             }.init();
+            sftp.setTimeoutMs(this.timeout());
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
