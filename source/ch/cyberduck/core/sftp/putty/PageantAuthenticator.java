@@ -70,6 +70,9 @@ public class PageantAuthenticator extends AgentAuthenticator {
         }
         final List<Identity> identities
                 = new ArrayList<Identity>();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Found %d identities", identities.size()));
+        }
         Collections.addAll(identities, proxy.getIdentities());
         return identities;
     }
