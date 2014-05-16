@@ -62,6 +62,7 @@ import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
 import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.transport.DisconnectListener;
+import net.schmizz.sshj.transport.Transport;
 import net.schmizz.sshj.transport.compression.Compression;
 import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
 import net.schmizz.sshj.transport.compression.NoneCompression;
@@ -135,9 +136,11 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             });
             disconnectListener = new StateDisconnectListener();
-            connection.getTransport().setDisconnectListener(disconnectListener);
-            connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
-                    host.getPort());
+            final Transport transport = connection.getTransport();
+            transport.setDisconnectListener(disconnectListener);
+            transport.setHeartbeatInterval(
+                    Preferences.instance().getInteger("ssh.heartbeat.seconds"));
+            connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
             return connection;
         }
         catch(IOException e) {
