@@ -34,7 +34,12 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             XmlNodeList dictNodes = plistDocument.SelectNodes("/plist/array/dict");
             foreach (XmlNode node in dictNodes)
             {
-                resultCollection.add(deserialize(node));
+                object r = deserialize(node);
+                if (null == r)
+                {
+                    continue;
+                }
+                resultCollection.add(r);
             }
             return resultCollection;
         }
