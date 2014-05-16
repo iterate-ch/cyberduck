@@ -158,12 +158,12 @@ public class SFTPSession extends Session<SSHClient> {
                 methods.add(new SFTPPublicKeyAuthentication(this));
             }
             else {
+                methods.add(new SFTPChallengeResponseAuthentication(this));
+                methods.add(new SFTPPasswordAuthentication(this));
                 if(Preferences.instance().getBoolean("ssh.authentication.agent.enable")) {
                     methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
                     methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
                 }
-                methods.add(new SFTPChallengeResponseAuthentication(this));
-                methods.add(new SFTPPasswordAuthentication(this));
             }
         }
         for(SFTPAuthentication auth : methods) {
