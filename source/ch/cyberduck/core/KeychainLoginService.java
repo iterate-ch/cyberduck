@@ -102,23 +102,19 @@ public class KeychainLoginService implements LoginService {
                 credentials.setIdentity(controller.select());
             }
         }
-        if(!credentials.validate(bookmark.getProtocol(), options)
-                || credentials.isPublicKeyAuthentication()) {
+        if(!credentials.validate(bookmark.getProtocol(), options)) {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     final String password = keychain.find(bookmark);
                     if(StringUtils.isBlank(password)) {
-                        if(!credentials.isPublicKeyAuthentication()) {
-                            final StringAppender appender = new StringAppender();
-                            appender.append(message);
-                            appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                            controller.prompt(bookmark.getProtocol(), credentials,
-                                    LocaleFactory.localizedString("Login", "Login"),
-                                    appender.toString(),
-                                    options);
-                        }
-                        // We decide later if the key is encrypted and a password must be known to decrypt.
+                        final StringAppender appender = new StringAppender();
+                        appender.append(message);
+                        appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                        controller.prompt(bookmark.getProtocol(), credentials,
+                                LocaleFactory.localizedString("Login", "Login"),
+                                appender.toString(),
+                                options);
                     }
                     else {
                         credentials.setPassword(password);
