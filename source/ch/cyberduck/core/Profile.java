@@ -51,12 +51,12 @@ public final class Profile implements Protocol, Serializable {
     public Profile(final Deserializer dict) {
         this.dict = dict;
         final String protocol = this.value("Protocol");
-        if(StringUtils.isBlank(protocol)) {
-            log.error("Missing protocol in profile");
-            parent = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-        }
-        else {
+        if(StringUtils.isNotBlank(protocol)) {
             parent = ProtocolFactory.forName(protocol);
+        }
+        if(null == parent) {
+            log.error("Missing or unknown protocol in profile");
+            parent = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         }
         image = this.write(this.value("Disk"));
     }
