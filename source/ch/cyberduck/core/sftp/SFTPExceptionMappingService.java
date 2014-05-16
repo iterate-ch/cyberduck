@@ -61,13 +61,19 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
         }
         if(e instanceof TransportException) {
             final TransportException failure = (TransportException) e;
-            if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(failure.getDisconnectReason())) {
-                return new ConnectionCanceledException(e);
-            }
-            if(DisconnectReason.UNKNOWN.equals(failure.getDisconnectReason())) {
-                // Too many authentication failures
-                return new LoginFailureException(e.getMessage(), e);
-            }
+            final DisconnectReason reason = failure.getDisconnectReason();
+            return this.map(e, buffer, reason);
+        }
+        return this.wrap(e, buffer);
+    }
+
+    private BackgroundException map(IOException e, StringBuilder buffer, DisconnectReason reason) {
+        if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(reason)) {
+            return new ConnectionCanceledException(e);
+        }
+        if(DisconnectReason.UNKNOWN.equals(reason)) {
+            // Too many authentication failures
+            return new LoginFailureException(e.getMessage(), e);
         }
         return this.wrap(e, buffer);
     }
