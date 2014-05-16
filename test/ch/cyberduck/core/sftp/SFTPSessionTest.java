@@ -1,18 +1,23 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Symlink;
@@ -52,16 +57,29 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertFalse(session.isConnected());
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testLoginFailureToomanyauthenticationfailures() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 "jenkins", "p"
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        final AtomicBoolean fail = new AtomicBoolean();
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
+                fail.set(true);
+                throw new LoginCanceledException();
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        try {
+            login.connect(session, Cache.empty());
+        }
+        catch(LoginCanceledException e) {
+            assertTrue(fail.get());
+            throw e;
+        }
     }
 
     @Test(expected = BackgroundException.class)

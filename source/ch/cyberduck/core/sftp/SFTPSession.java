@@ -56,6 +56,7 @@ import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.Factory;
+import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.sftp.Request;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
@@ -74,6 +75,8 @@ public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private SFTPEngine sftp;
+
+    private StateDisconnectListener disconnectListener;
 
     public SFTPSession(final Host h) {
         super(h);
@@ -131,12 +134,8 @@ public class SFTPSession extends Session<SSHClient> {
                     }
                 }
             });
-            connection.getTransport().setDisconnectListener(new DisconnectListener() {
-                @Override
-                public void notifyDisconnect(final DisconnectReason reason) {
-                    log.warn(String.format("Disconnected %s", reason));
-                }
-            });
+            disconnectListener = new StateDisconnectListener();
+            connection.getTransport().setDisconnectListener(disconnectListener);
             connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),
                     host.getPort());
             return connection;
@@ -177,7 +176,8 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
             catch(IllegalStateException e) {
-                throw new ConnectionCanceledException(e);
+                throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
+                        disconnectListener.getFailure());
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with authentication method %s", auth));
@@ -313,5 +313,22 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPCompressFeature(this);
         }
         return super.getFeature(type);
+    }
+
+    private static final class StateDisconnectListener implements DisconnectListener {
+        private SSHException failure;
+
+        @Override
+        public void notifyDisconnect(final DisconnectReason reason, final String message) {
+            log.warn(String.format("Disconnected %s", reason));
+            this.failure = new SSHException(reason, message);
+        }
+
+        /**
+         * @return Last disconnect reason
+         */
+        public SSHException getFailure() {
+            return failure;
+        }
     }
 }

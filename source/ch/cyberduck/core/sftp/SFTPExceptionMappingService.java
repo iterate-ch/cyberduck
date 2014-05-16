@@ -29,9 +29,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import java.io.IOException;
 
 import net.schmizz.sshj.common.DisconnectReason;
+import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPException;
-import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
 /**
@@ -59,21 +59,31 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
         if(e instanceof UserAuthException) {
             return new LoginFailureException(e.getMessage(), e);
         }
-        if(e instanceof TransportException) {
-            final TransportException failure = (TransportException) e;
+        if(e instanceof SSHException) {
+            final SSHException failure = (SSHException) e;
             final DisconnectReason reason = failure.getDisconnectReason();
             return this.map(e, buffer, reason);
         }
         return this.wrap(e, buffer);
     }
 
-    private BackgroundException map(IOException e, StringBuilder buffer, DisconnectReason reason) {
+    public BackgroundException map(final IOException e, final StringBuilder buffer, final DisconnectReason reason) {
         if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(reason)) {
+            // Host key dismissed by user
             return new ConnectionCanceledException(e);
         }
-        if(DisconnectReason.UNKNOWN.equals(reason)) {
+        if(DisconnectReason.PROTOCOL_ERROR.equals(reason)) {
             // Too many authentication failures
-            return new LoginFailureException(e.getMessage(), e);
+            return new LoginFailureException(buffer.toString(), e);
+        }
+        if(DisconnectReason.ILLEGAL_USER_NAME.equals(reason)) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
+        if(DisconnectReason.NO_MORE_AUTH_METHODS_AVAILABLE.equals(reason)) {
+            return new LoginFailureException(buffer.toString(), e);
+        }
+        if(DisconnectReason.PROTOCOL_VERSION_NOT_SUPPORTED.equals(reason)) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
