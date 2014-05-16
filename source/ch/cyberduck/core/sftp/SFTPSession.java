@@ -133,8 +133,8 @@ public class SFTPSession extends Session<SSHClient> {
             });
             connection.getTransport().setDisconnectListener(new DisconnectListener() {
                 @Override
-                public void notifyDisconnect(DisconnectReason disconnectReason) {
-                    log.warn(String.format("Disconnected %s", disconnectReason));
+                public void notifyDisconnect(final DisconnectReason reason) {
+                    log.warn(String.format("Disconnected %s", reason));
                 }
             });
             connection.connect(new OpenSSHHostnameConfigurator().getHostname(host.getHostname()),

@@ -2,8 +2,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.UnixPermission;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,7 +53,7 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginFailureException.class)
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailureToomanyauthenticationfailures() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 "jenkins", "p"
         ));
@@ -96,7 +95,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         try {
             session.open(new HostKeyCallback() {
                 @Override
-                public boolean verify(String hostname, int port, PublicKey key) throws  ConnectionCanceledException {
+                public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
