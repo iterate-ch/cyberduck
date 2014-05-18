@@ -57,7 +57,7 @@ public class SFTPExceptionMappingService extends AbstractIOExceptionMappingServi
             }
         }
         if(e instanceof UserAuthException) {
-            return new LoginFailureException(e.getMessage(), e);
+            return new LoginFailureException(buffer.toString(), e);
         }
         if(e instanceof SSHException) {
             final SSHException failure = (SSHException) e;

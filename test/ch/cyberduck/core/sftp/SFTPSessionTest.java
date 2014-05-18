@@ -66,8 +66,11 @@ public class SFTPSessionTest extends AbstractTestCase {
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
+            public void prompt(Protocol protocol, Credentials credentials,
+                               String title, String reason, LoginOptions options)
+                    throws LoginCanceledException {
+                assertEquals("Login failed", title);
+//                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }

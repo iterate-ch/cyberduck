@@ -168,6 +168,7 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
         }
+        LoginFailureException lastFailure = null;
         for(SFTPAuthentication auth : methods) {
             try {
                 if(!auth.authenticate(host, prompt, cancel)) {
@@ -185,6 +186,7 @@ public class SFTPSession extends Session<SSHClient> {
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with authentication method %s", auth));
                 cancel.verify();
+                lastFailure = e;
                 continue;
             }
             if(log.isInfoEnabled()) {
@@ -210,7 +212,7 @@ public class SFTPSession extends Session<SSHClient> {
             }
             else {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), host.getHostname()));
+                        "Login {0} with username and password", "Credentials"), host.getHostname()), lastFailure);
             }
         }
         try {
