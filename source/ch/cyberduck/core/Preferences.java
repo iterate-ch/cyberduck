@@ -804,6 +804,9 @@ public abstract class Preferences {
         defaults.put("connection.ssl.protocols", "TLSv1.2, TLSv1.1, TLSv1, SSLv3");
         defaults.put("connection.ssl.x509.revocation.online", String.valueOf(false));
 
+        defaults.put("connection.ssl.keystore.type", null);
+        defaults.put("connection.ssl.keystore.provider", null);
+
         /**
          * Transfer read buffer size
          */

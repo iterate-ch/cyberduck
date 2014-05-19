@@ -36,10 +36,11 @@ import java.security.cert.X509Certificate;
  *
  * @version $Id$
  */
-public abstract class AbstractX509KeyManager implements X509KeyManager {
+public abstract class DefaultX509KeyManager implements X509KeyManager {
 
     private javax.net.ssl.X509KeyManager manager;
 
+    @Override
     public X509KeyManager init() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.

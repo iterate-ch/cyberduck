@@ -2641,8 +2641,8 @@ source/ch/cyberduck/core/serializer/impl/PlistWriter.cs -text
 source/ch/cyberduck/core/serializer/impl/ProfilePlistReader.cs -text
 source/ch/cyberduck/core/serializer/impl/TransferPlistReader.cs -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
-source/ch/cyberduck/core/ssl/AbstractX509KeyManager.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
+source/ch/cyberduck/core/ssl/DefaultX509KeyManager.java -text
 source/ch/cyberduck/core/ssl/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/urlhandler/LaunchServicesSchemeHandler.m -text
