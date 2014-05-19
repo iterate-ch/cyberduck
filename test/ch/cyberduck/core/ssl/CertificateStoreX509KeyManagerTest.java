@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.junit.Test;
 
+import javax.security.auth.x500.X500Principal;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -70,8 +71,9 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
             }
         }
         ).init();
-        assertNull(m.chooseClientAlias(new String[]{"CN=StartCom Class 2 Primary Intermediate Client CA"},
-                new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
+        assertNull(m.chooseClientAlias(new String[]{""},
+                new Principal[]{new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA")},
+                new Socket("localhost", 443)));
         assertTrue(choose.get());
     }
 
