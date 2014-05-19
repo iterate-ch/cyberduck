@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,7 +38,7 @@ public final class DefaultX509TrustManager implements X509TrustManager {
 
     private X509TrustManager standardTrustManager;
 
-    public DefaultX509TrustManager() {
+    public DefaultX509TrustManager init() throws IOException {
         try {
             final TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             factory.init(KeyStore.getInstance(KeyStore.getDefaultType()));
@@ -48,11 +49,12 @@ public final class DefaultX509TrustManager implements X509TrustManager {
             this.standardTrustManager = (X509TrustManager) trustmanagers[0];
         }
         catch(NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
+            throw new IOException(e);
         }
         catch(KeyStoreException e) {
-            log.error(e.getMessage());
+            throw new IOException(e);
         }
+        return this;
     }
 
     @Override
@@ -82,6 +84,6 @@ public final class DefaultX509TrustManager implements X509TrustManager {
 
     @Override
     public X509Certificate[] getAcceptedIssuers() {
-        return this.standardTrustManager.getAcceptedIssuers();
+        return standardTrustManager.getAcceptedIssuers();
     }
 }

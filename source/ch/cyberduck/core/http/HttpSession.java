@@ -29,6 +29,8 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
@@ -62,7 +64,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -87,13 +88,18 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         hostnameVerifier.setTarget(host.getHostname());
     }
 
+    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
+        hostnameVerifier.setTarget(host.getHostname());
+    }
+
     public HttpClientBuilder connect() {
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
         // factory to be used to create the java.net.Socket instances for the given protocol
         final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register(Scheme.http.toString(), PlainConnectionSocketFactory.getSocketFactory())
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()),
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager()),
                         hostnameVerifier
                 ) {
                     @Override

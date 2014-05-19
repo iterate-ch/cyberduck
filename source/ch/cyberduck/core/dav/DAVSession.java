@@ -49,6 +49,8 @@ import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -64,7 +66,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
@@ -88,6 +89,10 @@ public class DAVSession extends HttpSession<DAVClient> {
         super(host, manager);
     }
 
+    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
+    }
+
     public DAVSession(final Host host, final RedirectCallback redirect) {
         super(host);
         this.redirect = redirect;
@@ -95,6 +100,11 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     public DAVSession(final Host host, final X509TrustManager manager, final RedirectCallback redirect) {
         super(host, manager);
+        this.redirect = redirect;
+    }
+
+    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {
+        super(host, trust, key);
         this.redirect = redirect;
     }
 

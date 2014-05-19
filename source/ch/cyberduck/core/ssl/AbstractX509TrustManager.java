@@ -20,7 +20,6 @@ package ch.cyberduck.core.ssl;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.List;

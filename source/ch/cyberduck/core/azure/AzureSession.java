@@ -45,14 +45,16 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -79,22 +81,20 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     private final static DisabledX509HostnameVerifier verifier
             = new DisabledX509HostnameVerifier();
 
-    private final static KeychainX509TrustManager trust
+    private final static X509TrustManager trust
             = new KeychainX509TrustManager(verifier);
 
-    public AzureSession(final Host h) {
-        super(h, trust);
-    }
+    private final static X509KeyManager key
+            = new KeychainX509KeyManager(verifier);
 
-    @Override
-    public X509TrustManager getTrustManager() {
-        return trust;
+    public AzureSession(final Host h) {
+        super(h, trust, key);
     }
 
     static {
         HttpsURLConnection.setDefaultHostnameVerifier(verifier);
         HttpsURLConnection.setFollowRedirects(true);
-        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust));
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(trust, key));
     }
 
     @Override

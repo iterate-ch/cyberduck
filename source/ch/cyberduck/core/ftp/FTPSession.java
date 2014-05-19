@@ -44,13 +44,14 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -78,6 +79,10 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     public FTPSession(final Host host, final X509TrustManager manager) {
         super(host, manager);
+    }
+
+    public FTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
+        super(h, trust, key);
     }
 
     @Override
@@ -158,17 +163,17 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
-        final CustomTrustSSLProtocolSocketFactory f
-                = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
-
-        final FTPClient client = new FTPClient(f, f.getSSLContext());
-        client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
-            @Override
-            public void log(boolean request, String event) {
-                FTPSession.this.log(request, event);
-            }
-        });
         try {
+            final CustomTrustSSLProtocolSocketFactory f
+                    = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager());
+
+            final FTPClient client = new FTPClient(f, f.getSSLContext());
+            client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
+                @Override
+                public void log(boolean request, String event) {
+                    FTPSession.this.log(request, event);
+                }
+            });
             this.configure(client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);

@@ -47,6 +47,8 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +67,6 @@ import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.oauth.OAuthConstants;
 import org.jets3t.service.utils.oauth.OAuthUtils;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -89,6 +90,10 @@ public class GoogleStorageSession extends S3Session {
 
     public GoogleStorageSession(final Host host, final X509TrustManager manager) {
         super(host, manager);
+    }
+
+    public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
     }
 
     @Override

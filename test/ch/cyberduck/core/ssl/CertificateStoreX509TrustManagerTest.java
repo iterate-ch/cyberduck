@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.Keychain;
 
 import org.junit.Test;
@@ -46,20 +46,10 @@ public class CertificateStoreX509TrustManagerTest extends AbstractTestCase {
             public String getTarget() {
                 return "cyberduck.ch";
             }
-        }, new CertificateStore() {
+        }, new DisabledCertificateStore() {
             @Override
             public boolean isTrusted(final String hostname, List<X509Certificate> certificates) {
                 return false;
-            }
-
-            @Override
-            public boolean display(List<X509Certificate> certificates) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public X509Certificate choose(final String[] issuers, final String hostname, final String prompt) {
-                throw new UnsupportedOperationException();
             }
         }
         );

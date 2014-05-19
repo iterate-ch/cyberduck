@@ -49,12 +49,13 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -91,6 +92,10 @@ public class SwiftSession extends HttpSession<Client> {
 
     public SwiftSession(final Host host, final X509TrustManager manager) {
         super(host, manager);
+    }
+
+    public SwiftSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
     }
 
     @Override

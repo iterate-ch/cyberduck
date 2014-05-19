@@ -23,9 +23,10 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -35,22 +36,33 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class SSLSession<C> extends Session<C> implements TrustManagerHostnameCallback {
+    private static final Logger log = Logger.getLogger(SSLSession.class);
 
     static {
         Security.insertProviderAt(new BouncyCastleProvider(),
                 Preferences.instance().getInteger("connection.ssl.provider.bouncycastle.position"));
     }
 
-    private X509TrustManager trust;
+    protected X509TrustManager trust;
+
+    protected X509KeyManager key;
 
     protected SSLSession(final Host h) {
         super(h);
         this.trust = new KeychainX509TrustManager(this);
+        this.key = new KeychainX509KeyManager(this);
     }
 
     protected SSLSession(final Host host, final X509TrustManager manager) {
         super(host);
         this.trust = manager;
+        this.key = new KeychainX509KeyManager(this);
+    }
+
+    protected SSLSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
+        super(h);
+        this.trust = trust;
+        this.key = key;
     }
 
     public String getTarget() {
@@ -61,13 +73,29 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
      * @return Trust manager backed by keychain
      */
     public X509TrustManager getTrustManager() {
+        try {
+            return trust.init();
+        }
+        catch(IOException e) {
+            log.error(String.format("Initialization of trust store failed %s", e.getMessage()));
+        }
         return trust;
+    }
+
+    public X509KeyManager getKeyManager() {
+        try {
+            return key.init();
+        }
+        catch(IOException e) {
+            log.error(String.format("Initialization of key store failed %s", e.getMessage()));
+        }
+        return key;
     }
 
     /**
      * @return List of certificates accepted by all trust managers of this session.
      */
     public List<X509Certificate> getAcceptedIssuers() {
-        return Arrays.asList(this.getTrustManager().getAcceptedIssuers());
+        return Arrays.asList(trust.getAcceptedIssuers());
     }
 }

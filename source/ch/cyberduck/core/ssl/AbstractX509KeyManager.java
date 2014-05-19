@@ -20,7 +20,6 @@ package ch.cyberduck.core.ssl;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.X509KeyManager;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -33,7 +32,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- * Default implementation for certificate trust settings.
+ * Default implementation to choose certificates from key store.
  *
  * @version $Id$
  */
@@ -41,7 +40,7 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
 
     private X509KeyManager manager;
 
-    protected AbstractX509KeyManager() throws IOException {
+    public X509KeyManager init() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.
             final KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -50,10 +49,10 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
             store.load(null);
             // Load default key manager factory using key store
             factory.init(store, null);
-            for(KeyManager keyManager : factory.getKeyManagers()) {
-                if(keyManager instanceof X509KeyManager) {
+            for(KeyManager m : factory.getKeyManagers()) {
+                if(m instanceof X509KeyManager) {
                     // Get the first X509KeyManager in the list
-                    manager = (X509KeyManager) keyManager;
+                    manager = (X509KeyManager) m;
                     break;
                 }
             }
@@ -63,17 +62,18 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
             }
         }
         catch(CertificateException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(UnrecoverableKeyException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(KeyStoreException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
+        return this;
     }
 
     @Override

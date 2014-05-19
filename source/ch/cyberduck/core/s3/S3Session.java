@@ -42,6 +42,8 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +69,6 @@ import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -93,6 +94,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     public S3Session(final Host host, final X509TrustManager manager) {
         super(host, manager);
+    }
+
+    public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
     }
 
     /**

@@ -20,14 +20,12 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.CertificateStoreFactory;
 
-import java.io.IOException;
-
 /**
  * @version $Id$
  */
-public class KeychainX509KeyManager extends CertificateStoreX509KeyManager {
+public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    public KeychainX509KeyManager(final TrustManagerHostnameCallback callback) throws IOException {
+    public KeychainX509KeyManager(final TrustManagerHostnameCallback callback) {
         super(callback, CertificateStoreFactory.get());
     }
 }

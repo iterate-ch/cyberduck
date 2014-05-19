@@ -54,9 +54,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     private CertificateStore certificateStore;
 
-    public CertificateStoreX509KeyManager(final TrustManagerHostnameCallback callback, final CertificateStore certificateStore)
-            throws IOException {
+    public CertificateStoreX509KeyManager(final TrustManagerHostnameCallback callback,
+                                          final CertificateStore certificateStore) {
         this.callback = callback;
+        this.certificateStore = certificateStore;
+    }
+
+    public X509KeyManager init() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.
             keyStore = KeyStore.getInstance("KeychainStore", "Apple");
@@ -64,21 +68,21 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             keyStore.load(null, null);
         }
         catch(CertificateException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(NoSuchAlgorithmException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(KeyStoreException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(IOException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
         catch(NoSuchProviderException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(e);
         }
-        this.certificateStore = certificateStore;
+        return this;
     }
 
     @Override
@@ -124,7 +128,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             return alias;
         }
         catch(KeyStoreException e) {
-            log.error(String.format("Keystore not loaded:%s", e.getMessage()));
+            log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
         return null;
     }
@@ -154,7 +158,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             return result.toArray(new X509Certificate[result.size()]);
         }
         catch(KeyStoreException e) {
-            log.error("Keystore not loaded:" + e.getMessage());
+            log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
         return null;
     }
@@ -170,7 +174,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             }
         }
         catch(KeyStoreException e) {
-            log.error("Keystore not loaded:" + e.getMessage());
+            log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
         catch(NoSuchAlgorithmException e) {
             log.error(e.getMessage());

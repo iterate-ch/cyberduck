@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -40,6 +41,11 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     public CertificateStoreX509TrustManager(final TrustManagerHostnameCallback callback, final CertificateStore store) {
         this.callback = callback;
         this.store = store;
+    }
+
+    @Override
+    public X509TrustManager init() throws IOException {
+        return this;
     }
 
     @Override
