@@ -20,29 +20,59 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.auth.BasicUserPrincipal;
 import org.junit.Test;
 
 import java.net.Socket;
 import java.security.Principal;
+import java.security.cert.X509Certificate;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
 
     @Test
-    public void testChooseClientAlias() throws Exception {
+    public void testChooseClientAliasNotfound() throws Exception {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
                 return "h";
             }
         }, new DisabledCertificateStore()).init();
-        assertNull(m.chooseClientAlias(new String[]{"issuer"}, new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
+        assertNull(m.chooseClientAlias(new String[]{"issuer"},
+                new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
+    }
+
+    @Test
+    public void testChooseClientAliasStartcom() throws Exception {
+        final AtomicBoolean choose = new AtomicBoolean();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "h";
+            }
+        }, new DisabledCertificateStore() {
+            @Override
+            public X509Certificate choose(String[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
+                assertEquals("h", hostname);
+                assertEquals("Select the certificate to use when connecting to h.", prompt);
+                for(String issuer : issuers) {
+                    assertEquals("CN=StartCom Class 2 Primary Intermediate Client CA", issuer);
+                }
+                choose.set(true);
+                throw new ConnectionCanceledException();
+            }
+        }
+        ).init();
+        assertNull(m.chooseClientAlias(new String[]{"CN=StartCom Class 2 Primary Intermediate Client CA"},
+                new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
+        assertTrue(choose.get());
     }
 
     @Test

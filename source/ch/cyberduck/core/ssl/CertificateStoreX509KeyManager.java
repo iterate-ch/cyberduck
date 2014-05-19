@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.Key;
@@ -93,7 +94,9 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final Enumeration<String> aliases = keyStore.aliases();
             while(aliases.hasMoreElements()) {
                 String alias = aliases.nextElement();
-                log.info(String.format("Alias in Keychain %s", alias));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Alias in Keychain %s", alias));
+                }
                 if(keyStore.isKeyEntry(alias)) {
                     log.info(String.format("Private key for alias %s", alias));
                     continue;
@@ -105,8 +108,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                         continue;
                     }
                     if(cert instanceof X509Certificate) {
-                        if(Arrays.asList(issuers).contains(((X509Certificate) cert).getIssuerX500Principal())) {
-                            list.add(((X509Certificate) cert).getIssuerX500Principal().getName());
+                        final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
+                        log.info(String.format("Add X509 certificate entry with issuer %s to list", issuer.getName()));
+                        if(Arrays.asList(issuers).contains(issuer)) {
+                            list.add(issuer.getName());
                         }
                     }
                 }
@@ -121,6 +126,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("No certificate selected for hostname %s", hostname));
                 }
+                // Return null if there are no matches
                 return null;
             }
             final String alias = keyStore.getCertificateAlias(selected);
