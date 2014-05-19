@@ -38,7 +38,7 @@ import java.security.cert.X509Certificate;
  */
 public abstract class AbstractX509KeyManager implements X509KeyManager {
 
-    private X509KeyManager manager;
+    private javax.net.ssl.X509KeyManager manager;
 
     public X509KeyManager init() throws IOException {
         try {
@@ -50,9 +50,9 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
             // Load default key manager factory using key store
             factory.init(store, null);
             for(KeyManager m : factory.getKeyManagers()) {
-                if(m instanceof X509KeyManager) {
+                if(m instanceof javax.net.ssl.X509KeyManager) {
                     // Get the first X509KeyManager in the list
-                    manager = (X509KeyManager) m;
+                    manager = (javax.net.ssl.X509KeyManager) m;
                     break;
                 }
             }
@@ -84,6 +84,11 @@ public abstract class AbstractX509KeyManager implements X509KeyManager {
     /**
      * Choose an alias to authenticate the client side of a secure socket given the public key type and the list of
      * certificate issuer authorities recognized by the peer (if any).
+     *
+     * @param keyType the key algorithm type name(s), ordered with the most-preferred key type first
+     * @param issuers the list of acceptable CA issuer subject names or null if it does not matter which issuers are used
+     * @param socket  the socket to be used for this connection. This parameter can be null, which indicates that
+     *                implementations are free to select an alias applicable to any socket
      */
     @Override
     public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
