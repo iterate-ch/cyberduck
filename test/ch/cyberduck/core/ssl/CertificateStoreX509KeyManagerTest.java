@@ -29,6 +29,7 @@ import javax.security.auth.x500.X500Principal;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -46,7 +47,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
                 return "h";
             }
         }, new DisabledCertificateStore()).init();
-        assertNull(m.chooseClientAlias(new String[]{"issuer"},
+        assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
     }
 
@@ -71,7 +72,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
             }
         }
         ).init();
-        assertNull(m.chooseClientAlias(new String[]{""},
+        assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA")},
                 new Socket("localhost", 443)));
         assertTrue(choose.get());
@@ -97,5 +98,19 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
             }
         }, new DisabledCertificateStore()).init();
         assertNull(m.getPrivateKey("unknown-alias"));
+    }
+
+    @Test
+    public void testGetAliases() throws Exception {
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "h";
+            }
+        }, new DisabledCertificateStore()).init();
+        final String[] aliases = m.getClientAliases("RSA", new Principal[]{
+                new X500Principal("CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
+        });
+        assertFalse(Arrays.asList(aliases).isEmpty());
     }
 }
