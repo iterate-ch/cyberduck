@@ -26,12 +26,15 @@ using ch.cyberduck.core;
 using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
+using CertificateFactory = java.security.cert.CertificateFactory;
+using ByteArrayInputStream = java.io.ByteArrayInputStream;
+using ConnectionCanceledException = ch.cyberduck.core.exception.ConnectionCanceledException;
 
 namespace Ch.Cyberduck.Core
 {
     public class Keychain : HostPasswordStore, CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(Keychain).FullName);
 
         public bool isTrusted(String hostName, List certs)
         {
@@ -123,15 +126,37 @@ namespace Ch.Cyberduck.Core
             {
                 return false;
             }
-            //todo did not find a way to show the chain in the case of self signed certs
             X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
             X509Certificate2UI.DisplayCertificate(cert);
             return true;
         }
 
-        public X509Certificate choose(string[] obj0, string obj1, string obj2)
+        public X509Certificate choose(string[] issuers, string hostname, string prompt)
         {
-            throw new NotImplementedException();
+            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+                X509Certificate2Collection found = new X509Certificate2Collection();
+                foreach (string issuer in issuers)
+                {
+                    X509Certificate2Collection certificates =
+                                store.Certificates.Find(X509FindType.FindByIssuerName,
+                                issuer, true);
+                    found.AddRange(certificates);
+                }
+                X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
+                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
+                foreach (X509Certificate2 c in selected)
+                {
+                    return ConvertCertificate(c);
+                }
+                throw new ConnectionCanceledException();
+            }
+            finally
+            {
+                store.Close();
+            }
         }
 
         public override string getPassword(Scheme scheme, int port, String hostName, String user)
@@ -184,11 +209,17 @@ namespace Ch.Cyberduck.Core
 
         private void AddCertificate(X509Certificate2 cert, StoreName storeName)
         {
-            Log.debug("AddCertificate:" + cert.SubjectName.Name);
+            Log.debug("Add certificate:" + cert.SubjectName.Name);
             X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
-            store.Open(OpenFlags.ReadWrite);
-            store.Add(cert);
-            store.Close();
+            try
+            {
+                store.Open(OpenFlags.ReadWrite);
+                store.Add(cert);
+            }
+            finally
+            {
+                store.Close();
+            }
         }
 
         private string GetErrorFromChainStatus(X509Chain chain, string hostName)
@@ -236,6 +267,12 @@ namespace Ch.Cyberduck.Core
         public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
         {
             return new X509Certificate2(certificate.getEncoded());
+        }
+
+        public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
+        {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         public static void Register()
