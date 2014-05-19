@@ -66,8 +66,13 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     public X509KeyManager init() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.
-            keyStore = KeyStore.getInstance(Preferences.instance().getProperty("connection.ssl.keystore.type"),
-                    Preferences.instance().getProperty("connection.ssl.keystore.provider"));
+            if(null == Preferences.instance().getProperty("connection.ssl.keystore.type")) {
+                keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            }
+            else {
+                keyStore = KeyStore.getInstance(Preferences.instance().getProperty("connection.ssl.keystore.type"),
+                        Preferences.instance().getProperty("connection.ssl.keystore.provider"));
+            }
             // Load default key store
             keyStore.load(null, null);
         }
