@@ -13,6 +13,9 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -366,5 +369,29 @@ public class DAVSessionTest extends AbstractTestCase {
         assertFalse(session.isSecured());
         assertNotNull(session.workdir());
         session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testClientSSLNoCertificate() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
+        final TrustManagerHostnameCallback callback = new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return "auth.startssl.com";
+            }
+        };
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(callback),
+                new KeychainX509KeyManager(callback));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginController() {
+                    @Override
+                    public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                        //
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        c.connect(session, Cache.empty());
     }
 }
