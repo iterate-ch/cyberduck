@@ -45,8 +45,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                     regionComboBox.Size = new Size(121, 23);
                     regionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                     regionComboBox.TabIndex = 3;
-
+                    regionComboBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
+                    Height += regionComboBox.Height + 10;
+                    tableLayoutPanel.RowCount++;
+                    tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
+                    tableLayoutPanel.SetRow(okButton, 3);
+                    tableLayoutPanel.SetRow(cancelButton, 3);
                     tableLayoutPanel.Controls.Add(regionComboBox, 1, 2);
+                    tableLayoutPanel.SetColumnSpan(regionComboBox, 3);
                 }
             }
             private get { return regionComboBox != null; }
