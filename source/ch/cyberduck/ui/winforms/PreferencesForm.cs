@@ -583,12 +583,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             uploadSkipRegexRichTextbox.SelectionColor = Color.Black;
         }
 
-        public string SshTransfer
-        {
-            get { return (string) sshTransfersCombobox.SelectedValue; }
-            set { sshTransfersCombobox.SelectedValue = value; }
-        }
-
         public string DefaultBucketLocation
         {
             get { return (string) defaultBucketLocationCombobox.SelectedValue; }
@@ -713,7 +707,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadSkipChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexDefaultEvent = delegate { };
-        public event VoidHandler SshTransferChangedEvent = delegate { };
         public event VoidHandler DefaultBucketLocationChangedEvent = delegate { };
         public event VoidHandler DefaultEncryptionChangedEvent = delegate { };
         public event VoidHandler DefaultDownloadThrottleChangedEvent = delegate { };
@@ -863,13 +856,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void PopulateChmodUploadTypes(List<string> types)
         {
             chmodUploadTypeCombobox.DataSource = types;
-        }
-
-        public void PopulateSshTransfers(IList<KeyValuePair<string, string>> transfers)
-        {
-            sshTransfersCombobox.DataSource = transfers;
-            sshTransfersCombobox.ValueMember = "Key";
-            sshTransfersCombobox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations)
@@ -1264,11 +1250,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 sftpButton.Checked = true;
                 panelManager.SelectedPanel = managedSftpPanel;
             }
-        }
-
-        private void sshTransfersCombobox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            SshTransferChangedEvent();
         }
 
         private void s3Button_Click(object sender, EventArgs e)

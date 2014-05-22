@@ -93,7 +93,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string UploadSkipRegex { set; get; }
         bool UploadSkipRegexEnabled { set; }
 
-        string SshTransfer { set; get; }
         string DefaultBucketLocation { set; get; }
         string DefaultStorageClass { set; get; }
         string DefaultEncryption { set; get; }
@@ -202,7 +201,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UploadSkipRegexChangedEvent;
         event VoidHandler UploadSkipRegexDefaultEvent;
 
-        event VoidHandler SshTransferChangedEvent;
         event VoidHandler DefaultBucketLocationChangedEvent;
         event VoidHandler DefaultStorageClassChangedEvent;
         event VoidHandler DefaultEncryptionChangedEvent;
@@ -224,7 +222,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDuplicateUploadActions(List<string> actions);
         void PopulateChmodDownloadTypes(List<string> types);
         void PopulateChmodUploadTypes(List<string> types);
-        void PopulateSshTransfers(IList<KeyValuePair<string, string>> transfers);
         void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
         void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
         void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms);

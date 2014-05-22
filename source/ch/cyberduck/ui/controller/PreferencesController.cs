@@ -122,8 +122,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UploadSkipRegexChangedEvent += View_UploadSkipRegexChangedEvent;
             View.UploadSkipRegexDefaultEvent += View_UploadSkipRegexDefaultEvent;
 
-            View.SshTransferChangedEvent += View_SshTransferChangedEvent;
-
             View.DefaultDownloadThrottleChangedEvent += View_DefaultDownloadThrottleChangedEvent;
             View.DefaultUploadThrottleChangedEvent += View_DefaultUploadThrottleChangedEvent;
 
@@ -353,11 +351,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultBucketLocationChangedEvent()
         {
             Preferences.instance().setProperty("s3.location", View.DefaultBucketLocation);
-        }
-
-        private void View_SshTransferChangedEvent()
-        {
-            Preferences.instance().setProperty("ssh.transfer", View.SshTransfer);
         }
 
         private void View_UploadSkipRegexDefaultEvent()
@@ -973,9 +966,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UploadSkipRegex = Preferences.instance().getProperty("queue.upload.skip.regex");
             View.UploadSkipRegexEnabled = View.UploadSkip;
 
-            PopulateSshTransfers();
-            View.SshTransfer = Preferences.instance().getProperty("ssh.transfer");
-
             PopulateDefaultDownloadThrottleList();
             PopulateDefaultUploadThrottleList();
             View.DefaultDownloadThrottle = Preferences.instance().getFloat("queue.download.bandwidth.bytes");
@@ -1178,15 +1168,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                         S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"),
                                                                     "S3")));
             View.PopulateDefaultStorageClasses(storageClasses);
-        }
-
-        private void PopulateSshTransfers()
-        {
-            IList<KeyValuePair<string, string>> sshTransfers = new List<KeyValuePair<string, string>>();
-            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.sftp.name(), ProtocolFactory.SFTP.getDescription()));
-            sshTransfers.Add(new KeyValuePair<string, string>(Scheme.scp.name(),
-                                                              LocaleFactory.localizedString("SCP (Secure Copy)")));
-            View.PopulateSshTransfers(sshTransfers);
         }
 
         private void PopulateChmodTypes()

@@ -749,7 +749,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sshTransfersCombobox.Name = "sshTransfersCombobox";
             this.sshTransfersCombobox.Size = new System.Drawing.Size(1, 23);
             this.sshTransfersCombobox.TabIndex = 2;
-            this.sshTransfersCombobox.SelectionChangeCommitted += new System.EventHandler(this.sshTransfersCombobox_SelectionChangeCommitted);
             // 
             // label28
             // 
@@ -3065,6 +3064,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sftpButton.Size = new System.Drawing.Size(37, 69);
             this.sftpButton.Text = "SFTP";
             this.sftpButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.sftpButton.Visible = false;
             this.sftpButton.Click += new System.EventHandler(this.sftpButton_Click);
             // 
             // s3Button
