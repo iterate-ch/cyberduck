@@ -2232,6 +2232,7 @@ profiles/Openstack[!!-~]Swift[!!-~](Keystone[!!-~]HTTP).cyberduckprofile -text s
 profiles/Openstack[!!-~]Swift[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Swauth[!!-~]HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Openstack[!!-~]Swift[!!-~](Swauth).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Openstack[!!-~]Swift[!!-~](v1).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Oracle[!!-~]Storage[!!-~]Cloud[!!-~](US[!!-~]Commercial[!!-~]2).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]UK.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/octet-stream
