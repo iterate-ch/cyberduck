@@ -53,6 +53,10 @@ public class PathContainerService {
         if(this.isContainer(file)) {
             return null;
         }
-        return PathRelativizer.relativize(this.getContainer(file).getAbsolute(), file.getAbsolute());
+        final String relative = PathRelativizer.relativize(this.getContainer(file).getAbsolute(), file.getAbsolute());
+        if(file.attributes().isPlaceholder()) {
+            return relative.concat(String.valueOf(Path.DELIMITER));
+        }
+        return relative;
     }
 }
