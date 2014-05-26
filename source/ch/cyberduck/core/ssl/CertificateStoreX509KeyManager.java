@@ -59,8 +59,8 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
 
     public CertificateStoreX509KeyManager(final TrustManagerHostnameCallback hostname,
                                           final CertificateStore callback) {
-        this.chooseCallback = callback;
         this.hostnameCallback = hostname;
+        this.chooseCallback = callback;
     }
 
     public X509KeyManager init() throws IOException {

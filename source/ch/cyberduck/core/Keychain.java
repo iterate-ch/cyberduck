@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
@@ -174,7 +175,8 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public X509Certificate choose(final String[] issuers, final String hostname, final String prompt) {
+    public X509Certificate choose(final String[] issuers, final String hostname, final String prompt)
+            throws ConnectionCanceledException {
         byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");
@@ -189,9 +191,8 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             return selected;
         }
         catch(CertificateException e) {
-            log.error(e.getMessage(), e);
+            throw new ConnectionCanceledException(e);
         }
-        return null;
     }
 
     /**
