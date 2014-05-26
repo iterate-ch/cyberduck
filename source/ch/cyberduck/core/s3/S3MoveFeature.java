@@ -57,7 +57,9 @@ public class S3MoveFeature implements Move {
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 destination.setAcl(acl.convert(acl.getPermission(file)));
                 // Moving the object retaining the metadata of the original.
-                final Map<String, Object> headers = session.getClient().copyObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                final Map<String, Object> headers = session.getClient().copyObject(
+                        containerService.getContainer(file).getName(),
+                        containerService.getKey(file),
                         containerService.getContainer(renamed).getName(),
                         destination, false);
                 if(log.isDebugEnabled()) {
