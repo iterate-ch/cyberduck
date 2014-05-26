@@ -62,15 +62,8 @@ public class AzureAttributesFeature implements Attributes {
                 return attributes;
             }
             else {
-                final CloudBlockBlob blob;
-                if(file.attributes().isPlaceholder()) {
-                    blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
-                }
-                else {
-                    blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file));
-                }
+                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlockBlobReference(containerService.getKey(file));
                 final BlobRequestOptions options = new BlobRequestOptions();
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 blob.downloadAttributes(null, options, null);
