@@ -183,8 +183,8 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             return null;
         }
         try {
-            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-            X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(cert));
+            final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(cert));
             if(log.isDebugEnabled()) {
                 log.info(String.format("Selected certificate %s", selected));
             }

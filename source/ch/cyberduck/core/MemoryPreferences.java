@@ -70,6 +70,8 @@ public class MemoryPreferences extends Preferences {
         defaults.put("queue.download.folder", "~/Downloads");
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", "0");
+        defaults.put("connection.ssl.keystore.type", "KeychainStore");
+        defaults.put("connection.ssl.keystore.provider", "Apple");
         super.setDefaults();
         defaults.put("local.normalize.unicode", String.valueOf(false));
     }
