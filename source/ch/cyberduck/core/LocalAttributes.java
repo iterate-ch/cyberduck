@@ -19,15 +19,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import org.apache.log4j.Logger;
-
 import java.io.File;
 
-/**
- *
- */
 public class LocalAttributes extends Attributes {
-    private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private String path;
 
