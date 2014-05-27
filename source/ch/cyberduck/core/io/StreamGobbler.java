@@ -97,7 +97,6 @@ public class StreamGobbler extends InputStream {
     private final Object synchronizer = new Object();
 
     private boolean isEOF = false;
-    private boolean isClosed = false;
     private IOException exception = null;
 
     private byte[] buffer = new byte[2048];
