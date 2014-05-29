@@ -680,9 +680,13 @@
       <JNASupport Include="..\..\..\lib\ikvm-native-win32-x86.dll" />
       <JNASupport Include="..\..\..\lib\jnidispatch.dll" />
     </ItemGroup>
+    <ItemGroup>
+      <SunMSCAPI Include="..\..\..\lib\sunmscapi.dll" />
+    </ItemGroup>	
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
     <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
+	<Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

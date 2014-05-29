@@ -44,9 +44,11 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.ui.growl;
+using java.security;
 using java.util;
 using org.apache.log4j;
 using org.apache.log4j.xml;
+using sun.security.mscapi;
 using ArrayList = System.Collections.ArrayList;
 using Keychain = Ch.Cyberduck.Core.Keychain;
 using Object = java.lang.Object;
@@ -99,6 +101,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Add the event handler for handling non-UI thread exceptions to the event. 
                 AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
             }
+
+            // Add mscapi security provider
+            Security.addProvider(new SunMSCAPI());
 
             ConfigureLogging();
 
