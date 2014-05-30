@@ -131,14 +131,14 @@ namespace Ch.Cyberduck.Core
             return true;
         }
 
-        public X509Certificate choose(string[] issuers, string hostname, string prompt)
+        public X509Certificate choose(List issuers, string hostname, string prompt)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try
             {
                 store.Open(OpenFlags.ReadOnly);
                 X509Certificate2Collection found = new X509Certificate2Collection();
-                foreach (string issuer in issuers)
+                foreach (string issuer in Utils.ConvertFromJavaList<string>(issuers))
                 {
                     X509Certificate2Collection certificates =
                                 store.Certificates.Find(X509FindType.FindByIssuerName,
