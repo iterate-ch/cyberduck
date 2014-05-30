@@ -31,6 +31,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @version $Id$
@@ -165,7 +166,17 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         if(certificates.isEmpty()) {
             return false;
         }
-        return this.displayCertificatesNative(this.getEncoded(certificates));
+        final Object[] encoded = this.getEncoded(certificates);
+        final AtomicBoolean accepted = new AtomicBoolean(false);
+        new ProxyController() {
+            //
+        }.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                accepted.set(displayCertificatesNative(encoded));
+            }
+        }, true);
+        return accepted.get();
     }
 
     /**
@@ -177,14 +188,25 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     @Override
     public X509Certificate choose(final List<String> issuers, final String hostname, final String prompt)
             throws ConnectionCanceledException {
-        byte[] cert = this.chooseCertificateNative(issuers.toArray(new String[issuers.size()]), hostname, prompt);
-        if(null == cert) {
+        final AtomicReference<byte[]> certificates = new AtomicReference<byte[]>();
+        new ProxyController() {
+            //
+        }.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                byte[] cert = chooseCertificateNative(issuers.toArray(new String[issuers.size()]), hostname, prompt);
+                certificates.set(cert);
+            }
+        }, true);
+
+        if(null == certificates.get()) {
             log.info("No certificate selected");
             return null;
         }
         try {
             final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-            final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(cert));
+            final X509Certificate selected = (X509Certificate) factory.generateCertificate(
+                    new ByteArrayInputStream(certificates.get()));
             if(log.isDebugEnabled()) {
                 log.info(String.format("Selected certificate %s", selected));
             }
