@@ -30,6 +30,7 @@ import java.net.Socket;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -61,7 +62,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
             }
         }, new DisabledCertificateStore() {
             @Override
-            public X509Certificate choose(String[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
+            public X509Certificate choose(List<String> issuers, String hostname, String prompt) throws ConnectionCanceledException {
                 assertEquals("h", hostname);
                 assertEquals("Select the certificate to use when connecting to h.", prompt);
                 for(String issuer : issuers) {
