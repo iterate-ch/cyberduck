@@ -175,9 +175,9 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public X509Certificate choose(final String[] issuers, final String hostname, final String prompt)
+    public X509Certificate choose(final List<String> issuers, final String hostname, final String prompt)
             throws ConnectionCanceledException {
-        byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
+        byte[] cert = this.chooseCertificateNative(issuers.toArray(new String[issuers.size()]), hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");
             return null;

@@ -49,5 +49,5 @@ public interface CertificateStore {
      * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    public X509Certificate choose(String[] issuers, String hostname, String prompt) throws ConnectionCanceledException;
+    public X509Certificate choose(List<String> issuers, String hostname, String prompt) throws ConnectionCanceledException;
 }

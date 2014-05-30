@@ -95,21 +95,18 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     }
 
     @Override
-    public String[] getClientAliases(String keyType, Principal[] issuers) {
+    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
         try {
             final Enumeration<String> aliases = keyStore.aliases();
             while(aliases.hasMoreElements()) {
-                String alias = aliases.nextElement();
+                final String alias = aliases.nextElement();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Alias in Keychain %s", alias));
                 }
                 if(keyStore.isKeyEntry(alias)) {
-                    log.info(String.format("Private key for alias %s", alias));
-                    continue;
-                }
-                if(keyStore.isCertificateEntry(alias)) {
+                    // returns the first element of the certificate chain of that key entry
                     final Certificate cert = keyStore.getCertificate(alias);
                     if(null == cert) {
                         log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
@@ -120,12 +117,12 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                         if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
                             continue;
                         }
-                        final X500Principal issuer = x509.getSubjectX500Principal();
+                        final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
                         if(!Arrays.asList(issuers).contains(issuer)) {
                             continue;
                         }
                         log.info(String.format("Add X509 certificate entry with issuer %s to list", issuer.getName()));
-                        list.add(issuer.getName());
+                        list.add(alias);
                     }
                 }
             }
@@ -140,10 +137,13 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             for(String keyType : keyTypes) {
-                final String[] aliases = this.getClientAliases(keyType, issuers);
+                final List<String> dn = new ArrayList<String>();
+                for(Principal issuer : issuers) {
+                    dn.add(issuer.getName());
+                }
                 final X509Certificate selected;
                 try {
-                    selected = chooseCallback.choose(aliases, hostnameCallback.getTarget(),
+                    selected = chooseCallback.choose(dn, hostnameCallback.getTarget(),
                             MessageFormat.format(LocaleFactory.localizedString(
                                     "Select the certificate to use when connecting to {0}."), hostnameCallback.getTarget()));
                 }
@@ -156,9 +156,15 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                 if(null == selected) {
                     continue;
                 }
-                final String alias = keyStore.getCertificateAlias(selected);
-                log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
-                return alias;
+                for(String alias : this.getClientAliases(keyType, issuers)) {
+                    if(keyStore.getCertificate(alias).equals(selected)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
+                        }
+                        return alias;
+                    }
+                }
+                log.warn(String.format("No matching alias found for selected certificate %s", selected));
             }
             // Return null if there are no matches
             return null;
