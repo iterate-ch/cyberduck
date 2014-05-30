@@ -123,9 +123,9 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
 		CFRelease(policy);
 	}
 	NSInteger result = [panel runModalForIdentities:identities message:NSLocalizedString(@"Choose", @"")];
-	[panel release];
 	if(result == NSOKButton) {
 		SecIdentityRef identity = [panel identity];
+    	[panel release];
 		OSStatus err;
 		SecCertificateRef certificateRef;
 		err = SecIdentityCopyCertificate(identity, &certificateRef);
@@ -134,6 +134,9 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
 		}
 		jbyteArray jb = GetCertData(env, certificateRef);
 		return jb;
+	}
+	else {
+		[panel release];
 	}
 	return NULL;
 }
