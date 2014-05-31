@@ -89,10 +89,10 @@ public class SFTPListService implements ListService {
 
     protected void post(final Path file) throws BackgroundException {
         if(file.isSymbolicLink()) {
+            final Path target;
+            Path.Type type;
             try {
                 final String link = session.sftp().readLink(file.getAbsolute());
-                final Path target;
-                final Path.Type type;
                 if(link.startsWith(String.valueOf(Path.DELIMITER))) {
                     target = new Path(link, EnumSet.of(Path.Type.file));
                 }
@@ -100,27 +100,30 @@ public class SFTPListService implements ListService {
                     target = new Path(String.format("%s/%s", file.getParent().getAbsolute(), link),
                             EnumSet.of(Path.Type.file));
                 }
-                if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {
-                    type = Path.Type.directory;
+                try {
+                    if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {
+                        type = Path.Type.directory;
+                    }
+                    else {
+                        type = Path.Type.file;
+                    }
                 }
-                else {
+                catch(SFTPException e) {
+                    final BackgroundException reason = new SFTPExceptionMappingService().map(e);
+                    if(reason instanceof NotfoundException) {
+                        log.warn(String.format("Cannot find symbolic link target of %s", file));
+                    }
+                    else if(reason instanceof AccessDeniedException) {
+                        log.warn(String.format("Cannot read symbolic link target of %s", file));
+                    }
+                    else {
+                        throw reason;
+                    }
                     type = Path.Type.file;
                 }
                 file.setType(EnumSet.of(Path.Type.symboliclink, type));
                 target.setType(EnumSet.of(type));
                 file.setSymlinkTarget(target);
-            }
-            catch(SFTPException e) {
-                final BackgroundException reason = new SFTPExceptionMappingService().map(e);
-                if(reason instanceof NotfoundException) {
-                    log.warn(String.format("Cannot find symbolic link target of %s", file));
-                }
-                else if(reason instanceof AccessDeniedException) {
-                    log.warn(String.format("Cannot read symbolic link target of %s", file));
-                }
-                else {
-                    throw reason;
-                }
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map("Cannot read file attributes", e, file);

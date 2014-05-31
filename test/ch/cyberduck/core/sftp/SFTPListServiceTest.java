@@ -17,18 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -63,5 +52,20 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()));
         assertEquals(new Path(home, "test", EnumSet.of(Path.Type.file)), list.get(new Path(home, "test.symlink-absolute", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink)).getReference()).getSymlinkTarget());
         session.close();
+    }
+
+    @Test
+    public void testInvalidSymlinkTarget() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        final Path home = new DefaultHomeFinderService(session).find();
+        final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
+        assertTrue(list.contains(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink)).getReference()));
+        assertEquals(new Path(home, "test.symlink-invalid", EnumSet.of(Path.Type.file)),
+                list.get(new Path(home, "notfound", EnumSet.of(Path.Type.file, Path.Type.symboliclink)).getReference()).getSymlinkTarget());
     }
 }
