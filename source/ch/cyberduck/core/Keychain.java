@@ -26,9 +26,11 @@ import ch.cyberduck.ui.cocoa.ProxyController;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -186,7 +188,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public X509Certificate choose(final List<String> issuers, final String hostname, final String prompt)
+    public X509Certificate choose(final Principal[] issuers, final String hostname, final String prompt)
             throws ConnectionCanceledException {
         final AtomicReference<byte[]> certificates = new AtomicReference<byte[]>();
         new ProxyController() {
@@ -194,7 +196,12 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         }.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                byte[] cert = chooseCertificateNative(issuers.toArray(new String[issuers.size()]), hostname, prompt);
+                final List<String> dn = new ArrayList<String>();
+                for(Principal issuer : issuers) {
+                    dn.add(issuer.getName());
+                }
+                final X509Certificate selected;
+                byte[] cert = chooseCertificateNative(dn.toArray(new String[dn.size()]), hostname, prompt);
                 certificates.set(cert);
             }
         }, true);

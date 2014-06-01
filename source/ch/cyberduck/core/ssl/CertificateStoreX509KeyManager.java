@@ -137,13 +137,9 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             for(String keyType : keyTypes) {
-                final List<String> dn = new ArrayList<String>();
-                for(Principal issuer : issuers) {
-                    dn.add(issuer.getName());
-                }
                 final X509Certificate selected;
                 try {
-                    selected = chooseCallback.choose(dn, hostnameCallback.getTarget(),
+                    selected = chooseCallback.choose(issuers, hostnameCallback.getTarget(),
                             MessageFormat.format(LocaleFactory.localizedString(
                                     "Select the certificate to use when connecting to {0}."), hostnameCallback.getTarget()));
                 }

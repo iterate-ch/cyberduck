@@ -19,6 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -44,10 +45,10 @@ public interface CertificateStore {
     /**
      * Prompt user for client certificate
      *
-     * @param issuers  Distinguished names
+     * @param issuers  Distinguished names. X500 Principal with distinguished name as in RFC 2253
      * @param hostname Client hostname
      * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    public X509Certificate choose(List<String> issuers, String hostname, String prompt) throws ConnectionCanceledException;
+    public X509Certificate choose(Principal[] issuers, String hostname, String prompt) throws ConnectionCanceledException;
 }

@@ -132,17 +132,17 @@ namespace Ch.Cyberduck.Core
             return true;
         }
 
-        public X509Certificate choose(List issuers, string hostname, string prompt)
+        public X509Certificate choose(Principal[] issuers, string hostname, string prompt)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try
             {
                 store.Open(OpenFlags.ReadOnly);
                 X509Certificate2Collection found = new X509Certificate2Collection();
-                foreach (string issuer in Utils.ConvertFromJavaList<string>(issuers))
+                foreach (Principal issuer in issuers)
                 {
                     string rfc1779 =
-                        new X500Principal(issuer).getName(X500Principal.RFC1779)
+                        new X500Principal(issuer.getName()).getName(X500Principal.RFC1779)
                                                  .Replace("ST=", "S=")
                                                  .Replace("SP=", "S=");
                     X509Certificate2Collection certificates =
