@@ -24,6 +24,7 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using java.util;
+using javax.security.auth.x500;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 using CertificateFactory = java.security.cert.CertificateFactory;
@@ -140,9 +141,13 @@ namespace Ch.Cyberduck.Core
                 X509Certificate2Collection found = new X509Certificate2Collection();
                 foreach (string issuer in Utils.ConvertFromJavaList<string>(issuers))
                 {
+                    string rfc1779 =
+                        new X500Principal(issuer).getName(X500Principal.RFC1779)
+                                                 .Replace("ST=", "S=")
+                                                 .Replace("SP=", "S=");
                     X509Certificate2Collection certificates =
-                                store.Certificates.Find(X509FindType.FindByIssuerName,
-                                issuer, true);
+                                store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName,
+                                rfc1779, true);
                     found.AddRange(certificates);
                 }
                 X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
