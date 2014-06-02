@@ -53,7 +53,7 @@ public class AzureObjectListService implements ListService {
                 prefix = StringUtils.EMPTY;
             }
             else {
-                prefix = containerService.getKey(directory).concat(String.valueOf(Path.DELIMITER));
+                prefix = containerService.getKey(directory);
             }
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();

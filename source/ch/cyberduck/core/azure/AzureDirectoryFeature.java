@@ -66,7 +66,7 @@ public class AzureDirectoryFeature implements Directory {
             else {
                 // Create delimiter placeholder
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
+                        .getBlockBlobReference(containerService.getKey(file));
                 blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, null, options, null);
             }
         }
