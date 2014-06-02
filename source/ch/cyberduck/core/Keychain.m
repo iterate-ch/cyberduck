@@ -105,8 +105,6 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
                                                                              jstring jPrompt) {
     OSStatus status;
     NSMutableArray *identities = [NSMutableArray array];
-    SecIdentityRef preferred = NULL;
-    NSMutableArray *issuers = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, jCertificates)];
     int i;
     for(i = 0; i < (*env)->GetArrayLength(env, jCertificates); i++) {
         SecCertificateRef certificate = CreateCertificateFromData(env, (*env)->GetObjectArrayElement(env, jCertificates, i));
@@ -120,7 +118,6 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
             CFRelease(error);
             continue;
         }
-        [issuers addObject: (id)issuer];
         SecIdentityRef identity;
         // If the associated private key is not found in one of the specified keychains, this function fails with an appropriate error code (usually errSecItemNotFound), and does not return anything in the identityRef parameter.
         status = SecIdentityCreateWithCertificate(NULL, certificate, &identity);
@@ -128,31 +125,6 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
             [identities addObject:(id)identity];
         }
         CFRelease(certificate);
-    }
-    // Search for preferred identity for the specified name and key use
-    status = SecIdentityCopyPreference((CFStringRef)[@"https://" stringByAppendingString:JNFJavaToNSString(env, jHostname)],
-                                                CSSM_KEYUSE_SIGN,
-                                                // Subject names of allowable issuers
-                                                (CFArrayRef)issuers,
-                                                &preferred);
-    if(status == errSecItemNotFound) {
-        // No matching preference found in keychain
-    }
-    else if(status == noErr) {
-        // Preference found.
-        SecCertificateRef certificate;
-        status = SecIdentityCopyCertificate(preferred, &certificate);
-        if(status == noErr) {
-            jbyteArray der = GetCertData(env, certificate);
-            CFRelease(certificate);
-            return der;
-        }
-        else {
-            NSLog(@"Error copying certificate from preferred identity: %@", SecCopyErrorMessageString(status, NULL));
-        }
-    }
-    else {
-        NSLog(@"Error with search preference: %@", SecCopyErrorMessageString(status, NULL));
     }
 	SFChooseIdentityPanel *panel = [[SFChooseIdentityPanel alloc] init];
     [panel setShowsHelp:NO];
