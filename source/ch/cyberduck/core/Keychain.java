@@ -20,12 +20,15 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -188,32 +191,40 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public X509Certificate choose(final Principal[] issuers, final String hostname, final String prompt)
+    public X509Certificate choose(String[] keyTypes, final Principal[] issuers, final String hostname, final String prompt)
             throws ConnectionCanceledException {
-        final AtomicReference<byte[]> certificates = new AtomicReference<byte[]>();
-        new ProxyController() {
-            //
-        }.invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                final List<String> dn = new ArrayList<String>();
-                for(Principal issuer : issuers) {
-                    dn.add(issuer.getName());
-                }
-                final X509Certificate selected;
-                byte[] cert = chooseCertificateNative(dn.toArray(new String[dn.size()]), hostname, prompt);
-                certificates.set(cert);
+        final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
+        final X509KeyManager manager;
+        try {
+            manager = new KeychainX509KeyManager().init();
+        }
+        catch(IOException e) {
+            throw new ConnectionCanceledException(e);
+        }
+        for(String keyType : keyTypes) {
+            for(String alias : manager.getClientAliases(keyType, issuers)) {
+                certificates.add(manager.getCertificate(alias, keyType, issuers));
             }
-        }, true);
-
-        if(null == certificates.get()) {
-            log.info("No certificate selected");
-            return null;
         }
         try {
+            final Object[] encoded = this.getEncoded(certificates);
+            final AtomicReference<byte[]> select = new AtomicReference<byte[]>();
+            new ProxyController() {
+                //
+            }.invoke(new DefaultMainAction() {
+                @Override
+                public void run() {
+                    select.set(chooseCertificateNative(encoded, hostname, prompt));
+                }
+            }, true);
+
+            if(null == select.get()) {
+                log.info("No certificate selected");
+                return null;
+            }
             final CertificateFactory factory = CertificateFactory.getInstance("X.509");
             final X509Certificate selected = (X509Certificate) factory.generateCertificate(
-                    new ByteArrayInputStream(certificates.get()));
+                    new ByteArrayInputStream(select.get()));
             if(log.isDebugEnabled()) {
                 log.info(String.format("Selected certificate %s", selected));
             }
@@ -225,9 +236,9 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     }
 
     /**
-     * @param issuers Distinguished names
-     * @param prompt  String to display in prompt
+     * @param certificates DER encoded certificates to choose from
+     * @param prompt       String to display in prompt
      * @return Selected certificate
      */
-    private native byte[] chooseCertificateNative(String[] issuers, String hostname, String prompt);
+    private native byte[] chooseCertificateNative(Object[] certificates, String hostname, String prompt);
 }

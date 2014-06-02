@@ -50,13 +50,13 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
     protected SSLSession(final Host h) {
         super(h);
         this.trust = new KeychainX509TrustManager(this);
-        this.key = new KeychainX509KeyManager(this);
+        this.key = new KeychainX509KeyManager();
     }
 
     protected SSLSession(final Host host, final X509TrustManager manager) {
         super(host);
         this.trust = manager;
-        this.key = new KeychainX509KeyManager(this);
+        this.key = new KeychainX509KeyManager();
     }
 
     protected SSLSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {

@@ -15,12 +15,7 @@ public class CustomTrustSSLProtocolSocketFactoryTest extends AbstractTestCase {
     @Test
     public void testGetSSLContext() throws Exception {
         assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
-                new TrustManagerHostnameCallback() {
-                    @Override
-                    public String getTarget() {
-                        return "hostname";
-                    }
-                }, new DisabledCertificateStore()
+                new DisabledCertificateStore()
         )).getSSLContext());
     }
 }

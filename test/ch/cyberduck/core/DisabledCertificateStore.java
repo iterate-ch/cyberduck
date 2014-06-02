@@ -48,8 +48,8 @@ public class DisabledCertificateStore implements CertificateStore {
     }
 
     @Override
-    public X509Certificate choose(final Principal[] issuers, final String hostname, final String prompt)
+    public X509Certificate choose(String[] keyTypes, final Principal[] issuers, final String hostname, final String prompt)
             throws ConnectionCanceledException {
-        throw new ConnectionCanceledException();
+        throw new ConnectionCanceledException(prompt);
     }
 }

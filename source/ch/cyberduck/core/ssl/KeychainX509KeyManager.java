@@ -25,7 +25,7 @@ import ch.cyberduck.core.CertificateStoreFactory;
  */
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    public KeychainX509KeyManager(final TrustManagerHostnameCallback callback) {
-        super(callback, CertificateStoreFactory.get());
+    public KeychainX509KeyManager() {
+        super(CertificateStoreFactory.get());
     }
 }

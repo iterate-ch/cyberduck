@@ -85,7 +85,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             = new KeychainX509TrustManager(verifier);
 
     private final static X509KeyManager key
-            = new KeychainX509KeyManager(verifier);
+            = new KeychainX509KeyManager();
 
     public AzureSession(final Host h) {
         super(h, trust, key);

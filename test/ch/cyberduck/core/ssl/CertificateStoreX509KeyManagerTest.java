@@ -41,12 +41,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
 
     @Test
     public void testChooseClientAliasNotfound() throws Exception {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "h";
-            }
-        }, new DisabledCertificateStore()).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
     }
@@ -54,15 +49,9 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
     @Test
     public void testChooseClientAliasStartcom() throws Exception {
         final AtomicBoolean choose = new AtomicBoolean();
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore() {
             @Override
-            public String getTarget() {
-                return "h";
-            }
-        }, new DisabledCertificateStore() {
-            @Override
-            public X509Certificate choose(Principal[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
-                assertEquals("h", hostname);
+            public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
                 assertEquals("Select the certificate to use when connecting to h.", prompt);
                 for(Principal issuer : issuers) {
                     assertEquals("CN=StartCom Class 2 Primary Intermediate Client CA", issuer.getName());
@@ -80,34 +69,19 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
 
     @Test
     public void testGetCertificateChain() throws Exception {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "h";
-            }
-        }, new DisabledCertificateStore()).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         m.getCertificateChain("a");
     }
 
     @Test
     public void testGetPrivateKey() throws Exception {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "h";
-            }
-        }, new DisabledCertificateStore()).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         assertNull(m.getPrivateKey("unknown-alias"));
     }
 
     @Test
     public void testGetAliases() throws Exception {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "h";
-            }
-        }, new DisabledCertificateStore()).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
                 new X500Principal("CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
         });

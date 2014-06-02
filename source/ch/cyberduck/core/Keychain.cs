@@ -133,7 +133,7 @@ namespace Ch.Cyberduck.Core
             return true;
         }
 
-        public X509Certificate choose(Principal[] issuers, string hostname, string prompt)
+        public X509Certificate choose(string[] keyTypes, Principal[] issuers, string hostname, string prompt)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try

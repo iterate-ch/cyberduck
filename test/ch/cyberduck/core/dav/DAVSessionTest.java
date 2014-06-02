@@ -381,7 +381,7 @@ public class DAVSessionTest extends AbstractTestCase {
             }
         };
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(callback),
-                new KeychainX509KeyManager(callback));
+                new KeychainX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginController() {
                     @Override

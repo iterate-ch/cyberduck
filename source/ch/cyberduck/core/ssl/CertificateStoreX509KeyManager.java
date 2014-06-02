@@ -55,11 +55,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
 
     private CertificateStore chooseCallback;
 
-    private TrustManagerHostnameCallback hostnameCallback;
-
-    public CertificateStoreX509KeyManager(final TrustManagerHostnameCallback hostname,
-                                          final CertificateStore callback) {
-        this.hostnameCallback = hostname;
+    public CertificateStoreX509KeyManager(final CertificateStore callback) {
         this.chooseCallback = callback;
     }
 
@@ -107,23 +103,13 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                 }
                 if(keyStore.isKeyEntry(alias)) {
                     // returns the first element of the certificate chain of that key entry
-                    final Certificate cert = keyStore.getCertificate(alias);
+                    final Certificate cert = this.getCertificate(alias, keyType, issuers);
                     if(null == cert) {
                         log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
                         continue;
                     }
-                    if(cert instanceof X509Certificate) {
-                        final X509Certificate x509 = (X509Certificate) cert;
-                        if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
-                            continue;
-                        }
-                        final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
-                        if(!Arrays.asList(issuers).contains(issuer)) {
-                            continue;
-                        }
-                        log.info(String.format("Add X509 certificate entry with issuer %s to list", issuer.getName()));
-                        list.add(alias);
-                    }
+                    log.info(String.format("Add X509 certificate entry %s to list", cert));
+                    list.add(alias);
                 }
             }
         }
@@ -133,19 +119,47 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
         return list.toArray(new String[list.size()]);
     }
 
+    public X509Certificate getCertificate(final String alias, final String keyType, final Principal[] issuers) {
+        try {
+            final Certificate cert = keyStore.getCertificate(alias);
+            if(cert instanceof X509Certificate) {
+                final X509Certificate x509 = (X509Certificate) cert;
+                if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
+                    log.warn(String.format("Key type %s does not match", x509.getPublicKey().getAlgorithm()));
+                    return null;
+                }
+                final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
+                if(!Arrays.asList(issuers).contains(issuer)) {
+                    log.warn(String.format("Issuer %s does not match", issuer));
+                    return null;
+                }
+                return (X509Certificate) cert;
+            }
+            else {
+                log.warn(String.format("Certificate %s is not of type X509", cert));
+            }
+        }
+        catch(KeyStoreException e) {
+            log.error(String.format("Keystore not loaded %s", e.getMessage()));
+        }
+        return null;
+    }
+
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             for(String keyType : keyTypes) {
                 final X509Certificate selected;
                 try {
-                    selected = chooseCallback.choose(issuers, hostnameCallback.getTarget(),
-                            MessageFormat.format(LocaleFactory.localizedString(
-                                    "Select the certificate to use when connecting to {0}."), hostnameCallback.getTarget()));
+                    final String hostname = socket.getInetAddress().getHostName();
+                    selected = chooseCallback.choose(keyTypes,
+                            issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
+                            "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
+                            hostname));
                 }
                 catch(ConnectionCanceledException e) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("No certificate selected for hostname %s", hostnameCallback.getTarget()));
+                        log.info(String.format("No certificate selected for socket %s", socket));
                     }
                     return null;
                 }

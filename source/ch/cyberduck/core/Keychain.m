@@ -100,40 +100,81 @@ jbyteArray GetCertData(JNIEnv *env, SecCertificateRef certificateRef) {
 }
 
 JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNIEnv *env, jobject this,
-                                                                             jobjectArray jIssuers, jstring jHostname, jstring jPrompt) {
-	//NSArray *identities = CreateCertificatesFromData(env, jCertificates);
+                                                                             jobjectArray jCertificates,
+                                                                             jstring jHostname,
+                                                                             jstring jPrompt) {
+    OSStatus status;
     NSMutableArray *identities = [NSMutableArray array];
-    SecIdentitySearchRef search;
-    SecIdentitySearchCreate(NULL, CSSM_KEYUSE_SIGN, &search);
-    SecIdentityRef identity;
-    while (SecIdentitySearchCopyNext(search, &identity) == noErr) {
-        [identities addObject: (id)identity];
-        CFRelease( identity );
+    SecIdentityRef preferred = NULL;
+    NSMutableArray *issuers = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, jCertificates)];
+    int i;
+    for(i = 0; i < (*env)->GetArrayLength(env, jCertificates); i++) {
+        SecCertificateRef certificate = CreateCertificateFromData(env, (*env)->GetObjectArrayElement(env, jCertificates, i));
+        CFErrorRef error;
+        // Normalized copy of the distinguished name (DN) of the issuer of a certificate
+        CFDataRef issuer = SecCertificateCopyNormalizedIssuerContent(certificate, &error);
+        if(NULL == issuer) {
+            // Returns NULL if an error occurred
+            NSLog(@"Error retrieving distinguished name (DN) from certificate %@", CFErrorCopyDescription(error));
+            CFRelease(certificate);
+            CFRelease(error);
+            continue;
+        }
+        [issuers addObject: (id)issuer];
+        SecIdentityRef identity;
+        // If the associated private key is not found in one of the specified keychains, this function fails with an appropriate error code (usually errSecItemNotFound), and does not return anything in the identityRef parameter.
+        status = SecIdentityCreateWithCertificate(NULL, certificate, &identity);
+        if(status == noErr) {
+            [identities addObject:(id)identity];
+        }
+        CFRelease(certificate);
     }
-    CFRelease(search);
+    // Search for preferred identity for the specified name and key use
+    status = SecIdentityCopyPreference((CFStringRef)[@"https://" stringByAppendingString:JNFJavaToNSString(env, jHostname)],
+                                                CSSM_KEYUSE_SIGN,
+                                                // Subject names of allowable issuers
+                                                (CFArrayRef)issuers,
+                                                &preferred);
+    if(status == errSecItemNotFound) {
+        // No matching preference found in keychain
+    }
+    else if(status == noErr) {
+        // Preference found.
+        SecCertificateRef certificate;
+        status = SecIdentityCopyCertificate(preferred, &certificate);
+        if(status == noErr) {
+            jbyteArray der = GetCertData(env, certificate);
+            CFRelease(certificate);
+            return der;
+        }
+        else {
+            NSLog(@"Error copying certificate from preferred identity: %@", SecCopyErrorMessageString(status, NULL));
+        }
+    }
+    else {
+        NSLog(@"Error with search preference: %@", SecCopyErrorMessageString(status, NULL));
+    }
 	SFChooseIdentityPanel *panel = [[SFChooseIdentityPanel alloc] init];
     [panel setShowsHelp:NO];
     [panel setDomain:JNFJavaToNSString(env, jHostname)];
     [panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
 	[panel setInformativeText:JNFJavaToNSString(env, jPrompt)];
-	// Create an SSL policy ref configured for client cert evaluation.
-	SecPolicyRef policy;
-	if (CreateSSLClientPolicy(&policy) == noErr) {
+	// Create an SSL policy ref configured for client cert evaluation. Policy will require the specified value
+	// to match the host name in the leaf certificate
+	SecPolicyRef policy = SecPolicyCreateSSL(false, (CFStringRef)JNFJavaToNSString(env, jHostname));
+	if (policy) {
 		[panel setPolicies:(id)policy];
 		CFRelease(policy);
 	}
-	NSInteger result = [panel runModalForIdentities:identities message:NSLocalizedString(@"Choose", @"")];
-	if(result == NSOKButton) {
+	if([panel runModalForIdentities:identities message:NSLocalizedString(@"Choose", @"")] == NSOKButton) {
 		SecIdentityRef identity = [panel identity];
     	[panel release];
-		OSStatus err;
-		SecCertificateRef certificateRef;
-		err = SecIdentityCopyCertificate(identity, &certificateRef);
-		if(err != noErr) {
-			return NULL;
+		SecCertificateRef certificate;
+		if(SecIdentityCopyCertificate(identity, &certificate) == noErr) {
+            jbyteArray der = GetCertData(env, certificate);
+            CFRelease(certificate);
+            return der;
 		}
-		jbyteArray jb = GetCertData(env, certificateRef);
-		return jb;
 	}
 	else {
 		[panel release];
@@ -141,43 +182,14 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
 	return NULL;
 }
 
-OSStatus CreateSSLClientPolicy(SecPolicyRef* policy) {
-	SecPolicySearchRef search;
-	OSStatus err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &search);
-	if (err) {
-		return err;
-	}
-	err = SecPolicySearchCopyNext(search, policy);
-	CFRelease(search);
-	if (err) {
-		return err;
-	}
-	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
-		CSSM_APPLE_TP_SSL_OPTS_VERSION,
-		0,
-		NULL,
-		CSSM_APPLE_TP_SSL_CLIENT
-	};
-	CSSM_DATA options_data = {
-		.Length = sizeof(ssloptions),
-		.Data = (void*)&ssloptions
-	};
-	err = SecPolicySetValue(*policy, &options_data);
-	if (err) {
-		CFRelease(*policy);
-		return err;
-	}
-	return noErr;
-}
-
 SecCertificateRef CreateCertificateFromData(JNIEnv *env, jbyteArray jCertificate) {
 	OSStatus err;
-	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
+	jbyte *der = (*env)->GetByteArrayElements(env, jCertificate, NULL);
 	// Creates a certificate object based on the specified data, type, and encoding.
-	NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
-	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
+	NSData *certData = [NSData dataWithBytes:der length:(*env)->GetArrayLength(env, jCertificate)];
+	(*env)->ReleaseByteArrayElements(env, jCertificate, der, 0);
 	CSSM_DATA *cssmData = NULL;
-	if (certData) {
+	if(certData) {
 		cssmData = (CSSM_DATA*)malloc(sizeof(CSSM_DATA));
 		cssmData->Length = [certData length];
 		cssmData->Data = (uint8*)malloc(cssmData->Length);

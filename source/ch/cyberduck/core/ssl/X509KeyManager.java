@@ -19,13 +19,18 @@ package ch.cyberduck.core.ssl;
  */
 
 import java.io.IOException;
+import java.security.Principal;
+import java.security.cert.X509Certificate;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
 
     X509KeyManager init() throws IOException;
 
-
+    /**
+     * Find matching certificate for alias in key store
+     */
+    X509Certificate getCertificate(String alias, String keyType, Principal[] issuers);
 }
