@@ -348,7 +348,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return new List<Path>();
             }
-            set { View.SelectedPaths = SelectedPaths; }
+            set { View.SelectedPaths = value; }
         }
 
         public bool ShowHiddenFiles
