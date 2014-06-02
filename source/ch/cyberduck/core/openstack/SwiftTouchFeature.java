@@ -37,7 +37,8 @@ public class SwiftTouchFeature implements Touch {
 
     private SwiftSession session;
 
-    final PathContainerService containerService = new PathContainerService();
+    final PathContainerService containerService
+            = new PathContainerService();
 
     private MimeTypeService mapping
             = new MappingMimeTypeService();

@@ -36,7 +36,8 @@ import java.util.Map;
 public class S3MoveFeature implements Move {
     private static final Logger log = Logger.getLogger(S3MoveFeature.class);
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
     private S3Session session;
 

@@ -30,7 +30,8 @@ public class GoogleStorageDirectoryFeature implements Directory {
 
     private GoogleStorageSession session;
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;

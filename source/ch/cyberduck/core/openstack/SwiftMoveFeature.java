@@ -38,7 +38,8 @@ import ch.iterate.openstack.swift.exception.NotFoundException;
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new PathContainerService();
 
     private SwiftSession session;
 
