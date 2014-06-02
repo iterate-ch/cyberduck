@@ -108,16 +108,6 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
     int i;
     for(i = 0; i < (*env)->GetArrayLength(env, jCertificates); i++) {
         SecCertificateRef certificate = CreateCertificateFromData(env, (*env)->GetObjectArrayElement(env, jCertificates, i));
-        CFErrorRef error;
-        // Normalized copy of the distinguished name (DN) of the issuer of a certificate
-        CFDataRef issuer = SecCertificateCopyNormalizedIssuerContent(certificate, &error);
-        if(NULL == issuer) {
-            // Returns NULL if an error occurred
-            NSLog(@"Error retrieving distinguished name (DN) from certificate %@", CFErrorCopyDescription(error));
-            CFRelease(certificate);
-            CFRelease(error);
-            continue;
-        }
         SecIdentityRef identity;
         // If the associated private key is not found in one of the specified keychains, this function fails with an appropriate error code (usually errSecItemNotFound), and does not return anything in the identityRef parameter.
         status = SecIdentityCreateWithCertificate(NULL, certificate, &identity);
