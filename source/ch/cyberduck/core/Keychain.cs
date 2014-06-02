@@ -23,19 +23,20 @@ using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
+using java.io;
+using java.security;
+using java.security.cert;
 using java.util;
 using javax.security.auth.x500;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
-using CertificateFactory = java.security.cert.CertificateFactory;
-using ByteArrayInputStream = java.io.ByteArrayInputStream;
-using ConnectionCanceledException = ch.cyberduck.core.exception.ConnectionCanceledException;
 
 namespace Ch.Cyberduck.Core
 {
     public class Keychain : HostPasswordStore, CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(Keychain).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 
         public bool isTrusted(String hostName, List certs)
         {
@@ -143,15 +144,18 @@ namespace Ch.Cyberduck.Core
                 {
                     string rfc1779 =
                         new X500Principal(issuer.getName()).getName(X500Principal.RFC1779)
-                                                 .Replace("ST=", "S=")
-                                                 .Replace("SP=", "S=");
+                                                           .Replace("ST=", "S=")
+                                                           .Replace("SP=", "S=");
                     X509Certificate2Collection certificates =
-                                store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName,
-                                rfc1779, true);
+                        store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName, rfc1779, true);
                     found.AddRange(certificates);
                 }
                 X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
-                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
+                                                                                              LocaleFactory
+                                                                                                  .localizedString(
+                                                                                                      "Choose"), prompt,
+                                                                                              X509SelectionFlag
+                                                                                                  .SingleSelection);
                 foreach (X509Certificate2 c in selected)
                 {
                     return ConvertCertificate(c);
@@ -277,7 +281,7 @@ namespace Ch.Cyberduck.Core
         public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
         {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         public static void Register()
