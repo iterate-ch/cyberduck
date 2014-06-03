@@ -51,26 +51,31 @@ import java.util.List;
 public class CertificateStoreX509KeyManager implements X509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 
-    private KeyStore keyStore;
+    private KeyStore store;
 
-    private CertificateStore chooseCallback;
+    private CertificateStore callback;
 
     public CertificateStoreX509KeyManager(final CertificateStore callback) {
-        this.chooseCallback = callback;
+        this.callback = callback;
+    }
+
+    public CertificateStoreX509KeyManager(final CertificateStore callback, final KeyStore store) {
+        this.callback = callback;
+        this.store = store;
     }
 
     public X509KeyManager init() throws IOException {
         try {
             // Get the key manager factory for the default algorithm.
             if(null == Preferences.instance().getProperty("connection.ssl.keystore.type")) {
-                keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                store = KeyStore.getInstance(KeyStore.getDefaultType());
             }
             else {
-                keyStore = KeyStore.getInstance(Preferences.instance().getProperty("connection.ssl.keystore.type"),
+                store = KeyStore.getInstance(Preferences.instance().getProperty("connection.ssl.keystore.type"),
                         Preferences.instance().getProperty("connection.ssl.keystore.provider"));
             }
             // Load default key store
-            keyStore.load(null, null);
+            store.load(null, null);
         }
         catch(CertificateException e) {
             throw new IOException(e);
@@ -95,13 +100,13 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
         try {
-            final Enumeration<String> aliases = keyStore.aliases();
+            final Enumeration<String> aliases = store.aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Alias in Keychain %s", alias));
                 }
-                if(keyStore.isKeyEntry(alias)) {
+                if(store.isKeyEntry(alias)) {
                     // returns the first element of the certificate chain of that key entry
                     final Certificate cert = this.getCertificate(alias, keyType, issuers);
                     if(null == cert) {
@@ -125,7 +130,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
 
     public X509Certificate getCertificate(final String alias, final String keyType, final Principal[] issuers) {
         try {
-            final Certificate cert = keyStore.getCertificate(alias);
+            final Certificate cert = store.getCertificate(alias);
             if(cert instanceof X509Certificate) {
                 final X509Certificate x509 = (X509Certificate) cert;
                 if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
@@ -156,7 +161,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                 final X509Certificate selected;
                 try {
                     final String hostname = socket.getInetAddress().getHostName();
-                    selected = chooseCallback.choose(keyTypes,
+                    selected = callback.choose(keyTypes,
                             issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
                             "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
                             hostname));
@@ -171,7 +176,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                     continue;
                 }
                 for(String alias : this.getClientAliases(keyType, issuers)) {
-                    if(keyStore.getCertificate(alias).equals(selected)) {
+                    if(store.getCertificate(alias).equals(selected)) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
                         }
@@ -194,7 +199,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     public X509Certificate[] getCertificateChain(final String alias) {
         try {
             final List<X509Certificate> result = new ArrayList<X509Certificate>();
-            final Certificate[] chain = keyStore.getCertificateChain(alias);
+            final Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
                 // Return null if the alias can't be found
@@ -209,7 +214,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
             }
             if(result.isEmpty()) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
-                final Certificate cert = keyStore.getCertificate(alias);
+                final Certificate cert = store.getCertificate(alias);
                 if(null == cert) {
                     // Return null if the alias can't be found
                     return null;
@@ -230,8 +235,8 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
     @Override
     public PrivateKey getPrivateKey(final String alias) {
         try {
-            if(keyStore.isKeyEntry(alias)) {
-                final Key key = keyStore.getKey(alias, "null".toCharArray());
+            if(store.isKeyEntry(alias)) {
+                final Key key = store.getKey(alias, "null".toCharArray());
                 if(key instanceof PrivateKey) {
                     return (PrivateKey) key;
                 }
