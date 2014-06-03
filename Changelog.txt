@@ -5,7 +5,7 @@ Changelog. Last modified: $Date$
 
 4.5 [https://trac.cyberduck.io/milestone/4.5]
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
-- [Feature] TLS client certificate authentication (WebDAV) (#5883)
+- [Feature] TLS mutual (two-way) authentication with client certificate (WebDAV) (#5883)
 - [Feature] Public key authentification using OpenSSH agent (SFTP) (Mac) (#75)
 - [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
 - [Feature] GZIP Compression (SFTP) (#123)
