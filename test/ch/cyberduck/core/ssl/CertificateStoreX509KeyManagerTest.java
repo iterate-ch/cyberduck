@@ -52,7 +52,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore() {
             @Override
             public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
-                assertEquals("Select the certificate to use when connecting to h.", prompt);
+                assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to localhost.", prompt);
                 for(Principal issuer : issuers) {
                     assertEquals("CN=StartCom Class 2 Primary Intermediate Client CA", issuer.getName());
                 }
