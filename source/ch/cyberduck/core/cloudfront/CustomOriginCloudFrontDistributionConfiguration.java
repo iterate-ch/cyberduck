@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.cdn.Distribution;
@@ -43,9 +42,6 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
     private Host origin;
-
-    private PathContainerService containerService
-            = new PathContainerService();
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         // Configure with the same host as S3 to get the same credentials from the keychain.

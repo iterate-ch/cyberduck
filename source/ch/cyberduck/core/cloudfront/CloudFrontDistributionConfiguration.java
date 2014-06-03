@@ -149,7 +149,7 @@ public class CloudFrontDistributionConfiguration
     /**
      * @param method Distribution method
      * @return Origin server hostname. This is not the same as the container for
-     * custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
+     *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     protected URI getOrigin(final Path container, final Distribution.Method method) {
         return URI.create(String.format("http://%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname()));
@@ -327,11 +327,11 @@ public class CloudFrontDistributionConfiguration
             final Distribution d = this.read(container, method, prompt);
             final List<String> keys = new ArrayList<String>();
             for(Path file : files) {
-                if(new PathContainerService().isContainer(file)) {
+                if(containerService.isContainer(file)) {
                     keys.add(String.valueOf(Path.DELIMITER));
                 }
                 else {
-                    keys.add(new PathContainerService().getKey(file));
+                    keys.add(containerService.getKey(file));
                 }
             }
             if(keys.isEmpty()) {
