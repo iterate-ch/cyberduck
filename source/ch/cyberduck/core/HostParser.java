@@ -63,21 +63,33 @@ public final class HostParser {
         else {
             username = Preferences.instance().getProperty("connection.login.name");
         }
-        if(input.lastIndexOf('@') != -1) {
-            if(input.indexOf(':', begin) != -1 && input.lastIndexOf('@') > input.indexOf(':', begin)) {
-                // ':' is not for the port number but username:pass seperator
-                cut = input.indexOf(':', begin);
-                username = input.substring(begin, cut);
-                begin += username.length() + 1;
-                cut = input.lastIndexOf('@');
-                password = input.substring(begin, cut);
-                begin += password.length() + 1;
-            }
-            else {
-                //no password given
-                cut = input.lastIndexOf('@');
-                username = input.substring(begin, cut);
-                begin += username.length() + 1;
+        if(input.indexOf('@', begin) != -1) {
+            if(-1 == input.indexOf(Path.DELIMITER, begin)
+                    || input.indexOf('@', begin) < input.indexOf(Path.DELIMITER, begin)) {
+                cut = input.indexOf('@', begin);
+                // Handle at sign in username
+                while(cut < input.lastIndexOf('@')) {
+                    if(input.indexOf(Path.DELIMITER, begin) != -1
+                            && input.indexOf('@', cut + 1) > input.indexOf(Path.DELIMITER, begin)) {
+                        // At sign is part of the path
+                        break;
+                    }
+                    cut = input.indexOf('@', cut + 1);
+                }
+                if(input.indexOf(':', begin) != -1
+                        && cut > input.indexOf(':', begin)) {
+                    // ':' is not for the port number but username:pass separator
+                    username = input.substring(begin, input.indexOf(':', begin));
+                    begin += username.length() + 1;
+                    cut = input.indexOf('@', begin);
+                    password = input.substring(begin, cut);
+                    begin += password.length() + 1;
+                }
+                else {
+                    // No password given
+                    username = input.substring(begin, cut);
+                    begin += username.length() + 1;
+                }
             }
         }
         String hostname = Preferences.instance().getProperty("connection.hostname.default");
