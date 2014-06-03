@@ -74,11 +74,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (!string.IsNullOrEmpty(t))
             {
-                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.file)).getReference()) != null
+                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.file)).getReference()) != null)
                 {
                     return false;
                 };
-                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.directory)).getReference()) != null
+                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.directory)).getReference()) != null)
                 {
                     return false;
                 };
