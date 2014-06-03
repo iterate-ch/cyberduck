@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.auth.BasicUserPrincipal;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
@@ -80,6 +81,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testGetAliases() throws Exception {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
