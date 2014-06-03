@@ -116,6 +116,10 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
         catch(KeyStoreException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
+        if(list.isEmpty()) {
+            // null if there were no matches
+            return null;
+        }
         return list.toArray(new String[list.size()]);
     }
 
@@ -182,6 +186,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
         catch(KeyStoreException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
+        // Return null if there are no matches
         return null;
     }
 
@@ -192,6 +197,8 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
             final Certificate[] chain = keyStore.getCertificateChain(alias);
             if(null == chain) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
+                // Return null if the alias can't be found
+                return null;
             }
             else {
                 for(Certificate cert : chain) {
@@ -203,6 +210,10 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
             if(result.isEmpty()) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
                 final Certificate cert = keyStore.getCertificate(alias);
+                if(null == cert) {
+                    // Return null if the alias can't be found
+                    return null;
+                }
                 if(cert instanceof X509Certificate) {
                     final X509Certificate x509 = (X509Certificate) cert;
                     result.add(x509);
@@ -230,8 +241,6 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
             }
             else {
                 log.warn(String.format("Alias %s is not a key entry", alias));
-                // Return null if the alias can't be found
-                return null;
             }
         }
         catch(KeyStoreException e) {
@@ -244,6 +253,7 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
             log.error(e.getMessage());
         }
         log.warn(String.format("No private key for alias %s", alias));
+        // Return null if the alias can't be found
         return null;
     }
 
