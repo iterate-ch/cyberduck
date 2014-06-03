@@ -41,6 +41,12 @@ public class DefaultPathReferenceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testUniqueSymbolicLInk() throws Exception {
+        final Path t = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
+        assertEquals("[directory, symboliclink]-/", new DefaultPathReference(t).unique());
+    }
+
+    @Test
     public void testUniqueContainer() throws Exception {
         final Path t = new Path("/container", EnumSet.of(Path.Type.directory));
         assertEquals("[directory]-/container", new DefaultPathReference(t).unique());
