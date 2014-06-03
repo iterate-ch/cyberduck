@@ -41,7 +41,7 @@ public class S3ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(S3ReadFeature.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private S3Session session;
 

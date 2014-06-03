@@ -35,7 +35,7 @@ public class AzureObjectListService implements ListService {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureObjectListService(AzureSession session) {
         this.session = session;

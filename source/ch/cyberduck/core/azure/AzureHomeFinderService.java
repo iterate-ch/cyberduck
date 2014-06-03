@@ -30,7 +30,7 @@ import java.util.EnumSet;
 public class AzureHomeFinderService extends DefaultHomeFinderService {
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureHomeFinderService(final AzureSession session) {
         super(session);

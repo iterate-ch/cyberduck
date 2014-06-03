@@ -47,7 +47,7 @@ public class S3VersioningFeature implements Versioning {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private Map<Path, VersioningConfiguration> cache
             = Collections.emptyMap();

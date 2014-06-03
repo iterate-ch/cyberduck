@@ -51,7 +51,7 @@ public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private HostPasswordStore store;
 

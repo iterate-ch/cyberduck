@@ -38,7 +38,7 @@ public class S3MultipartService {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public S3MultipartService(S3Session session) {
         this.session = session;

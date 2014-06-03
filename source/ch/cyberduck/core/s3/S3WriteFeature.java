@@ -50,7 +50,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private S3MultipartService multipartService;
 

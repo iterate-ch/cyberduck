@@ -49,7 +49,7 @@ import com.microsoft.windowsazure.services.core.storage.StorageException;
 public class AzureUrlProvider implements UrlProvider {
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     private AzureSession session;
 

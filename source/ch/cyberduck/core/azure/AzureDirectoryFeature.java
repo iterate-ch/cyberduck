@@ -42,7 +42,7 @@ public class AzureDirectoryFeature implements Directory {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureDirectoryFeature(AzureSession session) {
         this.session = session;

@@ -34,7 +34,7 @@ public class AzureMoveFeature implements Move {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureMoveFeature(AzureSession session) {
         this.session = session;

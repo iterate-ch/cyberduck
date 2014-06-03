@@ -41,7 +41,7 @@ public class AzureMetadataFeature implements Headers {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureMetadataFeature(AzureSession session) {
         this.session = session;

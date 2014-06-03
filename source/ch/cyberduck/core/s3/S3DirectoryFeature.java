@@ -35,7 +35,7 @@ public class S3DirectoryFeature implements Directory {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public S3DirectoryFeature(final S3Session session) {
         this.session = session;

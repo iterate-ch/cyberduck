@@ -43,7 +43,7 @@ public class AzureAttributesFeature implements Attributes {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureAttributesFeature(AzureSession session) {
         this.session = session;

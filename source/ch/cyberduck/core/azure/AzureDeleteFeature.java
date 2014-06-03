@@ -40,7 +40,7 @@ public class AzureDeleteFeature implements Delete {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureDeleteFeature(AzureSession session) {
         this.session = session;

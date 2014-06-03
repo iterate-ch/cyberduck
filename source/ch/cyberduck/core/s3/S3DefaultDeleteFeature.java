@@ -40,7 +40,7 @@ public class S3DefaultDeleteFeature implements Delete {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public S3DefaultDeleteFeature(final S3Session session) {
         this.session = session;

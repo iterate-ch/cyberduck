@@ -36,7 +36,7 @@ public class S3TouchFeature implements Touch {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private MimeTypeService mapping
             = new MappingMimeTypeService();

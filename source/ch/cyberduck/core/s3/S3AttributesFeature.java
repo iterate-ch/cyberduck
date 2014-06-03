@@ -36,7 +36,7 @@ public class S3AttributesFeature implements Attributes {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public S3AttributesFeature(S3Session session) {
         this.session = session;

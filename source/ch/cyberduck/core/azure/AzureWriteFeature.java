@@ -48,7 +48,7 @@ public class AzureWriteFeature implements Write {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureWriteFeature(AzureSession session) {
         this.session = session;

@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -49,7 +48,7 @@ public class S3LocationFeature implements Location {
 
     @Override
     public String getLocation(final Path file) throws BackgroundException {
-        final Path container = new PathContainerService().getContainer(file);
+        final Path container = new S3PathContainerService().getContainer(file);
         try {
             String location = session.getClient().getBucketLocation(
                     container.getName());

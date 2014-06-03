@@ -39,7 +39,7 @@ public class AzureCopyFeature implements Copy {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureCopyFeature(AzureSession session) {
         this.session = session;

@@ -60,7 +60,7 @@ public class S3ObjectListService implements ListService {
     private S3AttributesFeature attributes;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private Map<Path, VersioningConfiguration> versioning
             = new HashMap<Path, VersioningConfiguration>();
