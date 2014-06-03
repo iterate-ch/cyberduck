@@ -74,8 +74,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (!string.IsNullOrEmpty(t))
             {
-                Path file = new Path(Workdir, t, EnumSet.of(AbstractPath.Type.file));
-                return BrowserController.Lookup(file.getReference()) == null;
+                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.file)).getReference()) != null
+                {
+                    return false;
+                };
+                if(BrowserController.Lookup(new Path(Workdir, t, EnumSet.of(AbstractPath.Type.directory)).getReference()) != null
+                {
+                    return false;
+                };
+                return true;
             }
             return false;
         }
