@@ -66,7 +66,12 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        this.index();
+        if(this.isLocked()) {
+            log.debug("Skip indexing collection while loading");
+        }
+        else {
+            this.index();
+        }
         super.collectionItemAdded(bookmark);
     }
 

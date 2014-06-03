@@ -100,7 +100,12 @@ public class FolderTransferCollection extends Collection<Transfer> {
     @Override
     public void collectionItemAdded(final Transfer transfer) {
         this.save(transfer);
-        this.index();
+        if(this.isLocked()) {
+            log.debug("Skip indexing collection while loading");
+        }
+        else {
+            this.index();
+        }
         super.collectionItemAdded(transfer);
     }
 
