@@ -159,7 +159,7 @@ public class CopyTransfer extends Transfer {
                 files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
             }
             final List<TransferItem> nullified = new ArrayList<TransferItem>();
-            for(Path p : files.keySet()) {
+            for(Path p : list) {
                 nullified.add(new TransferItem(p));
             }
             return nullified;
