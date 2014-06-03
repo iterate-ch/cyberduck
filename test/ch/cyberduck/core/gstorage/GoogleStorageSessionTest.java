@@ -2,12 +2,13 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -72,6 +73,31 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {
                     return "a";
+                }
+                return null;
+            }
+        }, new DisabledLoginController(), new DisabledCancelCallback());
+    }
+
+    @Test(expected = LoginFailureException.class)
+    public void testConnectInvalidAccessTokenRefreshToken() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("google.projectid"), null
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    // Mark as not expired
+                    Preferences.instance().setProperty("google.storage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
+                    return "a";
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
                 }
                 return null;
             }
