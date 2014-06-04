@@ -79,7 +79,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         }, new DisabledLoginController(), new DisabledCancelCallback());
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test
     public void testConnectInvalidAccessTokenRefreshToken() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
