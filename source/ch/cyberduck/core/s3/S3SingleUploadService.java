@@ -45,7 +45,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         this(session, new S3WriteFeature(session));
     }
 
-    public S3SingleUploadService(final S3Session session, final AbstractHttpWriteFeature<?> writer) {
+    public S3SingleUploadService(final S3Session session, final AbstractHttpWriteFeature<StorageObject> writer) {
         super(writer);
         this.session = session;
     }

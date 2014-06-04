@@ -42,9 +42,9 @@ import java.io.InputStream;
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private AbstractHttpWriteFeature writer;
+    private AbstractHttpWriteFeature<Output> writer;
 
-    public HttpUploadFeature(final AbstractHttpWriteFeature<?> writer) {
+    public HttpUploadFeature(final AbstractHttpWriteFeature<Output> writer) {
         this.writer = writer;
     }
 
