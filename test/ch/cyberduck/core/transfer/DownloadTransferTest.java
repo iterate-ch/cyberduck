@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.local.FinderLocal;
@@ -13,7 +12,6 @@ import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.OutputStream;
@@ -49,7 +47,6 @@ public class DownloadTransferTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
         Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
@@ -145,62 +142,6 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return true;
             }
         }, new DisabledListProgressListener()).isEmpty());
-    }
-
-    @Test
-    public void testPrepareOverride() throws Exception {
-        final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
-        final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        final Cache cache = new Cache(Integer.MAX_VALUE);
-        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l") {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-        }) {
-            @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
-                if(file.equals(root)) {
-                    assertTrue(status.isExists());
-                }
-                else {
-                    assertFalse(status.isExists());
-                }
-            }
-        };
-        final NullSession session = new NullSession(new Host("t")) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(child);
-                return children;
-            }
-        };
-        final SingleTransferWorker worker = new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
-            @Override
-            public TransferAction prompt() {
-                return TransferAction.overwrite;
-            }
-        }, new DisabledTransferErrorCallback(), cache) {
-            @Override
-            public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
-                if(file.equals(root)) {
-                    assertTrue(cache.containsKey(root.getReference()));
-                }
-                super.transfer(file, new NullLocal("l") {
-                    @Override
-                    public boolean exists() {
-                        return true;
-                    }
-                }, filter);
-                if(file.equals(root)) {
-                    assertFalse(cache.containsKey(root.getReference()));
-                }
-            }
-        };
-        worker.run();
-        assertFalse(cache.containsKey(child.getReference()));
-        assertTrue(cache.isEmpty());
     }
 
     @Test
