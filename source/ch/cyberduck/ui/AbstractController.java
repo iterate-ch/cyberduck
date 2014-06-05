@@ -132,7 +132,13 @@ public abstract class AbstractController implements Controller {
     }
 
     protected void invalidate() {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Terminating single executor thread pool %s", singleExecutor));
+        }
         singleExecutor.shutdown();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Terminating concurrent executor thread pool %s", concurrentExecutor));
+        }
         concurrentExecutor.shutdown();
     }
 
