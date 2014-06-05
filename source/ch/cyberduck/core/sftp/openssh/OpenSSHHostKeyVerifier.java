@@ -29,6 +29,7 @@ import ch.cyberduck.core.sftp.AbstractHostKeyCallback;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,8 +41,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 
 import net.schmizz.sshj.common.KeyType;
+import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 
@@ -50,6 +53,10 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
  */
 public abstract class OpenSSHHostKeyVerifier extends AbstractHostKeyCallback {
     private static Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one
@@ -99,10 +106,10 @@ public abstract class OpenSSHHostKeyVerifier extends AbstractHostKeyCallback {
             };
         }
         catch(IOException e) {
-            log.error(String.format("Cannot read known hosts file %s", file));
+            log.error(String.format("Cannot read known hosts file %s", file), e);
         }
-        catch(IllegalArgumentException e) {
-            log.error(String.format("Cannot read known hosts file %s", file));
+        catch(SSHRuntimeException e) {
+            log.error(String.format("Cannot read known hosts file %s", file), e);
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Cannot read known hosts file %s", file));
