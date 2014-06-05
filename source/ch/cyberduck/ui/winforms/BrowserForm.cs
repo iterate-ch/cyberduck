@@ -674,7 +674,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter
         {
-            set { new TypedColumn<Path>(treeColumnVersion) { AspectGetter = value }; }
+            set { new TypedColumn<Path>(treeColumnVersion) {AspectGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter
@@ -773,6 +773,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                     s.Add(path);
                 }
                 browser.SelectedObjects = s;
+                if (browser.SelectedItem != null)
+                {
+                    browser.SelectedItem.Focused = true;
+                }
             }
         }
 
@@ -1015,7 +1019,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             treeColumnExtension.ComparatorGetter =
                 (SortOrder order) => new ExtensionComparator(order == SortOrder.Ascending);
             treeColumnRegion.ComparatorGetter = (SortOrder order) => new RegionComparator(order == SortOrder.Ascending);
-            treeColumnVersion.ComparatorGetter = (SortOrder order) => new VersionComparator(order == SortOrder.Ascending);
+            treeColumnVersion.ComparatorGetter =
+                (SortOrder order) => new VersionComparator(order == SortOrder.Ascending);
         }
 
         private void BeforeSorting(object sender, BeforeSortingEventArgs args)
@@ -2160,7 +2165,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)
                 {
-                    ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(h), icons[h.getProtocol().getProvider()]);
+                    ToolStripItem item = new ToolStripMenuItem(BookmarkNameProvider.toString(h),
+                                                               icons[h.getProtocol().getProvider()]);
                     item.Tag = h;
                     item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                     items.Add(item);

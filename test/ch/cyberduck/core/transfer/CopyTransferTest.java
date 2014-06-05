@@ -19,7 +19,11 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -50,7 +54,7 @@ public class CopyTransferTest extends AbstractTestCase {
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
-        assertEquals(t.files, ((CopyTransfer)serialized).files);
+        assertEquals(t.files, ((CopyTransfer) serialized).files);
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize());
         assertEquals(3L, serialized.getTransferred());
@@ -62,5 +66,23 @@ public class CopyTransferTest extends AbstractTestCase {
         CopyTransfer t = new CopyTransfer(new Host(new SFTPProtocol(), "t"),
                 new Host(new FTPProtocol(), "t"), Collections.<Path, Path>singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         assertEquals(TransferAction.overwrite, t.action(new SFTPSession(new Host(new SFTPProtocol(), "t")), false, true, new DisabledTransferPrompt()));
+    }
+
+    @Test
+    public void testList() throws Exception {
+        Transfer t = new CopyTransfer(new Host("s"), new Host("t"), Collections.singletonMap(
+                new Path("/s", EnumSet.of(Path.Type.directory)),
+                new Path("/t", EnumSet.of(Path.Type.directory))));
+        final NullSession session = new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                children.add(new Path("/s/c", EnumSet.of(Path.Type.file)));
+                return children;
+            }
+        };
+        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/s/c", EnumSet.of(Path.Type.file)))),
+                t.list(session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
+        );
     }
 }

@@ -61,7 +61,7 @@ public class S3SessionTest extends AbstractTestCase {
                 return null;
             }
         });
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -73,7 +73,7 @@ public class S3SessionTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        assertNotNull(session.open(new DefaultHostKeyController()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         Cache cache = new Cache();
@@ -85,7 +85,7 @@ public class S3SessionTest extends AbstractTestCase {
         session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertTrue(session.isConnected());
         assertNotNull(session.workdir());
         session.close();
@@ -99,7 +99,7 @@ public class S3SessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/test.cyberduck.ch");
         final S3Session session = new S3Session(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         Cache cache = new Cache();
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
         assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
@@ -113,7 +113,7 @@ public class S3SessionTest extends AbstractTestCase {
                 properties.getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
@@ -130,7 +130,7 @@ public class S3SessionTest extends AbstractTestCase {
                 p.set(true);
                 credentials.setPassword(properties.getProperty("s3.secret"));
             }
-        }, new DefaultHostKeyController(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertTrue(p.get());
         session.close();
     }
@@ -142,7 +142,7 @@ public class S3SessionTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         try {
-            session.open(new DefaultHostKeyController());
+            session.open(new DisabledHostKeyCallback());
             session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {

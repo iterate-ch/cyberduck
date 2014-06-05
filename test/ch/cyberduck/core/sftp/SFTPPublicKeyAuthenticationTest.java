@@ -2,7 +2,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.local.FinderLocal;
@@ -31,7 +31,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController()));
         session.close();
         key.delete();

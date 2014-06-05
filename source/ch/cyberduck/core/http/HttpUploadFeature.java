@@ -42,9 +42,9 @@ import java.io.InputStream;
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private AbstractHttpWriteFeature writer;
+    private AbstractHttpWriteFeature<Output> writer;
 
-    public HttpUploadFeature(final AbstractHttpWriteFeature<?> writer) {
+    public HttpUploadFeature(final AbstractHttpWriteFeature<Output> writer) {
         this.writer = writer;
     }
 
@@ -61,18 +61,42 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             InputStream in = null;
             ResponseOutputStream<Output> out = null;
             final Digest digest = this.digest();
+            final BytecountStreamListener count = new BytecountStreamListener() {
+                @Override
+                public void recv(long bytes) {
+                    super.recv(bytes);
+                    listener.recv(bytes);
+                }
+
+                @Override
+                public void sent(long bytes) {
+                    super.sent(bytes);
+                    listener.sent(bytes);
+                }
+            };
             try {
                 in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
-                new StreamCopier(cancel, progress).transfer(in, status.getCurrent(), new ThrottledOutputStream(out, throttle), listener, status.getLength());
+                new StreamCopier(cancel, progress)
+                        .withOffset(status.getCurrent())
+                        .withLimit(status.getLength())
+                        .withListener(count)
+                        .transfer(in, new ThrottledOutputStream(out, throttle));
             }
             finally {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
             }
-            final Output response = out.getResponse();
-            this.post(digest, response);
-            return response;
+            try {
+                final Output response = out.getResponse();
+                this.post(digest, response);
+                return response;
+            }
+            catch(BackgroundException e) {
+                // Discard sent bytes if there is an error reply.
+                listener.sent(-count.getSent());
+                throw e;
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
@@ -90,6 +114,29 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     protected void post(final Digest pre, final Output response) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Received response %s", response));
+        }
+    }
+
+    private static class BytecountStreamListener implements StreamListener {
+        private long sent = 0L;
+        private long recv = 0L;
+
+        @Override
+        public void sent(long bytes) {
+            sent += bytes;
+        }
+
+        @Override
+        public void recv(long bytes) {
+            recv += bytes;
+        }
+
+        private long getRecv() {
+            return recv;
+        }
+
+        public long getSent() {
+            return sent;
         }
     }
 }

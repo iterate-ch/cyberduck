@@ -17,7 +17,18 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
@@ -148,7 +159,7 @@ public class CopyTransfer extends Transfer {
                 files.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
             }
             final List<TransferItem> nullified = new ArrayList<TransferItem>();
-            for(Path p : files.keySet()) {
+            for(Path p : list) {
                 nullified.add(new TransferItem(p));
             }
             return nullified;
@@ -204,12 +215,14 @@ public class CopyTransfer extends Transfer {
             if(file.isFile()) {
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
-                new StreamCopier(status, status).transfer(in, 0, out, new DisabledStreamListener() {
-                    @Override
-                    public void sent(long bytes) {
-                        addTransferred(bytes);
-                    }
-                }, status.getLength());
+                new StreamCopier(status, status)
+                        .withLimit(status.getLength())
+                        .withListener(new DisabledStreamListener() {
+                            @Override
+                            public void sent(long bytes) {
+                                addTransferred(bytes);
+                            }
+                        }).transfer(in, out);
             }
         }
         catch(IOException e) {

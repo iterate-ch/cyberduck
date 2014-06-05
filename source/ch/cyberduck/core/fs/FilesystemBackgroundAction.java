@@ -20,7 +20,7 @@ package ch.cyberduck.core.fs;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -38,7 +38,7 @@ public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAct
 
     public FilesystemBackgroundAction(final Session session, final Cache cache) {
         super(session, cache, new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
-                new DefaultHostKeyController());
+                new DisabledHostKeyCallback());
         this.cache = cache;
     }
 

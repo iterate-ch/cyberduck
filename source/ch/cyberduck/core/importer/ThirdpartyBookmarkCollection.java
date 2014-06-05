@@ -87,12 +87,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                             log.info(String.format("Checksum changed for bookmarks file at %s", file));
                         }
                         // Should filter existing bookmarks
-                        try {
-                            this.parse(file);
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(String.format("Failure reading collection %s %s", file, e.getMessage()));
-                        }
+                        this.parse(file);
                     }
                 }
                 else {
@@ -104,12 +99,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             else {
                 // First import
-                try {
-                    this.parse(file);
-                }
-                catch(AccessDeniedException e) {
-                    log.warn(String.format("Failure reading collection %s %s", file, e.getMessage()));
-                }
+                this.parse(file);
             }
             // Save last checksum
             if(StringUtils.isNotBlank(current)) {

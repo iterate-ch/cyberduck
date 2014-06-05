@@ -65,7 +65,8 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent)
+            throws BackgroundException {
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
             return downloadFilter.prepare(file, local, parent);
@@ -73,12 +74,13 @@ public class SynchronizationPathFilter implements TransferPathFilter {
         if(compare.equals(Comparison.local)) {
             return uploadFilter.prepare(file, local, parent);
         }
-        // Directory with equal comparison
-        return new TransferStatus().exists(true);
+        // Equal comparison
+        return uploadFilter.prepare(file, local, parent);
     }
 
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path file, final Local local, final TransferStatus parent)
+            throws BackgroundException {
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.equal)) {
             return file.isDirectory();

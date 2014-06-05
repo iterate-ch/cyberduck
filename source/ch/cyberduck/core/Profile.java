@@ -48,16 +48,9 @@ public final class Profile implements Protocol, Serializable {
 
     private Local image;
 
-    public Profile(final Deserializer dict) {
+    public Profile(final Protocol parent, final Deserializer dict) {
+        this.parent = parent;
         this.dict = dict;
-        final String protocol = this.value("Protocol");
-        if(StringUtils.isBlank(protocol)) {
-            log.error("Missing protocol in profile");
-            parent = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-        }
-        else {
-            parent = ProtocolFactory.forName(protocol);
-        }
         image = this.write(this.value("Disk"));
     }
 

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -200,7 +201,6 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         final AttributedList<Local> children = new AttributedList<Local>();
         final File[] files = new File(path).listFiles();
         if(null == files) {
-            log.error(String.format("Error listing children for %s", path));
             throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
         }
         for(File file : files) {
@@ -237,14 +237,13 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
         return this.getAbsolute();
     }
 
-    public Local getSymlinkTarget() {
+    public Local getSymlinkTarget() throws NotfoundException {
         try {
             return LocalFactory.createLocal(this, new File(path).getCanonicalPath());
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
         }
-        return null;
     }
 
     /**

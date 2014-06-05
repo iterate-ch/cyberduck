@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.symlink;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -14,21 +14,22 @@ package ch.cyberduck.core.transfer.symlink;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
+import java.io.IOException;
 
 /**
  * @version $Id$
  */
-public interface SymlinkResolver<T> {
+public class DisabledHostKeyCallback implements HostKeyCallback {
 
-    /**
-     * @param file Symbolic link
-     * @return True if the symbolic link target can be resolved to another transfer item
-     */
-    boolean resolve(T file) throws NotfoundException;
-
-    String relativize(String base, String name);
+    @Override
+    public boolean verify(final String hostname, final int port,
+                          final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
+        return true;
+    }
 }

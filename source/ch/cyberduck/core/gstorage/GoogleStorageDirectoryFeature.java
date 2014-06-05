@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
+import ch.cyberduck.core.s3.S3PathContainerService;
 
 /**
  * @version $Id$
@@ -30,7 +31,8 @@ public class GoogleStorageDirectoryFeature implements Directory {
 
     private GoogleStorageSession session;
 
-    private PathContainerService containerService = new PathContainerService();
+    private PathContainerService containerService
+            = new S3PathContainerService();
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;

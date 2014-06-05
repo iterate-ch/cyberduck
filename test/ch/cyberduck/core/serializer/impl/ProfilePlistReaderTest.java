@@ -8,8 +8,8 @@ import ch.cyberduck.core.Profile;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @version $Id$
@@ -21,7 +21,7 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
         final Profile profile = new ProfilePlistReader().read(
                 LocalFactory.createLocal("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")
         );
-        assertFalse(profile.isEnabled());
+        assertNull(profile);
     }
 
     @Test

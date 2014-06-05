@@ -58,7 +58,7 @@ public class AlertHostKeyController extends PreferencesHostKeyVerifier {
             if(Scheme.sftp.equals(protocol.getScheme())) {
                 return new AlertHostKeyController((WindowController) c);
             }
-            return new DefaultHostKeyController();
+            return new DisabledHostKeyCallback();
         }
     }
 

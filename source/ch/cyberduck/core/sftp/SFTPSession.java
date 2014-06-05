@@ -27,7 +27,6 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
@@ -279,9 +278,6 @@ public class SFTPSession extends Session<Connection> {
         }
         if(type == Compress.class) {
             return (T) new SFTPCompressFeature(this);
-        }
-        if(type == Find.class) {
-            return (T) new SFTPFindFeature(this);
         }
         if(type == ch.cyberduck.core.features.Attributes.class) {
             return (T) new SFTPAttributesFeature(this);

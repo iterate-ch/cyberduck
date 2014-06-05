@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
@@ -54,7 +53,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DefaultHostKeyController()
+        }, new DisabledLoginController(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -92,7 +91,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DefaultHostKeyController()
+        }, new DisabledLoginController(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -130,7 +129,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DefaultHostKeyController()
+        }, new DisabledLoginController(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -168,7 +167,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DefaultHostKeyController()
+        }, new DisabledLoginController(), new DisabledHostKeyCallback()
         ) {
             @Override
             public Object run() throws BackgroundException {

@@ -62,7 +62,8 @@ public class SwiftAuthenticationService {
         this.version = version;
     }
 
-    public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt) throws LoginCanceledException {
+    public Set<? extends AuthenticationRequest> getRequest(final Host host, final LoginCallback prompt)
+            throws LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         final StringBuilder url = new StringBuilder();
         url.append(host.getProtocol().getScheme().toString()).append("://");
@@ -100,8 +101,8 @@ public class SwiftAuthenticationService {
             final String user;
             final String tenant;
             if(StringUtils.contains(credentials.getUsername(), ':')) {
-                tenant = StringUtils.split(credentials.getUsername(), ':')[0];
-                user = StringUtils.split(credentials.getUsername(), ':')[1];
+                tenant = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0];
+                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
             }
             else {
                 user = credentials.getUsername();
@@ -118,7 +119,7 @@ public class SwiftAuthenticationService {
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                         LocaleFactory.localizedString("Tenant Name", "Mosso"), options);
                 tenant = tenantCredentials.getUsername();
-                if(StringUtils.isNotBlank(tenant)) {
+                if(tenant != null) {
                     // Save tenant in username
                     credentials.setUsername(String.format("%s:%s", tenant, credentials.getUsername()));
                 }

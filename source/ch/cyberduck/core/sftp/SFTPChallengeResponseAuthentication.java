@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -51,6 +52,9 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
 
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)
             throws IOException, LoginCanceledException {
+        if(StringUtils.isBlank(host.getCredentials().getPassword())) {
+            return false;
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication with credentials %s", credentials));
         }

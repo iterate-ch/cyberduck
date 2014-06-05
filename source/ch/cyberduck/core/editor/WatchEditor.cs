@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Core.Editor
                 application = ch.cyberduck.core.editor.EditorFactory.instance().getDefaultEditor();
                 if (application != null && Utils.IsNotBlank(application.getIdentifier()))
                 {
-                    process.StartInfo.FileName = application.getIdentifier();
+                    process.StartInfo.FileName = Utils.GetExecutableFromEditCommand(application.getIdentifier());
                     process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
                 }
                 else
@@ -59,7 +59,7 @@ namespace Ch.Cyberduck.Core.Editor
             }
             else
             {
-                process.StartInfo.FileName = application.getIdentifier();
+                process.StartInfo.FileName = Utils.GetExecutableFromEditCommand(application.getIdentifier());
                 process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
             }
             if (Utils.StartProcess(process))

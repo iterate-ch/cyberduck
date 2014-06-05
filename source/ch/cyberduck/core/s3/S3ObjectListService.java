@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 
@@ -59,7 +60,7 @@ public class S3ObjectListService implements ListService {
     private S3AttributesFeature attributes;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private Map<Path, VersioningConfiguration> versioning
             = new HashMap<Path, VersioningConfiguration>();
@@ -136,7 +137,7 @@ public class S3ObjectListService implements ListService {
             // Read directory listing in chunks. List results are always returned
             // in lexicographic (alphabetical) order.
             final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    bucket.getName(), prefix, delimiter,
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
                     Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
 
             final StorageObject[] objects = chunk.getObjects();

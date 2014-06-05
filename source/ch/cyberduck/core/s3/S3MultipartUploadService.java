@@ -61,7 +61,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private S3MultipartService multipartService;
 

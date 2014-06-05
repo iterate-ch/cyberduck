@@ -37,6 +37,7 @@ import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     private GoogleStorageSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
         this.session = session;

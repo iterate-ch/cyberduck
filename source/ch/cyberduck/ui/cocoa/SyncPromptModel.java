@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -53,9 +52,9 @@ public class SyncPromptModel extends TransferPromptModel {
     }
 
     @Override
-    protected NSObject objectValueForItem(final TransferItem file, final String identifier) {
+    protected NSObject objectValueForItem(final TransferItem item, final String identifier) {
         if(identifier.equals(Column.sync.name())) {
-            final Comparison compare = transfer.compare(file);
+            final Comparison compare = transfer.compare(item);
             if(compare.equals(Comparison.remote)) {
                 return IconCacheFactory.<NSImage>get().iconNamed("transfer-download.tiff", 16);
             }
@@ -65,12 +64,12 @@ public class SyncPromptModel extends TransferPromptModel {
             return null;
         }
         if(identifier.equals(Column.create.name())) {
-            final TransferStatus status = this.getStatus(file);
+            final TransferStatus status = this.getStatus(item);
             if(!status.isExists()) {
                 return IconCacheFactory.<NSImage>get().iconNamed("plus.tiff", 16);
             }
             return null;
         }
-        return super.objectValueForItem(file, identifier);
+        return super.objectValueForItem(item, identifier);
     }
 }

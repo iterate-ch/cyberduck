@@ -41,7 +41,7 @@ public class AzureMetadataFeature implements Headers {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureMetadataFeature(AzureSession session) {
         this.session = session;
@@ -56,15 +56,8 @@ public class AzureMetadataFeature implements Headers {
                 return container.getMetadata();
             }
             else {
-                final CloudBlockBlob blob;
-                if(file.attributes().isPlaceholder()) {
-                    blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
-                }
-                else {
-                    blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file));
-                }
+                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlockBlobReference(containerService.getKey(file));
                 blob.downloadAttributes();
                 return blob.getMetadata();
             }

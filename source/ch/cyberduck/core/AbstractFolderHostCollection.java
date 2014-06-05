@@ -67,8 +67,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        writer.write(bookmark, this.getFile(bookmark));
+        this.save(bookmark);
         super.collectionItemAdded(bookmark);
+    }
+
+    @Override
+    public void collectionItemChanged(final Host bookmark) {
+        this.save(bookmark);
+        super.collectionItemChanged(bookmark);
     }
 
     @Override
@@ -77,17 +83,29 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.getFile(bookmark).delete();
         }
         catch(AccessDeniedException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Failure removing bookmark %s", e.getMessage()));
         }
         finally {
             super.collectionItemRemoved(bookmark);
         }
     }
 
-    @Override
-    public void collectionItemChanged(final Host bookmark) {
-        writer.write(bookmark, this.getFile(bookmark));
-        super.collectionItemChanged(bookmark);
+    protected void save(final Host bookmark) {
+        this.lock();
+        try {
+            folder.mkdir();
+            final Local f = this.getFile(bookmark);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save bookmark %s", f));
+            }
+            writer.write(bookmark, f);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+        }
+        finally {
+            this.unlock();
+        }
     }
 
     @Override
@@ -120,9 +138,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             }
             // Sort using previously built index
             this.sort();
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
         }
         finally {
             this.unlock();

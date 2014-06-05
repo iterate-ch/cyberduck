@@ -39,7 +39,8 @@ public class AzureProtocol extends AbstractProtocol {
      */
     @Override
     public String getDefaultHostname() {
-        return "blob.core.windows.net";
+        // return "blob.core.windows.net";
+        return super.getDefaultHostname();
     }
 
     @Override

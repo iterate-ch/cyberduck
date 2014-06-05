@@ -79,7 +79,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private static final Logger log = Logger.getLogger(S3Session.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private S3AccessControlListFeature acl
             = new S3AccessControlListFeature(this);

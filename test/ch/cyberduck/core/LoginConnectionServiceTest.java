@@ -66,7 +66,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
                 )
         );
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
@@ -79,7 +79,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DefaultHostKeyController(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override

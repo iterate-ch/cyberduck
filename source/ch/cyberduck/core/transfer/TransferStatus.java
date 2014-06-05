@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @version $Id$
  */
-public final class TransferStatus implements StreamCancelation, StreamProgress {
+public class TransferStatus implements StreamCancelation, StreamProgress {
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
@@ -55,6 +55,12 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      * Append to file
      */
     private boolean append = false;
+
+    /**
+     * Not accepted
+     */
+    private boolean skipped = false;
+
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
@@ -69,8 +75,13 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private AtomicBoolean canceled
             = new AtomicBoolean();
+
     private AtomicBoolean complete
             = new AtomicBoolean();
+
+    private AtomicBoolean failure
+            = new AtomicBoolean();
+
     /**
      * MIME type
      */
@@ -103,6 +114,11 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
         complete.set(true);
     }
 
+    public void setFailure() {
+        failure.set(true);
+        complete.set(false);
+    }
+
     /**
      * If this path is currently transferred, interrupt it as soon as possible
      */
@@ -115,6 +131,10 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean isCanceled() {
         return canceled.get();
+    }
+
+    public boolean isFailure() {
+        return failure.get();
     }
 
     /**
@@ -199,6 +219,19 @@ public final class TransferStatus implements StreamCancelation, StreamProgress {
     public TransferStatus append(final boolean append) {
         this.append = append;
         return this;
+    }
+
+    public void setSkipped(boolean skip) {
+        this.skipped = skip;
+    }
+
+    public TransferStatus skip(final boolean skip) {
+        this.skipped = skip;
+        return this;
+    }
+
+    public boolean isSkipped() {
+        return skipped;
     }
 
     public Rename getRename() {

@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
@@ -52,9 +53,9 @@ public class FinderLocalAttributes extends LocalAttributes {
     /**
      * @return Null if no such file.
      */
-    private NSDictionary getNativeAttributes() {
+    private NSDictionary getNativeAttributes() throws AccessDeniedException, NotfoundException {
         if((!local.exists())) {
-            return null;
+            throw new NotfoundException(local.getAbsolute());
         }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
@@ -64,7 +65,7 @@ public class FinderLocalAttributes extends LocalAttributes {
                 local.getAbsolute(), error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Failure reading attributes for %s %s", local, f));
+            throw new AccessDeniedException(String.format("%s", f));
         }
         return dict;
     }
@@ -73,35 +74,41 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @param name File manager attribute name
      * @return Null if no such file or attribute.
      */
-    private NSObject getNativeAttribute(final String name) {
+    private NSObject getNativeAttribute(final String name) throws AccessDeniedException, NotfoundException {
         final NSDictionary dict = this.getNativeAttributes();
-        if(null == dict) {
-            log.warn(String.format("No file at %s", local));
-            return null;
-        }
         // Returns an entry’s value given its key, or null if no value is associated with key.
         return dict.objectForKey(name);
     }
 
     @Override
     public long getSize() {
-        final NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
-        if(null == size) {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
+            // Refer to #5503 and http://code.google.com/p/rococoa/issues/detail?id=3
+            return (long) Rococoa.cast(object, NSNumber.class).doubleValue();
+        }
+        catch(AccessDeniedException e) {
             return -1;
         }
-        // Refer to #5503 and http://code.google.com/p/rococoa/issues/detail?id=3
-        return (long) Rococoa.cast(size, NSNumber.class).doubleValue();
+        catch(NotfoundException e) {
+            return -1;
+        }
     }
 
     @Override
     public Permission getPermission() {
         try {
-            final NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
-            if(null == object) {
+            try {
+                final NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
+                String posixString = Integer.toOctalString(Rococoa.cast(object, NSNumber.class).intValue());
+                return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+            }
+            catch(AccessDeniedException e) {
                 return Permission.EMPTY;
             }
-            String posixString = Integer.toOctalString(Rococoa.cast(object, NSNumber.class).intValue());
-            return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+            catch(NotfoundException e) {
+                return Permission.EMPTY;
+            }
         }
         catch(NumberFormatException e) {
             log.error(e.getMessage());
@@ -110,17 +117,18 @@ public class FinderLocalAttributes extends LocalAttributes {
     }
 
     @Override
-    public void setPermission(final Permission permission) {
+    public void setPermission(final Permission permission) throws AccessDeniedException {
         synchronized(NSWorkspace.class) {
             final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getMode(), 8))),
                             NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                    local.getAbsolute(), error);
+                    local.getAbsolute(), error
+            );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+                throw new AccessDeniedException(String.format("%s", f));
             }
         }
     }
@@ -131,17 +139,18 @@ public class FinderLocalAttributes extends LocalAttributes {
      * @param modified Milliseconds
      */
     @Override
-    public void setModificationDate(final long modified) {
+    public void setModificationDate(final long modified) throws AccessDeniedException {
         synchronized(NSWorkspace.class) {
             final ObjCObjectByReference error = new ObjCObjectByReference();
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
                             NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
                             NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                    local.getAbsolute(), error);
+                    local.getAbsolute(), error
+            );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.error(String.format("File attribute changed failed for file %s with error %s", this, f));
+                throw new AccessDeniedException(String.format("%s", f));
             }
         }
     }
@@ -153,41 +162,61 @@ public class FinderLocalAttributes extends LocalAttributes {
      */
     @Override
     public long getCreationDate() {
-        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
-        if(null == object) {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
+            return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+        }
+        catch(AccessDeniedException e) {
             return -1;
         }
-        return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+        catch(NotfoundException e) {
+            return -1;
+        }
     }
 
     @Override
     public String getOwner() {
-        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
-        if(null == object) {
-            return super.getOwner();
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
+            return object.toString();
         }
-        return object.toString();
+        catch(AccessDeniedException e) {
+            return null;
+        }
+        catch(NotfoundException e) {
+            return null;
+        }
     }
 
     @Override
     public String getGroup() {
-        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
-        if(null == object) {
-            return super.getGroup();
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
+            return object.toString();
         }
-        return object.toString();
+        catch(AccessDeniedException e) {
+            return null;
+        }
+        catch(NotfoundException e) {
+            return null;
+        }
     }
 
     /**
      * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
      */
     public Long getInode() {
-        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
-        if(null == object) {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
+            final NSNumber number = Rococoa.cast(object, NSNumber.class);
+            return number.longValue();
+        }
+        catch(AccessDeniedException e) {
             return null;
         }
-        final NSNumber number = Rococoa.cast(object, NSNumber.class);
-        return number.longValue();
+        catch(NotfoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -196,11 +225,16 @@ public class FinderLocalAttributes extends LocalAttributes {
     }
 
     public boolean isSymbolicLink() {
-        final NSObject object = this.getNativeAttribute(NSFileManager.NSFileType);
-        if(null == object) {
+        try {
+            final NSObject object = this.getNativeAttribute(NSFileManager.NSFileType);
+            return NSFileManager.NSFileTypeSymbolicLink.equals(object.toString());
+        }
+        catch(AccessDeniedException e) {
             return false;
         }
-        return NSFileManager.NSFileTypeSymbolicLink.equals(object.toString());
+        catch(NotfoundException e) {
+            return false;
+        }
     }
 
     /**

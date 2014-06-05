@@ -1,7 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.azure;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,18 +18,20 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-
-import java.io.IOException;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 
 /**
  * @version $Id$
  */
-public class DefaultHostKeyController implements HostKeyCallback {
+public class AzurePathContainerService extends PathContainerService {
 
     @Override
-    public boolean verify(final String hostname, final int port,
-                          final String serverHostKeyAlgorithm, final byte[] serverHostKey) throws IOException, ConnectionCanceledException {
-        return true;
+    public String getKey(final Path file) {
+        final String key = super.getKey(file);
+        if(file.attributes().isPlaceholder()) {
+            return key.concat(String.valueOf(Path.DELIMITER));
+        }
+        return key;
     }
 }

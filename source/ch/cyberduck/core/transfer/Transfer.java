@@ -50,14 +50,14 @@ public abstract class Transfer implements Serializable {
     protected List<TransferItem> roots;
 
     /**
-     * The sum of the file length of all files in the <code>queue</code>
+     * The sum of the file length of all files in the <code>queue</code> or null if unknown
      */
-    private long size = 0;
+    private Long size;
 
     /**
-     * The number bytes already transferred of the files in the <code>queue</code>
+     * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
      */
-    private long transferred = 0;
+    private Long transferred;
 
     public abstract Type getType();
 
@@ -307,8 +307,8 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset status for %s", this));
         }
-        transferred = 0;
-        size = 0;
+        transferred = null;
+        size = null;
         reset = true;
     }
 
@@ -326,20 +326,27 @@ public abstract class Transfer implements Serializable {
         if(this.isRunning()) {
             return false;
         }
-        if(this.getSize() > 0) {
-            return this.getSize() == this.getTransferred();
+        if(null == size || null == transferred) {
+            return false;
         }
-        return false;
+        return this.getSize() == this.getTransferred();
     }
 
     /**
      * @return The sum of all file lengths in this transfer.
      */
     public long getSize() {
+        if(null == size) {
+            return 0L;
+        }
         return size;
     }
 
     public void addSize(final long bytes) {
+        if(null == size) {
+            // Initialize
+            size = 0L;
+        }
         size += bytes;
     }
 
@@ -347,10 +354,17 @@ public abstract class Transfer implements Serializable {
      * @return The number of bytes transferred of all files.
      */
     public synchronized long getTransferred() {
+        if(null == transferred) {
+            return 0L;
+        }
         return transferred;
     }
 
     public synchronized void addTransferred(final long bytes) {
+        if(null == transferred) {
+            // Initialize
+            transferred = 0L;
+        }
         transferred += bytes;
     }
 

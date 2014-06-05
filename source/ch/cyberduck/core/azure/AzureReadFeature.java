@@ -44,7 +44,7 @@ public class AzureReadFeature implements Read {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureReadFeature(AzureSession session) {
         this.session = session;

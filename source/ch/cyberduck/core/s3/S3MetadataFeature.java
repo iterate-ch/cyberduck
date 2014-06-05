@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
@@ -69,7 +68,7 @@ public class S3MetadataFeature implements Headers {
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 target.setAcl(acl.convert(acl.getPermission(file)));
-                session.getClient().updateObjectMetadata(new PathContainerService().getContainer(file).getName(), target);
+                session.getClient().updateObjectMetadata(new S3PathContainerService().getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
                 throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, file);

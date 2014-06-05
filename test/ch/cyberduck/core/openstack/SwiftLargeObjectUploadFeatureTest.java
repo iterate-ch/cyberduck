@@ -2,7 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -77,7 +77,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
     private void test(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
 
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
@@ -108,7 +108,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        new StreamCopier(status, status).transfer(in, 0, buffer, new DisabledStreamListener(), -1);
+        new StreamCopier(status, status).transfer(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer.toByteArray());
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);

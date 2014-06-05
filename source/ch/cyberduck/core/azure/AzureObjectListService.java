@@ -35,7 +35,7 @@ public class AzureObjectListService implements ListService {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureObjectListService(AzureSession session) {
         this.session = session;
@@ -53,7 +53,7 @@ public class AzureObjectListService implements ListService {
                 prefix = StringUtils.EMPTY;
             }
             else {
-                prefix = containerService.getKey(directory).concat(String.valueOf(Path.DELIMITER));
+                prefix = containerService.getKey(directory);
             }
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();

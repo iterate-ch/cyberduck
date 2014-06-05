@@ -34,7 +34,7 @@ public class S3FindFeature implements Find {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private Cache cache;
 

@@ -27,6 +27,7 @@ import ch.cyberduck.core.ProfileWriterFactory;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TransferWriterFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -66,16 +67,20 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     }
 
     @Override
-    public void write(final Collection<S> collection, final Local file) {
+    public void write(final Collection<S> collection, final Local file) throws AccessDeniedException {
         NSMutableArray list = NSMutableArray.array();
         for(S bookmark : collection) {
             list.addObject(bookmark.<NSDictionary>serialize(SerializerFactory.get()));
         }
-        list.writeToFile(file.getAbsolute());
+        if(!list.writeToFile(file.getAbsolute())) {
+            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+        }
     }
 
     @Override
-    public void write(final S item, final Local file) {
-        item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute());
+    public void write(final S item, final Local file) throws AccessDeniedException {
+        if(!item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute())) {
+            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+        }
     }
 }

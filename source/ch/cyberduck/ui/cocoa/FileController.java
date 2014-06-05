@@ -102,8 +102,13 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(inputField.stringValue())) {
-            Path file = new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file));
-            return cache.lookup(file.getReference()) == null;
+            if(cache.lookup(new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)).getReference()) != null) {
+                return false;
+            }
+            if(cache.lookup(new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.directory)).getReference()) != null) {
+                return false;
+            }
+            return true;
         }
         return false;
     }

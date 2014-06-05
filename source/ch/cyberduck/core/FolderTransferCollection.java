@@ -86,17 +86,45 @@ public class FolderTransferCollection extends Collection<Transfer> {
             this.getFile(transfer).delete();
         }
         catch(AccessDeniedException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Failure removing transfer %s", e.getMessage()));
         }
-        finally {
-            super.collectionItemRemoved(transfer);
-        }
+        super.collectionItemRemoved(transfer);
     }
 
     @Override
     public void collectionItemChanged(final Transfer transfer) {
-        writer.write(transfer, this.getFile(transfer));
+        this.save(transfer);
         super.collectionItemChanged(transfer);
+    }
+
+    @Override
+    public void collectionItemAdded(final Transfer transfer) {
+        this.save(transfer);
+        if(this.isLocked()) {
+            log.debug("Skip indexing collection while loading");
+        }
+        else {
+            this.index();
+        }
+        super.collectionItemAdded(transfer);
+    }
+
+    protected void save(final Transfer transfer) {
+        this.lock();
+        try {
+            folder.mkdir();
+            final Local f = this.getFile(transfer);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Save transfer %s", f));
+            }
+            writer.write(transfer, f);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
+        }
+        finally {
+            this.unlock();
+        }
     }
 
     @Override
@@ -129,9 +157,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
             // Sort using previously built index
             this.sort();
         }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure reading collection %s %s", folder, e.getMessage()));
-        }
         finally {
             this.unlock();
         }
@@ -141,22 +166,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
     protected void rename(final Local next, final Transfer transfer) throws AccessDeniedException {
         // Rename all files previously saved with nickname to UUID.
         next.rename(this.getFile(transfer));
-    }
-
-    @Override
-    public void collectionItemAdded(final Transfer transfer) {
-        if(this.isLocked()) {
-            log.debug("Do not notify changes of locked collection");
-            return;
-        }
-        this.save(transfer);
-        this.index();
-        writer.write(transfer, this.getFile(transfer));
-        super.collectionItemAdded(transfer);
-    }
-
-    protected void save(final Transfer transfer) {
-        writer.write(transfer, this.getFile(transfer));
     }
 
     @Override
@@ -176,8 +185,15 @@ public class FolderTransferCollection extends Collection<Transfer> {
      * Update index of bookmark positions
      */
     private void index() {
-        for(int i = 0; i < this.size(); i++) {
-            Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+        this.lock();
+        try {
+            final Preferences preferences = Preferences.instance();
+            for(int i = 0; i < this.size(); i++) {
+                preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
+            }
+        }
+        finally {
+            this.unlock();
         }
     }
 
@@ -206,8 +222,8 @@ public class FolderTransferCollection extends Collection<Transfer> {
         Collections.sort(this, new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
-                return Integer.valueOf(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
-                        Preferences.instance().getInteger(PREFIX + o2.getUuid())
+                return Integer.valueOf(Preferences.instance().getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
+                        Preferences.instance().getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
                 );
             }
         });

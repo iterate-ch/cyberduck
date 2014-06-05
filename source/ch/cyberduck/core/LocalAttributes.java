@@ -17,15 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 import java.io.File;
 
-/**
- *
- */
 public class LocalAttributes extends Attributes {
-    private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private String path;
 
@@ -63,12 +59,12 @@ public class LocalAttributes extends Attributes {
         return this.getModificationDate();
     }
 
-    public void setModificationDate(final long timestamp) {
+    public void setModificationDate(final long timestamp) throws AccessDeniedException {
         if(timestamp < 0) {
             return;
         }
         if(!new File(path).setLastModified(timestamp)) {
-            log.error(String.format("Write modification date failed for %s", path));
+            throw new AccessDeniedException(String.format("Cannot change timestamp for %s", path));
         }
     }
 
@@ -86,7 +82,7 @@ public class LocalAttributes extends Attributes {
         return permission;
     }
 
-    public void setPermission(final Permission permission) {
+    public void setPermission(final Permission permission) throws AccessDeniedException {
         this.permission = permission;
     }
 

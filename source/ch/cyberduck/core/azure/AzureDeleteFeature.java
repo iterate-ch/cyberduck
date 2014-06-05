@@ -40,7 +40,7 @@ public class AzureDeleteFeature implements Delete {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureDeleteFeature(AzureSession session) {
         this.session = session;
@@ -56,16 +56,9 @@ public class AzureDeleteFeature implements Delete {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(options, null);
                 }
                 else {
-                    if(file.attributes().isPlaceholder()) {
-                        session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER))).delete(
-                                DeleteSnapshotsOption.NONE, null, options, null);
-                    }
-                    else {
-                        session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                                .getBlockBlobReference(containerService.getKey(file)).delete(
-                                DeleteSnapshotsOption.NONE, null, options, null);
-                    }
+                    session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlockBlobReference(containerService.getKey(file)).delete(
+                            DeleteSnapshotsOption.NONE, null, options, null);
                 }
             }
             catch(StorageException e) {

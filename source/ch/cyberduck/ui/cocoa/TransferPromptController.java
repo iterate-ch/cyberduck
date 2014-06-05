@@ -22,7 +22,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -322,15 +321,15 @@ public abstract class TransferPromptController extends SheetController
                                                                         final NSTableColumn column, final NSObject item) {
                 final String identifier = column.identifier();
                 final TransferItem file = cache.lookup(new NSObjectPathReference(item));
-                final boolean filtered = browserModel.isFiltered(file);
+                final TransferStatus status = browserModel.getStatus(file);
                 if(identifier.equals(TransferPromptModel.Column.include.name())) {
-                    cell.setEnabled(!filtered);
+                    cell.setEnabled(!status.isSkipped());
                 }
                 if(identifier.equals(TransferPromptModel.Column.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(filtered) {
+                    if(status.isSkipped()) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {

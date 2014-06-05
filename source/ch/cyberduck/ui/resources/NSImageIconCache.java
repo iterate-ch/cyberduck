@@ -236,10 +236,13 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     public NSImage applicationIcon(final Application app, final Integer size) {
         NSImage icon = this.load(app.getIdentifier(), size);
         if(null == icon) {
-            icon = NSWorkspace.sharedWorkspace().iconForFile(
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier()));
-            icon = this.convert(app.getIdentifier(), icon, size);
-            this.put(app.getIdentifier(), icon, size);
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier());
+            // Null if the bundle cannot be found
+            if(StringUtils.isNotBlank(path)) {
+                icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+                icon = this.convert(app.getIdentifier(), icon, size);
+                this.put(app.getIdentifier(), icon, size);
+            }
         }
         if(null == icon) {
             return this.iconNamed("notfound.tiff", size);

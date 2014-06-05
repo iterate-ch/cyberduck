@@ -3765,7 +3765,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted();
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();

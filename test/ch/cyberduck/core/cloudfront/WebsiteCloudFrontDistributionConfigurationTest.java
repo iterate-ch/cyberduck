@@ -1,7 +1,7 @@
 package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.DefaultHostKeyController;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -98,7 +98,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(properties.getProperty("s3.key"), properties.getProperty("s3.secret"));
         final S3Session session = new S3Session(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         final WebsiteCloudFrontDistributionConfiguration configuration
                 = new WebsiteCloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));

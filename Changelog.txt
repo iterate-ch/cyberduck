@@ -3,6 +3,15 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.4.5 [https://trac.cyberduck.io/milestone/4.4.5]
+- [Bugfix] Failure copying folders from server to server (#7946)
+- [Bugfix] Sort order of bookmarks not remembered (#7959)
+- [Bugfix] Duplicate files in synchronization prompt (#7645)
+- [Bugfix] 404 error response when downloading folders (S3) (#7971)
+- [Bugfix] Null pointer downloading symbolic link with non existent target (SFTP) (#7974)
+- [Bugfix] Only single login attempt possible (WebDAV) (#7940)
+- [Bugfix] Expanding a folder resets the scroll position (Windows) (#7941)
+
 4.4.4 [https://trac.cyberduck.io/milestone/4.4.4]
 - [Feature] Default region selected in create folder panel (Openstack Swift) (#7678)
 - [Feature] Two-factor authentication (SFTP, Google Authenticator) (#7573)

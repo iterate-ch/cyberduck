@@ -41,7 +41,7 @@ public class AzureTouchFeature implements Touch {
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureTouchFeature(AzureSession session) {
         this.session = session;

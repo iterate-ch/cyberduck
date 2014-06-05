@@ -85,7 +85,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
-                                         final AbstractHttpWriteFeature<?> writer,
+                                         final AbstractHttpWriteFeature<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         super(writer);
         this.session = session;

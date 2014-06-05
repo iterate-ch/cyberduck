@@ -50,14 +50,14 @@ import com.microsoft.windowsazure.services.core.storage.StorageException;
  * <p/>
  * No public read access: Container and blob data can be read by the account owner only.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureAclPermissionFeature implements AclPermission {
 
     private AzureSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new AzurePathContainerService();
 
     public AzureAclPermissionFeature(AzureSession session) {
         this.session = session;

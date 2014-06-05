@@ -20,13 +20,31 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
+ * @version $Id$
  */
 public class ProfileDictionary {
+    private static final Logger log = Logger.getLogger(ProfileDictionary.class);
 
     public Profile deserialize(Object serialized) {
-        return new Profile(DeserializerFactory.createDeserializer(serialized));
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final String protocol = dict.stringForKey("Protocol");
+        if(StringUtils.isNotBlank(protocol)) {
+            final Protocol parent = ProtocolFactory.forName(protocol);
+            if(null == parent) {
+                log.error(String.format("Unknown protocol %s in profile", protocol));
+                return null;
+            }
+            return new Profile(parent, dict);
+        }
+        log.error("Missing protocol in profile");
+        return null;
     }
 }

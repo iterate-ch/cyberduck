@@ -34,7 +34,7 @@ public class S3CopyFeature implements Copy {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     public S3CopyFeature(final S3Session session) {
         this.session = session;

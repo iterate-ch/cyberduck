@@ -110,6 +110,15 @@ namespace Ch.Cyberduck.Core
             return String.Empty;
         }
 
+        public static string GetExecutableFromEditCommand(string command)
+        {
+            if (IsNotBlank(command) && command.Contains(".exe"))
+            {
+                return command.Substring(0, command.LastIndexOf(".exe") + 4);
+            }
+            return command;
+        }
+
         public static string SafeString(string s)
         {
             return s ?? string.Empty;

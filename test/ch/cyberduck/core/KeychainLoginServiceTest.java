@@ -24,7 +24,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
         l.login(session, Cache.empty(), new ProgressListener() {
             int i = 0;
@@ -64,7 +64,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);
         final FTPSession session = new FTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message,

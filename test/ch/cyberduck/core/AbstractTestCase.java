@@ -148,7 +148,7 @@ public class AbstractTestCase {
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
             @Override
             public HostKeyCallback create(final Controller c, final Protocol protocol) {
-                return new DefaultHostKeyController();
+                return new DisabledHostKeyCallback();
             }
 
             @Override

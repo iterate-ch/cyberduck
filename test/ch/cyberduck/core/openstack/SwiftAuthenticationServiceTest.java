@@ -93,7 +93,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
                                 credentials.setUsername("");
                             }
                         }).iterator().next().getVersion());
-        assertEquals("u", host.getCredentials().getUsername());
+        assertEquals(":u", host.getCredentials().getUsername());
     }
 
     @Test
@@ -136,5 +136,26 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
         assertEquals(URI.create("https://myidentityservice.example.net/v1.0"), s.getRequest(host, new DisabledLoginController()).iterator().next().getURI());
         assertEquals(Client.AuthVersion.v10, s.getRequest(host, new DisabledLoginController()).iterator().next().getVersion());
         assertEquals(Authentication10UsernameKeyRequest.class, s.getRequest(host, new DisabledLoginController()).iterator().next().getClass());
+    }
+
+    @Test
+    public void testEmptyTenant() throws Exception {
+        final SwiftAuthenticationService s = new SwiftAuthenticationService("/v2.0/tokens");
+        final Host host = new Host(new SwiftProtocol(), "auth.lts2.evault.com", new Credentials(
+                "u", "p"
+        ));
+        s.getRequest(host, new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                credentials.setUsername("");
+            }
+        });
+        assertEquals(":u", host.getCredentials().getUsername());
+        s.getRequest(host, new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                fail();
+            }
+        });
     }
 }

@@ -39,7 +39,7 @@ public class S3ObjectDetailService {
     private S3Session session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new S3PathContainerService();
 
     private Map<Path, VersioningConfiguration> versioning
             = new HashMap<Path, VersioningConfiguration>();

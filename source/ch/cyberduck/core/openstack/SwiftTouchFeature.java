@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Touch;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * @version $Id$
@@ -37,7 +37,8 @@ public class SwiftTouchFeature implements Touch {
 
     private SwiftSession session;
 
-    final PathContainerService containerService = new PathContainerService();
+    final PathContainerService containerService
+            = new PathContainerService();
 
     private MimeTypeService mapping
             = new MappingMimeTypeService();
@@ -53,13 +54,13 @@ public class SwiftTouchFeature implements Touch {
                 session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
                         new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
-                        new HashMap<String, String>());
+                        Collections.<String, String>emptyMap());
             }
             else {
                 session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
                         new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
-                        new HashMap<String, String>());
+                        Collections.<String, String>emptyMap());
             }
         }
         catch(IOException e) {

@@ -4,10 +4,10 @@
      xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
         <title>Cyberduck Changelog</title>
-        <link>http://cyberduck.ch/changelog.php</link>
+        <link>http://cyberduck.io/changelog</link>
         <description>Cyberduck Changelog.</description>
         <language>en-us</language>
-        <copyright>Copyright 2001-2013 David V. Kocher</copyright>
+        <copyright>Copyright 2001-2014 David V. Kocher</copyright>
         <item>
             <title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
             <pubDate>_TIMESTAMP_</pubDate>

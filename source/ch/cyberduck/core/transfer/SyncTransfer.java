@@ -114,7 +114,7 @@ public class SyncTransfer extends Transfer {
         if(session.getFeature(Find.class).find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }
-        if(local.exists()) {
+        else if(local.exists()) {
             children.addAll(upload.list(session, directory, local, listener));
         }
         return children;

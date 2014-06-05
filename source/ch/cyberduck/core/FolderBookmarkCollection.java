@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.Writer;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -50,8 +48,6 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     private static final long serialVersionUID = -675342412129904735L;
 
-    private final Writer<Host> writer = HostWriterFactory.get();
-
     /**
      * @return Singleton instance
      */
@@ -71,16 +67,12 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     @Override
     public void collectionItemAdded(final Host bookmark) {
         if(this.isLocked()) {
-            log.debug("Do not notify changes of locked collection");
-            return;
+            log.debug("Skip indexing collection while loading");
         }
-        this.save(bookmark);
-        this.index();
+        else {
+            this.index();
+        }
         super.collectionItemAdded(bookmark);
-    }
-
-    protected void save(final Host bookmark) {
-        writer.write(bookmark, this.getFile(bookmark));
     }
 
     @Override
@@ -100,8 +92,15 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * Update index of bookmark positions
      */
     private void index() {
-        for(int i = 0; i < this.size(); i++) {
-            Preferences.instance().setProperty(PREFIX + this.get(i).getUuid(), i);
+        this.lock();
+        try {
+            final Preferences preferences = Preferences.instance();
+            for(int i = 0; i < this.size(); i++) {
+                preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
+            }
+        }
+        finally {
+            this.unlock();
         }
     }
 
@@ -132,8 +131,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         Collections.sort(this, new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.valueOf(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
-                        Preferences.instance().getInteger(PREFIX + o2.getUuid())
+                return Integer.valueOf(Preferences.instance().getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
+                        Preferences.instance().getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
                 );
             }
         });

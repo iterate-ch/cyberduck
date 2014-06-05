@@ -78,7 +78,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -133,7 +133,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -263,7 +263,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
@@ -293,7 +293,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DefaultHostKeyController());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";

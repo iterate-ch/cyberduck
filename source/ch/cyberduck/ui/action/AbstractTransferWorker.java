@@ -94,7 +94,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error,
-                                  final Cache cache) {
+                                  final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -286,7 +286,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                     // Transfer
                     final Session<?> session = borrow();
                     try {
-                        boolean failure = false;
                         try {
                             if(status.isRename()) {
                                 // Save with different name
@@ -300,9 +299,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             throw e;
                         }
                         catch(BackgroundException e) {
+                            status.setFailure();
                             // Prompt to continue or abort
                             if(error.prompt(e)) {
-                                failure = true;
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
@@ -318,7 +317,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             }
                             cache.remove(file.getReference());
                         }
-                        if(!failure) {
+                        if(!status.isFailure()) {
                             // Post process of file.
                             try {
                                 filter.complete(file, local, options, status, session);
