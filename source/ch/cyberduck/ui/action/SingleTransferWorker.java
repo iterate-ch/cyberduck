@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +46,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error,
-                                final Cache cache) {
+                                final Cache<TransferItem> cache) {
         super(transfer, options, prompt, error, cache);
         this.session = session;
     }

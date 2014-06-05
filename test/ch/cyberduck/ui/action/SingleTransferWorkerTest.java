@@ -17,6 +17,7 @@ import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,7 +31,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SingleTransferWorkerTest extends AbstractTestCase {
 
@@ -202,7 +203,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 public TransferAction prompt() {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), Cache.empty()) {
+            }, new DisabledTransferErrorCallback(), Cache.<TransferItem>empty()) {
                 @Override
                 public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                     // Expected not found

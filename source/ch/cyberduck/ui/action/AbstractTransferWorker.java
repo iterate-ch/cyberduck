@@ -94,7 +94,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error,
-                                  final Cache cache) {
+                                  final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
