@@ -130,7 +130,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (path.isDirectory())
             {
-                if(!Permission.EMPTY.equals(path.attributes().getPermission())) {
+                if (!Permission.EMPTY.equals(path.attributes().getPermission()))
+                {
                     if (!path.attributes().getPermission().isExecutable())
                     {
                         return IconForFolder(IconForName("privatefolderbadge", size), size);
@@ -431,10 +432,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     fileAttributes = Shell32.FILE_ATTRIBUTE_NORMAL;
                 }
 
-                IntPtr hSuccess = Shell32.SHGetFileInfo(filename,
-                                                        fileAttributes,
-                                                        ref shfi,
-                                                        (uint) Marshal.SizeOf(shfi),
+                IntPtr hSuccess = Shell32.SHGetFileInfo(filename, fileAttributes, ref shfi, (uint) Marshal.SizeOf(shfi),
                                                         flags);
                 if (hSuccess != IntPtr.Zero)
                 {
@@ -473,11 +471,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     flags += Shell32.SHGFI_LARGEICON;
                 }
-                IntPtr hSuccess = Shell32.SHGetFileInfo(filename,
-                                                        Shell32.FILE_ATTRIBUTE_NORMAL,
-                                                        ref shfi,
-                                                        (uint) Marshal.SizeOf(shfi),
-                                                        flags);
+                IntPtr hSuccess = Shell32.SHGetFileInfo(filename, Shell32.FILE_ATTRIBUTE_NORMAL, ref shfi,
+                                                        (uint) Marshal.SizeOf(shfi), flags);
                 if (hSuccess != IntPtr.Zero)
                 {
                     // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
@@ -517,11 +512,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             // Get the folder icon
             Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
-            IntPtr hSuccess = Shell32.SHGetFileInfo("_unknown",
-                                                    Shell32.FILE_ATTRIBUTE_DIRECTORY,
-                                                    ref shfi,
-                                                    (uint) Marshal.SizeOf(shfi),
-                                                    flags);
+            IntPtr hSuccess = Shell32.SHGetFileInfo("_unknown", Shell32.FILE_ATTRIBUTE_DIRECTORY, ref shfi,
+                                                    (uint) Marshal.SizeOf(shfi), flags);
             if (hSuccess != IntPtr.Zero)
             {
                 Icon.FromHandle(shfi.hIcon); // Load the icon from an HICON handle
@@ -610,8 +602,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class TypedLRUCache<T> : LRUCache<string, IDictionary<int, T>>
         {
-            public TypedLRUCache(int capacity)
-                : base(capacity)
+            public TypedLRUCache(int capacity) : base(capacity)
             {
             }
 
@@ -692,13 +683,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public const uint SHGFI_USEFILEATTRIBUTES = 0x000000010; // use passed dwFileAttribute
 
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SHGetFileInfo(
-            string pszPath,
-            uint dwFileAttributes,
-            ref SHFILEINFO psfi,
-            uint cbFileInfo,
-            uint uFlags
-            );
+        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi,
+                                                  uint cbFileInfo, uint uFlags);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct BROWSEINFO

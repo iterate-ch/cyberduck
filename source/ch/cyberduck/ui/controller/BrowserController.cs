@@ -2103,8 +2103,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Utils.IsNotBlank(editCommand))
                     {
                         View.EditIcon =
-                            IconCache.Instance.GetFileIconFromExecutable(editCommand, IconCache.IconSize.Large)
-                                     .ToBitmap();
+                            IconCache.Instance.GetFileIconFromExecutable(
+                                Utils.GetExecutableFromEditCommand(editCommand), IconCache.IconSize.Large).ToBitmap();
                         return;
                     }
                 }
