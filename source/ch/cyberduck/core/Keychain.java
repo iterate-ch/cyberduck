@@ -202,8 +202,11 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             throw new ConnectionCanceledException(e);
         }
         for(String keyType : keyTypes) {
-            for(String alias : manager.getClientAliases(keyType, issuers)) {
-                certificates.add(manager.getCertificate(alias, keyType, issuers));
+            final String[] aliases = manager.getClientAliases(keyType, issuers);
+            if(null != aliases) {
+                for(String alias : aliases) {
+                    certificates.add(manager.getCertificate(alias, keyType, issuers));
+                }
             }
         }
         try {

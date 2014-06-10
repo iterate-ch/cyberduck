@@ -22,7 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
 import javax.security.auth.x500.X500Principal;
@@ -48,7 +47,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CertificateStoreX509KeyManager implements X509KeyManager {
+public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 
     private KeyStore store;
@@ -175,12 +174,15 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
                 if(null == selected) {
                     continue;
                 }
-                for(String alias : this.getClientAliases(keyType, issuers)) {
-                    if(store.getCertificate(alias).equals(selected)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
+                final String[] aliases = this.getClientAliases(keyType, issuers);
+                if(null != aliases) {
+                    for(String alias : aliases) {
+                        if(store.getCertificate(alias).equals(selected)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
+                            }
+                            return alias;
                         }
-                        return alias;
                     }
                 }
                 log.warn(String.format("No matching alias found for selected certificate %s", selected));
@@ -259,16 +261,6 @@ public class CertificateStoreX509KeyManager implements X509KeyManager {
         }
         log.warn(String.format("No private key for alias %s", alias));
         // Return null if the alias can't be found
-        return null;
-    }
-
-    @Override
-    public String[] getServerAliases(final String keyType, final Principal[] issuers) {
-        return ArrayUtils.EMPTY_STRING_ARRAY;
-    }
-
-    @Override
-    public String chooseServerAlias(final String keyType, final Principal[] issuers, final Socket socket) {
         return null;
     }
 }
