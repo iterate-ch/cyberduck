@@ -45,7 +45,7 @@ public class DAVAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().getResources(new DAVPathEncoder().encode(file));
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
             for(final DavResource resource : resources) {
                 final PathAttributes attributes = new PathAttributes();
                 if(resource.getModified() != null) {
