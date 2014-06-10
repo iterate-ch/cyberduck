@@ -35,4 +35,9 @@ public class InteroperabilityException extends BackgroundException {
     public InteroperabilityException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Interoperability failure", "Error"), detail, cause);
     }
+
+    @Override
+    public String getHelp() {
+        return LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support");
+    }
 }
