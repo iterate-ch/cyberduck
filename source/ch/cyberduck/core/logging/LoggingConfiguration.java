@@ -17,6 +17,8 @@ package ch.cyberduck.core.logging;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -27,14 +29,17 @@ public class LoggingConfiguration {
     }
 
     private boolean enabled;
+
     private String loggingTarget;
 
     public LoggingConfiguration() {
-        this(false);
+        this.enabled = false;
+        this.loggingTarget = StringUtils.EMPTY;
     }
 
     public LoggingConfiguration(final boolean enabled) {
         this.enabled = enabled;
+        this.loggingTarget = StringUtils.EMPTY;
     }
 
     public LoggingConfiguration(final boolean enabled, final String loggingTarget) {
