@@ -66,6 +66,18 @@ public class ServiceExceptionMappingService extends AbstractIOExceptionMappingSe
                 // Actually never returned by S3 but always 403
                 return new LoginFailureException(buffer.toString(), e);
             }
+            if(HttpStatus.SC_BAD_REQUEST == code) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
+            if(HttpStatus.SC_NOT_IMPLEMENTED == code) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
+            if(HttpStatus.SC_SERVICE_UNAVAILABLE == code) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
+            if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
+                return new InteroperabilityException(buffer.toString(), e);
+            }
             if(e.getCause() instanceof IOException) {
                 return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
             }
