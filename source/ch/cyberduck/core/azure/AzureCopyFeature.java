@@ -26,10 +26,11 @@ import ch.cyberduck.core.features.Copy;
 
 import java.net.URISyntaxException;
 
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 /**
  * @version $Id$
@@ -46,7 +47,7 @@ public class AzureCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(Path source, Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             final CloudBlockBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
                     .getBlockBlobReference(containerService.getKey(copy));
@@ -55,7 +56,8 @@ public class AzureCopyFeature implements Copy {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
-            target.copyFromBlob(blob, null, null, options, null);
+            final String id = target.startCopyFromBlob(blob,
+                    AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, null);
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

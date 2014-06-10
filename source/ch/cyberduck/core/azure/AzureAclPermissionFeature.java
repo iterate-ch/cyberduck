@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.microsoft.windowsazure.services.blob.client.BlobContainerPermissions;
-import com.microsoft.windowsazure.services.blob.client.BlobContainerPublicAccessType;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobContainerPermissions;
+import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * By default, a container and any blobs within it may be accessed only by the owner of the storage account.

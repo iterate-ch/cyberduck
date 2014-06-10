@@ -38,10 +38,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.TimeZone;
 
-import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
-import com.microsoft.windowsazure.services.blob.client.SharedAccessBlobPermissions;
-import com.microsoft.windowsazure.services.blob.client.SharedAccessBlobPolicy;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
+import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$

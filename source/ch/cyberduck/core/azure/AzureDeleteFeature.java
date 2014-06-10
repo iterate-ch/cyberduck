@@ -27,10 +27,11 @@ import ch.cyberduck.core.features.Delete;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.DeleteSnapshotsOption;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.DeleteSnapshotsOption;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$
@@ -53,7 +54,8 @@ public class AzureDeleteFeature implements Delete {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 if(containerService.isContainer(file)) {
-                    session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(options, null);
+                    session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(
+                            AccessCondition.generateEmptyCondition(), options, null);
                 }
                 else {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName())

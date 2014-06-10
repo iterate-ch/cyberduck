@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -59,17 +60,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobClient;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.blob.client.ContainerListingDetails;
-import com.microsoft.windowsazure.services.core.storage.AuthenticationScheme;
-import com.microsoft.windowsazure.services.core.storage.Credentials;
-import com.microsoft.windowsazure.services.core.storage.ResultContinuation;
-import com.microsoft.windowsazure.services.core.storage.ResultSegment;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageCredentialsAccountAndKey;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.ContainerListingDetails;
+import com.microsoft.azure.storage.AuthenticationScheme;
+import com.microsoft.azure.storage.Credentials;
+import com.microsoft.azure.storage.ResultContinuation;
+import com.microsoft.azure.storage.ResultSegment;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$
@@ -186,6 +187,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         }
         if(type == Attributes.class) {
             return (T) new AzureAttributesFeature(this);
+        }
+        if(type == Logging.class) {
+            return (T) new AzureLoggingFeature(this);
         }
         if(type == Home.class) {
             return (T) new AzureHomeFinderService(this);

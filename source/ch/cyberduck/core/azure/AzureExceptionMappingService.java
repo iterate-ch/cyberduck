@@ -26,7 +26,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.net.UnknownHostException;
 
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$

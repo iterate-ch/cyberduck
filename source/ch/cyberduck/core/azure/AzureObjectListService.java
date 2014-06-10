@@ -16,16 +16,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 
-import com.microsoft.windowsazure.services.blob.client.BlobListingDetails;
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlob;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobDirectory;
-import com.microsoft.windowsazure.services.blob.client.ListBlobItem;
-import com.microsoft.windowsazure.services.core.storage.ResultContinuation;
-import com.microsoft.windowsazure.services.core.storage.ResultSegment;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobListingDetails;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlobDirectory;
+import com.microsoft.azure.storage.blob.ListBlobItem;
+import com.microsoft.azure.storage.ResultContinuation;
+import com.microsoft.azure.storage.ResultSegment;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$

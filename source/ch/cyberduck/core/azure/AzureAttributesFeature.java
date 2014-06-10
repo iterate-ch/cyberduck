@@ -27,13 +27,13 @@ import ch.cyberduck.core.features.Attributes;
 
 import java.net.URISyntaxException;
 
-import com.microsoft.windowsazure.services.blob.client.BlobContainerProperties;
-import com.microsoft.windowsazure.services.blob.client.BlobProperties;
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobContainerProperties;
+import com.microsoft.azure.storage.blob.BlobProperties;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$
