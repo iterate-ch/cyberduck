@@ -65,7 +65,7 @@ public class DAVSessionTest extends AbstractTestCase {
             session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
-            assertEquals("Method Not Allowed.", e.getDetail());
+            assertEquals("Method Not Allowed. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }

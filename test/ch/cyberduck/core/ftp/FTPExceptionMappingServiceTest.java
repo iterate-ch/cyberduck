@@ -43,6 +43,6 @@ public class FTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testTrim() throws Exception {
-        assertEquals("m.", new FTPExceptionMappingService().map(new FTPException(500, "m\n")).getDetail());
+        assertEquals("m. Please contact your web hosting service provider for assistance.", new FTPExceptionMappingService().map(new FTPException(500, "m\n")).getDetail());
     }
 }
