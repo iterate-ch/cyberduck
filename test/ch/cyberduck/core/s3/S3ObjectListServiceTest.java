@@ -162,7 +162,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testSpaceInBucketName() throws Exception {
+    public void testSpaceInBucketNameInteroperabilityEvault() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
         ));

@@ -188,7 +188,7 @@ public class S3SessionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testConnectEvault() throws Exception {
+    public void testConnectInteroperabilityEvault() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
         ));
