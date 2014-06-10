@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -38,14 +39,22 @@ public class S3ThresholdUploadService implements Upload {
 
     private S3Session session;
 
+    private Long threshold;
+
     public S3ThresholdUploadService(final S3Session session) {
         this.session = session;
+        this.threshold = Preferences.instance().getLong("s3.upload.multipart.threshold");
+    }
+
+    public S3ThresholdUploadService(final S3Session session, final Long threshold) {
+        this.session = session;
+        this.threshold = threshold;
     }
 
     @Override
     public Object upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) throws BackgroundException {
-        if(status.getLength() > Preferences.instance().getLong("s3.upload.multipart.threshold")) {
+        if(status.getLength() > threshold) {
             if(!Preferences.instance().getBoolean("s3.upload.multipart")) {
                 // Disabled by user
                 if(status.getLength() < Preferences.instance().getLong("s3.upload.multipart.required.threshold")) {
@@ -57,6 +66,11 @@ public class S3ThresholdUploadService implements Upload {
             final S3MultipartUploadService service = new S3MultipartUploadService(session);
             try {
                 return service.upload(file, local, throttle, listener, status);
+            }
+            catch(NotfoundException e) {
+                log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
+                final S3SingleUploadService single = new S3SingleUploadService(session);
+                return single.upload(file, local, throttle, listener, status);
             }
             catch(InteroperabilityException e) {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));

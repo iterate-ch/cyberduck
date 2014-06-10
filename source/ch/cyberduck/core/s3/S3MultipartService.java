@@ -20,6 +20,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.MultipartUploadChunk;
@@ -58,7 +60,14 @@ public class S3MultipartService {
                         null, nextKeyMarker, nextUploadIdMarker, null, true);
             }
             catch(S3ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+                final BackgroundException failure = new ServiceExceptionMappingService().map("Upload failed", e, file);
+                if(failure instanceof NotfoundException) {
+                    return null;
+                }
+                if(failure instanceof InteroperabilityException) {
+                    return null;
+                }
+                throw failure;
             }
             for(MultipartUpload upload : chunk.getUploads()) {
                 if(log.isInfoEnabled()) {
