@@ -23,15 +23,20 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.microsoft.windowsazure.services.blob.client.BlobRequestOptions;
-import com.microsoft.windowsazure.services.blob.client.CloudBlobContainer;
-import com.microsoft.windowsazure.services.blob.client.CloudBlockBlob;
-import com.microsoft.windowsazure.services.core.storage.RetryNoRetry;
-import com.microsoft.windowsazure.services.core.storage.StorageException;
+import com.microsoft.azure.storage.AccessCondition;
+import com.microsoft.azure.storage.RetryNoRetry;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobProperties;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 /**
  * @version $Id$
@@ -58,8 +63,18 @@ public class AzureMetadataFeature implements Headers {
             else {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
+                // Populates the blob properties and metadata
                 blob.downloadAttributes();
-                return blob.getMetadata();
+                final Map<String, String> metadata = new HashMap<String, String>();
+                metadata.putAll(blob.getMetadata());
+                final BlobProperties properties = blob.getProperties();
+                if(StringUtils.isNotBlank(properties.getCacheControl())) {
+                    metadata.put(HttpHeaders.CACHE_CONTROL, properties.getCacheControl());
+                }
+                if(StringUtils.isNotBlank(properties.getContentType())) {
+                    metadata.put(HttpHeaders.CONTENT_TYPE, properties.getContentType());
+                }
+                return metadata;
             }
         }
         catch(URISyntaxException e) {
@@ -78,13 +93,32 @@ public class AzureMetadataFeature implements Headers {
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 container.setMetadata(new HashMap<String, String>(metadata));
-                container.uploadMetadata(options, null);
+                container.uploadMetadata(AccessCondition.generateEmptyCondition(), options, null);
             }
             else {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
-                blob.setMetadata(new HashMap<String, String>(metadata));
-                blob.uploadMetadata(null, options, null);
+                // Populates the blob properties and metadata
+                blob.downloadAttributes();
+                // Replace metadata
+                final HashMap<String, String> pruned = new HashMap<String, String>();
+                for(Map.Entry<String, String> m : metadata.entrySet()) {
+                    final BlobProperties properties = blob.getProperties();
+                    if(HttpHeaders.CACHE_CONTROL.equalsIgnoreCase(m.getKey())) {
+                        // Update properties
+                        properties.setCacheControl(m.getValue());
+                        continue;
+                    }
+                    if(HttpHeaders.CONTENT_TYPE.equalsIgnoreCase(m.getKey())) {
+                        // Update properties
+                        properties.setContentType(m.getValue());
+                        continue;
+                    }
+                    pruned.put(m.getKey(), m.getValue());
+                }
+                blob.setMetadata(pruned);
+                blob.uploadMetadata(AccessCondition.generateEmptyCondition(), options, null);
+                blob.uploadProperties();
             }
         }
         catch(URISyntaxException e) {
