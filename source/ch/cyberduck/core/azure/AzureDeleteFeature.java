@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.LoginCallback;
@@ -28,10 +29,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.DeleteSnapshotsOption;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.DeleteSnapshotsOption;
 
 /**
  * @version $Id$
@@ -48,7 +49,7 @@ public class AzureDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(List<Path> files, LoginCallback prompt) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
         for(Path file : files) {
             try {
                 final BlobRequestOptions options = new BlobRequestOptions();
@@ -60,7 +61,7 @@ public class AzureDeleteFeature implements Delete {
                 else {
                     session.getClient().getContainerReference(containerService.getContainer(file).getName())
                             .getBlockBlobReference(containerService.getKey(file)).delete(
-                            DeleteSnapshotsOption.NONE, null, options, null);
+                            DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, null);
                 }
             }
             catch(StorageException e) {

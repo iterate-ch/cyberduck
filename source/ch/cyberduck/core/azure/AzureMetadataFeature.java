@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Path;
@@ -48,12 +49,12 @@ public class AzureMetadataFeature implements Headers {
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureMetadataFeature(AzureSession session) {
+    public AzureMetadataFeature(final AzureSession session) {
         this.session = session;
     }
 
     @Override
-    public Map<String, String> getMetadata(Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
@@ -86,7 +87,7 @@ public class AzureMetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());

@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
@@ -38,10 +39,10 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.TimeZone;
 
+import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
-import com.microsoft.azure.storage.StorageException;
 
 /**
  * @version $Id$
@@ -53,7 +54,7 @@ public class AzureUrlProvider implements UrlProvider {
 
     private AzureSession session;
 
-    public AzureUrlProvider(AzureSession session) {
+    public AzureUrlProvider(final AzureSession session) {
         this.session = session;
     }
 

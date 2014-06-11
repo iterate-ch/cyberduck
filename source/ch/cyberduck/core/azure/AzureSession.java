@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -60,10 +61,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlobClient;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.ContainerListingDetails;
 import com.microsoft.azure.storage.AuthenticationScheme;
 import com.microsoft.azure.storage.Credentials;
 import com.microsoft.azure.storage.ResultContinuation;
@@ -71,6 +68,10 @@ import com.microsoft.azure.storage.ResultSegment;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.ContainerListingDetails;
 
 /**
  * @version $Id$

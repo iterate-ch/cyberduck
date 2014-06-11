@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -36,17 +37,17 @@ public class AzureMoveFeature implements Move {
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureMoveFeature(AzureSession session) {
+    public AzureMoveFeature(final AzureSession session) {
         this.session = session;
     }
 
     @Override
-    public boolean isSupported(Path file) {
+    public boolean isSupported(final Path file) {
         return !containerService.isContainer(file);
     }
 
     @Override
-    public void move(Path file, Path renamed, boolean exists) throws BackgroundException {
+    public void move(final Path file, final Path renamed, final boolean exists) throws BackgroundException {
         if(file.isFile()) {
             new AzureCopyFeature(session).copy(file, renamed);
             new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
