@@ -246,7 +246,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
                 try {
                     if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
                         if(log.isInfoEnabled()) {
-                            log.info(String.format("Supressed Rendezvous notification for %s", host));
+                            log.info(String.format("Suppressed Rendezvous notification for %s", host));
                         }
                         return;
                     }

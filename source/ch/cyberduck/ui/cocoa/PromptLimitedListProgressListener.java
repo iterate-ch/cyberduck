@@ -33,13 +33,13 @@ import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PromptLimitedListProgressListener extends LimitedListProgressListener {
 
     private WindowController controller;
 
-    private boolean supressed;
+    private boolean suppressed;
 
     public PromptLimitedListProgressListener(final WindowController controller) {
         this(controller, Preferences.instance().getInteger("browser.model.size.limit"));
@@ -52,7 +52,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
 
     @Override
     public void chunk(final AttributedList<Path> list) throws ListCanceledException {
-        if(supressed) {
+        if(suppressed) {
             return;
         }
         try {
@@ -77,7 +77,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                             c.set(false);
                         }
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                            supressed = true;
+                            suppressed = true;
                         }
                     }
                 };

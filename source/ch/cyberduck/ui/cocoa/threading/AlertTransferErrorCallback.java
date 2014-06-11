@@ -55,7 +55,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
 
     private final WindowController controller;
 
-    private boolean supressed;
+    private boolean suppressed;
 
     private boolean option;
 
@@ -65,7 +65,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
 
     @Override
     public boolean prompt(final BackgroundException failure) {
-        if(supressed) {
+        if(suppressed) {
             return option;
         }
         if(controller.isVisible()) {
@@ -86,7 +86,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
                         c.set(false);
                     }
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                        supressed = true;
+                        suppressed = true;
                         option = c.get();
                     }
                 }
