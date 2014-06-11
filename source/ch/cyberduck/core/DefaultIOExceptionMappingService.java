@@ -44,8 +44,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
-        final Throwable cause = ExceptionUtils.getRootCause(failure);
-        if(cause instanceof SocketException) {
+        if(failure instanceof SocketException) {
             if(failure.getMessage().equals("Software caused connection abort")) {
                 // Do not report as failed if socket opening interrupted
                 log.warn("Suppressed socket exception:" + failure.getMessage());
@@ -57,7 +56,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
                 return new ConnectionCanceledException(failure);
             }
         }
-        if(cause instanceof SSLHandshakeException) {
+        if(failure instanceof SSLHandshakeException) {
             if(failure.getCause() instanceof CertificateException) {
                 log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
                 // Server certificate not accepted
@@ -66,6 +65,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
         }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
+        final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(null != cause) {
             this.append(buffer, cause.getMessage());
         }
