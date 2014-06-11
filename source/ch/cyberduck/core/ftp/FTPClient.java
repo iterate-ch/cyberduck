@@ -112,7 +112,8 @@ public class FTPClient extends FTPSClient {
     /**
      * SSL versions enabled.
      */
-    private List<String> versions = Collections.emptyList();
+    private List<String> versions
+            = Collections.emptyList();
 
     @Override
     public void setEnabledProtocols(final String[] protocols) {
@@ -123,7 +124,7 @@ public class FTPClient extends FTPSClient {
     @Override
     protected void execAUTH() throws IOException {
         if(versions.isEmpty()) {
-            log.debug("No trust manager configured");
+            log.debug("No SSL protocol versions configured");
             return;
         }
         super.execAUTH();
