@@ -19,19 +19,20 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -41,14 +42,28 @@ import static org.junit.Assert.assertFalse;
  */
 public class FTPMlsdListServiceTest extends AbstractTestCase {
 
-    @Test(expected = BackgroundException.class)
-    public void testListNotSupported() throws Exception {
+    @Test(expected = InteroperabilityException.class)
+    public void testListNotSupportedTest() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        final ListService list = new FTPMlsdListService(session);
+        final Path directory = session.workdir();
+        list.list(directory, new DisabledListProgressListener());
+        session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testListNotSupportedSwitch() throws Exception {
+        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final FTPSession session = new FTPSession(host);
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -56,14 +71,14 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
     public void testList() throws Exception {
         final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
+        host.setFTPConnectMode(FTPConnectMode.PORT);
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());
