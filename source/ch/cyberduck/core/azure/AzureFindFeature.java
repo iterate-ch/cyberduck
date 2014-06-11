@@ -2,7 +2,7 @@ package ch.cyberduck.core.azure;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,24 @@ package ch.cyberduck.core.azure;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+
+import java.net.URISyntaxException;
+
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 /**
  * @version $Id$
@@ -30,6 +39,9 @@ import ch.cyberduck.core.features.Find;
 public class AzureFindFeature implements Find {
 
     private AzureSession session;
+
+    private PathContainerService containerService
+            = new AzurePathContainerService();
 
     private Cache cache;
 
@@ -60,12 +72,34 @@ public class AzureFindFeature implements Find {
             return false;
         }
         try {
-            new AzureAttributesFeature(session).find(file);
-            list.add(file);
-            return true;
+            try {
+                final boolean found;
+                if(containerService.isContainer(file)) {
+                    final PathAttributes attributes = new PathAttributes();
+                    final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
+                    found = container.exists();
+                }
+                else {
+                    final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlockBlobReference(containerService.getKey(file));
+                    found = blob.exists();
+                }
+                if(found) {
+                    list.add(file);
+                }
+                else {
+                    list.attributes().addHidden(file);
+                }
+                return found;
+            }
+            catch(StorageException e) {
+                throw new AzureExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
+            catch(URISyntaxException e) {
+                return false;
+            }
         }
         catch(NotfoundException e) {
-            list.attributes().addHidden(file);
             return false;
         }
     }
