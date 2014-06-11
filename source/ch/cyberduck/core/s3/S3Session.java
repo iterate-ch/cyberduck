@@ -67,7 +67,6 @@ import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
-import org.jets3t.service.utils.RestUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -100,6 +99,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         super(host, trust, key);
     }
 
+    @Override
+    public HttpClientBuilder connect() {
+        final HttpClientBuilder builder = super.connect();
+        builder.setRetryHandler(new S3HttpREquestRetryHandler(client));
+        return builder;
+    }
+
     /**
      * Exposing protected methods
      */
@@ -123,7 +129,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         @Override
         protected HttpClient initHttpConnection() {
             final HttpClientBuilder builder = connect();
-            builder.setRetryHandler(new RestUtils.JetS3tRetryHandler(5, this));
             return builder.build();
         }
 
