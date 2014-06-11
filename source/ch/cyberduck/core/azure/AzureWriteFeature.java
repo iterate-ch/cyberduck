@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -101,7 +102,7 @@ public class AzureWriteFeature implements Write {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
-            return blob.openOutputStream(null, options, null);
+            return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, null);
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Upload failed", e);

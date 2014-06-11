@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 
+import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobInputStream;
@@ -63,7 +64,7 @@ public class AzureReadFeature implements Read {
                     .getBlockBlobReference(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
-            final BlobInputStream in = blob.openInputStream(null, options, null);
+            final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, null);
             try {
                 StreamCopier.skip(in, status.getCurrent());
             }

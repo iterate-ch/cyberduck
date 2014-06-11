@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -60,7 +61,7 @@ public class AzureTouchFeature implements Touch {
                     .getBlockBlobReference(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
-            blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, null, options, null);
+            blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, null);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

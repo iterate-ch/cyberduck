@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -69,7 +70,7 @@ public class AzureDirectoryFeature implements Directory {
                 // Create delimiter placeholder
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
-                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, null, options, null);
+                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, null);
             }
         }
         catch(URISyntaxException e) {
