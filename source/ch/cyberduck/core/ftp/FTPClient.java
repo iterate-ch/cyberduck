@@ -28,7 +28,6 @@ import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.SSLSocket;
@@ -127,24 +126,26 @@ public class FTPClient extends FTPSClient {
             log.debug("No SSL protocol versions configured");
             return;
         }
-        super.execAUTH();
+        if(FTPReply.SECURITY_DATA_EXCHANGE_COMPLETE != this.sendCommand("AUTH", this.getAuthValue())) {
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
+        }
     }
 
     @Override
-    public void execPROT(String prot) throws IOException {
-        try {
-            super.execPROT(prot);
-            if("P".equals(prot)) {
-                this.setSocketFactory(sslSocketFactory);
-            }
+    public void execPROT(final String prot) throws IOException {
+        if(FTPReply.COMMAND_OK != this.sendCommand("PROT", prot)) {
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
-        catch(SSLException e) {
-            if("P".equals(prot)) {
-                // Compatibility mode if server does only accept clear data connections.
-                log.warn("No data channel security: " + e.getMessage());
-                this.setSocketFactory(null);
-                this.setServerSocketFactory(null);
-            }
+        if("P".equals(prot)) {
+            // Private
+            this.setSocketFactory(sslSocketFactory);
+        }
+    }
+
+    @Override
+    public void execPBSZ(long pbsz) throws IOException {
+        if(FTPReply.COMMAND_OK != this.sendCommand("PBSZ", String.valueOf(pbsz))) {
+            throw new FTPException(this.getReplyCode(), this.getReplyString());
         }
     }
 
