@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.security.auth.x500.X500Principal;
@@ -74,8 +75,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(null == type) {
                     type = KeyStore.getDefaultType();
                 }
-                store = KeyStore.getInstance(type,
-                        Preferences.instance().getProperty("connection.ssl.keystore.provider"));
+                final String provider = Preferences.instance().getProperty("connection.ssl.keystore.provider");
+                if(StringUtils.isBlank(provider)) {
+                    store = KeyStore.getInstance(type);
+                }
+                else {
+                    store = KeyStore.getInstance(type, provider);
+                }
             }
             // Load default key store
             store.load(null, null);
