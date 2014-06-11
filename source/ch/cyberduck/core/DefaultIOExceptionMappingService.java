@@ -47,12 +47,12 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
         if(failure instanceof SocketException) {
             if(failure.getMessage().equals("Software caused connection abort")) {
                 // Do not report as failed if socket opening interrupted
-                log.warn("Suppressed socket exception:" + failure.getMessage());
+                log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
                 return new ConnectionCanceledException(failure);
             }
             if(failure.getMessage().equals("Socket closed")) {
                 // Do not report as failed if socket opening interrupted
-                log.warn("Suppressed socket exception:" + failure.getMessage());
+                log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
                 return new ConnectionCanceledException(failure);
             }
         }
