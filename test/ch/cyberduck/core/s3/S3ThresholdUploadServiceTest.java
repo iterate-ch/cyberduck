@@ -19,6 +19,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -29,11 +30,12 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3ThresholdUploadServiceTest extends AbstractTestCase {
 
     @Test
+    @Ignore
     public void testInteroperabilityEvault() throws Exception {
         final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
