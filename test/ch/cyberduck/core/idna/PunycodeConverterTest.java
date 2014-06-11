@@ -40,4 +40,9 @@ public class PunycodeConverterTest extends AbstractTestCase {
     public void testConvertWhitespace() throws Exception {
         assertEquals("host.localdomain", new PunycodeConverter().convert("host.localdomain "));
     }
+
+    @Test
+    public void testHostnameStartsWithDot() throws Exception {
+        assertEquals(".blob.core.windows.net", new PunycodeConverter().convert(".blob.core.windows.net"));
+    }
 }
