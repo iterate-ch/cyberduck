@@ -17,7 +17,7 @@ package ch.cyberduck.core.azure;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -31,7 +31,7 @@ import com.microsoft.azure.storage.StorageException;
 /**
  * @version $Id$
  */
-public class AzureExceptionMappingService extends AbstractIOExceptionMappingService<StorageException> {
+public class AzureExceptionMappingService extends AbstractExceptionMappingService<StorageException> {
 
     @Override
     public BackgroundException map(final StorageException e) {

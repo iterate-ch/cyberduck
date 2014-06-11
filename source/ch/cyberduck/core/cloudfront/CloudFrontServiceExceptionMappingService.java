@@ -18,7 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -30,7 +30,7 @@ import org.jets3t.service.CloudFrontServiceException;
 /**
  * @version $Id$
  */
-public class CloudFrontServiceExceptionMappingService extends AbstractIOExceptionMappingService<CloudFrontServiceException> {
+public class CloudFrontServiceExceptionMappingService extends AbstractExceptionMappingService<CloudFrontServiceException> {
 
     @Override
     public BackgroundException map(final CloudFrontServiceException e) {

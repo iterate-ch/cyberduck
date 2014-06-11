@@ -18,7 +18,7 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -37,7 +37,7 @@ import net.schmizz.sshj.userauth.UserAuthException;
 /**
  * @version $Id$
  */
-public class SFTPExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
+public class SFTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
 
     @Override
     public BackgroundException map(final IOException e) {

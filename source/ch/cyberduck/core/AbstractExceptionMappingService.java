@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public abstract class AbstractIOExceptionMappingService<T extends Exception> implements IOExceptionMappingService<T> {
+public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);

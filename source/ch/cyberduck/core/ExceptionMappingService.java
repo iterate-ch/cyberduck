@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 /**
  * @version $Id$
  */
-public interface IOExceptionMappingService<E> {
+public interface ExceptionMappingService<E> {
 
     BackgroundException map(E exception);
 }

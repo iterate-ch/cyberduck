@@ -18,7 +18,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class ServiceExceptionMappingService extends AbstractIOExceptionMappingService<ServiceException> {
+public class ServiceExceptionMappingService extends AbstractExceptionMappingService<ServiceException> {
 
     @Override
     public BackgroundException map(final ServiceException e) {

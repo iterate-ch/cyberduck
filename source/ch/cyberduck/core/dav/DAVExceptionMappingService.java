@@ -18,7 +18,7 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -33,7 +33,7 @@ import com.github.sardine.impl.SardineException;
 /**
  * @version $Id$
  */
-public class DAVExceptionMappingService extends AbstractIOExceptionMappingService<SardineException> {
+public class DAVExceptionMappingService extends AbstractExceptionMappingService<SardineException> {
 
     @Override
     public BackgroundException map(final SardineException e) {

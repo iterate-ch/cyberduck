@@ -17,7 +17,7 @@ package ch.cyberduck.core.iam;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -32,7 +32,7 @@ import com.amazonaws.AmazonServiceException;
 /**
  * @version $Id$
  */
-public class AmazonServiceExceptionMappingService extends AbstractIOExceptionMappingService<AmazonClientException> {
+public class AmazonServiceExceptionMappingService extends AbstractExceptionMappingService<AmazonClientException> {
 
     @Override
     public BackgroundException map(final AmazonClientException e) {

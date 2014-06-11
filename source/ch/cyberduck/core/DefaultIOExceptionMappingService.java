@@ -35,7 +35,7 @@ import java.security.cert.CertificateException;
 /**
  * @version $Id$
  */
-public class DefaultIOExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
+public class DefaultIOExceptionMappingService extends AbstractExceptionMappingService<IOException> {
     private static final Logger log = Logger.getLogger(DefaultIOExceptionMappingService.class);
 
     public BackgroundException map(final IOException failure, final Path directory) {

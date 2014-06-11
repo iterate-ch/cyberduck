@@ -17,7 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,7 +36,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class FTPExceptionMappingService extends AbstractIOExceptionMappingService<IOException> {
+public class FTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
 
     @Override
     public BackgroundException map(final IOException e) {

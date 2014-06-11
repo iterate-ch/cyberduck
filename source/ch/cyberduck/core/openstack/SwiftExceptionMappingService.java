@@ -18,7 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractIOExceptionMappingService;
+import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -33,7 +33,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 /**
  * @version $Id$
  */
-public class SwiftExceptionMappingService extends AbstractIOExceptionMappingService<GenericException> {
+public class SwiftExceptionMappingService extends AbstractExceptionMappingService<GenericException> {
 
     @Override
     public BackgroundException map(final GenericException e) {
