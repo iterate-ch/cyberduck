@@ -65,12 +65,16 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     public X509KeyManager init() throws IOException {
         try {
-            // Get the key manager factory for the default algorithm.
-            if(null == Preferences.instance().getProperty("connection.ssl.keystore.type")) {
-                store = KeyStore.getInstance(KeyStore.getDefaultType());
-            }
-            else {
-                store = KeyStore.getInstance(Preferences.instance().getProperty("connection.ssl.keystore.type"),
+            if(null == store) {
+                // Get the key manager factory for the default algorithm.
+                String type = Preferences.instance().getProperty("connection.ssl.keystore.type");
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Load default store of type %s", type));
+                }
+                if(null == type) {
+                    type = KeyStore.getDefaultType();
+                }
+                store = KeyStore.getInstance(type,
                         Preferences.instance().getProperty("connection.ssl.keystore.provider"));
             }
             // Load default key store
@@ -96,6 +100,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     @Override
     public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+            log.warn("No issuer subject names provided");
+            return null;
+        }
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
         try {
@@ -128,6 +136,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     }
 
     public X509Certificate getCertificate(final String alias, final String keyType, final Principal[] issuers) {
+        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+            log.warn("No issuer subject names provided");
+            return null;
+        }
         try {
             final Certificate cert = store.getCertificate(alias);
             if(cert instanceof X509Certificate) {
@@ -155,6 +167,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
+        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+            log.warn("No issuer subject names provided");
+            return null;
+        }
         try {
             for(String keyType : keyTypes) {
                 final X509Certificate selected;

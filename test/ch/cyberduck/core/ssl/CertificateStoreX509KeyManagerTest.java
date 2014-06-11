@@ -23,11 +23,11 @@ import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.auth.BasicUserPrincipal;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
 import java.net.Socket;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -81,12 +81,21 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
     }
 
     @Test
-    @Ignore
-    public void testGetAliases() throws Exception {
+    public void testPrincipalNotFound() throws Exception {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
+        assertNull(m.getClientAliases("RSA", new Principal[]{
+                new X500Principal("CN=g")
+        }));
+    }
+
+    @Test
+    public void testGetAliases() throws Exception {
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
+                KeyStore.getInstance("KeychainStore", "Apple")).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-                new X500Principal("CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
+                new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
         });
+        assertNotNull(aliases);
         assertFalse(Arrays.asList(aliases).isEmpty());
     }
 }

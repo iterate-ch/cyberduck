@@ -27,10 +27,15 @@ import java.security.cert.X509Certificate;
  */
 public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
 
+    /**
+     * Load the key store.
+     */
     X509KeyManager init() throws IOException;
 
     /**
      * Find matching certificate for alias in key store
+     *
+     * @param issuers Acceptable CA issuer subject names or null if it does not matter which issuers are used
      */
     X509Certificate getCertificate(String alias, String keyType, Principal[] issuers);
 }
