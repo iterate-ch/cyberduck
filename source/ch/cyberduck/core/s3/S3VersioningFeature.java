@@ -136,7 +136,7 @@ public class S3VersioningFeature implements Versioning {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+                throw new ServiceExceptionMappingService().map("Cannot read bucket versioning status", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));

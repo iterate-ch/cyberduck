@@ -60,7 +60,7 @@ public class S3LocationFeature implements Location {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read container configuration", e);
+                throw new ServiceExceptionMappingService().map("Cannot read bucket location", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read location for %s %s", container, e.getMessage()));
