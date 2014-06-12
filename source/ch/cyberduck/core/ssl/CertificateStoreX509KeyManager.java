@@ -124,6 +124,9 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     log.debug(String.format("Alias in Keychain %s", alias));
                 }
                 if(store.isKeyEntry(alias)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Found private key for %s", alias));
+                    }
                     // returns the first element of the certificate chain of that key entry
                     final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
                     if(null == cert) {
@@ -134,7 +137,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     list.add(alias);
                 }
                 else {
-                    log.warn(String.format("Missing secret key for alias %s", alias));
+                    log.warn(String.format("Missing private key for alias %s", alias));
                 }
             }
         }
