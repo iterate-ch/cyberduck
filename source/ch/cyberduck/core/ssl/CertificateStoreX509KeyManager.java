@@ -106,6 +106,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     @Override
     public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        return this.getClientAliases(new String[]{keyType}, issuers);
+    }
+
+    public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
         if(null == issuers || Arrays.asList(issuers).isEmpty()) {
             log.warn("No issuer subject names provided");
             return null;
@@ -121,13 +125,16 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
                 if(store.isKeyEntry(alias)) {
                     // returns the first element of the certificate chain of that key entry
-                    final Certificate cert = this.getCertificate(alias, keyType, issuers);
+                    final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
                     if(null == cert) {
                         log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
                         continue;
                     }
                     log.info(String.format("Add X509 certificate entry %s to list", cert));
                     list.add(alias);
+                }
+                else {
+                    log.warn(String.format("Missing secret key for alias %s", alias));
                 }
             }
         }
@@ -141,7 +148,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         return list.toArray(new String[list.size()]);
     }
 
-    public X509Certificate getCertificate(final String alias, final String keyType, final Principal[] issuers) {
+    public X509Certificate getCertificate(final String alias, final String[] keyType, final Principal[] issuers) {
         if(null == issuers || Arrays.asList(issuers).isEmpty()) {
             log.warn("No issuer subject names provided");
             return null;
@@ -151,7 +158,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             if(cert instanceof X509Certificate) {
                 final X509Certificate x509 = (X509Certificate) cert;
                 if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
-                    log.warn(String.format("Key type %s does not match", x509.getPublicKey().getAlgorithm()));
+                    log.warn(String.format("Key type %s does not match %s", x509.getPublicKey().getAlgorithm(), keyType));
                     return null;
                 }
                 final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
@@ -178,37 +185,39 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             return null;
         }
         try {
-            for(String keyType : keyTypes) {
-                final X509Certificate selected;
-                try {
-                    final String hostname = socket.getInetAddress().getHostName();
-                    selected = callback.choose(keyTypes,
-                            issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
-                            "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
-                            hostname));
-                }
-                catch(ConnectionCanceledException e) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("No certificate selected for socket %s", socket));
-                    }
-                    return null;
-                }
-                if(null == selected) {
-                    continue;
-                }
-                final String[] aliases = this.getClientAliases(keyType, issuers);
-                if(null != aliases) {
-                    for(String alias : aliases) {
-                        if(store.getCertificate(alias).equals(selected)) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
-                            }
-                            return alias;
-                        }
-                    }
-                }
-                log.warn(String.format("No matching alias found for selected certificate %s", selected));
+            final X509Certificate selected;
+            try {
+                final String hostname = socket.getInetAddress().getHostName();
+                selected = callback.choose(keyTypes,
+                        issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
+                        "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
+                        hostname));
             }
+            catch(ConnectionCanceledException e) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("No certificate selected for socket %s", socket));
+                }
+                return null;
+            }
+            if(null == selected) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("No certificate selected for socket %s", socket));
+                }
+                // Disconnect
+                return null;
+            }
+            final String[] aliases = this.getClientAliases(keyTypes, issuers);
+            if(null != aliases) {
+                for(String alias : aliases) {
+                    if(store.getCertificate(alias).equals(selected)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
+                        }
+                        return alias;
+                    }
+                }
+            }
+            log.warn(String.format("No matching alias found for selected certificate %s", selected));
             // Return null if there are no matches
             return null;
         }

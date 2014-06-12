@@ -37,5 +37,5 @@ public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
      *
      * @param issuers Acceptable CA issuer subject names or null if it does not matter which issuers are used
      */
-    X509Certificate getCertificate(String alias, String keyType, Principal[] issuers);
+    X509Certificate getCertificate(String alias, String[] keyTypes, Principal[] issuers);
 }

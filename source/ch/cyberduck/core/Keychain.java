@@ -191,7 +191,8 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public X509Certificate choose(String[] keyTypes, final Principal[] issuers, final String hostname, final String prompt)
+    public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
+                                  final String hostname, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
         final X509KeyManager manager;
@@ -205,7 +206,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             final String[] aliases = manager.getClientAliases(keyType, issuers);
             if(null != aliases) {
                 for(String alias : aliases) {
-                    certificates.add(manager.getCertificate(alias, keyType, issuers));
+                    certificates.add(manager.getCertificate(alias, new String[]{keyType}, issuers));
                 }
             }
         }
@@ -222,8 +223,10 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             }, true);
 
             if(null == select.get()) {
-                log.info("No certificate selected");
-                return null;
+                if(log.isInfoEnabled()) {
+                    log.info("No certificate selected");
+                }
+                throw new ConnectionCanceledException();
             }
             final CertificateFactory factory = CertificateFactory.getInstance("X.509");
             final X509Certificate selected = (X509Certificate) factory.generateCertificate(
