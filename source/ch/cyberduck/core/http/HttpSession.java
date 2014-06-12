@@ -186,6 +186,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             builder.addInterceptorLast(new RequestAcceptEncoding());
             builder.addInterceptorLast(new ResponseContentEncoding());
         }
+        else {
+            builder.disableContentCompression();
+        }
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(Preferences.instance().getProperty("http.credentials.charset"))))
