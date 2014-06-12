@@ -64,7 +64,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         this.store = store;
     }
 
-    public X509KeyManager init() throws IOException {
+    public CertificateStoreX509KeyManager init() throws IOException {
         try {
             if(null == store) {
                 // Get the key manager factory for the default algorithm.

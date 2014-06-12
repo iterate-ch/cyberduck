@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 
@@ -195,19 +195,17 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
                                   final String hostname, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        final X509KeyManager manager;
+        final CertificateStoreX509KeyManager manager;
         try {
             manager = new KeychainX509KeyManager().init();
         }
         catch(IOException e) {
             throw new ConnectionCanceledException(e);
         }
-        for(String keyType : keyTypes) {
-            final String[] aliases = manager.getClientAliases(keyType, issuers);
-            if(null != aliases) {
-                for(String alias : aliases) {
-                    certificates.add(manager.getCertificate(alias, new String[]{keyType}, issuers));
-                }
+        final String[] aliases = manager.getClientAliases(keyTypes, issuers);
+        if(null != aliases) {
+            for(String alias : aliases) {
+                certificates.add(manager.getCertificate(alias, keyTypes, issuers));
             }
         }
         try {
