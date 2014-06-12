@@ -151,7 +151,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         return list.toArray(new String[list.size()]);
     }
 
-    public X509Certificate getCertificate(final String alias, final String[] keyType, final Principal[] issuers) {
+    public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
         if(null == issuers || Arrays.asList(issuers).isEmpty()) {
             log.warn("No issuer subject names provided");
             return null;
@@ -160,8 +160,9 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             final Certificate cert = store.getCertificate(alias);
             if(cert instanceof X509Certificate) {
                 final X509Certificate x509 = (X509Certificate) cert;
-                if(!Arrays.asList(keyType).contains(x509.getPublicKey().getAlgorithm())) {
-                    log.warn(String.format("Key type %s does not match %s", x509.getPublicKey().getAlgorithm(), keyType));
+                if(!Arrays.asList(keyTypes).contains(x509.getPublicKey().getAlgorithm())) {
+                    log.warn(String.format("Key type %s does not match any of %s", x509.getPublicKey().getAlgorithm(),
+                            Arrays.toString(keyTypes)));
                     return null;
                 }
                 final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
