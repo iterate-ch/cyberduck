@@ -184,6 +184,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         for(Alert alert : Alert.values()) {
             if(StringUtils.contains(message, alert.name())) {
                 this.append(buffer, alert.getDescription());
+                break;
             }
         }
         if(buffer.length() == 0) {
