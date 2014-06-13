@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using StringBuilder = System.Text.StringBuilder;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
@@ -132,11 +133,19 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetPermission(Path path)
         {
-            Permission permission = path.attributes().getPermission();
-            if (null == permission)
-            {
-                return _unknown;
+            Acl acl = item.attributes().getAcl();
+            if(!Acl.EMPTY.equals(acl)) {
+                StringBuilder s = new StringBuilder();
+                Iterator iterator = javaMap.entrySet().iterator();
+                while (iterator.hasNext())
+                {
+                    Map.Entry entry = (Map.Entry) iterator.next();
+                    s.Append(String.Format("{0}{1}:{2}", s.length() == 0 ? StringUtils.EMPTY : ", ",
+                            entry.getKey().getDisplayName(), entry.getValue()));
+                }
+                return s.toString();
             }
+            Permission permission = path.attributes().getPermission();
             return permission.toString();
         }
 

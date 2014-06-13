@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostParser;
@@ -80,6 +81,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -126,15 +128,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
             controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                            new SessionListWorker(controller.getSession(), cache, directory, listener) {
-                                @Override
-                                public void cleanup(final AttributedList<Path> list) {
-                                    if(controller.getActions().isEmpty()) {
-                                        controller.reloadData(true, true);
-                                    }
-                                }
+                    new SessionListWorker(controller.getSession(), cache, directory, listener) {
+                        @Override
+                        public void cleanup(final AttributedList<Path> list) {
+                            if(controller.getActions().isEmpty()) {
+                                controller.reloadData(true, true);
                             }
-                    )
+                        }
+                    }
+            )
             );
         }
         return this.get(directory);
@@ -197,16 +199,28 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(Column.owner.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isBlank(item.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
+                    StringUtils.isBlank(item.attributes().getOwner()) ?
+                            LocaleFactory.localizedString("Unknown") : item.attributes().getOwner(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.group.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isBlank(item.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
+                    StringUtils.isBlank(item.attributes().getGroup()) ?
+                            LocaleFactory.localizedString("Unknown") : item.attributes().getGroup(),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.permission.name())) {
-            Permission permission = item.attributes().getPermission();
+            final Acl acl = item.attributes().getAcl();
+            if(!Acl.EMPTY.equals(acl)) {
+                final StringBuilder s = new StringBuilder();
+                for(Map.Entry<Acl.User, Set<Acl.Role>> entry : acl.entrySet()) {
+                    s.append(String.format("%s%s:%s", s.length() == 0 ? StringUtils.EMPTY : ", ",
+                            entry.getKey().getDisplayName(), entry.getValue()));
+                }
+                return NSAttributedString.attributedStringWithAttributes(s.toString(),
+                        TableCellAttributes.browserFontLeftAlignment());
+            }
+            final Permission permission = item.attributes().getPermission();
             return NSAttributedString.attributedStringWithAttributes(
                     permission.toString(),
                     TableCellAttributes.browserFontLeftAlignment());
@@ -218,17 +232,20 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(Column.extension.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
+                    item.isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() :
+                            LocaleFactory.localizedString("None") : LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.region.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() : LocaleFactory.localizedString("Unknown"),
+                    StringUtils.isNotBlank(item.attributes().getRegion()) ? item.attributes().getRegion() :
+                            LocaleFactory.localizedString("Unknown"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(Column.version.name())) {
             return NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() : LocaleFactory.localizedString("None"),
+                    StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
+                            LocaleFactory.localizedString("None"),
                     TableCellAttributes.browserFontLeftAlignment());
         }
         throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
@@ -252,8 +269,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *              image is currently poised) is in the same application as the source, while a NO value indicates that
      *              the destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     * any dragging operations, it should return NSDragOperationNone.
+     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     *         any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -520,10 +537,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     * blocking the destination application.
+     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     *         blocking the destination application.
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
