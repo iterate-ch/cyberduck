@@ -38,6 +38,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -227,7 +228,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         }
         final String[] aliases = manager.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
-            throw new ConnectionCanceledException();
+            throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
         }
         for(String alias : aliases) {
             certificates.add(manager.getCertificate(alias, keyTypes, issuers));
