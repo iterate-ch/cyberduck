@@ -29,7 +29,11 @@ import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.AccessController;
 import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.security.Provider;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -61,6 +65,25 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
 
     static {
         Native.load("Keychain");
+        Security.addProvider(new KeychainStoreProvider());
+    }
+
+    public static final class KeychainStoreProvider extends Provider {
+        private static final long serialVersionUID = -4548496302649727502L;
+
+        public KeychainStoreProvider() {
+            super("Cyberduck", 1.0, "Cyberduck Keychain Provider");
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                public Object run() {
+
+                    /*
+                     * KeyStore
+                     */
+                    put("KeyStore.KeychainStore", "ch.cyberduck.core.KeychainStore");
+                    return null;
+                }
+            });
+        }
     }
 
     public Keychain() {

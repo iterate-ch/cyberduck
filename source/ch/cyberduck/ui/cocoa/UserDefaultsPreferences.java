@@ -225,7 +225,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("browser.filesize.decimal", String.valueOf(!Factory.VERSION_PLATFORM.matches("10\\.5.*")));
 
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
-        defaults.put("connection.ssl.keystore.provider", "Apple");
+        defaults.put("connection.ssl.keystore.provider", "Cyberduck");
     }
 
     /**
