@@ -20,17 +20,14 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLKeyException;
-import javax.net.ssl.SSLProtocolException;
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.security.cert.CertificateException;
 
 /**
  * @version $Id$
@@ -56,27 +53,14 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
                 return new ConnectionCanceledException(failure);
             }
         }
-        if(failure instanceof SSLHandshakeException) {
-            if(failure.getCause() instanceof CertificateException) {
-                log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
-                // Server certificate not accepted
-                return new ConnectionCanceledException(failure);
-            }
+        if(failure instanceof SSLException) {
+            return new SSLExceptionMappingService().map((SSLException) failure);
         }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(null != cause) {
             this.append(buffer, cause.getMessage());
-        }
-        if(failure instanceof SSLProtocolException) {
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        if(failure instanceof SSLHandshakeException) {
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        if(failure instanceof SSLKeyException) {
-            return new InteroperabilityException(buffer.toString(), failure);
         }
         return this.wrap(failure, buffer);
     }
