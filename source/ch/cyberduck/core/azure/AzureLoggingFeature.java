@@ -19,7 +19,6 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
@@ -37,9 +36,6 @@ import com.microsoft.azure.storage.StorageException;
 public class AzureLoggingFeature implements Logging {
 
     private AzureSession session;
-
-    private PathContainerService containerService
-            = new AzurePathContainerService();
 
     public AzureLoggingFeature(final AzureSession session) {
         this.session = session;
