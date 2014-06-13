@@ -21,7 +21,6 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -75,7 +74,6 @@ public class AzureFindFeature implements Find {
             try {
                 final boolean found;
                 if(containerService.isContainer(file)) {
-                    final PathAttributes attributes = new PathAttributes();
                     final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                     found = container.exists();
                 }
