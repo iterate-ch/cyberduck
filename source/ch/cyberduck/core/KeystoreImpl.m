@@ -279,7 +279,7 @@ static void addIdentitiesToKeystore(JNIEnv *env, jobject keyStore)
     // Search the user keychain list for all identities. Identities are a certificate/private key association that
     // can be chosen for a purpose such as signing or an SSL connection.
     SecIdentitySearchRef identitySearch = NULL;
-    OSStatus err = SecIdentitySearchCreate(NULL, CSSM_KEYUSE_ANY, &identitySearch);
+    OSStatus err = SecIdentitySearchCreate(NULL, 0 /*Pass 0 if you want all identities returned by this search*/, &identitySearch);
     SecIdentityRef theIdentity = NULL;
     OSErr searchResult = noErr;
 
