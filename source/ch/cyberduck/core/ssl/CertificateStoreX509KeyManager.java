@@ -158,28 +158,43 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         }
         try {
             final Certificate cert = store.getCertificate(alias);
-            if(cert instanceof X509Certificate) {
-                final X509Certificate x509 = (X509Certificate) cert;
-                if(!Arrays.asList(keyTypes).contains(x509.getPublicKey().getAlgorithm())) {
-                    log.warn(String.format("Key type %s does not match any of %s", x509.getPublicKey().getAlgorithm(),
-                            Arrays.toString(keyTypes)));
-                    return null;
-                }
-                final X500Principal issuer = ((X509Certificate) cert).getIssuerX500Principal();
-                if(!Arrays.asList(issuers).contains(issuer)) {
-                    log.warn(String.format("Issuer %s does not match", issuer));
-                    return null;
-                }
+            if(this.matches(cert, keyTypes, issuers)) {
                 return (X509Certificate) cert;
             }
-            else {
-                log.warn(String.format("Certificate %s is not of type X509", cert));
+            for(Certificate c : store.getCertificateChain(alias)) {
+                if(c instanceof X509Certificate) {
+                    if(this.matches(c, keyTypes, issuers)) {
+                        return (X509Certificate) cert;
+                    }
+                }
             }
         }
         catch(KeyStoreException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("No matching certificate found for alias %s and issuers %s",
+                    alias, Arrays.toString(issuers)));
+        }
         return null;
+    }
+
+    protected boolean matches(final Certificate c, final String[] keyTypes, final Principal[] issuers) {
+        if(!(c instanceof X509Certificate)) {
+            log.warn(String.format("Certificate %s is not of type X509", c));
+            return false;
+        }
+        if(!Arrays.asList(keyTypes).contains(c.getPublicKey().getAlgorithm())) {
+            log.warn(String.format("Key type %s does not match any of %s", c.getPublicKey().getAlgorithm(),
+                    Arrays.toString(keyTypes)));
+            return false;
+        }
+        final X500Principal issuer = ((X509Certificate) c).getIssuerX500Principal();
+        if(!Arrays.asList(issuers).contains(issuer)) {
+            log.warn(String.format("Issuer %s does not match", issuer));
+            return false;
+        }
+        return true;
     }
 
     @Override
