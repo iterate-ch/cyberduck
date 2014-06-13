@@ -26,6 +26,8 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.threading;
+using Iterator = java.util.Iterator;
+using Map = java.util.Map;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -133,17 +135,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetPermission(Path path)
         {
-            Acl acl = item.attributes().getAcl();
+            Acl acl = path.attributes().getAcl();
             if(!Acl.EMPTY.equals(acl)) {
                 StringBuilder s = new StringBuilder();
-                Iterator iterator = javaMap.entrySet().iterator();
+                Iterator iterator = acl.entrySet().iterator();
                 while (iterator.hasNext())
                 {
                     Map.Entry entry = (Map.Entry) iterator.next();
-                    s.Append(String.Format("{0}{1}:{2}", s.length() == 0 ? StringUtils.EMPTY : ", ",
-                            entry.getKey().getDisplayName(), entry.getValue()));
+                    s.Append(String.Format("{0}{1}:{2}", s.Length == 0 ? "" : ", ",
+                            ((Acl.User)entry.getKey()).getDisplayName(), entry.getValue()));
                 }
-                return s.toString();
+                return s.ToString();
             }
             Permission permission = path.attributes().getPermission();
             return permission.toString();
