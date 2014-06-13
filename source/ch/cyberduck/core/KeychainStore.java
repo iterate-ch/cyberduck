@@ -79,7 +79,7 @@ public final class KeychainStore extends KeyStoreSpi {
     // If a key came from the keychain it has a SecKeyRef and one or more
     // SecCertificateRef.  When we delete the key we have to delete all of the corresponding
     // native objects.
-    class KeyEntry {
+    private static final class KeyEntry {
         Date date; // the creation date of this entry
         byte[] protectedPrivKey;
         char[] password;
@@ -89,7 +89,7 @@ public final class KeychainStore extends KeyStoreSpi {
     }
 
     // Trusted certificates
-    class TrustedCertEntry {
+    private static final class TrustedCertEntry {
         Date date; // the creation date of this entry
 
         Certificate cert;
@@ -304,9 +304,10 @@ public final class KeychainStore extends KeyStoreSpi {
                 if(((KeyEntry) entry).chain == null) {
                     return null;
                 }
-                else {
-                    return ((KeyEntry) entry).chain[0];
+                if(((KeyEntry) entry).chain.length == 0) {
+                    return null;
                 }
+                return ((KeyEntry) entry).chain[0];
             }
         }
         else {
@@ -625,11 +626,14 @@ public final class KeychainStore extends KeyStoreSpi {
             if(entry instanceof TrustedCertEntry) {
                 certElem = ((TrustedCertEntry) entry).cert;
             }
-            else if(((KeyEntry) entry).chain != null) {
-                certElem = ((KeyEntry) entry).chain[0];
+            else if(((KeyEntry) entry).chain == null) {
+                continue;
+            }
+            else if(((KeyEntry) entry).chain.length == 0) {
+                continue;
             }
             else {
-                continue;
+                certElem = ((KeyEntry) entry).chain[0];
             }
             if(certElem.equals(cert)) {
                 return alias;
