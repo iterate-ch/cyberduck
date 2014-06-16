@@ -52,9 +52,8 @@ public class FTPStatListService implements ListService {
         try {
             final int response = session.getClient().stat(directory.getAbsolute());
             if(FTPReply.isPositiveCompletion(response)) {
-                final String[] reply = session.getClient().getReplyStrings();
-                final List<String> result = this.parse(response, reply);
-                return new FTPListResponseReader().read(session, listener, directory, parser, result);
+                return new FTPListResponseReader().read(session, listener, directory, parser,
+                        this.parse(response, session.getClient().getReplyStrings()));
             }
             else {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
