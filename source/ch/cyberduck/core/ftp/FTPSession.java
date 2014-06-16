@@ -117,18 +117,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         super.disconnect();
     }
 
-    @Override
-    public void noop() throws BackgroundException {
-        try {
-            if(!(FTPReply.COMMAND_OK == client.noop())) {
-                throw new FTPException(client.getReplyCode(), client.getReplyString());
-            }
-        }
-        catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
-        }
-    }
-
     protected void configure(final FTPClient client) throws IOException {
         client.setControlEncoding(this.getEncoding());
         client.setConnectTimeout(this.timeout());

@@ -244,13 +244,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Send a 'no operation' command
-     */
-    public void noop() throws BackgroundException {
-        //
-    }
-
-    /**
      * @return boolean True if the session has not yet been closed.
      */
     public boolean isConnected() {

@@ -88,19 +88,6 @@ public class LoginConnectionService implements ConnectionService {
             }
             this.connect(session, cache);
         }
-        else {
-            // The session is still supposed to be connected
-            try {
-                // Send a 'no operation command' to make sure the session is alive
-                session.noop();
-                return false;
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("No operation command failed for session %s. Attempt to reopen connection", session));
-                // Try to reconnect once more
-                this.connect(session, cache);
-            }
-        }
         return true;
     }
 
