@@ -3,7 +3,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -35,14 +34,17 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginController(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        c.connect(session, Cache.empty());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
         session.close();
         assertEquals(Session.State.closed, session.getState());
         assertFalse(session.isConnected());
@@ -51,8 +53,8 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testConnectTLSNotSupported() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "mirror.switch.ch", new Credentials(
-                        Preferences.instance().getProperty("connection.login.anon.name"), null
-                ));
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
