@@ -1,8 +1,8 @@
 package ch.cyberduck.core.ssl;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +14,11 @@ package ch.cyberduck.core.ssl;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
 
 /**
@@ -26,5 +28,9 @@ public class KeychainX509TrustManager extends CertificateStoreX509TrustManager i
 
     public KeychainX509TrustManager(final TrustManagerHostnameCallback callback) {
         super(callback, CertificateStoreFactory.get());
+    }
+
+    public KeychainX509TrustManager(final TrustManagerHostnameCallback callback, final CertificateStore store) {
+        super(callback, store);
     }
 }
