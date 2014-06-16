@@ -147,8 +147,6 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         assertNotNull(in);
         // Send ABOR because stream was not read completly
         in.close();
-        // Make sure next command can be sent
-        session.noop();
         assertEquals(workdir, session.workdir());
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
@@ -177,8 +175,6 @@ public class FTPReadFeatureTest extends AbstractTestCase {
         assertTrue(in.read() > 0);
         // Send ABOR because stream was not read completly
         in.close();
-        // Make sure next command can be sent
-        session.noop();
         assertEquals(workdir, session.workdir());
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
