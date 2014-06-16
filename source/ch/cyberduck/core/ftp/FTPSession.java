@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
@@ -70,6 +71,8 @@ public class FTPSession extends SSLSession<FTPClient> {
     private Timestamp timestamp;
 
     private UnixPermission permission;
+
+    private Symlink symlink;
 
     private FTPListService listService;
 
@@ -263,6 +266,9 @@ public class FTPSession extends SSLSession<FTPClient> {
                     timestamp = new FTPUTIMETimestampFeature(this);
                 }
                 permission = new FTPUnixPermissionFeature(this);
+                if(client.hasFeature("SITE", "SYMLINK")) {
+                    symlink = new FTPSymlinkFeature(this);
+                }
             }
             else {
                 throw new FTPExceptionMappingService().map(new FTPException(this.getClient().getReplyCode(), this.getClient().getReplyString()));
@@ -319,6 +325,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         if(type == Timestamp.class) {
             return (T) timestamp;
+        }
+        if(type == Symlink.class) {
+            return (T) symlink;
         }
         if(type == Command.class) {
             return (T) new FTPCommandFeature(this);
