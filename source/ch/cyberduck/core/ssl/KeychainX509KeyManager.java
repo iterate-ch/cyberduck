@@ -35,8 +35,8 @@ import java.util.Map;
  */
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private Map<String, String> memory
-            = new HashMap<String, String>();
+    private Map<Alias, String> memory
+            = new HashMap<Alias, String>();
 
     public KeychainX509KeyManager() {
         super(CertificateStoreFactory.get());
@@ -52,16 +52,55 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-        final String key = String.format("%s.certificate.%s.alias",
-                socket.getInetAddress().getHostName(), Arrays.toString(issuers));
-        final String saved = memory.get(key);
-        if(StringUtils.isNotBlank(saved)) {
-            return saved;
+        final Alias key = new Alias(socket.getInetAddress().getHostName(), socket.getPort(), issuers);
+        if(memory.containsKey(key)) {
+            return memory.get(key);
         }
         final String alias = super.chooseClientAlias(keyTypes, issuers, socket);
         if(StringUtils.isNotBlank(alias)) {
             memory.put(key, alias);
         }
         return alias;
+    }
+
+    private static final class Alias {
+        private String hostname;
+        private int port;
+        private Principal[] issuers;
+
+        private Alias(String hostname, int port, Principal[] issuers) {
+            this.hostname = hostname;
+            this.port = port;
+            this.issuers = issuers;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Alias alias = (Alias) o;
+            if(port != alias.port) {
+                return false;
+            }
+            if(hostname != null ? !hostname.equals(alias.hostname) : alias.hostname != null) {
+                return false;
+            }
+            if(!Arrays.equals(issuers, alias.issuers)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = hostname != null ? hostname.hashCode() : 0;
+            result = 31 * result + port;
+            result = 31 * result + (issuers != null ? Arrays.hashCode(issuers) : 0);
+            return result;
+        }
     }
 }
