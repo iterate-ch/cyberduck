@@ -65,7 +65,7 @@ public class FTPStatListService implements ListService {
         }
     }
 
-    protected List<String> parse(int response, String[] reply) {
+    protected List<String> parse(final int response, final String[] reply) {
         final List<String> result = new ArrayList<String>(reply.length);
         for(final String line : reply) {
             //Some servers include the status code for every line.
