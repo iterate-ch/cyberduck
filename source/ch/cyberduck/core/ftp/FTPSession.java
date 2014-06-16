@@ -117,7 +117,10 @@ public class FTPSession extends SSLSession<FTPClient> {
     @Override
     public void noop() throws BackgroundException {
         try {
-            client.sendNoOp();
+            if(200 == client.noop()) {
+                return;
+            }
+            throw new FTPException(client.getReplyCode(), client.getReplyString());
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
