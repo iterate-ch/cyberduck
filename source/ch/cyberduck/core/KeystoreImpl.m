@@ -438,7 +438,7 @@ JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_KeychainStore__1getEncodedKe
  * Method:    _scanKeychain
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychain
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychainIdentities
 (JNIEnv *env, jobject this)
 {
     // Look for 'identities' -- private key and certificate chain pairs -- and add those.
@@ -446,9 +446,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychain
     // again later as a certificate.
     addIdentitiesToKeystore(env, this);
 
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychainCertificates
+(JNIEnv *env, jobject this)
+{
     // Scan current keychain for trusted certificates.
     addCertificatesToKeystore(env, this);
-
 }
 
 /*

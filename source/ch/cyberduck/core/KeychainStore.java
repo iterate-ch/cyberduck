@@ -784,11 +784,13 @@ public final class KeychainStore extends KeyStoreSpi {
             }
 
             entries.clear();
-            _scanKeychain();
+            _scanKeychainIdentities();
         }
     }
 
-    private native void _scanKeychain();
+    private native void _scanKeychainIdentities();
+
+    private native void _scanKeychainCertificates();
 
     /**
      * Callback method from _scanKeychain.  If a trusted certificate is found, this method will be called.

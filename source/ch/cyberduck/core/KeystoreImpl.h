@@ -48,7 +48,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1releaseKeychainIte
  * Method:    _scanKeychain
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychain
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychainIdentities
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     ch_cyberduck_core_KeychainStore
+ * Method:    _scanKeychain
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_KeychainStore__1scanKeychainCertificates
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus
