@@ -40,8 +40,17 @@ import java.util.List;
 public class FTPListResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 
-    public AttributedList<Path> read(final FTPSession session, final ListProgressListener listener, final Path parent,
-                                     final FTPFileEntryParser parser, final List<String> replies)
+    private FTPSession session;
+
+    private FTPFileEntryParser parser;
+
+    public FTPListResponseReader(final FTPSession session, final FTPFileEntryParser parser) {
+        this.session = session;
+        this.parser = parser;
+    }
+
+    public AttributedList<Path> read(final ListProgressListener listener, final Path parent,
+                                     final List<String> replies)
             throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed

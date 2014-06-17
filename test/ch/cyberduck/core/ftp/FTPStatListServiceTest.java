@@ -84,9 +84,9 @@ public class FTPStatListServiceTest extends AbstractTestCase {
                 212, lines.toArray(new String[lines.size()]));
         assertEquals(6, list.size());
         final Path parent = new Path("/cgi-bin", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> parsed = new FTPListResponseReader().read(null,
+        final AttributedList<Path> parsed = new FTPListResponseReader(null, new UnixFTPEntryParser()).read(
                 new DisabledListProgressListener(), parent,
-                new UnixFTPEntryParser(), list);
+                list);
         assertEquals(2, parsed.size());
         assertTrue(parsed.contains(new Path(parent, "tmp", EnumSet.of(Path.Type.directory))));
         assertTrue(parsed.contains(new Path(parent, "adoptees.php", EnumSet.of(Path.Type.file))));
