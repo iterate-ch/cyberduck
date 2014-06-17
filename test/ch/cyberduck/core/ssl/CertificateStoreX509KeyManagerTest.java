@@ -89,6 +89,13 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
     }
 
     @Test
+    public void testClientAliasesNoIssuer() throws Exception {
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
+        assertNull(m.getClientAliases("RSA", new Principal[]{}));
+        assertNull(m.getClientAliases("RSA", null));
+    }
+
+    @Test
     public void testGetAliases() throws Exception {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
                 KeyStore.getInstance("KeychainStore", "Apple")).init();
