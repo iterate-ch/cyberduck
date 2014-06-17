@@ -70,7 +70,7 @@ public class FTPStatListService implements ListService {
             //Some servers include the status code for every line.
             if(line.startsWith(String.valueOf(response))) {
                 try {
-                    result.add(StringUtils.strip(line.substring(line.indexOf(response) + line.length() + 1)));
+                    result.add(StringUtils.strip(StringUtils.removeStart(line, String.valueOf(response))));
                 }
                 catch(IndexOutOfBoundsException e) {
                     log.error(String.format("Failed parsing line %s", line), e);

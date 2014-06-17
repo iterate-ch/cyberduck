@@ -20,8 +20,8 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -65,9 +65,30 @@ public class FTPStatListServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testParse() {
+    public void testParse() throws Exception {
         final List<String> list = new FTPStatListService(null, null).parse(
-                200, new String[]{" drwxr-xr-x  11 root     root          8192 Dec 14 23:44 DK_BookStore"});
+                212, new String[]{" drwxr-xr-x  11 root     root          8192 Dec 14 23:44 DK_BookStore"});
         assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testParse8006() throws Exception {
+        final List<String> lines = Arrays.asList(
+                "212-Status of /cgi-bin:",
+                " drwxr-xr-x   3 1564466  15000           4 Jan 19 19:56 .",
+                " drwxr-x---  13 1564466  15000          44 Jun 13 18:36 ..",
+                " drwxr-xr-x   2 1564466  15000           2 May 25  2009 tmp",
+                " End of status",
+                "212 -rw-r--r--   1 1564466  15000        9859 Jan 19 19:56 adoptees.php");
+        final List<String> list = new FTPStatListService(null, null).parse(
+                212, lines.toArray(new String[lines.size()]));
+        assertEquals(6, list.size());
+        final Path parent = new Path("/cgi-bin", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> parsed = new FTPListResponseReader().read(null,
+                new DisabledListProgressListener(), parent,
+                new UnixFTPEntryParser(), list);
+        assertEquals(2, parsed.size());
+        assertTrue(parsed.contains(new Path(parent, "tmp", EnumSet.of(Path.Type.directory))));
+        assertTrue(parsed.contains(new Path(parent, "adoptees.php", EnumSet.of(Path.Type.file))));
     }
 }
