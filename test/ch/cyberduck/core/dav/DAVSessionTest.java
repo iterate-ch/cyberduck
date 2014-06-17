@@ -3,6 +3,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -12,6 +13,7 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -20,6 +22,10 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.security.auth.x500.X500Principal;
+import java.security.Principal;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -348,7 +354,8 @@ public class DAVSessionTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService c = new LoginConnectionService(new DisabledLoginController() {
             @Override
-            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public void prompt(Protocol protocol, Credentials credentials,
+                               String title, String reason, LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {
                     fail();
                 }
@@ -358,7 +365,8 @@ public class DAVSessionTest extends AbstractTestCase {
             }
 
             @Override
-            public void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
+            public void warn(Protocol protocol, String title, String message,
+                             String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -372,7 +380,7 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = InteroperabilityException.class)
-    public void testClientSSLNoCertificate() throws Exception {
+    public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
         final TrustManagerHostnameCallback callback = new TrustManagerHostnameCallback() {
             @Override
@@ -381,11 +389,29 @@ public class DAVSessionTest extends AbstractTestCase {
             }
         };
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(callback),
-                new KeychainX509KeyManager());
+                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                    @Override
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                            throws ConnectionCanceledException {
+                        assertEquals("auth.startssl.com", hostname);
+                        assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to auth.startssl.com.",
+                                prompt);
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 1 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 3 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        throw new ConnectionCanceledException(prompt);
+                    }
+                }));
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginController() {
                     @Override
-                    public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
+                    public void prompt(Protocol protocol, Credentials credentials,
+                                       String title, String reason, LoginOptions options) throws LoginCanceledException {
                         //
                     }
                 },
@@ -393,5 +419,69 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
         c.connect(session, Cache.empty());
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testConnectMutualTlsNoCertificate() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"),
+                Preferences.instance().getProperty("connection.login.anon.pass"))
+        );
+        host.setDefaultPath("/dav");
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                    @Override
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                            throws ConnectionCanceledException {
+                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
+                                prompt);
+                        throw new ConnectionCanceledException(prompt);
+                    }
+                }));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginController(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        try {
+            c.connect(session, Cache.empty());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testConnectMutualTls() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"),
+                Preferences.instance().getProperty("connection.login.anon.pass"))
+        );
+        host.setDefaultPath("/dav");
+        final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                    @Override
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                            throws ConnectionCanceledException {
+                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
+                                prompt);
+                        throw new ConnectionCanceledException(prompt);
+                    }
+                }));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginController(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        try {
+            c.connect(session, Cache.empty());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
     }
 }
