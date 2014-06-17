@@ -3,18 +3,24 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
 
+import java.security.Principal;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -231,5 +237,33 @@ public class FTPSessionTest extends AbstractTestCase {
             assertEquals(failure, e);
         }
         assertEquals(Session.State.closed, session.getState());
+    }
+
+    @Test
+    public void testConnectMutualTls() throws Exception {
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
+        ));
+        final AtomicBoolean callback = new AtomicBoolean();
+        final FTPSession session = new FTPSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
+                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                    @Override
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                            throws ConnectionCanceledException {
+                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
+                                prompt);
+                        callback.set(true);
+                        throw new ConnectionCanceledException(prompt);
+                    }
+                }));
+        final LoginConnectionService c = new LoginConnectionService(
+                new DisabledLoginController(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        c.connect(session, Cache.empty());
+        assertTrue(callback.get());
+        session.close();
     }
 }
