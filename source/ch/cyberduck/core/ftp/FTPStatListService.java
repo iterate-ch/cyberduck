@@ -22,9 +22,9 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class FTPStatListService implements ListService {
 
     private FTPListResponseReader reader;
 
-    public FTPStatListService(final FTPSession session, final CompositeFileEntryParser parser) {
+    public FTPStatListService(final FTPSession session, final FTPFileEntryParser parser) {
         this.session = session;
         this.reader = new FTPListResponseReader(session, parser);
     }
@@ -67,10 +67,13 @@ public class FTPStatListService implements ListService {
     protected List<String> parse(final int response, final String[] reply) {
         final List<String> result = new ArrayList<String>(reply.length);
         for(final String line : reply) {
-            //Some servers include the status code for every line.
+            // Some servers include the status code for every line.
             if(line.startsWith(String.valueOf(response))) {
                 try {
-                    result.add(StringUtils.strip(StringUtils.removeStart(line, String.valueOf(response))));
+                    String stripped = line;
+                    stripped = StringUtils.strip(StringUtils.removeStart(stripped, String.valueOf(String.format("%d-", response))));
+                    stripped = StringUtils.strip(StringUtils.removeStart(stripped, String.valueOf(response)));
+                    result.add(stripped);
                 }
                 catch(IndexOutOfBoundsException e) {
                     log.error(String.format("Failed parsing line %s", line), e);

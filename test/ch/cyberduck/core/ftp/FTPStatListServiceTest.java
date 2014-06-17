@@ -30,7 +30,9 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.junit.Test;
 
@@ -80,15 +82,33 @@ public class FTPStatListServiceTest extends AbstractTestCase {
                 " drwxr-xr-x   2 1564466  15000           2 May 25  2009 tmp",
                 " End of status",
                 "212 -rw-r--r--   1 1564466  15000        9859 Jan 19 19:56 adoptees.php");
-        final List<String> list = new FTPStatListService(null, null).parse(
+        final FTPFileEntryParser parser = new UnixFTPEntryParser();
+        final List<String> list = new FTPStatListService(null, parser).parse(
                 212, lines.toArray(new String[lines.size()]));
         assertEquals(6, list.size());
         final Path parent = new Path("/cgi-bin", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> parsed = new FTPListResponseReader(null, new UnixFTPEntryParser()).read(
+        final AttributedList<Path> parsed = new FTPListResponseReader(null, parser).read(
                 new DisabledListProgressListener(), parent,
                 list);
         assertEquals(2, parsed.size());
         assertTrue(parsed.contains(new Path(parent, "tmp", EnumSet.of(Path.Type.directory))));
         assertTrue(parsed.contains(new Path(parent, "adoptees.php", EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
+    public void testParseEgnyte() throws Exception {
+        final List<String> lines = Arrays.asList(
+                "200-drwx------   0 - -            0 Jun 17 07:59 core",
+                "200 -rw-------   0 David-Kocher -          529 Jun 17 07:59 App.config");
+        final FTPFileEntryParser parser = new LaxUnixFTPEntryParser();
+        final List<String> list = new FTPStatListService(null, parser).parse(
+                200, lines.toArray(new String[lines.size()]));
+        assertEquals(2, list.size());
+        assertTrue(list.contains("drwx------   0 - -            0 Jun 17 07:59 core"));
+        assertTrue(list.contains("-rw-------   0 David-Kocher -          529 Jun 17 07:59 App.config"));
+        final Path parent = new Path("/cyberduck", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> parsed = new FTPListResponseReader(null, parser).read(
+                new DisabledListProgressListener(), parent, list);
+        assertEquals(2, parsed.size());
     }
 }
