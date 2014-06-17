@@ -67,6 +67,8 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     private State state = State.closed;
 
+    private DistributionConfiguration cloudfront;
+
     public boolean alert() throws BackgroundException {
         if(host.getProtocol().isSecure()) {
             return false;
@@ -320,8 +322,11 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
             return (T) new DefaultDownloadFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            // Use login context of current session
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
+            if(null == cloudfront) {
+                // Use login context of current session
+                cloudfront = new CustomOriginCloudFrontDistributionConfiguration(host);
+            }
+            return (T) cloudfront;
         }
         if(type == UrlProvider.class) {
             return (T) new DefaultUrlProvider(host);
