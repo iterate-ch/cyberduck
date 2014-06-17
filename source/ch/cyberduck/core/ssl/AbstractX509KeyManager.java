@@ -18,13 +18,14 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
+import javax.net.ssl.X509ExtendedKeyManager;
 import java.net.Socket;
 import java.security.Principal;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class AbstractX509KeyManager implements X509KeyManager {
+public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager implements X509KeyManager {
 
     @Override
     public String chooseServerAlias(String s, Principal[] principals, Socket socket) {
