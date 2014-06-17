@@ -508,6 +508,8 @@ public abstract class Preferences {
         defaults.put("ftp.datachannel.verify", String.valueOf(false));
         defaults.put("ftp.socket.buffer", String.valueOf(131072));
 
+        defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
+
         /**
          * Send LIST -a
          */

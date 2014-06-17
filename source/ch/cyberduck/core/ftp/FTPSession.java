@@ -138,6 +138,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setSendBufferSize(buffer);
         client.setReceieveDataSocketBufferSize(buffer);
         client.setSendDataSocketBufferSize(buffer);
+        client.setStrictMultilineParsing(Preferences.instance().getBoolean("ftp.parser.multiline.strict"));
     }
 
     /**
