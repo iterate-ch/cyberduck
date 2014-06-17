@@ -73,6 +73,9 @@ public class DAVExceptionMappingService extends AbstractExceptionMappingService<
         if(e.getStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
             return new InteroperabilityException(buffer.toString(), e);
         }
+        if(e.getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         return this.wrap(e, buffer);
     }
 }

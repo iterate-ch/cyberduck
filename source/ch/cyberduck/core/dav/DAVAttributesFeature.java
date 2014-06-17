@@ -22,8 +22,10 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,6 +39,8 @@ import com.github.sardine.impl.SardineException;
 public class DAVAttributesFeature implements Attributes {
 
     private DAVSession session;
+
+    private Cache cache;
 
     public DAVAttributesFeature(DAVSession session) {
         this.session = session;
@@ -64,7 +68,12 @@ public class DAVAttributesFeature implements Attributes {
             throw new NotfoundException();
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot read file attributes", e, file);
+            try {
+                throw new DAVExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
+            catch(InteroperabilityException i) {
+                return new DefaultAttributesFeature(session).find(file);
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
@@ -73,6 +82,7 @@ public class DAVAttributesFeature implements Attributes {
 
     @Override
     public Attributes withCache(final Cache cache) {
+        this.cache = cache;
         return this;
     }
 }
