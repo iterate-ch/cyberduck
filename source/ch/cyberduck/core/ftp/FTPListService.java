@@ -98,7 +98,7 @@ public class FTPListService implements ListService {
         }
     }
 
-    public FTPListService(final FTPSession session, final String system, final TimeZone zone) throws BackgroundException {
+    public FTPListService(final FTPSession session, final String system, final TimeZone zone) {
         this.session = session;
         this.parser = new FTPParserSelector().getParser(system, zone);
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
@@ -129,6 +129,24 @@ public class FTPListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
+            if(implementations.containsKey(Command.mlsd)) {
+                // Note that there is no distinct FEAT output for MLSD. The presence of the MLST feature
+                // indicates that both MLST and MLSD are supported.
+                if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
+                    try {
+                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
+                    }
+                    catch(InteroperabilityException e) {
+                        this.remove(Command.mlsd);
+                    }
+                    catch(FTPInvalidListException e) {
+                        this.remove(Command.mlsd);
+                    }
+                }
+                else {
+                    this.remove(Command.mlsd);
+                }
+            }
             if(implementations.containsKey(Command.stat)) {
                 try {
                     return this.post(directory, implementations.get(Command.stat).list(directory, listener));
@@ -149,24 +167,6 @@ public class FTPListService implements ListService {
                                 new DisabledPasswordStore(), session).connect(session, Cache.empty());
                     }
                     this.remove(Command.stat);
-                }
-            }
-            if(implementations.containsKey(Command.mlsd)) {
-                // Note that there is no distinct FEAT output for MLSD.
-                // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
-                    try {
-                        return this.post(directory, implementations.get(Command.mlsd).list(directory, listener));
-                    }
-                    catch(InteroperabilityException e) {
-                        this.remove(Command.mlsd);
-                    }
-                    catch(FTPInvalidListException e) {
-                        this.remove(Command.mlsd);
-                    }
-                }
-                else {
-                    this.remove(Command.mlsd);
                 }
             }
             if(implementations.containsKey(Command.lista)) {
