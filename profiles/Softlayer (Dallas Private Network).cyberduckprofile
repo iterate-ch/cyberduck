@@ -18,5 +18,9 @@
         <false/>
         <key>Context</key>
         <string>/auth/v1.0</string>
+        <key>Username Placeholder</key>
+        <string>Username</string>
+        <key>Password Placeholder</key>
+        <string>API Key</string>
     </dict>
 </plist>
