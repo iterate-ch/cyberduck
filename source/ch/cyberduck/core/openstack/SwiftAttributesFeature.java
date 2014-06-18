@@ -73,7 +73,7 @@ public class SwiftAttributesFeature implements Attributes {
                     attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
                 }
                 catch(InvalidDateException e) {
-                    log.warn(String.format("%s is not  RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
+                    log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
                 }
                 attributes.setChecksum(metadata.getETag());
                 attributes.setETag(metadata.getETag());
