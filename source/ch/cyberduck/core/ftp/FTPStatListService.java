@@ -40,7 +40,7 @@ public class FTPStatListService implements ListService {
 
     private FTPSession session;
 
-    private FTPListResponseReader reader;
+    private FTPDataResponseReader reader;
 
     public FTPStatListService(final FTPSession session, final FTPFileEntryParser parser) {
         this.session = session;
@@ -52,8 +52,7 @@ public class FTPStatListService implements ListService {
         try {
             final int response = session.getClient().stat(directory.getAbsolute());
             if(FTPReply.isPositiveCompletion(response)) {
-                return reader.read(listener, directory,
-                        this.parse(response, session.getClient().getReplyStrings()));
+                return reader.read(directory, this.parse(response, session.getClient().getReplyStrings()), listener);
             }
             else {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());

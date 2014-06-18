@@ -43,11 +43,17 @@ import java.util.regex.Pattern;
 /**
  * @version $Id$
  */
-public class FTPMlsdListResponseReader {
+public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
 
-    public AttributedList<Path> read(final FTPSession session, final ListProgressListener listener,
-                                     final Path parent, final List<String> replies)
+    private FTPSession session;
+
+    public FTPMlsdListResponseReader(FTPSession session) {
+        this.session = session;
+    }
+
+    @Override
+    public AttributedList<Path> read(final Path parent, final List<String> replies, final ListProgressListener listener)
             throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed

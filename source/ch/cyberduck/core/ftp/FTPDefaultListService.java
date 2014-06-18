@@ -38,7 +38,7 @@ public class FTPDefaultListService implements ListService {
 
     private FTPListService.Command command;
 
-    private FTPListResponseReader reader;
+    private FTPDataResponseReader reader;
 
     public FTPDefaultListService(final FTPSession session, final CompositeFileEntryParser parser, final FTPListService.Command command) {
         this.session = session;
@@ -68,7 +68,7 @@ public class FTPDefaultListService implements ListService {
                     }
                 }
             });
-            return reader.read(listener, directory, list);
+            return reader.read(directory, list, listener);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);

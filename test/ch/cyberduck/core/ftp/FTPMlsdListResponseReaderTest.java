@@ -52,7 +52,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         };
 
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
         assertTrue(children.get(0).isFile());
@@ -70,7 +71,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
         };
-        new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        new FTPMlsdListResponseReader(s).read(path, Arrays.asList(replies), new DisabledListProgressListener());
     }
 
     @Test(expected = FTPInvalidListException.class)
@@ -82,7 +83,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
         };
-        new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        new FTPMlsdListResponseReader(s).read(path, Arrays.asList(replies), new DisabledListProgressListener());
     }
 
     @Test(expected = FTPInvalidListException.class)
@@ -96,7 +97,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
         };
-        new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        new FTPMlsdListResponseReader(s).read(path, Arrays.asList(replies), new DisabledListProgressListener());
     }
 
     @Test
@@ -111,7 +112,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s).read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals("ftpd.c", children.get(0).getName());
     }
@@ -126,7 +127,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals(34589, children.get(0).attributes().getSize());
     }
@@ -141,7 +143,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
         };
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals(916111845000L, children.get(0).attributes().getModificationDate());
         Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -153,13 +156,13 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
     @Test
     public void testParseTimestamp() throws Exception {
         // Pass UTC time
-        final long time = new FTPMlsdListResponseReader().parseTimestamp("20130709111201");
+        final long time = new FTPMlsdListResponseReader(null).parseTimestamp("20130709111201");
         assertEquals(1373368321000L, time);
     }
 
     @Test
     public void testParseTimestampInvalid() throws Exception {
-        final long time = new FTPMlsdListResponseReader().parseTimestamp("2013");
+        final long time = new FTPMlsdListResponseReader(null).parseTimestamp("2013");
         assertEquals(-1L, time);
     }
 
@@ -171,7 +174,7 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         String[] replies = new String[]{
                 "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
         };
-        new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        new FTPMlsdListResponseReader(s).read(path, Arrays.asList(replies), new DisabledListProgressListener());
     }
 
     public void testDir() throws Exception {
@@ -184,7 +187,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                     "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
             };
 
-            final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+            final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                    .read(path, Arrays.asList(replies), new DisabledListProgressListener());
             assertEquals(2, children.size());
         }
         {
@@ -193,7 +197,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                     "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter"
             };
 
-            final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+            final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                    .read(path, Arrays.asList(replies), new DisabledListProgressListener());
             assertEquals(2, children.size());
         }
     }
@@ -207,7 +212,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "modify=19990307234236;perm=adfr;size=60;type=file;unique=FE03U10001724;UNIX.group=1001;UNIX.mode=0664;UNIX.owner=2000; kalahari.diz"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals("664", children.get(0).attributes().getPermission().getMode());
     }
@@ -221,7 +227,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "modify=20090210192929;perm=fle;type=dir;unique=FE03U10006D95;UNIX.group=1001;UNIX.mode=02775;UNIX.owner=2000; tangerine"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals("2775", children.get(0).attributes().getPermission().getMode());
     }
@@ -235,7 +242,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(1, children.size());
         assertEquals("/www/foobar", children.get(0).getAbsolute());
         assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
@@ -250,7 +258,8 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
                 "type=dir;modify=20140315210350; Gozo 2013/2014",
                 "type=dir;modify=20140315210350; Tigger & Friends"
         };
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(s, new DisabledListProgressListener(), path, Arrays.asList(replies));
+        final AttributedList<Path> children = new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
         assertEquals(2, children.size());
         assertEquals("/www/Gozo 2013/2014", children.get(0).getAbsolute());
         assertEquals("Gozo 2013/2014", children.get(0).getName());

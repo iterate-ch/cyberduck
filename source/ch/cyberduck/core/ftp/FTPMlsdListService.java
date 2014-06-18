@@ -36,8 +36,11 @@ public class FTPMlsdListService implements ListService {
 
     private FTPSession session;
 
+    private FTPDataResponseReader reader;
+
     public FTPMlsdListService(final FTPSession session) {
         this.session = session;
+        this.reader = new FTPMlsdListResponseReader(session);
     }
 
     @Override
@@ -62,7 +65,7 @@ public class FTPMlsdListService implements ListService {
                     }
                 }
             });
-            return new FTPMlsdListResponseReader().read(session, listener, directory, list);
+            return reader.read(directory, list, listener);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
