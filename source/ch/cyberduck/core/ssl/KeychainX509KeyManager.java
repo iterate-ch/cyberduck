@@ -21,8 +21,6 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.net.Socket;
 import java.security.KeyStore;
 import java.security.Principal;
@@ -35,8 +33,8 @@ import java.util.Map;
  */
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private Map<Alias, String> memory
-            = new HashMap<Alias, String>();
+    private Map<Key, String> memory
+            = new HashMap<Key, String>();
 
     public KeychainX509KeyManager() {
         super(CertificateStoreFactory.get());
@@ -52,23 +50,36 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
 
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
-        final Alias key = new Alias(socket.getInetAddress().getHostName(), socket.getPort(), issuers);
+        final Key key = new Key(socket.getInetAddress().getHostName(), socket.getPort(), issuers);
+        final String alias = this.find(key);
+        if(alias != null) {
+            return alias;
+        }
+        final String s = super.chooseClientAlias(keyTypes, issuers, socket);
+        if(null == s) {
+            return null;
+        }
+        return this.save(key, s);
+    }
+
+    protected String find(final Key key) {
         if(memory.containsKey(key)) {
             return memory.get(key);
         }
-        final String alias = super.chooseClientAlias(keyTypes, issuers, socket);
-        if(StringUtils.isNotBlank(alias)) {
-            memory.put(key, alias);
-        }
+        return null;
+    }
+
+    protected String save(final Key key, final String alias) {
+        memory.put(key, alias);
         return alias;
     }
 
-    private static final class Alias {
+    protected static final class Key {
         private String hostname;
         private int port;
         private Principal[] issuers;
 
-        private Alias(String hostname, int port, Principal[] issuers) {
+        private Key(String hostname, int port, Principal[] issuers) {
             this.hostname = hostname;
             this.port = port;
             this.issuers = issuers;
@@ -82,14 +93,14 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
             if(o == null || getClass() != o.getClass()) {
                 return false;
             }
-            Alias alias = (Alias) o;
-            if(port != alias.port) {
+            Key key = (Key) o;
+            if(port != key.port) {
                 return false;
             }
-            if(hostname != null ? !hostname.equals(alias.hostname) : alias.hostname != null) {
+            if(hostname != null ? !hostname.equals(key.hostname) : key.hostname != null) {
                 return false;
             }
-            if(!Arrays.equals(issuers, alias.issuers)) {
+            if(!Arrays.equals(issuers, key.issuers)) {
                 return false;
             }
             return true;
@@ -101,6 +112,12 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
             result = 31 * result + port;
             result = 31 * result + (issuers != null ? Arrays.hashCode(issuers) : 0);
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("connection.ssl.keystore.%s:%s.%s.alias",
+                    hostname, port, Arrays.toString(issuers));
         }
     }
 }
