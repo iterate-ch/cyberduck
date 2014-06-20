@@ -52,6 +52,11 @@ public class NotificationCenter implements Growl {
     }
 
     @Override
+    public void unregister() {
+        //
+    }
+
+    @Override
     public void notify(final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));

@@ -58,6 +58,11 @@ public final class GrowlNative implements Growl {
     public native void setup();
 
     @Override
+    public void unregister() {
+        //
+    }
+
+    @Override
     public native void notify(String title, String description);
 
     @Override

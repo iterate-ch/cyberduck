@@ -62,6 +62,11 @@ public abstract class GrowlFactory extends Factory<Growl> {
         }
 
         @Override
+        public void unregister() {
+            log.warn("Growl notifications disabled");
+        }
+
+        @Override
         public void notify(String title, String description) {
             if(log.isInfoEnabled()) {
                 log.info(description);

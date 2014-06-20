@@ -29,6 +29,11 @@ public interface Growl {
     void setup();
 
     /**
+     * Unregister application
+     */
+    void unregister();
+
+    /**
      * @param title       Non localized title to be looked up in status table
      * @param description Hostname
      */
