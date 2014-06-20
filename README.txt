@@ -15,12 +15,12 @@ Mac
 	http://developer.apple.com/technologies/xcode.html
 	
 Windows
-- Microsoft Visual Studio 10
+- Microsoft Visual Studio 2012
 	http://www.microsoft.com/visualstudio/en-us/
 - Microsoft Windows SDK for Windows 7 and .NET Framework 4
 	http://www.microsoft.com/downloads/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&displaylang=en
 - MSBuild Community Tasks
-	http://msbuildtasks.tigris.org/
+	https://github.com/loresoft/msbuildtasks
 - Latest IKVM binary release in C:/workspace/
 	http://sourceforge.net/projects/ikvm/files/
 - Bonjour SDK for Windows
