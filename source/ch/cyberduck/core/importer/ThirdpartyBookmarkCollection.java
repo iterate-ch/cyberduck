@@ -1,9 +1,8 @@
 package ch.cyberduck.core.importer;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@ package ch.cyberduck.core.importer;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
@@ -59,7 +58,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found bookmarks file at %s", file));
             }
-            final String current;
+            String current = null;
             try {
                 current = new MD5ChecksumCompute().compute(file.getInputStream());
                 if(log.isDebugEnabled()) {
@@ -68,7 +67,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure obtaining checksum for %s", file));
-                return;
             }
             if(Preferences.instance().getBoolean(this.getConfiguration())) {
                 // Previously imported

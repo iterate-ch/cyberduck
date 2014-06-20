@@ -1,6 +1,7 @@
 package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
@@ -24,6 +25,19 @@ public class FireFtpBookmarkCollectionTest extends AbstractTestCase {
         FireFtpBookmarkCollection c = new FireFtpBookmarkCollection();
         assertEquals(0, c.size());
         c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/org.mozdev.fireftp"));
+        assertEquals(1, c.size());
+    }
+
+    @Test
+    public void testLoad() throws Exception {
+        FireFtpBookmarkCollection c = new FireFtpBookmarkCollection() {
+            @Override
+            public Local getFile() {
+                return LocalFactory.createLocal("test/ch/cyberduck/core/importer/org.mozdev.fireftp");
+            }
+        };
+        assertEquals(0, c.size());
+        c.load();
         assertEquals(1, c.size());
     }
 }
