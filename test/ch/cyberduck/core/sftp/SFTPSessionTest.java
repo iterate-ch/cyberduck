@@ -1,19 +1,6 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -124,6 +111,70 @@ public class SFTPSessionTest extends AbstractTestCase {
         }
         catch(Exception e) {
             assertTrue(verify.get());
+            throw e;
+        }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testNoValidCredentials() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final Session session = new SFTPSession(host);
+        final AtomicBoolean change = new AtomicBoolean();
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials,
+                               String title, String reason, LoginOptions options)
+                    throws LoginCanceledException {
+                assertEquals("Login", title);
+                assertEquals("Login test.cyberduck.ch with username and password. No login credentials could be found in the Keychain.", reason);
+                credentials.setUsername("u");
+                change.set(true);
+                throw new LoginCanceledException();
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        try {
+            login.connect(session, Cache.empty());
+        }
+        catch(LoginCanceledException e) {
+            assertTrue(change.get());
+            throw e;
+        }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testUsernameChange() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("anonymous", null));
+        final Session session = new SFTPSession(host);
+        final AtomicBoolean change = new AtomicBoolean();
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+            @Override
+            public Local select() throws LoginCanceledException {
+                return new NullLocal("k");
+            }
+
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials,
+                               String title, String reason, LoginOptions options)
+                    throws LoginCanceledException {
+                if(change.get()) {
+                    assertEquals("Change of username or service not allowed: (anonymous,ssh-connection) -> (u2,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
+                    throw new LoginCanceledException();
+                }
+                else {
+                    assertEquals("Login failed", title);
+                    assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
+                    credentials.setUsername("u2");
+                    change.set(true);
+                }
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new DisabledProgressListener());
+        try {
+            login.connect(session, Cache.empty());
+        }
+        catch(LoginCanceledException e) {
+            assertTrue(change.get());
             throw e;
         }
     }

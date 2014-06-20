@@ -211,6 +211,10 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
             else {
+                if(null == lastFailure) {
+                    throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
+                            "Login {0} with username and password", "Credentials"), host.getHostname()));
+                }
                 throw lastFailure;
             }
         }

@@ -84,6 +84,11 @@ public class Credentials {
         this.user = user;
     }
 
+    public Credentials withUsername(final String user) {
+        this.user = user;
+        return this;
+    }
+
     /**
      * @return The login secret
      */
@@ -98,6 +103,11 @@ public class Credentials {
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    public Credentials withPassword(final String password) {
+        this.password = password;
+        return this;
     }
 
     /**
@@ -149,6 +159,11 @@ public class Credentials {
      */
     public void setIdentity(final Local file) {
         this.identity = file;
+    }
+
+    public Credentials withIdentity(final Local file) {
+        this.identity = file;
+        return this;
     }
 
     /**
