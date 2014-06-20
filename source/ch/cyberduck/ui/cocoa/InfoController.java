@@ -1371,7 +1371,14 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected void initializePanel(final String identifier) {
-        switch(InfoToolbarItem.valueOf(identifier)) {
+        InfoToolbarItem item;
+        try {
+            item = InfoToolbarItem.valueOf(identifier);
+        }
+        catch(IllegalArgumentException e) {
+            item = InfoToolbarItem.info;
+        }
+        switch(item) {
             case info:
                 this.initGeneral();
                 this.initPermissions();

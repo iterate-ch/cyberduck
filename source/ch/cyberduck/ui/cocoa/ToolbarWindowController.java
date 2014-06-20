@@ -101,7 +101,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
-        this.setSelectedPanel(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
+        this.setSelectedPanel(Preferences.instance().getInteger(String.format("%s.selected", this.getToolbarName())));
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
 
         super.awakeFromNib();
@@ -266,7 +266,8 @@ public abstract class ToolbarWindowController extends WindowController implement
     public void tabView_didSelectTabViewItem(NSTabView view, NSTabViewItem item) {
         this.setTitle(this.getTitle(item));
         this.resize();
-        Preferences.instance().setProperty(String.format("%s.selected", this.getToolbarName()), view.indexOfTabViewItem(item));
+        Preferences.instance().setProperty(String.format("%s.selected",
+                this.getToolbarName()), view.indexOfTabViewItem(item));
     }
 
     protected void setTitle(final String title) {

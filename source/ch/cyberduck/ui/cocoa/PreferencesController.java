@@ -19,7 +19,19 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
@@ -211,7 +223,14 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     protected void initializePanel(final String identifier) {
-        switch(PreferencesToolbarItem.valueOf(identifier)) {
+        PreferencesToolbarItem item;
+        try {
+            item = PreferencesToolbarItem.valueOf(identifier);
+        }
+        catch(IllegalArgumentException e) {
+            item = PreferencesToolbarItem.general;
+        }
+        switch(item) {
             case general:
                 break;
             case browser:
