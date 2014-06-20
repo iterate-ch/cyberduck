@@ -19,11 +19,15 @@
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.serializer.impl;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public abstract class PlistReader<T> : Reader where T : Serializable
     {
+        private static readonly Logger Log = Logger.getLogger(typeof (PlistReader).Name);
+
         public Collection readCollection(ch.cyberduck.core.Local file)
         {
             XmlDocument plistDocument = new XmlDocument {XmlResolver = null};
@@ -47,7 +51,15 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
         public Serializable read(ch.cyberduck.core.Local file)
         {
             XmlDocument plistDocument = new XmlDocument {XmlResolver = null};
-            plistDocument.Load(file.getAbsolute());
+            try
+            {
+                plistDocument.Load(file.getAbsolute());
+            }
+            catch (XmlException e)
+            {
+                Log.warn("Error while loading " + file, e);
+                return null;
+            }
 
             XmlNode dictNode = plistDocument.SelectSingleNode("/plist/dict");
             return deserialize(dictNode);
