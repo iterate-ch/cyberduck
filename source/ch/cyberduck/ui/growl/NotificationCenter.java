@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.growl;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.ui.growl;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.LocaleFactory;
@@ -32,10 +32,10 @@ public class NotificationCenter implements Growl {
 
     public static void register() {
         if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
-            GrowlFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
+            GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
         }
         else {
-            log.warn(String.format("Skip registering notifications on %s", Factory.VERSION_PLATFORM));
+            log.warn(String.format("Skip registering notifications on %s", Factory.NATIVE_PLATFORM));
         }
     }
 

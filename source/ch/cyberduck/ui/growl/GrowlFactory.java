@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.growl;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.ui.growl;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Factory;
@@ -42,8 +42,8 @@ public abstract class GrowlFactory extends Factory<Growl> {
     }
 
     public static Growl get() {
-        if(factories.containsKey(VERSION_PLATFORM)) {
-            return factories.get(VERSION_PLATFORM).create();
+        if(factories.containsKey(NATIVE_PLATFORM)) {
+            return factories.get(NATIVE_PLATFORM).create();
         }
         return new Disabled();
     }
