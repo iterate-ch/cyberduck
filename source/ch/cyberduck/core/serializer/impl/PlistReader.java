@@ -42,7 +42,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         final Collection<S> c = new Collection<S>();
         NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
         if(null == list) {
-            log.error("Invalid bookmark file:" + file);
+            log.error(String.format("Invalid bookmark file %s", file));
             return c;
         }
         final NSEnumerator i = list.objectEnumerator();
@@ -66,7 +66,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     public S read(final Local file) {
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == dict) {
-            log.error("Invalid bookmark file:" + file);
+            log.error(String.format("Invalid bookmark file %s", file));
             return null;
         }
         return this.deserialize(dict);

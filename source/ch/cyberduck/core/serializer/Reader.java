@@ -19,8 +19,8 @@ package ch.cyberduck.core.serializer;
  */
 
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Serializable;
 
 /**
  * @param <S>
@@ -38,7 +38,7 @@ public interface Reader<S extends Serializable> {
      * Read the serialized item from the given file
      *
      * @param file A valid dictionary
-     * @return Deserialized item
+     * @return Deserialized item. Null if the file cannot be deserialized
      */
     S read(Local file);
 }
