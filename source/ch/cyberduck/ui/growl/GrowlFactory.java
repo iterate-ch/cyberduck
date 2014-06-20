@@ -41,11 +41,18 @@ public abstract class GrowlFactory extends Factory<Growl> {
         factories.put(platform, f);
     }
 
+    private static Growl notifier;
+
     public static Growl get() {
-        if(factories.containsKey(NATIVE_PLATFORM)) {
-            return factories.get(NATIVE_PLATFORM).create();
+        if(null == notifier) {
+            if(factories.containsKey(NATIVE_PLATFORM)) {
+                return factories.get(NATIVE_PLATFORM).create();
+            }
+            else {
+                notifier = new Disabled();
+            }
         }
-        return new Disabled();
+        return notifier;
     }
 
     private static final class Disabled implements Growl {
@@ -67,5 +74,6 @@ public abstract class GrowlFactory extends Factory<Growl> {
                 log.info(description);
             }
         }
+
     }
 }
