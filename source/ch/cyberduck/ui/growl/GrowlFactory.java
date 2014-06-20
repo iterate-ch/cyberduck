@@ -46,7 +46,7 @@ public abstract class GrowlFactory extends Factory<Growl> {
     public static Growl get() {
         if(null == notifier) {
             if(factories.containsKey(NATIVE_PLATFORM)) {
-                return factories.get(NATIVE_PLATFORM).create();
+                notifier = factories.get(NATIVE_PLATFORM).create();
             }
             else {
                 notifier = new Disabled();
