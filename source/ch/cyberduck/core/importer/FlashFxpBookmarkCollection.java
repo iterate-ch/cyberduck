@@ -1,9 +1,8 @@
 package ch.cyberduck.core.importer;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@ package ch.cyberduck.core.importer;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Host;
@@ -47,7 +46,7 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
     private static final long serialVersionUID = 5122804563710604658L;
 
     @Override
-    protected void parse(Local file) throws AccessDeniedException {
+    protected void parse(final Local file) throws AccessDeniedException {
         try {
             final BufferedReader in
                     = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
