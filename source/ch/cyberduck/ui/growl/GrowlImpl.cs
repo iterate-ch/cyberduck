@@ -35,25 +35,28 @@ namespace Ch.Cyberduck.Ui.Growl
 
         public void notify(string title, string description)
         {
-            _connector.Notify(new Notification(_app.Name, title, null, title,
-                                               description));
+            _connector.Notify(new Notification(_app.Name, title, null, title, description));
         }
 
         public void setup()
         {
-            _connector.Register(_app, new[]
-                {
-                    new NotificationType("Download complete"),
-                    new NotificationType("Upload complete"),
-                    new NotificationType("Synchronization complete"),
-                    new NotificationType("Connection opened"),
-                    new NotificationType("Connection failed"),
-                    new NotificationType("Download failed"),
-                    new NotificationType("Upload failed"),
-                    new NotificationType("Transfer queued"),
-                    new NotificationType("Bonjour", "Bonjour", IconCache.Instance.IconForName("rendezvous"),
-                                         true)
-                });
+            _connector.Register(_app,
+                                new[]
+                                    {
+                                        new NotificationType("Download complete"), new NotificationType("Upload complete"),
+                                        new NotificationType("Synchronization complete"),
+                                        new NotificationType("Connection opened"),
+                                        new NotificationType("Connection failed"),
+                                        new NotificationType("Download failed"), new NotificationType("Upload failed"),
+                                        new NotificationType("Transfer queued"),
+                                        new NotificationType("Bonjour", "Bonjour",
+                                                             IconCache.Instance.IconForName("rendezvous"), true)
+                                    });
+        }
+
+        public void unregister()
+        {
+            //
         }
 
         public void notifyWithImage(string title, string description, string image)

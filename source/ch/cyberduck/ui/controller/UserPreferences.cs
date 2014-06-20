@@ -299,6 +299,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
 
             defaults.put("editor.bundleIdentifier", new EditorFactory.Notepad().getIdentifier());
+            defaults.put("notifications.icon", false.ToString());
 
             //default browser toolbar set
             defaults.put("browser.toolbar", true.ToString());

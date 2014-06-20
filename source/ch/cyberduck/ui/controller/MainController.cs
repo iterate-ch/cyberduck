@@ -217,7 +217,6 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferPlistReader.Register();
             ProfilePlistReader.Register();
             TcpReachability.Register();
-            GrowlImpl.Register();
             DefaultPathReferenceFactory.Register();
             PromptLoginController.Register();
             DialogTransferPromptControllerFactory.Register();
@@ -234,6 +233,15 @@ namespace Ch.Cyberduck.Ui.Controller
             RegistryApplicationFinder.Register();
             TaskbarApplicationBadgeLabeler.Register();
             DefaultBrowserLauncher.Register();
+
+            if (Preferences.instance().getBoolean("notifications.icon"))
+            {
+                NotifyImpl.Register();
+            }
+            else
+            {
+                GrowlImpl.Register();
+            }
         }
 
         private static void ConfigureLogging()
@@ -765,6 +773,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
+            GrowlFactory.get().unregister();
             ApplicationShouldTerminateAfterDonationPrompt();
             System.Windows.Forms.Application.Exit();
         }

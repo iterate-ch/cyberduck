@@ -240,6 +240,7 @@
     <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
+    <Compile Include="ui\growl\NotifyImpl.cs" />
     <Compile Include="ui\growl\GrowlImpl.cs" />
     <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
       <SubType>Component</SubType>
@@ -682,11 +683,11 @@
     </ItemGroup>
     <ItemGroup>
       <SunMSCAPI Include="..\..\..\lib\sunmscapi.dll" />
-    </ItemGroup>	
+    </ItemGroup>
     <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
     <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
     <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
-	<Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
