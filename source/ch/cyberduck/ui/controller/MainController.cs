@@ -233,15 +233,8 @@ namespace Ch.Cyberduck.Ui.Controller
             RegistryApplicationFinder.Register();
             TaskbarApplicationBadgeLabeler.Register();
             DefaultBrowserLauncher.Register();
-
-            if (Preferences.instance().getBoolean("notifications.icon"))
-            {
-                NotifyImpl.Register();
-            }
-            else
-            {
-                GrowlImpl.Register();
-            }
+            NotifyImpl.Register();
+            GrowlImpl.Register();
         }
 
         private static void ConfigureLogging()

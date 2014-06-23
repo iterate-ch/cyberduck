@@ -22,8 +22,8 @@ import ch.cyberduck.core.Factory;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id: GrowlFactory.java 5451 2009-10-09 08:34:10Z dkocher $
@@ -34,28 +34,31 @@ public abstract class GrowlFactory extends Factory<Growl> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, GrowlFactory> factories
-            = new HashMap<Platform, GrowlFactory>();
+    protected static final Set<GrowlFactory> factories
+            = new HashSet<GrowlFactory>();
 
-    public static void addFactory(Platform platform, GrowlFactory f) {
-        factories.put(platform, f);
+    public static void addFactory(final Platform platform, final GrowlFactory f) {
+        factories.add(f);
     }
 
     private static Growl notifier;
 
     public static Growl get() {
         if(null == notifier) {
-            if(factories.containsKey(NATIVE_PLATFORM)) {
-                notifier = factories.get(NATIVE_PLATFORM).create();
+            Set<Growl> registered = new HashSet<Growl>();
+            for(GrowlFactory f : factories) {
+                registered.add(f.create());
             }
-            else {
-                notifier = new Disabled();
+            if(factories.isEmpty()) {
+                registered.add(new Disabled());
             }
+            notifier = new MultipleNotifier(registered);
         }
         return notifier;
     }
 
     private static final class Disabled implements Growl {
+
         @Override
         public void setup() {
             log.warn("Growl notifications disabled");
@@ -79,6 +82,42 @@ public abstract class GrowlFactory extends Factory<Growl> {
                 log.info(description);
             }
         }
+    }
 
+    private static final class MultipleNotifier implements Growl {
+
+        private final Set<Growl> notifier;
+
+        private MultipleNotifier(final Set<Growl> notifier) {
+            this.notifier = notifier;
+        }
+
+        @Override
+        public void notify(String title, String description) {
+            for(Growl notifier : this.notifier) {
+                notifier.notify(title, description);
+            }
+        }
+
+        @Override
+        public void notifyWithImage(String title, String description, String image) {
+            for(Growl notifier : this.notifier) {
+                notifier.notifyWithImage(title, description, image);
+            }
+        }
+
+        @Override
+        public void setup() {
+            for(Growl notifier : this.notifier) {
+                notifier.setup();
+            }
+        }
+
+        @Override
+        public void unregister() {
+            for(Growl notifier : this.notifier) {
+                notifier.unregister();
+            }
+        }
     }
 }
