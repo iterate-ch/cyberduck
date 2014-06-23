@@ -50,13 +50,13 @@ import java.util.Map;
 public class CopyTransferFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
-    private Session<?> source;
-
     private Session<?> destination;
 
     private Find find;
 
     private Attributes attribute;
+
+    private AclPermission acl;
 
     private final Map<Path, Path> files;
 
@@ -70,11 +70,11 @@ public class CopyTransferFilter implements TransferPathFilter {
     public CopyTransferFilter(final Session<?> source, final Session<?> destination,
                               final Map<Path, Path> files, final UploadFilterOptions options, final Cache cache) {
         this.destination = destination;
-        this.source = source;
         this.files = files;
         this.options = options;
         this.find = destination.getFeature(Find.class);
         this.attribute = source.getFeature(Attributes.class).withCache(cache);
+        this.acl = source.getFeature(AclPermission.class);
     }
 
     @Override
@@ -99,9 +99,8 @@ public class CopyTransferFilter implements TransferPathFilter {
             status.setTimestamp(attributes.getModificationDate());
         }
         if(this.options.acl) {
-            final AclPermission feature = this.source.getFeature(AclPermission.class);
-            if(feature != null) {
-                status.setAcl(feature.getPermission(source));
+            if(acl != null) {
+                status.setAcl(acl.getPermission(source));
             }
         }
         if(parent.isExists()) {
