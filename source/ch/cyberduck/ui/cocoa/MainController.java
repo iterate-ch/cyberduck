@@ -1007,13 +1007,15 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Registering Growl";
             }
         });
-        RendezvousFactory.instance().addListener(new RendezvousListener() {
+        final Rendezvous bonjour = RendezvousFactory.instance();
+        bonjour.addListener(new RendezvousListener() {
             @Override
             public void serviceResolved(final String identifier, final Host host) {
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
-                        GrowlFactory.get().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
+                        GrowlFactory.get().notifyWithImage("Bonjour",
+                                bonjour.getDisplayedName(identifier), "rendezvous");
                     }
                 });
             }
@@ -1075,7 +1077,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
             public Void run() throws BackgroundException {
-                RendezvousFactory.instance().init();
+                bonjour.init();
                 return null;
             }
         });
