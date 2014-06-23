@@ -10,8 +10,10 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
@@ -104,6 +106,14 @@ public class ResumeFilterTest extends AbstractTestCase {
                 final Path f = new Path("t", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(7L);
                 return new AttributedList<Path>(Collections.<Path>singletonList(f));
+            }
+
+            @Override
+            public <T> T getFeature(Class<T> type) {
+                if(type == Attributes.class) {
+                    return (T) new DefaultAttributesFeature(this);
+                }
+                return super.getFeature(type);
             }
         }, new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
