@@ -40,8 +40,6 @@ public class DAVAttributesFeature implements Attributes {
 
     private DAVSession session;
 
-    private Cache cache;
-
     public DAVAttributesFeature(DAVSession session) {
         this.session = session;
     }
@@ -82,7 +80,6 @@ public class DAVAttributesFeature implements Attributes {
 
     @Override
     public Attributes withCache(final Cache cache) {
-        this.cache = cache;
         return this;
     }
 }
