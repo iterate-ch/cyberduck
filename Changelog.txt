@@ -10,6 +10,7 @@ Changelog. Last modified: $Date$
 - [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
 - [Feature] GZIP Compression (SFTP) (#123)
 - [Feature] ECDSA public key authentication (SFTP) (#7938)
+- [Feature] Notifications in system tray (Windows) (#8007)
 
 4.4.5 [https://trac.cyberduck.io/milestone/4.4.5]
 - [Bugfix] Failure copying folders from server to server (#7946)
