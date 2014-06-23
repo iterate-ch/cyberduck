@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,11 +13,12 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Drawing;
 using System.Windows.Forms;
+using ch.cyberduck.core;
 using ch.cyberduck.ui.growl;
 
 namespace Ch.Cyberduck.Ui.Growl
@@ -29,7 +30,8 @@ namespace Ch.Cyberduck.Ui.Growl
         public void notify(string title, string description)
         {
             _icon.Visible = true;
-            _icon.ShowBalloonTip(300, title, description, ToolTipIcon.Info);
+            _icon.ShowBalloonTip(Preferences.instance().getInteger("notifications.timeout.milliseconds"),
+                title, description, ToolTipIcon.Info);
         }
 
         public void setup()
