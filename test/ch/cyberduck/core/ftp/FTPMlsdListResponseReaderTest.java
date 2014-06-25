@@ -264,4 +264,15 @@ public class FTPMlsdListResponseReaderTest extends AbstractTestCase {
         assertEquals("/www/Gozo 2013/2014", children.get(0).getAbsolute());
         assertEquals("Gozo 2013/2014", children.get(0).getName());
     }
+
+    @Test(expected = FTPInvalidListException.class)
+    public void test8053() throws Exception {
+        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
+        Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+                "type=OS.unix=slink:;size=11;modify=20140506165021;UNIX.mode=0777;UNIX.uid=1144;UNIX.gid=1144;unique=fd51g2dc0020; www"
+        };
+        new FTPMlsdListResponseReader(s)
+                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+    }
 }

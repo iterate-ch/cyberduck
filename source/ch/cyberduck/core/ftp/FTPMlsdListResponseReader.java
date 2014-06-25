@@ -48,7 +48,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
 
     private FTPSession session;
 
-    public FTPMlsdListResponseReader(FTPSession session) {
+    public FTPMlsdListResponseReader(final FTPSession session) {
         this.session = session;
     }
 
@@ -87,19 +87,27 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                 else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
                     parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file));
                 }
-                else if(facts.get("type").toLowerCase(Locale.ROOT).startsWith("os.unix=slink")) {
+                else if(facts.get("type").toLowerCase(Locale.ROOT).matches("os\\.unix=slink:.*")) {
                     parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
-                    final String target = facts.get("type").split(":")[1];
-                    if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                        parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
+                    // Parse symbolic link target in Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar
+                    final String[] type = facts.get("type").split(":");
+                    if(type.length == 2) {
+                        final String target = type[1];
+                        if(target.startsWith(String.valueOf(Path.DELIMITER))) {
+                            parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
+                        }
+                        else {
+                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target), EnumSet.of(Path.Type.file)));
+                        }
                     }
                     else {
-                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target), EnumSet.of(Path.Type.file)));
+                        log.warn(String.format("Missing symbolic link target for type %s in line %s", facts.get("type"), line));
+                        continue;
                     }
                 }
                 else {
                     log.warn(String.format("Ignored type %s in line %s", facts.get("type"), line));
-                    break;
+                    continue;
                 }
                 if(!success) {
                     if(parsed.isDirectory() && parent.getName().equals(name)) {
