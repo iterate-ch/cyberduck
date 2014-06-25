@@ -198,7 +198,7 @@ public class FTPListService implements ListService {
      */
     protected AttributedList<Path> post(final Path directory, final AttributedList<Path> list) throws BackgroundException {
         try {
-            final List<Path> symlinks = new ArrayList<Path>();
+            final List<Path> verified = new ArrayList<Path>();
             for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
                 if(!file.isChild(directory)) {
@@ -226,10 +226,10 @@ public class FTPListService implements ListService {
                             target.setType(EnumSet.of(Path.Type.file));
                         }
                     }
-                    symlinks.add(file);
+                    verified.add(file);
                 }
             }
-            list.addAll(symlinks);
+            list.addAll(verified);
             return list;
         }
         catch(IOException e) {
