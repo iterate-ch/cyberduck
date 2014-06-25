@@ -82,12 +82,14 @@ public class LoginConnectionService implements ConnectionService {
      */
     @Override
     public boolean check(final Session session, final Cache cache) throws BackgroundException {
-        if(!session.isConnected()) {
-            if(StringUtils.isBlank(session.getHost().getHostname())) {
-                throw new ConnectionCanceledException();
-            }
-            this.connect(session, cache);
+        if(StringUtils.isBlank(session.getHost().getHostname())) {
+            throw new ConnectionCanceledException();
         }
+        if(session.isConnected()) {
+            // Connection already open
+            return false;
+        }
+        this.connect(session, cache);
         return true;
     }
 

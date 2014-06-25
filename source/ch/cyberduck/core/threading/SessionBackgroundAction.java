@@ -18,7 +18,17 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.ui.growl.Growl;
@@ -145,7 +155,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * @return True if the the action had a permanent failures. Returns false if
-     * there were only temporary exceptions and the action succeeded upon retry
+     *         there were only temporary exceptions and the action succeeded upon retry
      */
     protected boolean hasFailed() {
         return failed;
@@ -153,9 +163,12 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() {
+        // Reset status
         this.reset();
         try {
+            // Open connection
             this.connect(session);
+            // Run action
             return super.call();
         }
         catch(ConnectionCanceledException failure) {
