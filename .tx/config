@@ -1,0 +1,195 @@
+[main]
+host = https://www.transifex.com
+
+[cyberduck.Azure]
+file_filter = <lang>.lproj/Azure.strings
+source_file = en.lproj/Azure.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Archive]
+file_filter = <lang>.lproj/Archive.strings
+source_file = en.lproj/Archive.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Bookmark]
+file_filter = <lang>.lproj/Bookmark.strings
+source_file = en.lproj/Bookmark.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Browser]
+file_filter = <lang>.lproj/Browser.strings
+source_file = en.lproj/Browser.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Command]
+file_filter = <lang>.lproj/Command.strings
+source_file = en.lproj/Command.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Configuration]
+file_filter = <lang>.lproj/Configuration.strings
+source_file = en.lproj/Configuration.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Connection]
+file_filter = <lang>.lproj/Connection.strings
+source_file = en.lproj/Connection.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Crash]
+file_filter = <lang>.lproj/Crash.strings
+source_file = en.lproj/Crash.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Credentials]
+file_filter = <lang>.lproj/Credentials.strings
+source_file = en.lproj/Credentials.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Donate]
+file_filter = <lang>.lproj/Donate.strings
+source_file = en.lproj/Donate.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Duplicate]
+file_filter = <lang>.lproj/Duplicate.strings
+source_file = en.lproj/Duplicate.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Error]
+file_filter = <lang>.lproj/Error.strings
+source_file = en.lproj/Error.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.File]
+file_filter = <lang>.lproj/File.strings
+source_file = en.lproj/File.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Folder]
+file_filter = <lang>.lproj/Folder.strings
+source_file = en.lproj/Folder.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Goto]
+file_filter = <lang>.lproj/Goto.strings
+source_file = en.lproj/Goto.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Info]
+file_filter = <lang>.lproj/Info.strings
+source_file = en.lproj/Info.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.InfoPlist]
+file_filter = <lang>.lproj/InfoPlist.strings
+source_file = en.lproj/InfoPlist.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Keychain]
+file_filter = <lang>.lproj/Keychain.strings
+source_file = en.lproj/Keychain.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.License]
+file_filter = <lang>.lproj/License.strings
+source_file = en.lproj/License.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Localizable]
+file_filter = <lang>.lproj/Localizable.strings
+source_file = en.lproj/Localizable.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Login]
+file_filter = <lang>.lproj/Login.strings
+source_file = en.lproj/Login.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Main]
+file_filter = <lang>.lproj/Main.strings
+source_file = en.lproj/Main.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Mosso]
+file_filter = <lang>.lproj/Mosso.strings
+source_file = en.lproj/Mosso.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Preferences]
+file_filter = <lang>.lproj/Preferences.strings
+source_file = en.lproj/Preferences.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Prompt]
+file_filter = <lang>.lproj/Prompt.strings
+source_file = en.lproj/Prompt.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Status]
+file_filter = <lang>.lproj/Status.strings
+source_file = en.lproj/Status.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.S3]
+file_filter = <lang>.lproj/S3.strings
+source_file = en.lproj/S3.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.ServicesMenu]
+file_filter = <lang>.lproj/ServicesMenu.strings
+source_file = en.lproj/ServicesMenu.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Transfer]
+file_filter = <lang>.lproj/Transfer.strings
+source_file = en.lproj/Transfer.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Download]
+file_filter = <lang>.lproj/Download.strings
+source_file = en.lproj/Download.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Support]
+file_filter = <lang>.lproj/Support.strings
+source_file = en.lproj/Support.strings
+source_lang = en
+type = STRINGS
+
+[cyberduck.Alert]
+file_filter = <lang>.lproj/Alert.strings
+source_file = en.lproj/Alert.strings
+source_lang = en
+type = STRINGS
+
