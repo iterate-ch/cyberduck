@@ -24,7 +24,6 @@ using System.Media;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.analytics;
@@ -1147,10 +1146,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.Modified =
-                            UserDateFormatterFactory.get()
-                                                    .getLongFormat(
-                                                        UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                            file.attributes().getModificationDate()));
+                            UserDateFormatterFactory.get().getLongFormat(file.attributes().getModificationDate());
                     }
                     if (-1 == file.attributes().getCreationDate())
                     {
@@ -1159,10 +1155,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.FileCreated =
-                            UserDateFormatterFactory.get()
-                                                    .getLongFormat(
-                                                        UserDefaultsDateFormatter.ConvertJavaMillisecondsToDotNetMillis(
-                                                            file.attributes().getModificationDate()));
+                            UserDateFormatterFactory.get().getLongFormat(file.attributes().getCreationDate());
                     }
                 }
                 View.FileOwner = count > 1
