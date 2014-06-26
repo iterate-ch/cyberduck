@@ -20,6 +20,7 @@
 nibtool="nibtool"
 base_language="en.lproj"
 arch="x86_64"
+tx="/usr/local/bin/tx"
 
 usage() {
 	echo ""
@@ -213,8 +214,27 @@ update() {
 	fi;
 }
 
+transifex() {
+    echo "*** Updating all localizations...";
+    if [ "$stringsfile" = "all" ] ; then
+        echo "*** Updating all .strings...";
+        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+            strings=`basename $stringsfile .strings`
+            echo "*** Updating $strings.strings...";
+            $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+        done;
+    fi;
+    if [ "$stringsfile" != "all" ] ; then
+        strings=`basename $stringsfile .strings`
+        echo "*** Updating $strings.strings...";
+        $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+    fi;
+    $tx push --source --translations
+}
+
 language="all";
 nibfile="all";
+stringsfile="all";
 force=false;
 
 while [ "$1" != "" ] # When there are arguments...
@@ -231,7 +251,13 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "Using Nib:$nibfile";
 				shift;
 			;;
-			-f | --force) 
+			--strings)
+				shift;
+				stringsfile=$1;
+				echo "Using strings:$stringsfile";
+				shift;
+			;;
+			-f | --force)
 				force=true;
 				shift;
 			;;
@@ -279,6 +305,12 @@ while [ "$1" != "" ] # When there are arguments...
 				arch=$1;
 				echo "Running architecture:$arch";
 				shift;
+			;;
+			-tx | --transifex)
+				echo "Updating .tx...";
+				transifex;
+				echo "*** DONE. ***";
+				exit 0;
 			;;
 			--test)
 				test;
