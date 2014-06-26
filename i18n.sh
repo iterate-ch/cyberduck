@@ -39,33 +39,19 @@ usage() {
 
 init() {
 	mkdir -p $language
-	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib`; do
 	{
 		echo "Copying $nibfile"
-		nib=`basename $nibfile .nib`
 		cp -R $base_language/$nibfile $language/$nibfile
 		rm -rf $language/$nibfile/.svn
-		$nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
 	}
 	done
-	cp $base_language/Localizable.strings $language/
-	cp $base_language/File.strings $language/
-	cp $base_language/Folder.strings $language/
-	cp $base_language/Goto.strings $language/
-	cp $base_language/Duplicate.strings $language/
-	cp $base_language/ServicesMenu.strings $language/
-	cp $base_language/Crash.strings $language/
-	cp $base_language/Status.strings $language/
-	cp $base_language/Error.strings $language/
-	cp $base_language/Credentials.strings $language/
-	cp $base_language/Configuration.strings $language/
-	cp $base_language/S3.strings $language/
-	cp $base_language/Mosso.strings $language/
-	cp $base_language/Keychain.strings $language/
-	cp $base_language/Archive.strings $language/
-	cp $base_language/Transfer.strings $language/
-	cp $base_language/License.strings $language/
-	cp $base_language/InfoPlist.strings $language/
+	for stringsfile in `ls $base_language | grep .strings | grep -v ~.strings`; do
+	{
+		echo "Copying $stringsfile"
+		cp -R $base_language/$stringsfile $language/$stringsfile
+	}
+	done
 	cp $base_language/License.txt $language/
 }
 
@@ -177,7 +163,7 @@ update() {
 				echo "*** Updating $language Localization...";
 				if [ "$nibfile" = "all" ] ; then
 					echo "*** Updating all NIBs...";
-					for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+					for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
 						nib=`basename $nibfile .nib`
 						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 						nib;
@@ -197,7 +183,7 @@ update() {
 		echo "*** Updating $language Localization...";
 		if [ "$nibfile" = "all" ] ; then
 			echo "*** Updating all NIBs...";
-			for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+			for nibfile in `ls $language | grep .nib | grep -v ~.nib`; do
 				nib=`basename $nibfile .nib`;
 				$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 				nib;
