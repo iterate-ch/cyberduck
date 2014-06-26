@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
@@ -46,7 +47,9 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(ExceptionUtils.getRootCause(e) != null) {
-            this.append(buffer, ExceptionUtils.getRootCause(e).getMessage());
+            if(!StringUtils.equals(e.getMessage(), ExceptionUtils.getRootCause(e).getMessage())) {
+                this.append(buffer, ExceptionUtils.getRootCause(e).getMessage());
+            }
         }
         if(e instanceof SFTPException) {
             final SFTPException failure = (SFTPException) e;
