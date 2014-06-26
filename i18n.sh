@@ -208,14 +208,15 @@ transifex() {
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
             $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+            $tx push --source --translations --resource=cyberduck.$strings --force
         done;
     fi;
     if [ "$stringsfile" != "all" ] ; then
         strings=`basename $stringsfile .strings`
         echo "*** Updating $strings.strings...";
         $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+        $tx push --source --translations --resource=cyberduck.$strings --force
     fi;
-    $tx push --source --translations
 }
 
 language="all";
