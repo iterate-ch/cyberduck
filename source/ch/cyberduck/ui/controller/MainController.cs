@@ -831,9 +831,16 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (Utils.IsWin7OrLater)
             {
-                Windows7Taskbar.SetCurrentProcessAppId(Preferences.instance().getProperty("application.name"));
-                _jumpListManager = new JumpListManager(Preferences.instance().getProperty("application.name"));
-                _jumpListManager.UserRemovedItems += (o, e) => { };
+                try
+                {
+                    Windows7Taskbar.SetCurrentProcessAppId(Preferences.instance().getProperty("application.name"));
+                    _jumpListManager = new JumpListManager(Preferences.instance().getProperty("application.name"));
+                    _jumpListManager.UserRemovedItems += (o, e) => { };
+                }
+                catch (Exception exception)
+                {
+                    Logger.warn("Exception while initializing jump list", exception);
+                }
             }
         }
 
@@ -846,21 +853,28 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (Utils.IsWin7OrLater)
             {
-                _jumpListManager.ClearCustomDestinations();
-                Iterator iterator = HistoryCollection.defaultCollection().iterator();
-                while (iterator.hasNext())
+                try
                 {
-                    Host host = (Host) iterator.next();
-                    _jumpListManager.AddCustomDestination(new ShellLink
-                        {
-                            Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
-                            Title = BookmarkNameProvider.toString(host, true),
-                            Category = LocaleFactory.localizedString("History"),
-                            IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
-                            IconIndex = 0
-                        });
+                    _jumpListManager.ClearCustomDestinations();
+                    Iterator iterator = HistoryCollection.defaultCollection().iterator();
+                    while (iterator.hasNext())
+                    {
+                        Host host = (Host) iterator.next();
+                        _jumpListManager.AddCustomDestination(new ShellLink
+                            {
+                                Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
+                                Title = BookmarkNameProvider.toString(host, true),
+                                Category = LocaleFactory.localizedString("History"),
+                                IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
+                                IconIndex = 0
+                            });
+                    }
+                    _jumpListManager.Refresh();
                 }
-                _jumpListManager.Refresh();
+                catch (Exception exception)
+                {
+                    Logger.warn("Exception while refreshing jump list", exception);
+                }
             }
         }
     }
