@@ -31,19 +31,17 @@ namespace Ch.Cyberduck.Core
             string tempFile = System.IO.Path.GetTempFileName();
             bool identity = host.getCredentials().isPublicKeyAuthentication();
             TextWriter tw = new StreamWriter(tempFile);
-            tw.WriteLine("cd {0} && exec $SHELL", workdir);
+            tw.WriteLine("cd {0} && exec $SHELL", workdir.getAbsolute());
             tw.Close();
             String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
                                        identity
                                            ? "-i " + host.getCredentials().getIdentity().getAbsolute()
-                                           : String.Empty,
-                                       host.getCredentials().getUsername(),
-                                       host.getHostname(),
+                                           : String.Empty, host.getCredentials().getUsername(), host.getHostname(),
                                        Convert.ToString(host.getPort()), tempFile);
-
-
-            ApplicationLauncherFactory.get().open(
-                new Application(Preferences.instance().getProperty("terminal.command.ssh"), null), ssh);
+            ApplicationLauncherFactory.get()
+                                      .open(
+                                          new Application(Preferences.instance().getProperty("terminal.command.ssh"),
+                                                          null), ssh);
         }
     }
 }
