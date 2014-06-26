@@ -300,7 +300,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("editor.bundleIdentifier", new EditorFactory.Notepad().getIdentifier());
 
-            defaults.put("notifications.icon", false.ToString());
             defaults.put("notifications.timeout.milliseconds", "300");
 
             //default browser toolbar set
