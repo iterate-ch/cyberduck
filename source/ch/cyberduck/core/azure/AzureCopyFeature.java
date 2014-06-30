@@ -25,6 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 
+import org.apache.log4j.Logger;
+
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
@@ -37,6 +39,7 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
  * @version $Id$
  */
 public class AzureCopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
 
     private AzureSession session;
 
@@ -59,6 +62,9 @@ public class AzureCopyFeature implements Copy {
             options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
             final String id = target.startCopyFromBlob(blob,
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, null);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));
+            }
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
