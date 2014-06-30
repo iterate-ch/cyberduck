@@ -46,10 +46,8 @@ import java.util.regex.Pattern;
 public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
 
-    private FTPSession session;
-
-    public FTPMlsdListResponseReader(final FTPSession session) {
-        this.session = session;
+    public FTPMlsdListResponseReader() {
+        //
     }
 
     @Override

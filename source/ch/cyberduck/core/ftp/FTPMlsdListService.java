@@ -40,7 +40,7 @@ public class FTPMlsdListService implements ListService {
 
     public FTPMlsdListService(final FTPSession session) {
         this.session = session;
-        this.reader = new FTPMlsdListResponseReader(session);
+        this.reader = new FTPMlsdListResponseReader();
     }
 
     @Override

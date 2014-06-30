@@ -40,12 +40,9 @@ import java.util.List;
 public class FTPListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 
-    private FTPSession session;
-
     private FTPFileEntryParser parser;
 
     public FTPListResponseReader(final FTPSession session, final FTPFileEntryParser parser) {
-        this.session = session;
         this.parser = parser;
     }
 

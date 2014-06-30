@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPAttributesFeature implements Attributes {
 
@@ -57,7 +57,7 @@ public class FTPAttributesFeature implements Attributes {
                     }
                 }
             });
-            final FTPDataResponseReader reader = new FTPMlsdListResponseReader(session);
+            final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
             final AttributedList<Path> attributes
                     = reader.read(file.getParent(), list, new DisabledListProgressListener());
             if(attributes.size() == 1) {
