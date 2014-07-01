@@ -207,15 +207,15 @@ transifex() {
         for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
-            $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-            $tx push --source --translations --resource=cyberduck.$strings --force --no-interactive
+            $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+            $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive
         done;
     fi;
     if [ "$stringsfile" != "all" ] ; then
         strings=`basename $stringsfile .strings`
         echo "*** Updating $strings.strings...";
-        $tx set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-        $tx push --source --translations --resource=cyberduck.$strings --force --no-interactive
+        $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
+        $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive
     fi;
 }
 
