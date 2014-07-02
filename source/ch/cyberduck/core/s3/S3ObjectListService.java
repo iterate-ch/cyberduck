@@ -1,8 +1,8 @@
 package ch.cyberduck.core.s3;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.s3;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -22,7 +23,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +58,6 @@ public class S3ObjectListService implements ListService {
 
     private S3Session session;
 
-    private S3AttributesFeature attributes;
-
     private PathContainerService containerService
             = new S3PathContainerService();
 
@@ -67,7 +66,6 @@ public class S3ObjectListService implements ListService {
 
     public S3ObjectListService(final S3Session session) {
         this.session = session;
-        this.attributes = new S3AttributesFeature(session);
     }
 
     @Override
@@ -146,12 +144,17 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final PathAttributes attr = attributes.find(object);
-                final Path p = new Path(parent, PathNormalizer.name(key),
-                        attr.isPlaceholder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
+                final Path file = new Path(parent, PathNormalizer.name(key),
+                        object.isDirectoryPlaceholder() ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file));
+                file.attributes().setChecksum(object.getETag());
+                final Date lastmodified = object.getLastModifiedDate();
+                if(lastmodified != null) {
+                    file.attributes().setModificationDate(lastmodified.getTime());
+                }
+                file.attributes().setSize(object.getContentLength());
                 // Copy bucket location
-                p.attributes().setRegion(bucket.attributes().getRegion());
-                children.add(p);
+                file.attributes().setRegion(bucket.attributes().getRegion());
+                children.add(file);
             }
             final String[] prefixes = chunk.getCommonPrefixes();
             for(String common : prefixes) {
@@ -169,7 +172,6 @@ public class S3ObjectListService implements ListService {
                     continue;
                 }
                 p.attributes().setRegion(bucket.attributes().getRegion());
-                p.attributes().setPlaceholder(false);
                 children.add(p);
             }
             priorLastKey = chunk.getPriorLastKey();
