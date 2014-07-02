@@ -19,10 +19,10 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
 import org.jets3t.service.ServiceException;
@@ -54,7 +54,7 @@ public class GoogleStorageBucketCreateService {
             acl = GSAccessControlList.REST_CANNED_PRIVATE;
         }
         try {
-            session.getClient().createBucket(new PathContainerService().getContainer(bucket).getName(), location, acl);
+            session.getClient().createBucket(new S3PathContainerService().getContainer(bucket).getName(), location, acl);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
