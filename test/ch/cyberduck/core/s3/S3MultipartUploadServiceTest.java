@@ -61,8 +61,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes();
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);

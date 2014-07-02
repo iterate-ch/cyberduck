@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 
 import org.junit.Test;
 
@@ -61,7 +62,8 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
         new S3StorageClassFeature(session).setClass(test, "REDUCED_REDUNDANCY");
-        assertEquals("REDUCED_REDUNDANCY", session.list(container, new DisabledListProgressListener()).get(test.getReference()).attributes().getStorageClass());
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

@@ -73,8 +73,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = session.list(container,
-                new DisabledListProgressListener()).get(test.getReference()).attributes();
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
