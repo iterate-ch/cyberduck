@@ -152,6 +152,7 @@ public class S3ObjectListService implements ListService {
                     file.attributes().setModificationDate(lastmodified.getTime());
                 }
                 file.attributes().setSize(object.getContentLength());
+                file.attributes().setStorageClass(object.getStorageClass());
                 // Copy bucket location
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
@@ -166,13 +167,13 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
-                if(children.contains(p.getReference())) {
+                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
+                if(children.contains(file.getReference())) {
                     // There is already a placeholder object
                     continue;
                 }
-                p.attributes().setRegion(bucket.attributes().getRegion());
-                children.add(p);
+                file.attributes().setRegion(bucket.attributes().getRegion());
+                children.add(file);
             }
             priorLastKey = chunk.getPriorLastKey();
             listener.chunk(children);
