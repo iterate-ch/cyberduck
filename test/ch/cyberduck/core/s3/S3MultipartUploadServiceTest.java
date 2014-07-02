@@ -2,8 +2,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -63,7 +63,6 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
-        assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));

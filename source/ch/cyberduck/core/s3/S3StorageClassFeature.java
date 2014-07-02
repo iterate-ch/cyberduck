@@ -17,8 +17,10 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
 
 import org.jets3t.service.model.S3Object;
@@ -48,7 +50,13 @@ public class S3StorageClassFeature implements Redundancy {
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(file.isFile()) {
-            return new S3ObjectDetailService(session).getDetails(file).getStorageClass();
+            // HEAD request does not include storage class header
+            final Path list = new S3ObjectListService(session).list(file.getParent(), new DisabledListProgressListener())
+                    .get(file.getReference());
+            if(null == list) {
+                throw new NotfoundException();
+            }
+            return list.attributes().getStorageClass();
         }
         return null;
     }
@@ -59,7 +67,6 @@ public class S3StorageClassFeature implements Redundancy {
             final S3CopyFeature copy = new S3CopyFeature(session);
             copy.copy(file, file, redundancy, file.attributes().getEncryption(),
                     new S3AccessControlListFeature(session).getPermission(file));
-            file.attributes().setStorageClass(redundancy);
         }
     }
 }
