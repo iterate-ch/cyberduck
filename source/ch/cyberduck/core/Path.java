@@ -162,6 +162,10 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         return type.contains(Type.directory);
     }
 
+    public boolean isPlaceholder() {
+        return type.contains(Type.placeholder);
+    }
+
     public boolean isFile() {
         return type.contains(Type.file);
     }

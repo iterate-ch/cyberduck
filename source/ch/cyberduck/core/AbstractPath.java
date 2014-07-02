@@ -59,6 +59,12 @@ public abstract class AbstractPath {
             public int legacy() {
                 return 8;
             }
+        },
+        placeholder {
+            @Override
+            public int legacy() {
+                return 0;
+            }
         };
 
         public abstract int legacy();

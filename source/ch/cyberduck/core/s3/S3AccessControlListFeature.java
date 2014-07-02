@@ -1,8 +1,8 @@
 package ch.cyberduck.core.s3;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.s3;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Acl;
@@ -71,7 +72,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 // for that bucket (in S3) allows you to do so.
                 return this.convert(session.getClient().getBucketAcl(containerService.getContainer(file).getName()));
             }
-            else if(file.isFile() || file.attributes().isPlaceholder()) {
+            else if(file.isFile() || file.isPlaceholder()) {
                 org.jets3t.service.acl.AccessControlList list;
                 if(session.getFeature(Versioning.class) != null
                         && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
@@ -113,7 +114,7 @@ public class S3AccessControlListFeature implements AclPermission {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
             }
             else {
-                if(file.isFile() || file.attributes().isPlaceholder()) {
+                if(file.isFile() || file.isPlaceholder()) {
                     session.getClient().putObjectAcl(container.getName(), containerService.getKey(file), this.convert(acl));
                 }
             }

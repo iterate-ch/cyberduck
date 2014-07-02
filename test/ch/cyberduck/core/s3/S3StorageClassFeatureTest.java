@@ -19,9 +19,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -45,7 +44,8 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
 
     @Test
     public void testGetClasses() throws Exception {
-        assertEquals(Arrays.asList("STANDARD", "REDUCED_REDUNDANCY", "GLACIER"), new S3StorageClassFeature(null).getClasses());
+        assertEquals(Arrays.asList("STANDARD", "REDUCED_REDUNDANCY", "GLACIER"),
+                new S3StorageClassFeature(null).getClasses());
     }
 
     @Test
@@ -60,8 +60,10 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
-        final String v = UUID.randomUUID().toString();
-        new S3StorageClassFeature(session).setClass(test, "REDUCED_REDUNDANCY");
+        final S3StorageClassFeature feature = new S3StorageClassFeature(session);
+        assertEquals(null, feature.getClass(test));
+        feature.setClass(test, "REDUCED_REDUNDANCY");
+        assertEquals("REDUCED_REDUNDANCY", feature.getClass(test));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals("REDUCED_REDUNDANCY", attributes.getStorageClass());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());

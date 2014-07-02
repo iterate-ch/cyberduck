@@ -91,11 +91,11 @@ public class AzureObjectListService implements ListService {
                         attributes.setETag(blob.getProperties().getEtag());
                         attributes.setChecksum(blob.getProperties().getContentMD5());
                     }
-                    if(object instanceof CloudBlobDirectory) {
-                        attributes.setPlaceholder(true);
-                    }
+                    final EnumSet<Path.Type> type;
                     final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()),
-                            object instanceof CloudBlobDirectory ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes);
+                            object instanceof CloudBlobDirectory
+                                    ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file),
+                            attributes);
                     children.add(child);
                 }
                 listener.chunk(children);

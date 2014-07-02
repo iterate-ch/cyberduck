@@ -60,8 +60,7 @@ public class AzureDeleteFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        test.attributes().setPlaceholder(true);
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new AzureDirectoryFeature(session).mkdir(test);
         assertTrue(new AzureFindFeature(session).find(test));
         new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());

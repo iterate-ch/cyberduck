@@ -66,7 +66,6 @@ public class AzureDirectoryFeature implements Directory {
                 container.create(options, null);
             }
             else {
-                file.attributes().setPlaceholder(true);
                 // Create delimiter placeholder
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));

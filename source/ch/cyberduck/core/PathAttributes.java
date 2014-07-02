@@ -93,11 +93,6 @@ public class PathAttributes extends Attributes implements Serializable {
     private long revision;
 
     /**
-     * Directory placeholder in Cloud Storage.
-     */
-    private boolean placeholder;
-
-    /**
      * Geographical location
      */
     private String region;
@@ -317,15 +312,6 @@ public class PathAttributes extends Attributes implements Serializable {
         this.metadata = metadata;
     }
 
-
-    public boolean isPlaceholder() {
-        return placeholder;
-    }
-
-    public void setPlaceholder(final boolean placeholder) {
-        this.placeholder = placeholder;
-    }
-
     public String getRegion() {
         return region;
     }
@@ -397,7 +383,6 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", versionId='").append(versionId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", revision=").append(revision);
-        sb.append(", placeholder=").append(placeholder);
         sb.append(", region='").append(region).append('\'');
         sb.append(", metadata=").append(metadata);
         sb.append('}');

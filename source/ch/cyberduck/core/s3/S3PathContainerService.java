@@ -2,7 +2,7 @@ package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,21 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3PathContainerService extends PathContainerService {
 
     @Override
     public String getKey(final Path file) {
         final String key = super.getKey(file);
-        if(file.attributes().isPlaceholder()) {
+        if(file.isPlaceholder()) {
             return key.concat(String.valueOf(Path.DELIMITER));
         }
         return key;

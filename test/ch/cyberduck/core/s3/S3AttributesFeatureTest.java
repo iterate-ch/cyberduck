@@ -90,8 +90,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory));
-        test.attributes().setPlaceholder(true);
+        final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum());

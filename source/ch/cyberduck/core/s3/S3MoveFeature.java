@@ -1,8 +1,8 @@
 package ch.cyberduck.core.s3;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -48,7 +48,7 @@ public class S3MoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
         try {
-            if(file.isFile() || file.attributes().isPlaceholder()) {
+            if(file.isFile() || file.isPlaceholder()) {
                 final StorageObject destination = new StorageObject(containerService.getKey(renamed));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());

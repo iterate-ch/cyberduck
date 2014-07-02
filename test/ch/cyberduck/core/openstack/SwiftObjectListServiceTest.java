@@ -20,8 +20,8 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -64,7 +64,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                 assertNotNull(p.attributes().getETag());
             }
             else if(p.isDirectory()) {
-                assertTrue(p.attributes().isPlaceholder());
+                assertTrue(p.isPlaceholder());
             }
             else {
                 fail();
@@ -105,9 +105,9 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         assertTrue(list.contains(base));
         assertEquals(EnumSet.of(Path.Type.file), list.get(base.getReference()).getType());
-        final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory));
+        final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(list.contains(placeholder));
-        assertEquals(EnumSet.of(Path.Type.directory), list.get(placeholder.getReference()).getType());
+        assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder.getReference()).getType());
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
     }
 }

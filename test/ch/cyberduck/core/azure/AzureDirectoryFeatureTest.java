@@ -50,8 +50,8 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        placeholder.attributes().setPlaceholder(true);
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(),
+                EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new AzureDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new AzureFindFeature(session).find(placeholder));
         new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
