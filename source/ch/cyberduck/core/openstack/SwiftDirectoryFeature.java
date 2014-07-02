@@ -36,7 +36,7 @@ public class SwiftDirectoryFeature implements Directory {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private SwiftRegionService regionService;
 

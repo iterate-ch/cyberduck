@@ -1,8 +1,8 @@
 package ch.cyberduck.core.openstack;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AttributedList;
@@ -50,7 +50,7 @@ public class SwiftObjectListService implements ListService {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private ISO8601DateParser dateParser
             = new ISO8601DateParser();
@@ -74,22 +74,22 @@ public class SwiftObjectListService implements ListService {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setOwner(container.attributes().getOwner());
                     attributes.setRegion(container.attributes().getRegion());
-                    if("application/directory".equals(object.getMimeType())) {
-                        attributes.setPlaceholder(true);
-                    }
-                    else {
-                        attributes.setChecksum(object.getMd5sum());
-                        attributes.setETag(object.getMd5sum());
-                        attributes.setSize(object.getSize());
+                    attributes.setChecksum(object.getMd5sum());
+                    attributes.setETag(object.getMd5sum());
+                    attributes.setSize(object.getSize());
+                    final String lastModified = object.getLastModified();
+                    if(lastModified != null) {
                         try {
-                            attributes.setModificationDate(dateParser.parse(object.getLastModified()).getTime());
+                            attributes.setModificationDate(dateParser.parse(lastModified).getTime());
                         }
                         catch(InvalidDateException e) {
-                            log.warn(String.format("%s is not ISO 8601 format %s", object.getLastModified(), e.getMessage()));
+                            log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
                         }
                     }
                     final Path child = new Path(directory, PathNormalizer.name(object.getName()),
-                            "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes);
+                            "application/directory".equals(object.getMimeType())
+                                    ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file),
+                            attributes);
                     if(child.isDirectory()) {
                         if(children.contains(child.getReference())) {
                             // There is already a placeholder object

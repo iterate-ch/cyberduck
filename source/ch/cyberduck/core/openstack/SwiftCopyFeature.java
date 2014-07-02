@@ -36,7 +36,7 @@ public class SwiftCopyFeature implements Copy {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     public SwiftCopyFeature(final SwiftSession session) {
         this.session = session;

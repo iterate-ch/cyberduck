@@ -39,7 +39,7 @@ public class SwiftDistributionPurgeFeature implements Purge {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     public SwiftDistributionPurgeFeature(final SwiftSession session) {
         this.session = session;

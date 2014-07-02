@@ -52,7 +52,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private SwiftSession session;
 

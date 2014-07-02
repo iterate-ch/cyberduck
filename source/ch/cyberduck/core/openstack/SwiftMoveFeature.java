@@ -39,7 +39,7 @@ public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private SwiftSession session;
 

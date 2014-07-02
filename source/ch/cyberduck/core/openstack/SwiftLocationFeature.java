@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 
@@ -73,6 +72,6 @@ public class SwiftLocationFeature implements Location {
 
     @Override
     public String getLocation(final Path container) throws BackgroundException {
-        return new PathContainerService().getContainer(container).attributes().getRegion();
+        return new SwiftPathContainerService().getContainer(container).attributes().getRegion();
     }
 }

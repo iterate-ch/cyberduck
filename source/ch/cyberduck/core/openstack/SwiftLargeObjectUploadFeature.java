@@ -69,7 +69,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private ThreadPool pool;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private Long segmentSize;
 

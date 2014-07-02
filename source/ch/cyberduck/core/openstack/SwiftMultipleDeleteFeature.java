@@ -47,7 +47,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private SwiftSegmentService segmentService;
 

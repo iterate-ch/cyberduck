@@ -62,7 +62,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();

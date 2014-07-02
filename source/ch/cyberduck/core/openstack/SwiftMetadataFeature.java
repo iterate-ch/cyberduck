@@ -43,7 +43,7 @@ public class SwiftMetadataFeature implements Headers {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     public SwiftMetadataFeature(final SwiftSession session) {
         this.session = session;

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.openstack;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.openstack;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Cache;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
+import ch.iterate.openstack.swift.model.Region;
 
 /**
  * @version $Id$
@@ -44,7 +46,7 @@ public class SwiftAttributesFeature implements Attributes {
     private SwiftSession session;
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
@@ -56,8 +58,9 @@ public class SwiftAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
+            final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
             if(containerService.isContainer(file)) {
-                final ContainerInfo info = session.getClient().getContainerInfo(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                final ContainerInfo info = session.getClient().getContainerInfo(region,
                         containerService.getContainer(file).getName());
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(info.getTotalSize());
@@ -65,20 +68,24 @@ public class SwiftAttributesFeature implements Attributes {
                 return attributes;
             }
             else {
-                final ObjectMetadata metadata = session.getClient().getObjectMetaData(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
                 final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(Long.valueOf(metadata.getContentLength()));
-                try {
-                    attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
+                if(file.isFile() || file.isPlaceholder()) {
+                    final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
+                    attributes.setSize(Long.valueOf(metadata.getContentLength()));
+                    try {
+                        attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
+                    }
+                    catch(InvalidDateException e) {
+                        log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
+                    }
+                    attributes.setChecksum(metadata.getETag());
+                    attributes.setETag(metadata.getETag());
                 }
-                catch(InvalidDateException e) {
-                    log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
-                }
-                attributes.setChecksum(metadata.getETag());
-                attributes.setETag(metadata.getETag());
-                if("application/directory".equals(metadata.getMimeType())) {
-                    attributes.setPlaceholder(true);
+                else {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Return blank attributes for directory delimiter %s", file));
+                    }
                 }
                 return attributes;
             }

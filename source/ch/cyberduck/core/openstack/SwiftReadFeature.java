@@ -40,7 +40,7 @@ public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     private SwiftSession session;
 

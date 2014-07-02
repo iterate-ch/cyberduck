@@ -31,7 +31,7 @@ import java.util.EnumSet;
 public class SwiftHomeFinderService extends DefaultHomeFinderService {
 
     private PathContainerService containerService
-            = new PathContainerService();
+            = new SwiftPathContainerService();
 
     public SwiftHomeFinderService(final SwiftSession session) {
         super(session);
