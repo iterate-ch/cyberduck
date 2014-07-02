@@ -274,13 +274,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof (Headers)) != null;
-            if (enable)
-            {
-                foreach (Path file in _files)
-                {
-                    enable = enable && (file.isVolume() || file.isFile() || file.attributes().isPlaceholder());
-                }
-            }
             View.MetadataTableEnabled = stop && enable;
             View.MetadataAddEnabled = stop && enable;
             bool selection = View.SelectedMetadataEntries.Count > 0;
