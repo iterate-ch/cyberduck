@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -37,36 +37,21 @@ namespace Ch.Cyberduck.Ui.Controller
         void Show();
         void Show(IWin32Window owner);
         void Show(IView owner);
+        void Activate();
         void BringToFront();
 
         DialogResult ShowDialog();
         DialogResult ShowDialog(IWin32Window owner);
         DialogResult ShowDialog(IView owner);
 
-        DialogResult MessageBox(
-            string title,
-            string message,
-            string content,
-            string expandedInfo,
-            string help,
-            string verificationText,
-            DialogResponseHandler handler);
+        DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
+                                string verificationText, DialogResponseHandler handler);
 
-        DialogResult MessageBox(string title, string message, string content,
-                                TaskDialogButtons buttons,
-                                SysIcons icons);
+        DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons, SysIcons icons);
 
-        DialogResult CommandBox(
-            string title,
-            string mainInstruction,
-            string content,
-            string expandedInfo,
-            string help,
-            string verificationText,
-            string commandButtons,
-            bool showCancelButton,
-            SysIcons mainIcon,
-            SysIcons footerIcon, DialogResponseHandler handler);
+        DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo, string help,
+                                string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
+                                SysIcons footerIcon, DialogResponseHandler handler);
 
         //todo evtl. extend form that implements these events
         event VoidHandler PositionSizeRestoredEvent;

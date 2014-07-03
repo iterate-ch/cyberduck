@@ -13,12 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// feedback@cyberduck.io
+// yves@cyberduck.ch
 // 
 
+using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.ui.growl;
 
 namespace Ch.Cyberduck.Ui.Growl
@@ -29,14 +33,47 @@ namespace Ch.Cyberduck.Ui.Growl
 
         public void notify(string title, string description)
         {
-            _icon.Visible = true;
-            _icon.ShowBalloonTip(Preferences.instance().getInteger("notifications.timeout.milliseconds"),
-                title, description, ToolTipIcon.Info);
+            _icon.ShowBalloonTip(Preferences.instance().getInteger("notifications.timeout.milliseconds"), title,
+                                 description, ToolTipIcon.Info);
         }
 
         public void setup()
         {
+            ContextMenuStrip rightMenu = new ContextMenuStrip();
+            ToolStripMenuItem itemUpdate = new ToolStripMenuItem
+                {
+                    Text = LocaleFactory.get().localize("Check for Update…", "Main")
+                };
+            itemUpdate.Click += delegate { UpdateController.Instance.ForceCheckForUpdates(false); };
+            ToolStripMenuItem itemDonate = new ToolStripMenuItem
+                {
+                    Text = LocaleFactory.get().localize("Donate…", "Main")
+                };
+            itemDonate.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
+            ToolStripMenuItem itemKey = new ToolStripMenuItem {Text = LicenseFactory.find().ToString(), Enabled = false};
+            ToolStripMenuItem itemExit = new ToolStripMenuItem
+                {
+                    Text = LocaleFactory.get().localize("Exit", "Localizable")
+                };
+            itemExit.Click += delegate { MainController.Exit(); };
+            rightMenu.Items.AddRange(new ToolStripItem[]
+                {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
+
             _icon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            _icon.Visible = true;
+            _icon.ContextMenuStrip = rightMenu;
+
+            _icon.MouseClick += delegate(object sender, MouseEventArgs args)
+                {
+                    if (args.Button == MouseButtons.Left)
+                    {
+                        foreach (BrowserController browser in MainController.Browsers)
+                        {
+                            browser.View.Activate();
+                            browser.View.BringToFront();
+                        }
+                    }
+                };
         }
 
         public void unregister()

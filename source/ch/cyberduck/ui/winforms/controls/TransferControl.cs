@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             InitializeComponent();
 
             SetStyle(
-                ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint |
-                ControlStyles.OptimizedDoubleBuffer, true);
+                ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer,
+                true);
 
             // route events to parent control which is normally a ListView
             statusLabel.Click += DelegateOnClick;
@@ -208,6 +208,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             ;
         }
 
+        public void Activate()
+        {
+            ;
+        }
+
         public DialogResult ModalResult
         {
             get { return DialogResult.None; }
@@ -228,8 +233,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             return DialogResult.None;
         }
 
-        public DialogResult MessageBox(string title, string message, string content, string expandedInfo,
-                                       string help,
+        public DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
                                        string verificationText, DialogResponseHandler handler)
         {
             return DialogResult.None;

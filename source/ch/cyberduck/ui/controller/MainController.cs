@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -390,8 +390,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _sessions.clear();
                     });
             }
-            //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
-            _controller.Background(delegate { GrowlFactory.get().setup(); }, delegate { });
+            GrowlFactory.get().setup();
 
             // User bookmarks and thirdparty applications
             CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
