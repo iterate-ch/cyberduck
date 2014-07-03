@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,10 @@ namespace Ch.Cyberduck.Core.I18n
 
             if (!_cache.TryGetValue(table, out bundle))
             {
-                ReadBundleIntoCache(table);
+                lock (this)
+                {
+                    ReadBundleIntoCache(table);
+                }
                 //try again
                 if (!_cache.TryGetValue(table, out bundle))
                 {
@@ -61,8 +64,9 @@ namespace Ch.Cyberduck.Core.I18n
             Log.debug("Caching bundle " + bundle);
             Assembly asm = Assembly.GetExecutingAssembly();
             // the dots apparently come from the relative path in the msbuild file
-            Stream stream = asm.GetManifestResourceStream(
-                string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language, bundle));
+            Stream stream =
+                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
+                                                            bundle));
             if (null == stream)
             {
                 stream =
@@ -85,6 +89,13 @@ namespace Ch.Cyberduck.Core.I18n
                             Match match = StringsRegex.Match(line);
                             string key = match.Groups[1].Value;
                             string value = match.Groups[2].Value;
+                            if (key.StartsWith("Mounting"))
+                            {
+                                throw new KeyNotFoundException("blabba");
+                                bundleDict[key] = value;
+                                bundleDict[key] = value;
+                                bundleDict[null] = value;
+                            }
                             bundleDict[key] = value;
                         }
                     }
