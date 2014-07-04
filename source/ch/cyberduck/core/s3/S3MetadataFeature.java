@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
@@ -39,6 +40,9 @@ public class S3MetadataFeature implements Headers {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new S3PathContainerService();
+
     public S3MetadataFeature(final S3Session session) {
         this.session = session;
     }
@@ -46,13 +50,7 @@ public class S3MetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            final StorageObject target = new S3ObjectDetailService(session).getDetails(file);
-            final HashMap<String, String> metadata = new HashMap<String, String>();
-            final Map<String, Object> source = target.getModifiableMetadata();
-            for(Map.Entry<String, Object> entry : source.entrySet()) {
-                metadata.put(entry.getKey(), entry.getValue().toString());
-            }
-            return metadata;
+            return new S3AttributesFeature(session).find(file).getMetadata();
         }
         return Collections.emptyMap();
     }
@@ -64,12 +62,15 @@ public class S3MetadataFeature implements Headers {
                 log.debug(String.format("Write metadata %s for file %s", metadata, file));
             }
             try {
-                final StorageObject target = new S3ObjectDetailService(session).getDetails(file);
+                // Make sure to copy existing attributes
+                final StorageObject target = new S3AttributesFeature(session).details(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
                 final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
                 target.setAcl(acl.convert(acl.getPermission(file)));
-                session.getClient().updateObjectMetadata(new S3PathContainerService().getContainer(file).getName(), target);
+                target.setStorageClass(new S3StorageClassFeature(session).getClass(file));
+                target.setServerSideEncryptionAlgorithm(new S3EncryptionFeature(session).getEncryption(file));
+                session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
                 throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, file);

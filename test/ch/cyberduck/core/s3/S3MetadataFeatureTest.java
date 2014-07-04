@@ -19,14 +19,15 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 
 import org.jets3t.service.Constants;
+import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -79,7 +80,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSetMetadataFile() throws Exception {
+    public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -91,11 +92,24 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final String v = UUID.randomUUID().toString();
-        new S3MetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final S3StorageClassFeature storage = new S3StorageClassFeature(session);
+        storage.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
+
+        final S3EncryptionFeature encryption = new S3EncryptionFeature(session);
+        encryption.setEncryption(test, "AES256");
+        assertEquals("AES256", encryption.getEncryption(test));
+
+        final S3MetadataFeature feature = new S3MetadataFeature(session);
+        feature.setMetadata(test, Collections.<String, String>singletonMap("Test", v));
+        final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
         assertEquals(v, metadata.get("test"));
+
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
+        assertEquals("AES256", encryption.getEncryption(test));
+
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
         session.close();
     }

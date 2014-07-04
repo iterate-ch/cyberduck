@@ -65,7 +65,7 @@ public class S3StorageClassFeature implements Redundancy {
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         if(file.isFile()) {
             final S3CopyFeature copy = new S3CopyFeature(session);
-            copy.copy(file, file, redundancy, file.attributes().getEncryption(),
+            copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
                     new S3AccessControlListFeature(session).getPermission(file));
         }
     }

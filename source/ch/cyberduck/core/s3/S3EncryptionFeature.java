@@ -43,7 +43,7 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public String getEncryption(final Path file) throws BackgroundException {
         if(file.isFile()) {
-            return new S3ObjectDetailService(session).getDetails(file).getServerSideEncryptionAlgorithm();
+            return new S3AttributesFeature(session).find(file).getEncryption();
         }
         return null;
     }
@@ -53,9 +53,8 @@ public class S3EncryptionFeature implements Encryption {
         if(file.isFile()) {
             final S3CopyFeature copy = new S3CopyFeature(session);
             // Copy item in place to write new attributes
-            copy.copy(file, file, file.attributes().getStorageClass(), algorithm,
+            copy.copy(file, file, new S3StorageClassFeature(session).getClass(file), algorithm,
                     new S3AccessControlListFeature(session).getPermission(file));
-            file.attributes().setEncryption(algorithm);
         }
     }
 }

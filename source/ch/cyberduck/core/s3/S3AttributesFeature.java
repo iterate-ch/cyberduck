@@ -22,12 +22,18 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -40,6 +46,9 @@ public class S3AttributesFeature implements Attributes {
     private PathContainerService containerService
             = new S3PathContainerService();
 
+    private Map<Path, VersioningConfiguration> versioning
+            = new HashMap<Path, VersioningConfiguration>();
+
     public S3AttributesFeature(final S3Session session) {
         this.session = session;
     }
@@ -51,7 +60,7 @@ public class S3AttributesFeature implements Attributes {
         }
         else {
             if(file.isFile() || file.isPlaceholder()) {
-                return this.find(new S3ObjectDetailService(session).getDetails(file));
+                return this.convert(this.details(file));
             }
             else {
                 if(log.isDebugEnabled()) {
@@ -67,7 +76,32 @@ public class S3AttributesFeature implements Attributes {
         return this;
     }
 
-    protected PathAttributes find(final StorageObject object) {
+    protected StorageObject details(final Path file) throws BackgroundException {
+        final String container = containerService.getContainer(file).getName();
+        try {
+            if(session.getFeature(Versioning.class) != null
+                    && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
+                return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                        container, containerService.getKey(file));
+            }
+            else {
+                return session.getClient().getObjectDetails(container, containerService.getKey(file));
+            }
+        }
+        catch(ServiceException e) {
+            try {
+                throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            }
+            catch(AccessDeniedException l) {
+                log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
+                final StorageObject object = new StorageObject(containerService.getKey(file));
+                object.setBucketName(container);
+                return object;
+            }
+        }
+    }
+
+    protected PathAttributes convert(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
         attributes.setModificationDate(object.getLastModifiedDate().getTime());
@@ -76,6 +110,13 @@ public class S3AttributesFeature implements Attributes {
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
+        attributes.setEncryption(object.getServerSideEncryptionAlgorithm());
+        final HashMap<String, String> metadata = new HashMap<String, String>();
+        final Map<String, Object> source = object.getModifiableMetadata();
+        for(Map.Entry<String, Object> entry : source.entrySet()) {
+            metadata.put(entry.getKey(), entry.getValue().toString());
+        }
+        attributes.setMetadata(metadata);
         return attributes;
     }
 }
