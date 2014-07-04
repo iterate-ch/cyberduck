@@ -41,10 +41,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version $Id$
  */
 public class TransferStatus implements StreamCancelation, StreamProgress {
+    private static final Logger log = Logger.getLogger(TransferStatus.class);
+
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
-    private static final Logger log = Logger.getLogger(TransferStatus.class);
+
     private Rename rename
             = new Rename();
     /**
@@ -102,6 +104,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Target timestamp to set when transfer is complete
      */
     private Long timestamp;
+
     private Map<String, String> parameters
             = Collections.emptyMap();
 
