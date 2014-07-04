@@ -1,12 +1,14 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -32,8 +34,8 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
@@ -48,8 +50,8 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
@@ -71,8 +73,8 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(container);
@@ -87,13 +89,13 @@ public class SwiftAttributesFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, "placeholder", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final PathAttributes attributes = new SwiftAttributesFeature(session).find(test);
-        assertEquals(0L, attributes.getSize());
+        assertEquals(-1L, attributes.getSize());
         session.close();
     }
 }

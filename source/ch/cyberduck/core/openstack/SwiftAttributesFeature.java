@@ -69,7 +69,7 @@ public class SwiftAttributesFeature implements Attributes {
             }
             else {
                 final PathAttributes attributes = new PathAttributes();
-                if(file.isFile() || file.isPlaceholder()) {
+                if(file.isFile()) {
                     final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     attributes.setSize(Long.valueOf(metadata.getContentLength()));
