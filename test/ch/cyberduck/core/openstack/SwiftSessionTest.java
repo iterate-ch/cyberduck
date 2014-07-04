@@ -44,10 +44,8 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -68,10 +66,8 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -102,10 +98,8 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.user"), properties.getProperty("hpcloud.password")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -125,10 +119,8 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -136,7 +128,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertEquals(Session.State.closed, session.getState());
     }
 
-    @Test
+    @Test(expected = LoginFailureException.class)
     public void testConnectOraclecloud() throws Exception {
         final SwiftProtocol protocol = new SwiftProtocol() {
             @Override
@@ -152,11 +144,6 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
-        assertNotNull(session.workdir());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
     }
 
     @Test
