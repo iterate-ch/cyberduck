@@ -89,13 +89,6 @@ namespace Ch.Cyberduck.Core.I18n
                             Match match = StringsRegex.Match(line);
                             string key = match.Groups[1].Value;
                             string value = match.Groups[2].Value;
-                            if (key.StartsWith("Mounting"))
-                            {
-                                throw new KeyNotFoundException("blabba");
-                                bundleDict[key] = value;
-                                bundleDict[key] = value;
-                                bundleDict[null] = value;
-                            }
                             bundleDict[key] = value;
                         }
                     }
