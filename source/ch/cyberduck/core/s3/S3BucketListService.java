@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -44,6 +45,9 @@ public class S3BucketListService implements RootListService {
 
     private S3Session session;
 
+    private PathContainerService containerService
+            = new S3PathContainerService();
+
     public S3BucketListService(final S3Session session) {
         this.session = session;
     }
@@ -58,7 +62,7 @@ public class S3BucketListService implements RootListService {
                 // Listing all buckets not supported for thirdparty buckets
                 if(StringUtils.isEmpty(this.getContainer(session.getHost()))) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
-                        final Path container = new S3PathContainerService().getContainer(
+                        final Path container = containerService.getContainer(
                                 new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory))
                         );
                         log.info(String.format("Using default %s path to determine bucket name %s",

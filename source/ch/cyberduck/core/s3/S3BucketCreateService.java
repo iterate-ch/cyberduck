@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -33,6 +34,9 @@ import org.jets3t.service.utils.ServiceUtils;
 public class S3BucketCreateService {
 
     private S3Session session;
+
+    private PathContainerService containerService
+            = new S3PathContainerService();
 
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
@@ -51,7 +55,7 @@ public class S3BucketCreateService {
             acl = AccessControlList.REST_CANNED_PRIVATE;
         }
         try {
-            session.getClient().createBucket(new S3PathContainerService().getContainer(bucket).getName(), location, acl);
+            session.getClient().createBucket(containerService.getContainer(bucket).getName(), location, acl);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
