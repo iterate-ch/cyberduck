@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -87,10 +87,9 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         new SwiftTouchFeature(session).touch(test);
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
+        assertFalse(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).contains(test));
         assertTrue(new SwiftFindFeature(session).find(test));
-        final AttributedList<Path> list = session.list(placeholder, new DisabledListProgressListener());
-        list.add(placeholder);
-        new SwiftDeleteFeature(session).delete(list, new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginController());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertFalse(new SwiftFindFeature(session).find(placeholder));
     }
