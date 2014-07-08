@@ -2479,10 +2479,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Redundancy feature = (Redundancy) BrowserController.Session.getFeature(typeof (Redundancy));
                 foreach (Path next in _infoController._files)
                 {
-                    if (next.isFile())
-                    {
-                        feature.setClass(next, _storageClass);
-                    }
+                    feature.setClass(next, _storageClass);
                 }
                 return true;
             }

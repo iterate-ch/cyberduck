@@ -365,9 +365,7 @@ public class InfoController extends ToolbarWindowController {
                 public Boolean run() throws BackgroundException {
                     final Redundancy feature = controller.getSession().getFeature(Redundancy.class);
                     for(Path next : files) {
-                        if(next.isFile()) {
-                            feature.setClass(next, sender.selectedItem().representedObject());
-                        }
+                        feature.setClass(next, sender.selectedItem().representedObject());
                     }
                     return true;
                 }
