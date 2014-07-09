@@ -130,6 +130,12 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
+    public synchronized void reset() {
+        cache.clear();
+        super.reset();
+    }
+
+    @Override
     public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
