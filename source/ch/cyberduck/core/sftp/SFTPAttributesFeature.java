@@ -36,7 +36,7 @@ public class SFTPAttributesFeature implements Attributes {
 
     private SFTPSession session;
 
-    public SFTPAttributesFeature(SFTPSession session) {
+    public SFTPAttributesFeature(final SFTPSession session) {
         this.session = session;
     }
 
