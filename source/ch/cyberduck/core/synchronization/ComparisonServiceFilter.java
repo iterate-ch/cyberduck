@@ -54,16 +54,18 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz) {
-        this(session, Cache.empty(), tz);
-    }
-
-    public ComparisonServiceFilter(final Session<?> session, final Cache cache, final TimeZone tz) {
-        this.finder = session.getFeature(Find.class).withCache(cache);
-        this.attribute = session.getFeature(Attributes.class).withCache(cache);
+        this.finder = session.getFeature(Find.class);
+        this.attribute = session.getFeature(Attributes.class);
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
         this.progress = session;
+    }
+
+    public ComparisonServiceFilter withCache(final Cache cache) {
+        finder.withCache(cache);
+        attribute.withCache(cache);
+        return this;
     }
 
     @Override

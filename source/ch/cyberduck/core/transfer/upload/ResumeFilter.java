@@ -17,6 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -35,6 +36,8 @@ public class ResumeFilter extends AbstractUploadFilter {
 
     private Write write;
 
+    private Cache cache = Cache.empty();
+
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());
     }
@@ -48,6 +51,12 @@ public class ResumeFilter extends AbstractUploadFilter {
                         final UploadFilterOptions options, final Write write) {
         super(symlinkResolver, session, options);
         this.write = write;
+    }
+
+    @Override
+    public AbstractUploadFilter withCache(final Cache cache) {
+        this.cache = cache;
+        return super.withCache(cache);
     }
 
     @Override

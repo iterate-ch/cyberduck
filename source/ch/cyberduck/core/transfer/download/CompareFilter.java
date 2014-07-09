@@ -23,8 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -43,13 +43,20 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
-        this.comparisonService = new ComparisonServiceFilter(session, cache, session.getHost().getTimezone());
+        this.comparisonService = new ComparisonServiceFilter(session, session.getHost().getTimezone());
     }
 
-    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options,
+    public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
+                         final DownloadFilterOptions options,
                          final ComparisonServiceFilter comparisonService) {
         super(symlinkResolver, session, options);
         this.comparisonService = comparisonService;
+    }
+
+    @Override
+    public AbstractDownloadFilter withCache(final Cache cache) {
+        comparisonService.withCache(cache);
+        return super.withCache(cache);
     }
 
     @Override

@@ -70,15 +70,10 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                                      final DownloadFilterOptions options) {
-        this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
-    }
-
-    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                                     final DownloadFilterOptions options, final Cache cache) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.attribute = session.getFeature(Attributes.class).withCache(cache);
+        this.attribute = session.getFeature(Attributes.class);
     }
 
     public AbstractDownloadFilter withCache(final Cache cache) {

@@ -73,24 +73,16 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     private MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    protected Cache cache;
-
-    public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
-        this(symlinkResolver, session, options, new Cache(Preferences.instance().getInteger("transfer.cache.size")));
-    }
-
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
-                                final UploadFilterOptions options, final Cache cache) {
+                                final UploadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
-        this.cache = cache;
-        this.find = session.getFeature(Find.class).withCache(cache);
-        this.attribute = session.getFeature(Attributes.class).withCache(cache);
+        this.find = session.getFeature(Find.class);
+        this.attribute = session.getFeature(Attributes.class);
     }
 
     public AbstractUploadFilter withCache(final Cache cache) {
-        this.cache = cache;
         find.withCache(cache);
         attribute.withCache(cache);
         return this;

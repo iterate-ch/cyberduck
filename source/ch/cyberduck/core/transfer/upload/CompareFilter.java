@@ -17,12 +17,13 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -38,7 +39,7 @@ public class CompareFilter extends AbstractUploadFilter {
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new UploadFilterOptions());
-        this.comparisonService = new ComparisonServiceFilter(session, cache, session.getHost().getTimezone());
+        this.comparisonService = new ComparisonServiceFilter(session, session.getHost().getTimezone());
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
@@ -46,6 +47,12 @@ public class CompareFilter extends AbstractUploadFilter {
                          final ComparisonServiceFilter comparisonService) {
         super(symlinkResolver, session, options);
         this.comparisonService = comparisonService;
+    }
+
+    @Override
+    public AbstractUploadFilter withCache(final Cache cache) {
+        comparisonService.withCache(cache);
+        return super.withCache(cache);
     }
 
     @Override
