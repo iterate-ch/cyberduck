@@ -157,6 +157,20 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    public void start() {
+        download.start();
+        upload.start();
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        download.stop();
+        upload.stop();
+        super.stop();
+    }
+
+    @Override
     public void reset() {
         download.reset();
         upload.reset();

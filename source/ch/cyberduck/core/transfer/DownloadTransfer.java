@@ -128,9 +128,9 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public synchronized void reset() {
+    public synchronized void start() {
         cache.clear();
-        super.reset();
+        super.start();
     }
 
     @Override
