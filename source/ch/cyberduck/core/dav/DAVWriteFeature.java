@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -47,6 +48,10 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     private DAVSession session;
 
+    private Find finder;
+
+    private Attributes attributes;
+
     /**
      * Use Expect directive
      */
@@ -58,6 +63,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     public DAVWriteFeature(final DAVSession session, final boolean expect) {
         this.session = session;
+        this.finder = new DAVFindFeature(session);
+        this.attributes = new DAVAttributesFeature(session);
         this.expect = expect;
     }
 
@@ -110,8 +117,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(new DAVFindFeature(session).withCache(cache).find(file)) {
-            return new Append(session.getFeature(Attributes.class).withCache(cache).find(file).getSize());
+        if(finder.withCache(cache).find(file)) {
+            return new Append(attributes.withCache(cache).find(file).getSize());
         }
         return Write.notfound;
     }

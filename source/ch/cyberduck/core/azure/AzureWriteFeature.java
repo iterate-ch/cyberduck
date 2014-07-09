@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,16 +50,19 @@ public class AzureWriteFeature implements Write {
 
     private AzureSession session;
 
+    private Find finder;
+
     private PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureWriteFeature(final AzureSession session) {
         this.session = session;
+        this.finder = new AzureFindFeature(session);
     }
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(new AzureFindFeature(session).withCache(cache).find(file)) {
+        if(finder.withCache(cache).find(file)) {
             return Write.override;
         }
         return Write.notfound;

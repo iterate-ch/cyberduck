@@ -39,8 +39,14 @@ public class FTPWriteFeature implements Write {
 
     private FTPSession session;
 
+    private Find finder;
+
+    private Attributes attributes;
+
     public FTPWriteFeature(final FTPSession session) {
         this.session = session;
+        this.finder = session.getFeature(Find.class);
+        this.attributes = session.getFeature(Attributes.class);
     }
 
     @Override
@@ -93,8 +99,8 @@ public class FTPWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(session.getFeature(Find.class).withCache(cache).find(file)) {
-            return new Append(session.getFeature(Attributes.class).withCache(cache).find(file).getSize());
+        if(finder.withCache(cache).find(file)) {
+            return new Append(attributes.withCache(cache).find(file).getSize());
         }
         return Write.notfound;
     }
