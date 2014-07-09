@@ -17,13 +17,10 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -38,19 +35,14 @@ import net.schmizz.sshj.sftp.RemoteFile;
 /**
  * @version $Id$
  */
-public class SFTPWriteFeature implements Write {
+public class SFTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(SFTPWriteFeature.class);
 
     private SFTPSession session;
 
-    private Find finder;
-
-    private Attributes attributes;
-
     public SFTPWriteFeature(final SFTPSession session) {
+        super(session);
         this.session = session;
-        this.finder = new SFTPFindFeature(session);
-        this.attributes = new SFTPAttributesFeature(session);
     }
 
     @Override
@@ -88,14 +80,6 @@ public class SFTPWriteFeature implements Write {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload failed", e, file);
         }
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            return new Append(attributes.withCache(cache).find(file).getSize());
-        }
-        return Write.notfound;
     }
 
     @Override

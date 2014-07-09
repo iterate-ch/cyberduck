@@ -17,12 +17,9 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.CountingOutputStream;
@@ -34,19 +31,14 @@ import java.io.OutputStream;
 /**
  * @version $Id$
  */
-public class FTPWriteFeature implements Write {
+public class FTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(FTPWriteFeature.class);
 
     private FTPSession session;
 
-    private Find finder;
-
-    private Attributes attributes;
-
     public FTPWriteFeature(final FTPSession session) {
+        super(session);
         this.session = session;
-        this.finder = session.getFeature(Find.class);
-        this.attributes = session.getFeature(Attributes.class);
     }
 
     @Override
@@ -95,14 +87,6 @@ public class FTPWriteFeature implements Write {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Upload failed", e, file);
         }
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            return new Append(attributes.withCache(cache).find(file).getSize());
-        }
-        return Write.notfound;
     }
 
     @Override
