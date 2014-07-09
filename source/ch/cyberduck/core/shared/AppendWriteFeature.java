@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AppendWriteFeature implements Write {
 
@@ -41,8 +41,8 @@ public abstract class AppendWriteFeature implements Write {
     }
 
     protected AppendWriteFeature(final Find finder, final Attributes attributes) {
-        this.attributes = attributes;
         this.finder = finder;
+        this.attributes = attributes;
     }
 
     @Override

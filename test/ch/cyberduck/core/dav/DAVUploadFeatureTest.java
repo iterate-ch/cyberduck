@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
@@ -26,18 +27,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVUploadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(n, new DAVUploadFeature(null).decorate(n, null));
+        assertSame(n, new DAVUploadFeature(new DAVSession(new Host("h"))).decorate(n, null));
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNull(new DAVUploadFeature(null).digest());
+        assertNull(new DAVUploadFeature(new DAVSession(new Host("h"))).digest());
     }
 }

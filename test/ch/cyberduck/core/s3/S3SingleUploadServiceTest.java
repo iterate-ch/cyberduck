@@ -41,12 +41,12 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(n, new S3SingleUploadService(null).decorate(n, null));
+        assertSame(n, new S3SingleUploadService(new S3Session(new Host("h"))).decorate(n, null));
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNotNull(new S3SingleUploadService(null).digest());
+        assertNotNull(new S3SingleUploadService(new S3Session(new Host("h"))).digest());
     }
 
     @Test

@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Host;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
@@ -26,18 +27,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftSmallObjectUploadFeatureTest extends AbstractTestCase {
 
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(n, new SwiftSmallObjectUploadFeature(null).decorate(n, null));
+        assertSame(n, new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).decorate(n, null));
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNotNull(new SwiftSmallObjectUploadFeature(null).digest());
+        assertNotNull(new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).digest());
     }
 }

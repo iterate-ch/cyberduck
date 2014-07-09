@@ -3,8 +3,8 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -26,7 +26,7 @@ public class S3WriteFeatureTest extends AbstractTestCase {
 
     @Test
     public void testAppendBelowLimit() throws Exception {
-        assertFalse(new S3WriteFeature(null, null, new Find() {
+        assertFalse(new S3WriteFeature(new S3Session(new Host("h")), null, new Find() {
             @Override
             public boolean find(final Path file) throws BackgroundException {
                 return true;
