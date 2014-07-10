@@ -21,12 +21,15 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 
 /**
  * @version $Id$
  */
 public class DisconnectWorker extends Worker<Void> {
+    private static final Logger log = Logger.getLogger(DisconnectWorker.class);
 
     private Session<?> session;
 
@@ -35,8 +38,13 @@ public class DisconnectWorker extends Worker<Void> {
     }
 
     @Override
-    public Void run() throws BackgroundException {
-        session.close();
+    public Void run() {
+        try {
+            session.close();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure closing connection %s. %s", session, e.getMessage()));
+        }
         return null;
     }
 
