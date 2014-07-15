@@ -30,6 +30,7 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -51,10 +52,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
@@ -124,6 +127,20 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             final HttpClientBuilder builder = connect();
             builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
             return builder.build();
+        }
+
+        @Override
+        protected HttpUriRequest setupConnection(final HTTP_METHOD method, final String bucketName,
+                                                 final String objectKey, final Map<String, String> requestParameters)
+                throws S3ServiceException {
+            final HttpUriRequest request = super.setupConnection(method, bucketName, objectKey, requestParameters);
+            if(Preferences.instance().getBoolean("s3.upload.expect-continue")) {
+                if("PUT".equals(request.getMethod())) {
+                    // #7621
+                    request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+                }
+            }
+            return request;
         }
 
         @Override

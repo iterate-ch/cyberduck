@@ -577,6 +577,8 @@ public abstract class Preferences {
         // Maximum number of parts is 10'000. With 5MB segements this gives a maximum object size of 50GB
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
+        defaults.put("s3.upload.expect-continue", String.valueOf(true));
+
         /**
          * A prefix to apply to log file names
          */
