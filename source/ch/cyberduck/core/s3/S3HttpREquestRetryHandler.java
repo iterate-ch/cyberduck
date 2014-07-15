@@ -38,7 +38,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
     private static final Logger log = Logger.getLogger(S3HttpREquestRetryHandler.class);
@@ -46,7 +46,11 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
     private final JetS3tRequestAuthorizer authorizer;
 
     public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer) {
-        super(Preferences.instance().getInteger("connection.retry"), false,
+        this(authorizer, Preferences.instance().getInteger("connection.retry"));
+    }
+
+    public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {
+        super(retryCount, false,
                 Arrays.asList(
                         UnrecoverableIOException.class,
                         InterruptedIOException.class,
@@ -63,8 +67,7 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
         if(super.retryRequest(exception, executionCount, context)) {
             final HttpUriRequest method = (HttpUriRequest) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
-            log.warn(String.format("Retrying %s %s request attempt %d of %d",
-                    method.getMethod(), method.getURI(), executionCount, getRetryCount()));
+            log.warn(String.format("Retrying request %s", method));
             try {
                 // Build the authorization string for the method.
                 authorizer.authorizeHttpRequest(method, context);
