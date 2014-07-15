@@ -12,6 +12,10 @@ Changelog. Last modified: $Date$
 - [Feature] GZIP Compression (SFTP) (#123)
 - [Feature] ECDSA public key authentication (SFTP) (#7938)
 - [Feature] Notifications in system tray (Windows) (#8007)
+- [Bugfix] Broken pipe with multipart upload (S3) (#7964)
+- [Bugfix] 404 error response when downloading folders (S3, OpenStack Swift) (#7971, #8064)
+- [Bugfix] Repeated prompt for private key password (SFTP) (#8009)
+- [Bugfix] Open in Putty (SFTP, Windows) (#8063)
 
 4.4.5 [https://trac.cyberduck.io/milestone/4.4.5]
 - [Bugfix] Failure copying folders from server to server (#7946)
