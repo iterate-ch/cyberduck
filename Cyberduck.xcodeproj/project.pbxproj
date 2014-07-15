@@ -10,9 +10,7 @@
 		470168310EED9EA8005E2CCF /* Archive.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168130EED9EA7005E2CCF /* Archive.strings */; };
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
 		47022C231018663600488C19 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
-		4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		4704C3A91664F94F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3AA1664F95E00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
@@ -23,7 +21,6 @@
 		4704C3B01664FB5300B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3B11664FC8D00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3B21664FCB300B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
-		4704C3B31664FD0B00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3B41664FD0F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
@@ -33,8 +30,6 @@
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
 		4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */; };
 		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
-		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
-		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
 		471F77AD180439B500A4C196 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -49,8 +44,6 @@
 		4739EF690856981300405FD3 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 47983749072AD67800FA3CDB /* Keychain.h */; };
 		4739EF6B0856981300405FD3 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4798373F072AD66D00FA3CDB /* Keychain.m */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		473A701A182259350055C76C /* base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A7017182259350055C76C /* base64.m */; };
 		473A701B182259350055C76C /* NSData+Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A7018182259350055C76C /* NSData+Base64.h */; };
@@ -325,13 +318,6 @@
 			remoteGlobalIDString = 478CFE760F9932B3000560EF;
 			remoteInfo = libPrime;
 		};
-		475C2DF60FDC287700E4251E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4739EF950856990000405FD3;
-			remoteInfo = libGrowl;
-		};
 		477A11D30FD0942800BAD4AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -403,7 +389,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */,
-				470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,8 +579,6 @@
 		4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationProxy.m; sourceTree = "<group>"; };
 		4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace UK.cyberduckprofile"; sourceTree = "<group>"; };
 		4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Rackspace US.cyberduckprofile"; sourceTree = "<group>"; };
-		471B4905102C66600059687D /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
-		471B4907102C66600059687D /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "cyberduck-document.icns"; sourceTree = "<group>"; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_PT; path = pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -650,7 +633,6 @@
 		472539CC10F4D19800DF0F02 /* sr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sr; path = sr.lproj/Archive.strings; sourceTree = "<group>"; };
 		472539CE10F4D1A300DF0F02 /* sr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sr; path = sr.lproj/Mosso.strings; sourceTree = "<group>"; };
 		472539CF10F4D1B400DF0F02 /* sr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sr; path = sr.lproj/License.strings; sourceTree = "<group>"; };
-		4726277E0FD5743C001D5BA5 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47271D9009F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Main.nib; sourceTree = "<group>"; };
 		47271D9109F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text; name = tr; path = tr.lproj/License.txt; sourceTree = "<group>"; };
@@ -713,7 +695,6 @@
 		4734425A102DEABD00C04C43 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EF94085698F700405FD3 /* libODBEdit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libODBEdit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFA20856990000405FD3 /* libGrowl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libGrowl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
@@ -1625,17 +1606,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF9A0856990000405FD3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */,
-				4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */,
-				4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */,
-				4704C3B31664FD0B00B17020 /* JavaNativeFoundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA80856990900405FD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1765,7 +1735,6 @@
 				471D2C5505A2505600675163 /* Cyberduck.app */,
 				4739EF730856981400405FD3 /* libKeychain.dylib */,
 				4739EF94085698F700405FD3 /* libODBEdit.dylib */,
-				4739EFA20856990000405FD3 /* libGrowl.dylib */,
 				4739EFB00856990900405FD3 /* libProxy.dylib */,
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
@@ -1803,7 +1772,6 @@
 				474523971076B6D800823467 /* Carbon.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
-				4726277E0FD5743C001D5BA5 /* Growl.framework */,
 				47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */,
 				4773D6B00F9C86A7004658BD /* libAquaticPrime.a */,
 				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
@@ -1834,15 +1802,6 @@
 				4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */,
 			);
 			path = profiles;
-			sourceTree = "<group>";
-		};
-		471B4904102C66600059687D /* growl */ = {
-			isa = PBXGroup;
-			children = (
-				471B4905102C66600059687D /* Growl.h */,
-				471B4907102C66600059687D /* Growl.m */,
-			);
-			path = growl;
 			sourceTree = "<group>";
 		};
 		4729389B0F9DBC420086605D /* aquaticprime */ = {
@@ -1920,7 +1879,6 @@
 		4741530106C4F08A00AC0BD2 /* ui */ = {
 			isa = PBXGroup;
 			children = (
-				471B4904102C66600059687D /* growl */,
 				4741530206C4F08A00AC0BD2 /* cocoa */,
 			);
 			path = ui;
@@ -2286,14 +2244,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF960856990000405FD3 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				471B4909102C66600059687D /* Growl.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA40856990900405FD3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2438,7 +2388,6 @@
 				4726A8D40DAD6E27001BC01D /* PBXTargetDependency */,
 				4744AB250F9F749E00241A56 /* PBXTargetDependency */,
 				477A11D40FD0942800BAD4AD /* PBXTargetDependency */,
-				475C2DF70FDC287700E4251E /* PBXTargetDependency */,
 			);
 			name = app;
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -2498,24 +2447,6 @@
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
 			productReference = 4739EF94085698F700405FD3 /* libODBEdit.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		4739EF950856990000405FD3 /* libGrowl */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4739EFA00856990000405FD3 /* Build configuration list for PBXNativeTarget "libGrowl" */;
-			buildPhases = (
-				4739EF960856990000405FD3 /* Headers */,
-				4739EF980856990000405FD3 /* Sources */,
-				4739EF9A0856990000405FD3 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = libGrowl;
-			productInstallPath = /usr/local/lib;
-			productName = growlLib;
-			productReference = 4739EFA20856990000405FD3 /* libGrowl.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EFA30856990900405FD3 /* libProxy */ = {
@@ -2778,7 +2709,6 @@
 				471D2C0B05A2505500675163 /* app */,
 				4739EF670856981300405FD3 /* libKeychain */,
 				4739EF83085698F600405FD3 /* libODBEdit */,
-				4739EF950856990000405FD3 /* libGrowl */,
 				4739EFA30856990900405FD3 /* libProxy */,
 				4739EFB10856991200405FD3 /* libLocal */,
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
@@ -2984,14 +2914,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF980856990000405FD3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				471B490B102C66600059687D /* Growl.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA60856990900405FD3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3144,11 +3066,6 @@
 			isa = PBXTargetDependency;
 			target = 478CFE760F9932B3000560EF /* libPrime */;
 			targetProxy = 4744AB240F9F749E00241A56 /* PBXContainerItemProxy */;
-		};
-		475C2DF70FDC287700E4251E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4739EF950856990000405FD3 /* libGrowl */;
-			targetProxy = 475C2DF60FDC287700E4251E /* PBXContainerItemProxy */;
 		};
 		477A11D40FD0942800BAD4AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4447,20 +4364,6 @@
 			};
 			name = Release;
 		};
-		4739EFA10856990000405FD3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libGrowl;
-			};
-			name = Release;
-		};
 		4739EFAF0856990900405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4654,21 +4557,6 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
-			};
-			name = Debug;
-		};
-		47A8AD66100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libGrowl;
 			};
 			name = Debug;
 		};
@@ -4953,15 +4841,6 @@
 			buildConfigurations = (
 				4739EF93085698F600405FD3 /* Release */,
 				47A8AD65100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4739EFA00856990000405FD3 /* Build configuration list for PBXNativeTarget "libGrowl" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4739EFA10856990000405FD3 /* Release */,
-				47A8AD66100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
