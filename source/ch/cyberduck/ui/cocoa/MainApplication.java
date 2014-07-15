@@ -55,7 +55,6 @@ import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
-import ch.cyberduck.ui.growl.GrowlNative;
 import ch.cyberduck.ui.growl.NotificationCenter;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
@@ -96,7 +95,6 @@ public final class MainApplication {
                 UserDefaultsPreferences.register();
                 BundleLocale.register();
                 NSImageIconCache.register();
-                GrowlNative.register();
                 NotificationCenter.register();
                 if(null == Updater.getFeed()) {
                     Receipt.register();
