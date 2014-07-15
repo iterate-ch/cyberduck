@@ -234,7 +234,6 @@ namespace Ch.Cyberduck.Ui.Controller
             TaskbarApplicationBadgeLabeler.Register();
             DefaultBrowserLauncher.Register();
             NotifyImpl.Register();
-            GrowlImpl.Register();
         }
 
         private static void ConfigureLogging()
