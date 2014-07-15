@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
@@ -60,7 +61,9 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
         this.append(buffer, failure.getMessage());
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(null != cause) {
-            this.append(buffer, cause.getMessage());
+            if(!StringUtils.equals(failure.getMessage(), cause.getMessage())) {
+                this.append(buffer, cause.getMessage());
+            }
         }
         return this.wrap(failure, buffer);
     }

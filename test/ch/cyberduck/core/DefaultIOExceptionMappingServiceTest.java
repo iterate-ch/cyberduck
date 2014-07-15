@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import org.junit.Test;
 
 import javax.net.ssl.SSLHandshakeException;
+import java.io.IOException;
 import java.net.SocketException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
@@ -56,5 +57,15 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertEquals("n message (/n).", e.getMessage());
+    }
+
+    @Test
+    public void testSameMessageInRootCause() throws Exception {
+        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
+                .getDetail());
+        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
+                .getDetail());
+        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
+                .getDetail());
     }
 }
