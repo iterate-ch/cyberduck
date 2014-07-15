@@ -102,14 +102,6 @@
     <Reference Include="ExceptionReporter.WinForms">
       <HintPath>..\..\..\lib\ExceptionReporter.WinForms.dll</HintPath>
     </Reference>
-    <Reference Include="Growl.Connector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=980c2339411be384, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Growl.Connector.dll</HintPath>
-    </Reference>
-    <Reference Include="Growl.CoreLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=13e59d82e007b064, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Growl.CoreLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="IKVM.OpenJDK.Beans, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.OpenJDK.Beans.dll</HintPath>
@@ -241,7 +233,6 @@
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
     <Compile Include="ui\growl\NotifyImpl.cs" />
-    <Compile Include="ui\growl\GrowlImpl.cs" />
     <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>

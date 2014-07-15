@@ -1858,8 +1858,6 @@ lib/AutomaticUpdater.dll -text
 lib/CustomOpenFileFolderDialog.dll -text
 lib/ExceptionReporter.WinForms.dll -text
 lib/ExceptionReporter.WinForms.xml -text
-lib/Growl.Connector.dll -text
-lib/Growl.CoreLibrary.dll -text
 lib/IKVM.OpenJDK.Beans.dll -text
 lib/IKVM.OpenJDK.Charsets.dll -text
 lib/IKVM.OpenJDK.Core.dll -text
@@ -2763,7 +2761,6 @@ source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
-source/ch/cyberduck/ui/growl/GrowlImpl.cs -text
 source/ch/cyberduck/ui/growl/NotifyImpl.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.cs -text
