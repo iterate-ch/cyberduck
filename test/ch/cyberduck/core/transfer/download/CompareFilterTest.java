@@ -24,16 +24,17 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -42,17 +43,8 @@ public class CompareFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptEqual() throws Exception {
-        final CompareFilter filter = new CompareFilter(new SymlinkResolver<Path>() {
-            @Override
-            public boolean resolve(final Path file) {
-                return false;
-            }
-
-            @Override
-            public String relativize(final String base, final String name) {
-                return null;
-            }
-        }, new NullSession(new Host("t")), new DownloadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
+        final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
+                new NullSession(new Host("t")), new DownloadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
             @Override
             public Comparison compare(final Path file, final Local local) throws BackgroundException {
                 return Comparison.equal;
@@ -62,5 +54,20 @@ public class CompareFilterTest extends AbstractTestCase {
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         final Local local = new NullLocal("/", "f");
         assertFalse(filter.accept(file, local, new TransferStatus().exists(true)));
+    }
+
+
+    @Test
+    public void testAcceptDirectory() throws Exception {
+        final CompareFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(),
+                new NullSession(new Host("t")), new DownloadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
+            @Override
+            public Comparison compare(final Path file, final Local local) throws BackgroundException {
+                return Comparison.equal;
+            }
+        });
+        assertTrue(
+                filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n"),
+                        new TransferStatus().exists(true)));
     }
 }

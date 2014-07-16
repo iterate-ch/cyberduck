@@ -63,6 +63,13 @@ public class CompareFilter extends AbstractUploadFilter {
                 case local:
                     return true;
                 case equal:
+                    if(file.isDirectory()) {
+                        return true;
+                    }
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                    }
+                    return false;
                 case remote:
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));

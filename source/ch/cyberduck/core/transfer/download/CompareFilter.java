@@ -65,7 +65,14 @@ public class CompareFilter extends AbstractDownloadFilter {
             final Comparison comparison = comparisonService.compare(file, local);
             switch(comparison) {
                 case local:
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison %s", file, comparison));
+                    }
+                    return false;
                 case equal:
+                    if(file.isDirectory()) {
+                        return true;
+                    }
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s with comparison %s", file, comparison));
                     }
