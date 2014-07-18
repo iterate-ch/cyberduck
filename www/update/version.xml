@@ -13,8 +13,6 @@
             <File source="_BUILDPATH_\Cyberduck.exe"/>
             <File source="_BUILDPATH_\Cyberduck.exe.config"/>
             <File source="_BUILDPATH_\ExceptionReporter.WinForms.dll"/>
-            <File source="_BUILDPATH_\Growl.Connector.dll"/>
-            <File source="_BUILDPATH_\Growl.CoreLibrary.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Beans.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Core.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Charsets.dll"/>
