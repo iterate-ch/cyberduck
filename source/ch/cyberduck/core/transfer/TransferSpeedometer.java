@@ -45,6 +45,6 @@ public class TransferSpeedometer extends Speedometer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset with timestamp %d", timestamp));
         }
-        this.reset(timestamp, 0L);
+        this.reset(timestamp, transfer.getTransferred());
     }
 }
