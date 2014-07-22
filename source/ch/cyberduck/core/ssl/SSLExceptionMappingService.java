@@ -24,12 +24,14 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLKeyException;
 import javax.net.ssl.SSLProtocolException;
+import java.net.SocketException;
 import java.security.cert.CertificateException;
 
 /**
@@ -172,6 +174,12 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
      */
     @Override
     public BackgroundException map(final SSLException failure) {
+        final StringBuilder buffer = new StringBuilder();
+        if(ExceptionUtils.getRootCause(failure) instanceof SocketException) {
+            // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+            this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
+            return this.wrap(failure, buffer);
+        }
         if(failure instanceof SSLHandshakeException) {
             if(failure.getCause() instanceof CertificateException) {
                 log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
@@ -179,7 +187,6 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 return new ConnectionCanceledException(failure);
             }
         }
-        final StringBuilder buffer = new StringBuilder();
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
             if(StringUtils.contains(message, alert.name())) {
