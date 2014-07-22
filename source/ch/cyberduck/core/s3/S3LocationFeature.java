@@ -59,7 +59,6 @@ public class S3LocationFeature implements Location {
             if(StringUtils.isBlank(location)) {
                 location = "US"; //Default location US is null
             }
-            container.attributes().setRegion(location);
             return location;
         }
         catch(ServiceException e) {
