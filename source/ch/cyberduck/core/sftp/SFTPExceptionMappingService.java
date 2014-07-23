@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -41,6 +42,7 @@ import net.schmizz.sshj.userauth.UserAuthException;
  * @version $Id$
  */
 public class SFTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+    private static final Logger log = Logger.getLogger(SFTPExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException e) {
@@ -76,22 +78,24 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
     }
 
     public BackgroundException map(final IOException e, final StringBuilder buffer, final DisconnectReason reason) {
+        final String failure = buffer.toString();
         if(DisconnectReason.HOST_KEY_NOT_VERIFIABLE.equals(reason)) {
+            log.warn(String.format("Failure verifying host key. %s", failure));
             // Host key dismissed by user
             return new ConnectionCanceledException(e);
         }
         if(DisconnectReason.PROTOCOL_ERROR.equals(reason)) {
             // Too many authentication failures
-            return new LoginFailureException(buffer.toString(), e);
+            return new LoginFailureException(failure, e);
         }
         if(DisconnectReason.ILLEGAL_USER_NAME.equals(reason)) {
-            return new LoginFailureException(buffer.toString(), e);
+            return new LoginFailureException(failure, e);
         }
         if(DisconnectReason.NO_MORE_AUTH_METHODS_AVAILABLE.equals(reason)) {
-            return new LoginFailureException(buffer.toString(), e);
+            return new LoginFailureException(failure, e);
         }
         if(DisconnectReason.PROTOCOL_VERSION_NOT_SUPPORTED.equals(reason)) {
-            return new InteroperabilityException(buffer.toString(), e);
+            return new InteroperabilityException(failure, e);
         }
         return this.wrap(e, buffer);
     }

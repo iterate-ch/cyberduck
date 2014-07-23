@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.sftp.AbstractHostKeyCallback;
+import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -51,7 +51,7 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 /**
  * @version $Id$
  */
-public abstract class OpenSSHHostKeyVerifier extends AbstractHostKeyCallback {
+public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
     static {
@@ -120,26 +120,36 @@ public abstract class OpenSSHHostKeyVerifier extends AbstractHostKeyCallback {
     }
 
     @Override
-    public boolean verify(final String hostname, final int port, final PublicKey key) {
+    public boolean verify(final String hostname, final int port, final PublicKey key)
+            throws ConnectionCanceledException, ChecksumException {
+        if(null == database) {
+            return super.verify(hostname, port, key);
+        }
         return database.verify(hostname, port, key);
     }
 
     @Override
     public void allow(final String hostname, final PublicKey key, final boolean persist) {
-        try {
-            // Add the hostkey to the in-memory database
-            final OpenSSHKnownHosts.HashedEntry entry
-                    = new OpenSSHKnownHosts.HashedEntry(null, hash(hostname), KeyType.fromKey(key), key);
-            database.entries().add(entry);
-            if(persist) {
-                if(file.attributes().getPermission().isWritable()) {
-                    // Also try to add the key to a known_host file
-                    database.write(entry);
+        if(null == database) {
+            super.allow(hostname, key, persist);
+        }
+        else {
+            try {
+                // Add the host key to the in-memory database
+                final OpenSSHKnownHosts.HashedEntry entry
+                        = new OpenSSHKnownHosts.HashedEntry(null, hash(hostname), KeyType.fromKey(key), key);
+                database.entries().add(entry);
+                if(persist) {
+                    if(file.attributes().getPermission().isWritable()) {
+                        // Also try to add the key to a known_host file
+                        database.write(entry);
+                    }
                 }
             }
-        }
-        catch(IOException e) {
-            log.error(String.format("Failure adding host key to database: %s", e.getMessage()));
+            catch(IOException e) {
+                log.error(String.format("Failure adding host key to database: %s", e.getMessage()));
+                super.allow(hostname, key, persist);
+            }
         }
     }
 

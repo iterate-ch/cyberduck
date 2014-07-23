@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.5.1 [https://trac.cyberduck.io/milestone/4.5.1]
+- [Bugfix] Connection failure when sandboxing denies access to ~/.ssh/known_hosts (SFTP)
+
 4.5 [https://trac.cyberduck.io/milestone/4.5]
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
 - [Feature] New SSH/SFTP protocol implementation

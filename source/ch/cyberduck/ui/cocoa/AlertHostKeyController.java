@@ -73,8 +73,6 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
 
     private WindowController parent;
 
-    private NSOpenPanel panel;
-
     public AlertHostKeyController(final WindowController c) {
         this(c, LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
                 Preferences.instance().getProperty("ssh.knownhosts.bookmark")

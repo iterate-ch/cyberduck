@@ -39,8 +39,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
 
     @Override
     public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException, ChecksumException {
-        final String lookup = Preferences.instance().getProperty(
-                String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), hostname));
+        final String lookup = Preferences.instance().getProperty(this.getFormat(hostname, key));
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
             return true;
         }
@@ -51,17 +50,17 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
         else {
             accept = this.isChangedKeyAccepted(hostname, key);
         }
-        if(accept) {
-            this.allow(hostname, key, true);
-        }
         return accept;
+    }
+
+    private String getFormat(final String hostname, final PublicKey key) {
+        return String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), hostname);
     }
 
     @Override
     protected void allow(final String hostname, final PublicKey key, final boolean persist) {
         if(persist) {
-            Preferences.instance().setProperty(String.format("ssh.hostkey.%s.%s",
-                    KeyType.fromKey(key), hostname), Base64.toBase64String(key.getEncoded()));
+            Preferences.instance().setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
         }
     }
 }
