@@ -15,11 +15,11 @@
 "EU" = "EU (Īrija)";
 "US" = "ASV standarts";
 "us-west-1" = "ASV-Rietumu (Ziemeļ Kalifornija)";
-"us-west-2" = "US West (Oregon)";
-"ap-southeast-1" = "Āzija un Klusais okeāns (Singapore)";
-"ap-northeast-1" = "Asia Pacific (Tokyo)";
-"sa-east-1" = "South America (Sao Paulo)";
-"ap-southeast-2" = "Asia Pacific (Sydney)";
+"us-west-2" = "US West (Oregona)";
+"ap-southeast-1" = "Āzija un Klusais okeāns (Singapūra)";
+"ap-northeast-1" = "Asia Pacific (Tokija)";
+"sa-east-1" = "South America (San Paulo)";
+"ap-southeast-2" = "Asia Pacific (Sidneja)";
 
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Lejuplāde (HTTP) CDN";
@@ -27,8 +27,8 @@
 "Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS) CDN";
 
 /* S3 Website Configuration (HTTP) with index document */
-"Website Configuration (HTTP)" = "Website Configuration (HTTP)";
-"NoSuchWebsiteConfiguration" = "The specified bucket does not have a website configuration";
+"Website Configuration (HTTP)" = "Interneta vietnes iestatījumi (HTTP)";
+"NoSuchWebsiteConfiguration" = "Norādītam avotam nav interneta vietnes iestatījumu";
 
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
@@ -72,7 +72,7 @@
 "{0} invalidations in progress" = "{0} atzītas par nederīgām ir procesā";
 "{0} invalidations completed" = "{0} atzītas par nederīgām ir pabeigts";
 
-"Bucket name is not DNS compatible" = "Bucket name is not DNS compatible";
+"Bucket name is not DNS compatible" = "Avota vārds nav priekš DNS atbilstošs";
 
 /* Lifecyle configuration */
 "after {0} Days" = "pēc {0} Dienām";
