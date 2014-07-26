@@ -53,4 +53,12 @@ public class DisconnectWorker extends Worker<Void> {
         return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                 session.getHost().getHostname());
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DisconnectWorker{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
+    }
 }

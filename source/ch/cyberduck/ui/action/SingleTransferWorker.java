@@ -71,4 +71,12 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     protected void submit(TransferCallable runnable) throws BackgroundException {
         runnable.call();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SingleTransferWorker{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
+    }
 }
