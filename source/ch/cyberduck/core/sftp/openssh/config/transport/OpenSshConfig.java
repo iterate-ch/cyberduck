@@ -76,11 +76,12 @@ public class OpenSshConfig {
     /**
      * Cached entries read out of the configuration file.
      */
-    private Map<String, Host> hosts;
+    private Map<String, Host> hosts
+            = Collections.emptyMap();
 
     /**
      * Obtain the user's configuration data.
-     * <p/>
+     * <p>
      * The configuration file is always returned to the caller, even if no file
      * exists in the user's home directory at the time the call was made. Lookup
      * requests are cached and are automatically updated if the user modifies
@@ -88,7 +89,7 @@ public class OpenSshConfig {
      */
     public OpenSshConfig(final Local configuration) {
         this.configuration = configuration;
-        this.hosts = Collections.emptyMap();
+        this.refresh();
     }
 
     /**
@@ -100,8 +101,7 @@ public class OpenSshConfig {
      * @return r configuration for the requested name. Never null.
      */
     public Host lookup(final String hostName) {
-        final Map<String, Host> cache = this.refresh();
-        Host h = cache.get(hostName);
+        Host h = hosts.get(hostName);
         if(h == null) {
             h = new Host();
         }
@@ -109,7 +109,7 @@ public class OpenSshConfig {
             return h;
         }
 
-        for(final Map.Entry<String, Host> e : cache.entrySet()) {
+        for(final Map.Entry<String, Host> e : hosts.entrySet()) {
             if(!isHostPattern(e.getKey())) {
                 continue;
             }
@@ -284,11 +284,11 @@ public class OpenSshConfig {
 
     /**
      * Configuration of one "Host" block in the configuration file.
-     * <p/>
+     * <p>
      * If returned from {@link OpenSshConfig#lookup(String)} some or all of the
      * properties may not be populated. The properties which are not populated
      * should be defaulted by the caller.
-     * <p/>
+     * <p>
      * When returned from {@link OpenSshConfig#lookup(String)} any wildcard
      * entries which appear later in the configuration file will have been
      * already merged into this block.
