@@ -39,7 +39,7 @@ package ch.cyberduck.core.sftp.openssh.config.transport;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sftp.openssh.config.errors.InvalidPatternException;
 import ch.cyberduck.core.sftp.openssh.config.fnmatch.FileNameMatcher;
 
@@ -138,7 +138,7 @@ public class OpenSshConfig {
                     IOUtils.closeQuietly(in);
                 }
             }
-            catch(BackgroundException none) {
+            catch(AccessDeniedException none) {
                 hosts = Collections.emptyMap();
             }
             catch(IOException err) {
