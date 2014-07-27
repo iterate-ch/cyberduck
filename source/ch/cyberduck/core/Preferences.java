@@ -209,6 +209,10 @@ public abstract class Preferences {
         defaults.put("local.symboliclink.resolve", String.valueOf(false));
         defaults.put("local.normalize.unicode", String.valueOf(true));
         defaults.put("local.list.native", String.valueOf(true));
+        /**
+         * Prompt to resolve bookmark of file outside of sandbox with choose panel
+         */
+        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
 
         /**
          * Maximum number of directory listings to cache using a most recently used implementation
@@ -999,7 +1003,7 @@ public abstract class Preferences {
 
     /**
      * @return The preferred locale of all localizations available
-     *         in this application bundle
+     * in this application bundle
      */
     public String locale() {
         return this.applicationLocales().iterator().next();

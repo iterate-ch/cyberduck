@@ -28,7 +28,6 @@ import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -162,32 +161,9 @@ public class FinderLocal extends Local {
     @Override
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
-            bookmark = this.createBookmark();
+            bookmark = new PanelSandboxBookmarkResolver().create(this);
         }
         return bookmark;
-    }
-
-    private String createBookmark() {
-        if(this.exists()) {
-            // Create new security scoped bookmark
-            final ObjCObjectByReference error = new ObjCObjectByReference();
-            final NSData data = NSURL.fileURLWithPath(this.getAbsolute()).bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                    NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
-            if(null == data) {
-                final NSError f = error.getValueAs(NSError.class);
-                log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
-                return null;
-            }
-            final String encoded = data.base64EncodedString();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
-            }
-            return encoded;
-        }
-        else {
-            log.warn(String.format("Skip creating bookmark for file not found %s", this));
-            return null;
-        }
     }
 
     @Override
@@ -224,24 +200,9 @@ public class FinderLocal extends Local {
 
     @Override
     public NSURL lock() throws AccessDeniedException {
-        if(StringUtils.isBlank(bookmark)) {
-            throw new AccessDeniedException(String.format("No security scoped bookmark for %s", this));
-        }
-        final NSURL resolved = this.resolve(bookmark);
+        final NSURL resolved = new PanelSandboxBookmarkResolver().resolve(this);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             resolved.startAccessingSecurityScopedResource();
-        }
-        return resolved;
-    }
-
-    protected NSURL resolve(final String data) throws AccessDeniedException {
-        final ObjCObjectByReference error = new ObjCObjectByReference();
-        final NSData bookmark = NSData.dataWithBase64EncodedString(data);
-        final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
-        if(null == resolved) {
-            final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Error resolving bookmark for %s to URL %s", this, f));
-            throw new AccessDeniedException(String.format("%s", f));
         }
         return resolved;
     }
