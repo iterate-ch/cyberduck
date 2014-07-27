@@ -254,6 +254,10 @@ public abstract class NSSavePanel extends NSPanel {
      */
     public abstract NSInteger runModalForDirectory_file(String path, String name);
 
+    public NSInteger runModal(String directory, String file) {
+        return this.runModalForDirectory_file(directory, file);
+    }
+
     /**
      * Original signature : <code>NSInteger runModal()</code><br>
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:155</i>
