@@ -46,7 +46,7 @@ public class FTPMlsdListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            if(!(FTPReply.FILE_ACTION_OK == session.getClient().cwd(directory.getAbsolute()))) {
+            if(!(FTPReply.isPositiveCompletion(session.getClient().cwd(directory.getAbsolute())))) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
             if(!session.getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
