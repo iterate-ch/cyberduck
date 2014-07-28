@@ -29,13 +29,22 @@ public final class HostnameConfiguratorFactory {
         //
     }
 
+    private static HostnameConfigurator instance;
+
+    private static final Object lock = new Object();
+
     /**
      * @param protocol Protocol
      * @return Configurator for default settings
      */
     public static HostnameConfigurator get(final Protocol protocol) {
         if(protocol.getType() == Protocol.Type.ssh) {
-            return new OpenSSHHostnameConfigurator();
+            synchronized(lock) {
+                if(null == instance) {
+                    instance = new OpenSSHHostnameConfigurator();
+                }
+                return instance;
+            }
         }
         return new NullHostnameConfigurator();
     }
