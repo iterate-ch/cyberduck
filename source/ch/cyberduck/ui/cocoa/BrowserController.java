@@ -2789,16 +2789,16 @@ public class BrowserController extends WindowController
             // Selected files on the local filesystem
             final NSArray selected = sheet.filenames();
             final NSEnumerator iterator = selected.objectEnumerator();
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
+            final List<TransferItem> uploads = new ArrayList<TransferItem>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.createLocal(next.toString());
-                downloads.add(new TransferItem(
+                uploads.add(new TransferItem(
                         new Path(destination, local.getName(),
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
             }
-            transfer(new UploadTransfer(session.getHost(), downloads));
+            this.transfer(new UploadTransfer(session.getHost(), uploads));
         }
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
