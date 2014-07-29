@@ -1,12 +1,15 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCObjectByReference;
 
 import java.text.MessageFormat;
 
@@ -31,7 +34,7 @@ public class ApplescriptTerminalService implements TerminalService {
             = ApplicationFinderFactory.get();
 
     @Override
-    public void open(final Host host, final Path workdir) {
+    public void open(final Host host, final Path workdir) throws AccessDeniedException {
         final boolean identity = host.getCredentials().isPublicKeyAuthentication();
         final Application application
                 = finder.getDescription(Preferences.instance().getProperty("terminal.bundle.identifier"));
@@ -51,7 +54,9 @@ public class ApplescriptTerminalService implements TerminalService {
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
         // Escape all " for do script command
         ssh = StringUtils.replace(ssh, "\"", "\\\"");
-        log.info("Escaped SSH Command for Applescript:" + ssh);
+        if(log.isInfoEnabled()) {
+            log.info("Escaped SSH Command for Applescript:" + ssh);
+        }
         String command
                 = "tell application \"" + application.getName() + "\""
                 + "\n"
@@ -64,7 +69,12 @@ public class ApplescriptTerminalService implements TerminalService {
             log.info(String.format("Execute AppleScript %s", command));
         }
         final NSAppleScript as = NSAppleScript.createWithSource(command);
-        as.executeAndReturnError(null);
+        final ObjCObjectByReference error = new ObjCObjectByReference();
+        if(null == as.executeAndReturnError(error)) {
+            final NSDictionary d = error.getValueAs(NSDictionary.class);
+            throw new AccessDeniedException(String.format("Failure running script in %s. %s",
+                    application.getName(), d.objectForKey("NSAppleScriptErrorBriefMessage")));
+        }
     }
 
     protected String escape(final String path) {
