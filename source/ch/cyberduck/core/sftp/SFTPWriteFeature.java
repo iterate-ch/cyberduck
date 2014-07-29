@@ -48,7 +48,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            RemoteFile handle;
+            final RemoteFile handle;
             if(status.isAppend()) {
                 handle = session.sftp().open(file.getAbsolute(),
                         EnumSet.of(OpenMode.WRITE, OpenMode.APPEND));
