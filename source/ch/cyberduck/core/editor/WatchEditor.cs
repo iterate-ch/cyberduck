@@ -25,6 +25,7 @@ using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
+using IOException = java.io.IOException;
 
 namespace Ch.Cyberduck.Core.Editor
 {
@@ -38,7 +39,7 @@ namespace Ch.Cyberduck.Core.Editor
         {
         }
 
-        protected override void edit()
+        protected override void edit() throws IOException
         {
             ch.cyberduck.core.Local local = getLocal();
             Application application = getApplication();
@@ -65,6 +66,10 @@ namespace Ch.Cyberduck.Core.Editor
             if (Utils.StartProcess(process))
             {
                 Watch();
+            }
+            else
+            {
+                throw new IOException(String.Format("Failed to open application {0}", application.getName()));
             }
         }
 
