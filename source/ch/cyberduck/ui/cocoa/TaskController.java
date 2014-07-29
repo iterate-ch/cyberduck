@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
@@ -108,7 +108,7 @@ public class TaskController extends BundleController {
             }
 
             @Override
-            public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+            public boolean alert(final Host host, final BackgroundException failure,
                                  final StringBuilder transcript) {
                 return false;
             }

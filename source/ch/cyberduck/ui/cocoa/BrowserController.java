@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -3111,7 +3112,12 @@ public class BrowserController extends WindowController
         if(null == workdir) {
             workdir = this.workdir();
         }
-        TerminalServiceFactory.get().open(session.getHost(), workdir);
+        try {
+            TerminalServiceFactory.get().open(session.getHost(), workdir);
+        }
+        catch(AccessDeniedException e) {
+            this.alert(session.getHost(), e, new StringBuilder());
+        }
     }
 
     @Action

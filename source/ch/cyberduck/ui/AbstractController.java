@@ -18,12 +18,12 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
@@ -240,7 +240,7 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         log.warn(failure.getMessage(), failure);
         return false;
     }

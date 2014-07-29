@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -28,6 +29,6 @@ public interface AlertCallback {
     /**
      * @return True if action should be repeated
      */
-    boolean alert(SessionBackgroundAction<?> action,
+    boolean alert(Host host,
                   BackgroundException failure, StringBuilder transcript);
 }

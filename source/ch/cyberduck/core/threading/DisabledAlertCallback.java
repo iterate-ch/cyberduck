@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -29,7 +30,7 @@ public class DisabledAlertCallback implements AlertCallback {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
     @Override
-    public boolean alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         log.warn(failure.getMessage());
         return false;
     }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -79,7 +80,7 @@ public final class BackgroundActionRegistry extends AbstractActionRegistry<Backg
     }
 
     @Override
-    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+    public boolean alert(final Host host, final BackgroundException failure,
                          final StringBuilder transcript) {
         log.warn(failure.getMessage());
         return false;

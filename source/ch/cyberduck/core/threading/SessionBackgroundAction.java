@@ -188,6 +188,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         if(connection.check(session, cache)) {
             // New connection opened
             growl.notify("Connection opened", session.getHost().getHostname());
+            // Reset cache
+            cache.clear();
             return true;
         }
         // Use existing connection
@@ -226,7 +228,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public boolean alert() {
         if(this.hasFailed() && !this.isCanceled()) {
             // Display alert if the action was not canceled intentionally
-            return alert.alert(this, exception, transcript);
+            return alert.alert(session.getHost(), exception, transcript);
         }
         return false;
     }

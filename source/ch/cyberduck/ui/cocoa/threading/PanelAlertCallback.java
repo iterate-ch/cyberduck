@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.TranscriptController;
@@ -48,8 +48,7 @@ public class PanelAlertCallback implements AlertCallback {
     }
 
     @Override
-    public boolean alert(final SessionBackgroundAction<?> action,
-                         final BackgroundException failure, final StringBuilder log) {
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder log) {
         if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert(
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
@@ -63,13 +62,13 @@ public class PanelAlertCallback implements AlertCallback {
                 @Override
                 public void callback(final int returncode) {
                     if(returncode == SheetCallback.ALTERNATE_OPTION) {
-                        ReachabilityFactory.get().diagnose(action.getSession().getHost());
+                        ReachabilityFactory.get().diagnose(host);
                     }
                 }
 
                 @Override
                 protected void help() {
-                    new DefaultProviderHelpService().help(action.getSession().getHost().getProtocol());
+                    new DefaultProviderHelpService().help(host.getProtocol());
                 }
             };
             if(log.length() > 0) {

@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -211,9 +211,9 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    public boolean alert(final SessionBackgroundAction<?> action, final BackgroundException failure,
+    public boolean alert(final Host host, final BackgroundException failure,
                          final StringBuilder transcript) {
-        return new PanelAlertCallback(this).alert(action, failure, transcript);
+        return new PanelAlertCallback(this).alert(host, failure, transcript);
     }
 
     /**

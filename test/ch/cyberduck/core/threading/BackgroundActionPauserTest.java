@@ -42,7 +42,7 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
     public void testAwait() throws Exception {
         final SessionBackgroundAction action = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.empty(), new AlertCallback() {
             @Override
-            public boolean alert(final SessionBackgroundAction action, final BackgroundException failure, final StringBuilder transcript) {
+            public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
                 return false;
             }
 
