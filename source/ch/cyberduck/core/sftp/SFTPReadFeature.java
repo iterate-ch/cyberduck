@@ -56,10 +56,30 @@ public class SFTPReadFeature implements Read {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                in = handle.new RemoteFileInputStream(status.getCurrent(), maxUnconfirmedReads);
+                in = handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, status.getCurrent()) {
+                    @Override
+                    public void close() throws IOException {
+                        try {
+                            super.close();
+                        }
+                        finally {
+                            handle.close();
+                        }
+                    }
+                };
             }
             else {
-                in = handle.new RemoteFileInputStream(0L, maxUnconfirmedReads);
+                in = handle.new ReadAheadRemoteFileInputStream(maxUnconfirmedReads, 0L) {
+                    @Override
+                    public void close() throws IOException {
+                        try {
+                            super.close();
+                        }
+                        finally {
+                            handle.close();
+                        }
+                    }
+                };
             }
             return in;
         }

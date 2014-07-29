@@ -70,10 +70,30 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));
                 }
-                out = handle.new RemoteFileOutputStream(status.getCurrent(), maxUnconfirmedWrites);
+                out = handle.new RemoteFileOutputStream(status.getCurrent(), maxUnconfirmedWrites) {
+                    @Override
+                    public void close() throws IOException {
+                        try {
+                            super.close();
+                        }
+                        finally {
+                            handle.close();
+                        }
+                    }
+                };
             }
             else {
-                out = handle.new RemoteFileOutputStream(0L, maxUnconfirmedWrites);
+                out = handle.new RemoteFileOutputStream(0L, maxUnconfirmedWrites) {
+                    @Override
+                    public void close() throws IOException {
+                        try {
+                            super.close();
+                        }
+                        finally {
+                            handle.close();
+                        }
+                    }
+                };
             }
             return out;
         }
