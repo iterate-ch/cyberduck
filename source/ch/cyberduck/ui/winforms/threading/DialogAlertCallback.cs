@@ -29,7 +29,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
     public class DialogAlertCallback : AlertCallback
     {
         private readonly WindowController _controller;
-        private SessionBackgroundAction _action;
 
         public DialogAlertCallback(WindowController controller)
         {
@@ -38,7 +37,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
 
         public bool alert(SessionBackgroundAction rba, BackgroundException failure, StringBuilder log)
         {
-            _action = rba;
             bool r = false;
             _controller.Invoke(delegate
                 {
