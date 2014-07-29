@@ -570,6 +570,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     new FilezillaBookmarkCollection(),
                     new WinScpBookmarkCollection(),
                     new SmartFtpBookmarkCollection(),
+                    new TotalCommanderBookmarkCollection(),
                     new FlashFxp4UserBookmarkCollection(),
                     new FlashFxp4CommonBookmarkCollection(),
                     new FlashFxp3BookmarkCollection(),
