@@ -82,8 +82,8 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
             @Override
             public void run() {
                 final NSOpenPanel panel = NSOpenPanel.openPanel();
-                panel.setCanChooseDirectories(false);
-                panel.setCanChooseFiles(true);
+                panel.setCanChooseDirectories(file.isDirectory());
+                panel.setCanChooseFiles(file.isFile());
                 panel.setAllowsMultipleSelection(false);
                 panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select the file {0}", "Credentials"), file.getAbsolute()));
                 panel.setPrompt(LocaleFactory.localizedString("Choose"));
