@@ -27,7 +27,7 @@ public class ProtocolFactoryTest extends AbstractTestCase {
         assertEquals(new SFTPProtocol(), ProtocolFactory.forName("sftp"));
         assertEquals(new SwiftProtocol(), ProtocolFactory.forName("swift"));
         assertEquals(new SFTPProtocol(), ProtocolFactory.forName(String.valueOf(new SFTPProtocol().hashCode())));
-        assertEquals(new FTPProtocol(), ProtocolFactory.forName(String.valueOf("unknown")));
+        assertEquals(null, ProtocolFactory.forName(String.valueOf("unknown")));
     }
 
     @Test
