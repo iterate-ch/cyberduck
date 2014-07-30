@@ -117,17 +117,17 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
                     NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, null, null, error);
             if(null == data) {
                 final NSError f = error.getValueAs(NSError.class);
-                log.warn(String.format("Failure getting bookmark data for file %s %s", this, f));
+                log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
                 return null;
             }
             final String encoded = data.base64EncodedString();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Encoded bookmark for %s as %s", this, encoded));
+                log.debug(String.format("Encoded bookmark for %s as %s", file, encoded));
             }
             return encoded;
         }
         else {
-            log.warn(String.format("Skip creating bookmark for file not found %s", this));
+            log.warn(String.format("Skip creating bookmark for file not found %s", file));
             return null;
         }
     }
