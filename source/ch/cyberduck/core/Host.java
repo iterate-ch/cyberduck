@@ -397,7 +397,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p/>
+     * <p>
      * Configures credentials according to new hostname.
      *
      * @param hostname Server
@@ -428,7 +428,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The character encoding to be used when connecting to this server or null
-     *         if the default encoding should be used
+     * if the default encoding should be used
      */
     public String getEncoding() {
         return encoding;
@@ -457,7 +457,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     *         if the default should be used
+     * if the default should be used
      */
     public Integer getMaxConnections() {
         return maxConnections;
