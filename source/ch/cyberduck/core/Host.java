@@ -38,8 +38,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The protocol identifier.
      */
-    private Protocol protocol
-            = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+    private Protocol protocol;
 
     /**
      * The port number to connect to
@@ -129,7 +128,8 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname The hostname of the server
      */
     public Host(final String hostname) {
-        this(ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
+        this(null == ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))
+                        ? ProtocolFactory.FTP : ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
                 hostname);
     }
 
@@ -140,7 +140,8 @@ public class Host implements Serializable, Comparable<Host> {
      * @param port     The port number to connect to
      */
     public Host(final String hostname, final int port) {
-        this(ProtocolFactory.getDefaultProtocol(port), hostname, port);
+        this(null == ProtocolFactory.getDefaultProtocol(port) ?
+                ProtocolFactory.FTP : ProtocolFactory.getDefaultProtocol(port), hostname, port);
     }
 
     /**

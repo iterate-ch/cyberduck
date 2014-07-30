@@ -129,4 +129,12 @@ public class HostTest extends AbstractTestCase {
         bookmark.setHostname("h ");
         assertEquals("h", bookmark.getHostname());
     }
+
+    @Test
+    public void testInvalidProtocol() {
+        Preferences.instance().setProperty("connection.protocol.default", "me");
+        final Host bookmark = new Host("h");
+        assertEquals(ProtocolFactory.FTP, bookmark.getProtocol());
+        Preferences.instance().deleteProperty("connection.protocol.default");
+    }
 }

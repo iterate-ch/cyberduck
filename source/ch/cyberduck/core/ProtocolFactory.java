@@ -183,7 +183,7 @@ public final class ProtocolFactory {
             }
         }
         log.warn(String.format("Unknown protocol with identifier %s", identifier));
-        return FTP;
+        return null;
     }
 
     /**
