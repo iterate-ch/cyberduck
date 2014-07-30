@@ -18,20 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.WatchEditor;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Touch;
@@ -333,7 +320,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     continue;
                 }
                 if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
-                        || !pasteboard.getSession().equals(controller.getSession())) {
+                        || pasteboard.getSession().getHost().compareTo(controller.getSession().getHost()) != 0) {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path file : pasteboard) {
@@ -433,7 +420,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                if(pasteboard.getSession().equals(controller.getSession())) {
+                if(pasteboard.getSession().getHost().compareTo(controller.getSession().getHost()) == 0) {
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         return NSDraggingInfo.NSDragOperationCopy;
