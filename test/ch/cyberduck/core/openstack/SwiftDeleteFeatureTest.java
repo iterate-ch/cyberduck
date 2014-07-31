@@ -81,16 +81,19 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path t = new Path(container, "t", EnumSet.of(Path.Type.directory));
-        final Path placeholder = new Path(t, "placeholder-" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path placeholder = new Path(new Path(container, "t", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+                "placeholder-" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
-        assertFalse(new SwiftFindFeature(session).find(placeholder));
-        assertTrue(new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
-        assertFalse(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).contains(test));
-        assertTrue(new SwiftFindFeature(session).find(test));
+        final SwiftFindFeature find = new SwiftFindFeature(session);
+        assertFalse(find.find(placeholder));
+        final SwiftObjectListService list = new SwiftObjectListService(session);
+        assertTrue(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
+        assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(test));
+        assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
+        assertTrue(find.find(test));
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginController());
-        assertFalse(new SwiftFindFeature(session).find(test));
-        assertFalse(new SwiftFindFeature(session).find(placeholder));
+        assertFalse(find.find(test));
+        assertFalse(find.find(placeholder));
     }
 }
