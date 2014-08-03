@@ -33,16 +33,19 @@ public class ApplescriptTerminalService implements TerminalService {
     private ApplicationFinder finder
             = ApplicationFinderFactory.get();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     @Override
     public void open(final Host host, final Path workdir) throws AccessDeniedException {
         final boolean identity = host.getCredentials().isPublicKeyAuthentication();
         final Application application
-                = finder.getDescription(Preferences.instance().getProperty("terminal.bundle.identifier"));
+                = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
         if(!finder.isInstalled(application)) {
             log.error(String.format("Application with bundle identifier %s is not installed",
-                    Preferences.instance().getProperty("terminal.bundle.identifier")));
+                    preferences.getProperty("terminal.bundle.identifier")));
         }
-        String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
+        String ssh = MessageFormat.format(preferences.getProperty("terminal.command.ssh"),
                 identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : StringUtils.EMPTY,
                 host.getCredentials().getUsername(),
                 host.getHostname(),
@@ -62,7 +65,7 @@ public class ApplescriptTerminalService implements TerminalService {
                 + "\n"
                 + "activate"
                 + "\n"
-                + MessageFormat.format(Preferences.instance().getProperty("terminal.command"), ssh)
+                + MessageFormat.format(preferences.getProperty("terminal.command"), ssh)
                 + "\n"
                 + "end tell";
         if(log.isInfoEnabled()) {
