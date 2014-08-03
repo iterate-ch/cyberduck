@@ -17,17 +17,7 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -58,6 +48,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private final ApplicationLauncher launcher
             = ApplicationLauncherFactory.get();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     private final IconService icon
             = IconServiceFactory.get();
@@ -132,14 +125,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         if(this.options.permissions) {
             Permission permission = Permission.EMPTY;
-            if(Preferences.instance().getBoolean("queue.download.permissions.default")) {
+            if(preferences.getBoolean("queue.download.permissions.default")) {
                 if(file.isFile()) {
                     permission = new Permission(
-                            Preferences.instance().getInteger("queue.download.permissions.file.default"));
+                            preferences.getInteger("queue.download.permissions.file.default"));
                 }
                 if(file.isDirectory()) {
                     permission = new Permission(
-                            Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+                            preferences.getInteger("queue.download.permissions.folder.default"));
                 }
             }
             else {

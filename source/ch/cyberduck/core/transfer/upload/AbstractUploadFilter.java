@@ -17,19 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
@@ -72,6 +60,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private MimeTypeService mapping
             = new MappingMimeTypeService();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {
@@ -130,7 +121,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
-                        MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
+                        MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), UUID.randomUUID().toString()), file.getType());
                 status.rename(renamed);
                 // File attributes should not change after calculate the hash code of the file reference
@@ -144,14 +135,14 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 permission = status.getRemote().getPermission();
             }
             else {
-                if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
+                if(preferences.getBoolean("queue.upload.permissions.default")) {
                     if(local.isFile()) {
                         permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                                preferences.getInteger("queue.upload.permissions.file.default"));
                     }
                     else {
                         permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                                preferences.getInteger("queue.upload.permissions.folder.default"));
                     }
                 }
                 else {
@@ -172,14 +163,14 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             else {
                 final Permission permission;
-                if(Preferences.instance().getBoolean("queue.upload.permissions.default")) {
+                if(preferences.getBoolean("queue.upload.permissions.default")) {
                     if(local.isFile()) {
                         permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                                preferences.getInteger("queue.upload.permissions.file.default"));
                     }
                     else {
                         permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                                preferences.getInteger("queue.upload.permissions.folder.default"));
                     }
                 }
                 else {
