@@ -68,14 +68,15 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         try {
             if(null == store) {
                 // Get the key manager factory for the default algorithm.
-                String type = Preferences.instance().getProperty("connection.ssl.keystore.type");
+                final Preferences preferences = Preferences.instance();
+                String type = preferences.getProperty("connection.ssl.keystore.type");
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Load default store of type %s", type));
                 }
                 if(null == type) {
                     type = KeyStore.getDefaultType();
                 }
-                final String provider = Preferences.instance().getProperty("connection.ssl.keystore.provider");
+                final String provider = preferences.getProperty("connection.ssl.keystore.provider");
                 if(StringUtils.isBlank(provider)) {
                     store = KeyStore.getInstance(type);
                 }
