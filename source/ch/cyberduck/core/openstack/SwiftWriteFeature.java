@@ -62,6 +62,9 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private Find finder;
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public SwiftWriteFeature(final SwiftSession session) {
         this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftFindFeature(session));
     }
@@ -84,7 +87,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         final Map<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
-        for(String m : Preferences.instance().getList("openstack.metadata.default")) {
+        for(String m : preferences.getList("openstack.metadata.default")) {
             if(StringUtils.isBlank(m)) {
                 continue;
             }
@@ -139,8 +142,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public Append append(final Path file, final Long length, final Cache cache) throws BackgroundException {
-        if(length >= Preferences.instance().getLong("openstack.upload.largeobject.threshold")) {
-            if(Preferences.instance().getBoolean("openstack.upload.largeobject")) {
+        if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
+            if(preferences.getBoolean("openstack.upload.largeobject")) {
                 Long size = 0L;
                 final List<Path> segments = listService.list(
                         new Path(containerService.getContainer(file), segmentService.basename(file, length), EnumSet.of(Path.Type.directory)),

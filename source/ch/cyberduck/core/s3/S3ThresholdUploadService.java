@@ -37,13 +37,16 @@ import org.apache.log4j.Logger;
 public class S3ThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
+    private Preferences preferences
+            = Preferences.instance();
+
     private S3Session session;
 
     private Long threshold;
 
     public S3ThresholdUploadService(final S3Session session) {
         this.session = session;
-        this.threshold = Preferences.instance().getLong("s3.upload.multipart.threshold");
+        this.threshold = preferences.getLong("s3.upload.multipart.threshold");
     }
 
     public S3ThresholdUploadService(final S3Session session, final Long threshold) {
@@ -55,9 +58,9 @@ public class S3ThresholdUploadService implements Upload {
     public Object upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status) throws BackgroundException {
         if(status.getLength() > threshold) {
-            if(!Preferences.instance().getBoolean("s3.upload.multipart")) {
+            if(!preferences.getBoolean("s3.upload.multipart")) {
                 // Disabled by user
-                if(status.getLength() < Preferences.instance().getLong("s3.upload.multipart.required.threshold")) {
+                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
                     log.warn("Multipart upload is disabled with property s3.upload.multipart");
                     final S3SingleUploadService single = new S3SingleUploadService(session);
                     return single.upload(file, local, throttle, listener, status);

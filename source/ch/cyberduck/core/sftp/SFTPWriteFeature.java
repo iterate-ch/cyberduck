@@ -40,6 +40,9 @@ public class SFTPWriteFeature extends AppendWriteFeature {
 
     private SFTPSession session;
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public SFTPWriteFeature(final SFTPSession session) {
         super(session);
         this.session = session;
@@ -64,7 +67,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                         EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE));
             }
             final int maxUnconfirmedWrites
-                    = (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1;
+                    = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
             final OutputStream out;
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {

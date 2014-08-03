@@ -55,6 +55,9 @@ public class AzureWriteFeature implements Write {
     private PathContainerService containerService
             = new AzurePathContainerService();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public AzureWriteFeature(final AzureSession session) {
         this.session = session;
         this.finder = new AzureFindFeature(session);
@@ -81,7 +84,7 @@ public class AzureWriteFeature implements Write {
             blob.getProperties().setContentType(status.getMime());
             // Default metadata for new files
             final Map<String, String> metadata = new HashMap<String, String>();
-            for(String m : Preferences.instance().getList("azure.metadata.default")) {
+            for(String m : preferences.getList("azure.metadata.default")) {
                 if(StringUtils.isBlank(m)) {
                     continue;
                 }
@@ -105,7 +108,7 @@ public class AzureWriteFeature implements Write {
             blob.setMetadata(new HashMap<String, String>(metadata));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
-            options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
             return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, null);
         }
         catch(StorageException e) {
