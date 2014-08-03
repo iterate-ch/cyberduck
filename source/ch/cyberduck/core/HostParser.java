@@ -51,17 +51,18 @@ public final class HostParser {
                 begin += cut - begin + 3;
             }
         }
+        final Preferences preferences = Preferences.instance();
         if(null == protocol) {
             protocol = ProtocolFactory.forName(
-                    Preferences.instance().getProperty("connection.protocol.default"));
+                    preferences.getProperty("connection.protocol.default"));
         }
         String username;
         String password = null;
         if(protocol.isAnonymousConfigurable()) {
-            username = Preferences.instance().getProperty("connection.login.anon.name");
+            username = preferences.getProperty("connection.login.anon.name");
         }
         else {
-            username = Preferences.instance().getProperty("connection.login.name");
+            username = preferences.getProperty("connection.login.name");
         }
         if(input.indexOf('@', begin) != -1) {
             if(-1 == input.indexOf(Path.DELIMITER, begin)
@@ -92,7 +93,7 @@ public final class HostParser {
                 }
             }
         }
-        String hostname = Preferences.instance().getProperty("connection.hostname.default");
+        String hostname = preferences.getProperty("connection.hostname.default");
         if(StringUtils.isNotBlank(input)) {
             hostname = input.substring(begin, input.length());
         }
