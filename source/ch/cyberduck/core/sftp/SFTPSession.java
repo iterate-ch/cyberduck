@@ -64,6 +64,9 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
+    private Preferences preferences
+            = Preferences.instance();
+
     private SFTPEngine sftp;
 
     private StateDisconnectListener disconnectListener;
@@ -95,7 +98,7 @@ public class SFTPSession extends Session<SSHClient> {
     public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
             final DefaultConfig configuration = new DefaultConfig();
-            if("zlib".equals(Preferences.instance().getProperty("ssh.compression"))) {
+            if("zlib".equals(preferences.getProperty("ssh.compression"))) {
                 configuration.setCompressionFactories(Arrays.asList(
                         new DelayedZlibCompression.Factory(),
                         new ZlibCompression.Factory(),
@@ -128,7 +131,7 @@ public class SFTPSession extends Session<SSHClient> {
             final Transport transport = connection.getTransport();
             transport.setDisconnectListener(disconnectListener);
             transport.setHeartbeatInterval(
-                    Preferences.instance().getInteger("ssh.heartbeat.seconds"));
+                    preferences.getInteger("ssh.heartbeat.seconds"));
             connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
             return connection;
         }
@@ -151,7 +154,7 @@ public class SFTPSession extends Session<SSHClient> {
             else {
                 methods.add(new SFTPChallengeResponseAuthentication(this));
                 methods.add(new SFTPPasswordAuthentication(this));
-                if(Preferences.instance().getBoolean("ssh.authentication.agent.enable")) {
+                if(preferences.getBoolean("ssh.authentication.agent.enable")) {
                     methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
                     methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
                 }

@@ -78,6 +78,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private DisabledX509HostnameVerifier hostnameVerifier
             = new DisabledX509HostnameVerifier();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     protected HttpSession(final Host host) {
         super(host);
         hostnameVerifier.setTarget(host.getHostname());
@@ -114,7 +117,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                     }
                 }).build();
         final HttpClientBuilder builder = HttpClients.custom();
-        if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+        if(preferences.getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.get();
             if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                 if(proxy.isHTTPSProxyEnabled(host)) {
@@ -149,12 +152,12 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .setAuthenticationEnabled(true)
                 .setConnectTimeout(timeout())
                         // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-                .setConnectionRequestTimeout(Preferences.instance().getInteger("http.manager.timeout"))
+                .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
                 .setStaleConnectionCheckEnabled(true)
                 .setSocketTimeout(timeout())
                 .build());
         builder.setDefaultConnectionConfig(ConnectionConfig.custom()
-                .setBufferSize(Preferences.instance().getInteger("http.socket.buffer"))
+                .setBufferSize(preferences.getInteger("http.socket.buffer"))
                 .setCharset(Charset.forName(getEncoding()))
                 .build());
         builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
@@ -182,7 +185,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         });
-        if(Preferences.instance().getBoolean("http.compression.enable")) {
+        if(preferences.getBoolean("http.compression.enable")) {
             builder.addInterceptorLast(new RequestAcceptEncoding());
             builder.addInterceptorLast(new ResponseContentEncoding());
         }
@@ -191,9 +194,9 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         }
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
-                        Charset.forName(Preferences.instance().getProperty("http.credentials.charset"))))
+                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
                 .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
-                        Charset.forName(Preferences.instance().getProperty("http.credentials.charset"))))
+                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
                 .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
                 .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory())
@@ -206,8 +209,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             log.debug(String.format("Setup connection pool with registry %s", registry));
         }
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
-        manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
-        manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
+        manager.setMaxTotal(preferences.getInteger("http.connections.total"));
+        manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
         return manager;
     }
 

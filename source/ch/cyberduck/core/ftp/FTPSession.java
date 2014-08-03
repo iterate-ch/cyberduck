@@ -17,30 +17,10 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.Command;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -67,6 +47,9 @@ import java.util.TimeZone;
  */
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
+
+    private Preferences preferences
+            = Preferences.instance();
 
     private Timestamp timestamp;
 
@@ -124,21 +107,21 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setDataTimeout(this.timeout());
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
-        client.setRemoteVerificationEnabled(Preferences.instance().getBoolean("ftp.datachannel.verify"));
+        client.setRemoteVerificationEnabled(preferences.getBoolean("ftp.datachannel.verify"));
         if(host.getProtocol().isSecure()) {
             List<String> protocols = new ArrayList<String>();
-            for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
+            for(String protocol : preferences.getProperty("connection.ssl.protocols").split(",")) {
                 protocols.add(protocol.trim());
             }
             client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
         }
-        final int buffer = Preferences.instance().getInteger("ftp.socket.buffer");
+        final int buffer = preferences.getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
         client.setReceiveBufferSize(buffer);
         client.setSendBufferSize(buffer);
         client.setReceieveDataSocketBufferSize(buffer);
         client.setSendDataSocketBufferSize(buffer);
-        client.setStrictMultilineParsing(Preferences.instance().getBoolean("ftp.parser.multiline.strict"));
+        client.setStrictMultilineParsing(preferences.getBoolean("ftp.parser.multiline.strict"));
     }
 
     /**
@@ -227,7 +210,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 if(host.getProtocol().isSecure()) {
                     client.execPBSZ(0);
                     // Negotiate data connection security
-                    client.execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
+                    client.execPROT(preferences.getProperty("ftp.tls.datachannel"));
                 }
                 if("UTF-8".equals(this.getEncoding())) {
                     if(client.hasFeature("UTF8")) {

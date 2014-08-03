@@ -19,17 +19,7 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -84,6 +74,9 @@ import java.util.EnumSet;
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public GoogleStorageSession(final Host h) {
         super(h);
     }
@@ -134,9 +127,9 @@ public class GoogleStorageSession extends S3Session {
             final OAuth2Credentials oauth = new OAuth2Credentials(
                     new OAuthUtils(client.getHttpClient(),
                             OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
-                            Preferences.instance().getProperty("google.storage.oauth.clientid"),
-                            Preferences.instance().getProperty("google.storage.oauth.secret")),
-                    Preferences.instance().getProperty("application.name"));
+                            preferences.getProperty("google.storage.oauth.clientid"),
+                            preferences.getProperty("google.storage.oauth.secret")),
+                    preferences.getProperty("application.name"));
             final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
                     host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
             final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
@@ -164,7 +157,7 @@ public class GoogleStorageSession extends S3Session {
                             "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                     // Save expiry
-                    Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
+                    preferences.setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
@@ -173,7 +166,7 @@ public class GoogleStorageSession extends S3Session {
             else {
                 // Re-use authentication tokens from last use
                 oauth.setOAuth2Tokens(new OAuth2Tokens(accesstoken, refreshtoken,
-                        new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
+                        new Date(preferences.getLong("google.storage.oauth.expiry"))));
             }
             client.setProviderCredentials(oauth);
             // List all buckets and cache

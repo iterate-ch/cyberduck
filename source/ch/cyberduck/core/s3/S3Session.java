@@ -19,20 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -40,6 +27,7 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -81,14 +69,14 @@ import java.util.Map;
 public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
 
-    private PathContainerService containerService
-            = new S3PathContainerService();
-
     private S3AccessControlListFeature acl
             = new S3AccessControlListFeature(this);
 
     private DistributionConfiguration cdn
             = new WebsiteCloudFrontDistributionConfiguration(this);
+
+    private Preferences preferences
+            = Preferences.instance();
 
     public S3Session(final Host h) {
         super(h);
@@ -134,7 +122,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                                                  final String objectKey, final Map<String, String> requestParameters)
                 throws S3ServiceException {
             final HttpUriRequest request = super.setupConnection(method, bucketName, objectKey, requestParameters);
-            if(Preferences.instance().getBoolean("s3.upload.expect-continue")) {
+            if(preferences.getBoolean("s3.upload.expect-continue")) {
                 if("PUT".equals(request.getMethod())) {
                     // #7621
                     request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);

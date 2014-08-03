@@ -69,6 +69,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     private DistributionConfiguration cloudfront;
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public boolean alert() throws BackgroundException {
         if(host.getProtocol().isSecure()) {
             return false;
@@ -76,10 +79,10 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
-        if(Preferences.instance().getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
+        if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }
-        return Preferences.instance().getBoolean(
+        return preferences.getBoolean(
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
@@ -195,7 +198,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return The timeout in milliseconds
      */
     protected int timeout() {
-        return Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
+        return preferences.getInteger("connection.timeout.seconds") * 1000;
     }
 
     /**
@@ -224,13 +227,13 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return The custom character encoding specified by the host
-     *         of this session or the default encoding if not specified
+     * of this session or the default encoding if not specified
      * @see Preferences
      * @see Host
      */
     public String getEncoding() {
         if(null == host.getEncoding()) {
-            return Preferences.instance().getProperty("browser.charset.encoding");
+            return preferences.getProperty("browser.charset.encoding");
         }
         return host.getEncoding();
     }
@@ -240,7 +243,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     public int getMaxConnections() {
         if(null == host.getMaxConnections()) {
-            return Preferences.instance().getInteger("connection.host.max");
+            return preferences.getInteger("connection.host.max");
         }
         return host.getMaxConnections();
     }
@@ -254,7 +257,7 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * @return True if a connection attempt is currently being made. False if the connection
-     *         has already been established or is closed.
+     * has already been established or is closed.
      */
     public State getState() {
         return state;

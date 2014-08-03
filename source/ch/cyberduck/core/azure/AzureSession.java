@@ -18,33 +18,11 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -88,6 +66,9 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     private final static X509KeyManager key
             = new KeychainX509KeyManager();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     public AzureSession(final Host h) {
         super(h, trust, key);
@@ -144,7 +125,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                     final BlobRequestOptions options = new BlobRequestOptions();
                     options.setRetryPolicyFactory(new RetryNoRetry());
                     result = client.listContainersSegmented(null, ContainerListingDetails.NONE,
-                            Preferences.instance().getInteger("azure.listing.chunksize"), token,
+                            preferences.getInteger("azure.listing.chunksize"), token,
                             options, null);
                     for(CloudBlobContainer container : result.getResults()) {
                         final PathAttributes attributes = new PathAttributes();

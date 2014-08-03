@@ -19,31 +19,10 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -80,6 +59,9 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     private RedirectCallback redirect
             = new PreferencesRedirectCallback();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     public DAVSession(final Host h) {
         super(h);
@@ -152,10 +134,10 @@ public class DAVSession extends HttpSession<DAVClient> {
                       final Cache cache) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
-                Preferences.instance().getProperty("webdav.ntlm.workstation"),
-                Preferences.instance().getProperty("webdav.ntlm.domain"));
+                preferences.getProperty("webdav.ntlm.workstation"),
+                preferences.getProperty("webdav.ntlm.domain"));
         if(host.getCredentials().validate(host.getProtocol(), new LoginOptions())) {
-            if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
+            if(preferences.getBoolean("webdav.basic.preemptive")) {
                 // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
                 client.enablePreemptiveAuthentication(this.getHost().getHostname());
             }
@@ -180,7 +162,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
                 }
                 else if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-                    if(Preferences.instance().getBoolean("webdav.basic.preemptive")) {
+                    if(preferences.getBoolean("webdav.basic.preemptive")) {
                         log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
                                 host, e.getResponsePhrase()));
                         cancel.verify();
@@ -207,7 +189,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public boolean alert() throws BackgroundException {
         if(super.alert()) {
-            return Preferences.instance().getBoolean("webdav.basic.preemptive");
+            return preferences.getBoolean("webdav.basic.preemptive");
         }
         return false;
     }
