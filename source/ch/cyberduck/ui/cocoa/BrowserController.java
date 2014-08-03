@@ -43,19 +43,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DownloadTransfer;
-import ch.cyberduck.core.transfer.SyncTransfer;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferAdapter;
-import ch.cyberduck.core.transfer.TransferCallback;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferProgress;
-import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.*;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
@@ -2727,7 +2715,7 @@ public class BrowserController extends WindowController
                     selected = this.workdir();
                 }
                 this.transfer(new SyncTransfer(session.getHost(),
-                        new TransferItem(selected, LocalFactory.createLocal(sheet.filenames().lastObject().toString())))
+                                new TransferItem(selected, LocalFactory.createLocal(sheet.filenames().lastObject().toString())))
                 );
             }
         }
@@ -2958,9 +2946,9 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
-     * <p/>
+     * <p>
      * Either sendType or returnType—but not both—may be empty. If sendType is empty,
      * the service doesn’t require input from the application requesting the service.
      * If returnType is empty, the service doesn’t return data.
@@ -2987,7 +2975,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Reads data from the pasteboard and uses it to replace the current selection.
      *
      * @param pboard Pasteboard
@@ -2999,7 +2987,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p/>
+     * <p>
      * Writes the current selection to the pasteboard.
      *
      * @param pboard Pasteboard
@@ -3086,15 +3074,17 @@ public class BrowserController extends WindowController
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                final Path workdir = this.workdir();
-                final List<TransferItem> uploads = new ArrayList<TransferItem>();
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
-                    uploads.add(new TransferItem(new Path(workdir, local.getName(),
-                            local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    final Path workdir = this.workdir();
+                    final List<TransferItem> uploads = new ArrayList<TransferItem>();
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                        uploads.add(new TransferItem(new Path(workdir, local.getName(),
+                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                    }
+                    this.transfer(new UploadTransfer(session.getHost(), uploads));
                 }
-                this.transfer(new UploadTransfer(session.getHost(), uploads));
             }
         }
         return false;
@@ -3529,16 +3519,18 @@ public class BrowserController extends WindowController
                     if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                         NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                         if(o != null) {
-                            final NSArray elements = Rococoa.cast(o, NSArray.class);
-                            if(elements.count().intValue() == 1) {
-                                item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                        "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
-                            }
-                            else {
-                                item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
-                                                String.valueOf(elements.count().intValue()))
-                                ).trim());
+                            if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                                final NSArray elements = Rococoa.cast(o, NSArray.class);
+                                if(elements.count().intValue() == 1) {
+                                    item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
+                                            "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
+                                }
+                                else {
+                                    item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
+                                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                                                    String.valueOf(elements.count().intValue()))
+                                    ).trim());
+                                }
                             }
                         }
                     }

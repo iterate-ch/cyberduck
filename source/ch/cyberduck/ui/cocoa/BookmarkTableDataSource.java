@@ -166,7 +166,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
-     *         given by the comparision with the HostFilter
+     * given by the comparison with the bookmark filter
      * @see HostFilter
      */
     protected AbstractHostCollection getSource() {
@@ -314,31 +314,35 @@ public class BookmarkTableDataSource extends ListDataSource {
             return NSDraggingInfo.NSDragOperationNone;
         }
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-            NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            final NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    String file = elements.objectAtIndex(new NSUInteger(i)).toString();
-                    if(file.endsWith(".duck")) {
-                        // Allow drag if at least one file is a serialized bookmark
-                        view.setDropRow(row, NSTableView.NSTableViewDropAbove);
-                        return NSDraggingInfo.NSDragOperationCopy;
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        String file = elements.objectAtIndex(new NSUInteger(i)).toString();
+                        if(file.endsWith(".duck")) {
+                            // Allow drag if at least one file is a serialized bookmark
+                            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+                            return NSDraggingInfo.NSDragOperationCopy;
+                        }
                     }
+                    //only allow other files if there is at least one bookmark
+                    view.setDropRow(row, NSTableView.NSTableViewDropOn);
+                    return NSDraggingInfo.NSDragOperationCopy;
                 }
-                //only allow other files if there is at least one bookmark
-                view.setDropRow(row, NSTableView.NSTableViewDropOn);
-                return NSDraggingInfo.NSDragOperationCopy;
             }
             return NSDraggingInfo.NSDragOperationNone;
         }
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
+            final NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
-                NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        view.setDropRow(row, NSTableView.NSTableViewDropAbove);
-                        return NSDraggingInfo.NSDragOperationCopy;
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+                            return NSDraggingInfo.NSDragOperationCopy;
+                        }
                     }
                 }
             }
@@ -360,7 +364,7 @@ public class BookmarkTableDataSource extends ListDataSource {
      * @param row  The proposed location is row and action is operation.
      *             The data source should incorporate the data from the dragging pasteboard at this time.
      * @see NSTableView.DataSource
-     *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
+     * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info,
@@ -384,58 +388,65 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
-            NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
-            // If regular files are dropped, these will be uploaded to the dropped bookmark location
-            final List<TransferItem> uploads = new ArrayList<TransferItem>();
-            Host host = null;
-            for(int i = 0; i < filesList.count().intValue(); i++) {
-                final String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
-                final Local local = LocalFactory.createLocal(filename);
-                if(filename.endsWith(".duck")) {
-                    // Adding a previously exported bookmark file from the Finder
-                    Host bookmark = HostReaderFactory.get().read(local);
-                    if(null == bookmark) {
-                        continue;
+            final NSObject object = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(object != null) {
+                if(object.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(object, NSArray.class);
+                    // If regular files are dropped, these will be uploaded to the dropped bookmark location
+                    final List<TransferItem> uploads = new ArrayList<TransferItem>();
+                    Host host = null;
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
+                        final Local local = LocalFactory.createLocal(filename);
+                        if(filename.endsWith(".duck")) {
+                            // Adding a previously exported bookmark file from the Finder
+                            Host bookmark = HostReaderFactory.get().read(local);
+                            if(null == bookmark) {
+                                continue;
+                            }
+                            source.add(row.intValue(), bookmark);
+                            view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
+                            view.scrollRowToVisible(row);
+                        }
+                        else {
+                            // The bookmark this file has been dropped onto
+                            final Host h = source.get(row.intValue());
+                            if(null == host) {
+                                host = h;
+                            }
+                            // Upload to the remote host this bookmark points to
+                            uploads.add(new TransferItem(
+                                    new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), EnumSet.of(Path.Type.directory)),
+                                            local.getName(), EnumSet.of(Path.Type.file)),
+                                    local
+                            ));
+                        }
                     }
-                    source.add(row.intValue(), bookmark);
-                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
-                    view.scrollRowToVisible(row);
-                }
-                else {
-                    // The bookmark this file has been dropped onto
-                    final Host h = source.get(row.intValue());
-                    if(null == host) {
-                        host = h;
+                    if(!uploads.isEmpty()) {
+                        // If anything has been added to the queue, then process the queue
+                        final Transfer t = new UploadTransfer(host, uploads);
+                        TransferControllerFactory.get().start(t);
                     }
-                    // Upload to the remote host this bookmark points to
-                    uploads.add(new TransferItem(
-                            new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), EnumSet.of(Path.Type.directory)),
-                                    local.getName(), EnumSet.of(Path.Type.file)),
-                            local
-                    ));
+                    return true;
                 }
             }
-            if(!uploads.isEmpty()) {
-                // If anything has been added to the queue, then process the queue
-                final Transfer t = new UploadTransfer(host, uploads);
-                TransferControllerFactory.get().start(t);
-            }
-            return true;
         }
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
-            if(o != null) {
-                NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
-                    if(StringUtils.isNotBlank(url)) {
-                        final Host h = HostParser.parse(url);
-                        source.add(row.intValue(), h);
-                        view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
-                        view.scrollRowToVisible(row);
+            final NSObject object = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
+            if(object != null) {
+                if(object.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(object, NSArray.class);
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
+                        if(StringUtils.isNotBlank(url)) {
+                            final Host h = HostParser.parse(url);
+                            source.add(row.intValue(), h);
+                            view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
+                            view.scrollRowToVisible(row);
+                        }
                     }
+                    return true;
                 }
-                return true;
             }
             return false;
         }
@@ -505,8 +516,8 @@ public class BookmarkTableDataSource extends ListDataSource {
      *              image is currently poised) is in the same application as the source, while a NO value indicates that
      *              the destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     *         any dragging operations, it should return NSDragOperationNone.
+     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     * any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -520,11 +531,11 @@ public class BookmarkTableDataSource extends ListDataSource {
     /**
      * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
-     *         the drag data onto pboard (data, owner, and so on).
+     * the drag data onto pboard (data, owner, and so on).
      * @see NSTableView.DataSource
-     *      Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
-     *      The drag image and other drag-related information will be set up and provided by the table view once this call
-     *      returns with true.
+     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
+     * The drag image and other drag-related information will be set up and provided by the table view once this call
+     * returns with true.
      */
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
@@ -544,11 +555,11 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination,
-     *         in the case of another Cocoa application, invokes the NSDraggingInfo method
-     *         namesOfPromisedFilesDroppedAtDestination.
-     *         For long operations, you can cache dropDestination and defer the creation of the files until the
-     *         finishedDraggingImage method to avoid blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination,
+     * in the case of another Cocoa application, invokes the NSDraggingInfo method
+     * namesOfPromisedFilesDroppedAtDestination.
+     * For long operations, you can cache dropDestination and defer the creation of the files until the
+     * finishedDraggingImage method to avoid blocking the destination application.
      * @see NSTableView.DataSource
      */
     @Override

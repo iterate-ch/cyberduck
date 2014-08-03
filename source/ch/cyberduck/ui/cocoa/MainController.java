@@ -43,19 +43,7 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -1203,12 +1191,14 @@ public class MainController extends BundleController implements NSApplication.De
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                List<Local> files = new ArrayList<Local>();
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    files.add(LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    List<Local> files = new ArrayList<Local>();
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        files.add(LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                    }
+                    this.upload(files);
                 }
-                this.upload(files);
             }
         }
     }

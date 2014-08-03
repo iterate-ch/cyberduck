@@ -115,15 +115,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Reloading a working directory that is not cached yet would cause the interface to freeze;
             // Delay until path is cached in the background
             controller.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new SessionListWorker(controller.getSession(), cache, directory, listener) {
-                        @Override
-                        public void cleanup(final AttributedList<Path> list) {
-                            if(controller.getActions().isEmpty()) {
-                                controller.reloadData(true, true);
+                            new SessionListWorker(controller.getSession(), cache, directory, listener) {
+                                @Override
+                                public void cleanup(final AttributedList<Path> list) {
+                                    if(controller.getActions().isEmpty()) {
+                                        controller.reloadData(true, true);
+                                    }
+                                }
                             }
-                        }
-                    }
-            )
+                    )
             );
         }
         return this.get(directory);
@@ -256,8 +256,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *              image is currently poised) is in the same application as the source, while a NO value indicates that
      *              the destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     *         any dragging operations, it should return NSDragOperationNone.
+     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     * any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -287,11 +287,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             // Mount .webloc URLs dragged to browser window
             if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                        return true;
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                            controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            return true;
+                        }
                     }
                 }
             }
@@ -301,15 +303,17 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
-                    final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final List<TransferItem> roots = new ArrayList<TransferItem>();
-                    for(int i = 0; i < elements.count().intValue(); i++) {
-                        final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
-                        roots.add(new TransferItem(new Path(destination, local.getName(),
-                                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                    if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                        final NSArray elements = Rococoa.cast(o, NSArray.class);
+                        final List<TransferItem> roots = new ArrayList<TransferItem>();
+                        for(int i = 0; i < elements.count().intValue(); i++) {
+                            final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                            roots.add(new TransferItem(new Path(destination, local.getName(),
+                                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                        }
+                        controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
+                        return true;
                     }
-                    controller.transfer(new UploadTransfer(controller.getSession().getHost(), roots));
-                    return true;
                 }
                 return false;
             }
@@ -362,17 +366,19 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // Dragging URLs to mount new session
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
-                NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    // Validate if .webloc URLs dragged to browser window have a known protocol
-                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
-                        // entire table view to be highlighted rather than a specific row.
-                        view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
-                        return NSDraggingInfo.NSDragOperationCopy;
-                    }
-                    else {
-                        log.warn(String.format("Protocol not supported for URL %s", elements.objectAtIndex(new NSUInteger(i)).toString()));
+                if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        // Validate if .webloc URLs dragged to browser window have a known protocol
+                        if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                            // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
+                            // entire table view to be highlighted rather than a specific row.
+                            view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
+                            return NSDraggingInfo.NSDragOperationCopy;
+                        }
+                        else {
+                            log.warn(String.format("Protocol not supported for URL %s", elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        }
                     }
                 }
             }
@@ -524,10 +530,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     *         blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     * blocking the destination application.
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
