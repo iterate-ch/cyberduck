@@ -258,9 +258,11 @@ public class UserDefaultsPreferences extends Preferences {
         if(null == value) {
             return super.locale();
         }
-        final List<String> languages = this.toList(Rococoa.cast(value, NSArray.class));
-        if(null != languages) {
-            return languages.iterator().next();
+        if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+            final List<String> languages = this.toList(Rococoa.cast(value, NSArray.class));
+            if(null != languages) {
+                return languages.iterator().next();
+            }
         }
         return super.locale();
     }
