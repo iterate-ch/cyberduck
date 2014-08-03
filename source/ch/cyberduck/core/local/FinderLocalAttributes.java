@@ -84,8 +84,11 @@ public class FinderLocalAttributes extends LocalAttributes {
     public long getSize() {
         try {
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSize);
-            // Refer to #5503 and http://code.google.com/p/rococoa/issues/detail?id=3
-            return (long) Rococoa.cast(object, NSNumber.class).doubleValue();
+            if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
+                // Refer to #5503 and http://code.google.com/p/rococoa/issues/detail?id=3
+                return (long) Rococoa.cast(object, NSNumber.class).doubleValue();
+            }
+            return -1;
         }
         catch(AccessDeniedException e) {
             return -1;
@@ -100,8 +103,11 @@ public class FinderLocalAttributes extends LocalAttributes {
         try {
             try {
                 final NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
-                String posixString = Integer.toOctalString(Rococoa.cast(object, NSNumber.class).intValue());
-                return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+                if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
+                    final String posixString = Integer.toOctalString(Rococoa.cast(object, NSNumber.class).intValue());
+                    return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+                }
+                return Permission.EMPTY;
             }
             catch(AccessDeniedException e) {
                 return Permission.EMPTY;
@@ -164,7 +170,10 @@ public class FinderLocalAttributes extends LocalAttributes {
     public long getCreationDate() {
         try {
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
-            return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+            if(object.isKindOfClass(Rococoa.createClass("NSDate", NSDate._Class.class))) {
+                return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
+            }
+            return -1;
         }
         catch(AccessDeniedException e) {
             return -1;
@@ -208,8 +217,11 @@ public class FinderLocalAttributes extends LocalAttributes {
     public Long getInode() {
         try {
             final NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
-            final NSNumber number = Rococoa.cast(object, NSNumber.class);
-            return number.longValue();
+            if(object.isKindOfClass(Rococoa.createClass("NSNumber", NSNumber._Class.class))) {
+                final NSNumber number = Rococoa.cast(object, NSNumber.class);
+                return number.longValue();
+            }
+            return null;
         }
         catch(AccessDeniedException e) {
             return null;
