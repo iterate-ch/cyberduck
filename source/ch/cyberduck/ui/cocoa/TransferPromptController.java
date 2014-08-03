@@ -63,6 +63,9 @@ public abstract class TransferPromptController extends SheetController
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             LocaleFactory.localizedString("Unknown"),
             TRUNCATE_MIDDLE_ATTRIBUTES);
@@ -93,7 +96,7 @@ public abstract class TransferPromptController extends SheetController
         super(parent);
         this.transfer = transfer;
         this.session = session;
-        this.action = TransferAction.forName(Preferences.instance().getProperty(
+        this.action = TransferAction.forName(preferences.getProperty(
                 String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }
 
@@ -111,7 +114,7 @@ public abstract class TransferPromptController extends SheetController
 
     @Override
     public void awakeFromNib() {
-        this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
+        this.setState(this.toggleDetailsButton, preferences.getBoolean("transfer.toggle.details"));
         super.awakeFromNib();
     }
 
@@ -140,7 +143,7 @@ public abstract class TransferPromptController extends SheetController
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.cancel;
         }
-        Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
+        preferences.setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
     }
 
     /**
@@ -174,7 +177,7 @@ public abstract class TransferPromptController extends SheetController
         this.browserView = view;
         this.browserView.setHeaderView(null);
         this.browserView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
         {
             NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
@@ -344,14 +347,14 @@ public abstract class TransferPromptController extends SheetController
         this.browserView.setAllowsColumnResizing(true);
         this.browserView.setAllowsColumnSelection(false);
         this.browserView.setAllowsColumnReordering(true);
-        this.browserView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+        this.browserView.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
+        if(preferences.getBoolean("browser.horizontalLines") && preferences.getBoolean("browser.verticalLines")) {
             this.browserView.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
         }
-        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
+        else if(preferences.getBoolean("browser.verticalLines")) {
             this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
         }
-        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
+        else if(preferences.getBoolean("browser.horizontalLines")) {
             this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
         else {
@@ -431,7 +434,7 @@ public abstract class TransferPromptController extends SheetController
         this.actionPopup.setAutoenablesItems(false);
 
         final TransferAction defaultAction
-                = TransferAction.forName(Preferences.instance().getProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name())));
+                = TransferAction.forName(preferences.getProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name())));
 
         final TransferAction[] actions = this.getTransferActions();
 
@@ -466,7 +469,7 @@ public abstract class TransferPromptController extends SheetController
         if(action.equals(selected)) {
             return;
         }
-        Preferences.instance().setProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name()), selected.name());
+        preferences.setProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name()), selected.name());
         action = selected;
         browserModel.setAction(selected);
         this.reloadData();

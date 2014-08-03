@@ -19,19 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
@@ -77,6 +65,9 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
+
+    private Preferences preferences
+            = Preferences.instance();
 
     public PreferencesController() {
         this.loadBundle();
@@ -268,8 +259,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
         this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
 
-        boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.permissions.change")
-                && Preferences.instance().getBoolean("queue.download.permissions.default");
+        boolean chmodDownloadDefaultEnabled = preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default");
         this.downerr.setEnabled(chmodDownloadDefaultEnabled);
         this.downerr.setTarget(this.id());
         this.downerr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
@@ -300,8 +291,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.dotherx.setTarget(this.id());
         this.dotherx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
 
-        boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.permissions.change")
-                && Preferences.instance().getBoolean("queue.upload.permissions.default");
+        boolean chmodUploadDefaultEnabled = preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default");
         this.uownerr.setEnabled(chmodUploadDefaultEnabled);
         this.uownerr.setTarget(this.id());
         this.uownerr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
@@ -385,7 +376,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
+            preferences.setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
             for(BrowserController controller : MainController.getBrowsers()) {
                 controller.validateToolbar();
             }
@@ -417,7 +408,7 @@ public class PreferencesController extends ToolbarWindowController {
                     log.error("Loading bundle failed:" + path);
                 }
                 else {
-                    Preferences.instance().setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());
+                    preferences.setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());
                     for(BrowserController controller : MainController.getBrowsers()) {
                         controller.validateToolbar();
                     }
@@ -434,12 +425,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEditorCheckbox = b;
         this.defaultEditorCheckbox.setTarget(this.id());
         this.defaultEditorCheckbox.setAction(Foundation.selector("defaultEditorCheckboxClicked:"));
-        this.defaultEditorCheckbox.setState(Preferences.instance().getBoolean("editor.alwaysUseDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.defaultEditorCheckbox.setState(preferences.getBoolean("editor.alwaysUseDefault") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     public void defaultEditorCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("editor.alwaysUseDefault", enabled);
+        preferences.setProperty("editor.alwaysUseDefault", enabled);
     }
 
     @Outlet
@@ -449,7 +440,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.bookmarkSizePopup = b;
         this.bookmarkSizePopup.setTarget(this.id());
         this.bookmarkSizePopup.setAction(Foundation.selector("bookmarkSizePopupClicked:"));
-        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        final int size = preferences.getInteger("bookmark.icon.size");
 //        this.bookmarkSizePopup.itemAtIndex(0).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.SMALL_BOOKMARK_SIZE));
 //        this.bookmarkSizePopup.itemAtIndex(1).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE));
 //        this.bookmarkSizePopup.itemAtIndex(2).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.LARGE_BOOKMARK_SIZE));
@@ -470,13 +461,13 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == 0) {
-            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 1) {
-            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 2) {
-            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         BrowserController.updateBookmarkTableRowHeight();
     }
@@ -488,13 +479,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.openUntitledBrowserCheckbox = b;
         this.openUntitledBrowserCheckbox.setTarget(this.id());
         this.openUntitledBrowserCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
-        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.open.untitled") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.openUntitledBrowserCheckbox.setState(preferences.getBoolean("browser.open.untitled") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void openUntitledBrowserCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.open.untitled", enabled);
+        preferences.setProperty("browser.open.untitled", enabled);
     }
 
     @Outlet
@@ -504,13 +495,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.browserSerializeCheckbox = b;
         this.browserSerializeCheckbox.setTarget(this.id());
         this.browserSerializeCheckbox.setAction(Foundation.selector("browserSerializeCheckboxClicked:"));
-        this.browserSerializeCheckbox.setState(Preferences.instance().getBoolean("browser.serialize") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.browserSerializeCheckbox.setState(preferences.getBoolean("browser.serialize") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void browserSerializeCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.serialize", enabled);
+        preferences.setProperty("browser.serialize", enabled);
     }
 
     @Outlet
@@ -537,7 +528,7 @@ public class PreferencesController extends ToolbarWindowController {
                     String selected = defaultBookmarkCombobox.selectedItem().representedObject();
                     if(StringUtils.isNotEmpty(selected)) {
                         if(selected.equals(bookmark.getUuid())) {
-                            Preferences.instance().deleteProperty("browser.open.bookmark.default");
+                            preferences.deleteProperty("browser.open.bookmark.default");
                         }
                     }
                     NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
@@ -562,7 +553,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.defaultBookmarkCombobox.lastItem().setImage(
                     IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().icon(), 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
-            if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.open.bookmark.default"))) {
+            if(bookmark.getUuid().equals(preferences.getProperty("browser.open.bookmark.default"))) {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
             }
         }
@@ -576,9 +567,9 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultBookmarkComboboxClicked(NSPopUpButton sender) {
         final String selected = sender.selectedItem().representedObject();
         if(null == selected) {
-            Preferences.instance().deleteProperty("browser.open.bookmark.default");
+            preferences.deleteProperty("browser.open.bookmark.default");
         }
-        Preferences.instance().setProperty("browser.open.bookmark.default", selected);
+        preferences.setProperty("browser.open.bookmark.default", selected);
     }
 
     @Outlet
@@ -590,12 +581,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.encodingCombobox.setAction(Foundation.selector("encodingComboboxClicked:"));
         this.encodingCombobox.removeAllItems();
         this.encodingCombobox.addItemsWithTitles(NSArray.arrayWithObjects(MainController.availableCharsets()));
-        this.encodingCombobox.selectItemWithTitle(Preferences.instance().getProperty("browser.charset.encoding"));
+        this.encodingCombobox.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
     }
 
     @Action
     public void encodingComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
+        preferences.setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
     }
 
     @Outlet
@@ -612,10 +603,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+            p = new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+            p = new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:" + sender);
@@ -652,10 +643,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
-            p = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
+            p = new Permission(preferences.getInteger("queue.download.permissions.file.default"));
         }
         if(sender.selectedItem().tag() == 1) {
-            p = new Permission(Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+            p = new Permission(preferences.getInteger("queue.download.permissions.folder.default"));
         }
         if(null == p) {
             log.error("No selected item for:" + sender);
@@ -685,13 +676,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadCheckbox = b;
         this.chmodUploadCheckbox.setTarget(this.id());
         this.chmodUploadCheckbox.setAction(Foundation.selector("chmodUploadCheckboxClicked:"));
-        this.chmodUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadCheckbox.setState(preferences.getBoolean("queue.upload.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void chmodUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.permissions.change", enabled);
+        preferences.setProperty("queue.upload.permissions.change", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
         this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -713,14 +704,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadDefaultCheckbox = b;
         this.chmodUploadDefaultCheckbox.setTarget(this.id());
         this.chmodUploadDefaultCheckbox.setAction(Foundation.selector("chmodUploadDefaultCheckboxClicked:"));
-        this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
+        this.chmodUploadDefaultCheckbox.setState(preferences.getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadDefaultCheckbox.setEnabled(preferences.getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
     public void chmodUploadDefaultCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.permissions.default", enabled);
+        preferences.setProperty("queue.upload.permissions.default", enabled);
         this.uownerr.setEnabled(enabled);
         this.uownerw.setEnabled(enabled);
         this.uownerx.setEnabled(enabled);
@@ -740,14 +731,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodUploadCustomCheckbox = b;
         this.chmodUploadCustomCheckbox.setTarget(this.id());
         this.chmodUploadCustomCheckbox.setAction(Foundation.selector("chmodUploadCustomCheckboxClicked:"));
-        this.chmodUploadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodUploadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.permissions.change"));
+        this.chmodUploadCustomCheckbox.setState(!preferences.getBoolean("queue.upload.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodUploadCustomCheckbox.setEnabled(preferences.getBoolean("queue.upload.permissions.change"));
     }
 
     @Action
     public void chmodUploadCustomCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.permissions.default", !enabled);
+        preferences.setProperty("queue.upload.permissions.default", !enabled);
         this.uownerr.setEnabled(!enabled);
         this.uownerw.setEnabled(!enabled);
         this.uownerx.setEnabled(!enabled);
@@ -767,13 +758,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadCheckbox = b;
         this.chmodDownloadCheckbox.setTarget(this.id());
         this.chmodDownloadCheckbox.setAction(Foundation.selector("chmodDownloadCheckboxClicked:"));
-        this.chmodDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadCheckbox.setState(preferences.getBoolean("queue.download.permissions.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void chmodDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.permissions.change", enabled);
+        preferences.setProperty("queue.download.permissions.change", enabled);
         this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
         this.chmodDownloadCustomCheckbox.setEnabled(enabled);
         boolean chmodDownloadDefaultChecked = this.chmodDownloadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -795,14 +786,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadDefaultCheckbox = b;
         this.chmodDownloadDefaultCheckbox.setTarget(this.id());
         this.chmodDownloadDefaultCheckbox.setAction(Foundation.selector("chmodDownloadDefaultCheckboxClicked:"));
-        this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
+        this.chmodDownloadDefaultCheckbox.setState(preferences.getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadDefaultCheckbox.setEnabled(preferences.getBoolean("queue.download.permissions.change"));
     }
 
     @Action
     public void chmodDownloadDefaultCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.permissions.default", enabled);
+        preferences.setProperty("queue.download.permissions.default", enabled);
         this.downerr.setEnabled(enabled);
         this.downerw.setEnabled(enabled);
         this.downerx.setEnabled(enabled);
@@ -822,14 +813,14 @@ public class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadCustomCheckbox = b;
         this.chmodDownloadCustomCheckbox.setTarget(this.id());
         this.chmodDownloadCustomCheckbox.setAction(Foundation.selector("chmodDownloadCustomCheckboxClicked:"));
-        this.chmodDownloadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
-        this.chmodDownloadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.permissions.change"));
+        this.chmodDownloadCustomCheckbox.setState(!preferences.getBoolean("queue.download.permissions.default") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.chmodDownloadCustomCheckbox.setEnabled(preferences.getBoolean("queue.download.permissions.change"));
     }
 
     @Action
     public void chmodDownloadCustomCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.permissions.default", !enabled);
+        preferences.setProperty("queue.download.permissions.default", !enabled);
         this.downerr.setEnabled(!enabled);
         this.downerw.setEnabled(!enabled);
         this.downerx.setEnabled(!enabled);
@@ -930,10 +921,10 @@ public class PreferencesController extends ToolbarWindowController {
         }
         final Permission permission = new Permission(u, g, o);
         if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getMode());
+            preferences.setProperty("queue.download.permissions.file.default", permission.getMode());
         }
         if(chmodDownloadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getMode());
+            preferences.setProperty("queue.download.permissions.folder.default", permission.getMode());
         }
     }
 
@@ -1026,10 +1017,10 @@ public class PreferencesController extends ToolbarWindowController {
         }
         final Permission permission = new Permission(u, g, o);
         if(chmodUploadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.upload.permissions.file.default", permission.getMode());
+            preferences.setProperty("queue.upload.permissions.file.default", permission.getMode());
         }
         if(chmodUploadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.upload.permissions.folder.default", permission.getMode());
+            preferences.setProperty("queue.upload.permissions.folder.default", permission.getMode());
         }
     }
 
@@ -1040,13 +1031,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.preserveModificationDownloadCheckbox = b;
         this.preserveModificationDownloadCheckbox.setTarget(this.id());
         this.preserveModificationDownloadCheckbox.setAction(Foundation.selector("preserveModificationDownloadCheckboxClicked:"));
-        this.preserveModificationDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.preserveModificationDownloadCheckbox.setState(preferences.getBoolean("queue.download.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void preserveModificationDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.timestamp.change", enabled);
+        preferences.setProperty("queue.download.timestamp.change", enabled);
     }
 
     @Outlet
@@ -1056,13 +1047,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.preserveModificationUploadCheckbox = b;
         this.preserveModificationUploadCheckbox.setTarget(this.id());
         this.preserveModificationUploadCheckbox.setAction(Foundation.selector("preserveModificationUploadCheckboxClicked:"));
-        this.preserveModificationUploadCheckbox.setState(Preferences.instance().getBoolean("queue.upload.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.preserveModificationUploadCheckbox.setState(preferences.getBoolean("queue.upload.timestamp.change") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void preserveModificationUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.timestamp.change", enabled);
+        preferences.setProperty("queue.upload.timestamp.change", enabled);
     }
 
     @Outlet
@@ -1072,13 +1063,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.horizontalLinesCheckbox = b;
         this.horizontalLinesCheckbox.setTarget(this.id());
         this.horizontalLinesCheckbox.setAction(Foundation.selector("horizontalLinesCheckboxClicked:"));
-        this.horizontalLinesCheckbox.setState(Preferences.instance().getBoolean("browser.horizontalLines") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.horizontalLinesCheckbox.setState(preferences.getBoolean("browser.horizontalLines") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void horizontalLinesCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.horizontalLines", enabled);
+        preferences.setProperty("browser.horizontalLines", enabled);
         BrowserController.updateBrowserTableAttributes();
     }
 
@@ -1089,13 +1080,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.verticalLinesCheckbox = b;
         this.verticalLinesCheckbox.setTarget(this.id());
         this.verticalLinesCheckbox.setAction(Foundation.selector("verticalLinesCheckboxClicked:"));
-        this.verticalLinesCheckbox.setState(Preferences.instance().getBoolean("browser.verticalLines") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.verticalLinesCheckbox.setState(preferences.getBoolean("browser.verticalLines") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void verticalLinesCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.verticalLines", enabled);
+        preferences.setProperty("browser.verticalLines", enabled);
         BrowserController.updateBrowserTableAttributes();
     }
 
@@ -1106,13 +1097,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.alternatingRowBackgroundCheckbox = b;
         this.alternatingRowBackgroundCheckbox.setTarget(this.id());
         this.alternatingRowBackgroundCheckbox.setAction(Foundation.selector("alternatingRowBackgroundCheckboxClicked:"));
-        this.alternatingRowBackgroundCheckbox.setState(Preferences.instance().getBoolean("browser.alternatingRows") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.alternatingRowBackgroundCheckbox.setState(preferences.getBoolean("browser.alternatingRows") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void alternatingRowBackgroundCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.alternatingRows", enabled);
+        preferences.setProperty("browser.alternatingRows", enabled);
         BrowserController.updateBrowserTableAttributes();
     }
 
@@ -1123,13 +1114,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.infoWindowAsInspectorCheckbox = b;
         this.infoWindowAsInspectorCheckbox.setTarget(this.id());
         this.infoWindowAsInspectorCheckbox.setAction(Foundation.selector("infoWindowAsInspectorCheckboxClicked:"));
-        this.infoWindowAsInspectorCheckbox.setState(Preferences.instance().getBoolean("browser.info.inspector") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.infoWindowAsInspectorCheckbox.setState(preferences.getBoolean("browser.info.inspector") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void infoWindowAsInspectorCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.info.inspector", enabled);
+        preferences.setProperty("browser.info.inspector", enabled);
     }
 
     @Outlet
@@ -1138,7 +1129,7 @@ public class PreferencesController extends ToolbarWindowController {
     private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     // The currently set download folder
-    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
+    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(preferences.getProperty("queue.download.folder"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
@@ -1187,7 +1178,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("queue.download.folder", sender.representedObject());
+            preferences.setProperty("queue.download.folder", sender.representedObject());
         }
     }
 
@@ -1197,11 +1188,11 @@ public class PreferencesController extends ToolbarWindowController {
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
                 final Local folder = LocalFactory.createLocal(filename);
-                Preferences.instance().setProperty("queue.download.folder", folder.getAbbreviatedPath());
-                Preferences.instance().setProperty("queue.download.folder.bookmark", folder.getBookmark());
+                preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
+                preferences.setProperty("queue.download.folder.bookmark", folder.getBookmark());
             }
         }
-        final Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
+        final Local custom = LocalFactory.createLocal(preferences.getProperty("queue.download.folder"));
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
         item.setTitle(custom.getDisplayName());
         item.setRepresentedObject(custom.getAbsolute());
@@ -1218,7 +1209,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.selectItemAtIndex(
-                new NSInteger(Preferences.instance().getInteger("connection.host.max") == 1 ? TransferPopupOption.browser.ordinal() : TransferPopupOption.queue.ordinal()));
+                new NSInteger(preferences.getInteger("connection.host.max") == 1 ? TransferPopupOption.browser.ordinal() : TransferPopupOption.queue.ordinal()));
     }
 
     private enum TransferPopupOption {
@@ -1229,10 +1220,10 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.browser.ordinal()) {
-            Preferences.instance().setProperty("connection.host.max", 1);
+            preferences.setProperty("connection.host.max", 1);
         }
         else if(sender.indexOfSelectedItem().intValue() == TransferPopupOption.queue.ordinal()) {
-            Preferences.instance().setProperty("connection.host.max", -1);
+            preferences.setProperty("connection.host.max", -1);
         }
     }
 
@@ -1243,7 +1234,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.downloadSkipButton = b;
         this.downloadSkipButton.setTarget(this.id());
         this.downloadSkipButton.setAction(Foundation.selector("downloadSkipButtonClicked:"));
-        this.downloadSkipButton.setState(Preferences.instance().getBoolean("queue.download.skip.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.downloadSkipButton.setState(preferences.getBoolean("queue.download.skip.enable") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
@@ -1252,7 +1243,7 @@ public class PreferencesController extends ToolbarWindowController {
         downloadSkipRegexField.setSelectable(enabled);
         downloadSkipRegexField.setEditable(enabled);
         downloadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
-        Preferences.instance().setProperty("queue.download.skip.enable", enabled);
+        preferences.setProperty("queue.download.skip.enable", enabled);
     }
 
     @Outlet
@@ -1266,9 +1257,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void downloadSkipRegexDefaultButtonClicked(final NSButton sender) {
-        final String regex = Preferences.instance().getProperty("queue.download.skip.regex.default");
+        final String regex = preferences.getProperty("queue.download.skip.regex.default");
         this.downloadSkipRegexField.setString(regex);
-        Preferences.instance().setProperty("queue.download.skip.regex", regex);
+        preferences.setProperty("queue.download.skip.regex", regex);
     }
 
     private NSTextView downloadSkipRegexField;
@@ -1276,7 +1267,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void setDownloadSkipRegexField(NSTextView t) {
         this.downloadSkipRegexField = t;
         this.downloadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-        this.downloadSkipRegexField.setString(Preferences.instance().getProperty("queue.download.skip.regex"));
+        this.downloadSkipRegexField.setString(preferences.getProperty("queue.download.skip.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("downloadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
@@ -1286,13 +1277,13 @@ public class PreferencesController extends ToolbarWindowController {
     public void downloadSkipRegexFieldDidChange(NSNotification sender) {
         String value = this.downloadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
-            Preferences.instance().setProperty("queue.download.skip.enable", false);
-            Preferences.instance().setProperty("queue.download.skip.regex", value);
+            preferences.setProperty("queue.download.skip.enable", false);
+            preferences.setProperty("queue.download.skip.regex", value);
             this.downloadSkipButton.setState(NSCell.NSOffState);
         }
         try {
             Pattern compiled = Pattern.compile(value);
-            Preferences.instance().setProperty("queue.download.skip.regex",
+            preferences.setProperty("queue.download.skip.regex",
                     compiled.pattern());
             this.mark(this.downloadSkipRegexField.textStorage(), null);
         }
@@ -1308,7 +1299,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.uploadSkipButton = b;
         this.uploadSkipButton.setTarget(this.id());
         this.uploadSkipButton.setAction(Foundation.selector("uploadSkipButtonClicked:"));
-        this.uploadSkipButton.setState(Preferences.instance().getBoolean("queue.upload.skip.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.uploadSkipButton.setState(preferences.getBoolean("queue.upload.skip.enable") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
@@ -1317,7 +1308,7 @@ public class PreferencesController extends ToolbarWindowController {
         uploadSkipRegexField.setSelectable(enabled);
         uploadSkipRegexField.setEditable(enabled);
         uploadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
-        Preferences.instance().setProperty("queue.upload.skip.enable", enabled);
+        preferences.setProperty("queue.upload.skip.enable", enabled);
     }
 
     @Outlet
@@ -1331,9 +1322,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void uploadSkipRegexDefaultButtonClicked(final NSButton sender) {
-        final String regex = Preferences.instance().getProperty("queue.upload.skip.regex.default");
+        final String regex = preferences.getProperty("queue.upload.skip.regex.default");
         this.uploadSkipRegexField.setString(regex);
-        Preferences.instance().setProperty("queue.upload.skip.regex", regex);
+        preferences.setProperty("queue.upload.skip.regex", regex);
     }
 
     private NSTextView uploadSkipRegexField;
@@ -1341,7 +1332,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void setUploadSkipRegexField(NSTextView b) {
         this.uploadSkipRegexField = b;
         this.uploadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
-        this.uploadSkipRegexField.setString(Preferences.instance().getProperty("queue.upload.skip.regex"));
+        this.uploadSkipRegexField.setString(preferences.getProperty("queue.upload.skip.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("uploadSkipRegexFieldDidChange:"),
                 NSText.TextDidChangeNotification,
@@ -1351,13 +1342,13 @@ public class PreferencesController extends ToolbarWindowController {
     public void uploadSkipRegexFieldDidChange(NSNotification sender) {
         String value = this.uploadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
-            Preferences.instance().setProperty("queue.upload.skip.enable", false);
-            Preferences.instance().setProperty("queue.upload.skip.regex", value);
+            preferences.setProperty("queue.upload.skip.enable", false);
+            preferences.setProperty("queue.upload.skip.regex", value);
             this.uploadSkipButton.setState(NSCell.NSOffState);
         }
         try {
             Pattern compiled = Pattern.compile(value);
-            Preferences.instance().setProperty("queue.upload.skip.regex",
+            preferences.setProperty("queue.upload.skip.regex",
                     compiled.pattern());
             this.mark(this.uploadSkipRegexField.textStorage(), null);
         }
@@ -1397,13 +1388,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.keychainCheckbox = b;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("connection.login.useKeychain", enabled);
+        preferences.setProperty("connection.login.useKeychain", enabled);
     }
 
     @Outlet
@@ -1413,13 +1404,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.doubleClickCheckbox = b;
         this.doubleClickCheckbox.setTarget(this.id());
         this.doubleClickCheckbox.setAction(Foundation.selector("doubleClickCheckboxClicked:"));
-        this.doubleClickCheckbox.setState(Preferences.instance().getBoolean("browser.doubleclick.edit") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.doubleClickCheckbox.setState(preferences.getBoolean("browser.doubleclick.edit") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void doubleClickCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.doubleclick.edit", enabled);
+        preferences.setProperty("browser.doubleclick.edit", enabled);
     }
 
     @Outlet
@@ -1429,13 +1420,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.returnKeyCheckbox = b;
         this.returnKeyCheckbox.setTarget(this.id());
         this.returnKeyCheckbox.setAction(Foundation.selector("returnKeyCheckboxClicked:"));
-        this.returnKeyCheckbox.setState(Preferences.instance().getBoolean("browser.enterkey.rename") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.returnKeyCheckbox.setState(preferences.getBoolean("browser.enterkey.rename") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void returnKeyCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.enterkey.rename", enabled);
+        preferences.setProperty("browser.enterkey.rename", enabled);
     }
 
     @Outlet
@@ -1445,13 +1436,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.showHiddenCheckbox = b;
         this.showHiddenCheckbox.setTarget(this.id());
         this.showHiddenCheckbox.setAction(Foundation.selector("showHiddenCheckboxClicked:"));
-        this.showHiddenCheckbox.setState(Preferences.instance().getBoolean("browser.showHidden") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.showHiddenCheckbox.setState(preferences.getBoolean("browser.showHidden") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void showHiddenCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.showHidden", enabled);
+        preferences.setProperty("browser.showHidden", enabled);
     }
 
     @Outlet
@@ -1461,13 +1452,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.bringQueueToFrontCheckbox = b;
         this.bringQueueToFrontCheckbox.setTarget(this.id());
         this.bringQueueToFrontCheckbox.setAction(Foundation.selector("bringQueueToFrontCheckboxClicked:"));
-        this.bringQueueToFrontCheckbox.setState(Preferences.instance().getBoolean("queue.window.open.transfer.start") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.bringQueueToFrontCheckbox.setState(preferences.getBoolean("queue.window.open.transfer.start") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void bringQueueToFrontCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.window.open.transfer.start", enabled);
+        preferences.setProperty("queue.window.open.transfer.start", enabled);
     }
 
     @Outlet
@@ -1477,13 +1468,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.bringQueueToBackCheckbox = b;
         this.bringQueueToBackCheckbox.setTarget(this.id());
         this.bringQueueToBackCheckbox.setAction(Foundation.selector("bringQueueToBackCheckboxClicked:"));
-        this.bringQueueToBackCheckbox.setState(Preferences.instance().getBoolean("queue.window.open.transfer.stop") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.bringQueueToBackCheckbox.setState(preferences.getBoolean("queue.window.open.transfer.stop") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void bringQueueToBackCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.window.open.transfer.stop", enabled);
+        preferences.setProperty("queue.window.open.transfer.stop", enabled);
     }
 
     @Outlet
@@ -1493,13 +1484,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.removeFromQueueCheckbox = b;
         this.removeFromQueueCheckbox.setTarget(this.id());
         this.removeFromQueueCheckbox.setAction(Foundation.selector("removeFromQueueCheckboxClicked:"));
-        this.removeFromQueueCheckbox.setState(Preferences.instance().getBoolean("queue.removeItemWhenComplete") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.removeFromQueueCheckbox.setState(preferences.getBoolean("queue.removeItemWhenComplete") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void removeFromQueueCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.removeItemWhenComplete", enabled);
+        preferences.setProperty("queue.removeItemWhenComplete", enabled);
     }
 
     @Outlet
@@ -1509,13 +1500,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.openAfterDownloadCheckbox = b;
         this.openAfterDownloadCheckbox.setTarget(this.id());
         this.openAfterDownloadCheckbox.setAction(Foundation.selector("openAfterDownloadCheckboxClicked:"));
-        this.openAfterDownloadCheckbox.setState(Preferences.instance().getBoolean("queue.download.complete.open") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.openAfterDownloadCheckbox.setState(preferences.getBoolean("queue.download.complete.open") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void openAfterDownloadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.download.complete.open", enabled);
+        preferences.setProperty("queue.download.complete.open", enabled);
     }
 
     @Outlet
@@ -1543,12 +1534,12 @@ public class PreferencesController extends ToolbarWindowController {
             this.duplicateDownloadCombobox.lastItem().setEnabled(false);
         }
         this.duplicateDownloadCombobox.selectItemWithTitle(
-                TransferAction.forName(Preferences.instance().getProperty("queue.download.action")).getTitle());
+                TransferAction.forName(preferences.getProperty("queue.download.action")).getTitle());
     }
 
     @Action
     public void duplicateDownloadComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("queue.download.action",
+        preferences.setProperty("queue.download.action",
                 TransferAction.forName(sender.selectedItem().representedObject()).name());
         this.duplicateDownloadOverwriteButtonClicked(duplicateDownloadOverwriteButton);
     }
@@ -1561,7 +1552,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateDownloadOverwriteButton.setTarget(this.id());
         this.duplicateDownloadOverwriteButton.setAction(Foundation.selector("duplicateDownloadOverwriteButtonClicked:"));
         this.duplicateDownloadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.download.reload.action").equals(
+                preferences.getProperty("queue.download.reload.action").equals(
                         TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
@@ -1569,11 +1560,11 @@ public class PreferencesController extends ToolbarWindowController {
     public void duplicateDownloadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.download.reload.action", TransferAction.overwrite.name());
+            preferences.setProperty("queue.download.reload.action", TransferAction.overwrite.name());
         }
         else {
-            Preferences.instance().setProperty("queue.download.reload.action",
-                    Preferences.instance().getProperty("queue.download.action"));
+            preferences.setProperty("queue.download.reload.action",
+                    preferences.getProperty("queue.download.action"));
         }
     }
 
@@ -1602,12 +1593,12 @@ public class PreferencesController extends ToolbarWindowController {
             this.duplicateUploadCombobox.lastItem().setEnabled(false);
         }
         this.duplicateUploadCombobox.selectItemWithTitle(
-                TransferAction.forName(Preferences.instance().getProperty("queue.upload.action")).getTitle());
+                TransferAction.forName(preferences.getProperty("queue.upload.action")).getTitle());
     }
 
     @Action
     public void duplicateUploadComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("queue.upload.action",
+        preferences.setProperty("queue.upload.action",
                 TransferAction.forName(sender.selectedItem().representedObject()).name());
         this.duplicateUploadOverwriteButtonClicked(duplicateUploadOverwriteButton);
     }
@@ -1620,7 +1611,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateUploadOverwriteButton.setTarget(this.id());
         this.duplicateUploadOverwriteButton.setAction(Foundation.selector("duplicateUploadOverwriteButtonClicked:"));
         this.duplicateUploadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.upload.reload.action").equals(
+                preferences.getProperty("queue.upload.reload.action").equals(
                         TransferAction.overwrite.name()) ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
@@ -1628,11 +1619,11 @@ public class PreferencesController extends ToolbarWindowController {
     public void duplicateUploadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.upload.reload.action", TransferAction.overwrite.name());
+            preferences.setProperty("queue.upload.reload.action", TransferAction.overwrite.name());
         }
         else {
-            Preferences.instance().setProperty("queue.upload.reload.action",
-                    Preferences.instance().getProperty("queue.upload.action"));
+            preferences.setProperty("queue.upload.reload.action",
+                    preferences.getProperty("queue.upload.action"));
         }
     }
 
@@ -1644,13 +1635,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.uploadTemporaryFilenameButton.setTarget(this.id());
         this.uploadTemporaryFilenameButton.setAction(Foundation.selector("uploadTemporaryFilenameButtonClicked:"));
         this.uploadTemporaryFilenameButton.setState(
-                Preferences.instance().getBoolean("queue.upload.file.temporary") ? NSCell.NSOnState : NSCell.NSOffState);
+                preferences.getBoolean("queue.upload.file.temporary") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void uploadTemporaryFilenameButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("queue.upload.file.temporary", enabled);
+        preferences.setProperty("queue.upload.file.temporary", enabled);
     }
 
     @Outlet
@@ -1671,15 +1662,15 @@ public class PreferencesController extends ToolbarWindowController {
         }
 
         final Protocol defaultProtocol
-                = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                = ProtocolFactory.forName(preferences.getProperty("connection.protocol.default"));
         this.protocolCombobox.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
-        Preferences.instance().setProperty("connection.protocol.default", selected.getProvider());
-        Preferences.instance().setProperty("connection.port.default", selected.getDefaultPort());
+        preferences.setProperty("connection.protocol.default", selected.getProvider());
+        preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
 
     @Outlet
@@ -1689,13 +1680,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.confirmDisconnectCheckbox = b;
         this.confirmDisconnectCheckbox.setTarget(this.id());
         this.confirmDisconnectCheckbox.setAction(Foundation.selector("confirmDisconnectCheckboxClicked:"));
-        this.confirmDisconnectCheckbox.setState(Preferences.instance().getBoolean("browser.disconnect.confirm") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.confirmDisconnectCheckbox.setState(preferences.getBoolean("browser.disconnect.confirm") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void confirmDisconnectCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("browser.disconnect.confirm", enabled);
+        preferences.setProperty("browser.disconnect.confirm", enabled);
     }
 
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
@@ -1763,8 +1754,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultDownloadThrottleCombobox = b;
         this.defaultDownloadThrottleCombobox.setTarget(this.id());
         this.defaultDownloadThrottleCombobox.setAction(Foundation.selector("defaultDownloadThrottleComboboxClicked:"));
-        int bandwidth = (int) Preferences.instance().getDouble("queue.download.bandwidth.bytes");
-        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
+        int bandwidth = (int) preferences.getDouble("queue.download.bandwidth.bytes");
+        final StringTokenizer options = new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
             this.defaultDownloadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
@@ -1783,10 +1774,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultDownloadThrottleComboboxClicked(NSPopUpButton sender) {
         String bytes = sender.selectedItem().representedObject();
         if(null == bytes) {
-            Preferences.instance().setProperty("queue.download.bandwidth.bytes", -1);
+            preferences.setProperty("queue.download.bandwidth.bytes", -1);
         }
         else {
-            Preferences.instance().setProperty("queue.download.bandwidth.bytes", Integer.parseInt(bytes));
+            preferences.setProperty("queue.download.bandwidth.bytes", Integer.parseInt(bytes));
         }
     }
 
@@ -1797,8 +1788,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultUploadThrottleCombobox = b;
         this.defaultUploadThrottleCombobox.setTarget(this.id());
         this.defaultUploadThrottleCombobox.setAction(Foundation.selector("defaultUploadThrottleComboboxClicked:"));
-        int bandwidth = (int) Preferences.instance().getDouble("queue.upload.bandwidth.bytes");
-        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
+        int bandwidth = (int) preferences.getDouble("queue.upload.bandwidth.bytes");
+        final StringTokenizer options = new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
             this.defaultUploadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
@@ -1816,10 +1807,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultUploadThrottleComboboxClicked(NSPopUpButton sender) {
         String bytes = sender.selectedItem().representedObject();
         if(null == bytes) {
-            Preferences.instance().setProperty("queue.upload.bandwidth.bytes", -1);
+            preferences.setProperty("queue.upload.bandwidth.bytes", -1);
         }
         else {
-            Preferences.instance().setProperty("queue.upload.bandwidth.bytes", Integer.parseInt(bytes));
+            preferences.setProperty("queue.upload.bandwidth.bytes", Integer.parseInt(bytes));
         }
     }
 
@@ -1830,19 +1821,19 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateCheckbox = b;
         this.updateCheckbox.setTarget(this.id());
         this.updateCheckbox.setAction(Foundation.selector("updateCheckboxClicked:"));
-        this.updateCheckbox.setState(Preferences.instance().getBoolean("update.check") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.updateCheckbox.setState(preferences.getBoolean("update.check") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void updateCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("update.check", enabled);
+        preferences.setProperty("update.check", enabled);
         // Update the Sparkle property. Default is in Info.plist
         if(enabled) {
-            Preferences.instance().setProperty("SUScheduledCheckInterval", Preferences.instance().getProperty("update.check.interval"));
+            preferences.setProperty("SUScheduledCheckInterval", preferences.getProperty("update.check.interval"));
         }
         else {
-            Preferences.instance().deleteProperty("SUScheduledCheckInterval");
+            preferences.deleteProperty("SUScheduledCheckInterval");
         }
     }
 
@@ -1863,17 +1854,17 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.removeAllItems();
         this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Release"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.release"));
+        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.release"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.beta"));
+        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.beta"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.nightly"));
-        String feed = Preferences.instance().getProperty("SUFeedURL");
+        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.nightly"));
+        String feed = preferences.getProperty("SUFeedURL");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
             log.warn(String.format("Invalid feed setting:%s", feed));
             this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
-                    Preferences.instance().getProperty("update.feed.release")));
+                    preferences.getProperty("update.feed.release")));
         }
         else {
             this.updateFeedPopup.selectItemAtIndex(selected);
@@ -1884,12 +1875,12 @@ public class PreferencesController extends ToolbarWindowController {
     public void updateFeedPopupClicked(NSPopUpButton sender) {
         // Update sparkle feed property. Default is in Info.plist
         String selected = sender.selectedItem().representedObject();
-        if(null == selected || Preferences.instance().getDefault("SUFeedURL").equals(selected)) {
+        if(null == selected || preferences.getDefault("SUFeedURL").equals(selected)) {
             // Remove custom value
-            Preferences.instance().deleteProperty("SUFeedURL");
+            preferences.deleteProperty("SUFeedURL");
         }
         else {
-            Preferences.instance().setProperty("SUFeedURL", selected);
+            preferences.setProperty("SUFeedURL", selected);
         }
     }
 
@@ -1906,12 +1897,12 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
-        this.defaultBucketLocation.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));
+        this.defaultBucketLocation.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.location"), "S3"));
     }
 
     @Action
     public void defaultBucketLocationClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("s3.location", sender.selectedItem().representedObject());
+        preferences.setProperty("s3.location", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -1927,12 +1918,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         this.defaultStorageClassPopup.setTarget(this.id());
         this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
-        this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.storage.class"), "S3"));
+        this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.storage.class"), "S3"));
     }
 
     @Action
     public void defaultStorageClassPopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("s3.storage.class", sender.selectedItem().representedObject());
+        preferences.setProperty("s3.storage.class", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -1947,8 +1938,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEncryptionPopup.lastItem().setRepresentedObject("AES256");
         this.defaultEncryptionPopup.setTarget(this.id());
         this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
-        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
-            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString(Preferences.instance().getProperty("s3.encryption.algorithm"), "S3"));
+        if(StringUtils.isNotBlank(preferences.getProperty("s3.encryption.algorithm"))) {
+            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.encryption.algorithm"), "S3"));
         }
         else {
             this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
@@ -1957,7 +1948,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void defaultEncryptionPopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("s3.encryption.algorithm", sender.selectedItem().representedObject());
+        preferences.setProperty("s3.encryption.algorithm", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -1968,7 +1959,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.documentExportFormatPopup.setAutoenablesItems(false);
         this.documentExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
-                Preferences.instance().getProperty("google.docs.export.document.formats"), ",");
+                preferences.getProperty("google.docs.export.document.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String description = FileDescriptorFactory.get().getKind(format);
@@ -1979,7 +1970,7 @@ public class PreferencesController extends ToolbarWindowController {
             }
             this.documentExportFormatPopup.addItemWithTitle(title.toString());
             this.documentExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(Preferences.instance().getProperty("google.docs.export.document"))) {
+            if(format.equals(preferences.getProperty("google.docs.export.document"))) {
                 this.documentExportFormatPopup.selectItemWithTitle(title.toString());
             }
         }
@@ -1989,7 +1980,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void documentExportFormatPopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("google.docs.export.document", sender.selectedItem().representedObject());
+        preferences.setProperty("google.docs.export.document", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -2000,13 +1991,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.spreadsheetExportFormatPopup.setAutoenablesItems(false);
         this.spreadsheetExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
-                Preferences.instance().getProperty("google.docs.export.spreadsheet.formats"), ",");
+                preferences.getProperty("google.docs.export.spreadsheet.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
             this.spreadsheetExportFormatPopup.addItemWithTitle(title);
             this.spreadsheetExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(Preferences.instance().getProperty("google.docs.export.spreadsheet"))) {
+            if(format.equals(preferences.getProperty("google.docs.export.spreadsheet"))) {
                 this.spreadsheetExportFormatPopup.selectItemWithTitle(title);
             }
         }
@@ -2016,7 +2007,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void spreadsheetExportFormatPopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("google.docs.export.spreadsheet", sender.selectedItem().representedObject());
+        preferences.setProperty("google.docs.export.spreadsheet", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -2027,13 +2018,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.presentationExportFormatPopup.setAutoenablesItems(false);
         this.presentationExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
-                Preferences.instance().getProperty("google.docs.export.presentation.formats"), ",");
+                preferences.getProperty("google.docs.export.presentation.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
             this.presentationExportFormatPopup.addItemWithTitle(title);
             this.presentationExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(Preferences.instance().getProperty("google.docs.export.presentation"))) {
+            if(format.equals(preferences.getProperty("google.docs.export.presentation"))) {
                 this.presentationExportFormatPopup.selectItemWithTitle(title);
             }
         }
@@ -2043,7 +2034,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void presentationExportFormatPopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("google.docs.export.presentation", sender.selectedItem().representedObject());
+        preferences.setProperty("google.docs.export.presentation", sender.selectedItem().representedObject());
     }
 
     @Outlet
@@ -2053,12 +2044,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.convertUploadsCheckbox = b;
         this.convertUploadsCheckbox.setTarget(this.id());
         this.convertUploadsCheckbox.setAction(Foundation.selector("convertUploadsCheckboxClicked:"));
-        this.convertUploadsCheckbox.setState(Preferences.instance().getBoolean("google.docs.upload.convert") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.convertUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.convert") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void convertUploadsCheckboxClicked(NSButton sender) {
-        Preferences.instance().setProperty("google.docs.upload.convert", sender.state() == NSCell.NSOnState);
+        preferences.setProperty("google.docs.upload.convert", sender.state() == NSCell.NSOnState);
     }
 
     @Outlet
@@ -2068,12 +2059,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.ocrUploadsCheckbox = b;
         this.ocrUploadsCheckbox.setTarget(this.id());
         this.ocrUploadsCheckbox.setAction(Foundation.selector("ocrUploadsCheckboxClicked:"));
-        this.ocrUploadsCheckbox.setState(Preferences.instance().getBoolean("google.docs.upload.ocr") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.ocrUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.ocr") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void ocrUploadsCheckboxClicked(NSButton sender) {
-        Preferences.instance().setProperty("google.docs.upload.ocr", sender.state() == NSCell.NSOnState);
+        preferences.setProperty("google.docs.upload.ocr", sender.state() == NSCell.NSOnState);
     }
 
     @Outlet
@@ -2087,17 +2078,17 @@ public class PreferencesController extends ToolbarWindowController {
         this.languagePopup.addItemWithTitle(LocaleFactory.localizedString("Default"));
         this.languagePopup.menu().addItem(NSMenuItem.separatorItem());
         String custom = null;
-        if(Preferences.instance().systemLocales().size() > 1) {
+        if(preferences.systemLocales().size() > 1) {
             // No user default application scope single value of AppleLanguages property is set but a list
             // of preferred languages from system preferences is returned.
             this.languagePopup.selectItemWithTitle(LocaleFactory.localizedString("Default"));
         }
         else {
             // Custom language set for this application identifier
-            custom = Preferences.instance().locale();
+            custom = preferences.locale();
         }
-        for(String identifier : Preferences.instance().applicationLocales()) {
-            this.languagePopup.addItemWithTitle(Preferences.instance().getDisplayName(identifier));
+        for(String identifier : preferences.applicationLocales()) {
+            this.languagePopup.addItemWithTitle(preferences.getDisplayName(identifier));
             this.languagePopup.lastItem().setRepresentedObject(identifier);
             if(identifier.equals(custom)) {
                 this.languagePopup.selectItem(this.languagePopup.lastItem());
@@ -2109,10 +2100,10 @@ public class PreferencesController extends ToolbarWindowController {
     public void languagePopupClicked(NSPopUpButton sender) {
         if(null == sender.selectedItem().representedObject()) {
             // Revert to system default language
-            Preferences.instance().deleteProperty("AppleLanguages");
+            preferences.deleteProperty("AppleLanguages");
         }
         else {
-            Preferences.instance().setProperty("AppleLanguages",
+            preferences.setProperty("AppleLanguages",
                     Collections.singletonList(sender.selectedItem().representedObject()));
         }
     }
@@ -2124,12 +2115,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.useProxiesButton = b;
         this.useProxiesButton.setTarget(this.id());
         this.useProxiesButton.setAction(Foundation.selector("useProxiesButtonClicked:"));
-        this.useProxiesButton.setState(Preferences.instance().getBoolean("connection.proxy.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.useProxiesButton.setState(preferences.getBoolean("connection.proxy.enable") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void useProxiesButtonClicked(NSButton sender) {
-        Preferences.instance().setProperty("connection.proxy.enable", sender.state() == NSCell.NSOnState);
+        preferences.setProperty("connection.proxy.enable", sender.state() == NSCell.NSOnState);
     }
 
     @Outlet

@@ -19,16 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -91,6 +82,9 @@ public final class TransferController extends WindowController implements NSTool
     private NSToolbar toolbar;
 
     private RevealService reveal = RevealServiceFactory.get();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     private TransferCollection collection = TransferCollection.defaultCollection();
 
@@ -280,11 +274,11 @@ public final class TransferController extends WindowController implements NSTool
     private NSDrawer logDrawer;
 
     public void drawerDidOpen(NSNotification notification) {
-        Preferences.instance().setProperty("queue.transcript.open", true);
+        preferences.setProperty("queue.transcript.open", true);
     }
 
     public void drawerDidClose(NSNotification notification) {
-        Preferences.instance().setProperty("queue.transcript.open", false);
+        preferences.setProperty("queue.transcript.open", false);
         transcript.clear();
     }
 
@@ -325,7 +319,7 @@ public final class TransferController extends WindowController implements NSTool
         this.bandwidthPopup.addItemWithTitle(LocaleFactory.localizedString("Unlimited Bandwidth", "Transfer"));
         this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
         this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
-        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
+        final StringTokenizer options = new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
             this.bandwidthPopup.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
@@ -337,7 +331,7 @@ public final class TransferController extends WindowController implements NSTool
     private class BandwidthMenuDelegate extends AbstractMenuDelegate {
         @Override
         public NSInteger numberOfItemsInMenu(NSMenu menu) {
-            return new NSInteger(new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",").countTokens() + 3);
+            return new NSInteger(new StringTokenizer(preferences.getProperty("queue.bandwidth.options"), ",").countTokens() + 3);
         }
 
         @Override
@@ -614,7 +608,7 @@ public final class TransferController extends WindowController implements NSTool
      * @param transfer Transfer
      */
     public void add(final Transfer transfer, final BackgroundAction action) {
-        if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
+        if(collection.size() > preferences.getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
                     TransferToolbarItem.cleanup.label(), //title
                     LocaleFactory.localizedString("Remove completed transfers from list."), // message
@@ -629,7 +623,7 @@ public final class TransferController extends WindowController implements NSTool
                 public void callback(int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty("queue.size.warn", Integer.MAX_VALUE);
+                        preferences.setProperty("queue.size.warn", Integer.MAX_VALUE);
                     }
                     if(returncode == DEFAULT_OPTION) {
                         clearButtonClicked(null);
@@ -701,7 +695,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void init() {
                 super.init();
-                if(Preferences.instance().getBoolean("queue.window.open.transfer.start")) {
+                if(preferences.getBoolean("queue.window.open.transfer.start")) {
                     window.makeKeyAndOrderFront(null);
                 }
             }
@@ -718,7 +712,7 @@ public final class TransferController extends WindowController implements NSTool
             public void cleanup() {
                 super.cleanup();
                 if(transfer.isReset() && transfer.isComplete()) {
-                    if(Preferences.instance().getBoolean("queue.window.open.transfer.stop")) {
+                    if(preferences.getBoolean("queue.window.open.transfer.stop")) {
                         if(!(collection.numberOfRunningTransfers() > 0)) {
                             window.close();
                         }

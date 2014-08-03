@@ -43,6 +43,9 @@ import org.rococoa.cocoa.foundation.NSInteger;
 public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
 
+    private Preferences preferences
+            = Preferences.instance();
+
     @Override
     protected void invalidate() {
         hostField.setDelegate(null);
@@ -68,7 +71,7 @@ public class ConnectionController extends SheetController {
     @Override
     public void awakeFromNib() {
         this.protocolSelectionDidChange(null);
-        this.setState(toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
+        this.setState(toggleOptionsButton, preferences.getBoolean("connection.toggle.options"));
         super.awakeFromNib();
     }
 
@@ -96,7 +99,7 @@ public class ConnectionController extends SheetController {
             item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
-                = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                = ProtocolFactory.forName(preferences.getProperty("connection.protocol.default"));
         this.protocolPopup.selectItemAtIndex(
                 protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(defaultProtocol.hashCode()))
         );
@@ -331,7 +334,7 @@ public class ConnectionController extends SheetController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
-        this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+        this.usernameField.setStringValue(preferences.getProperty("connection.login.name"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -371,15 +374,15 @@ public class ConnectionController extends SheetController {
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
-        this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
-                && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain")
+                && preferences.getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
     }
 
     public void keychainCheckboxClicked(final NSButton sender) {
         final boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("connection.login.addKeychain", enabled);
+        preferences.setProperty("connection.login.addKeychain", enabled);
     }
 
     @Outlet
@@ -396,13 +399,13 @@ public class ConnectionController extends SheetController {
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
             this.usernameField.setEnabled(false);
-            this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anon.name"));
+            this.usernameField.setStringValue(preferences.getProperty("connection.login.anon.name"));
             this.passField.setEnabled(false);
             this.passField.setStringValue(StringUtils.EMPTY);
         }
         if(sender.state() == NSCell.NSOffState) {
             this.usernameField.setEnabled(true);
-            this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+            this.usernameField.setStringValue(preferences.getProperty("connection.login.name"));
             this.passField.setEnabled(true);
         }
         this.updateURLLabel();
@@ -511,7 +514,7 @@ public class ConnectionController extends SheetController {
      * is avaialble for this hostname
      */
     public void readPasswordFromKeychain() {
-        if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+        if(preferences.getBoolean("connection.login.useKeychain")) {
             if(StringUtils.isBlank(hostField.stringValue())) {
                 return;
             }
@@ -600,6 +603,6 @@ public class ConnectionController extends SheetController {
             }
             ((BrowserController) parent).mount(host);
         }
-        Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
+        preferences.setProperty("connection.toggle.options", this.toggleOptionsButton.state());
     }
 }

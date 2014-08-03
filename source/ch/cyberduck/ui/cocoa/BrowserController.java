@@ -137,6 +137,9 @@ public class BrowserController extends WindowController
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     /**
      * Hide files beginning with '.'
      */
@@ -234,7 +237,7 @@ public class BrowserController extends WindowController
         this.window().makeFirstResponder(quickConnectPopup);
         this._updateBrowserColumns(browserListView, browserListViewDelegate);
         this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
-        if(Preferences.instance().getBoolean("browser.transcript.open")) {
+        if(preferences.getBoolean("browser.transcript.open")) {
             this.logDrawer.open();
         }
         if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
@@ -513,7 +516,7 @@ public class BrowserController extends WindowController
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setTitle(Preferences.instance().getProperty("application.name"));
+        window.setTitle(preferences.getProperty("application.name"));
         window.setMiniwindowImage(IconCacheFactory.<NSImage>get().iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
@@ -525,11 +528,11 @@ public class BrowserController extends WindowController
     private NSDrawer logDrawer;
 
     public void drawerDidOpen(NSNotification notification) {
-        Preferences.instance().setProperty("browser.transcript.open", true);
+        preferences.setProperty("browser.transcript.open", true);
     }
 
     public void drawerDidClose(NSNotification notification) {
-        Preferences.instance().setProperty("browser.transcript.open", false);
+        preferences.setProperty("browser.transcript.open", false);
         transcript.clear();
     }
 
@@ -601,7 +604,7 @@ public class BrowserController extends WindowController
      * @return The currently selected browser view (which is either an outlineview or a plain tableview)
      */
     public NSTableView getSelectedBrowserView() {
-        switch(Preferences.instance().getInteger("browser.view")) {
+        switch(preferences.getInteger("browser.view")) {
             case SWITCH_LIST_VIEW: {
                 return browserListView;
             }
@@ -833,7 +836,7 @@ public class BrowserController extends WindowController
             this.selectBookmarks();
         }
         else {
-            this.selectBrowser(Preferences.instance().getInteger("browser.view"));
+            this.selectBrowser(preferences.getInteger("browser.view"));
         }
     }
 
@@ -856,7 +859,7 @@ public class BrowserController extends WindowController
         final NSSegmentedCell cell = Rococoa.cast(browserSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
         cell.setControlSize(NSCell.NSRegularControlSize);
-        browserSwitchView.setSelectedSegment(Preferences.instance().getInteger("browser.view"));
+        browserSwitchView.setSelectedSegment(preferences.getInteger("browser.view"));
     }
 
     @Action
@@ -883,7 +886,7 @@ public class BrowserController extends WindowController
                 break;
         }
         // Save selected browser view
-        Preferences.instance().setProperty("browser.view", selected);
+        preferences.setProperty("browser.view", selected);
         // Remove any custom file filter
         this.setPathFilter(null);
         // Update from model
@@ -1035,7 +1038,7 @@ public class BrowserController extends WindowController
 
         @Override
         public boolean isColumnRowEditable(NSTableColumn column, int row) {
-            if(Preferences.instance().getBoolean("browser.editable")) {
+            if(preferences.getBoolean("browser.editable")) {
                 return column.identifier().equals(BrowserTableDataSource.Column.filename.name());
             }
             return false;
@@ -1066,7 +1069,7 @@ public class BrowserController extends WindowController
                 // Set the newly selected column
                 this.setSelectedColumn(tableColumn);
                 // Update the default value
-                Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
+                preferences.setProperty("browser.sort.column", this.selectedColumnIdentifier());
             }
             this.setBrowserColumnSortingIndicator(
                     this.isSortedAscending() ?
@@ -1079,7 +1082,7 @@ public class BrowserController extends WindowController
 
         @Override
         public void columnDidResize(final String columnIdentifier, final float width) {
-            Preferences.instance().setProperty(String.format("browser.column.%s.width", columnIdentifier), width);
+            preferences.setProperty(String.format("browser.column.%s.width", columnIdentifier), width);
         }
 
         @Override
@@ -1088,7 +1091,7 @@ public class BrowserController extends WindowController
             if(quicklook.isOpen()) {
                 updateQuickLookSelection(selected);
             }
-            if(Preferences.instance().getBoolean("browser.info.inspector")) {
+            if(preferences.getBoolean("browser.info.inspector")) {
                 InfoController c = InfoControllerFactory.get(BrowserController.this);
                 if(null != c) {
                     // Currently open info panel
@@ -1202,13 +1205,13 @@ public class BrowserController extends WindowController
         browserOutlineView.setAllowsColumnReordering(true);
 
         browserOutlineView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
 
         {
             NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(new CGFloat(100));
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.filename.name())));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1222,7 +1225,7 @@ public class BrowserController extends WindowController
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
-                if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
+                if(preferences.getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
                         renameFileButtonClicked(sender);
                     }
@@ -1265,7 +1268,7 @@ public class BrowserController extends WindowController
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     if(NSEvent.NSLeftMouseDragged == event.type()) {
-                        if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                        if(!preferences.getBoolean("browser.view.autoexpand")) {
                             if(log.isDebugEnabled()) {
                                 log.debug("Returning false to #outlineViewShouldExpandItem while dragging because browser.view.autoexpand == false");
                             }
@@ -1327,13 +1330,13 @@ public class BrowserController extends WindowController
         browserListView.setAllowsColumnReordering(true);
 
         browserListView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
 
         {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.icon.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth((20));
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.icon.name())));
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
@@ -1345,7 +1348,7 @@ public class BrowserController extends WindowController
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth((100));
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.filename.name())));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1359,7 +1362,7 @@ public class BrowserController extends WindowController
         ) {
             @Override
             public void enterKeyPressed(final ID sender) {
-                if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
+                if(preferences.getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows().intValue() == 1) {
                         renameFileButtonClicked(sender);
                     }
@@ -1394,14 +1397,14 @@ public class BrowserController extends WindowController
     }
 
     protected void _updateBrowserAttributes(NSTableView tableView) {
-        tableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+        tableView.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
+        if(preferences.getBoolean("browser.horizontalLines") && preferences.getBoolean("browser.verticalLines")) {
             tableView.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
         }
-        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
+        else if(preferences.getBoolean("browser.verticalLines")) {
             tableView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
         }
-        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
+        else if(preferences.getBoolean("browser.horizontalLines")) {
             tableView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
         else {
@@ -1410,7 +1413,7 @@ public class BrowserController extends WindowController
     }
 
     protected void _updateBookmarkCell() {
-        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        final int size = preferences.getInteger("bookmark.icon.size");
         final double width = size * 1.5;
         final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.icon.name());
         c.setMinWidth(width);
@@ -1423,11 +1426,11 @@ public class BrowserController extends WindowController
 
     private void _updateBrowserColumns(final NSTableView table, final AbstractBrowserTableDelegate<Path> delegate) {
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.size.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.size.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.size.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.size.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Size"));
             c.setMinWidth(50f);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.size.name())));
             c.setMaxWidth(150f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1435,11 +1438,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.modified.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.modified.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.modified.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.modified.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Modified"));
             c.setMinWidth(100f);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.modified.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1447,11 +1450,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.owner.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.owner.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.owner.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.owner.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Owner"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.owner.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1459,11 +1462,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.group.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.group.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.group.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Group"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.group.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1471,11 +1474,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.permission.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.permission.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.permission.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Permissions"));
             c.setMinWidth(100);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.permission.name())));
             c.setMaxWidth(800);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1483,11 +1486,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.kind.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.kind.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.kind.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.kind.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Kind"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.kind.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1495,11 +1498,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.extension.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.extension.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.extension.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.extension.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Extension"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.extension.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1507,11 +1510,11 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.region.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.region.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.region.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Region"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.region.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
@@ -1519,18 +1522,18 @@ public class BrowserController extends WindowController
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.Column.version.name()));
-        if(Preferences.instance().getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.version.name()))) {
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserTableDataSource.Column.version.name()))) {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.Column.version.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Version"));
             c.setMinWidth(50);
-            c.setWidth(Preferences.instance().getFloat(String.format("browser.column.%s.width",
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                     BrowserTableDataSource.Column.version.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
-        NSTableColumn selected = table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column"));
+        NSTableColumn selected = table.tableColumnWithIdentifier(preferences.getProperty("browser.sort.column"));
         if(null == selected) {
             selected = table.tableColumnWithIdentifier(BrowserTableDataSource.Column.filename.name());
         }
@@ -1620,7 +1623,7 @@ public class BrowserController extends WindowController
             }
 
             public CGFloat tableView_heightOfRow(NSTableView view, NSInteger row) {
-                final int size = Preferences.instance().getInteger("bookmark.icon.size");
+                final int size = preferences.getInteger("bookmark.icon.size");
                 if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
                     return new CGFloat(18);
                 }
@@ -1695,7 +1698,7 @@ public class BrowserController extends WindowController
         ));
         this._updateBookmarkCell();
 
-        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        final int size = preferences.getInteger("bookmark.icon.size");
         if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
             this.bookmarkTable.setRowHeight(new CGFloat(18));
         }
@@ -1707,7 +1710,7 @@ public class BrowserController extends WindowController
         }
 
         // setting appearance attributes()
-        this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        this.bookmarkTable.setUsesAlternatingRowBackgroundColors(preferences.getBoolean("browser.alternatingRows"));
         this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
 
         // selection properties
@@ -1896,9 +1899,9 @@ public class BrowserController extends WindowController
             bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            bookmark = new Host(ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
-                    Preferences.instance().getProperty("connection.hostname.default"),
-                    Preferences.instance().getInteger("connection.port.default"));
+            bookmark = new Host(ProtocolFactory.forName(preferences.getProperty("connection.protocol.default")),
+                    preferences.getProperty("connection.hostname.default"),
+                    preferences.getInteger("connection.port.default"));
         }
         this.selectBookmarks();
         this.addBookmark(bookmark);
@@ -2073,7 +2076,7 @@ public class BrowserController extends WindowController
         this.encodingPopup.setAction(Foundation.selector("encodingButtonClicked:"));
         this.encodingPopup.removeAllItems();
         this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(MainController.availableCharsets()));
-        this.encodingPopup.selectItemWithTitle(Preferences.instance().getProperty("browser.charset.encoding"));
+        this.encodingPopup.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
     }
 
     @Action
@@ -2388,7 +2391,7 @@ public class BrowserController extends WindowController
      * @param selected The files to check for existence
      */
     private void checkMove(final Map<Path, Path> selected, final MainAction action) {
-        if(Preferences.instance().getBoolean("browser.move.confirm")) {
+        if(preferences.getBoolean("browser.move.confirm")) {
             StringBuilder alertText = new StringBuilder(
                     LocaleFactory.localizedString("Do you want to move the selected files?"));
             int i = 0;
@@ -2419,7 +2422,7 @@ public class BrowserController extends WindowController
                 public void callback(final int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty("browser.move.confirm", false);
+                        preferences.setProperty("browser.move.confirm", false);
                     }
                     if(returncode == DEFAULT_OPTION) {
                         checkOverwrite(new ArrayList<Path>(selected.values()), action);
@@ -2858,7 +2861,7 @@ public class BrowserController extends WindowController
             this.setWorkdir(selected);
         }
         else if(selected.isFile() || this.getSelectionCount() > 1) {
-            if(Preferences.instance().getBoolean("browser.doubleclick.edit")) {
+            if(preferences.getBoolean("browser.doubleclick.edit")) {
                 this.editButtonClicked(null);
             }
             else {
@@ -2891,11 +2894,11 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                if(Preferences.instance().getBoolean("browser.disconnect.bookmarks.show")) {
+                if(preferences.getBoolean("browser.disconnect.bookmarks.show")) {
                     selectBookmarks();
                 }
                 else {
-                    selectBrowser(Preferences.instance().getInteger("browser.view"));
+                    selectBrowser(preferences.getInteger("browser.view"));
                 }
             }
         });
@@ -3305,10 +3308,10 @@ public class BrowserController extends WindowController
                                     // Set the working directory
                                     setWorkdir(workdir);
                                     // Close bookmarks
-                                    selectBrowser(Preferences.instance().getInteger("browser.view"));
+                                    selectBrowser(preferences.getInteger("browser.view"));
                                     // Set the window title
                                     window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
-                                    if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
+                                    if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
                                     securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("locked.tiff")
@@ -3370,7 +3373,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Unmount session %s", session));
         }
         if(this.isConnected() || this.isActivityRunning()) {
-            if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
+            if(preferences.getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
                         MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
@@ -3386,7 +3389,7 @@ public class BrowserController extends WindowController
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
                             // Never show again.
-                            Preferences.instance().setProperty("browser.disconnect.confirm", false);
+                            preferences.setProperty("browser.disconnect.confirm", false);
                         }
                         callback.callback(returncode);
                     }
@@ -3413,7 +3416,7 @@ public class BrowserController extends WindowController
                     PathPasteboardFactory.delete(session);
                 }
                 session = null;
-                window.setTitle(Preferences.instance().getProperty("application.name"));
+                window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 disconnected.run();
             }
@@ -3582,12 +3585,12 @@ public class BrowserController extends WindowController
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
-                item.setState(Preferences.instance().getProperty("browser.charset.encoding").equalsIgnoreCase(
+                item.setState(preferences.getProperty("browser.charset.encoding").equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
         }
         else if(action.equals(Foundation.selector("browserSwitchMenuClicked:"))) {
-            if(item.tag() == Preferences.instance().getInteger("browser.view")) {
+            if(item.tag() == preferences.getInteger("browser.view")) {
                 item.setState(NSCell.NSOnState);
             }
             else {
@@ -4137,7 +4140,7 @@ public class BrowserController extends WindowController
         else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
             final ApplicationFinder finder = ApplicationFinderFactory.get();
             final Application application
-                    = finder.getDescription(Preferences.instance().getProperty("terminal.bundle.identifier"));
+                    = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
 
             item.setLabel(application.getName());
             item.setPaletteLabel(application.getName());

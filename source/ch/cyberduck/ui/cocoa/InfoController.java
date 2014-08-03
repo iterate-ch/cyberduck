@@ -29,16 +29,7 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Lifecycle;
-import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -107,6 +98,9 @@ public class InfoController extends ToolbarWindowController {
 
     private PathContainerService containerService
             = new PathContainerService();
+
+    private Preferences preferences
+            = Preferences.instance();
 
     private Path getSelected() {
         for(Path file : files) {
@@ -498,7 +492,7 @@ public class InfoController extends ToolbarWindowController {
                     final Session<?> session = controller.getSession();
                     final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
+                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
                         iam.create(controller.getSession().getFeature(AnalyticsProvider.class).getName(), document, prompt);
                     }
                     else {
@@ -630,7 +624,7 @@ public class InfoController extends ToolbarWindowController {
     public void setLifecycleTransitionPopup(final NSPopUpButton b) {
         this.lifecycleTransitionPopup = b;
         this.lifecycleTransitionPopup.setTarget(this.id());
-        for(String option : Preferences.instance().getList("s3.lifecycle.transition.options")) {
+        for(String option : preferences.getList("s3.lifecycle.transition.options")) {
             this.lifecycleTransitionPopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), option));
             this.lifecycleTransitionPopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleTransitionPopup.lastItem().setTarget(this.id());
@@ -651,7 +645,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setLifecycleDeletePopup(final NSPopUpButton b) {
         this.lifecycleDeletePopup = b;
-        for(String option : Preferences.instance().getList("s3.lifecycle.delete.options")) {
+        for(String option : preferences.getList("s3.lifecycle.delete.options")) {
             this.lifecycleDeletePopup.addItemWithTitle(MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"), option));
             this.lifecycleDeletePopup.lastItem().setAction(Foundation.selector("lifecyclePopupClicked:"));
             this.lifecycleDeletePopup.lastItem().setTarget(this.id());
@@ -1147,7 +1141,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void metadataAddCacheControlClicked(ID sender) {
         this.addMetadataItem("Cache-Control",
-                "public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
+                "public,max-age=" + preferences.getInteger("s3.cache.seconds"));
     }
 
     @Action
@@ -1168,7 +1162,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void metadataAddExpiresClicked(ID sender) {
         final Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        time.add(Calendar.SECOND, Preferences.instance().getInteger("s3.cache.seconds"));
+        time.add(Calendar.SECOND, preferences.getInteger("s3.cache.seconds"));
         this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime(), TimeZone.getTimeZone("UTC")));
     }
 
@@ -1333,7 +1327,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public boolean isSingleton() {
-        return Preferences.instance().getBoolean("browser.info.inspector");
+        return preferences.getBoolean("browser.info.inspector");
     }
 
     private BrowserController controller;
@@ -2706,7 +2700,7 @@ public class InfoController extends ToolbarWindowController {
                 public Void run() throws BackgroundException {
                     final Session<?> session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
+                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
                         session.getFeature(IdentityConfiguration.class).create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
                     }
                     else {
@@ -2783,7 +2777,7 @@ public class InfoController extends ToolbarWindowController {
     @Override
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        final StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
         switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
             case info:
                 site.append("/howto/info");

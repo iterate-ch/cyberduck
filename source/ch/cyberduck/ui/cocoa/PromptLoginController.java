@@ -18,33 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.LoginControllerFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -76,6 +54,9 @@ public final class PromptLoginController implements LoginCallback {
             return new PromptLoginController((WindowController) c);
         }
     }
+
+    private Preferences preferences
+            = Preferences.instance();
 
     private WindowController parent;
 
@@ -241,13 +222,13 @@ public final class PromptLoginController implements LoginCallback {
                 this.keychainCheckbox = keychainCheckbox;
                 this.keychainCheckbox.setTarget(this.id());
                 this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-                this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
-                        && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+                this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain")
+                        && preferences.getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
             }
 
             public void keychainCheckboxClicked(final NSButton sender) {
                 final boolean enabled = sender.state() == NSCell.NSOnState;
-                Preferences.instance().setProperty("connection.login.addKeychain", enabled);
+                preferences.setProperty("connection.login.addKeychain", enabled);
             }
 
             @Outlet
@@ -262,11 +243,11 @@ public final class PromptLoginController implements LoginCallback {
             @Action
             public void anonymousCheckboxClicked(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
-                    credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
-                    credentials.setPassword(Preferences.instance().getProperty("connection.login.anon.pass"));
+                    credentials.setUsername(preferences.getProperty("connection.login.anon.name"));
+                    credentials.setPassword(preferences.getProperty("connection.login.anon.pass"));
                 }
                 if(sender.state() == NSCell.NSOffState) {
-                    credentials.setUsername(Preferences.instance().getProperty("connection.login.name"));
+                    credentials.setUsername(preferences.getProperty("connection.login.name"));
                     credentials.setPassword(null);
                 }
                 this.updateField(this.usernameField, credentials.getUsername());
