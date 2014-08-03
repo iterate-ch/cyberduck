@@ -36,10 +36,9 @@
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.profiles" value="${app.resources}/Profiles"/>
     <property name="app.bookmarks" value="${app.resources}/Bookmarks"/>
-    <property name="app.java" value="${app.resources}/Java"/>
-    <property name="app.runtime" value="${app.java}/Runtime.jre"/>
+    <property name="app.runtime" value="${app.macos}/Runtime.jre"/>
     <property name="app.runtime.lib"
-              value="@executable_path/../Resources/Java/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
+              value="@executable_path/../MacOS/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
     <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.6.8"/>
 
@@ -50,20 +49,19 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime.home" value="${lib}/1.7.0-u40-b30.jre"/>
+    <property name="jvm.runtime.home" value="${lib}/1.8.0.jre"/>
     <property name="jvm.runtime.bundle.home" value="${jvm.runtime.home}/Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="${jvm.runtime.home}/Contents/Home/lib"/>
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
     <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
-    <property name="codesign.resources" value="${home}/codesign-resources.plist"/>
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${home}/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${home}/codesign-requirement.bin"/>
     <property name="codesign.options" value="--timestamp=none --force"/>
     <property name="codesign.arg"
-              value="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement} --resource-rules ${codesign.resources}"/>
+              value="--entitlements ${codesign.entitlements} --requirements ${codesign.requirement}"/>
 
     <property name="keychain.password" value=""/>
 
@@ -125,7 +123,7 @@
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="-sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
-        <copy todir="${app.java}">
+        <copy todir="${app.frameworks}">
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
                 <include name="*.jar"/>
@@ -153,7 +151,7 @@
             <param name="codesign.options" value="--force"/>
             <!-- No sandboxing enabled -->
             <param name="codesign.arg"
-                   value="--requirements ${codesign.requirement} --resource-rules ${codesign.resources}"/>
+                   value="--requirements ${codesign.requirement}"/>
             <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
         </antcall>
         <antcall target="tar">
@@ -210,7 +208,7 @@
         <antcall target="codesign">
             <param name="codesign.options" value="--force"/>
             <param name="codesign.arg"
-                   value="--entitlements ${codesign.entitlements} --resource-rules ${codesign.resources}"/>
+                   value="--entitlements ${codesign.entitlements}"/>
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
         </antcall>
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
@@ -292,7 +290,7 @@
                type="file"
                parallel="false" spawn="false" force="true">
             <arg line="-change ${oldname} ${newname}"/>
-            <fileset dir="${app.java}">
+            <fileset dir="${app.frameworks}">
                 <include name="*.dylib"/>
             </fileset>
             <srcfile/>
@@ -305,8 +303,9 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg line="${codesign.options} --identifier ch.sudo.cyberduck --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
-            <fileset dir="${app.java}">
+            <fileset dir="${app.frameworks}">
                 <include name="*.dylib"/>
+                <include name="*.jar"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -317,7 +316,7 @@
             <fileset dir="${app.runtime}" erroronmissingdir="false">
                 <include name="**/*.dylib"/>
             </fileset>
-            <fileset dir="${app.java}">
+            <fileset dir="${app.macos}">
                 <include name="*.jre"/>
             </fileset>
             <srcfile/>
@@ -549,7 +548,7 @@
         <antcall target="codesign">
             <param name="codesign.options" value="--force"/>
             <param name="codesign.arg"
-                   value="--requirements ${codesign.requirement} --resource-rules ${codesign.resources}"/>
+                   value="--requirements ${codesign.requirement}"/>
             <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
         </antcall>
         <antcall target="zip">
