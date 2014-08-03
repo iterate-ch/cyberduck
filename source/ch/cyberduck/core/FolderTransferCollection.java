@@ -62,6 +62,9 @@ public class FolderTransferCollection extends Collection<Transfer> {
      */
     private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
+    private Preferences preferences
+            = Preferences.instance();
+
     private Local folder;
 
     public FolderTransferCollection(final Local folder) {
@@ -187,7 +190,6 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private void index() {
         this.lock();
         try {
-            final Preferences preferences = Preferences.instance();
             for(int i = 0; i < this.size(); i++) {
                 preferences.setProperty(String.format("%s%s", PREFIX, this.get(i).getUuid()), i);
             }
@@ -222,8 +224,8 @@ public class FolderTransferCollection extends Collection<Transfer> {
         Collections.sort(this, new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
-                return Integer.valueOf(Preferences.instance().getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
-                        Preferences.instance().getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
+                return Integer.valueOf(preferences.getInteger(String.format("%s%s", PREFIX, o1.getUuid()))).compareTo(
+                        preferences.getInteger(String.format("%s%s", PREFIX, o2.getUuid()))
                 );
             }
         });
