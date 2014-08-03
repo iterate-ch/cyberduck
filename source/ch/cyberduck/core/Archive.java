@@ -35,6 +35,9 @@ import java.util.Locale;
 public abstract class Archive {
     private static final Logger log = Logger.getLogger(Archive.class);
 
+    private Preferences preferences
+            = Preferences.instance();
+
     public static final Archive TAR
             = new Archive("tar") {
         @Override
@@ -226,7 +229,7 @@ public abstract class Archive {
         for(Path path : files) {
             command.add(this.escape(PathRelativizer.relativize(workdir.getAbsolute(), path.getAbsolute())));
         }
-        return MessageFormat.format(Preferences.instance().getProperty(String.format("archive.command.create.%s", this.getIdentifier())),
+        return MessageFormat.format(preferences.getProperty(String.format("archive.command.create.%s", this.getIdentifier())),
                 this.escape(archive.toString()), StringUtils.join(command, " "), workdir.getAbsolute());
     }
 
@@ -235,7 +238,7 @@ public abstract class Archive {
      * @return Unarchive command
      */
     public String getDecompressCommand(final Path path) {
-        return MessageFormat.format(Preferences.instance().getProperty(String.format("archive.command.expand.%s", this.getIdentifier())),
+        return MessageFormat.format(preferences.getProperty(String.format("archive.command.expand.%s", this.getIdentifier())),
                 this.escape(path.getAbsolute()), this.escape(path.getParent().getAbsolute()));
     }
 
