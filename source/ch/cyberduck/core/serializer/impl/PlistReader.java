@@ -48,12 +48,14 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         final NSEnumerator i = list.objectEnumerator();
         NSObject next;
         while(((next = i.nextObject()) != null)) {
-            final NSDictionary dict = Rococoa.cast(next, NSDictionary.class);
-            final S object = this.deserialize(dict);
-            if(null == object) {
-                continue;
+            if(next.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
+                final NSDictionary dict = Rococoa.cast(next, NSDictionary.class);
+                final S object = this.deserialize(dict);
+                if(null == object) {
+                    continue;
+                }
+                c.add(object);
             }
-            c.add(object);
         }
         return c;
     }
