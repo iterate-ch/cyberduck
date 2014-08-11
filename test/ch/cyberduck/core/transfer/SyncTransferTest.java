@@ -105,6 +105,38 @@ public class SyncTransferTest extends AbstractTestCase {
     }
 
     @Test
+    public void testChildrenDuplicate() throws Exception {
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir") + "t", "a");
+        final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+            @Override
+            public AttributedList<Local> list() {
+                final AttributedList<Local> list = new AttributedList<Local>();
+                list.add(local);
+                return list;
+            }
+        };
+        final Path root = new Path("t", EnumSet.of(Path.Type.directory));
+        final Path remote = new Path(root, "a", EnumSet.of(Path.Type.file));
+        final NullSession session = new NullSession(new Host("t")) {
+            @Override
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+                final AttributedList<Path> list = new AttributedList<Path>();
+                if(file.equals(root.getParent())) {
+                    list.add(root);
+                }
+                else {
+                    list.add(remote);
+                }
+                return list;
+            }
+        };
+        directory.mkdir();
+        Transfer t = new SyncTransfer(new Host("t"), new TransferItem(root, directory));
+        final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+    }
+
+    @Test
     public void testChildrenLocalOnly() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host("t")) {

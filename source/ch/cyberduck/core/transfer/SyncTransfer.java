@@ -36,7 +36,9 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -110,14 +112,14 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
-        final List<TransferItem> children = new ArrayList<TransferItem>();
+        final Set<TransferItem> children = new HashSet<TransferItem>();
         if(session.getFeature(Find.class).find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }
-        else if(local.exists()) {
+        if(local.exists()) {
             children.addAll(upload.list(session, directory, local, listener));
         }
-        return children;
+        return new ArrayList<>(children);
     }
 
     @Override
