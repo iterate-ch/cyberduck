@@ -130,7 +130,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             status.setMime(mapping.getMime(file.getName()));
         }
         if(this.options.permissions) {
-            Permission permission = Permission.EMPTY;
+            final Permission permission;
             if(status.isExists()) {
                 permission = status.getRemote().getPermission();
             }
