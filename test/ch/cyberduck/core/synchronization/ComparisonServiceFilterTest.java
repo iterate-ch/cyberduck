@@ -123,7 +123,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCompareLocalOnlytDirectory() throws Exception {
+    public void testCompareLocalOnlyDirectory() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host("t")) {
             @Override
