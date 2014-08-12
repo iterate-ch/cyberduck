@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(View.InputText) && !View.InputText.Trim().Equals(string.Empty))
             {
-                Path parent = new UploadTargetFinder(Workdir).find(Selected);
+                Path parent = new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath);
                 if (DialogResult.OK == result)
                 {
                     BrowserController.background(new CreateFileAction(BrowserController, parent, View.InputText, false));
