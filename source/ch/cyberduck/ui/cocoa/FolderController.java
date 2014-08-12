@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
@@ -95,7 +96,7 @@ public class FolderController extends FileController {
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.run(this.getWorkdir(), inputField.stringValue());
+            this.run(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()), inputField.stringValue());
         }
     }
 

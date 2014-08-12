@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using UploadTargetFinder = ch.cyberduck.ui.browser.UploadTargetFinder;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -64,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (DialogResult.OK == result && !String.IsNullOrEmpty(View.InputText) &&
                 !View.InputText.Trim().Equals(String.Empty))
             {
-                BrowserController.background(new CreateFolderAction(BrowserController, Workdir, View.InputText,
+                BrowserController.background(new CreateFolderAction(BrowserController, new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath), View.InputText,
                                                                     HasLocation() ? _view.Region : null));
             }
         }
