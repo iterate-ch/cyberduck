@@ -80,7 +80,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(this.getAbsolute(), "Path");
+        dict.setStringForKey(path, "Path");
         return dict.getSerialized();
     }
 
@@ -222,7 +222,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
      * @return Security scoped bookmark outside of sandbox to store in preferences
      */
     public String getBookmark() {
-        return this.getAbsolute();
+        return path;
     }
 
     public void setBookmark(final String data) {
@@ -238,7 +238,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
      * @return A shortened path representation.
      */
     public String getAbbreviatedPath() {
-        return this.getAbsolute();
+        return path;
     }
 
     public Local getSymlinkTarget() throws NotfoundException {
@@ -351,7 +351,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
     }
 
     public String toURL() {
-        return String.format("file:%s", this.getAbsolute());
+        return String.format("file:%s", path);
     }
 
     public InputStream getInputStream() throws AccessDeniedException {
