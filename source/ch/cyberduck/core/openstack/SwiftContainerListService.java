@@ -56,6 +56,9 @@ public class SwiftContainerListService implements RootListService {
 
     private SwiftSession session;
 
+    private Preferences preferences
+            = Preferences.instance();
+
     private boolean cdn;
 
     private boolean size;
@@ -79,7 +82,7 @@ public class SwiftContainerListService implements RootListService {
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
-            final int limit = Preferences.instance().getInteger("openstack.list.limit");
+            final int limit = preferences.getInteger("openstack.list.limit");
             final Client client = session.getClient();
             for(Region region : client.getRegions()) {
                 // List all containers
