@@ -1691,15 +1691,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string[] paths = View.UploadDialog(null);
             if (null == paths) return;
 
-            Path destination = SelectedPath;
-            if (null == destination)
-            {
-                destination = Workdir;
-            }
-            else if (!destination.isDirectory())
-            {
-                destination = destination.getParent();
-            }
+            Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
             List downloads = Utils.ConvertToJavaList(paths, delegate(string path)
                 {
                     Local local = LocalFactory.createLocal(path);

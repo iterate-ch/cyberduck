@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
+using UploadTargetFinder = ch.cyberduck.ui.browser.UploadTargetFinder;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -38,13 +39,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(View.InputText) && !View.InputText.Trim().Equals(string.Empty))
             {
+                Path parent = new UploadTargetFinder(Workdir).find(Selected);
                 if (DialogResult.OK == result)
                 {
-                    BrowserController.background(new CreateFileAction(BrowserController, Workdir, View.InputText, false));
+                    BrowserController.background(new CreateFileAction(BrowserController, parent, View.InputText, false));
                 }
                 if (DialogResult.Yes == result)
                 {
-                    BrowserController.background(new CreateFileAction(BrowserController, Workdir, View.InputText, true));
+                    BrowserController.background(new CreateFileAction(BrowserController, parent, View.InputText, true));
                 }
             }
         }
