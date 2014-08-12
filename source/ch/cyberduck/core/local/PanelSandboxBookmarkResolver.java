@@ -78,6 +78,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
 
     private String choose(final Local file) throws AccessDeniedException {
         final AtomicReference<String> bookmark = new AtomicReference<String>();
+        log.warn(String.format("Prompt for file %s to obtain bookmark reference", file));
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
