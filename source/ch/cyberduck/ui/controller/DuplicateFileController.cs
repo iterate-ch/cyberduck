@@ -53,11 +53,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public override Path Workdir
-        {
-            get { return BrowserController.SelectedPath; }
-        }
-
         public override void Callback(DialogResult result)
         {
             if (!String.IsNullOrEmpty(View.InputText) &&

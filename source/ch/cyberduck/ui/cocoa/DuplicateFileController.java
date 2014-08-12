@@ -61,14 +61,8 @@ public class DuplicateFileController extends FileController {
         }
     }
 
-    @Override
-    protected Path getWorkdir() {
-        return this.getSelected().getParent();
-    }
-
     private void run(final Path selected, final String filename) {
-        final Path duplicate = new Path(
-                selected.getParent(), filename, selected.getType());
+        final Path duplicate = new Path(selected.getParent(), filename, selected.getType());
         ((BrowserController) parent).duplicatePath(selected, duplicate);
     }
 }
