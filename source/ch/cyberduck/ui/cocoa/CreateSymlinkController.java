@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
@@ -61,7 +60,7 @@ public class CreateSymlinkController extends FileController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.run(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()), inputField.stringValue(), false);
+            this.run(this.getSelected(), inputField.stringValue(), false);
         }
     }
 
