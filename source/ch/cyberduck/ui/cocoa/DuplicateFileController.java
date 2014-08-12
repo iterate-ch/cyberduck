@@ -57,7 +57,7 @@ public class DuplicateFileController extends FileController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.duplicateFile(this.getSelected(), inputField.stringValue());
+            this.run(this.getSelected(), inputField.stringValue());
         }
     }
 
@@ -66,7 +66,7 @@ public class DuplicateFileController extends FileController {
         return this.getSelected().getParent();
     }
 
-    private void duplicateFile(final Path selected, final String filename) {
+    private void run(final Path selected, final String filename) {
         final Path duplicate = new Path(
                 selected.getParent(), filename, selected.getType());
         ((BrowserController) parent).duplicatePath(selected, duplicate);

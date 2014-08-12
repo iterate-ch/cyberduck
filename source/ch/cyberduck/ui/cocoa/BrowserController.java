@@ -53,6 +53,7 @@ import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.action.RevertWorker;
 import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilter;
+import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
@@ -2771,13 +2772,7 @@ public class BrowserController extends WindowController
     public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            Path destination = this.getSelectedPath();
-            if(null == destination) {
-                destination = this.workdir();
-            }
-            else if(!destination.isDirectory()) {
-                destination = destination.getParent();
-            }
+            final Path destination = new UploadTargetFinder(workdir).find(this.getSelectedPath());
             // Selected files on the local filesystem
             final NSArray selected = sheet.filenames();
             final NSEnumerator iterator = selected.objectEnumerator();
@@ -2949,9 +2944,9 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
-     * <p>
+     * <p/>
      * Either sendType or returnType—but not both—may be empty. If sendType is empty,
      * the service doesn’t require input from the application requesting the service.
      * If returnType is empty, the service doesn’t return data.
@@ -2978,7 +2973,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Reads data from the pasteboard and uses it to replace the current selection.
      *
      * @param pboard Pasteboard
@@ -2990,7 +2985,7 @@ public class BrowserController extends WindowController
 
     /**
      * NSService
-     * <p>
+     * <p/>
      * Writes the current selection to the pasteboard.
      *
      * @param pboard Pasteboard
@@ -3731,7 +3726,9 @@ public class BrowserController extends WindowController
             return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(
+                    new UploadTargetFinder(workdir).find(this.getSelectedPath())
+            );
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && this.isMounted() && session.getFeature(Symlink.class) != null
@@ -3766,7 +3763,9 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(
+                    new UploadTargetFinder(workdir).find(this.getSelectedPath())
+            );
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();

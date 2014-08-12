@@ -95,13 +95,13 @@ public class FolderController extends FileController {
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.createFolder(this.getWorkdir(), inputField.stringValue());
+            this.run(this.getWorkdir(), inputField.stringValue());
         }
     }
 
-    protected void createFolder(final Path workdir, final String filename) {
-        final BrowserController c = (BrowserController) parent;
-        final Path folder = new Path(workdir, filename, EnumSet.of(Path.Type.directory));
+    protected void run(final Path parent, final String filename) {
+        final BrowserController c = (BrowserController) this.parent;
+        final Path folder = new Path(parent, filename, EnumSet.of(Path.Type.directory));
         c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {

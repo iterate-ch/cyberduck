@@ -26,6 +26,7 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
@@ -53,17 +54,18 @@ public class CreateFileController extends FileController {
 
     @Override
     public void callback(final int returncode) {
+        final Path parent = new UploadTargetFinder(this.getWorkdir()).find(this.getSelected());
         if(returncode == DEFAULT_OPTION) {
-            this.createFile(this.getWorkdir(), inputField.stringValue(), false);
+            this.run(parent, inputField.stringValue(), false);
         }
         else if(returncode == ALTERNATE_OPTION) {
-            this.createFile(this.getWorkdir(), inputField.stringValue(), true);
+            this.run(parent, inputField.stringValue(), true);
         }
     }
 
-    protected void createFile(final Path workdir, final String filename, final boolean edit) {
-        final BrowserController c = (BrowserController) parent;
-        final Path file = new Path(workdir, filename, EnumSet.of(Path.Type.file));
+    protected void run(final Path parent, final String filename, final boolean edit) {
+        final BrowserController c = (BrowserController) this.parent;
+        final Path file = new Path(parent, filename, EnumSet.of(Path.Type.file));
         c.background(new BrowserControllerBackgroundAction<Path>(c) {
             @Override
             public Path run() throws BackgroundException {
