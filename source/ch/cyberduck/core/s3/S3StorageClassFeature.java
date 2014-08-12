@@ -54,7 +54,7 @@ public class S3StorageClassFeature implements Redundancy {
             final Path list = new S3ObjectListService(session).list(file.getParent(), new DisabledListProgressListener())
                     .get(file.getReference());
             if(null == list) {
-                throw new NotfoundException();
+                throw new NotfoundException(file.getAbsolute());
             }
             return list.attributes().getStorageClass();
         }

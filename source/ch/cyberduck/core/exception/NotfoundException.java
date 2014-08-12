@@ -26,10 +26,6 @@ import ch.cyberduck.core.LocaleFactory;
 public class NotfoundException extends BackgroundException {
     private static final long serialVersionUID = -5634899621865307418L;
 
-    public NotfoundException() {
-        super(LocaleFactory.localizedString("File not found", "Error"), LocaleFactory.localizedString("Unknown"));
-    }
-
     public NotfoundException(final String detail) {
         super(LocaleFactory.localizedString("File not found", "Error"), detail);
     }

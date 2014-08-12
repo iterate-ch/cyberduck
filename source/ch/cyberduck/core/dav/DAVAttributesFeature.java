@@ -63,7 +63,7 @@ public class DAVAttributesFeature implements Attributes {
                 attributes.setETag(resource.getEtag());
                 return attributes;
             }
-            throw new NotfoundException();
+            throw new NotfoundException(file.getAbsolute());
         }
         catch(SardineException e) {
             try {

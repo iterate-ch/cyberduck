@@ -63,7 +63,7 @@ public class FTPAttributesFeature implements Attributes {
             if(attributes.size() == 1) {
                 return attributes.iterator().next().attributes();
             }
-            throw new NotfoundException();
+            throw new NotfoundException(file.getAbsolute());
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
