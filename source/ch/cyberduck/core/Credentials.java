@@ -146,10 +146,10 @@ public class Credentials {
      * @see #setIdentity
      */
     public boolean isPublicKeyAuthentication() {
-        if(null == this.getIdentity()) {
+        if(null == identity) {
             return false;
         }
-        return this.getIdentity().exists();
+        return identity.exists();
     }
 
     /**
