@@ -85,7 +85,7 @@ public class WatchEditorFactory extends EditorFactory {
 
     @Override
     public Editor create(final Controller c, final Session session, final Application application, final Path file) {
-        return new WatchEditor((BrowserController) c, session, application, file);
+        return new WatchEditor(c, session, application, file);
     }
 
     @Override
