@@ -28,6 +28,7 @@ import javax.net.ssl.SSLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @version $Id$
@@ -43,6 +44,7 @@ public final class NetworkFailureDiagnostics {
             return true;
         }
         return cause instanceof SocketException
+                || cause instanceof TimeoutException // Used in Promise#retrieve
                 || cause instanceof SocketTimeoutException
                 || cause instanceof UnknownHostException;
     }
