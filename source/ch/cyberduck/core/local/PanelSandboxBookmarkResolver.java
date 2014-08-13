@@ -66,7 +66,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
         final NSURL resolved = NSURL.URLByResolvingBookmarkData(bookmark, error);
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
-            log.error(String.format("Error resolving bookmark for %s to URL %s", this, f));
+            log.error(String.format("Error resolving bookmark for %s to URL %s", file, f));
             throw new AccessDeniedException(String.format("%s", f));
         }
         return resolved;
