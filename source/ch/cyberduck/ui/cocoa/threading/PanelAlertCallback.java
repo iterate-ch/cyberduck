@@ -23,7 +23,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.TranscriptController;
@@ -40,8 +41,8 @@ public class PanelAlertCallback implements AlertCallback {
 
     private final WindowController controller;
 
-    private final NetworkFailureDiagnostics diagnostics
-            = new NetworkFailureDiagnostics();
+    private final FailureDiagnostics diagnostics
+            = new DefaultFailureDiagnostics();
 
     public PanelAlertCallback(final WindowController controller) {
         this.controller = controller;
@@ -54,7 +55,8 @@ public class PanelAlertCallback implements AlertCallback {
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
                     null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
                     LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                    diagnostics.isNetworkFailure(failure) ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
+                    diagnostics.determine(failure) == FailureDiagnostics.Type.network
+                            ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
                     LocaleFactory.localizedString("Cancel", "Alert") // alternate button
             );
             alert.setShowsHelp(true);

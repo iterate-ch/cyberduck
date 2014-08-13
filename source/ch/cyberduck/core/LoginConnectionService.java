@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,8 +48,8 @@ public class LoginConnectionService implements ConnectionService {
 
     private Proxy proxy;
 
-    private final NetworkFailureDiagnostics diagnostics
-            = new NetworkFailureDiagnostics();
+    private final FailureDiagnostics diagnostics
+            = new DefaultFailureDiagnostics();
 
     private AtomicBoolean canceled
             = new AtomicBoolean();
@@ -102,7 +103,7 @@ public class LoginConnectionService implements ConnectionService {
         if(null == failure) {
             return this.check(session, cache);
         }
-        if(diagnostics.isNetworkFailure(failure)) {
+        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
             this.close(session, cache);
             this.connect(session, cache);
             return true;

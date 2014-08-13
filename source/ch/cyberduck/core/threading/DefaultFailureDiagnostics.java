@@ -33,19 +33,25 @@ import java.util.concurrent.TimeoutException;
 /**
  * @version $Id$
  */
-public final class NetworkFailureDiagnostics {
+public final class DefaultFailureDiagnostics implements FailureDiagnostics<BackgroundException> {
 
-    public boolean isNetworkFailure(final BackgroundException e) {
-        final Throwable cause = ExceptionUtils.getRootCause(e);
+    @Override
+    public Type determine(final BackgroundException failure) {
+        final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(cause instanceof SSLException) {
-            return StringUtils.contains(cause.getMessage(), "Received close_notify during handshake");
+            if(StringUtils.contains(cause.getMessage(), "Received close_notify during handshake")) {
+                return Type.network;
+            }
         }
         if(cause instanceof NoHttpResponseException) {
-            return true;
+            return Type.network;
         }
-        return cause instanceof SocketException
+        if(cause instanceof SocketException
                 || cause instanceof TimeoutException // Used in Promise#retrieve
                 || cause instanceof SocketTimeoutException
-                || cause instanceof UnknownHostException;
+                || cause instanceof UnknownHostException) {
+            return Type.network;
+        }
+        return Type.application;
     }
 }

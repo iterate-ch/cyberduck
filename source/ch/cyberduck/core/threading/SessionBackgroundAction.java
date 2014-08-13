@@ -18,7 +18,17 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.ui.growl.Growl;
@@ -65,8 +75,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private ConnectionService connection;
 
-    private final NetworkFailureDiagnostics diagnostics
-            = new NetworkFailureDiagnostics();
+    private final FailureDiagnostics diagnostics
+            = new DefaultFailureDiagnostics();
 
     private Growl growl = GrowlFactory.get();
 
@@ -131,7 +141,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     protected int retry() {
         if(this.hasFailed() && !this.isCanceled()) {
             // Check for an exception we consider possibly temporary
-            if(diagnostics.isNetworkFailure(exception)) {
+            if(diagnostics.determine(exception) == FailureDiagnostics.Type.network) {
                 // The initial connection attempt does not count
                 return Preferences.instance().getInteger("connection.retry") - repeatCount;
             }

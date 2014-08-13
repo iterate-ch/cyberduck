@@ -7,7 +7,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.junit.Test;
 
@@ -74,7 +75,7 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         }
         catch(BackgroundException e) {
             assertEquals("Cannot write user configuration.", e.getMessage());
-            assertTrue(new NetworkFailureDiagnostics().isNetworkFailure(e));
+            assertTrue(new DefaultFailureDiagnostics().determine(e) == FailureDiagnostics.Type.network);
 //            assertEquals("Unable to execute HTTP request: Connect to iam.amazonaws.com:443 timed out.", e.getDetail());
             throw e;
         }
