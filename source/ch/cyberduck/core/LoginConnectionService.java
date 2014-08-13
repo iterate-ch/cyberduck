@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.NetworkFailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,6 +46,9 @@ public class LoginConnectionService implements ConnectionService {
     private LoginService login;
 
     private Proxy proxy;
+
+    private final NetworkFailureDiagnostics diagnostics
+            = new NetworkFailureDiagnostics();
 
     private AtomicBoolean canceled
             = new AtomicBoolean();
@@ -94,17 +98,35 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
+    public boolean check(final Session session, final Cache cache, final BackgroundException failure) throws BackgroundException {
+        if(null == failure) {
+            return this.check(session, cache);
+        }
+        if(diagnostics.isNetworkFailure(failure)) {
+            this.close(session, cache);
+            this.connect(session, cache);
+            return true;
+        }
+        return this.check(session, cache);
+    }
+
+    private void close(final Session session, final Cache cache) {
+        try {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
+                    session.getHost().getHostname()));
+            // Close the underlying socket first
+            session.interrupt();
+            cache.clear();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
+        }
+    }
+
+    @Override
     public void connect(final Session session, final Cache cache) throws BackgroundException {
         if(session.isConnected()) {
-            try {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                        session.getHost().getHostname()));
-                // Close the underlying socket first
-                session.interrupt();
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
-            }
+            this.close(session, cache);
         }
         final Host bookmark = session.getHost();
 
@@ -145,7 +167,7 @@ public class LoginConnectionService implements ConnectionService {
             });
         }
         catch(BackgroundException e) {
-            session.interrupt();
+            this.close(session, cache);
             throw e;
         }
     }

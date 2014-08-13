@@ -162,7 +162,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
         state = State.closing;
         try {
             this.logout();
-            this.disconnect();
+            if(client != null) {
+                this.disconnect();
+            }
         }
         finally {
             state = State.closed;
@@ -175,7 +177,9 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     public void interrupt() throws BackgroundException {
         state = State.closing;
         try {
-            this.disconnect();
+            if(client != null) {
+                this.disconnect();
+            }
         }
         finally {
             state = State.closed;

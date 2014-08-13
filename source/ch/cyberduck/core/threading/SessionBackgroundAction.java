@@ -143,7 +143,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         // Clear the transcript and exceptions
         transcript = new StringBuilder();
         failed = false;
-        exception = null;
     }
 
     /**
@@ -178,11 +177,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     protected boolean connect(final Session session) throws BackgroundException {
-        if(connection.check(session, cache)) {
+        if(connection.check(session, cache, exception)) {
             // New connection opened
             growl.notify("Connection opened", session.getHost().getHostname());
-            // Reset cache
-            cache.clear();
             return true;
         }
         // Use existing connection

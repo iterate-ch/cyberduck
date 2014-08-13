@@ -4,19 +4,22 @@ import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.ftp.FTPClient;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.junit.Test;
 
-import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -89,5 +92,45 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     }
                 });
         s.check(new FTPSession(new Host("")), Cache.empty());
+    }
+
+    @Test(expected = ConnectionCanceledException.class)
+    public void testCheckReconnect() throws Exception {
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new ProgressListener() {
+                    @Override
+                    public void message(final String message) {
+                        //
+                    }
+                });
+        final AtomicBoolean connected = new AtomicBoolean();
+        final AtomicBoolean disconnected = new AtomicBoolean();
+        try {
+            final FTPSession session = new FTPSession(new Host("")) {
+                @Override
+                public void interrupt() throws BackgroundException {
+                    disconnected.set(true);
+                    super.interrupt();
+                }
+
+                @Override
+                public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
+                    connected.set(true);
+                    return null;
+                }
+
+                @Override
+                public boolean isConnected() {
+                    // Previously connected
+                    return true;
+                }
+            };
+            s.check(session, Cache.empty(), new BackgroundException("m", new SocketException("m")));
+        }
+        finally {
+            assertTrue(disconnected.get());
+            assertTrue(connected.get());
+        }
     }
 }
