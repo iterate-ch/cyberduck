@@ -18,16 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -36,11 +27,9 @@ import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyControllerFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
 
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.security.PublicKey;
 import java.text.MessageFormat;
 
@@ -89,7 +78,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
             throws ConnectionCanceledException, ChecksumException {
         final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
-                        new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
+                        new MD5ChecksumCompute().fingerprint(key)),
                 LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
@@ -127,7 +116,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
             throws ConnectionCanceledException, ChecksumException {
         NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname), //title
                 MessageFormat.format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                        new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
+                        new MD5ChecksumCompute().fingerprint(key)),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button

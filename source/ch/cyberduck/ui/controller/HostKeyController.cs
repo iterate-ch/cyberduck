@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(
                             LocaleFactory.localizedString(
                                 "The host is currently unknown to the system. The host key fingerprint is {0}."),
-                                new MD5ChecksumCompute().fingerprint(new ByteArrayInputStream(key.getEncoded()))),
+                                new MD5ChecksumCompute().fingerprint(key)),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
@@ -83,8 +83,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
                         String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                                                                    new MD5ChecksumCompute().fingerprint(
-                                                                        new ByteArrayInputStream(key.getEncoded()))),
+                                                                    new MD5ChecksumCompute().fingerprint(key)),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,
