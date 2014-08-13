@@ -193,3 +193,9 @@ source_file = en.lproj/Alert.strings
 source_lang = en
 type = STRINGS
 
+[cyberduck.Sftp]
+file_filter = <lang>.lproj/Sftp.strings
+source_file = en.lproj/Sftp.strings
+source_lang = en
+type = STRINGS
+
