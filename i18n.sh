@@ -200,7 +200,7 @@ update() {
 	fi;
 }
 
-transifex() {
+tx_push() {
     echo "*** Updating all localizations...";
     if [ "$stringsfile" = "all" ] ; then
         echo "*** Updating all .strings...";
@@ -216,6 +216,23 @@ transifex() {
         echo "*** Updating $strings.strings...";
         $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
         $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive
+    fi;
+}
+
+tx_pull() {
+    echo "*** Updating all localizations...";
+    if [ "$stringsfile" = "all" ] ; then
+        echo "*** Updating all .strings...";
+        for stringsfile in `ls en.lproj | grep .strings | grep -v ~.strings`; do
+            strings=`basename $stringsfile .strings`
+            echo "*** Updating $strings.strings...";
+            $tx --traceback pull --source --resource=cyberduck.$strings --force
+        done;
+    fi;
+    if [ "$stringsfile" != "all" ] ; then
+        strings=`basename $stringsfile .strings`
+        echo "*** Updating $strings.strings...";
+        $tx --traceback pull --source --resource=cyberduck.$strings --force
     fi;
 }
 
@@ -293,9 +310,15 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "Running architecture:$arch";
 				shift;
 			;;
-			-tx | --transifex)
+			-tx-push)
 				echo "Updating .tx...";
-				transifex;
+				tx_push;
+				echo "*** DONE. ***";
+				exit 0;
+			;;
+			-tx-pull)
+				echo "Updating .tx...";
+				tx_pull;
 				echo "*** DONE. ***";
 				exit 0;
 			;;
