@@ -321,7 +321,7 @@ public class SFTPSession extends Session<SSHClient> {
         @Override
         public void notifyDisconnect(final DisconnectReason reason, final String message) {
             log.warn(String.format("Disconnected %s", reason));
-            this.failure = new SSHException(reason, message);
+            failure = new SSHException(reason, message);
         }
 
         /**
