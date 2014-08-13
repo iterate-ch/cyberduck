@@ -27,6 +27,8 @@ using java.io;
 using java.security;
 using org.apache.log4j;
 
+using KeyType = net.schmizz.sshj.common.KeyType;
+
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class HostKeyController : PreferencesHostKeyVerifier
@@ -48,12 +50,12 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncController.AsyncDelegate d = delegate
                 {
                     _parent.CommandBox(
-                        String.Format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname),
-                        String.Format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname),
+                        String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname),
+                        String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname),
                         String.Format(
                             LocaleFactory.localizedString(
-                                "The host is currently unknown to the system. The host key fingerprint is {0}."),
-                                new MD5ChecksumCompute().fingerprint(key)),
+                                "The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                                new MD5ChecksumCompute().fingerprint(key), KeyType.fromKey(key).name()),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
@@ -80,10 +82,10 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncController.AsyncDelegate d = delegate
                 {
                     _parent.CommandBox(
-                        String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
-                        String.Format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname),
-                        String.Format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                                                                    new MD5ChecksumCompute().fingerprint(key)),
+                        String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
+                        String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
+                        String.Format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                                                                    new MD5ChecksumCompute().fingerprint(key), KeyType.fromKey(key).name()),
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,

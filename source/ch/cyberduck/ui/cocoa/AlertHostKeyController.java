@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import java.security.PublicKey;
 import java.text.MessageFormat;
 
+import net.schmizz.sshj.common.KeyType;
+
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
  *
@@ -76,9 +78,10 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown host key for {0}."), hostname), //title
-                MessageFormat.format(LocaleFactory.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
-                        new MD5ChecksumCompute().fingerprint(key)),
+        final NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname), //title
+                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        new MD5ChecksumCompute().fingerprint(key),
+                        KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Deny"), // alternate button
                 null //other button
@@ -114,9 +117,10 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Host key mismatch for {0}"), hostname), //title
-                MessageFormat.format(LocaleFactory.localizedString("The host key supplied is {0}."),
-                        new MD5ChecksumCompute().fingerprint(key)),
+        NSAlert alert = NSAlert.alert(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname), //title
+                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        new MD5ChecksumCompute().fingerprint(key),
+                        KeyType.fromKey(key).name()),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Deny"), //alternative button
                 null //other button
