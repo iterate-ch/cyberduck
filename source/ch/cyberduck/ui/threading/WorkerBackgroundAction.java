@@ -35,9 +35,13 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
 
     private T result;
 
-    public WorkerBackgroundAction(final Controller controller, final Session session,
+    public WorkerBackgroundAction(final Controller controller, final Session session, final Worker<T> worker) {
+        this(controller, session, Cache.empty(), worker);
+    }
+
+    public WorkerBackgroundAction(final Controller controller, final Session session, final Cache cache,
                                   final Worker<T> worker) {
-        super(controller, session, Cache.empty());
+        super(controller, session, cache);
         this.worker = worker;
     }
 

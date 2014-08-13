@@ -144,27 +144,29 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory.getReference())) {
-            controller.background(new WorkerBackgroundAction(controller, session,
+            controller.background(new WorkerBackgroundAction(controller, session, cache,
                     new TransferPromptListWorker(session, transfer, directory.remote, directory.local) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
                             cache.put(directory.getReference(), new AttributedList<TransferItem>(list));
                             filter();
                         }
-                    }));
+                    }
+            ));
         }
         return this.get(directory);
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction(controller, session,
-                new TransferPromptFilterWorker(session, transfer, action, cache) {
-                    @Override
-                    public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
-                        status = accepted;
-                        controller.reloadData();
-                    }
-                })
+        controller.background(new WorkerBackgroundAction(controller, session, cache,
+                        new TransferPromptFilterWorker(session, transfer, action, cache) {
+                            @Override
+                            public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
+                                status = accepted;
+                                controller.reloadData();
+                            }
+                        }
+                )
         );
     }
 

@@ -43,7 +43,19 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.transfer.*;
+import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferAdapter;
+import ch.cyberduck.core.transfer.TransferCallback;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
@@ -2327,7 +2339,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                background(new WorkerBackgroundAction(BrowserController.this, session,
+                background(new WorkerBackgroundAction(BrowserController.this, session, cache,
                                 new MoveWorker(session, selected) {
                                     @Override
                                     public void cleanup(final Boolean result) {
@@ -2483,7 +2495,7 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction(this, session,
+        this.background(new WorkerBackgroundAction(this, session, cache,
                         new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                             @Override
                             public void cleanup(final Boolean result) {
@@ -2495,7 +2507,7 @@ public class BrowserController extends WindowController
     }
 
     public void revertPaths(final List<Path> files) {
-        this.background(new WorkerBackgroundAction(this, session,
+        this.background(new WorkerBackgroundAction(this, session, cache,
                 new RevertWorker(session, files) {
                     @Override
                     public void cleanup(final Boolean result) {
@@ -3290,7 +3302,7 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-                background(new WorkerBackgroundAction(BrowserController.this, session,
+                background(new WorkerBackgroundAction(BrowserController.this, session, cache,
                         new MountWorker(session, cache, new PromptLimitedListProgressListener(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -3314,7 +3326,8 @@ public class BrowserController extends WindowController
                                     securityLabel.setEnabled(session instanceof SSLSession);
                                 }
                             }
-                        }) {
+                        }
+                ) {
                     @Override
                     public void init() {
                         super.init();
@@ -3427,7 +3440,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, new DisconnectWorker(session)) {
+            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session)) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {

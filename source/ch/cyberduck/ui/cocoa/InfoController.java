@@ -29,7 +29,16 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -439,7 +448,8 @@ public class InfoController extends ToolbarWindowController {
                             new LoggingConfiguration(
                                     bucketLoggingButton.state() == NSCell.NSOnState,
                                     null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
-                            ));
+                            )
+                    );
                     return true;
                 }
 
@@ -953,15 +963,16 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
-                            files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
-                        @Override
-                        public void cleanup(final Boolean v) {
-                            toggleAclSettings(true);
-                            initAcl();
-                        }
-                    })
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
+                            new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
+                                    files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
+                                @Override
+                                public void cleanup(final Boolean v) {
+                                    toggleAclSettings(true);
+                                    initAcl();
+                                }
+                            }
+                    )
             );
         }
     }
@@ -1240,13 +1251,14 @@ public class InfoController extends ToolbarWindowController {
             for(Header header : metadata) {
                 update.put(header.getName(), header.getValue());
             }
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class), files, update) {
-                        @Override
-                        public void cleanup(final Boolean v) {
-                            toggleMetadataSettings(true);
-                        }
-                    })
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
+                            new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class), files, update) {
+                                @Override
+                                public void cleanup(final Boolean v) {
+                                    toggleMetadataSettings(true);
+                                }
+                            }
+                    )
             );
         }
     }
@@ -1668,25 +1680,29 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
-                            file.attributes().getModificationDate()),
-                            TRUNCATE_MIDDLE_ATTRIBUTES);
+                                    file.attributes().getModificationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
+                    );
                 }
                 if(-1 == file.attributes().getCreationDate()) {
                     this.updateField(createdField, LocaleFactory.localizedString("Unknown"));
                 }
                 else {
                     this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
-                            file.attributes().getCreationDate()),
-                            TRUNCATE_MIDDLE_ATTRIBUTES);
+                                    file.attributes().getCreationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
+                    );
                 }
             }
             // Owner
             this.updateField(ownerField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
-                    StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
-                    TRUNCATE_MIDDLE_ATTRIBUTES);
+                            StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
+            );
             this.updateField(groupField, count > 1 ? "(" + LocaleFactory.localizedString("Multiple files") + ")" :
-                    StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
-                    TRUNCATE_MIDDLE_ATTRIBUTES);
+                            StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
+            );
             // Icon
             if(count > 1) {
                 iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
@@ -1732,14 +1748,15 @@ public class InfoController extends ToolbarWindowController {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
                     new ReadPermissionWorker(files) {
                         @Override
                         public void cleanup(final List<Permission> permissions) {
                             setPermissions(permissions);
                             togglePermissionSettings(true);
                         }
-                    }));
+                    }
+            ));
         }
     }
 
@@ -1846,14 +1863,15 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
                     new ReadSizeWorker(files) {
                         @Override
                         public void cleanup(final Long size) {
                             updateSize(size);
                             toggleSizeSettings(true);
                         }
-                    }));
+                    }
+            ));
         }
     }
 
@@ -2158,7 +2176,7 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
                     new ReadMetadataWorker(controller.getSession().getFeature(Headers.class), files) {
                         @Override
                         public void cleanup(final Map<String, String> updated) {
@@ -2171,7 +2189,8 @@ public class InfoController extends ToolbarWindowController {
                             setMetadata(m);
                             toggleMetadataSettings(true);
                         }
-                    }));
+                    }
+            ));
         }
     }
 
@@ -2212,7 +2231,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
                     new ReadAclWorker(session.getFeature(AclPermission.class), files) {
                         @Override
                         public void cleanup(final List<Acl.UserAndRole> updated) {
@@ -2221,7 +2240,8 @@ public class InfoController extends ToolbarWindowController {
                             }
                             toggleAclSettings(true);
                         }
-                    }));
+                    }
+            ));
         }
     }
 
@@ -2361,14 +2381,15 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
-                    new WritePermissionWorker(controller.getSession(),
-                            controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
-                        @Override
-                        public void cleanup(final Boolean v) {
-                            togglePermissionSettings(true);
-                        }
-                    })
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
+                            new WritePermissionWorker(controller.getSession(),
+                                    controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
+                                @Override
+                                public void cleanup(final Boolean v) {
+                                    togglePermissionSettings(true);
+                                }
+                            }
+                    )
             );
         }
     }
@@ -2606,7 +2627,8 @@ public class InfoController extends ToolbarWindowController {
                         if(credentials != null) {
                             distributionAnalyticsSetupUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getHostname(),
-                                            distribution.getMethod().getScheme(), container.getName(), credentials)));
+                                            distribution.getMethod().getScheme(), container.getName(), credentials))
+                            );
                         }
                     }
                     final DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
@@ -2731,7 +2753,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            this.background(new WorkerBackgroundAction(controller, controller.getSession(),
+            this.background(new WorkerBackgroundAction(controller, controller.getSession(), controller.getCache(),
                     new CalculateSizeWorker(controller.getSession(), files) {
                         @Override
                         public void cleanup(final Long size) {
@@ -2748,7 +2770,8 @@ public class InfoController extends ToolbarWindowController {
                                 }
                             });
                         }
-                    }));
+                    }
+            ));
         }
     }
 
