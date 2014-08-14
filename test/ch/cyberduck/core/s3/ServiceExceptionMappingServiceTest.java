@@ -71,7 +71,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testMapping() {
-        assertEquals("message.", new ServiceExceptionMappingService().map(new ServiceException("message")).getDetail());
+        assertEquals("Message.", new ServiceExceptionMappingService().map(new ServiceException("message")).getDetail());
         assertEquals("Exceeded 403 retry limit (1).", new ServiceExceptionMappingService().map(
                 new ServiceException("Exceeded 403 retry limit (1).")).getDetail());
         assertEquals("Connection failed", new ServiceExceptionMappingService().map(
@@ -80,17 +80,17 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testDNSFailure() {
-        assertEquals("custom.",
+        assertEquals("Custom.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
-        assertEquals("h.",
+        assertEquals("H.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
     }
 
     @Test
     public void testCustomMessage() {
-        assertEquals("custom.",
+        assertEquals("Custom.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getMessage());
-        assertEquals("message.",
+        assertEquals("Message.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message")).getDetail());
     }
 
@@ -98,7 +98,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     public void testIAMFailure() {
         assertEquals("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9.",
                 new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getMessage());
-        assertEquals("message.",
+        assertEquals("Message.",
                 new ServiceExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getDetail());
     }
 
@@ -120,7 +120,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     @Test
     public void testWrapped() {
         assertEquals("Access Denied.", new ServiceExceptionMappingService().map(new ServiceException(new S3ServiceException("m",
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
         );
     }
 }

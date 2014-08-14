@@ -56,16 +56,16 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
     public void testPlaceholder() throws Exception {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
-        assertEquals("n message (/n).", e.getMessage());
+        assertEquals("N message (/n).", e.getMessage());
     }
 
     @Test
     public void testSameMessageInRootCause() throws Exception {
-        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
+        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
                 .getDetail());
-        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
+        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
                 .getDetail());
-        assertEquals("s.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
+        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
                 .getDetail());
     }
 }

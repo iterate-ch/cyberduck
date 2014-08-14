@@ -43,12 +43,12 @@ public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
                 "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
         assertTrue(new SwiftExceptionMappingService().map(f) instanceof AccessDeniedException);
         assertEquals("Access denied", new SwiftExceptionMappingService().map(f).getMessage());
-        assertEquals("message. 403 Forbidden. Please contact your web hosting service provider for assistance.", new SwiftExceptionMappingService().map(f).getDetail());
+        assertEquals("Message. 403 Forbidden. Please contact your web hosting service provider for assistance.", new SwiftExceptionMappingService().map(f).getDetail());
     }
 
     @Test
     public void testMap() throws Exception {
-        assertEquals("message. 500 reason.", new SwiftExceptionMappingService().map(
+        assertEquals("Message. 500 reason.", new SwiftExceptionMappingService().map(
                 new GenericException("message", null, new StatusLine() {
                     @Override
                     public ProtocolVersion getProtocolVersion() {
