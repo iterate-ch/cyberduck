@@ -160,8 +160,14 @@ public abstract class AbstractController implements Controller {
                 return null;
             }
             try {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Prepare background action %s", action));
+                }
                 action.prepare();
                 // Execute the action of the runnable
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Call background action %s", action));
+                }
                 return action.call();
             }
             catch(ConnectionCanceledException e) {
@@ -182,10 +188,16 @@ public abstract class AbstractController implements Controller {
                 }
                 // If there was any failure, display the summary now
                 if(action.alert()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Retry background action %s", action));
+                    }
                     // Retry
                     this.call();
                 }
                 else {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Invoke cleanup for background action %s", action));
+                    }
                     // Invoke the cleanup on the main thread to let the action synchronize the user interface
                     invoke(new ControllerMainAction(AbstractController.this) {
                         @Override
