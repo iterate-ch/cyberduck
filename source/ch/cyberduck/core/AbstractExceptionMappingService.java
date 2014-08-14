@@ -58,7 +58,7 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
 
     public StringBuilder append(final StringBuilder buffer, final String message) {
         final StringAppender appender = new StringAppender(buffer);
-        appender.append(message);
+        appender.append(StringUtils.capitalize(message));
         return buffer;
     }
 
