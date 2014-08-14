@@ -171,4 +171,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ThirdpartyBookmarkCollection{");
+        sb.append("file=").append(this.getFile());
+        sb.append('}');
+        return sb.toString();
+    }
 }
