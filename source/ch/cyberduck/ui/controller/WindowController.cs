@@ -117,8 +117,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool alert(Host host, BackgroundException failure, StringBuilder transcript)
         {
-            new DialogAlertCallback(this).alert(host, failure, transcript);
-            return false;
+            return new DialogAlertCallback(this).alert(host, failure, transcript);
         }
 
         protected virtual void Invalidate()
@@ -167,10 +166,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="help"></param>
         /// <returns></returns>
         public DialogResult WarningBox(string title, string message, string detail, string expanded,
-                                       string commandButtons, bool showCancelButton, string help)
+                                       string commandButtons, bool showCancelButton, string help,
+                                       DialogResponseHandler handler)
         {
             return View.CommandBox(title, message, detail, expanded, help, null, commandButtons, showCancelButton,
-                                   SysIcons.Warning, SysIcons.Information, delegate { });
+                                   SysIcons.Warning, SysIcons.Information, handler);
         }
 
         /// <summary>

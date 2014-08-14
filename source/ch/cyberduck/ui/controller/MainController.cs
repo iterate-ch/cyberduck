@@ -307,7 +307,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                LocaleFactory.localizedString(
                                                    "This donation key does not appear to be valid.", "License"), null,
                                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
-                                               false, Preferences.instance().getProperty("website.help") + "/faq"))
+                                               false, Preferences.instance().getProperty("website.help") + "/faq",
+                                               delegate { }))
                             {
                                 ;
                             }

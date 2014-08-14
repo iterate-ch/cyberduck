@@ -3096,7 +3096,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Host _host;
 
             public MountAction(BrowserController controller, Session session, Host host)
-                : base(controller, controller.Session, new InnerMountWorker(controller, session, host))
+                : base(controller, controller.Session, new InnerMountWorker(controller, session))
             {
                 _controller = controller;
                 _host = host;
@@ -3112,15 +3112,13 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerMountWorker : MountWorker
             {
                 private readonly BrowserController _controller;
-                private readonly Host _host;
                 private readonly Session _session;
 
-                public InnerMountWorker(BrowserController controller, Session session, Host host)
+                public InnerMountWorker(BrowserController controller, Session session)
                     : base(session, controller._cache, new DialogLimitedListProgressListener(controller))
                 {
                     _controller = controller;
                     _session = session;
-                    _host = host;
                 }
 
                 public override void cleanup(object wd)
