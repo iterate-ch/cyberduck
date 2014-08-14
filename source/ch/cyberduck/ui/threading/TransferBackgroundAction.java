@@ -192,6 +192,10 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         return StringUtils.EMPTY;
     }
 
+    public TransferSpeedometer getMeter() {
+        return meter;
+    }
+
     public Transfer getTransfer() {
         return transfer;
     }

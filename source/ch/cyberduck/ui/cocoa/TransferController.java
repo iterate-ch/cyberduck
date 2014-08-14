@@ -19,7 +19,16 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -38,6 +47,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -338,10 +348,10 @@ public final class TransferController extends WindowController implements NSTool
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean cancel) {
             if(item.representedObject() != null) {
                 final int selected = transferTable.numberOfSelectedRows().intValue();
-                int bytes = Integer.valueOf(item.representedObject());
-                NSIndexSet iterator = transferTable.selectedRowIndexes();
+                final int bytes = Integer.valueOf(item.representedObject());
+                final NSIndexSet iterator = transferTable.selectedRowIndexes();
                 for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                    Transfer transfer = collection.get(index.intValue());
+                    final Transfer transfer = collection.get(index.intValue());
                     if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth().getRate()) {
                         if(BandwidthThrottle.UNLIMITED == bytes) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
@@ -352,7 +362,7 @@ public final class TransferController extends WindowController implements NSTool
                         }
                     }
                     else {
-                        int bandwidth = (int) transfer.getBandwidth().getRate();
+                        final int bandwidth = (int) transfer.getBandwidth().getRate();
                         if(bytes == bandwidth) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
                             break;
@@ -377,8 +387,21 @@ public final class TransferController extends WindowController implements NSTool
         NSIndexSet selected = transferTable.selectedRowIndexes();
         float bandwidth = Float.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
-            Transfer transfer = collection.get(index.intValue());
+            final Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
+            if(transfer.isRunning()) {
+                final BackgroundActionRegistry registry = this.getActions();
+                // Find matching background task
+                for(BackgroundAction action : registry) {
+                    if(action instanceof TransferBackgroundAction) {
+                        final TransferBackgroundAction t = (TransferBackgroundAction) action;
+                        if(t.getTransfer().equals(transfer)) {
+                            final TransferSpeedometer meter = t.getMeter();
+                            meter.reset();
+                        }
+                    }
+                }
+            }
         }
         this.updateBandwidthPopup();
     }

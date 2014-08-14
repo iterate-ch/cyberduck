@@ -357,6 +357,23 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Transfer transfer = GetTransferFromView(progressView);
                 transfer.setBandwidth(View.Bandwidth);
+                if (transfer.isRunning())
+                {
+                    BackgroundActionRegistry registry = getActions();
+                    // Find matching background task
+                    for (int i = 0; i < registry.size(); i++)
+                    {
+                        if (registry.get(i) is TransferBackgroundAction)
+                        {
+                            TransferBackgroundAction t = (TransferBackgroundAction) registry.get(i);
+                            if (t.getTransfer().Equals(transfer))
+                            {
+                                TransferSpeedometer meter = t.getMeter();
+                                meter.reset();
+                            }
+                        }
+                    }
+                }
             }
             UpdateBandwidthPopup();
         }
