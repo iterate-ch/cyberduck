@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Container for file listing attributes, such as a sorting comparator and filter
@@ -42,13 +43,15 @@ public class AttributedListAttributes<E> {
     /**
      * Hidden attribute holds a list of hidden files.
      */
-    private List<E> hidden = new ArrayList<E>();
+    private List<E> hidden
+            = new ArrayList<E>();
 
     /**
      * The cached version should be superseded
      * with an updated listing.
      */
-    private boolean invalid = false;
+    private AtomicBoolean invalid
+            = new AtomicBoolean();
 
     /**
      * Initialize with default values
@@ -105,14 +108,14 @@ public class AttributedListAttributes<E> {
      * @param invalid Flag
      */
     public void setInvalid(final boolean invalid) {
-        this.invalid = invalid;
+        this.invalid.set(true);
     }
 
     /**
      * @return true if the listing should be superseded
      */
     public boolean isInvalid() {
-        return invalid;
+        return invalid.get();
     }
 
     public void clear() {
