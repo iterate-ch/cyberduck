@@ -122,4 +122,12 @@ public class Resolver {
     public void cancel() {
         signal.countDown();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Resolver{");
+        sb.append("resolved=").append(resolved);
+        sb.append('}');
+        return sb.toString();
+    }
 }
