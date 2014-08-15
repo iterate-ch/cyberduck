@@ -31,12 +31,10 @@ namespace Ch.Cyberduck.Core
             {
                 return true;
             }
-
             try
             {
-                //todo honour proxy settings
-                TcpClient clnt = new TcpClient(h.getHostname(), h.getPort());
-                clnt.Close();
+                TcpClient c = new TcpClient(h.getHostname(), h.getPort());
+                c.Close();
                 return true;
             }
             catch (Exception)
