@@ -26,7 +26,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_sparkle_Sandbox_isSandboxed(JN
     BOOL isSandboxed = NO;
     NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
     SecStaticCodeRef staticCode = NULL;
-    SecStaticCodeCreateWithPath((__bridge CFURLRef)bundleURL, kSecCSDefaultFlags, &staticCode);
+    SecStaticCodeCreateWithPath((CFURLRef)bundleURL, kSecCSDefaultFlags, &staticCode);
     if (!staticCode) {
         return NO;
     }
