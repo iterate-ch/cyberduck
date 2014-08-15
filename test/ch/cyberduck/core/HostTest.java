@@ -137,4 +137,21 @@ public class HostTest extends AbstractTestCase {
         assertEquals(ProtocolFactory.FTP, bookmark.getProtocol());
         Preferences.instance().deleteProperty("connection.protocol.default");
     }
+
+    @Test
+    public void testTrimDefaultPath() {
+        Host host = new Host("localhost");
+        host.setDefaultPath("p");
+        assertEquals("p", host.getDefaultPath());
+        host.setDefaultPath("/p");
+        assertEquals("/p", host.getDefaultPath());
+        host.setDefaultPath("/p\n");
+        assertEquals("/p", host.getDefaultPath());
+        host.setDefaultPath("/p\r");
+        assertEquals("/p", host.getDefaultPath());
+        host.setDefaultPath("/p\r\n");
+        assertEquals("/p", host.getDefaultPath());
+        host.setDefaultPath("/p f");
+        assertEquals("/p f", host.getDefaultPath());
+    }
 }
