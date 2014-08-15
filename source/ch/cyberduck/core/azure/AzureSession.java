@@ -18,11 +18,33 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -89,9 +111,10 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             verifier.setTarget(uri.getHost());
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
-            client.setTimeoutInMs(this.timeout());
             client.setAuthenticationScheme(AuthenticationScheme.SHAREDKEYFULL);
-            client.setRetryPolicyFactory(new RetryNoRetry());
+            final BlobRequestOptions options = client.getDefaultRequestOptions();
+            options.setTimeoutIntervalInMs(this.timeout());
+            options.setRetryPolicyFactory(new RetryNoRetry());
             return client;
         }
         catch(URISyntaxException e) {

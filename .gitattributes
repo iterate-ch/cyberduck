@@ -1994,6 +1994,7 @@ lib/VistaBridgeLibrary.dll -text
 lib/Windows7.DesktopIntegration.dll -text
 lib/asm-3.3.1.jar -text
 lib/aws-java-sdk-1.6.6.jar -text svneol=unset#application/jar
+lib/azure-storage-1.2.0.jar -text
 lib/bcpkix-jdk15on-150.jar -text svneol=unset#application/jar
 lib/bcprov-jdk15on-150.jar -text svneol=unset#application/jar
 lib/cglib-2.2.2.jar -text
@@ -2040,7 +2041,6 @@ lib/log4j-1.2.17.jar -text
 lib/log4j-cocoa.xml -text
 lib/log4j-windows.xml -text
 lib/mail-1.4.7.jar -text svneol=unset#application/zip
-lib/microsoft-windowsazure-storage-sdk-1.0.0.jar -text
 lib/mime.types -text
 lib/rococoa-core-0.6.jar -text svneol=unset#application/zip
 lib/sardine-5.1.jar -text svneol=unset#application/zip
