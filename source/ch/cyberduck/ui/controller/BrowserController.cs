@@ -2358,7 +2358,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReloadData(Path directory, bool preserveSelection)
         {
-            if (_cache.get(Workdir.getReference()).attributes().isInvalid())
+            if (Workdir.equals(directory))
             {
                 ReloadData(true);
             }
