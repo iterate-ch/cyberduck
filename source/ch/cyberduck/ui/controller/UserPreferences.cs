@@ -241,9 +241,9 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.profiles.path", "profiles"); // relative to .exe
             defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
 
-            defaults.put("update.feed.release", "https://version.cyberduck.ch/changelog.wys");
-            defaults.put("update.feed.beta", "https://version.cyberduck.ch/beta/changelog.wys");
-            defaults.put("update.feed.nightly", "https://version.cyberduck.ch/nightly/changelog.wys");
+            defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.wys");
+            defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.wys");
+            defaults.put("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.wys");
 
             defaults.put("update.feed", "release");
 
