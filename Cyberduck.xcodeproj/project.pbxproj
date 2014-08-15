@@ -215,6 +215,8 @@
 		47AE2FDA1630470D0091E874 /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */; };
 		47AE2FDB1630470D0091E874 /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */; };
 		47AF48FD199B913300A580EC /* Sftp.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AF48FB199B913300A580EC /* Sftp.strings */; };
+		47B1F21B199E13EA00960511 /* Sandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 47B1F213199E13C200960511 /* Sandbox.h */; };
+		47B1F21C199E13F000960511 /* Sandbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B1F215199E13C200960511 /* Sandbox.m */; };
 		47B3318C16680FF100C9FFA0 /* ftp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B3318B16680FF100C9FFA0 /* ftp.tiff */; };
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
@@ -1240,6 +1242,8 @@
 		47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesApplicationFinder.h; sourceTree = "<group>"; };
 		47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesApplicationFinder.m; sourceTree = "<group>"; };
 		47AF48FC199B913300A580EC /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = lv.lproj/Sftp.strings; sourceTree = "<group>"; };
+		47B1F213199E13C200960511 /* Sandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sandbox.h; sourceTree = "<group>"; };
+		47B1F215199E13C200960511 /* Sandbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sandbox.m; sourceTree = "<group>"; };
 		47B3318B16680FF100C9FFA0 /* ftp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ftp.tiff; sourceTree = "<group>"; };
 		47B331911668102400C9FFA0 /* s3.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = s3.tiff; sourceTree = "<group>"; };
 		47B331921668102400C9FFA0 /* swift.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = swift.tiff; sourceTree = "<group>"; };
@@ -1893,6 +1897,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47B1F212199E13C200960511 /* sparkle */,
 				473A7016182259350055C76C /* base64 */,
 				47C88FED17269A54001A746A /* IOKitSleepPreventer.h */,
 				47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */,
@@ -2214,6 +2219,15 @@
 			path = oofn;
 			sourceTree = "<group>";
 		};
+		47B1F212199E13C200960511 /* sparkle */ = {
+			isa = PBXGroup;
+			children = (
+				47B1F213199E13C200960511 /* Sandbox.h */,
+				47B1F215199E13C200960511 /* Sandbox.m */,
+			);
+			path = sparkle;
+			sourceTree = "<group>";
+		};
 		47BE1F8712369DE600E758FE /* importer */ = {
 			isa = PBXGroup;
 			children = (
@@ -2264,6 +2278,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B1F21B199E13EA00960511 /* Sandbox.h in Headers */,
 				47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */,
 				4739EF690856981300405FD3 /* Keychain.h in Headers */,
 				47462ADD0F0A473D0075CBA9 /* EMKeychainItem.h in Headers */,
@@ -2936,6 +2951,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B1F21C199E13F000960511 /* Sandbox.m in Sources */,
 				4739EF6B0856981300405FD3 /* Keychain.m in Sources */,
 				47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */,
 				47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */,
