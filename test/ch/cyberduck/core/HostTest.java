@@ -153,5 +153,7 @@ public class HostTest extends AbstractTestCase {
         assertEquals("/p", host.getDefaultPath());
         host.setDefaultPath("/p f");
         assertEquals("/p f", host.getDefaultPath());
+        host.setDefaultPath("/p ");
+        assertEquals("/p", host.getDefaultPath());
     }
 }
