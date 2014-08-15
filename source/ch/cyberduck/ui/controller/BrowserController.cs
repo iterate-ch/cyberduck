@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -2356,6 +2356,18 @@ namespace Ch.Cyberduck.Ui.Controller
             SelectedPaths = selected;
         }
 
+        public void ReloadData(Path directory, bool preserveSelection)
+        {
+            if (_cache.get(Workdir.getReference()).attributes().isInvalid())
+            {
+                ReloadData(true);
+            }
+            else
+            {
+                View.RefreshBrowserObject(directory);
+            }
+        }
+
         protected void ReloadData(IList<Path> selected)
         {
             if (null != Workdir)
@@ -2363,8 +2375,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 IEnumerable<Path> children = _browserModel.ChildrenGetter(Workdir);
                 //clear selection before resetting model. Otherwise we have weird selection effects.
                 SelectedPaths = new List<Path>();
+                int savedIndex = View.TopItemIndex;
+                View.BeginBrowserUpdate();
                 View.SetBrowserModel(null); // #7670
                 View.SetBrowserModel(children);
+                View.TopItemIndex = savedIndex;
                 SelectedPaths = selected;
                 List<Path> toUpdate = new List<Path>();
                 foreach (Path path in View.VisiblePaths)
@@ -2375,6 +2390,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
                 View.RefreshBrowserObjects(toUpdate);
+                View.EndBrowserUpdate();
             }
             else
             {

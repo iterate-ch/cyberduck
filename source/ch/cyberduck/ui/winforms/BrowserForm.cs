@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -568,6 +568,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public void BeginBrowserUpdate()
+        {
+            browser.BeginUpdate();    
+        }
+
+        public void EndBrowserUpdate()
+        {
+            browser.EndUpdate();    
+        }
+
         public void SetBrowserModel(IEnumerable<Path> model)
         {
             // Clear the cache in order to avoid strange side effects
@@ -955,6 +965,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                 toggleToolbarMainMenuItem.Text = LocaleFactory.localizedString(value ? "Hide Toolbar" : "Show Toolbar");
             }
             get { return toolBar.Visible; }
+        }
+
+        public int TopItemIndex
+        {
+            set { browser.TopItemIndex = value; }
+            get { return browser.TopItemIndex; }
         }
 
         public void PopulateEncodings(List<string> encodings)

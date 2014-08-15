@@ -194,18 +194,20 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerListWorker : SessionListWorker
             {
                 private readonly BrowserController _controller;
+                private readonly Path _directory;
 
                 public InnerListWorker(BrowserController controller, Path directory, Cache cache)
                     : base(controller.Session, cache, directory, new DialogLimitedListProgressListener(controller))
                 {
                     _controller = controller;
+                    _directory = directory;
                 }
 
                 public override void cleanup(object result)
                 {
                     if (_controller.getActions().isEmpty())
                     {
-                        _controller.ReloadData(true);
+                        _controller.ReloadData(_directory, true);
                     }
                 }
             }
