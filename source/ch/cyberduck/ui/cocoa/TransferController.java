@@ -392,7 +392,7 @@ public final class TransferController extends WindowController implements NSTool
             if(transfer.isRunning()) {
                 final BackgroundActionRegistry registry = this.getActions();
                 // Find matching background task
-                for(BackgroundAction action : registry) {
+                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {
@@ -902,7 +902,7 @@ public final class TransferController extends WindowController implements NSTool
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
                 // Find matching background task
-                for(BackgroundAction action : registry) {
+                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {
@@ -921,7 +921,7 @@ public final class TransferController extends WindowController implements NSTool
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
                 // Find matching background task
-                for(BackgroundAction action : registry) {
+                for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
                         final TransferBackgroundAction t = (TransferBackgroundAction) action;
                         if(t.getTransfer().equals(transfer)) {

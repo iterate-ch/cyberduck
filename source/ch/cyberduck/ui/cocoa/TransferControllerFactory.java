@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 
@@ -68,7 +69,8 @@ public class TransferControllerFactory {
                 @Override
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Quit
-                        for(BackgroundAction action : shared.getActions()) {
+                        final BackgroundActionRegistry registry = shared.getActions();
+                        for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                             action.cancel();
                         }
                         app.replyToApplicationShouldTerminate(true);
