@@ -42,9 +42,11 @@ public interface TransferPathFilter {
      * @param parent Parent transfer status
      * @return Transfer status
      */
-    TransferStatus prepare(Path file, Local local, TransferStatus parent) throws BackgroundException;
+    TransferStatus prepare(Path file, Local local, TransferStatus parent)
+            throws BackgroundException;
 
-    void apply(Path file, Local local, TransferStatus status) throws BackgroundException;
+    void apply(Path file, Local local, TransferStatus status)
+            throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
