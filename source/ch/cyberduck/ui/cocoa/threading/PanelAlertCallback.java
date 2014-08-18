@@ -41,7 +41,7 @@ public class PanelAlertCallback implements AlertCallback {
 
     private final WindowController controller;
 
-    private final FailureDiagnostics diagnostics
+    private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
     public PanelAlertCallback(final WindowController controller) {
