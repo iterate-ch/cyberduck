@@ -92,7 +92,7 @@ public class CreateFileController extends FileController {
                 if(filename.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);
                 }
-                c.reloadData(Collections.singletonList(file), Collections.singletonList(file));
+                c.reload(Collections.singletonList(file), Collections.singletonList(file));
             }
         });
     }

@@ -149,7 +149,7 @@ public abstract class TransferPromptController extends SheetController
     /**
      * Reload the files in the prompt dialog
      */
-    public void reloadData() {
+    public void reload() {
         if(log.isDebugEnabled()) {
             log.debug("Reload table view");
         }
@@ -472,7 +472,7 @@ public abstract class TransferPromptController extends SheetController
         preferences.setProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name()), selected.name());
         action = selected;
         browserModel.setAction(selected);
-        this.reloadData();
+        this.reload();
     }
 
     @Override

@@ -330,37 +330,37 @@ public class BrowserController extends WindowController
     /**
      * @param preserveSelection All selected files should be reselected after reloading the view
      */
-    public void reloadData(boolean preserveSelection) {
-        this.reloadData(preserveSelection, true);
+    public void reload(boolean preserveSelection) {
+        this.reload(preserveSelection, true);
     }
 
     /**
      * @param preserveSelection All selected files should be reselected after reloading the view
      * @param scroll            Scroll to current selection
      */
-    public void reloadData(boolean preserveSelection, boolean scroll) {
-        this.reloadData(Collections.<Path>emptyList(), preserveSelection, scroll);
+    public void reload(boolean preserveSelection, boolean scroll) {
+        this.reload(Collections.<Path>emptyList(), preserveSelection, scroll);
     }
 
     /**
      * @param changed           Modified files. Invalidate its parents
      * @param preserveSelection All selected files should be reselected after reloading the view
      */
-    public void reloadData(final List<Path> changed, boolean preserveSelection) {
-        this.reloadData(changed, preserveSelection, true);
+    public void reload(final List<Path> changed, boolean preserveSelection) {
+        this.reload(changed, preserveSelection, true);
     }
 
     /**
      * @param preserveSelection All selected files should be reselected after reloading the view
      * @param scroll            Scroll to current selection
      */
-    public void reloadData(final List<Path> changed, boolean preserveSelection, boolean scroll) {
+    public void reload(final List<Path> changed, boolean preserveSelection, boolean scroll) {
         if(preserveSelection) {
             //Remember the previously selected paths
-            this.reloadData(changed, this.getSelectedPaths(), scroll);
+            this.reload(changed, this.getSelectedPaths(), scroll);
         }
         else {
-            this.reloadData(changed, Collections.<Path>emptyList(), scroll);
+            this.reload(changed, Collections.<Path>emptyList(), scroll);
         }
     }
 
@@ -369,8 +369,8 @@ public class BrowserController extends WindowController
      *
      * @param selected The items to be selected
      */
-    protected void reloadData(final List<Path> selected) {
-        this.reloadData(Collections.<Path>emptyList(), selected);
+    protected void reload(final List<Path> selected) {
+        this.reload(Collections.<Path>emptyList(), selected);
     }
 
     /**
@@ -378,11 +378,11 @@ public class BrowserController extends WindowController
      *
      * @param selected The items to be selected
      */
-    protected void reloadData(final List<Path> changed, final List<Path> selected) {
-        this.reloadData(changed, selected, true);
+    protected void reload(final List<Path> changed, final List<Path> selected) {
+        this.reload(changed, selected, true);
     }
 
-    protected void reloadData(final List<Path> changed, final List<Path> selected, boolean scroll) {
+    protected void reload(final List<Path> changed, final List<Path> selected, boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
@@ -903,7 +903,7 @@ public class BrowserController extends WindowController
         // Remove any custom file filter
         this.setPathFilter(null);
         // Update from model
-        this.reloadData(true);
+        this.reload(true);
         // Focus on browser view
         this.getFocus();
     }
@@ -1090,7 +1090,7 @@ public class BrowserController extends WindowController
                             IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier()
             );
-            reloadData(true);
+            reload(true);
         }
 
         @Override
@@ -1559,7 +1559,7 @@ public class BrowserController extends WindowController
         table.sizeToFit();
         table.setAutosaveName("browser.autosave");
         table.setAutosaveTableColumns(true);
-        this.reloadData(false);
+        this.reload(false);
     }
 
     private BookmarkTableDataSource bookmarkModel;
@@ -1827,7 +1827,7 @@ public class BrowserController extends WindowController
         }
         else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
             this.setPathFilter(searchField.stringValue());
-            this.reloadData(true);
+            this.reload(true);
         }
     }
 
@@ -2277,7 +2277,7 @@ public class BrowserController extends WindowController
                 }
             }
             cache.invalidate(this.workdir().getReference());
-            this.reloadData(true);
+            this.reload(true);
         }
     }
 
@@ -2343,7 +2343,7 @@ public class BrowserController extends WindowController
                                 new MoveWorker(session, selected) {
                                     @Override
                                     public void cleanup(final Boolean result) {
-                                        reloadData(changed, new ArrayList<Path>(selected.values()));
+                                        reload(changed, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                         )
@@ -2499,7 +2499,7 @@ public class BrowserController extends WindowController
                         new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                             @Override
                             public void cleanup(final Boolean result) {
-                                reloadData(files, false);
+                                reload(files, false);
                             }
                         }
                 )
@@ -2511,7 +2511,7 @@ public class BrowserController extends WindowController
                 new RevertWorker(session, files) {
                     @Override
                     public void cleanup(final Boolean result) {
-                        reloadData(files, false);
+                        reload(files, false);
                     }
                 }
         ));
@@ -2832,7 +2832,7 @@ public class BrowserController extends WindowController
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        reloadData(selected, selected, true);
+                        reload(selected, selected, true);
                     }
                 });
             }
@@ -2922,7 +2922,7 @@ public class BrowserController extends WindowController
             sender.setState(NSCell.NSOnState);
         }
         if(this.isMounted()) {
-            this.reloadData(true);
+            this.reload(true);
         }
     }
 
@@ -3151,7 +3151,7 @@ public class BrowserController extends WindowController
                     public void cleanup() {
                         super.cleanup();
                         // Update Selection
-                        reloadData(changed, Collections.singletonList(archive.getArchive(changed)));
+                        reload(changed, Collections.singletonList(archive.getArchive(changed)));
                     }
 
                     @Override
@@ -3188,7 +3188,7 @@ public class BrowserController extends WindowController
                             super.cleanup();
                             expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
                             // Update Selection
-                            reloadData(selected, expanded);
+                            reload(selected, expanded);
                         }
 
                         @Override
@@ -3233,7 +3233,7 @@ public class BrowserController extends WindowController
         // Update the working directory if listing is successful
         workdir = directory;
         // Change to last selected browser view
-        this.reloadData(workdir != null ? selected : Collections.<Path>emptyList());
+        this.reload(workdir != null ? selected : Collections.<Path>emptyList());
         this.setNavigation(this.isMounted());
     }
 

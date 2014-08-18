@@ -119,7 +119,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 @Override
                                 public void cleanup(final AttributedList<Path> list) {
                                     if(controller.getActions().isEmpty()) {
-                                        controller.reloadData(true, true);
+                                        controller.reload(true, true);
                                     }
                                 }
                             }

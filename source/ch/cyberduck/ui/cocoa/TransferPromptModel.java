@@ -163,7 +163,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;
-                                controller.reloadData();
+                                controller.reload();
                             }
                         }
                 )
