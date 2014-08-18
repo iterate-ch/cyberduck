@@ -28,6 +28,8 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -83,6 +85,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
      */
     private Cache<TransferItem> cache
             = new Cache<TransferItem>(Integer.MAX_VALUE);
+
+    private FailureDiagnostics<BackgroundException> diagnostics
+            = new DefaultFailureDiagnostics();
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error) {
@@ -242,6 +247,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                             throw e;
                         }
                         catch(BackgroundException e) {
+                            if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                throw e;
+                            }
                             // Prompt to continue or abort
                             if(error.prompt(e)) {
                                 // Continue
@@ -300,6 +308,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
                         }
                         catch(BackgroundException e) {
                             status.setFailure();
+                            if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                throw e;
+                            }
                             // Prompt to continue or abort
                             if(error.prompt(e)) {
                                 // Continue
