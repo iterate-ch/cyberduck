@@ -19,6 +19,7 @@
 #import <Sandbox.h>
 #import <Cocoa/Cocoa.h>
 #import <Security/SecRequirement.h>
+#import <Security/SecStaticCode.h>
 #import <objc/runtime.h>
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_sparkle_Sandbox_isSandboxed(JNIEnv *env, jobject this)
