@@ -39,7 +39,6 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
@@ -226,9 +225,6 @@ public class SwiftSession extends HttpSession<Client> {
                 return (T) new SwiftHpUrlProvider(this);
             }
             return (T) new SwiftUrlProvider(this, accounts);
-        }
-        if(type == Find.class) {
-            return (T) new SwiftFindFeature(this);
         }
         if(type == Attributes.class) {
             return (T) new SwiftAttributesFeature(this);

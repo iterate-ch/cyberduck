@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,12 +67,12 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             = Preferences.instance();
 
     public SwiftWriteFeature(final SwiftSession session) {
-        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftFindFeature(session));
+        this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
-        this(session, listService, segmentService, new SwiftFindFeature(session));
+        this(session, listService, segmentService, new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftObjectListService listService,

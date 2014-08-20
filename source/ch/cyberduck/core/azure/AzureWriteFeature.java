@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class AzureWriteFeature implements Write {
 
     public AzureWriteFeature(final AzureSession session) {
         this.session = session;
-        this.finder = new AzureFindFeature(session);
+        this.finder = new DefaultFindFeature(session);
     }
 
     @Override

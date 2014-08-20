@@ -19,7 +19,19 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -27,7 +39,6 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -96,17 +107,17 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(final Jets3tProperties configuration) {
             super(host.getCredentials().isAnonymousLogin() ? null :
-                    new AWSCredentials(null, null) {
-                        @Override
-                        public String getAccessKey() {
-                            return host.getCredentials().getUsername();
-                        }
+                            new AWSCredentials(null, null) {
+                                @Override
+                                public String getAccessKey() {
+                                    return host.getCredentials().getUsername();
+                                }
 
-                        @Override
-                        public String getSecretKey() {
-                            return host.getCredentials().getPassword();
-                        }
-                    },
+                                @Override
+                                public String getSecretKey() {
+                                    return host.getCredentials().getPassword();
+                                }
+                            },
                     new PreferencesUseragentProvider().get(), null, configuration);
         }
 
@@ -464,9 +475,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);
-        }
-        if(type == Find.class) {
-            return (T) new S3FindFeature(this);
         }
         if(type == Attributes.class) {
             return (T) new S3AttributesFeature(this);

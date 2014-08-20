@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +79,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             = Preferences.instance().getList("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3MultipartService(session), new S3FindFeature(session));
+        this(session, new S3MultipartService(session), new DefaultFindFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final Find finder) {
