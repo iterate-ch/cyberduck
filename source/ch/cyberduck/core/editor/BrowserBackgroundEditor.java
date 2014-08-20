@@ -21,8 +21,8 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
@@ -46,7 +46,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     public BrowserBackgroundEditor(final Controller controller,
                                    final Session session,
                                    final Application application, final Path path) {
-        super(application, session, path, TransferErrorCallbackControllerFactory.get(controller));
+        super(application, session, path, new DisabledTransferErrorCallback());
         this.controller = controller;
         this.session = session;
     }
