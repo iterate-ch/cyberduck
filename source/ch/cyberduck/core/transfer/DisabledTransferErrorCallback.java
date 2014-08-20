@@ -28,6 +28,6 @@ public class DisabledTransferErrorCallback implements TransferErrorCallback {
     @Override
     public boolean prompt(final BackgroundException failure) throws BackgroundException {
         // Abort
-        return false;
+        throw failure;
     }
 }
