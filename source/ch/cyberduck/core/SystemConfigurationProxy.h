@@ -12,7 +12,6 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- *  Created by August Mueller on Wed Feb 04 2005.
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
@@ -29,17 +28,17 @@ extern "C" {
     JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePassiveFTPNative(JNIEnv *, jobject);
     JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHostExcludedNative(JNIEnv *, jobject, jstring);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *, jobject, jstring);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *, jobject, jstring);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *, jobject, jstring);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *, jobject, jstring);
 #ifdef __cplusplus
 }
 #endif
@@ -60,22 +59,22 @@ extern "C" {
 
 + (BOOL)isSimpleHostnameExcluded;
 
-+ (BOOL)isSOCKSProxyEnabled;
++ (BOOL)isSOCKSProxyEnabled:(NSString*)targetURL;
 
-+ (NSString *)getSOCKSProxyHost;
++ (NSString *)getSOCKSProxyHost:(NSString*)targetURL;
 
-+ (NSNumber *)getSOCKSProxyPort;
++ (NSNumber *)getSOCKSProxyPort:(NSString*)targetURL;
 
-+ (BOOL)isHTTPProxyEnabled;
++ (BOOL)isHTTPProxyEnabled:(NSString*)targetURL;
 
-+ (NSString *)getHTTPProxyHost;
++ (NSString *)getHTTPProxyHost:(NSString*)targetURL;
 
-+ (NSNumber *)getHTTPProxyPort;
++ (NSNumber *)getHTTPProxyPort:(NSString*)targetURL;
 
-+ (BOOL)isHTTPSProxyEnabled;
++ (BOOL)isHTTPSProxyEnabled:(NSString*)targetURL;
 
-+ (NSString *)getHTTPSProxyHost;
++ (NSString *)getHTTPSProxyHost:(NSString*)targetURL;
 
-+ (NSNumber *)getHTTPSProxyPort;
++ (NSNumber *)getHTTPSProxyPort:(NSString*)targetURL;
 
 @end

@@ -47,49 +47,49 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSim
 	return [Proxy isSimpleHostnameExcluded];
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [Proxy isSOCKSProxyEnabled];
+	return [Proxy isSOCKSProxyEnabled:JNFJavaToNSString(env, target)];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *env,  jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *env,  jobject this, jstring target)
 {
-	return [[Proxy getSOCKSProxyPort] intValue];
+	return [[Proxy getSOCKSProxyPort:JNFJavaToNSString(env, target)] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *env, jobject this, jstring target)
 {
-	return JNFNSToJavaString(env, [Proxy getSOCKSProxyHost]);
+	return JNFNSToJavaString(env, [Proxy getSOCKSProxyHost:JNFJavaToNSString(env, target)]);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [Proxy isHTTPProxyEnabled];
+	return [Proxy isHTTPProxyEnabled:JNFJavaToNSString(env, target)];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *env, jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [[Proxy getHTTPProxyPort] intValue];
+	return [[Proxy getHTTPProxyPort:JNFJavaToNSString(env, target)] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *env, jobject this, jstring target)
 {
-	return JNFNSToJavaString(env, [Proxy getHTTPProxyHost]);
+	return JNFNSToJavaString(env, [Proxy getHTTPProxyHost:JNFJavaToNSString(env, target)]);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [Proxy isHTTPSProxyEnabled];
+	return [Proxy isHTTPSProxyEnabled:JNFJavaToNSString(env, target)];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *env, jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [[Proxy getHTTPSProxyPort] intValue];
+	return [[Proxy getHTTPSProxyPort:JNFJavaToNSString(env, target)] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *env, jobject this, jstring target)
 {
-	return JNFNSToJavaString(env, [Proxy getHTTPSProxyHost]);
+	return JNFNSToJavaString(env, [Proxy getHTTPSProxyHost:JNFJavaToNSString(env, target)]);
 }
 
 @implementation Proxy
@@ -125,7 +125,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return enabled;
 }
 
-+ (BOOL)isSOCKSProxyEnabled
++ (BOOL)isSOCKSProxyEnabled:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return NO;
@@ -136,7 +136,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return enabled;
 }
 
-+ (NSString *)getSOCKSProxyHost
++ (NSString *)getSOCKSProxyHost:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;
@@ -147,7 +147,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return [hostname autorelease];
 }
 
-+ (NSNumber *)getSOCKSProxyPort
++ (NSNumber *)getSOCKSProxyPort:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;
@@ -158,7 +158,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return [port autorelease];
 }
 
-+ (BOOL)isHTTPProxyEnabled
++ (BOOL)isHTTPProxyEnabled:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return NO;
@@ -169,7 +169,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return enabled;
 }
 
-+ (NSString *)getHTTPProxyHost
++ (NSString *)getHTTPProxyHost:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;
@@ -180,7 +180,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return [hostname autorelease];
 }
 
-+ (NSNumber *)getHTTPProxyPort
++ (NSNumber *)getHTTPProxyPort:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;
@@ -191,7 +191,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return [port autorelease];
 }
 
-+ (BOOL)isHTTPSProxyEnabled
++ (BOOL)isHTTPSProxyEnabled:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return NO;
@@ -202,7 +202,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return enabled;
 }
 
-+ (NSString *)getHTTPSProxyHost
++ (NSString *)getHTTPSProxyHost:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;
@@ -213,7 +213,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 	return [hostname autorelease];
 }
 
-+ (NSNumber *)getHTTPSProxyPort
++ (NSNumber *)getHTTPSProxyPort:(NSString*)targetURL
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     if(!proxies) return nil;

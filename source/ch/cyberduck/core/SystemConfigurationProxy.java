@@ -48,6 +48,9 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         Native.load("Proxy");
     }
 
+    private HostUrlProvider provider
+            = new HostUrlProvider();
+
     protected SystemConfigurationProxy() {
         //
     }
@@ -119,17 +122,17 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
-        return this.isSOCKSProxyEnabledNative();
+        return this.isSOCKSProxyEnabledNative(provider.get(host));
     }
 
     @Override
     public String getSOCKSProxyHost(final Host host) {
-        return this.getSOCKSProxyHostNative();
+        return this.getSOCKSProxyHostNative(provider.get(host));
     }
 
     @Override
     public int getSOCKSProxyPort(final Host host) {
-        return this.getSOCKSProxyPortNative();
+        return this.getSOCKSProxyPortNative(provider.get(host));
     }
 
     @Override
@@ -137,17 +140,17 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
-        return this.isHTTPProxyEnabledNative();
+        return this.isHTTPProxyEnabledNative(provider.get(host));
     }
 
     @Override
     public String getHTTPProxyHost(final Host host) {
-        return this.getHTTPProxyHostNative();
+        return this.getHTTPProxyHostNative(provider.get(host));
     }
 
     @Override
     public int getHTTPProxyPort(final Host host) {
-        return getHTTPProxyPortNative();
+        return getHTTPProxyPortNative(provider.get(host));
     }
 
     @Override
@@ -155,79 +158,88 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
-        return this.isHTTPSProxyEnabledNative();
+        return this.isHTTPSProxyEnabledNative(provider.get(host));
     }
 
     @Override
     public String getHTTPSProxyHost(final Host host) {
-        return this.getHTTPSProxyHostNative();
+        return this.getHTTPSProxyHostNative(provider.get(host));
     }
 
     @Override
     public int getHTTPSProxyPort(final Host host) {
-        return this.getHTTPSProxyPortNative();
+        return this.getHTTPSProxyPortNative(provider.get(host));
     }
 
     /**
      * SOCKS proxy setting enabled
      *
+     * @param url The URL the application intends to access
      * @return True if enabled
      */
-    public native boolean isSOCKSProxyEnabledNative();
+    public native boolean isSOCKSProxyEnabledNative(String url);
 
     /**
      * SOCKS proxy setting hostname
      *
+     * @param url The URL the application intends to access
      * @return Proxy host
      */
-    public native String getSOCKSProxyHostNative();
+    public native String getSOCKSProxyHostNative(String url);
 
     /**
      * HTTP proxy setting port
      *
+     * @param url The URL the application intends to access
      * @return Proxy port
      */
-    public native int getSOCKSProxyPortNative();
+    public native int getSOCKSProxyPortNative(String url);
 
     /**
      * HTTP proxy setting enabled
      *
+     * @param url The URL the application intends to access
      * @return True if enabled
      */
-    public native boolean isHTTPProxyEnabledNative();
+    public native boolean isHTTPProxyEnabledNative(String url);
 
     /**
      * HTTP proxy setting hostname
      *
+     * @param url The URL the application intends to access
      * @return Proxy host
      */
-    public native String getHTTPProxyHostNative();
+    public native String getHTTPProxyHostNative(String url);
 
     /**
      * HTTP proxy setting port
      *
+     * @param url The URL the application intends to access
      * @return Proxy port
      */
-    public native int getHTTPProxyPortNative();
+    public native int getHTTPProxyPortNative(String url);
 
     /**
      * HTTPS proxy setting enabled
      *
+     * @param url The URL the application intends to access
      * @return True if enabled
      */
-    public native boolean isHTTPSProxyEnabledNative();
+    public native boolean isHTTPSProxyEnabledNative(String url);
 
     /**
      * HTTPS proxy setting hostname
      *
+     * @param url The URL the application intends to access
      * @return Proxy host
      */
-    public native String getHTTPSProxyHostNative();
+    public native String getHTTPSProxyHostNative(String url);
 
     /**
      * HTTPS proxy setting port
      *
+     * @param url The URL the application intends to access
      * @return Proxy port
      */
-    public native int getHTTPSProxyPortNative();
+    public native int getHTTPSProxyPortNative(String url);
 }
