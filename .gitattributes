@@ -2015,9 +2015,9 @@ lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
 lib/gson-2.2.4.jar -text svneol=unset#application/zip
-lib/httpclient-4.3.4.jar -text svneol=unset#application/zip
+lib/httpclient-4.3.5.jar -text
 lib/httpcore-4.3.2.jar -text svneol=unset#application/zip
-lib/httpmime-4.3.4.jar -text svneol=unset#application/zip
+lib/httpmime-4.3.5.jar -text
 lib/icu4j-module-4.4.1.1.jar -text
 lib/ikvm-native-win32-x86.dll -text
 lib/jackson-core-asl-1.9.13.jar -text svneol=unset#application/jar
