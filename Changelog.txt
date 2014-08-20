@@ -9,6 +9,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Use version 2 for sealed resources for compatibility with OS X 10.9.5 and later (Gatekeeper)
 - [Bugfix] Synchronize fails to add new local files (#8096)
 - [Bugfix] Wrong public key fingerprint displayed (SFTP) (#8173)
+- [Bugfix] Expanding a folder resets the scroll position (#7941) (Windows)
 
 4.5.1 [https://trac.cyberduck.io/milestone/4.5.1]
 - [Bugfix] Connection failure when sandboxing denies access to ~/.ssh/known_hosts (SFTP) (#8102)
