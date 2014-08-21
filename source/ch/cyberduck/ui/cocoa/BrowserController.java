@@ -2559,7 +2559,7 @@ public class BrowserController extends WindowController
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
         SheetController sheet = new FolderController(this, cache,
-                feature != null ? feature.getLocations() : Collections.<String>emptySet());
+                feature != null ? feature.getLocations() : Collections.<Location.Name>emptySet());
         sheet.beginSheet();
     }
 

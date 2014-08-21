@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.Location;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,16 +72,16 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public Set<String> getRegions() {
-        return new HashSet<String>(Arrays.asList(
-                "US",
-                "EU",
-                "us-west-1",
-                "us-west-2",
-                "ap-southeast-1",
-                "ap-southeast-2",
-                "ap-northeast-1",
-                "sa-east-1"
+    public Set<Location.Name> getRegions() {
+        return new HashSet<Location.Name>(Arrays.asList(
+                new S3LocationFeature.S3Region("US"),
+                new S3LocationFeature.S3Region("EU"),
+                new S3LocationFeature.S3Region("us-west-1"),
+                new S3LocationFeature.S3Region("us-west-2"),
+                new S3LocationFeature.S3Region("ap-southeast-1"),
+                new S3LocationFeature.S3Region("ap-southeast-2"),
+                new S3LocationFeature.S3Region("ap-northeast-1"),
+                new S3LocationFeature.S3Region("sa-east-1")
         ));
     }
 

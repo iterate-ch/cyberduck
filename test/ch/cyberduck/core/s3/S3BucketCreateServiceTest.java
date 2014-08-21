@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.features.Location;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,10 +52,10 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
         final S3FindFeature find = new S3FindFeature(session);
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);
-        for(String region : ProtocolFactory.S3_SSL.getRegions()) {
+        for(Location.Name region : ProtocolFactory.S3_SSL.getRegions()) {
             final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            create.create(bucket, region);
-            bucket.attributes().setRegion(region);
+            create.create(bucket, region.getIdentifier());
+            bucket.attributes().setRegion(region.getIdentifier());
             assertTrue(find.find(bucket));
             delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
             assertFalse(find.find(bucket));

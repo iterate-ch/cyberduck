@@ -2010,7 +2010,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             this.background(new BrowserControllerBackgroundAction<Void>(controller) {
-                String location;
+                Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
                 List<String> containers = new ArrayList<String>();
@@ -2070,8 +2070,8 @@ public class InfoController extends ToolbarWindowController {
                             bucketLoggingPopup.selectItemWithTitle(containerService.getContainer(getSelected()).getName());
                         }
                     }
-                    if(StringUtils.isNotBlank(location)) {
-                        bucketLocationField.setStringValue(LocaleFactory.localizedString(location, "S3"));
+                    if(location != null) {
+                        bucketLocationField.setStringValue(location.toString());
                     }
                     if(versioning != null) {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);

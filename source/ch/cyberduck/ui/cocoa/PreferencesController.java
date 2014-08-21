@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -1891,9 +1892,9 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(String location : ProtocolFactory.S3_SSL.getRegions()) {
-            this.defaultBucketLocation.addItemWithTitle(LocaleFactory.localizedString(location, "S3"));
-            this.defaultBucketLocation.lastItem().setRepresentedObject(location);
+        for(Location.Name location : ProtocolFactory.S3_SSL.getRegions()) {
+            this.defaultBucketLocation.addItemWithTitle(location.toString());
+            this.defaultBucketLocation.lastItem().setRepresentedObject(location.getIdentifier());
         }
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));

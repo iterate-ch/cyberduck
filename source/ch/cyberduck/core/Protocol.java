@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Location;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
@@ -127,7 +129,7 @@ public interface Protocol {
     /**
      * @return Locations for containers
      */
-    Set<String> getRegions();
+    Set<Location.Name> getRegions();
 
     /**
      * @return Human readable short name

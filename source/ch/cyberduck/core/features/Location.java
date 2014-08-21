@@ -1,8 +1,8 @@
 package ch.cyberduck.core.features;
 
 /*
- * Copyright (c) 2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Path;
@@ -28,7 +28,41 @@ import java.util.Set;
  */
 public interface Location {
 
-    Set<String> getLocations();
+    Set<Name> getLocations();
 
-    String getLocation(Path container) throws BackgroundException;
+    Name getLocation(Path container) throws BackgroundException;
+
+    public static abstract class Name {
+        private String identifier;
+
+        protected Name(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public abstract String toString();
+
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Name name = (Name) o;
+            if(identifier != null ? !identifier.equals(name.identifier) : name.identifier != null) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return identifier != null ? identifier.hashCode() : 0;
+        }
+    }
 }

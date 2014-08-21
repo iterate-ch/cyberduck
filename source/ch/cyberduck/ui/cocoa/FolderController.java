@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -56,9 +57,9 @@ public class FolderController extends FileController {
         this.view = view;
     }
 
-    private Set<String> regions;
+    private Set<Location.Name> regions;
 
-    public FolderController(final WindowController parent, final Cache cache, final Set<String> regions) {
+    public FolderController(final WindowController parent, final Cache cache, final Set<Location.Name> regions) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
@@ -75,10 +76,10 @@ public class FolderController extends FileController {
         if(this.hasLocation()) {
             // Override accessory view with location menu added
             this.loadBundle("Folder");
-            for(String region : regions) {
-                regionPopup.addItemWithTitle(LocaleFactory.localizedString(region, "S3"));
-                regionPopup.itemWithTitle(LocaleFactory.localizedString(region, "S3")).setRepresentedObject(region);
-                if(region.equals(Preferences.instance().getProperty("s3.location"))) {
+            for(Location.Name region : regions) {
+                regionPopup.addItemWithTitle(region.toString());
+                regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
+                if(region.getIdentifier().equals(Preferences.instance().getProperty("s3.location"))) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             }

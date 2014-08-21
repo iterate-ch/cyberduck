@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,12 +50,12 @@ public class SwiftLocationFeature implements Location {
     }
 
     @Override
-    public Set<String> getLocations() {
-        final Set<String> locations = new LinkedHashSet<String>();
+    public Set<Name> getLocations() {
+        final Set<Name> locations = new LinkedHashSet<Name>();
         final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
         Collections.sort(regions, new Comparator<Region>() {
             @Override
-            public int compare(Region r1, Region r2) {
+            public int compare(final Region r1, final Region r2) {
                 if(r1.isDefault()) {
                     return -1;
                 }
@@ -69,13 +70,25 @@ public class SwiftLocationFeature implements Location {
                 // v1 authentication contexts do not have region support
                 continue;
             }
-            locations.add(region.getRegionId());
+            locations.add(new SwiftRegion(region.getRegionId()));
         }
         return locations;
     }
 
     @Override
-    public String getLocation(final Path container) throws BackgroundException {
-        return containerService.getContainer(container).attributes().getRegion();
+    public Name getLocation(final Path container) throws BackgroundException {
+        return new SwiftRegion(containerService.getContainer(container).attributes().getRegion());
+    }
+
+    public static final class SwiftRegion extends Name {
+
+        public SwiftRegion(String identifier) {
+            super(identifier);
+        }
+
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString(this.getIdentifier(), "Mosso");
+        }
     }
 }

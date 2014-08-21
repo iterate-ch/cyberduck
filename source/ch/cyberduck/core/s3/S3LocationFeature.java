@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -46,20 +47,19 @@ public class S3LocationFeature implements Location {
     }
 
     @Override
-    public Set<String> getLocations() {
+    public Set<Name> getLocations() {
         return session.getHost().getProtocol().getRegions();
     }
 
     @Override
-    public String getLocation(final Path file) throws BackgroundException {
+    public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         try {
-            String location = session.getClient().getBucketLocation(
-                    container.getName());
+            String location = session.getClient().getBucketLocation(container.getName());
             if(StringUtils.isBlank(location)) {
                 location = "US"; //Default location US is null
             }
-            return location;
+            return new S3Region(location);
         }
         catch(ServiceException e) {
             try {
@@ -73,6 +73,18 @@ public class S3LocationFeature implements Location {
                 log.warn(String.format("Not supported to read location for %s %s", container, e.getMessage()));
                 return null;
             }
+        }
+    }
+
+    public static class S3Region extends Name {
+
+        public S3Region(String identifier) {
+            super(identifier);
+        }
+
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString(this.getIdentifier(), "S3");
         }
     }
 }

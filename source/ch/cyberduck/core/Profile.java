@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -241,7 +242,7 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public Set<String> getRegions() {
+    public Set<Location.Name> getRegions() {
         return parent.getRegions();
     }
 

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Location;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -128,7 +130,7 @@ public abstract class AbstractProtocol implements Protocol {
      * @return Available regions for containers
      */
     @Override
-    public Set<String> getRegions() {
+    public Set<Location.Name> getRegions() {
         return Collections.emptySet();
     }
 

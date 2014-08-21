@@ -2,11 +2,12 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.features.Location;
 
 import org.junit.Test;
 
@@ -29,11 +30,11 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
-        final Set<String> locations = new SwiftLocationFeature(session).getLocations();
-        assertTrue(locations.contains("DFW"));
-        assertTrue(locations.contains("ORD"));
-        assertTrue(locations.contains("SYD"));
-        assertEquals("DFW", locations.iterator().next());
+        final Set<Location.Name> locations = new SwiftLocationFeature(session).getLocations();
+        assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("DFW")));
+        assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("ORD")));
+        assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("SYD")));
+        assertEquals(new SwiftLocationFeature.SwiftRegion("DFW"), locations.iterator().next());
         session.close();
     }
 }
