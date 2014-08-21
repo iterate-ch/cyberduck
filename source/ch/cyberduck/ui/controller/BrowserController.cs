@@ -1851,7 +1851,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                            ? (IList<Location.Name>)
                                                              Utils.ConvertFromJavaList<Location.Name>(
                                                                  feature.getLocations())
-                                                           : new List<string>());
+                                                           : new List<Location.Name>());
             fc.Show();
         }
 
