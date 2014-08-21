@@ -2,8 +2,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -32,7 +32,8 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
-        final List<Path> list = new SwiftContainerListService(session, false, false).list(new DisabledListProgressListener());
+        final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(null),
+                false, false).list(new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
         assertTrue(list.contains(container));
@@ -40,5 +41,23 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD1");
         assertFalse(list.contains(container));
+    }
+
+    @Test
+    public void testListLimitRegion() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("ORD"),
+                false, false).list(new DisabledListProgressListener());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        container.attributes().setRegion("DFW");
+        assertFalse(list.contains(container));
+        container.attributes().setRegion("ORD");
+        assertTrue(list.contains(container));
     }
 }

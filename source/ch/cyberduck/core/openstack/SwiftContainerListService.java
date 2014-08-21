@@ -66,23 +66,18 @@ public class SwiftContainerListService implements RootListService {
 
     private SwiftLocationFeature.SwiftRegion region;
 
-    public SwiftContainerListService(final SwiftSession session) {
-        this(session,
+    public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region) {
+        this(session, region,
                 Preferences.instance().getBoolean("openstack.cdn.preload"),
                 Preferences.instance().getBoolean("openstack.container.size.preload"));
     }
 
-    public SwiftContainerListService(SwiftSession session, SwiftLocationFeature.SwiftRegion region) {
-        this(session,
-                Preferences.instance().getBoolean("openstack.cdn.preload"),
-                Preferences.instance().getBoolean("openstack.container.size.preload"));
-        this.region = region;
-    }
-
-    public SwiftContainerListService(final SwiftSession session, final boolean cdn, final boolean size) {
+    public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region,
+                                     final boolean cdn, final boolean size) {
         this.session = session;
         this.cdn = cdn;
         this.size = size;
+        this.region = region;
     }
 
     @Override
@@ -95,7 +90,7 @@ public class SwiftContainerListService implements RootListService {
             final int limit = preferences.getInteger("openstack.list.limit");
             final Client client = session.getClient();
             for(Region r : client.getRegions()) {
-                if(region != null) {
+                if(region.getIdentifier() != null) {
                     if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
                         log.warn(String.format("Skip region %s", r));
                         continue;
