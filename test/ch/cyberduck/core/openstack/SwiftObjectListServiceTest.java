@@ -17,7 +17,16 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.junit.Test;
@@ -33,24 +42,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class SwiftObjectListServiceTest extends AbstractTestCase {
-
-    @Test
-    public void testListPlaceholder() throws Exception {
-
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
-                        )));
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        connect.connect(session, Cache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
-        final Path directory = new Path(container, "t", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        final List<Path> list = new SwiftObjectListService(session).list(directory, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-    }
 
     @Test
     public void testList() throws Exception {
