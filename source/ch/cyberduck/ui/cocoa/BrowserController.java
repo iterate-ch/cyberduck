@@ -2558,7 +2558,8 @@ public class BrowserController extends WindowController
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        SheetController sheet = new FolderController(this, cache, feature != null ? feature.getLocations() : Collections.<String>emptySet());
+        SheetController sheet = new FolderController(this, cache,
+                feature != null ? feature.getLocations() : Collections.<String>emptySet());
         sheet.beginSheet();
     }
 
@@ -3418,11 +3419,6 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                if(session != null) {
-                    // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                    cache.clear();
-                    PathPasteboardFactory.delete(session);
-                }
                 session = null;
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
@@ -3440,7 +3436,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session)) {
+            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session, cache)) {
                 @Override
                 public void prepare() throws ConnectionCanceledException {
                     if(!session.isConnected()) {

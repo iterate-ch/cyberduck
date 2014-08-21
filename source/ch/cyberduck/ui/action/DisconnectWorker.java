@@ -17,9 +17,11 @@ package ch.cyberduck.ui.action;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +35,11 @@ public class DisconnectWorker extends Worker<Void> {
 
     private Session<?> session;
 
-    public DisconnectWorker(Session<?> session) {
+    private Cache cache;
+
+    public DisconnectWorker(final Session<?> session, final Cache cache) {
         this.session = session;
+        this.cache = cache;
     }
 
     @Override
@@ -46,6 +51,13 @@ public class DisconnectWorker extends Worker<Void> {
             log.warn(String.format("Failure closing connection %s. %s", session, e.getMessage()));
         }
         return null;
+    }
+
+    @Override
+    public void cleanup(Void result) {
+        // Clear the cache on the main thread to make sure the browser model is not in an invalid state
+        cache.clear();
+        PathPasteboardFactory.delete(session);
     }
 
     @Override
