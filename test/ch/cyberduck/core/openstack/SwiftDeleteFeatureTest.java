@@ -54,6 +54,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
     }
 
@@ -67,6 +68,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
     }
@@ -81,6 +83,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         final Path placeholder = new Path(new Path(container, "t", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 "placeholder-" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -94,6 +97,26 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         assertTrue(find.find(test));
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginController());
         assertFalse(find.find(test));
+        assertFalse(find.find(placeholder));
+    }
+
+    @Test
+    public void testDeletePlaceholder() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final Path placeholder = new Path(container,
+                "placeholder-" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        final SwiftFindFeature find = new SwiftFindFeature(session);
+        assertTrue(find.find(placeholder));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginController());
         assertFalse(find.find(placeholder));
     }
 }
