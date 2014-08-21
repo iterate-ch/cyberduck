@@ -28,6 +28,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
     public class DialogAlertCallback : AlertCallback
     {
         private readonly WindowController _controller;
+        private readonly FailureDiagnostics _diagnostics = new DefaultFailureDiagnostics();
 
         public DialogAlertCallback(WindowController controller)
         {
@@ -46,9 +47,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
                     string expanded = log.length() > 0 ? log.toString() : null;
-                    string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
-                                                          LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-
+                    string commandButtons;
+                    if (_diagnostics.determine(failure) == FailureDiagnostics.Type.network)
+                    {
+                        commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
+                                                       LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                    }
+                    else
+                    {
+                        commandButtons = String.Format("{0}", LocaleFactory.localizedString("Try Again", "Alert"));
+                    }
                     _controller.WarningBox(title, message, detail, expanded, commandButtons, true, footer,
                                            delegate(int option, bool @checked)
                                                {
