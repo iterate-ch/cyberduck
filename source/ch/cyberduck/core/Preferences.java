@@ -545,6 +545,8 @@ public abstract class Preferences {
          * Default bucket location
          */
         defaults.put("s3.location", "US");
+        defaults.put("s3.bucket.virtualhost.disable", String.valueOf(false));
+
         defaults.put("s3.bucket.acl.default", "public-read");
         //defaults.put("s3.bucket.acl.default", "private");
         defaults.put("s3.key.acl.default", "public-read");
