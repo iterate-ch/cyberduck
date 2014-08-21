@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.serializer.Serializer;
 
-import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -397,7 +396,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     /**
      * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
-     * <p>
+     * <p/>
      * Configures credentials according to new hostname.
      *
      * @param hostname Server
