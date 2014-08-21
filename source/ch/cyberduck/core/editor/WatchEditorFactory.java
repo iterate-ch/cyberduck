@@ -25,7 +25,6 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.BrowserController;
 
 import java.util.ArrayList;
 import java.util.List;
