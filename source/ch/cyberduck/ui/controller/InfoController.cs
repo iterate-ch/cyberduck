@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -1720,7 +1720,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private Credentials _credentials;
             private String _encryption;
             private LifecycleConfiguration _lifecycle;
-            private String _location;
+            private Location.Name _location;
             private LoggingConfiguration _logging;
             private VersioningConfiguration _versioning;
 
@@ -1797,9 +1797,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
 
-                    if (Utils.IsNotBlank(_location))
+                    if (_location != null)
                     {
-                        _view.BucketLocation = LocaleFactory.localizedString(_location, "S3");
+                        _view.BucketLocation = LocaleFactory.localizedString(_location.toString(), "S3");
                     }
 
                     if (_versioning != null)

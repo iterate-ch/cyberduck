@@ -1848,8 +1848,9 @@ namespace Ch.Cyberduck.Ui.Controller
             Location feature = (Location) _session.getFeature(typeof (Location));
             FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this,
                                                        feature != null
-                                                           ? (IList<string>)
-                                                             Utils.ConvertFromJavaList<String>(feature.getLocations())
+                                                           ? (IList<Location.Name>)
+                                                             Utils.ConvertFromJavaList<Location.Name>(
+                                                                 feature.getLocations())
                                                            : new List<string>());
             fc.Show();
         }
@@ -3065,44 +3066,45 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class DisconnectAction : BrowserControllerBackgroundAction
+        private class DisconnectAction : WorkerBackgroundAction
         {
-            private readonly CallbackDelegate _callback;
+            private readonly BrowserController _controller;
 
-            public DisconnectAction(BrowserController controller, CallbackDelegate callback) : base(controller)
+            public DisconnectAction(BrowserController controller, CallbackDelegate callback)
+                : base(controller, controller.Session, controller.Cache, new InnerDisconnectWorker(controller, callback)
+                    )
             {
-                _callback = callback;
+                _controller = controller;
             }
 
             public override void prepare()
             {
-                if (null == BrowserController._session)
+                if (null == _controller.Session)
                 {
                     throw new ConnectionCanceledException();
                 }
-                if (!BrowserController._session.isConnected())
+                if (!_controller.Session.isConnected())
                 {
                     throw new ConnectionCanceledException();
                 }
                 base.prepare();
             }
 
-            public override object run()
+            private class InnerDisconnectWorker : DisconnectWorker
             {
-                BrowserController._session.close();
-                return true;
-            }
+                private readonly CallbackDelegate _callback;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _callback();
-            }
+                public InnerDisconnectWorker(BrowserController controller, CallbackDelegate callback)
+                    : base(controller.Session, controller.Cache)
+                {
+                    _callback = callback;
+                }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                                     BrowserController.Session.getHost().getHostname());
+                public override void cleanup(object wd)
+                {
+                    base.cleanup(wd);
+                    _callback();
+                }
             }
         }
 

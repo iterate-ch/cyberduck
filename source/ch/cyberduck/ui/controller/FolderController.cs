@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,18 +23,18 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
-using UploadTargetFinder = ch.cyberduck.ui.browser.UploadTargetFinder;
+using ch.cyberduck.ui.browser;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     internal class FolderController : FileController
     {
-        private readonly IList<string> _regions;
+        private readonly IList<Location.Name> _regions;
         private readonly INewFolderPromptView _view;
 
-        public FolderController(INewFolderPromptView view, BrowserController browserController, IList<string> regions)
-            : base(view, browserController)
+        public FolderController(INewFolderPromptView view, BrowserController browserController,
+                                IList<Location.Name> regions) : base(view, browserController)
         {
             _view = view;
             _regions = regions;
@@ -42,9 +42,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 view.RegionsEnabled = true;
                 IList<KeyValuePair<string, string>> r = new List<KeyValuePair<string, string>>();
-                foreach (string region in regions)
+                foreach (Location.Name region in regions)
                 {
-                    r.Add(new KeyValuePair<string, string>(region, LocaleFactory.localizedString(region, "S3")));
+                    r.Add(new KeyValuePair<string, string>(region.getIdentifier(), region.toString()));
                 }
                 view.PopulateRegions(r);
             }
@@ -65,7 +65,9 @@ namespace Ch.Cyberduck.Ui.Controller
             if (DialogResult.OK == result && !String.IsNullOrEmpty(View.InputText) &&
                 !View.InputText.Trim().Equals(String.Empty))
             {
-                BrowserController.background(new CreateFolderAction(BrowserController, new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath), View.InputText,
+                BrowserController.background(new CreateFolderAction(BrowserController,
+                                                                    new UploadTargetFinder(Workdir).find(
+                                                                        BrowserController.SelectedPath), View.InputText,
                                                                     HasLocation() ? _view.Region : null));
             }
         }
