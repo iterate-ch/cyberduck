@@ -43,6 +43,7 @@ public class TransferSpeedometerTest extends AbstractTestCase {
         s.reset();
         assertEquals(0L, s.getStatus().getSpeed(), 0L);
         transfer.addTransferred(4L);
+        Thread.sleep(1000L);
         assertNotEquals(0L, s.getStatus().getSpeed(), 0L);
         s.reset();
         assertEquals(0L, s.getStatus().getSpeed(), 0L);
