@@ -198,6 +198,11 @@ public interface Protocol {
     String getContext();
 
     /**
+     * @return Default region
+     */
+    String getRegion();
+
+    /**
      * @return A mounted disk icon to display
      */
     String disk();

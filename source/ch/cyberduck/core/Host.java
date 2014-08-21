@@ -521,6 +521,10 @@ public class Host implements Serializable, Comparable<Host> {
         this.timezone = timezone;
     }
 
+    public String getRegion() {
+        return protocol.getRegion();
+    }
+
     /**
      * @return Notice
      */

@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -36,5 +37,12 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("SYD")));
         assertEquals(new SwiftLocationFeature.SwiftRegion("DFW"), locations.iterator().next());
         session.close();
+    }
+
+    @Test
+    public void testLocationNull() throws Exception {
+        final SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(null);
+        assertNull(region.getIdentifier());
+        assertEquals("", region.toString());
     }
 }

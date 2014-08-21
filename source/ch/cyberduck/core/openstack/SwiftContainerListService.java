@@ -31,6 +31,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -63,10 +64,19 @@ public class SwiftContainerListService implements RootListService {
 
     private boolean size;
 
+    private SwiftLocationFeature.SwiftRegion region;
+
     public SwiftContainerListService(final SwiftSession session) {
         this(session,
                 Preferences.instance().getBoolean("openstack.cdn.preload"),
                 Preferences.instance().getBoolean("openstack.container.size.preload"));
+    }
+
+    public SwiftContainerListService(SwiftSession session, SwiftLocationFeature.SwiftRegion region) {
+        this(session,
+                Preferences.instance().getBoolean("openstack.cdn.preload"),
+                Preferences.instance().getBoolean("openstack.container.size.preload"));
+        this.region = region;
     }
 
     public SwiftContainerListService(final SwiftSession session, final boolean cdn, final boolean size) {
@@ -84,12 +94,18 @@ public class SwiftContainerListService implements RootListService {
             final List<Path> containers = new ArrayList<Path>();
             final int limit = preferences.getInteger("openstack.list.limit");
             final Client client = session.getClient();
-            for(Region region : client.getRegions()) {
+            for(Region r : client.getRegions()) {
+                if(region != null) {
+                    if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
+                        log.warn(String.format("Skip region %s", r));
+                        continue;
+                    }
+                }
                 // List all containers
                 List<Container> chunk;
                 String marker = null;
                 do {
-                    chunk = client.listContainers(region, limit, marker);
+                    chunk = client.listContainers(r, limit, marker);
                     for(final Container f : chunk) {
                         final PathAttributes attributes = new PathAttributes();
                         attributes.setRegion(f.getRegion().getRegionId());

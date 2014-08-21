@@ -158,6 +158,15 @@ public final class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getRegion() {
+        final String v = this.value("Region");
+        if(StringUtils.isBlank(v)) {
+            return parent.getRegion();
+        }
+        return v;
+    }
+
+    @Override
     public String disk() {
         if(null == image) {
             return parent.disk();

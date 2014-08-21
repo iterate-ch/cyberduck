@@ -151,6 +151,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getRegion() {
+        return null;
+    }
+
+    @Override
     public Type getType() {
         return Type.valueOf(this.getIdentifier());
     }
