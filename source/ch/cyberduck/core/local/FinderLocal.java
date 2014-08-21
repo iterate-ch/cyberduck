@@ -253,7 +253,7 @@ public class FinderLocal extends Local {
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);
             if(null == files) {
                 final NSError f = error.getValueAs(NSError.class);
-                throw new AccessDeniedException(String.format("%s", f));
+                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;
@@ -290,7 +290,7 @@ public class FinderLocal extends Local {
                 this.getAbsolute(), error);
         if(null == destination) {
             final NSError f = error.getValueAs(NSError.class);
-            throw new NotfoundException(String.format("%s", f));
+            throw new NotfoundException(String.format("%s", f.localizedDescription()));
         }
         return new FinderLocal(this.getParent().getAbsolute(), destination);
     }
