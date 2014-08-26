@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
@@ -1149,9 +1150,9 @@ namespace Ch.Cyberduck.Ui.Controller
             Iterator iter = locations.iterator();
             while (iter.hasNext())
             {
-                string location = (string) iter.next();
-                defaultBucketLocations.Add(new KeyValuePair<string, string>(location,
-                                                                            LocaleFactory.localizedString(location, "S3")));
+                Location.Name location = (Location.Name) iter.next();
+                defaultBucketLocations.Add(new KeyValuePair<string, string>(location.getIdentifier(),
+                                                                            location.toString()));
             }
             View.PopulateDefaultBucketLocations(defaultBucketLocations);
         }
