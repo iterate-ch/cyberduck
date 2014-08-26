@@ -100,6 +100,8 @@ public class SwiftUrlProvider implements UrlProvider {
                 list.addAll(this.createTempUrl(region, file, this.getExpiry(Preferences.instance().getInteger("s3.url.expire.seconds"))));
                 // Week
                 list.addAll(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60)));
+                // Month
+                list.addAll(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60 * 4)));
             }
         }
         return list;

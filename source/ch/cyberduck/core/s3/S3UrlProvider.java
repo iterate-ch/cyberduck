@@ -79,6 +79,8 @@ public class S3UrlProvider implements UrlProvider {
                 list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
                 // Week
                 list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
+                // Month
+                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60 * 4));
             }
             // Torrent
             final S3Service service = new RestS3Service(
