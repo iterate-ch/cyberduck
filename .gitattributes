@@ -2269,12 +2269,12 @@ profiles/Openstack[!!-~]Swift[!!-~](Swauth).cyberduckprofile -text svneol=unset#
 profiles/Openstack[!!-~]Swift[!!-~](v1).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Oracle[!!-~]Storage[!!-~]Cloud[!!-~](US[!!-~]Commercial[!!-~]2).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]UK.cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/Rackspace[!!-~]US[!!-~](DFW).cyberduckprofile -text
-profiles/Rackspace[!!-~]US[!!-~](HKG).cyberduckprofile -text
-profiles/Rackspace[!!-~]US[!!-~](IAD).cyberduckprofile -text
-profiles/Rackspace[!!-~]US[!!-~](LON).cyberduckprofile -text
+profiles/Rackspace[!!-~]US[!!-~](DFW).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Rackspace[!!-~]US[!!-~](HKG).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Rackspace[!!-~]US[!!-~](IAD).cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Rackspace[!!-~]US[!!-~](LON).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]US[!!-~](ORD).cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/Rackspace[!!-~]US[!!-~](SYD).cyberduckprofile -text
+profiles/Rackspace[!!-~]US[!!-~](SYD).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Rackspace[!!-~]US.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/S3[!!-~](HTTP).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/S3[!!-~](HTTPS).cyberduckprofile -text svneol=unset#application/octet-stream
