@@ -28,7 +28,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         assertTrue(new S3UrlProvider(session).toUrl(p).filter(DescriptiveUrl.Type.http).contains(
                 new DescriptiveUrl(URI.create("http://bucket.s3.amazonaws.com/f/key%20f"))
         ));
-        assertEquals(3, new S3UrlProvider(session, new DisabledPasswordStore() {
+        assertEquals(4, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String find(final Host host) {
                 return "k";
