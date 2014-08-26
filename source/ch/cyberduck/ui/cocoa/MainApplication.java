@@ -48,6 +48,7 @@ import ch.cyberduck.core.serializer.impl.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
+import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -138,7 +139,7 @@ public final class MainApplication {
                 AlertTransferErrorCallback.register();
                 RendezvousResponder.register();
                 ProtocolFactory.register();
-                if(null != Updater.getFeed()) {
+                if(!Sandbox.get().isSandboxed()) {
                     // Disabled in App Store
                     ApplescriptTerminalService.register();
                 }
