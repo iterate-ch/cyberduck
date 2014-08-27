@@ -207,6 +207,7 @@ namespace Ch.Cyberduck.Ui.Controller
             LicenseImpl.Register();
             Proxy.Register();
             LocalImpl.Register();
+            RecycleLocalTrashFeature.Register();
             LocaleImpl.Register();
             UserPreferences.Register();
             Keychain.Register();

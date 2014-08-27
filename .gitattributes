@@ -2680,6 +2680,7 @@ source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
 source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
 source/ch/cyberduck/core/local/LocalImpl.cs -text
+source/ch/cyberduck/core/local/RecycleLocalTrashFeature.cs -text
 source/ch/cyberduck/core/local/TaskbarApplicationBadgeLabeler.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
