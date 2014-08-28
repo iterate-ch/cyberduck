@@ -188,6 +188,7 @@
     <Compile Include="core\editor\WatchEditor.cs" />
     <Compile Include="core\i18n\LocaleImpl.cs" />
     <Compile Include="core\Keychain.cs" />
+    <Compile Include="core\local\RecycleLocalTrashFeature.cs" />
     <Compile Include="core\local\DefaultBrowserLauncher.cs" />
     <Compile Include="core\local\ExplorerRevealService.cs" />
     <Compile Include="core\local\LocalImpl.cs" />
