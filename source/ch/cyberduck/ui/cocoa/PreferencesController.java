@@ -360,7 +360,6 @@ public class PreferencesController extends ToolbarWindowController {
         editorCombobox.menu().addItem(NSMenuItem.separatorItem());
         editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
         editorCombobox.lastItem().setTarget(this.id());
-        editorCombobox.selectItemWithTitle(EditorFactory.instance().getDefaultEditor().getName());
     }
 
     private NSOpenPanel editorPathPanel;
