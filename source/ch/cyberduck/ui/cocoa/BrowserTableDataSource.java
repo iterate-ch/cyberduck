@@ -33,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.action.SessionListWorker;
+import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
@@ -76,20 +77,6 @@ import java.util.Set;
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
-    public enum Column {
-        icon,
-        filename,
-        size,
-        modified,
-        owner,
-        group,
-        permission,
-        kind,
-        extension,
-        region,
-        version
-    }
-
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
     protected BrowserController controller;
@@ -98,7 +85,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private ListProgressListener listener;
 
-    protected BrowserTableDataSource(final BrowserController controller, final Cache cache) {
+    protected BrowserTableDataSource(final BrowserController controller, final Cache<Path> cache) {
         this.controller = controller;
         this.cache = cache;
         this.listener = new PromptLimitedListProgressListener(controller);

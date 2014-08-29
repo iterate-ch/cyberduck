@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.PathTooltipService;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
@@ -61,7 +62,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();
-        switch(BrowserTableDataSource.Column.valueOf(identifier)) {
+        switch(Column.valueOf(identifier)) {
             case icon:
             case kind:
                 return new FileTypeComparator(ascending);
