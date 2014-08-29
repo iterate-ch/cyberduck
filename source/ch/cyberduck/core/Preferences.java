@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
@@ -445,22 +446,22 @@ public abstract class Preferences {
          * Bandwidth throttle options
          */
         StringBuilder options = new StringBuilder();
-        options.append(5 * TransferStatus.KILO).append(",");
-        options.append(10 * TransferStatus.KILO).append(",");
-        options.append(20 * TransferStatus.KILO).append(",");
-        options.append(50 * TransferStatus.KILO).append(",");
-        options.append(100 * TransferStatus.KILO).append(",");
-        options.append(150 * TransferStatus.KILO).append(",");
-        options.append(200 * TransferStatus.KILO).append(",");
-        options.append(500 * TransferStatus.KILO).append(",");
-        options.append(1 * TransferStatus.MEGA).append(",");
-        options.append(2 * TransferStatus.MEGA).append(",");
-        options.append(5 * TransferStatus.MEGA).append(",");
-        options.append(10 * TransferStatus.MEGA).append(",");
-        options.append(15 * TransferStatus.MEGA).append(",");
-        options.append(20 * TransferStatus.MEGA).append(",");
-        options.append(50 * TransferStatus.MEGA).append(",");
-        options.append(100 * TransferStatus.MEGA).append(",");
+        options.append(5 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(10 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(20 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(50 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(100 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(150 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(200 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(500 * DecimalSizeFormatter.KILO.multiple()).append(",");
+        options.append(1 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(2 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(5 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(10 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(15 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(20 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(50 * DecimalSizeFormatter.MEGA.multiple()).append(",");
+        options.append(100 * DecimalSizeFormatter.MEGA.multiple()).append(",");
         defaults.put("queue.bandwidth.options", options.toString());
 
         /**
@@ -560,9 +561,9 @@ public abstract class Preferences {
         defaults.put("s3.encryption.algorithm", StringUtils.EMPTY);
 
         /**
-         * Validaty for public S3 URLs
+         * Validity for public S3 URLs
          */
-        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL
+        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
 
         defaults.put("s3.mfa.serialnumber", StringUtils.EMPTY);
 
@@ -635,6 +636,12 @@ public abstract class Preferences {
         defaults.put("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
+
+        defaults.put("google.drive.client.id", "996125414232.apps.googleusercontent.com");
+        defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
+        defaults.put("google.drive.list.limit", String.valueOf(10000));
+
+        defaults.put("google.drive.upload.checksum", String.valueOf(false));
 
         //doc	Microsoft Word
         //html	HTML Format
