@@ -119,7 +119,7 @@ public class SyncTransfer extends Transfer {
         if(local.exists()) {
             children.addAll(upload.list(session, directory, local, listener));
         }
-        return new ArrayList<>(children);
+        return new ArrayList<TransferItem>(children);
     }
 
     @Override
