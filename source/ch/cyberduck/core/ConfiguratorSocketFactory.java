@@ -41,6 +41,13 @@ public class ConfiguratorSocketFactory extends SocketFactory {
     }
 
     @Override
+    public Socket createSocket() throws IOException {
+        final Socket socket = delegate.createSocket();
+        configurator.configure(socket);
+        return socket;
+    }
+
+    @Override
     public Socket createSocket(String hostname, int port) throws IOException {
         final Socket socket = delegate.createSocket(hostname, port);
         configurator.configure(socket);
@@ -48,8 +55,8 @@ public class ConfiguratorSocketFactory extends SocketFactory {
     }
 
     @Override
-    public Socket createSocket(String hostname, int port, InetAddress inetAddress, int i2) throws IOException {
-        final Socket socket = delegate.createSocket(hostname, port, inetAddress, i2);
+    public Socket createSocket(String hostname, int port, InetAddress localHost, int localPort) throws IOException {
+        final Socket socket = delegate.createSocket(hostname, port, localHost, localPort);
         configurator.configure(socket);
         return socket;
     }
