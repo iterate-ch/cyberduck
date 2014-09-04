@@ -19,12 +19,14 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultSocketConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SocketConfigurator;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -97,14 +99,29 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     public HttpClientBuilder connect() {
+        final SocketConfigurator configurator = new DefaultSocketConfigurator();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
         // factory to be used to create the java.net.Socket instances for the given protocol
         final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(Scheme.http.toString(), PlainConnectionSocketFactory.getSocketFactory())
+                .register(Scheme.http.toString(), new PlainConnectionSocketFactory() {
+                    @Override
+                    public Socket createSocket(HttpContext context) throws IOException {
+                        final Socket socket = super.createSocket(context);
+                        configurator.configure(socket);
+                        return socket;
+                    }
+                })
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager()),
                         hostnameVerifier
                 ) {
+                    @Override
+                    public Socket createSocket(HttpContext context) throws IOException {
+                        final Socket socket = super.createSocket(context);
+                        configurator.configure(socket);
+                        return socket;
+                    }
+
                     @Override
                     public Socket connectSocket(final int connectTimeout,
                                                 final Socket socket,

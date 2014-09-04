@@ -828,6 +828,14 @@ public abstract class Preferences {
          * Transfer read buffer size
          */
         defaults.put("connection.chunksize", String.valueOf(32768));
+        /**
+         * SO_SNDBUF
+         */
+        defaults.put("connection.buffer.send", String.valueOf(131072));
+        /**
+         * SO_RCVBUF
+         */
+        defaults.put("connection.buffer.receive", String.valueOf(131072));
 
         defaults.put("disk.unmount.timeout", String.valueOf(2));
 

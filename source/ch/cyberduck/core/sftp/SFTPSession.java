@@ -24,7 +24,17 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -113,6 +123,7 @@ public class SFTPSession extends Session<SSHClient> {
             final int timeout = this.timeout();
             connection.setTimeout(timeout);
             connection.setConnectTimeout(timeout);
+            connection.setSocketFactory(new ConfiguratorSocketFactory());
             connection.addHostKeyVerifier(new HostKeyVerifier() {
                 @Override
                 public boolean verify(String hostname, int port, PublicKey publicKey) {

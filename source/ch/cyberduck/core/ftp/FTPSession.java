@@ -17,10 +17,30 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -117,10 +137,12 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         final int buffer = preferences.getInteger("ftp.socket.buffer");
         client.setBufferSize(buffer);
-        client.setReceiveBufferSize(buffer);
-        client.setSendBufferSize(buffer);
-        client.setReceieveDataSocketBufferSize(buffer);
-        client.setSendDataSocketBufferSize(buffer);
+
+        client.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
+        client.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
+        client.setReceieveDataSocketBufferSize(preferences.getInteger("connection.buffer.receive"));
+        client.setSendDataSocketBufferSize(preferences.getInteger("connection.buffer.send"));
+
         client.setStrictMultilineParsing(preferences.getBoolean("ftp.parser.multiline.strict"));
     }
 
