@@ -3421,6 +3421,7 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 session = null;
+                cache.clear();
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
                 disconnected.run();

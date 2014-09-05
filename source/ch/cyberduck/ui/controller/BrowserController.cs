@@ -2623,12 +2623,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             CallbackDelegate run = delegate
                 {
-                    if (_session != null)
-                    {
-                        // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                        _cache.clear();
-                    }
                     _session = null;
+                    _cache.clear();
                     View.WindowTitle = Preferences.instance().getProperty("application.name");
                     disconnected();
                 };

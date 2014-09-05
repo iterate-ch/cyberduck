@@ -55,8 +55,6 @@ public class DisconnectWorker extends Worker<Void> {
 
     @Override
     public void cleanup(Void result) {
-        // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-        cache.clear();
         PathPasteboardFactory.delete(session);
     }
 
