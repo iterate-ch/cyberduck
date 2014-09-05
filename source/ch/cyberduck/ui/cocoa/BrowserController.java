@@ -2496,7 +2496,7 @@ public class BrowserController extends WindowController
     }
 
     private void deletePathsImpl(final List<Path> files) {
-        this.background(new WorkerBackgroundAction(this, session, cache,
+        this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
                         new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
                             @Override
                             public void cleanup(final Boolean result) {
@@ -2508,7 +2508,7 @@ public class BrowserController extends WindowController
     }
 
     public void revertPaths(final List<Path> files) {
-        this.background(new WorkerBackgroundAction(this, session, cache,
+        this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
                 new RevertWorker(session, files) {
                     @Override
                     public void cleanup(final Boolean result) {
