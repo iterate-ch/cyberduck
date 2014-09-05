@@ -61,7 +61,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
             final Session<?> session = worker.borrow();
         }
         catch(BackgroundException e) {
-            assertEquals("Unknownhostname: nodename nor servname provided, or not known.", e.getDetail());
+            assertEquals("DNS lookup for unknownhostname failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
             assertEquals("Connection failed", e.getMessage());
             throw e;
         }

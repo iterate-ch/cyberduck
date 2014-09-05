@@ -48,6 +48,8 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
             s.check(session, Cache.empty());
         }
         catch(BackgroundException e) {
+            assertEquals("Connection failed", e.getMessage());
+            assertEquals("DNS lookup for unknownhost.local failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
             assertEquals(UnknownHostException.class, e.getCause().getClass());
             assertEquals(Session.State.closed, session.getState());
             throw e;

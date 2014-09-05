@@ -19,12 +19,14 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.ResolveCanceledException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
@@ -65,12 +67,11 @@ public class Resolver {
      * has been canceled using #cancel
      *
      * @return The resolved IP address for this hostname
-     * @throws UnknownHostException If the hostname cannot be resolved
-     * @throws ch.cyberduck.core.exception.ResolveCanceledException
-     *                              If the lookup has been interrupted
+     * @throws ResolveFailedException                               If the hostname cannot be resolved
+     * @throws ch.cyberduck.core.exception.ResolveCanceledException If the lookup has been interrupted
      * @see #cancel
      */
-    public InetAddress resolve(final String hostname) throws UnknownHostException, ResolveCanceledException {
+    public InetAddress resolve(final String hostname) throws ResolveFailedException, ResolveCanceledException {
         final Thread t = threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
@@ -104,7 +105,8 @@ public class Resolver {
         }
         if(!this.isResolved()) {
             if(this.hasFailed()) {
-                throw exception;
+                throw new ResolveFailedException(
+                        MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), exception);
             }
             log.warn(String.format("Canceled resolving %s", hostname));
             throw new ResolveCanceledException();

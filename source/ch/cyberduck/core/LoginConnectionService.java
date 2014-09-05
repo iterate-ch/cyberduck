@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.threading.FailureDiagnostics;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -134,19 +134,20 @@ public class LoginConnectionService implements ConnectionService {
         // Configuring proxy if any
         proxy.configure(bookmark);
 
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
-                bookmark.getHostname()));
-
         // Try to resolve the hostname first
+        final HostnameConfigurator configurator = HostnameConfiguratorFactory.get(bookmark.getProtocol());
+        final String hostname = configurator.getHostname(bookmark.getHostname());
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Resolving {0}", "Status"),
+                hostname));
         try {
-            resolver.resolve(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname()));
+            resolver.resolve(hostname);
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+        catch(ResolveFailedException e) {
+            log.warn(String.format("DNS resolver failed for %s", hostname));
+            throw e;
         }
-
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
-                bookmark.getProtocol().getName(), bookmark.getHostname()));
+                bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
         session.open(key);
