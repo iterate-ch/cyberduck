@@ -379,6 +379,10 @@
         <exec executable="/usr/bin/codesign" failonerror="true">
             <arg line="-d -r- --deep-verify ${app.bundle}"/>
         </exec>
+        <echo message="Print system policy verification for ${app.bundle}..."/>
+        <exec executable="/usr/sbin/spctl" failonerror="true">
+            <arg line="-v --assess --type execute ${app.bundle}"/>
+        </exec>
     </target>
 
     <target name="tar">
