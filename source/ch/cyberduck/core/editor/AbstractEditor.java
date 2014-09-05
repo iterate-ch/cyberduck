@@ -91,12 +91,12 @@ public abstract class AbstractEditor implements Editor {
     /**
      * @param background Download transfer
      */
-    protected abstract void open(Worker background);
+    protected abstract void open(Worker<Transfer> background);
 
     /**
      * @param background Upload transfer
      */
-    protected abstract void save(Worker background);
+    protected abstract void save(Worker<Transfer> background);
 
     public Path getRemote() {
         return remote;
@@ -146,7 +146,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Worker worker = new EditBackgroundAction(this, session, callback) {
+        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -197,7 +197,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker worker = new SaveBackgroundAction(this, session, callback);
+            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

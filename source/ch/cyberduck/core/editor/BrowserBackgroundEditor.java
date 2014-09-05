@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
@@ -55,21 +56,21 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final Worker download) {
+    public void open(final Worker<Transfer> download) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open %s in %s", local, this.getApplication()));
         }
-        controller.background(new WorkerBackgroundAction(controller, session, download));
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, download));
     }
 
     /**
      * Upload the edited file to the server
      */
     @Override
-    public void save(final Worker upload) {
+    public void save(final Worker<Transfer> upload) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local));
         }
-        controller.background(new WorkerBackgroundAction(controller, session, upload));
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, upload));
     }
 }
