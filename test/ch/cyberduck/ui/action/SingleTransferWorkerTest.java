@@ -52,7 +52,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -96,7 +96,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return l;
             }
         };
-        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
@@ -137,7 +137,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
     public void testDownloadPrepareOverride() throws Exception {
         final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        final Cache cache = new Cache(Integer.MAX_VALUE);
+        final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l")) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
