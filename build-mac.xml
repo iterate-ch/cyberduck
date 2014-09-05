@@ -423,8 +423,8 @@
 
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
-        <exec dir="${build.deploy}" executable="zip" spawn="false" failonerror="true">
-            <arg line="-y -r ../${zip.filename} ${app.name}.app"/>
+        <exec dir="${build.deploy}" executable="ditto" spawn="false" failonerror="true">
+            <arg line="-c -k --sequesterRsrc --keepParent ${app.name}.app ../${zip.filename}"/>
         </exec>
         <checksum file="${build}/${zip.filename}" algorithm="md5"/>
     </target>
