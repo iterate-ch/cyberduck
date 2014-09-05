@@ -29,13 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NamedThreadFactory implements ThreadFactory {
     private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
 
-    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    private final AtomicInteger threadNumber
+            = new AtomicInteger(1);
 
     private String name;
 
     private Thread.UncaughtExceptionHandler handler;
 
-    public NamedThreadFactory(String name) {
+    public NamedThreadFactory(final String name) {
         this(name, new LoggingUncaughtExceptionHandler());
     }
 
