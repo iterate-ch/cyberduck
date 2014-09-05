@@ -61,7 +61,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
             final Session<?> session = worker.borrow();
         }
         catch(BackgroundException e) {
-            assertEquals("T: nodename nor servname provided, or not known.", e.getDetail());
+            assertEquals("Unknownhostname: nodename nor servname provided, or not known.", e.getDetail());
             assertEquals("Connection failed", e.getMessage());
             throw e;
         }
