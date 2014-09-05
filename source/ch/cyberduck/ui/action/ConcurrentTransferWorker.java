@@ -91,6 +91,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
+        configuration.setJmxEnabled(false);
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
         pool = new GenericObjectPool<Session>(
@@ -127,7 +128,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void submit(final TransferCallable callable) throws BackgroundException {
+    public void submit(final TransferCallable callable) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s", callable));
         }
@@ -136,7 +137,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void complete() throws BackgroundException {
+    public void complete() throws BackgroundException {
         // Await termination for submitted tasks in queue
         for(int i = 0; i < size.get(); i++) {
             try {

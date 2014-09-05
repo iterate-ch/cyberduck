@@ -68,7 +68,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
         //
     }
 
-    protected void submit(TransferCallable runnable) throws BackgroundException {
+    public void submit(TransferCallable runnable) throws BackgroundException {
         runnable.call();
     }
 

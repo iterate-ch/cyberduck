@@ -48,12 +48,11 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
  */
-public abstract class AbstractTransferWorker extends Worker<Boolean> {
+public abstract class AbstractTransferWorker extends Worker<Boolean> implements TransferWorker {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 
     private SleepPreventer sleep = SleepPreventerFactory.get();
@@ -129,7 +128,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
         super.cancel();
     }
 
-    protected void complete() throws BackgroundException {
+    public void complete() throws BackgroundException {
         // No need to implement for single threaded transfer
     }
 
@@ -348,12 +347,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> {
         else {
             log.warn(String.format("Skip file %s with unknown transfer status", file));
         }
-    }
-
-    protected abstract void submit(TransferCallable callable) throws BackgroundException;
-
-    protected interface TransferCallable extends Callable<TransferStatus> {
-        TransferStatus call() throws BackgroundException;
     }
 
     @Override
