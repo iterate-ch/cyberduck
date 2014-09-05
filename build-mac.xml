@@ -315,6 +315,7 @@
             <arg line="${codesign.options} --identifier net.java.openjdk.jre --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${app.runtime}" erroronmissingdir="false">
                 <include name="**/*.dylib"/>
+                <include name="**/*.jar"/>
             </fileset>
             <fileset dir="${app.macos}">
                 <include name="*.jre"/>
