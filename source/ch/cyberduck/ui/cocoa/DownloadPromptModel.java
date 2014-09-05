@@ -21,13 +21,15 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 
 /**
  * @version $Id$
  */
 public class DownloadPromptModel extends TransferPromptModel {
 
-    public DownloadPromptModel(final TransferPromptController c, final Session session, final Transfer transfer, final Cache cache) {
+    public DownloadPromptModel(final TransferPromptController c, final Session session,
+                               final Transfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
     }
 }

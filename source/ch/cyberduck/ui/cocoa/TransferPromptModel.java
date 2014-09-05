@@ -91,7 +91,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param transfer Transfer
      */
     public TransferPromptModel(final TransferPromptController c, final Session session,
-                               final Transfer transfer, final Cache cache) {
+                               final Transfer transfer, final Cache<TransferItem> cache) {
         this.controller = c;
         this.session = session;
         this.transfer = transfer;
@@ -144,7 +144,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory.getReference())) {
-            controller.background(new WorkerBackgroundAction(controller, session, cache,
+            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, cache,
                     new TransferPromptListWorker(session, transfer, directory.remote, directory.local) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
@@ -158,7 +158,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction(controller, session, cache,
+        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, cache,
                         new TransferPromptFilterWorker(session, transfer, action, cache) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {

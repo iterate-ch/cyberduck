@@ -35,7 +35,8 @@ public class SyncPromptModel extends TransferPromptModel {
 
     private SyncTransfer transfer;
 
-    public SyncPromptModel(final TransferPromptController c, final Session session, final SyncTransfer transfer, final Cache cache) {
+    public SyncPromptModel(final TransferPromptController c, final Session session,
+                           final SyncTransfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
         this.transfer = transfer;
     }
