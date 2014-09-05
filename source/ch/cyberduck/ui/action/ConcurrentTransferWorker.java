@@ -21,7 +21,6 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -36,10 +35,11 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPoolFactory;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
@@ -59,11 +59,11 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private ConnectionService connect;
 
-    private ObjectPool<Session> pool;
+    private GenericObjectPool<Session> pool;
 
     private CompletionService<TransferStatus> completion;
 
-    private BlockingQueue<Future<Path>> queue;
+    private BlockingQueue<Future<TransferStatus>> queue;
 
     private AtomicInteger size = new AtomicInteger();
 
@@ -90,13 +90,15 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.connect = connect;
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
-        final GenericObjectPool.Config configuration = new GenericObjectPool.Config();
-        configuration.maxActive = connections;
-        configuration.maxIdle = connections;
-        configuration.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-        pool = new GenericObjectPoolFactory(new SessionPool(transfer.getHost()), configuration).createPool();
-        queue = new LinkedBlockingQueue<Future<Path>>();
-        completion = new ExecutorCompletionService(Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")), queue);
+        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
+        configuration.setMaxTotal(connections);
+        configuration.setMaxIdle(connections);
+        pool = new GenericObjectPool<Session>(
+                new SessionPool(transfer.getHost()), configuration);
+        pool.setBlockWhenExhausted(true);
+        queue = new LinkedBlockingQueue<Future<TransferStatus>>();
+        completion = new ExecutorCompletionService<TransferStatus>(
+                Executors.newFixedThreadPool(connections, new NamedThreadFactory("transfer")), queue);
     }
 
     @Override
@@ -112,21 +114,16 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             throw e;
         }
         catch(Exception e) {
+            if(e.getCause() instanceof BackgroundException) {
+                throw ((BackgroundException) e.getCause());
+            }
             throw new BackgroundException(e.getMessage(), e);
         }
     }
 
     @Override
-    protected void release(final Session session) throws BackgroundException {
-        try {
-            pool.returnObject(session);
-        }
-        catch(BackgroundException e) {
-            throw e;
-        }
-        catch(Exception e) {
-            throw new BackgroundException(e.getMessage(), e);
-        }
+    protected void release(final Session session) {
+        pool.returnObject(session);
     }
 
     @Override
@@ -172,7 +169,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         }
     }
 
-    private final class SessionPool extends BasePoolableObjectFactory<Session> {
+    private final class SessionPool extends BasePooledObjectFactory<Session> {
 
         private Host host;
 
@@ -181,31 +178,32 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         }
 
         @Override
-        public Session makeObject() {
+        public Session create() throws Exception {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create new session for host %s in pool", host));
             }
-            final Session session = SessionFactory.create(host);
-            session.addProgressListener(progressListener);
-            session.addTranscriptListener(transcriptListener);
-            return session;
+            return SessionFactory.create(host);
         }
 
         @Override
-        public boolean validateObject(final Session session) {
-            return true;
+        public PooledObject<Session> wrap(Session session) {
+            return new DefaultPooledObject<Session>(session);
         }
 
         @Override
-        public void activateObject(final Session session) throws BackgroundException {
+        public void activateObject(final PooledObject<Session> p) throws Exception {
+            final Session session = p.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Activate session %s", session));
             }
+            session.addProgressListener(progressListener);
+            session.addTranscriptListener(transcriptListener);
             connect.check(session, Cache.empty());
         }
 
         @Override
-        public void destroyObject(final Session session) throws BackgroundException {
+        public void destroyObject(final PooledObject<Session> p) throws Exception {
+            final Session session = p.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Destroy session %s", session));
             }
@@ -213,5 +211,21 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             session.removeTranscriptListener(transcriptListener);
             session.close();
         }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("SessionPool{");
+            sb.append("host=").append(host);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
+        sb.append("size=").append(size);
+        sb.append('}');
+        return sb.toString();
     }
 }
