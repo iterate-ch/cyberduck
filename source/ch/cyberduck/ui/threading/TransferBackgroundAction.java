@@ -71,7 +71,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
      */
     private ScheduledFuture progressTimer;
 
-    private ScheduledThreadPool timerPool;
+    private ScheduledThreadPool timerPool
+            = new ScheduledThreadPool();
 
     private TransferListener listener;
 
@@ -114,7 +115,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.listener = transferListener;
         this.prompt = prompt;
         this.meter = new TransferSpeedometer(transfer);
-        this.timerPool = new ScheduledThreadPool();
     }
 
     @Override
