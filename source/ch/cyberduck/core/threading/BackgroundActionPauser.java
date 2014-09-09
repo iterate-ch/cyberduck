@@ -52,6 +52,10 @@ public class BackgroundActionPauser {
     }
 
     public void await(final ProgressListener listener) {
+        if(0 == delay) {
+            log.info("No pause between retry");
+            return;
+        }
         final Timer wakeup = new Timer();
         final CyclicBarrier wait = new CyclicBarrier(2);
 
@@ -80,7 +84,7 @@ public class BackgroundActionPauser {
                 }
                 return super.cancel();
             }
-        }, 0, 1000); // Schedule for immediate execusion with an interval of 1s
+        }, 0, 1000); // Schedule for immediate execution with an interval of 1s
         try {
             // Wait for notify from wakeup timer
             wait.await();

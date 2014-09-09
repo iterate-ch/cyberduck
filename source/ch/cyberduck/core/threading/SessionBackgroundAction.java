@@ -242,10 +242,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Idle this action for some time. Blocks the caller.
      */
     public void pause() {
-        if(0 == Preferences.instance().getInteger("connection.retry.delay")) {
-            log.info("No pause between retry");
-            return;
-        }
         final BackgroundActionPauser pauser = new BackgroundActionPauser(this);
         pauser.await(this);
     }
