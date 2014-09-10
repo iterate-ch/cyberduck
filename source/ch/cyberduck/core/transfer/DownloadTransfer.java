@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
+import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
@@ -67,6 +68,8 @@ public class DownloadTransfer extends Transfer {
     private Cache<Path> cache
             = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
 
+    private DownloadSymlinkResolver symlinkResolver;
+
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)));
     }
@@ -96,6 +99,7 @@ public class DownloadTransfer extends Transfer {
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
+        this.symlinkResolver = new DownloadSymlinkResolver(roots);
     }
 
     @Override
@@ -213,7 +217,6 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(roots);
         if(file.isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getAbsolute(),
@@ -221,7 +224,8 @@ public class DownloadTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create symbolic link from %s to %s", local, target));
             }
-            LocalSymlinkFactory.get().symlink(local, target);
+            final Symlink symlink = LocalSymlinkFactory.get();
+            symlink.symlink(local, target);
         }
         else if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
