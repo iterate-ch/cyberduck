@@ -42,7 +42,7 @@ public class AzureFindFeature implements Find {
     private PathContainerService containerService
             = new AzurePathContainerService();
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public AzureFindFeature(AzureSession session) {
         this.session = session;
@@ -103,7 +103,7 @@ public class AzureFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache cache) {
+    public Find withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

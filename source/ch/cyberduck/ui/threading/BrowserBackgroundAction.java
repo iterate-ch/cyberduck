@@ -21,6 +21,7 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,7 +37,7 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
     private BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
-    public BrowserBackgroundAction(final Controller controller, final Session<?> session, final Cache cache) {
+    public BrowserBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(controller, session, cache);
     }
 

@@ -72,7 +72,7 @@ public class S3AttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final Cache cache) {
+    public Attributes withCache(final Cache<Path> cache) {
         return this;
     }
 

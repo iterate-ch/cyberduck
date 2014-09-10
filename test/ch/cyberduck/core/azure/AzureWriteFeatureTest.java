@@ -39,7 +39,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
@@ -53,7 +53,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         assertTrue(new AzureFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new AzureWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
+        assertEquals(0L, new AzureWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

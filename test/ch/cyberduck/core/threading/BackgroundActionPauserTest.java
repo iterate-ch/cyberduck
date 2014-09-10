@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -40,7 +41,7 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
 
     @Test
     public void testAwait() throws Exception {
-        final SessionBackgroundAction action = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.empty(), new AlertCallback() {
+        final SessionBackgroundAction action = new SessionBackgroundAction(new NullSession(new Host("t")), Cache.<Path>empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
                 return false;

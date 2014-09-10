@@ -43,7 +43,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -62,7 +62,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache cache) {
+                        public Attributes withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -105,7 +105,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -137,7 +137,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -169,7 +169,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -202,7 +202,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -233,7 +233,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Attributes withCache(Cache cache) {
+                        public Attributes withCache(Cache<Path> cache) {
                             return this;
                         }
                     };

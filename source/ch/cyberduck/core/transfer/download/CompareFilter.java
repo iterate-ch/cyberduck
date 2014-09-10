@@ -38,8 +38,8 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     private ComparisonServiceFilter comparisonService;
 
-    protected Cache cache
-            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+    protected Cache<Path> cache
+            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
         super(symlinkResolver, session, new DownloadFilterOptions());
@@ -54,7 +54,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public AbstractDownloadFilter withCache(final Cache cache) {
+    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
         comparisonService.withCache(cache);
         return super.withCache(cache);
     }

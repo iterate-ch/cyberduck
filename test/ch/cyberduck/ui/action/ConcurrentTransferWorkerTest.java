@@ -88,12 +88,12 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
             @Override
-            public boolean check(Session session, Cache cache) throws BackgroundException {
+            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
                 return true;
             }
 
             @Override
-            public boolean check(Session session, Cache cache, BackgroundException failure) throws BackgroundException {
+            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
                 return true;
             }
         };
@@ -111,12 +111,12 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
             @Override
-            public boolean check(Session session, Cache cache) throws BackgroundException {
+            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
                 return true;
             }
 
             @Override
-            public boolean check(Session session, Cache cache, BackgroundException failure) throws BackgroundException {
+            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
                 return true;
             }
         };

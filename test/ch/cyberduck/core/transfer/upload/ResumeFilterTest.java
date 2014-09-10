@@ -65,7 +65,7 @@ public class ResumeFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };

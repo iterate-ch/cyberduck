@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -199,7 +200,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             }
             session.addProgressListener(progressListener);
             session.addTranscriptListener(transcriptListener);
-            connect.check(session, Cache.empty());
+            connect.check(session, Cache.<Path>empty());
         }
 
         @Override

@@ -79,7 +79,7 @@ public class DAVAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final Cache cache) {
+    public Attributes withCache(final Cache<Path> cache) {
         return this;
     }
 }

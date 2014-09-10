@@ -49,7 +49,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -63,7 +63,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         list.list(directory, new DisabledListProgressListener());
@@ -78,7 +78,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         host.setFTPConnectMode(FTPConnectMode.PORT);
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();
         final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());

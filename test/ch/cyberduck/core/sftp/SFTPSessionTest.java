@@ -64,7 +64,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener());
         try {
-            login.connect(session, Cache.empty());
+            login.connect(session, Cache.<Path>empty());
         }
         catch(LoginCanceledException e) {
             assertTrue(fail.get());
@@ -134,7 +134,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener());
         try {
-            login.connect(session, Cache.empty());
+            login.connect(session, Cache.<Path>empty());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
@@ -171,7 +171,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener());
         try {
-            login.connect(session, Cache.empty());
+            login.connect(session, Cache.<Path>empty());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());

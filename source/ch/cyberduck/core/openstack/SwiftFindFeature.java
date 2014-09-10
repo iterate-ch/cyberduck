@@ -32,7 +32,7 @@ public class SwiftFindFeature implements Find {
 
     private SwiftMetadataFeature feature;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public SwiftFindFeature(final SwiftSession session) {
         this(new SwiftMetadataFeature(session));
@@ -76,7 +76,7 @@ public class SwiftFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache cache) {
+    public Find withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

@@ -62,7 +62,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         final DAVSession session = new DAVSession(host);
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, Cache.empty());
+        service.connect(session, Cache.<Path>empty());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {

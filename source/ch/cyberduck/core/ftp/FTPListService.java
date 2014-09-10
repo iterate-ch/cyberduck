@@ -164,7 +164,7 @@ public class FTPListService implements ListService {
                     else {
                         log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
                         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                                new DisabledPasswordStore(), session).connect(session, Cache.empty());
+                                new DisabledPasswordStore(), session).connect(session, Cache.<Path>empty());
                     }
                     this.remove(Command.stat);
                 }

@@ -52,7 +52,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -138,7 +138,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), Cache.empty());
+        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), Cache.<Path>empty());
         final NullSession session = new NullSession(new Host("h"));
         final TransferStatus status = f.prepare(source, null, new TransferStatus());
         f.complete(source, null, new TransferOptions(), status, session);

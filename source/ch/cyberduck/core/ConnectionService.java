@@ -24,13 +24,13 @@ import ch.cyberduck.core.exception.BackgroundException;
  */
 public interface ConnectionService {
 
-    boolean check(Session session, Cache cache)
+    boolean check(Session session, Cache<Path> cache)
             throws BackgroundException;
 
-    boolean check(Session session, Cache cache, BackgroundException failure)
+    boolean check(Session session, Cache<Path> cache, BackgroundException failure)
             throws BackgroundException;
 
-    void connect(Session session, Cache cache)
+    void connect(Session session, Cache<Path> cache)
             throws BackgroundException;
 
     void cancel();

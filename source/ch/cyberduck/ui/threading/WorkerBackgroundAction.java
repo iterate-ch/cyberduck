@@ -18,6 +18,7 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.ui.Controller;
@@ -36,10 +37,10 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<Boolean> 
     private T result;
 
     public WorkerBackgroundAction(final Controller controller, final Session session, final Worker<T> worker) {
-        this(controller, session, Cache.empty(), worker);
+        this(controller, session, Cache.<Path>empty(), worker);
     }
 
-    public WorkerBackgroundAction(final Controller controller, final Session session, final Cache cache,
+    public WorkerBackgroundAction(final Controller controller, final Session session, final Cache<Path> cache,
                                   final Worker<T> worker) {
         super(controller, session, cache);
         this.worker = worker;

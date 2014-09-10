@@ -53,7 +53,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
         this.attribute = session.getFeature(Attributes.class);
     }
 
-    public AbstractDownloadFilter withCache(final Cache cache) {
+    public AbstractDownloadFilter withCache(final Cache<Path> cache) {
         attribute.withCache(cache);
         return super.withCache(cache);
     }

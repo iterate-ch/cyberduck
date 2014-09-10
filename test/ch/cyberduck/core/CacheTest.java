@@ -92,7 +92,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testDisabledCache() throws Exception {
-        Cache cache = Cache.empty();
+        Cache cache = Cache.<Path>empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file.getReference(), AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file.getReference()));

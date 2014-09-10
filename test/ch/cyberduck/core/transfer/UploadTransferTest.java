@@ -277,7 +277,7 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public Find withCache(Cache cache) {
+                        public Find withCache(Cache<Path> cache) {
                             return this;
                         }
                     };
@@ -304,7 +304,7 @@ public class UploadTransferTest extends AbstractTestCase {
                         }
 
                         @Override
-                        public ch.cyberduck.core.features.Attributes withCache(Cache cache) {
+                        public ch.cyberduck.core.features.Attributes withCache(Cache<Path> cache) {
                             return this;
                         }
                     };

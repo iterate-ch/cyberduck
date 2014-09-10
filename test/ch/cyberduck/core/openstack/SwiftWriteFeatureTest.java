@@ -61,7 +61,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
+        assertEquals(0L, new SwiftWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -89,7 +89,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, Cache.empty());
+        }, new SwiftSegmentService(session)).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 2L * 1024L * 1024L * 1024L, Cache.<Path>empty());
         assertTrue(list.get());
         assertFalse(append.append);
         assertFalse(append.override);
@@ -117,7 +117,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
                 segment2.attributes().setSize(2L);
                 return new AttributedList<Path>(Arrays.asList(segment1, segment2));
             }
-        }, segments).append(file, 2L * 1024L * 1024L * 1024L, Cache.empty());
+        }, segments).append(file, 2L * 1024L * 1024L * 1024L, Cache.<Path>empty());
         assertTrue(append.append);
         assertEquals(3L, append.size, 0L);
         assertTrue(list.get());
@@ -148,11 +148,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.<Path>empty());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(Write.override, append);
@@ -185,11 +185,11 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }
-        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.empty());
+        ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, Cache.<Path>empty());
         assertFalse(append.append);
         assertFalse(append.override);
         assertEquals(Write.notfound, append);

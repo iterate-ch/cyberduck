@@ -71,7 +71,7 @@ public class FTPAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(Cache cache) {
+    public Attributes withCache(Cache<Path> cache) {
         return this;
     }
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -33,13 +34,13 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
 
     private Controller controller;
 
-    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache) {
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(session, cache, controller, controller, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller, session.getHost().getProtocol()));
         this.controller = controller;
     }
 
-    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache cache,
+    public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache,
                                       final ProgressListener listener) {
         super(session, cache, controller, listener, controller,
                 LoginControllerFactory.get(controller), HostKeyControllerFactory.get(controller, session.getHost().getProtocol()));

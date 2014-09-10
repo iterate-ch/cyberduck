@@ -37,6 +37,7 @@ public interface Attributes {
 
     /**
      * Decorate with cache
+     * @param cache Path cache
      */
-    Attributes withCache(Cache cache);
+    Attributes withCache(Cache<Path> cache);
 }

@@ -45,7 +45,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
-        c.connect(session, Cache.empty());
+        c.connect(session, Cache.<Path>empty());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
@@ -63,7 +63,7 @@ public class FTPSessionTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
     }
 
     @Test
@@ -187,7 +187,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         }, new DisabledPasswordStore());
-        l.login(session, Cache.empty(), new ProgressListener() {
+        l.login(session, Cache.<Path>empty(), new ProgressListener() {
             @Override
             public void message(final String message) {
                 //
@@ -262,7 +262,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
-        c.connect(session, Cache.empty());
+        c.connect(session, Cache.<Path>empty());
         assertTrue(callback.get());
         session.close();
     }

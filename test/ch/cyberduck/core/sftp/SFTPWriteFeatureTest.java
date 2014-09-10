@@ -56,7 +56,7 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), Cache.empty()).size, 0L);
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), Cache.<Path>empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length));
@@ -139,8 +139,8 @@ public class SFTPWriteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(false, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
+                new Path(session.workdir(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
         assertEquals(true, new SFTPWriteFeature(session).append(
-                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
+                new Path(session.workdir(), "test", EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
     }
 }

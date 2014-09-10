@@ -7,6 +7,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
@@ -58,7 +59,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 throw new UnsupportedOperationException();
             }
-        }, new NullSession(new Host("t")), Cache.empty()) {
+        }, new NullSession(new Host("t")), Cache.<Path>empty()) {
             @Override
             public Boolean run() throws BackgroundException {
                 return false;

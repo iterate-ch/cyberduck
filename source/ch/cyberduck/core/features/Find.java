@@ -33,6 +33,7 @@ public interface Find {
 
     /**
      * Decorate with cache
+     * @param cache Path cache
      */
-    Find withCache(Cache cache);
+    Find withCache(Cache<Path> cache);
 }

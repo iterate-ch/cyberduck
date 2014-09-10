@@ -10,6 +10,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
@@ -29,7 +30,7 @@ public class AzureSessionTest extends AbstractTestCase {
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -49,7 +50,7 @@ public class AzureSessionTest extends AbstractTestCase {
                 super.prompt(protocol, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -66,6 +67,6 @@ public class AzureSessionTest extends AbstractTestCase {
                 super.prompt(protocol, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
     }
 }

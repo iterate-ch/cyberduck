@@ -45,7 +45,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
         );
         try {
-            s.check(session, Cache.empty());
+            s.check(session, Cache.<Path>empty());
         }
         catch(BackgroundException e) {
             assertEquals("Connection failed", e.getMessage());
@@ -80,7 +80,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                         //
                     }
                 });
-        s.check(session, Cache.empty());
+        s.check(session, Cache.<Path>empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -93,7 +93,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                         //
                     }
                 });
-        s.check(new FTPSession(new Host("")), Cache.empty());
+        s.check(new FTPSession(new Host("")), Cache.<Path>empty());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -128,7 +128,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     return true;
                 }
             };
-            s.check(session, Cache.empty(), new BackgroundException("m", new SocketException("m")));
+            s.check(session, Cache.<Path>empty(), new BackgroundException("m", new SocketException("m")));
         }
         finally {
             assertTrue(disconnected.get());

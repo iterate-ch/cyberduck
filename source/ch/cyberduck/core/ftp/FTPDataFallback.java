@@ -89,7 +89,7 @@ public class FTPDataFallback {
                             log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
                             // Reconnect
                             new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                                    new DisabledPasswordStore(), session).connect(session, Cache.empty());
+                                    new DisabledPasswordStore(), session).connect(session, Cache.<Path>empty());
                         }
                         return this.fallback(action);
                     }

@@ -64,11 +64,11 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(),
-                new Cache(Preferences.instance().getInteger("transfer.cache.size")));
+                new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size")));
     }
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination,
-                              final Map<Path, Path> files, final UploadFilterOptions options, final Cache cache) {
+                              final Map<Path, Path> files, final UploadFilterOptions options, final Cache<Path> cache) {
         this.destination = destination;
         this.files = files;
         this.options = options;

@@ -126,7 +126,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractTestCase {
             public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword(properties.getProperty("s3.secret"));
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertTrue(session.isConnected());
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration

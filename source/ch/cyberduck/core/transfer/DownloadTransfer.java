@@ -64,8 +64,8 @@ public class DownloadTransfer extends Transfer {
 
     private Comparator<Path> comparator;
 
-    private Cache cache
-            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+    private Cache<Path> cache
+            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)));

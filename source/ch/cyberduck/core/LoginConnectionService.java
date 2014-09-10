@@ -82,11 +82,12 @@ public class LoginConnectionService implements ConnectionService {
      * Open connection if needed.
      *
      * @param session Session
+     * @param cache
      * @return True if new connection was opened. False if connection is reused.
      * @throws BackgroundException If opening connection fails
      */
     @Override
-    public boolean check(final Session session, final Cache cache) throws BackgroundException {
+    public boolean check(final Session session, final Cache<Path> cache) throws BackgroundException {
         if(StringUtils.isBlank(session.getHost().getHostname())) {
             throw new ConnectionCanceledException();
         }
@@ -99,7 +100,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public boolean check(final Session session, final Cache cache, final BackgroundException failure) throws BackgroundException {
+    public boolean check(final Session session, final Cache<Path> cache, final BackgroundException failure) throws BackgroundException {
         if(null == failure) {
             return this.check(session, cache);
         }
@@ -125,7 +126,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void connect(final Session session, final Cache cache) throws BackgroundException {
+    public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
         if(session.isConnected()) {
             this.close(session, cache);
         }

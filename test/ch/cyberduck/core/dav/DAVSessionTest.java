@@ -371,7 +371,7 @@ public class DAVSessionTest extends AbstractTestCase {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
-        c.connect(session, Cache.empty());
+        c.connect(session, Cache.<Path>empty());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
@@ -418,7 +418,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
-        c.connect(session, Cache.empty());
+        c.connect(session, Cache.<Path>empty());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -445,7 +445,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
         try {
-            c.connect(session, Cache.empty());
+            c.connect(session, Cache.<Path>empty());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -477,7 +477,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener());
         try {
-            c.connect(session, Cache.empty());
+            c.connect(session, Cache.<Path>empty());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());

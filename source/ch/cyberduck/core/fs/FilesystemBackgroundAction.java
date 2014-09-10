@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
@@ -34,9 +35,9 @@ import ch.cyberduck.core.threading.SessionBackgroundAction;
  */
 public abstract class FilesystemBackgroundAction<T> extends SessionBackgroundAction<T> {
 
-    private Cache cache;
+    private Cache<Path> cache;
 
-    public FilesystemBackgroundAction(final Session session, final Cache cache) {
+    public FilesystemBackgroundAction(final Session session, final Cache<Path> cache) {
         super(session, cache, new DisabledAlertCallback(), new DisabledProgressListener(), new DisabledTranscriptListener(), new DisabledLoginController(),
                 new DisabledHostKeyCallback());
         this.cache = cache;

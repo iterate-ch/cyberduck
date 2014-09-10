@@ -33,10 +33,10 @@ public class S3WriteFeatureTest extends AbstractTestCase {
             }
 
             @Override
-            public Find withCache(final Cache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
-        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, Cache.empty()).append);
+        }).append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, Cache.<Path>empty()).append);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class S3WriteFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 10L * 1024L * 1024L, Cache.empty()).append);
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 10L * 1024L * 1024L, Cache.<Path>empty()).append);
         session.close();
     }
 }

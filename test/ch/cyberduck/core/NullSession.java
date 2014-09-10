@@ -48,7 +48,7 @@ public class NullSession extends FTPSession {
                 }
 
                 @Override
-                public ch.cyberduck.core.features.Attributes withCache(Cache cache) {
+                public ch.cyberduck.core.features.Attributes withCache(Cache<Path> cache) {
                     return this;
                 }
             };

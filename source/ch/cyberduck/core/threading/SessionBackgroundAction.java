@@ -25,6 +25,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -82,10 +83,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private Session<?> session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public SessionBackgroundAction(final Session<?> session,
-                                   final Cache cache,
+                                   final Cache<Path> cache,
                                    final AlertCallback alert,
                                    final ProgressListener progressListener,
                                    final TranscriptListener transcriptListener,

@@ -95,7 +95,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
     private Session<?> session;
 
-    private Cache cache = Cache.empty();
+    private Cache<Path> cache = Cache.empty();
 
     private Local mountpoint;
 

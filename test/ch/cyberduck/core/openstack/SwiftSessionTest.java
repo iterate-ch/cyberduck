@@ -45,7 +45,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -67,7 +67,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -99,7 +99,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();
@@ -120,7 +120,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();

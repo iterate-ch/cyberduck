@@ -39,7 +39,7 @@ public class DAVFindFeature implements Find {
 
     private DAVSession session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public DAVFindFeature(final DAVSession session) {
         this.session = session;
@@ -99,7 +99,7 @@ public class DAVFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final Cache cache) {
+    public Find withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

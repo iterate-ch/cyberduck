@@ -80,7 +80,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private Session<?> session;
 
-    private Cache cache = Cache.empty();
+    private Cache<Path> cache = Cache.empty();
 
     private RevealService reveal = RevealServiceFactory.get();
 
