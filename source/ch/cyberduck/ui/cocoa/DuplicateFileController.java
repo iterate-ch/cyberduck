@@ -37,7 +37,7 @@ import java.text.MessageFormat;
  */
 public class DuplicateFileController extends FileController {
 
-    public DuplicateFileController(final WindowController parent, final Cache cache) {
+    public DuplicateFileController(final WindowController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Duplicate File", "Duplicate"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate"),

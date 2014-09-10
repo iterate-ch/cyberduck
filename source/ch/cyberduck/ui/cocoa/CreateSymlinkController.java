@@ -42,7 +42,7 @@ import java.util.EnumSet;
  */
 public class CreateSymlinkController extends FileController {
 
-    public CreateSymlinkController(final WindowController parent, final Cache cache) {
+    public CreateSymlinkController(final WindowController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new symbolic link", "File"),
                 StringUtils.EMPTY,

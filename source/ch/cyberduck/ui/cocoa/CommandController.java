@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -107,7 +108,7 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new ControllerBackgroundAction<Void>(this, session, Cache.empty()) {
+            parent.background(new ControllerBackgroundAction<Void>(this, session, Cache.<Path>empty()) {
                 @Override
                 public boolean alert() {
                     return false;

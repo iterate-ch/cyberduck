@@ -41,7 +41,7 @@ import java.util.EnumSet;
  */
 public class CreateFileController extends FileController {
 
-    public CreateFileController(final WindowController parent, final Cache cache) {
+    public CreateFileController(final WindowController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new file", "File"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "File"),

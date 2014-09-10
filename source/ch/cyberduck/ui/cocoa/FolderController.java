@@ -59,7 +59,7 @@ public class FolderController extends FileController {
 
     private Set<Location.Name> regions;
 
-    public FolderController(final WindowController parent, final Cache cache, final Set<Location.Name> regions) {
+    public FolderController(final WindowController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),

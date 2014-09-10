@@ -47,9 +47,9 @@ public abstract class FileController extends AlertController {
         this.inputField = inputField;
     }
 
-    private Cache cache;
+    private Cache<Path> cache;
 
-    public FileController(final WindowController parent, final Cache cache, final NSAlert alert) {
+    public FileController(final WindowController parent, final Cache<Path> cache, final NSAlert alert) {
         super(parent, alert);
         this.cache = cache;
         alert.setShowsHelp(true);
