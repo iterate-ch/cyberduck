@@ -217,17 +217,20 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        if(file.isSymbolicLink() && symlinkResolver.resolve(file)) {
-            // Make relative symbolic link
-            final String target = symlinkResolver.relativize(file.getAbsolute(),
-                    file.getSymlinkTarget().getAbsolute());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Create symbolic link from %s to %s", local, target));
+        if(file.isSymbolicLink()) {
+            if(symlinkResolver.resolve(file)) {
+                // Make relative symbolic link
+                final String target = symlinkResolver.relativize(file.getAbsolute(),
+                        file.getSymlinkTarget().getAbsolute());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Create symbolic link from %s to %s", local, target));
+                }
+                final Symlink symlink = LocalSymlinkFactory.get();
+                symlink.symlink(local, target);
+                return;
             }
-            final Symlink symlink = LocalSymlinkFactory.get();
-            symlink.symlink(local, target);
         }
-        else if(file.isFile()) {
+        if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                     file.getName()));
             local.getParent().mkdir();

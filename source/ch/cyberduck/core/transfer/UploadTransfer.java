@@ -72,12 +72,12 @@ public class UploadTransfer extends Transfer {
         this(host, Collections.singletonList(new TransferItem(root, local)));
     }
 
-    public UploadTransfer(final Host session, final List<TransferItem> roots) {
-        this(session, new UploadRootPathsNormalizer().normalize(roots), new UploadRegexFilter());
+    public UploadTransfer(final Host host, final List<TransferItem> roots) {
+        this(host, new UploadRootPathsNormalizer().normalize(roots), new UploadRegexFilter());
     }
 
-    public UploadTransfer(final Host session, final List<TransferItem> roots, final Filter<Local> f) {
-        this(session, roots, f, new Comparator<Local>() {
+    public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {
+        this(host, roots, f, new Comparator<Local>() {
             @Override
             public int compare(Local o1, Local o2) {
                 final String pattern = Preferences.instance().getProperty("queue.upload.priority.regex");
@@ -92,10 +92,10 @@ public class UploadTransfer extends Transfer {
         });
     }
 
-    public UploadTransfer(final Host session, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
-        super(session, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
+    public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
+        super(host, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
-        filter = f;
+        this.filter = f;
         this.comparator = comparator;
     }
 
@@ -206,18 +206,22 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final Symlink symlink = session.getFeature(Symlink.class);
-        final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(symlink, roots);
-        if(local.isSymbolicLink() && symlinkResolver.resolve(local)) {
-            // Make relative symbolic link
-            final String target = symlinkResolver.relativize(local.getAbsolute(),
-                    local.getSymlinkTarget().getAbsolute());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Create symbolic link from %s to %s", file, target));
+        if(local.isSymbolicLink()) {
+            final Symlink feature = session.getFeature(Symlink.class);
+            final UploadSymlinkResolver symlinkResolver
+                    = new UploadSymlinkResolver(feature, roots);
+            if(symlinkResolver.resolve(local)) {
+                // Make relative symbolic link
+                final String target = symlinkResolver.relativize(local.getAbsolute(),
+                        local.getSymlinkTarget().getAbsolute());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Create symbolic link from %s to %s", file, target));
+                }
+                feature.symlink(file, target);
+                return;
             }
-            symlink.symlink(file, target);
         }
-        else if(file.isFile()) {
+        if(file.isFile()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
