@@ -201,7 +201,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options,
+    public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
