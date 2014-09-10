@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.5.3 [https://trac.cyberduck.io/milestone/4.5.3]
+- [Bugfix] Interoperability with SSH Tectia Server (#8166)
+
 4.5.2 [https://trac.cyberduck.io/milestone/4.5.2]
 - [Feature] Network diagnose option in connection failure alert (Windows)
 - [Bugfix] Folder contents in directory placeholders not listed (OpenStack Swift) (#8094)
