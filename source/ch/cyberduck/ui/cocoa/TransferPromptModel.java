@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -144,7 +145,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory.getReference())) {
-            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, cache,
+            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, Cache.<Path>empty(),
                     new TransferPromptListWorker(session, transfer, directory.remote, directory.local) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
@@ -158,7 +159,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, cache,
+        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, Cache.<Path>empty(),
                         new TransferPromptFilterWorker(session, transfer, action, cache) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
