@@ -20,8 +20,12 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -30,7 +34,10 @@ import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAdapter;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
@@ -157,5 +164,32 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
+    }
+
+    @Test
+    public void testResumeOnAutomatedRetry() throws Exception {
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        };
+        final AtomicBoolean start = new AtomicBoolean();
+        final AtomicBoolean stop = new AtomicBoolean();
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        final TransferOptions options = new TransferOptions();
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, new TransferAdapter(),
+                new DisabledProgressListener(),
+                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
+                options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback()) {
+            @Override
+            protected boolean connect(final Session session) throws BackgroundException {
+                return false;
+            }
+        };
+        assertEquals(false, options.resumeRequested);
+        action.pause();
+        assertEquals(true, options.resumeRequested);
     }
 }

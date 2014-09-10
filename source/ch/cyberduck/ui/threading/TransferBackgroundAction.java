@@ -21,6 +21,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -100,7 +101,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final ProgressListener progressListener,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
-        super(controller, session, Cache.empty(), progressListener);
+        super(controller, session, Cache.<Path>empty(), progressListener);
         this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
                 HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progressListener);
@@ -122,7 +123,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         final boolean opened = super.connect(session);
         if(transfer instanceof CopyTransfer) {
             final Session target = ((CopyTransfer) transfer).getDestination();
-            if(connection.check(target, Cache.empty())) {
+            if(connection.check(target, Cache.<Path>empty())) {
                 // New connection opened
                 growl.notify("Connection opened", session.getHost().getHostname());
             }
@@ -166,16 +167,23 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         return worker.run();
     }
 
-    @Override
     public void finish() {
         super.finish();
-        // Upon retry do not suggest to overwrite already completed items from the transfer
-        options.reloadRequested = false;
-        options.resumeRequested = true;
 
         progressTimer.cancel(false);
         listener.stop(transfer);
         timerPool.shutdown();
+    }
+
+    @Override
+    public void pause() {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Pause background action for transfer %s", transfer));
+        }
+        // Upon retry do not suggest to overwrite already completed items from the transfer
+        options.reloadRequested = false;
+        options.resumeRequested = true;
+        super.pause();
     }
 
     @Override
