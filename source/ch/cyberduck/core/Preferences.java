@@ -349,6 +349,7 @@ public abstract class Preferences {
         defaults.put("editor.odb.enable", String.valueOf(false));
         defaults.put("editor.upload.temporary", String.valueOf(true));
         defaults.put("editor.upload.permissions.change", String.valueOf(true));
+        defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
 
         /**
          * Save bookmarks in ~/Library

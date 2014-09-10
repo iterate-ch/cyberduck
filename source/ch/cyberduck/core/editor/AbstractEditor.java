@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -82,7 +83,12 @@ public abstract class AbstractEditor implements Editor {
     public AbstractEditor(final Application application, final Session session, final Path file,
                           final TransferErrorCallback callback) {
         this.application = application;
-        this.remote = file;
+        if(file.isSymbolicLink() && Preferences.instance().getBoolean("editor.upload.symboliclink.resolve")) {
+            this.remote = file.getSymlinkTarget();
+        }
+        else {
+            this.remote = file;
+        }
         this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
         this.callback = callback;
