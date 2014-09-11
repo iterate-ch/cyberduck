@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -68,5 +69,18 @@ public class WatchEditorTest extends AbstractTestCase {
         assertEquals("1", local.getParent().getName());
         assertEquals("f2", local.getParent().getParent().getName());
         assertEquals("f1", local.getParent().getParent().getParent().getName());
+    }
+
+    @Test
+    public void testSymlinkTarget() throws Exception {
+        final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
+        final WatchEditor editor = new WatchEditor(new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                //
+            }
+        }, new FTPSession(new Host("h")), new Application("com.apple.TextEdit", null), file);
+        assertEquals(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)), editor.getRemote());
     }
 }
