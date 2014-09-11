@@ -64,7 +64,7 @@ public class Donation extends AbstractLicense implements LicenseVerifier {
     /**
      * @param file The license key file.
      */
-    public Donation(Local file) {
+    public Donation(final Local file) {
         super(file);
         this.file = file;
     }
@@ -89,7 +89,7 @@ public class Donation extends AbstractLicense implements LicenseVerifier {
     private native boolean verify(String license);
 
     @Override
-    public String getValue(String property) {
+    public String getValue(final String property) {
         return this.getValue(file.getAbsolute(), property);
     }
 
