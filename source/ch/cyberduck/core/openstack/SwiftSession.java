@@ -114,7 +114,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {

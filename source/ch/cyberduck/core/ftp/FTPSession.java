@@ -205,7 +205,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         try {
             if(super.alert() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.

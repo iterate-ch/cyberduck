@@ -136,18 +136,17 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
-        this.login(keychain, prompt, cancel, Cache.empty());
+        this.login(keychain, prompt, cancel, Cache.<Path>empty());
     }
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     *
-     * @param keychain Password store
+     *  @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
      */
-    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache cache)
+    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache)
             throws BackgroundException;
 
     /**

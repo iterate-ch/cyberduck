@@ -121,7 +121,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback controller,
-                      final CancelCallback cancel, final Cache cache) throws BackgroundException {
+                      final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(

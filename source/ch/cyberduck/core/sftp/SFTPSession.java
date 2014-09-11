@@ -153,7 +153,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
         if(host.getCredentials().isAnonymousLogin()) {
             methods.add(new SFTPNoneAuthentication(this));

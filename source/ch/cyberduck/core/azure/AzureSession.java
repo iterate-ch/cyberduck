@@ -124,7 +124,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         // Update credentials
         credentials.setCredentials(new Credentials(
                 host.getCredentials().getUsername(), host.getCredentials().getPassword()));

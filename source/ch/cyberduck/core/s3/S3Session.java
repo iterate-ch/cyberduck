@@ -356,7 +356,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache)
+                      final Cache<Path> cache)
             throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));

@@ -151,7 +151,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 preferences.getProperty("webdav.ntlm.workstation"),
