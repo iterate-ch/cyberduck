@@ -19,6 +19,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +33,9 @@ import java.text.MessageFormat;
  */
 public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
     private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
+
+    private final FailureDiagnostics<BackgroundException> diagnostics
+            = new DefaultFailureDiagnostics();
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);
@@ -67,6 +73,12 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             log.warn(String.format("No message for failure %s", e));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
-        return new BackgroundException(LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
+        final BackgroundException failure = new BackgroundException(
+                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
+        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            return new ConnectionRefusedException(
+                    LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
+        }
+        return failure;
     }
 }
