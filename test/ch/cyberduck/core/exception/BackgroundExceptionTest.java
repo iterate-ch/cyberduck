@@ -35,11 +35,4 @@ public class BackgroundExceptionTest extends AbstractTestCase {
         e.setMessage("m.");
         assertEquals("s.", e.getDetail());
     }
-
-    @Test
-    public void testTitle() throws Exception {
-        assertEquals("Error", new BackgroundException(new LoginCanceledException()).getTitle());
-        assertEquals("I/O Error", new BackgroundException(new IOException()).getTitle());
-        assertEquals("Network Error", new BackgroundException(new SocketException("s")).getTitle());
-    }
 }

@@ -58,23 +58,6 @@ public class BackgroundException extends Exception {
         this.detail = detail;
     }
 
-    /**
-     * @return What kind of error
-     */
-    public String getTitle() {
-        final Throwable cause = this.getCause();
-        if(cause instanceof SocketException) {
-            return String.format("Network %s", LocaleFactory.localizedString("Error"));
-        }
-        if(cause instanceof UnknownHostException) {
-            return String.format("DNS %s", LocaleFactory.localizedString("Error"));
-        }
-        if(cause instanceof IOException) {
-            return String.format("I/O %s", LocaleFactory.localizedString("Error"));
-        }
-        return LocaleFactory.localizedString("Error");
-    }
-
     public void setMessage(final String title) {
         this.message = title;
     }
