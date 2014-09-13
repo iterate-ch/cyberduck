@@ -1121,6 +1121,9 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
         this.metadataAddButton.menu().addItem(NSMenuItem.separatorItem());
+        this.metadataAddButton.addItemWithTitle("Content-Disposition");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddContentDispositionClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
         this.metadataAddButton.addItemWithTitle("Cache-Control");
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCacheControlClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
@@ -1150,9 +1153,13 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Action
+    public void metadataAddContentDispositionClicked(ID sender) {
+        this.addMetadataItem("Content-Disposition", "attachment");
+    }
+
+    @Action
     public void metadataAddCacheControlClicked(ID sender) {
-        this.addMetadataItem("Cache-Control",
-                "public,max-age=" + preferences.getInteger("s3.cache.seconds"));
+        this.addMetadataItem("Cache-Control", "public,max-age=" + preferences.getInteger("s3.cache.seconds"));
     }
 
     @Action

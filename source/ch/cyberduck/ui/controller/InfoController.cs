@@ -361,6 +361,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IDictionary<string, SyncDelegate> metadata = new Dictionary<string, SyncDelegate>();
             metadata.Add(LocaleFactory.localizedString("Custom Header"),
                          () => AddMetadataItem(LocaleFactory.localizedString("Unknown")));
+            metadata.Add("Content-Disposition", () => AddMetadataItem("Content-Disposition", "attachment", true));
             metadata.Add(LocaleFactory.localizedString("Cache-Control"),
                          () =>
                          AddMetadataItem("Cache-Control",
