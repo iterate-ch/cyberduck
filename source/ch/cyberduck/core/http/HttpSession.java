@@ -102,37 +102,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         final SocketConfigurator configurator = new DefaultSocketConfigurator();
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
         // factory to be used to create the java.net.Socket instances for the given protocol
-        final Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(Scheme.http.toString(), new PlainConnectionSocketFactory() {
-                    @Override
-                    public Socket createSocket(HttpContext context) throws IOException {
-                        final Socket socket = super.createSocket(context);
-                        configurator.configure(socket);
-                        return socket;
-                    }
-                })
-                .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager()),
-                        hostnameVerifier
-                ) {
-                    @Override
-                    public Socket createSocket(HttpContext context) throws IOException {
-                        final Socket socket = super.createSocket(context);
-                        configurator.configure(socket);
-                        return socket;
-                    }
-
-                    @Override
-                    public Socket connectSocket(final int connectTimeout,
-                                                final Socket socket,
-                                                final HttpHost host,
-                                                final InetSocketAddress remoteAddress,
-                                                final InetSocketAddress localAddress,
-                                                final HttpContext context) throws IOException {
-                        hostnameVerifier.setTarget(remoteAddress.getHostName());
-                        return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-                    }
-                }).build();
+        final Registry<ConnectionSocketFactory> registry = this.registry(configurator);
         final HttpClientBuilder builder = HttpClients.custom();
         if(preferences.getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.get();
@@ -219,6 +189,40 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory())
                 .build());
         return builder;
+    }
+
+    protected Registry<ConnectionSocketFactory> registry(final SocketConfigurator configurator) {
+        return RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(Scheme.http.toString(), new PlainConnectionSocketFactory() {
+                    @Override
+                    public Socket createSocket(HttpContext context) throws IOException {
+                        final Socket socket = super.createSocket(context);
+                        configurator.configure(socket);
+                        return socket;
+                    }
+                })
+                .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager()),
+                        hostnameVerifier
+                ) {
+                    @Override
+                    public Socket createSocket(HttpContext context) throws IOException {
+                        final Socket socket = super.createSocket(context);
+                        configurator.configure(socket);
+                        return socket;
+                    }
+
+                    @Override
+                    public Socket connectSocket(final int connectTimeout,
+                                                final Socket socket,
+                                                final HttpHost host,
+                                                final InetSocketAddress remoteAddress,
+                                                final InetSocketAddress localAddress,
+                                                final HttpContext context) throws IOException {
+                        hostnameVerifier.setTarget(remoteAddress.getHostName());
+                        return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+                    }
+                }).build();
     }
 
     protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {
