@@ -141,7 +141,8 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     *  @param keychain Password store
+     *
+     * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
