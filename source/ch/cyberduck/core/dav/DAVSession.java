@@ -112,7 +112,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder builder = super.connect();
+        final HttpClientBuilder builder = this.connect();
         builder.setRedirectStrategy(new SardineRedirectStrategy() {
             @Override
             protected boolean isRedirectable(final String method) {
