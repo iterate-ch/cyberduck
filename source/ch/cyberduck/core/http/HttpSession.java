@@ -51,6 +51,8 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.SchemePortResolver;
+import org.apache.http.conn.UnsupportedSchemeException;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -62,6 +64,7 @@ import org.apache.http.impl.auth.SPNegoSchemeFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
@@ -70,6 +73,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -125,7 +129,17 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         }
-        final HttpClientConnectionManager manager = this.pool(registry);
+        final SchemePortResolver portResolver = new SchemePortResolver() {
+            @Override
+            public int resolve(final HttpHost target) throws UnsupportedSchemeException {
+                if(-1 == target.getPort()) {
+                    return host.getProtocol().getDefaultPort();
+                }
+                return target.getPort();
+            }
+        };
+        builder.setRoutePlanner(new SystemDefaultRoutePlanner(portResolver, null));
+        final HttpClientConnectionManager manager = this.pool(registry, portResolver);
         builder.setUserAgent(new PreferencesUseragentProvider().get());
         builder.setConnectionManager(manager);
         builder.setDefaultSocketConfig(SocketConfig.custom()
@@ -225,11 +239,13 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }).build();
     }
 
-    protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {
+    protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry,
+                                                      final SchemePortResolver portResolver) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Setup connection pool with registry %s", registry));
         }
-        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
+        final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(
+                registry, null, portResolver, null, -1, TimeUnit.MILLISECONDS);
         manager.setMaxTotal(preferences.getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
         return manager;
