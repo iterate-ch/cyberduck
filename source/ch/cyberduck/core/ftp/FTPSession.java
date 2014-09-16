@@ -217,7 +217,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                             LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Change", "Credentials"),
                             String.format("connection.unsecure.%s", host.getHostname()));
-                    // Continue choosen. Login using plain FTP.
+                    // Continue chosen. Login using plain FTP.
                 }
                 catch(LoginCanceledException e) {
                     // Protocol switch
