@@ -124,9 +124,20 @@ public class HostDictionary {
                     bookmark.setFTPConnectMode(FTPConnectMode.PASV);
                 }
             }
-            Object connObj = dict.stringForKey("Maximum Connections");
-            if(connObj != null) {
-                bookmark.setMaxConnections(Integer.valueOf(connObj.toString()));
+            Object transferObj = dict.stringForKey("Transfer Connection");
+            if(transferObj != null) {
+                bookmark.setTransfer(Host.TransferType.valueOf(transferObj.toString()));
+            }
+            else {
+                Object connObj = dict.stringForKey("Maximum Connections");
+                if(connObj != null) {
+                    if(1 == Integer.valueOf(connObj.toString())) {
+                        bookmark.setTransfer(Host.TransferType.browser);
+                    }
+                    else {
+                        bookmark.setTransfer(Host.TransferType.newconnection);
+                    }
+                }
             }
             // Legacy
             Object downloadObjDeprecated = dict.stringForKey("Download Folder");

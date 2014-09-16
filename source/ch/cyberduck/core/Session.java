@@ -246,10 +246,10 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      * @return The maximum number of concurrent connections allowed or -1 if no limit is set
      */
     public int getMaxConnections() {
-        if(null == host.getMaxConnections()) {
+        if(null == host.getTransfer()) {
             return preferences.getInteger("connection.host.max");
         }
-        return host.getMaxConnections();
+        return host.getTransfer().getMaxConnections();
     }
 
     /**

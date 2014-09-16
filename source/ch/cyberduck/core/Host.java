@@ -94,7 +94,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The maximum number of concurrent sessions to this host
      */
-    private Integer maxConnections;
+    private TransferType transfer;
 
     /**
      * The custom download folder
@@ -237,67 +237,92 @@ public class Host implements Serializable, Comparable<Host> {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
-        if(StringUtils.isNotBlank(this.getProtocol().getProvider())) {
-            if(!StringUtils.equals(this.getProtocol().getProvider(), this.getProtocol().getIdentifier())) {
-                dict.setStringForKey(this.getProtocol().getProvider(), "Provider");
+        dict.setStringForKey(protocol.getIdentifier(), "Protocol");
+        if(StringUtils.isNotBlank(protocol.getProvider())) {
+            if(!StringUtils.equals(protocol.getProvider(), protocol.getIdentifier())) {
+                dict.setStringForKey(protocol.getProvider(), "Provider");
             }
         }
-        if(StringUtils.isNotBlank(this.getNickname())) {
-            dict.setStringForKey(this.getNickname(), "Nickname");
+        if(StringUtils.isNotBlank(nickname)) {
+            dict.setStringForKey(nickname, "Nickname");
         }
         dict.setStringForKey(this.getUuid(), "UUID");
-        dict.setStringForKey(this.getHostname(), "Hostname");
+        dict.setStringForKey(hostname, "Hostname");
         dict.setStringForKey(String.valueOf(this.getPort()), "Port");
-        if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
-            dict.setStringForKey(this.getCredentials().getUsername(), "Username");
+        if(StringUtils.isNotBlank(credentials.getUsername())) {
+            dict.setStringForKey(credentials.getUsername(), "Username");
         }
-        if(StringUtils.isNotBlank(this.getCdnCredentials().getUsername())) {
-            dict.setStringForKey(this.getCdnCredentials().getUsername(), "CDN Credentials");
+        if(StringUtils.isNotBlank(cloudfront.getUsername())) {
+            dict.setStringForKey(cloudfront.getUsername(), "CDN Credentials");
         }
-        if(StringUtils.isNotBlank(this.getDefaultPath())) {
-            dict.setStringForKey(this.getDefaultPath(), "Path");
+        if(StringUtils.isNotBlank(defaultpath)) {
+            dict.setStringForKey(defaultpath, "Path");
         }
-        if(this.getWorkdir() != null) {
-            dict.setObjectForKey(this.getWorkdir(), "Workdir Dictionary");
+        if(workdir != null) {
+            dict.setObjectForKey(workdir, "Workdir Dictionary");
         }
-        if(StringUtils.isNotBlank(this.getEncoding())) {
-            dict.setStringForKey(this.getEncoding(), "Encoding");
+        if(StringUtils.isNotBlank(encoding)) {
+            dict.setStringForKey(encoding, "Encoding");
         }
-        if(null != this.getCredentials().getIdentity()) {
-            dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
-            dict.setObjectForKey(this.getCredentials().getIdentity(), "Private Key File Dictionary");
+        if(null != credentials.getIdentity()) {
+            dict.setStringForKey(credentials.getIdentity().getAbbreviatedPath(), "Private Key File");
+            dict.setObjectForKey(credentials.getIdentity(), "Private Key File Dictionary");
         }
-        if(this.getProtocol().getType() == Protocol.Type.ftp) {
-            if(null != this.getFTPConnectMode()) {
+        if(protocol.getType() == Protocol.Type.ftp) {
+            if(null != connectMode) {
                 if(this.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
                     dict.setStringForKey(FTPConnectMode.PORT.toString(), "FTP Connect Mode");
                 }
-                else if(this.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
+                else if(connectMode.equals(FTPConnectMode.PASV)) {
                     dict.setStringForKey(FTPConnectMode.PASV.toString(), "FTP Connect Mode");
                 }
             }
         }
-        if(null != this.getMaxConnections()) {
-            dict.setStringForKey(String.valueOf(this.getMaxConnections()), "Maximum Connections");
+        if(null != transfer) {
+            dict.setStringForKey(transfer.name(), "Transfer Connection");
+            dict.setStringForKey(String.valueOf(transfer.getMaxConnections()), "Maximum Connections");
         }
         if(!this.isDefaultDownloadFolder()) {
             dict.setStringForKey(this.getDownloadFolder().getAbbreviatedPath(), "Download Folder");
             dict.setObjectForKey(this.getDownloadFolder(), "Download Folder Dictionary");
         }
-        if(null != this.getTimezone()) {
+        if(null != timezone) {
             dict.setStringForKey(this.getTimezone().getID(), "Timezone");
         }
-        if(StringUtils.isNotBlank(this.getComment())) {
-            dict.setStringForKey(this.getComment(), "Comment");
+        if(StringUtils.isNotBlank(comment)) {
+            dict.setStringForKey(comment, "Comment");
         }
         if(!this.isDefaultWebURL()) {
             dict.setStringForKey(this.getWebURL(), "Web URL");
         }
-        if(null != this.getTimestamp()) {
-            dict.setStringForKey(String.valueOf(this.getTimestamp().getTime()), "Access Timestamp");
+        if(null != timestamp) {
+            dict.setStringForKey(String.valueOf(timestamp.getTime()), "Access Timestamp");
         }
         return dict.getSerialized();
+    }
+
+    public enum TransferType {
+        browser {
+            @Override
+            public int getMaxConnections() {
+                return 1;
+            }
+
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Use browser connection");
+            }
+        },
+        newconnection {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open new connection");
+            }
+        };
+
+        public int getMaxConnections() {
+            return Preferences.instance().getInteger("connection.host.max");
+        }
     }
 
     /**
@@ -458,18 +483,18 @@ public class Host implements Serializable, Comparable<Host> {
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
      * if the default should be used
      */
-    public Integer getMaxConnections() {
-        return maxConnections;
+    public TransferType getTransfer() {
+        return transfer;
     }
 
     /**
      * Set a custom number of concurrent sessions allowed for this host
      * If not set, connection.pool.max is used.
      *
-     * @param n null to use the default value or -1 if no limit
+     * @param transfer null to use the default value or -1 if no limit
      */
-    public void setMaxConnections(final Integer n) {
-        this.maxConnections = n;
+    public void setTransfer(final TransferType transfer) {
+        this.transfer = transfer;
     }
 
     /**

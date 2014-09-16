@@ -18,7 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -391,9 +403,6 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton transferPopup;
 
-    private static final String TRANSFER_NEWCONNECTION = LocaleFactory.localizedString("Open new connection");
-    private static final String TRANSFER_BROWSERCONNECTION = LocaleFactory.localizedString("Use browser connection");
-
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this.id());
@@ -401,20 +410,19 @@ public class BookmarkController extends WindowController {
         this.transferPopup.removeAllItems();
         this.transferPopup.addItemWithTitle(DEFAULT);
         this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.transferPopup.addItemWithTitle(TRANSFER_NEWCONNECTION);
-        this.transferPopup.addItemWithTitle(TRANSFER_BROWSERCONNECTION);
+        for(Host.TransferType t : Host.TransferType.values()) {
+            this.transferPopup.addItemWithTitle(t.toString());
+            this.transferPopup.lastItem().setRepresentedObject(t.name());
+        }
     }
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            host.setMaxConnections(null);
+            host.setTransfer(null);
         }
-        else if(sender.selectedItem().title().equals(TRANSFER_BROWSERCONNECTION)) {
-            host.setMaxConnections(1);
-        }
-        else if(sender.selectedItem().title().equals(TRANSFER_NEWCONNECTION)) {
-            host.setMaxConnections(-1);
+        else {
+            host.setTransfer(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
         }
         this.itemChanged();
     }
@@ -743,12 +751,11 @@ public class BookmarkController extends WindowController {
         protocolPopup.selectItemAtIndex(
                 protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode()))
         );
-        if(null == host.getMaxConnections()) {
+        if(null == host.getTransfer()) {
             transferPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            transferPopup.selectItemWithTitle(
-                    host.getMaxConnections() == 1 ? TRANSFER_BROWSERCONNECTION : TRANSFER_NEWCONNECTION);
+            transferPopup.selectItemWithTitle(host.getTransfer().toString());
         }
         encodingPopup.setEnabled(host.getProtocol().isEncodingConfigurable());
         connectmodePopup.setEnabled(host.getProtocol().getType() == Protocol.Type.ftp);
