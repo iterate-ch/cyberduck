@@ -61,11 +61,11 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testSameMessageInRootCause() throws Exception {
-        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
+        assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
                 .getDetail());
-        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
+        assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
                 .getDetail());
-        assertEquals("S.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
+        assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
                 .getDetail());
     }
 }

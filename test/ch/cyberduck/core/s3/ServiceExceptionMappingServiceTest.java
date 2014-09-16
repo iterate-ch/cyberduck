@@ -82,7 +82,7 @@ public class ServiceExceptionMappingServiceTest extends AbstractTestCase {
     public void testDNSFailure() {
         assertEquals("Custom.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
-        assertEquals("H.",
+        assertEquals("H. The connection attempt was rejected. The server may be down, or your network may not be properly configured.",
                 new ServiceExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
     }
 

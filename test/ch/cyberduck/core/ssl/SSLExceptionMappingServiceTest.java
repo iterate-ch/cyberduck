@@ -29,7 +29,7 @@ import java.net.SocketException;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SSLExceptionMappingServiceTest extends AbstractTestCase {
 
@@ -40,6 +40,6 @@ public class SSLExceptionMappingServiceTest extends AbstractTestCase {
                 new SSLException("javax.net.ssl.SSLException: java.net.SocketException: Broken pipe",
                         new SocketException("Broken pipe"))));
         assertEquals("Connection failed", f.getMessage());
-        assertEquals("Broken pipe.", f.getDetail());
+        assertEquals("Broken pipe. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", f.getDetail());
     }
 }
