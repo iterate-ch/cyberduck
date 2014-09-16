@@ -108,19 +108,6 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     log.warn("Invalid Port:" + e.getMessage());
                 }
             }
-            else if(name.equals("MaximumMultipleConnections")) {
-                if("0".equals(elementText)) {
-                    current.setMaxConnections(null);
-                }
-                else {
-                    try {
-                        current.setMaxConnections(Integer.parseInt(elementText));
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn("Invalid MaximumMultipleConnections:" + e.getMessage());
-                    }
-                }
-            }
             else if(name.equals("User")) {
                 current.getCredentials().setUsername(elementText);
             }
