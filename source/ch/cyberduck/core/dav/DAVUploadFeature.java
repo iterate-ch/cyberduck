@@ -39,12 +39,21 @@ import java.security.NoSuchAlgorithmException;
 public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     private static final Logger log = Logger.getLogger(DAVUploadFeature.class);
 
+    private boolean checksum;
+
     public DAVUploadFeature(final DAVSession session) {
         super(new DAVWriteFeature(session));
+        this.checksum = Preferences.instance().getBoolean("webdav.upload.checksum");
     }
 
     public DAVUploadFeature(final AbstractHttpWriteFeature<String> writer) {
         super(writer);
+        this.checksum = Preferences.instance().getBoolean("webdav.upload.checksum");
+    }
+
+    public DAVUploadFeature(final AbstractHttpWriteFeature<String> writer, final boolean checksum) {
+        super(writer);
+        this.checksum = checksum;
     }
 
     @Override
@@ -61,7 +70,7 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     @Override
     protected MessageDigest digest() {
         MessageDigest digest = null;
-        if(Preferences.instance().getBoolean("webdav.upload.checksum")) {
+        if(checksum) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }
