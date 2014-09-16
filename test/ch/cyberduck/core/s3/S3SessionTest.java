@@ -135,7 +135,7 @@ public class S3SessionTest extends AbstractTestCase {
                 p.set(true);
                 credentials.setPassword(properties.getProperty("s3.secret"));
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.empty());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
         assertTrue(p.get());
         session.close();
     }
