@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.log4j.Logger;
@@ -28,6 +27,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -51,13 +51,13 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     }
 
     @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
         if(null == digest) {
             log.warn("MD5 calculation disabled");
             return in;
         }
         else {
-            return new DigestInputStream(in, digest);
+            return new DigestInputStream(super.decorate(in, digest), digest);
         }
     }
 

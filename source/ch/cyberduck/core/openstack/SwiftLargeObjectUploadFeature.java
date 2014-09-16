@@ -204,7 +204,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             return in;
         }
         else {
-            return new DigestInputStream(in, digest);
+            return new DigestInputStream(super.decorate(in, digest), digest);
         }
     }
 
