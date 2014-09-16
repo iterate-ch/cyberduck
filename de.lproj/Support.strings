@@ -1,8 +1,8 @@
 /* No comment */
-"Please contact your web hosting service provider for assistance" = "Molimo vas da kontaktirate osobu odgovornu za pružanje usluge hostinga radi pomoći";
+"Please contact your web hosting service provider for assistance" = "Please contact your web hosting service provider for assistance";
 
 /* No comment */
-"Please open a ticket at {0}" = "Molimo vas da otvorite tiket na {0}";
+"Please open a ticket at {0}" = "Bitte ein Ticket öffnen auf {0}";
 
 "DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network." = "DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.";
 
