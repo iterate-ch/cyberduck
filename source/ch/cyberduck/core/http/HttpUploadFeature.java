@@ -33,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -104,7 +105,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     protected InputStream decorate(final InputStream in, final Digest digest) throws IOException {
-        return in;
+        return new BufferedInputStream(in);
     }
 
     protected Digest digest() {
