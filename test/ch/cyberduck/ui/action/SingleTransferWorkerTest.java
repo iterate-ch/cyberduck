@@ -3,9 +3,11 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -55,7 +57,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
                 //
             }
         };
@@ -64,7 +66,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), cache) {
             @Override
             public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
@@ -99,7 +101,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -119,7 +121,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), cache) {
             @Override
             public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
@@ -140,7 +142,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
         final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l")) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -162,7 +164,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), cache) {
             @Override
             public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                 if(file.equals(root)) {
@@ -203,7 +205,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 public TransferAction prompt() {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), Cache.<TransferItem>empty()) {
+            }, new DisabledTransferErrorCallback(), new DisabledLoginController(), Cache.<TransferItem>empty()) {
                 @Override
                 public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
                     // Expected not found

@@ -99,7 +99,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
                 new SwiftObjectListService(session),
                 new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2), 4);
 
-        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status, new DisabledLoginController());
 
         assertEquals(1048576 + 1048576 + 1, status.getCurrent());
         assertTrue(status.isComplete());

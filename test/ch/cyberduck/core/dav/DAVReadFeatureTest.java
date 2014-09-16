@@ -99,8 +99,8 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         IOUtils.closeQuietly(out);
         new HttpUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().length(content.length)
-        );
+                new TransferStatus().length(content.length),
+                new DisabledLoginController());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);

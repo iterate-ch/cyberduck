@@ -56,7 +56,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             final Session<?> session = worker.borrow();
         }
@@ -76,7 +76,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener());
         worker.borrow();
     }
 
@@ -99,7 +99,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledTranscriptListener(), 2);
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener(), 2);
         assertNotSame(worker.borrow(), worker.borrow());
     }
 
@@ -122,7 +122,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledTranscriptListener(), 1);
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener(), 1);
         final Session<?> session = worker.borrow();
         worker.release(session);
         assertEquals(Session.State.closed, session.getState());

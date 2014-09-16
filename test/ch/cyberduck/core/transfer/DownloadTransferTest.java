@@ -60,7 +60,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController()).run();
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
@@ -162,7 +162,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))
@@ -201,7 +201,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), table);
         worker.prepare(test, local, new TransferStatus().exists(true),
                 new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))

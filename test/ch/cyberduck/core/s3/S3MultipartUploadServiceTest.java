@@ -57,7 +57,8 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginController());
         assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -84,7 +85,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final TransferStatus status = new TransferStatus();
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
-        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status);
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
         assertEquals((long) random.length, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -145,7 +146,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         throw new RuntimeException();
                     }
                 }
-            }, status);
+            }, status, new DisabledLoginController());
         }
         catch(BackgroundException e) {
             // Expected
@@ -157,7 +158,9 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertFalse(new S3FindFeature(session).find(test));
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append);
+        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new DisabledLoginController());
         assertEquals(random.length, append.getCurrent(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -201,7 +204,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         throw new RuntimeException();
                     }
                 }
-            }, status);
+            }, status, new DisabledLoginController());
         }
         catch(BackgroundException e) {
             // Expected
@@ -212,7 +215,10 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new S3MultipartUploadService(session, 10485760L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append);
+        new S3MultipartUploadService(session, 10485760L, 1).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), append,
+                new DisabledLoginController());
         assertEquals(32769L, append.getCurrent(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
