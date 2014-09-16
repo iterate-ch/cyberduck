@@ -19,6 +19,8 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
@@ -102,14 +104,15 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, session, Cache.<Path>empty(), progressListener);
-        this.connection = new LoginConnectionService(LoginControllerFactory.get(controller),
+        final LoginCallback login = LoginControllerFactory.get(controller);
+        this.connection = new LoginConnectionService(login,
                 HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progressListener);
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options, prompt, error);
+            this.worker = new SingleTransferWorker(session, transfer, options, prompt, error, login);
         }
         else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, progressListener, controller);
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, new DisabledLoginController(), progressListener, controller);
         }
         this.transfer = transfer;
         this.options = options;

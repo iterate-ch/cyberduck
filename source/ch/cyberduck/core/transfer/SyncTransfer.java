@@ -21,6 +21,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -134,16 +135,16 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.transfer(session, file, local, options, status);
+            download.transfer(session, file, local, options, status, login);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.transfer(session, file, local, options, status);
+            upload.transfer(session, file, local, options, status, login);
         }
     }
 

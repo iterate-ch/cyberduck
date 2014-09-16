@@ -19,6 +19,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -31,5 +32,5 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface Upload<Output> {
 
     Output upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                  final TransferStatus status) throws BackgroundException;
+                  final TransferStatus status, final LoginCallback callback) throws BackgroundException;
 }

@@ -19,6 +19,8 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,22 +41,22 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     private Session session;
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
-                                final TransferPrompt prompt, final TransferErrorCallback error) {
-        super(transfer, options, prompt, error);
+                                final TransferPrompt prompt, final TransferErrorCallback error, final LoginCallback login) {
+        super(transfer, options, prompt, error, login);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error,
-                                final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, error, cache);
+                                final LoginCallback login, final Cache<TransferItem> cache) {
+        super(transfer, options, prompt, error, login, cache);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferPrompt prompt, final TransferErrorCallback error,
-                                final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, error, table);
+                                final LoginCallback login, final Map<Path, TransferStatus> table) {
+        super(transfer, options, prompt, login, error, table);
         this.session = session;
     }
 

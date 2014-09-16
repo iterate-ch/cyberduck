@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
@@ -75,19 +76,19 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error,
-                                    final ProgressListener progressListener,
+                                    final LoginCallback login, final ProgressListener progressListener,
                                     final TranscriptListener transcriptListener) {
-        this(connect, transfer, options, prompt, error, progressListener, transcriptListener,
+        this(connect, transfer, options, prompt, error, login, progressListener, transcriptListener,
                 Preferences.instance().getInteger("queue.session.pool.size"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error,
-                                    final ProgressListener progressListener,
+                                    final LoginCallback login, final ProgressListener progressListener,
                                     final TranscriptListener transcriptListener,
                                     final Integer connections) {
-        super(transfer, options, prompt, error);
+        super(transfer, options, prompt, error, login);
         this.connect = connect;
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;

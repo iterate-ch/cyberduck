@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
@@ -285,9 +286,11 @@ public abstract class Transfer implements Serializable {
      * @param local   Local
      * @param options Quarantine option
      * @param status  Transfer status
+     * @param login   Login prompt
      */
     public abstract void transfer(Session<?> session, Path file, Local local,
-                                  TransferOptions options, TransferStatus status) throws BackgroundException;
+                                  TransferOptions options, TransferStatus status,
+                                  LoginCallback login) throws BackgroundException;
 
     public void start() {
         state = State.running;

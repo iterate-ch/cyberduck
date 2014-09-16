@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SleepPreventer;
@@ -71,6 +72,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      */
     private TransferErrorCallback error;
 
+    /**
+     * Login prompt
+     */
+    private LoginCallback login;
+
     private TransferOptions options;
 
     /**
@@ -89,30 +95,35 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             = new DefaultFailureDiagnostics();
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferErrorCallback error) {
+                                  final TransferPrompt prompt, final TransferErrorCallback error,
+                                  final LoginCallback login) {
         this.transfer = transfer;
         this.prompt = prompt;
         this.error = error;
+        this.login = login;
         this.options = options;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferErrorCallback error,
-                                  final Cache<TransferItem> cache) {
+                                  final LoginCallback login, final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
         this.error = error;
+        this.login = login;
         this.cache = cache;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferErrorCallback error,
+                                  final TransferPrompt prompt, final LoginCallback login,
+                                  final TransferErrorCallback error,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
         this.error = error;
+        this.login = login;
         this.table = table;
     }
 
@@ -296,10 +307,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         try {
                             if(status.isRename()) {
                                 // Save with different name
-                                transfer.transfer(session, status.getRename().remote, local, options, status);
+                                transfer.transfer(session, status.getRename().remote, local, options, status, login);
                             }
                             else {
-                                transfer.transfer(session, file, local, options, status);
+                                transfer.transfer(session, file, local, options, status, login);
                             }
                         }
                         catch(ConnectionCanceledException e) {

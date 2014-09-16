@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -49,7 +50,7 @@ public class DefaultTouchFeature implements Touch {
         try {
             feature.upload(file, temp,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                    new DisabledStreamListener(), status);
+                    new DisabledStreamListener(), status, new DisabledLoginController());
         }
         finally {
             temp.delete();

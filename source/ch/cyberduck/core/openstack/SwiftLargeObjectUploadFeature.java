@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -99,7 +100,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     public StorageObject upload(final Path file, final Local local,
                                 final BandwidthThrottle throttle,
                                 final StreamListener listener,
-                                final TransferStatus status) throws BackgroundException {
+                                final TransferStatus status,
+                                final LoginCallback callback) throws BackgroundException {
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments

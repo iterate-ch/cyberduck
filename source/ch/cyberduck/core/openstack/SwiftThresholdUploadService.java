@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,7 +62,7 @@ public class SwiftThresholdUploadService implements Upload {
 
     @Override
     public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
+                         final TransferStatus status, final LoginCallback callback) throws BackgroundException {
         final Upload feature;
         if(status.getLength() > threshold) {
             if(!Preferences.instance().getBoolean("openstack.upload.largeobject")) {
@@ -69,7 +70,7 @@ public class SwiftThresholdUploadService implements Upload {
                 if(status.getLength() < Preferences.instance().getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
                     final SwiftSmallObjectUploadFeature single = new SwiftSmallObjectUploadFeature(session);
-                    return single.upload(file, local, throttle, listener, status);
+                    return single.upload(file, local, throttle, listener, status, callback);
                 }
             }
             feature = new SwiftLargeObjectUploadFeature(session, segment);
@@ -85,7 +86,7 @@ public class SwiftThresholdUploadService implements Upload {
                 segments.addAll(new SwiftSegmentService(session).list(file));
             }
         }
-        final Object checksum = feature.upload(file, local, throttle, listener, status);
+        final Object checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
             new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController());

@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Serializable;
@@ -168,7 +169,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path source,
-                         final Local n, final TransferOptions options, final TransferStatus status) throws BackgroundException {
+                         final Local n, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
