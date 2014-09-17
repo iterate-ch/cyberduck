@@ -24,7 +24,6 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
-import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 import java.io.IOException;
@@ -80,12 +79,10 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     protected void post(final MessageDigest digest, final StorageObject part) throws BackgroundException {
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
-            final String hexMD5 = Hex.encodeHexString(digest.digest());
-            try {
-                session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
-            }
-            catch(ServiceException e) {
-                throw new ChecksumException("Upload failed", e.getMessage(), e);
+            final String expected = Hex.encodeHexString(digest.digest());
+            if(!expected.equals(part.getETag())) {
+                throw new ChecksumException("Upload failed",
+                        String.format("Mismatch between MD5 hash of uploaded data (%s) and ETag returned by the server (%s)", expected, part.getETag()));
             }
         }
     }
