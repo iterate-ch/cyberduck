@@ -21,7 +21,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -37,6 +36,8 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -364,7 +365,17 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         try {
             final Path home = new S3HomeFinderService(this).find();
-            cache.put(home.getReference(), this.list(home, new DisabledListProgressListener()));
+            cache.put(home.getReference(), this.list(home, new ListProgressListener() {
+                @Override
+                public void chunk(final AttributedList<Path> list) throws ListCanceledException {
+                    try {
+                        cancel.verify();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        throw new ListCanceledException(list);
+                    }
+                }
+            }));
         }
         catch(BackgroundException e) {
             throw new LoginFailureException(e.getMessage(), e.getCause());
