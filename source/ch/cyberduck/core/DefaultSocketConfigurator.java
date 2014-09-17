@@ -29,8 +29,9 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
             = Preferences.instance();
 
     @Override
-    public void configure(Socket socket) throws IOException {
+    public void configure(final Socket socket) throws IOException {
         socket.setReceiveBufferSize(preferences.getInteger("connection.buffer.receive"));
         socket.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
+        socket.setSoTimeout(preferences.getInteger("connection.timeout.seconds") * 1000);
     }
 }
