@@ -57,7 +57,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected abstract License open(Local file);
 
     protected License open() throws AccessDeniedException {
-        Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
+        final Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
         if(support.exists()) {
             for(Local key : support.list().filter(new Filter<Local>() {
                 @Override
@@ -80,7 +80,9 @@ public abstract class LicenseFactory extends Factory<License> {
                 }
             }
         }
-        log.info("No donation key found");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("No donation key found in %s", support));
+        }
         return LicenseFactory.EMPTY_LICENSE;
     }
 

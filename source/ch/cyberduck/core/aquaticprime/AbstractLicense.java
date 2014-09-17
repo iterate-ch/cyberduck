@@ -35,7 +35,7 @@ public abstract class AbstractLicense implements License {
 
     private Local file;
 
-    protected AbstractLicense(Local file) {
+    protected AbstractLicense(final Local file) {
         this.file = file;
     }
 
