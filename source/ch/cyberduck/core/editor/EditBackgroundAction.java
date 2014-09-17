@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.action.Worker;
 
@@ -78,7 +79,8 @@ public class EditBackgroundAction extends Worker<Transfer> {
         options.quarantine = false;
         options.open = false;
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, download, options, new DisabledTransferPrompt(), callback, new DisabledLoginController());
+                = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
+                new DisabledTransferPrompt(), callback, new DisabledLoginController());
         worker.run();
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));

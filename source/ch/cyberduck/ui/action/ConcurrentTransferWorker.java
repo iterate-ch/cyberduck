@@ -35,6 +35,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -75,20 +76,20 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
-                                    final TransferPrompt prompt, final TransferErrorCallback error,
+                                    final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final LoginCallback login, final ProgressListener progressListener,
                                     final TranscriptListener transcriptListener) {
-        this(connect, transfer, options, prompt, error, login, progressListener, transcriptListener,
+        this(connect, transfer, options, meter, prompt, error, login, progressListener, transcriptListener,
                 Preferences.instance().getInteger("queue.session.pool.size"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
-                                    final TransferPrompt prompt, final TransferErrorCallback error,
+                                    final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final LoginCallback login, final ProgressListener progressListener,
                                     final TranscriptListener transcriptListener,
                                     final Integer connections) {
-        super(transfer, options, prompt, error, login);
+        super(transfer, options, prompt, meter, error, login);
         this.connect = connect;
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
@@ -139,7 +140,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void complete() throws BackgroundException {
+    public void await() throws BackgroundException {
         // Await termination for submitted tasks in queue
         for(int i = 0; i < size.get(); i++) {
             try {

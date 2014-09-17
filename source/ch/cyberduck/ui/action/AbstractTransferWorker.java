@@ -38,6 +38,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.growl.GrowlFactory;
@@ -79,6 +80,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
 
     private TransferOptions options;
 
+    private TransferSpeedometer meter;
+
     /**
      * Transfer status determined by filters
      */
@@ -95,33 +98,36 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             = new DefaultFailureDiagnostics();
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferErrorCallback error,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
                                   final LoginCallback login) {
         this.transfer = transfer;
         this.prompt = prompt;
+        this.meter = meter;
         this.error = error;
         this.login = login;
         this.options = options;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final TransferErrorCallback error,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
                                   final LoginCallback login, final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
+        this.meter = meter;
         this.error = error;
         this.login = login;
         this.cache = cache;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
-                                  final TransferPrompt prompt, final LoginCallback login,
+                                  final TransferPrompt prompt, final TransferSpeedometer meter, final LoginCallback login,
                                   final TransferErrorCallback error,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
+        this.meter = meter;
         this.error = error;
         this.login = login;
         this.table = table;
@@ -139,7 +145,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         super.cancel();
     }
 
-    public void complete() throws BackgroundException {
+    public void await() throws BackgroundException {
         // No need to implement for single threaded transfer
     }
 
@@ -177,12 +183,13 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                 for(TransferItem next : transfer.getRoots()) {
                     this.prepare(next.remote, next.local, new TransferStatus().exists(true), filter);
                 }
-                this.complete();
+                this.await();
+                meter.reset();
                 // Transfer all files sequentially
                 for(TransferItem next : transfer.getRoots()) {
                     this.transfer(next.remote, next.local, filter);
                 }
-                this.complete();
+                this.await();
             }
             finally {
                 this.release(session);

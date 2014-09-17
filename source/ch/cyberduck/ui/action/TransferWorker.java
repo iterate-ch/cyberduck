@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 public interface TransferWorker {
     void cancel();
 
-    void complete() throws BackgroundException;
+    void await() throws BackgroundException;
 
     void submit(TransferCallable callable) throws BackgroundException;
 

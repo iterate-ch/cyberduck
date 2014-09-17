@@ -19,7 +19,6 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -89,36 +88,36 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final TransferListener transferListener,
-                                    final ProgressListener progressListener,
+                                    final TransferListener listener,
+                                    final ProgressListener progress,
                                     final Transfer transfer, final TransferOptions options) {
-        this(controller, session, transferListener, progressListener, transfer, options,
+        this(controller, session, listener, progress, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, session),
                 TransferErrorCallbackControllerFactory.get(controller));
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
-                                    final TransferListener transferListener,
-                                    final ProgressListener progressListener,
+                                    final TransferListener listener,
+                                    final ProgressListener progress,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
-        super(controller, session, Cache.<Path>empty(), progressListener);
+        super(controller, session, Cache.<Path>empty(), progress);
         final LoginCallback login = LoginControllerFactory.get(controller);
         this.connection = new LoginConnectionService(login,
                 HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
-                PasswordStoreFactory.get(), progressListener);
-        if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options, prompt, error, login);
-        }
-        else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, login, progressListener, controller);
-        }
+                PasswordStoreFactory.get(), progress);
+        this.meter = new TransferSpeedometer(transfer);
         this.transfer = transfer;
         this.options = options;
-        this.listener = transferListener;
+        this.listener = listener;
         this.prompt = prompt;
-        this.meter = new TransferSpeedometer(transfer);
+        if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
+            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, login);
+        }
+        else {
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options, meter, prompt, error, login, progress, controller);
+        }
     }
 
     @Override
@@ -147,7 +146,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     public void prepare() throws ConnectionCanceledException {
         listener.start(transfer);
         timerPool = new ScheduledThreadPool();
-        meter.reset();
         progressTimer = timerPool.repeat(new Runnable() {
             @Override
             public void run() {
