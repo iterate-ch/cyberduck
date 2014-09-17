@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -38,7 +40,12 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,5 +211,44 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         part.getETag(), part.getContentLength());
             }
         });
+    }
+
+    @Override
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+        if(null == digest) {
+            log.warn("MD5 calculation disabled");
+            return in;
+        }
+        else {
+            return new DigestInputStream(super.decorate(in, digest), digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() {
+        MessageDigest digest = null;
+        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            // Content-MD5 not set. Need to verify ourselves instad of S3
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return digest;
+    }
+
+    @Override
+    protected void post(final MessageDigest digest, final StorageObject part) throws BackgroundException {
+        if(null != digest) {
+            // Obtain locally-calculated MD5 hash.
+            final String expected = Hex.encodeHexString(digest.digest());
+            if(!expected.equals(part.getETag())) {
+                throw new ChecksumException("Upload failed",
+                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                expected, part.getETag()));
+            }
+        }
     }
 }
