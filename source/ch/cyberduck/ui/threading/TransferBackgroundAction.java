@@ -112,7 +112,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             this.worker = new SingleTransferWorker(session, transfer, options, prompt, error, login);
         }
         else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, new DisabledLoginController(), progressListener, controller);
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options, prompt, error, login, progressListener, controller);
         }
         this.transfer = transfer;
         this.options = options;
