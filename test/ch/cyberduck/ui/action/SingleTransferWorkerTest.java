@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
@@ -61,7 +62,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 //
             }
         };
-        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -116,7 +117,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return new AttributedList<Path>(Collections.<Path>singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
-        new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -159,7 +160,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 return children;
             }
         };
-        final SingleTransferWorker worker = new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -200,7 +201,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             }
         };
         try {
-            new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
+            new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
                 @Override
                 public TransferAction prompt() {
                     return TransferAction.overwrite;

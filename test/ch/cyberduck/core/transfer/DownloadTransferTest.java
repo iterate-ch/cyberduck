@@ -55,7 +55,8 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return true;
             }
         });
-        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(),
+                new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.overwrite;
@@ -156,7 +157,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -195,7 +197,8 @@ public class DownloadTransferTest extends AbstractTestCase {
         final Transfer transfer = new DownloadTransfer(host, test, local);
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();

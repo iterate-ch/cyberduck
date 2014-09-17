@@ -141,7 +141,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         final TransferOptions options = new TransferOptions();
         options.resumeRequested = true;
-        new SingleTransferWorker(session, t, options, new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, t, options, new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -178,7 +178,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 //
             }
         };
-        new SingleTransferWorker(session, t, new TransferOptions(), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferAction.rename;
@@ -202,7 +202,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final Transfer transfer = new UploadTransfer(host, test, new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"));
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -241,7 +242,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final Transfer transfer = new UploadTransfer(host, test, directory);
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
@@ -348,7 +350,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final OverwriteFilter filter = new OverwriteFilter(
                 new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session,
                 new UploadFilterOptions().withTemporary(true));
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt() {
                 fail();
