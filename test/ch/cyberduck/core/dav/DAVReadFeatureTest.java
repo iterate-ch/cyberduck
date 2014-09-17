@@ -75,7 +75,7 @@ public class DAVReadFeatureTest extends AbstractTestCase {
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertEquals(-1L, local.attributes().getSize());
         new DefaultDownloadFeature(session).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status);
+                new DisabledStreamListener(), status, new DisabledLoginController());
         assertEquals(923L, local.attributes().getSize());
     }
 
