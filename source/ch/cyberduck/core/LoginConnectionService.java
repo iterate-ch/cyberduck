@@ -162,7 +162,7 @@ public class LoginConnectionService implements ConnectionService {
         try {
             login.login(session, cache, listener, new CancelCallback() {
                 @Override
-                public void verify() throws LoginCanceledException {
+                public void verify() throws ConnectionCanceledException {
                     if(canceled.get()) {
                         throw new LoginCanceledException();
                     }

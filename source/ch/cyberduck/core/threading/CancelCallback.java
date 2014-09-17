@@ -1,10 +1,10 @@
 package ch.cyberduck.core.threading;
 
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 /**
  * @version $Id$
  */
 public interface CancelCallback {
-    void verify() throws LoginCanceledException;
+    void verify() throws ConnectionCanceledException;
 }
