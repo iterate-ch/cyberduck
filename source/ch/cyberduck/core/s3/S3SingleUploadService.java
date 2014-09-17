@@ -54,7 +54,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
         if(null == digest) {
             log.warn("MD5 calculation disabled");
-            return in;
+            return super.decorate(in, null);
         }
         else {
             return new DigestInputStream(super.decorate(in, digest), digest);
