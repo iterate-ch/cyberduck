@@ -55,7 +55,8 @@ public class DAVReadFeature implements Read {
             headers.put(HttpHeaders.ACCEPT_ENCODING, "identity");
         }
         try {
-            final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file), headers);
+            final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file),
+                    this.decorate(file, headers, status));
             // Update content length
             if(-1 == stream.getLength()) {
                 log.warn(String.format("Unknown content length for %s", file));
@@ -71,6 +72,11 @@ public class DAVReadFeature implements Read {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
         }
+    }
+
+    protected Map<String, String> decorate(final Path file, final Map<String, String> headers,
+                                           final TransferStatus status) throws BackgroundException {
+        return headers;
     }
 
     @Override
