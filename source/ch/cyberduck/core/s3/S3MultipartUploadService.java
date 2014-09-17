@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -174,7 +175,27 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                 }
-                return new StorageObject(containerService.getKey(file));
+                final StringBuilder concat = new StringBuilder();
+                for(MultipartPart part : completed) {
+                    concat.append(part.getEtag());
+                }
+                final String expected = String.format("%s-%d",
+                        new MD5ChecksumCompute().compute(concat.toString()), completed.size());
+                final String reference;
+                if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                    reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                }
+                else {
+                    reference = complete.getEtag();
+                }
+                if(!expected.equals(reference)) {
+                    throw new ChecksumException("Upload failed",
+                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                    expected, reference));
+                }
+                final StorageObject object = new StorageObject(containerService.getKey(file));
+                object.setETag(complete.getEtag());
+                return object;
             }
             finally {
                 // Cancel future tasks
@@ -217,7 +238,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
         if(null == digest) {
             log.warn("MD5 calculation disabled");
-            return in;
+            return super.decorate(in, null);
         }
         else {
             return new DigestInputStream(super.decorate(in, digest), digest);
