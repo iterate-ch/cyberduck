@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -243,7 +244,7 @@ public class DownloadTransfer extends Transfer {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
-            }, status);
+            }, status, login);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {

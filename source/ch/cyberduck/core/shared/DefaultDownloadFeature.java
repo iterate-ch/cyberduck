@@ -19,6 +19,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,9 +48,13 @@ public class DefaultDownloadFeature implements Download {
         this.reader = session.getFeature(Read.class);
     }
 
+    public DefaultDownloadFeature(final Read reader) {
+        this.reader = reader;
+    }
+
     @Override
     public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status) throws BackgroundException {
+                         final TransferStatus status, final LoginCallback callback) throws BackgroundException {
         try {
             InputStream in = null;
             OutputStream out = null;
