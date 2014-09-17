@@ -63,7 +63,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * The number of times this action has been run
      */
-    protected int repeatCount;
+    protected int repeat = 0;
 
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
@@ -140,25 +140,20 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * @return Greater than zero if a failed action should be repeated again
      */
     protected int retry() {
-        if(this.hasFailed() && !this.isCanceled()) {
-            // Check for an exception we consider possibly temporary
-            if(diagnostics.determine(exception) == FailureDiagnostics.Type.network) {
-                // The initial connection attempt does not count
-                return Preferences.instance().getInteger("connection.retry") - repeatCount;
-            }
-        }
-        return 0;
+        // The initial connection attempt does not count
+        return Preferences.instance().getInteger("connection.retry") - repeat;
     }
 
     protected void reset() {
         // Clear the transcript and exceptions
         transcript = new StringBuilder();
+        // Reset the failure status but remember the previous exception for automatic retry.
         failed = false;
     }
 
     /**
      * @return True if the the action had a permanent failures. Returns false if
-     *         there were only temporary exceptions and the action succeeded upon retry
+     * there were only temporary exceptions and the action succeeded upon retry
      */
     protected boolean hasFailed() {
         return failed;
@@ -183,6 +178,20 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             growl.notify(failure.getMessage(), session.getHost().getHostname());
             exception = failure;
             failed = true;
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                if(this.retry() > 0) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Retry failed background action %s", this));
+                    }
+                    // This is an automated retry. Wait some time first.
+                    this.pause();
+                    if(!this.isCanceled()) {
+                        repeat++;
+                        // Re-run the action with the previous lock used
+                        this.call();
+                    }
+                }
+            }
         }
         return null;
     }
@@ -203,20 +212,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public void finish() {
-        while(this.retry() > 0) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Retry failed background action %s", this));
-            }
-            // This is an automated retry. Wait some time first.
-            this.pause();
-            if(!this.isCanceled()) {
-                repeatCount++;
-                // Reset the failure status but remember the previous exception for automatic retry.
-                failed = false;
-                // Re-run the action with the previous lock used
-                this.call();
-            }
-        }
         session.removeProgressListener(this);
         // It is important _not_ to do this in #cleanup as otherwise
         // the listeners are still registered when the next BackgroundAction
