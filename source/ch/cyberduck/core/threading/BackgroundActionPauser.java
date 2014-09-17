@@ -73,7 +73,7 @@ public class BackgroundActionPauser {
             @Override
             public boolean cancel() {
                 try {
-                    // Notifiy to return to caller from #pause()
+                    // Notify to return to caller from #pause()
                     wait.await();
                 }
                 catch(InterruptedException e) {
