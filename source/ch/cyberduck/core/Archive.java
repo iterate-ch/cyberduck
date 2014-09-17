@@ -219,18 +219,18 @@ public abstract class Archive {
     public String getCompressCommand(final Path workdir, final List<Path> files) {
         final StringBuilder archive = new StringBuilder();
         if(files.size() == 1) {
-            archive.append(files.get(0).getAbsolute());
+            archive.append(this.escape(files.get(0).getAbsolute()));
         }
         else {
             // Use default filename
-            archive.append(files.get(0).getParent().getAbsolute()).append(Path.DELIMITER).append("Archive");
+            archive.append(this.escape(files.get(0).getParent().getAbsolute())).append(Path.DELIMITER).append("Archive");
         }
         final List<String> command = new ArrayList<String>();
         for(Path path : files) {
             command.add(this.escape(PathRelativizer.relativize(workdir.getAbsolute(), path.getAbsolute())));
         }
         return MessageFormat.format(preferences.getProperty(String.format("archive.command.create.%s", this.getIdentifier())),
-                this.escape(archive.toString()), StringUtils.join(command, " "), workdir.getAbsolute());
+                archive.toString(), StringUtils.join(command, " "), this.escape(workdir.getAbsolute()));
     }
 
     /**
@@ -251,7 +251,8 @@ public abstract class Archive {
     protected String escape(final String path) {
         final StringBuilder escaped = new StringBuilder();
         for(char c : path.toCharArray()) {
-            if(StringUtils.isAlphanumeric(String.valueOf(c))) {
+            if(StringUtils.isAlphanumeric(String.valueOf(c))
+                    || c == Path.DELIMITER) {
                 escaped.append(c);
             }
             else {

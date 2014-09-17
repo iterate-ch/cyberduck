@@ -29,9 +29,14 @@ public class ArchiveTest extends AbstractTestCase {
 
     @Test
     public void testCommand() throws FactoryException {
-        assertEquals("cd /a; zip -qr \\/a\\/b.zip b",
-                Archive.ZIP.getCompressCommand(new Path("/a", EnumSet.of(Path.Type.directory)), Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.file)))));
-        assertEquals("cd /a; tar -cpPf \\/a\\/b.tar b",
-                Archive.TAR.getCompressCommand(new Path("/a", EnumSet.of(Path.Type.directory)), Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.file)))));
+        assertEquals("cd /a; zip -qr /a/b.zip b",
+                Archive.ZIP.getCompressCommand(new Path("/a", EnumSet.of(Path.Type.directory)),
+                        Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.file)))));
+        assertEquals("cd /a; zip -qr /a/b\\ c.zip b\\ c",
+                Archive.ZIP.getCompressCommand(new Path("/a", EnumSet.of(Path.Type.directory)),
+                        Collections.singletonList(new Path("/a/b c", EnumSet.of(Path.Type.file)))));
+        assertEquals("cd /a; tar -cpPf /a/b.tar b",
+                Archive.TAR.getCompressCommand(new Path("/a", EnumSet.of(Path.Type.directory)),
+                        Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.file)))));
     }
 }
