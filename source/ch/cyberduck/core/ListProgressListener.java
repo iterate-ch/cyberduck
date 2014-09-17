@@ -23,5 +23,5 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
  * @version $Id$
  */
 public interface ListProgressListener {
-    void chunk(AttributedList<Path> list) throws ConnectionCanceledException;
+    void chunk(Path parent, AttributedList<Path> list) throws ConnectionCanceledException;
 }

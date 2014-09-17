@@ -70,7 +70,7 @@ public class DAVListService implements ListService {
                 children.add(new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                         attributes));
-                listener.chunk(children);
+                listener.chunk(directory, children);
             }
             return children;
         }

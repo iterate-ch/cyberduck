@@ -77,7 +77,7 @@ public class SFTPListService implements ListService {
                 final Path file = new Path(directory, f.getName(), type, attributes);
                 this.post(file);
                 children.add(file);
-                listener.chunk(children);
+                listener.chunk(directory, children);
             }
             handle.close();
             return children;

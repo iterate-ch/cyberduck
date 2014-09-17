@@ -47,7 +47,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path parent, final List<String> replies, final ListProgressListener listener)
+    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener)
             throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
@@ -64,12 +64,12 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             if(!success) {
                 // Workaround for #2410. STAT only returns ls of directory itself
                 // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
-                if(parent.getAbsolute().equals(name)) {
+                if(directory.getAbsolute().equals(name)) {
                     log.warn(String.format("Skip %s", f.getName()));
                     continue;
                 }
                 if(name.contains(String.valueOf(Path.DELIMITER))) {
-                    if(!name.startsWith(parent.getAbsolute() + Path.DELIMITER)) {
+                    if(!name.startsWith(directory.getAbsolute() + Path.DELIMITER)) {
                         // Workaround for #2434.
                         log.warn(String.format("Skip listing entry with delimiter %s", name));
                         continue;
@@ -83,7 +83,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                 }
                 continue;
             }
-            final Path parsed = new Path(parent, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file));
+            final Path parsed = new Path(directory, PathNormalizer.name(name), f.getType() == FTPFile.DIRECTORY_TYPE ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file));
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.setType(EnumSet.of(Path.Type.file, Path.Type.symboliclink));
@@ -93,7 +93,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                         parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                     }
                     else {
-                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target),
+                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target),
                                 EnumSet.of(Path.Type.file)));
                     }
                     break;
@@ -145,7 +145,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
             }
             children.add(parsed);
-            listener.chunk(children);
+            listener.chunk(directory, children);
         }
         if(!success) {
             throw new FTPInvalidListException(children);

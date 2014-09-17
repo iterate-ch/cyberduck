@@ -157,7 +157,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
                         containers.add(new Path(String.format("/%s", container.getName()),
                                 EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                     }
-                    listener.chunk(containers);
+                    listener.chunk(directory, containers);
                     token = result.getContinuationToken();
                 }
                 while(result.getHasMoreResults());

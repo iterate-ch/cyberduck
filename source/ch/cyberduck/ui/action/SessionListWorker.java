@@ -76,14 +76,14 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
-    public void chunk(final AttributedList<Path> list) throws ConnectionCanceledException {
+    public void chunk(final Path parent, final AttributedList<Path> list) throws ConnectionCanceledException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Retrieved chunk of %d items in %s", list.size(), directory));
         }
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        listener.chunk(list);
+        listener.chunk(directory, list);
     }
 
     @Override

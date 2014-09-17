@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ActionListProgressListener implements ListProgressListener {
 
@@ -35,7 +35,7 @@ public class ActionListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void chunk(AttributedList<Path> list) throws ConnectionCanceledException {
+    public void chunk(final Path parent, AttributedList<Path> list) throws ConnectionCanceledException {
         if(worker.isCanceled()) {
             throw new ListCanceledException(list);
         }

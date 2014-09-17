@@ -51,7 +51,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path parent, final List<String> replies, final ListProgressListener listener)
+    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener)
             throws IOException, FTPInvalidListException, ConnectionCanceledException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
@@ -80,13 +80,13 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                 }
                 final Path parsed;
                 if("dir".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.directory));
+                    parsed = new Path(directory, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.directory));
                 }
                 else if("file".equals(facts.get("type").toLowerCase(Locale.ROOT))) {
-                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file));
+                    parsed = new Path(directory, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file));
                 }
                 else if(facts.get("type").toLowerCase(Locale.ROOT).matches("os\\.unix=slink:.*")) {
-                    parsed = new Path(parent, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+                    parsed = new Path(directory, PathNormalizer.name(f.getKey()), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
                     // Parse symbolic link target in Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar
                     final String[] type = facts.get("type").split(":");
                     if(type.length == 2) {
@@ -95,7 +95,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                             parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                         }
                         else {
-                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", parent.getAbsolute(), target), EnumSet.of(Path.Type.file)));
+                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target), EnumSet.of(Path.Type.file)));
                         }
                     }
                     else {
@@ -108,7 +108,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     continue;
                 }
                 if(!success) {
-                    if(parsed.isDirectory() && parent.getName().equals(name)) {
+                    if(parsed.isDirectory() && directory.getName().equals(name)) {
                         log.warn(String.format("Possibly bogus response line %s", line));
                     }
                     else {
@@ -142,7 +142,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                 }
                 children.add(parsed);
-                listener.chunk(children);
+                listener.chunk(directory, children);
             }
         }
         if(!success) {

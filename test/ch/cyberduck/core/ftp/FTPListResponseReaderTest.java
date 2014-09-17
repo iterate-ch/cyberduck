@@ -144,7 +144,7 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         final AttributedList<Path> list = new FTPListResponseReader(new NullSession(new Host("f")), parser).read(
                 new Path("/", EnumSet.of(Path.Type.directory)), Arrays.asList("lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"), new DisabledListProgressListener() {
             @Override
-            public void chunk(AttributedList<Path> list) throws ListCanceledException {
+            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                 throw new ListCanceledException(AttributedList.<Path>emptyList());
             }
         }

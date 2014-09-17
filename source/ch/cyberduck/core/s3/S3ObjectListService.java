@@ -109,7 +109,7 @@ public class S3ObjectListService implements ListService {
                                 Arrays.asList(chunk.getItems())));
                         priorLastKey = chunk.getNextKeyMarker();
                         priorLastVersionId = chunk.getNextVersionIdMarker();
-                        listener.chunk(children);
+                        listener.chunk(directory, children);
                     }
                     while(priorLastKey != null);
                 }
@@ -176,7 +176,7 @@ public class S3ObjectListService implements ListService {
                 children.add(file);
             }
             priorLastKey = chunk.getPriorLastKey();
-            listener.chunk(children);
+            listener.chunk(parent, children);
         }
         while(priorLastKey != null);
         return children;

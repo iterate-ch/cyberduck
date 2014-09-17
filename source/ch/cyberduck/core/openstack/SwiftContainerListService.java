@@ -87,7 +87,7 @@ public class SwiftContainerListService implements RootListService {
         }
         try {
             final List<Path> containers = new ArrayList<Path>();
-            final int limit = preferences.getInteger("openstack.list.limit");
+            final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(Region r : client.getRegions()) {
                 if(region.getIdentifier() != null) {
@@ -141,7 +141,8 @@ public class SwiftContainerListService implements RootListService {
                         containers.add(container);
                         marker = f.getName();
                     }
-                    listener.chunk(new AttributedList<Path>(containers));
+                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                            new AttributedList<Path>(containers));
                 }
                 while(!chunk.isEmpty());
             }

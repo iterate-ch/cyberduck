@@ -63,7 +63,7 @@ public class SwiftObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final int limit = Preferences.instance().getInteger("openstack.list.limit");
+            final int limit = Preferences.instance().getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;
             do {
@@ -99,7 +99,7 @@ public class SwiftObjectListService implements ListService {
                     children.add(child);
                     marker = object.getName();
                 }
-                listener.chunk(children);
+                listener.chunk(directory, children);
             }
             while(list.size() == limit);
             return children;

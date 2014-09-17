@@ -367,7 +367,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             final Path home = new S3HomeFinderService(this).find();
             cache.put(home.getReference(), this.list(home, new ListProgressListener() {
                 @Override
-                public void chunk(final AttributedList<Path> list) throws ListCanceledException {
+                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                     try {
                         cancel.verify();
                     }

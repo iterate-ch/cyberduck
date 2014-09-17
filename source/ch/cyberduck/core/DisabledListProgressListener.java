@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 public class DisabledListProgressListener implements ListProgressListener {
 
     @Override
-    public void chunk(final AttributedList<Path> list) throws ListCanceledException {
+    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
         //
     }
 }

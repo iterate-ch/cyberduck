@@ -24,19 +24,33 @@ import ch.cyberduck.core.exception.ListCanceledException;
  */
 public class LimitedListProgressListener implements ListProgressListener {
 
-    private Integer limit;
+    private Preferences preferences
+            = Preferences.instance();
 
-    private Integer setting;
+    /**
+     * Limit for containers
+     */
+    private Integer container
+            = preferences.getInteger("browser.list.limit.container");
 
-    public LimitedListProgressListener(final Integer limit) {
-        this.limit = limit;
-        this.setting = limit;
-    }
+    /**
+     * Limit for regular directories
+     */
+    private Integer directory
+            = preferences.getInteger("browser.list.limit.directory");
 
     @Override
-    public void chunk(final AttributedList<Path> list) throws ListCanceledException {
-        if(list.size() >= limit) {
-            limit += setting;
+    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+        if(parent.isVolume()) {
+            if(list.size() >= container) {
+                // Allow another chunk until limit is reached again
+                container += preferences.getInteger("browser.list.limit.container");
+                throw new ListCanceledException(list);
+            }
+        }
+        if(list.size() >= directory) {
+            // Allow another chunk until limit is reached again
+            directory += preferences.getInteger("browser.list.limit.directory");
             throw new ListCanceledException(list);
         }
     }

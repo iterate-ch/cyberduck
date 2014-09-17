@@ -98,7 +98,8 @@ public class S3BucketListService implements RootListService {
                             bucket.attributes().setRegion(b.getLocation());
                         }
                         buckets.add(bucket);
-                        listener.chunk(new AttributedList<Path>(buckets));
+                        listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                                new AttributedList<Path>(buckets));
                     }
                     return buckets;
                 }

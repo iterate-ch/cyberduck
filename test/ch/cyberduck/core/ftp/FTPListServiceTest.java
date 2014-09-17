@@ -62,7 +62,7 @@ public class FTPListServiceTest extends AbstractTestCase {
             int size = 0;
 
             @Override
-            public void chunk(AttributedList<Path> list) throws ListCanceledException {
+            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                 assertEquals(++size, list.size());
                 assertNotNull(list.get(list.size() - 1));
             }
@@ -91,7 +91,7 @@ public class FTPListServiceTest extends AbstractTestCase {
             int size = 0;
 
             @Override
-            public void chunk(AttributedList<Path> list) throws ListCanceledException {
+            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
                 assertEquals(++size, list.size());
             }
         });

@@ -42,21 +42,16 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
     private boolean suppressed;
 
     public PromptLimitedListProgressListener(final WindowController controller) {
-        this(controller, Preferences.instance().getInteger("browser.model.size.limit"));
-    }
-
-    public PromptLimitedListProgressListener(final WindowController controller, final Integer limit) {
-        super(limit);
         this.controller = controller;
     }
 
     @Override
-    public void chunk(final AttributedList<Path> list) throws ListCanceledException {
+    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
         if(suppressed) {
             return;
         }
         try {
-            super.chunk(list);
+            super.chunk(parent, list);
         }
         catch(ListCanceledException e) {
             if(controller.isVisible()) {

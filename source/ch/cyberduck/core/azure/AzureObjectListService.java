@@ -97,7 +97,7 @@ public class AzureObjectListService implements ListService {
                             attributes);
                     children.add(child);
                 }
-                listener.chunk(children);
+                listener.chunk(directory, children);
                 token = result.getContinuationToken();
             }
             while(result.getHasMoreResults());
