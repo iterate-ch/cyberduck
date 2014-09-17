@@ -317,14 +317,16 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", host));
         }
-        if(host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+        if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            // Only for AWS
             configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+            configuration.setProperty("s3service.disable-dns-buckets",
+                    String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
         }
         else {
             configuration.setProperty("s3service.s3-endpoint", host.getHostname());
+            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
-        configuration.setProperty("s3service.disable-dns-buckets",
-                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
             configuration.setProperty("s3service.s3-endpoint-virtual-path",
