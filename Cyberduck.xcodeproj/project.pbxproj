@@ -921,6 +921,9 @@
 		47562B8C081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Login.nib; sourceTree = "<group>"; };
 		47562B8D081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47562B8E081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		4759423A19C9EB89002A68F5 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Support.strings; sourceTree = "<group>"; };
+		4759423B19C9EB92002A68F5 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Support.strings; sourceTree = "<group>"; };
+		4759423C19C9EB92002A68F5 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Support.strings; sourceTree = "<group>"; };
 		475C6D59170C9214006535BB /* googlestorage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = googlestorage.tiff; sourceTree = "<group>"; };
 		475D17AF0805D54C00166B8A /* download5.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download5.icns; sourceTree = "<group>"; };
 		475D17B00805D54C00166B8A /* download7.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download7.icns; sourceTree = "<group>"; };
@@ -1324,6 +1327,10 @@
 		47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesFileDescriptor.h; sourceTree = "<group>"; };
 		47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesFileDescriptor.m; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
+		47C6ECFA19C9EBAC0059F4DE /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Support.strings; sourceTree = "<group>"; };
+		47C6ECFB19C9EBB30059F4DE /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Support.strings; sourceTree = "<group>"; };
+		47C6ECFC19C9EBB30059F4DE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Support.strings; sourceTree = "<group>"; };
+		47C6ECFD19C9EBB30059F4DE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Support.strings; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		47C88FED17269A54001A746A /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOKitSleepPreventer.h; sourceTree = "<group>"; };
 		47C88FEE17269A54001A746A /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IOKitSleepPreventer.m; sourceTree = "<group>"; };
@@ -3958,6 +3965,13 @@
 				4796E530195C692E000864F4 /* sv */,
 				4796E531195C692E000864F4 /* sk */,
 				4796E532195C692E000864F4 /* zh_CN */,
+				4759423A19C9EB89002A68F5 /* cs */,
+				4759423B19C9EB92002A68F5 /* cy */,
+				4759423C19C9EB92002A68F5 /* da */,
+				47C6ECFA19C9EBAC0059F4DE /* ar */,
+				47C6ECFB19C9EBB30059F4DE /* ca */,
+				47C6ECFC19C9EBB30059F4DE /* bg */,
+				47C6ECFD19C9EBB30059F4DE /* de */,
 			);
 			name = Support.strings;
 			sourceTree = "<group>";
