@@ -91,7 +91,7 @@ public class FolderController extends FileController {
     }
 
     private boolean hasLocation() {
-        return this.getWorkdir().isRoot() && !regions.isEmpty();
+        return new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()).isRoot() && !regions.isEmpty();
     }
 
     @Override
