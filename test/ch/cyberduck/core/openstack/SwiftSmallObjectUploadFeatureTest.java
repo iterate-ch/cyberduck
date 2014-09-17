@@ -23,6 +23,8 @@ import ch.cyberduck.core.Host;
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
+import java.io.BufferedInputStream;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -34,7 +36,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractTestCase {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(n, new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).decorate(n, null));
+        assertSame(BufferedInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).decorate(n, null).getClass());
     }
 
     @Test

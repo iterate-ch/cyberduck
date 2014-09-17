@@ -25,6 +25,7 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(n, new S3SingleUploadService(new S3Session(new Host("h"))).decorate(n, null));
+        assertSame(BufferedInputStream.class, new S3SingleUploadService(new S3Session(new Host("h"))).decorate(n, null).getClass());
     }
 
     @Test
