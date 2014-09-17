@@ -13,6 +13,6 @@
         <key>Default Port</key>
        	<string>8773</string>
         <key>Context</key>
-        <string>/services/Walrus</string>
+        <string>/services/objectstorage</string>
     </dict>
 </plist>
