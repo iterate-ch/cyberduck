@@ -23,9 +23,9 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,7 +93,7 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
         }
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
-            final String expected = ServiceUtils.toHex(digest.digest());
+            final String expected = Hex.encodeHexString(digest.digest());
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!expected.equals(etag)) {
                 throw new ChecksumException("Upload failed",

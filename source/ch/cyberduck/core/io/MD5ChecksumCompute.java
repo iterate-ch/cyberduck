@@ -21,6 +21,7 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
 
+import org.apache.commons.codec.binary.Hex;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.ByteArrayInputStream;
@@ -39,7 +40,7 @@ public class MD5ChecksumCompute implements ChecksumCompute {
     @Override
     public String compute(final InputStream in) throws ChecksumException {
         try {
-            return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(in));
+            return Hex.encodeHexString(ServiceUtils.computeMD5Hash(in));
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);

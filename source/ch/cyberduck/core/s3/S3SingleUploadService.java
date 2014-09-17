@@ -22,10 +22,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +80,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     protected void post(final MessageDigest digest, final StorageObject part) throws BackgroundException {
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
-            final String hexMD5 = ServiceUtils.toHex(digest.digest());
+            final String hexMD5 = Hex.encodeHexString(digest.digest());
             try {
                 session.getClient().verifyExpectedAndActualETagValues(hexMD5, part);
             }

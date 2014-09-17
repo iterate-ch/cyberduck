@@ -35,8 +35,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -228,7 +228,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     protected void post(final MessageDigest digest, final StorageObject response) throws BackgroundException {
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
-            final String expected = ServiceUtils.toHex(digest.digest());
+            final String expected = Hex.encodeHexString(digest.digest());
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!expected.equals(response.getMd5sum())) {
                 throw new ChecksumException("Upload failed",
