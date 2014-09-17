@@ -212,14 +212,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     }
 
     @Override
-    protected MessageDigest digest() {
+    protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
         if(Preferences.instance().getBoolean("openstack.upload.md5")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }
             catch(NoSuchAlgorithmException e) {
-                log.error(e.getMessage());
+                throw new IOException(e.getMessage(), e);
             }
         }
         return digest;

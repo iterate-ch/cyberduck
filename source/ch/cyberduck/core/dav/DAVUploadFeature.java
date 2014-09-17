@@ -69,14 +69,14 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     }
 
     @Override
-    protected MessageDigest digest() {
+    protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
         if(checksum) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }
             catch(NoSuchAlgorithmException e) {
-                log.error(e.getMessage());
+                throw new IOException(e.getMessage(), e);
             }
         }
         return digest;

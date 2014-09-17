@@ -109,7 +109,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
         return new BufferedInputStream(in);
     }
 
-    protected Digest digest() {
+    protected Digest digest() throws IOException {
         return null;
     }
 
