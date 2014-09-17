@@ -344,7 +344,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     @Override
                     public Boolean run() throws BackgroundException {
                         log.debug("kfscreate_f:" + path);
-                        final Path file = new Path(path, EnumSet.of(Path.Type.directory));
+                        final Path file = new Path(path, EnumSet.of(Path.Type.file));
                         final Touch feature = session.getFeature(Touch.class);
                         if(feature.isSupported(file.getParent())) {
                             feature.touch(file);

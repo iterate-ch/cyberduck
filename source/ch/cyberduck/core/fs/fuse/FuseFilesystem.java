@@ -391,7 +391,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
-                    final Path file = new Path(path, EnumSet.of(Path.Type.directory));
+                    final Path file = new Path(path, EnumSet.of(Path.Type.file));
                     final Touch feature = session.getFeature(Touch.class);
                     if(feature.isSupported(file.getParent())) {
                         feature.touch(file);
