@@ -1,4 +1,4 @@
-// 
+//
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -2956,9 +2956,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public bool accept(Host host)
             {
                 return BookmarkNameProvider.toString(host).ToLower().Contains(_searchString.ToLower()) ||
-                       (null == host.getComment()
-                            ? false
-                            : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
+                       (null == host.getComment() ? false : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
+                       (null == host.getCredentials().getUsername() ? false : host.getCredentials().getUsername().ToLower().Contains(_searchString.ToLower())) ||
                        host.getHostname().ToLower().Contains(_searchString.ToLower());
             }
         }

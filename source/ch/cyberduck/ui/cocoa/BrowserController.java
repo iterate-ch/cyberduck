@@ -1843,6 +1843,7 @@ public class BrowserController extends WindowController
                 public boolean accept(Host host) {
                     return StringUtils.lowerCase(BookmarkNameProvider.toString(host)).contains(searchString.toLowerCase(Locale.ROOT))
                             || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(Locale.ROOT)))
+                            || ((null != host.getCredentials().getUsername()) && StringUtils.lowerCase(host.getCredentials().getUsername()).contains(searchString.toLowerCase(Locale.ROOT)))
                             || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(Locale.ROOT));
                 }
             });
