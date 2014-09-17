@@ -226,7 +226,12 @@ public abstract class Preferences {
          * Caching NS* proxy instances.
          */
         defaults.put("browser.model.cache.size", String.valueOf(200));
-        defaults.put("browser.model.size.limit", String.valueOf(10000));
+
+        /**
+         * Callback threshold
+         */
+        defaults.put("browser.list.limit.directory", String.valueOf(10000));
+        defaults.put("browser.list.limit.container", String.valueOf(100));
 
         defaults.put("info.toolbar.selected", String.valueOf(0));
         defaults.put("preferences.toolbar.selected", String.valueOf(0));
@@ -588,6 +593,12 @@ public abstract class Preferences {
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
         /**
+         * qloudsonic.io
+         */
+        defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
+        defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
+
+        /**
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
@@ -620,7 +631,8 @@ public abstract class Preferences {
         defaults.put("openstack.authentication.context", "/v2.0/tokens");
         defaults.put("openstack.upload.metadata.md5", String.valueOf(false));
         defaults.put("openstack.metadata.default", StringUtils.EMPTY);
-        defaults.put("openstack.list.limit", String.valueOf(10000));
+        defaults.put("openstack.list.container.limit", String.valueOf(10));
+        defaults.put("openstack.list.object.limit", String.valueOf(10000));
         defaults.put("openstack.cdn.preload", String.valueOf(true));
         defaults.put("openstack.container.size.preload", String.valueOf(true));
 
