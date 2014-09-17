@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -82,7 +83,8 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             final String expected = Hex.encodeHexString(digest.digest());
             if(!expected.equals(part.getETag())) {
                 throw new ChecksumException("Upload failed",
-                        String.format("Mismatch between MD5 hash of uploaded data (%s) and ETag returned by the server (%s)", expected, part.getETag()));
+                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                expected, part.getETag()));
             }
         }
     }

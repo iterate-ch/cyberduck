@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -77,7 +78,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!expected.equals(response.getMd5sum())) {
                 throw new ChecksumException("Upload failed",
-                        String.format("Mismatch between MD5 hash of uploaded data (%s) and ETag returned by the server (%s)",
+                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                 expected, response.getMd5sum()));
             }
             if(log.isDebugEnabled()) {
