@@ -31,7 +31,9 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,40 +52,53 @@ public abstract class LicenseFactory extends Factory<License> {
         factories.put(platform, f);
     }
 
+    protected Local folder;
+
+    private String extension;
+
+    protected LicenseFactory() {
+        this(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path")));
+    }
+
+    protected LicenseFactory(final Local folder) {
+        this(folder, "cyberducklicense");
+    }
+
+    protected LicenseFactory(final Local folder, final String extension) {
+        this.folder = folder;
+        this.extension = extension;
+    }
+
+    @Override
+    protected License create() {
+        try {
+            return this.open().iterator().next();
+        }
+        catch(AccessDeniedException e) {
+            log.error(String.format("Failure finding receipt %s", e.getMessage()));
+        }
+        return LicenseFactory.EMPTY_LICENSE;
+    }
+
     /**
      * @param file File to parse
      * @return License possibly not yet verified depending on the implementation
      */
     protected abstract License open(Local file);
 
-    protected License open() throws AccessDeniedException {
-        final Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
-        if(support.exists()) {
-            for(Local key : support.list().filter(new Filter<Local>() {
+    public List<License> open() throws AccessDeniedException {
+        final List<License> keys = new ArrayList<License>();
+        if(folder.exists()) {
+            for(Local key : folder.list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(final Local file) {
-                    return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
+                    return extension.equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                return open(key);
-            }
-            // No key found. Look for receipt
-            for(Local file : support.list().filter(new Filter<Local>() {
-                @Override
-                public boolean accept(final Local file) {
-                    return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
-                }
-            })) {
-                final ReceiptVerifier verifier = new ReceiptVerifier(file);
-                if(verifier.verify()) {
-                    return new Receipt(file, verifier.getGuid());
-                }
+                keys.add(this.open(key));
             }
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("No donation key found in %s", support));
-        }
-        return LicenseFactory.EMPTY_LICENSE;
+        return keys;
     }
 
     /**
@@ -106,7 +121,7 @@ public abstract class LicenseFactory extends Factory<License> {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         try {
-            return factories.get(NATIVE_PLATFORM).open();
+            return factories.get(NATIVE_PLATFORM).open().iterator().next();
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure finding receipt %s", e.getMessage()));

@@ -19,7 +19,6 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
@@ -29,31 +28,6 @@ import org.apache.log4j.Logger;
  */
 public class Donation extends AbstractLicense implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(Donation.class);
-
-    public static void register() {
-        LicenseFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends LicenseFactory {
-        @Override
-        protected License open(final Local file) {
-            if(file.getName().endsWith(".cyberducklicense")) {
-                return new Donation(file);
-            }
-            return LicenseFactory.EMPTY_LICENSE;
-        }
-
-        @Override
-        protected License create() {
-            try {
-                return this.open();
-            }
-            catch(AccessDeniedException e) {
-                log.error(String.format("Failure finding receipt %s", e.getMessage()));
-            }
-            return LicenseFactory.EMPTY_LICENSE;
-        }
-    }
 
     static {
         Native.load("Prime");

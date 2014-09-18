@@ -19,12 +19,8 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.log4j.Logger;
 
@@ -33,74 +29,6 @@ import org.apache.log4j.Logger;
  */
 public class Receipt extends AbstractLicense {
     private static final Logger log = Logger.getLogger(Receipt.class);
-
-    public static void register() {
-        LicenseFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    /**
-     * Application has determined that its receipt is invalid. Exit with a status of 173
-     */
-    private static final int APPSTORE_VALIDATION_FAILURE = 173;
-
-    private static class Factory extends LicenseFactory {
-        @Override
-        protected License open(final Local file) {
-            // Verify immediately and exit if not a valid receipt
-            final ReceiptVerifier verifier = new ReceiptVerifier(file);
-            if(verifier.verify()) {
-                // Set name
-                final Receipt receipt = new Receipt(file, verifier.getGuid());
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Valid receipt %s in %s", receipt, file));
-                }
-                // Copy to Application Support for users switching versions
-                final Local support = LocalFactory.createLocal(
-                        Preferences.instance().getProperty("application.support.path"));
-                try {
-                    file.copy(LocalFactory.createLocal(support, String.format("%s.cyberduckreceipt", receipt.getName())));
-                }
-                catch(AccessDeniedException e) {
-                    log.warn(e.getMessage());
-                }
-                return receipt;
-            }
-            else {
-                log.error(String.format("Invalid receipt found in %s", file));
-                System.exit(APPSTORE_VALIDATION_FAILURE);
-            }
-            return null;
-        }
-
-        @Override
-        protected License open() throws AccessDeniedException {
-            final Local folder = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
-            if(folder.exists()) {
-                for(Local key : folder.list().filter(new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return "receipt".equals(file.getName());
-                    }
-                })) {
-                    return open(key);
-                }
-            }
-            log.error(String.format("No receipt found in %s", folder));
-            System.exit(APPSTORE_VALIDATION_FAILURE);
-            return LicenseFactory.EMPTY_LICENSE;
-        }
-
-        @Override
-        protected License create() {
-            try {
-                return this.open();
-            }
-            catch(AccessDeniedException e) {
-                log.error(String.format("Failure finding receipt %s", e.getMessage()));
-            }
-            return LicenseFactory.EMPTY_LICENSE;
-        }
-    }
 
     private String guid;
 

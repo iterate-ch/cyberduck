@@ -26,8 +26,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.RendezvousResponder;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
-import ch.cyberduck.core.aquaticprime.Donation;
-import ch.cyberduck.core.aquaticprime.Receipt;
+import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
+import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.editor.MultipleEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FinderLocal;
@@ -98,10 +98,10 @@ public final class MainApplication {
                 NSImageIconCache.register();
                 NotificationCenter.register();
                 if(null == Updater.getFeed()) {
-                    Receipt.register();
+                    ReceiptFactory.register();
                 }
                 else {
-                    Donation.register();
+                    DonationKeyFactory.register();
                 }
 
                 PlistDeserializer.register();

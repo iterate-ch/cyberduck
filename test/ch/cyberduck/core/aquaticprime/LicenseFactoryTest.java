@@ -13,9 +13,9 @@ public class LicenseFactoryTest extends AbstractTestCase {
 
     @Test
     public void testFind() throws Exception {
-        Donation.register();
+        DonationKeyFactory.register();
         assertEquals(LicenseFactory.EMPTY_LICENSE, LicenseFactory.find());
-//        Receipt.register();
-//        assertEquals(LicenseFactory.EMPTY_LICENSE, LicenseFactory.find());
+//        ReceiptFactory.register();
+        assertEquals(LicenseFactory.EMPTY_LICENSE, LicenseFactory.find());
     }
 }
