@@ -64,19 +64,19 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * Storage class
      */
     private String storage
-            = Preferences.instance().getProperty("s3.storage.class");
+            = preferences.getProperty("s3.storage.class");
 
     /**
      * Encrytion algorithm
      */
     private String encryption
-            = Preferences.instance().getProperty("s3.encryption.algorithm");
+            = preferences.getProperty("s3.encryption.algorithm");
 
     /**
      * Default metadata for new files
      */
     private List<String> metadata
-            = Preferences.instance().getList("s3.metadata.default");
+            = preferences.getList("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
         this(session, new S3MultipartService(session), new DefaultFindFeature(session));
