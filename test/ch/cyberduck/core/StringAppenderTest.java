@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class StringAppenderTest {
 
@@ -31,5 +31,6 @@ public class StringAppenderTest {
         assertEquals("Verification Code.", new StringAppender().append("Verification Code:").toString());
         assertEquals("Message.", new StringAppender().append("Message").toString());
         assertEquals("Message.", new StringAppender().append("Message.").toString());
+        assertEquals("Message?", new StringAppender().append("Message?").toString());
     }
 }
