@@ -20,21 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public interface LoginCallback {
-
-    /**
-     * Display warning sheet. Block connection until decision is made.
-     *
-     * @param title            Title in alert window
-     * @param message          Message in alert window
-     * @param continueButton   Button title for default button
-     * @param disconnectButton Button title for other button
-     * @param preference       Where to save preference if dismissed
-     * @throws ch.cyberduck.core.exception.LoginCanceledException
-     *          If the other option has been selected.
-     */
-    void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
-              String preference) throws LoginCanceledException;
+public interface LoginCallback extends ConnectionCallback {
 
     /**
      * Call this to allow the user to reenter the new login credentials.
