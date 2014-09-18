@@ -44,7 +44,7 @@ public class DonationKeyFactory extends LicenseFactory {
     }
 
     @Override
-    protected List<License> open() throws AccessDeniedException {
+    public List<License> open() throws AccessDeniedException {
         final List<License> keys = super.open();
         if(keys.isEmpty()) {
             if(log.isInfoEnabled()) {
