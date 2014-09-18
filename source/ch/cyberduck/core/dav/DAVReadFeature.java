@@ -23,13 +23,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.io.ContentLengthInputStream;
@@ -48,11 +50,11 @@ public class DAVReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        Map<String, String> headers = new HashMap<String, String>();
+        final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
+            headers.add(new BasicHeader(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-"));
             // Disable compression
-            headers.put(HttpHeaders.ACCEPT_ENCODING, "identity");
+            headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
             final ContentLengthInputStream stream = session.getClient().get(new DAVPathEncoder().encode(file),
@@ -74,8 +76,8 @@ public class DAVReadFeature implements Read {
         }
     }
 
-    protected Map<String, String> decorate(final Path file, final Map<String, String> headers,
-                                           final TransferStatus status) throws BackgroundException {
+    protected List<Header> decorate(final Path file, final List<Header> headers,
+                                    final TransferStatus status) throws BackgroundException {
         return headers;
     }
 

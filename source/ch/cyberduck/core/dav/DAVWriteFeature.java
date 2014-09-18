@@ -27,13 +27,15 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
@@ -62,19 +64,19 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     @Override
     public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final Map<String, String> headers = new HashMap<String, String>();
+        final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            headers.put(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
-                            status.getCurrent(), status.getLength() - 1, status.getLength())
+            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d",
+                            status.getCurrent(), status.getLength() - 1, status.getLength()))
             );
         }
         if(expect) {
-            headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+            headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
         }
         return this.write(file, headers, status);
     }
 
-    private ResponseOutputStream<String> write(final Path file, final Map<String, String> headers, final TransferStatus status)
+    private ResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
             throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
@@ -103,8 +105,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         return this.write(file, status, command);
     }
 
-    protected Map<String, String> decorate(final Path file, final Map<String, String> headers,
-                                           final TransferStatus status) throws BackgroundException {
+    protected List<Header> decorate(final Path file, final List<Header> headers,
+                                    final TransferStatus status) throws BackgroundException {
         return headers;
     }
 
