@@ -31,6 +31,7 @@ public class StringAppenderTest {
         assertEquals("Verification Code.", new StringAppender().append("Verification Code:").toString());
         assertEquals("Message.", new StringAppender().append("Message").toString());
         assertEquals("Message.", new StringAppender().append("Message.").toString());
-        assertEquals("Message?", new StringAppender().append("Message?").toString());
+//        assertEquals("Message?", new StringAppender().append("Message?").toString());
+        assertEquals("Message).", new StringAppender().append("Message)").toString());
     }
 }

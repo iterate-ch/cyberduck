@@ -48,9 +48,10 @@ public final class StringAppender {
         if(buffer.charAt(buffer.length() - 1) == ':') {
             buffer.deleteCharAt(buffer.length() - 1);
         }
-        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
-            buffer.append(".");
-        }
+        buffer.append(".");
+//        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
+//            buffer.append(".");
+//        }
         return this;
     }
 
