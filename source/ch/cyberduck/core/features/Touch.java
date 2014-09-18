@@ -29,7 +29,7 @@ public interface Touch {
     void touch(Path file) throws BackgroundException;
 
     /**
-     * @param workdir The workdir to create query
+     * @param workdir Working directory
      * @return True if creating an empty file is possible.
      */
     boolean isSupported(Path workdir);
