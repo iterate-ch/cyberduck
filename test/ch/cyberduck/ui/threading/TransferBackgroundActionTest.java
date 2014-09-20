@@ -26,6 +26,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -45,6 +46,7 @@ import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 
+import java.net.SocketException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -76,7 +78,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         test.attributes().setSize(5L);
 
         final Path copy = new Path(new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CopyTransfer t = new CopyTransfer(host, host, Collections.<Path, Path>singletonMap(test, copy));
+        final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy));
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -129,7 +131,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
 
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
-                Collections.<Path, Path>singletonMap(test, copy));
+                Collections.singletonMap(test, copy));
 
         final AbstractController controller = new AbstractController() {
             @Override
@@ -167,7 +169,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testResumeOnAutomatedRetry() throws Exception {
+    public void testResumeOnPause() throws Exception {
         final AbstractController controller = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -190,6 +192,60 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         };
         assertEquals(false, options.resumeRequested);
         action.pause();
+        assertEquals(true, options.resumeRequested);
+    }
+
+    @Test
+    public void testResumeOnAutomatedRetryWithException() throws Exception {
+        final AtomicBoolean alert = new AtomicBoolean();
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+
+            @Override
+            public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+                alert.set(true);
+                return false;
+            }
+        };
+        final AtomicBoolean start = new AtomicBoolean();
+        final AtomicBoolean stop = new AtomicBoolean();
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        final TransferOptions options = new TransferOptions();
+        final AtomicBoolean paused = new AtomicBoolean();
+        final AtomicBoolean retry = new AtomicBoolean();
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, new TransferAdapter(),
+                new DisabledProgressListener(),
+                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
+                options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback()) {
+            @Override
+            protected boolean connect(final Session session) throws BackgroundException {
+                throw new ConnectionRefusedException("m", "d", new SocketException());
+            }
+
+            @Override
+            public void pause() {
+                super.pause();
+                paused.set(true);
+            }
+
+            @Override
+            protected int retry() {
+                if(retry.get()) {
+                    return 0;
+                }
+                retry.set(true);
+                return 1;
+            }
+        };
+        // Connect, prepare and run
+        action.call();
+        assertFalse(alert.get());
+//        assertTrue(action.hasFailed());
+        assertTrue(paused.get());
         assertEquals(true, options.resumeRequested);
     }
 }
