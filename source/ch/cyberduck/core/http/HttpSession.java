@@ -168,6 +168,13 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
             }
         });
+        if(preferences.getBoolean("http.compression.enable")) {
+            builder.addInterceptorLast(new RequestAcceptEncoding());
+            builder.addInterceptorLast(new ResponseContentEncoding());
+        }
+        else {
+            builder.disableContentCompression();
+        }
         builder.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
@@ -186,13 +193,6 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 }
             }
         });
-        if(preferences.getBoolean("http.compression.enable")) {
-            builder.addInterceptorLast(new RequestAcceptEncoding());
-            builder.addInterceptorLast(new ResponseContentEncoding());
-        }
-        else {
-            builder.disableContentCompression();
-        }
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(preferences.getProperty("http.credentials.charset"))))
