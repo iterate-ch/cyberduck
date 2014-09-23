@@ -58,7 +58,8 @@ public class S3ReadFeature implements Read {
             final S3Object object;
             if(session.getFeature(Versioning.class) != null
                     && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(containerService.getContainer(file)).isEnabled()) {
-                object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
+                object = session.getClient().getVersionedObject(
+                        file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
                         null, // ifModifiedSince
                         null, // ifUnmodifiedSince
@@ -68,7 +69,9 @@ public class S3ReadFeature implements Read {
                 return object.getDataInputStream();
             }
             else {
-                object = session.getClient().getObject(containerService.getContainer(file).getName(), containerService.getKey(file),
+                object = session.getClient().getObject(
+                        containerService.getContainer(file).getName(),
+                        containerService.getKey(file),
                         null, // ifModifiedSince
                         null, // ifUnmodifiedSince
                         null, // ifMatch
