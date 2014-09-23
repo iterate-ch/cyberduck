@@ -489,16 +489,15 @@ public class ConnectionController extends SheetController {
     @Outlet
     private NSPopUpButton connectmodePopup;
 
-    private static final String CONNECTMODE_ACTIVE = LocaleFactory.localizedString("Active");
-    private static final String CONNECTMODE_PASSIVE = LocaleFactory.localizedString("Passive");
-
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.removeAllItems();
         this.connectmodePopup.addItemWithTitle(DEFAULT);
         this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
-        this.connectmodePopup.addItemWithTitle(CONNECTMODE_ACTIVE);
-        this.connectmodePopup.addItemWithTitle(CONNECTMODE_PASSIVE);
+        for(FTPConnectMode m : FTPConnectMode.values()) {
+            this.connectmodePopup.addItemWithTitle(m.toString());
+            this.connectmodePopup.lastItem().setRepresentedObject(m.name());
+        }
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
@@ -579,11 +578,8 @@ public class ConnectionController extends SheetController {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }
-                else if(connectmodePopup.titleOfSelectedItem().equals(CONNECTMODE_ACTIVE)) {
-                    host.setFTPConnectMode(FTPConnectMode.PORT);
-                }
-                else if(connectmodePopup.titleOfSelectedItem().equals(CONNECTMODE_PASSIVE)) {
-                    host.setFTPConnectMode(FTPConnectMode.PASV);
+                else {
+                    host.setFTPConnectMode(FTPConnectMode.valueOf(connectmodePopup.selectedItem().representedObject()));
                 }
             }
             final Credentials credentials = host.getCredentials();

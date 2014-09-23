@@ -117,18 +117,14 @@ public class HostDictionary {
             }
             Object connectModeObj = dict.stringForKey("FTP Connect Mode");
             if(connectModeObj != null) {
-                if(connectModeObj.toString().equals(FTPConnectMode.PORT.toString())) {
-                    bookmark.setFTPConnectMode(FTPConnectMode.PORT);
-                }
-                if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
-                    bookmark.setFTPConnectMode(FTPConnectMode.PASV);
-                }
+                bookmark.setFTPConnectMode(FTPConnectMode.valueOf(connectModeObj.toString()));
             }
             Object transferObj = dict.stringForKey("Transfer Connection");
             if(transferObj != null) {
                 bookmark.setTransfer(Host.TransferType.valueOf(transferObj.toString()));
             }
             else {
+                // Legacy
                 Object connObj = dict.stringForKey("Maximum Connections");
                 if(connObj != null) {
                     if(1 == Integer.valueOf(connObj.toString())) {

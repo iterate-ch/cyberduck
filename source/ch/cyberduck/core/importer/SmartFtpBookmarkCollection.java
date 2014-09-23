@@ -145,10 +145,10 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 0:
-                            current.setFTPConnectMode(FTPConnectMode.PORT);
+                            current.setFTPConnectMode(FTPConnectMode.active);
                             break;
                         case 1:
-                            current.setFTPConnectMode(FTPConnectMode.PASV);
+                            current.setFTPConnectMode(FTPConnectMode.passive);
                             break;
                     }
                 }

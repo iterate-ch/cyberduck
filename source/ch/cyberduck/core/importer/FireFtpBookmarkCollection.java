@@ -165,10 +165,10 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
             else if("pasvmode".equals(name)) {
                 if(Boolean.TRUE.toString().equals(value)) {
-                    current.setFTPConnectMode(FTPConnectMode.PASV);
+                    current.setFTPConnectMode(FTPConnectMode.passive);
                 }
                 if(Boolean.FALSE.toString().equals(value)) {
-                    current.setFTPConnectMode(FTPConnectMode.PORT);
+                    current.setFTPConnectMode(FTPConnectMode.active);
                 }
             }
             else if("login".equals(name)) {

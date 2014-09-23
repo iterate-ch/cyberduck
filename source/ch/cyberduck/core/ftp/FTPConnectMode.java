@@ -19,29 +19,29 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 /**
  * @version $Id$
  */
-public final class FTPConnectMode {
-
-    private String name;
+public enum FTPConnectMode {
 
     /**
-     * Represents active connect mode
+     * Represents PORT connect mode
      */
-    public static final FTPConnectMode PORT = new FTPConnectMode("active");
-
+    active {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Active");
+        }
+    },
     /**
      * Represents PASV connect mode
      */
-    public static final FTPConnectMode PASV = new FTPConnectMode("passive");
-
-    private FTPConnectMode(final String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+    passive {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Passive");
+        }
     }
 }

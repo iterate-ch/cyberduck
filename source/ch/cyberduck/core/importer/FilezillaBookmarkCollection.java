@@ -142,10 +142,10 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     current.setFTPConnectMode(null);
                 }
                 else if("MODE_PASSIVE".equals(elementText)) {
-                    current.setFTPConnectMode(FTPConnectMode.PASV);
+                    current.setFTPConnectMode(FTPConnectMode.passive);
                 }
                 else if("MODE_ACTIVE".equals(elementText)) {
-                    current.setFTPConnectMode(FTPConnectMode.PORT);
+                    current.setFTPConnectMode(FTPConnectMode.active);
                 }
             }
             else if(name.equals("Comments")) {

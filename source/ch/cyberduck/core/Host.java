@@ -270,12 +270,7 @@ public class Host implements Serializable, Comparable<Host> {
         }
         if(protocol.getType() == Protocol.Type.ftp) {
             if(null != connectMode) {
-                if(this.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
-                    dict.setStringForKey(FTPConnectMode.PORT.toString(), "FTP Connect Mode");
-                }
-                else if(connectMode.equals(FTPConnectMode.PASV)) {
-                    dict.setStringForKey(FTPConnectMode.PASV.toString(), "FTP Connect Mode");
-                }
+                dict.setStringForKey(this.getFTPConnectMode().name(), "FTP Connect Mode");
             }
         }
         if(null != transfer) {
@@ -317,6 +312,12 @@ public class Host implements Serializable, Comparable<Host> {
             @Override
             public String toString() {
                 return LocaleFactory.localizedString("Open new connection");
+            }
+        },
+        udt {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Qloudsonic UDP (UDT)");
             }
         };
 

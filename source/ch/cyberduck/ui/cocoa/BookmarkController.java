@@ -372,9 +372,6 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton connectmodePopup;
 
-    private static final String CONNECTMODE_ACTIVE = LocaleFactory.localizedString("Active");
-    private static final String CONNECTMODE_PASSIVE = LocaleFactory.localizedString("Passive");
-
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.setTarget(this.id());
@@ -382,8 +379,10 @@ public class BookmarkController extends WindowController {
         this.connectmodePopup.removeAllItems();
         this.connectmodePopup.addItemWithTitle(DEFAULT);
         this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
-        this.connectmodePopup.addItemWithTitle(CONNECTMODE_ACTIVE);
-        this.connectmodePopup.addItemWithTitle(CONNECTMODE_PASSIVE);
+        for(FTPConnectMode m : FTPConnectMode.values()) {
+            this.connectmodePopup.addItemWithTitle(m.toString());
+            this.connectmodePopup.lastItem().setRepresentedObject(m.name());
+        }
     }
 
     @Action
@@ -391,11 +390,8 @@ public class BookmarkController extends WindowController {
         if(sender.selectedItem().title().equals(DEFAULT)) {
             host.setFTPConnectMode(null);
         }
-        else if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            host.setFTPConnectMode(FTPConnectMode.PORT);
-        }
-        else if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-            host.setFTPConnectMode(FTPConnectMode.PASV);
+        else {
+            host.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         }
         this.itemChanged();
     }
@@ -763,11 +759,8 @@ public class BookmarkController extends WindowController {
             if(null == host.getFTPConnectMode()) {
                 connectmodePopup.selectItemWithTitle(DEFAULT);
             }
-            else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-                connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
-            }
-            else if(host.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
-                connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
+            else {
+                connectmodePopup.selectItemWithTitle(host.getFTPConnectMode().toString());
             }
         }
         pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.ssh);

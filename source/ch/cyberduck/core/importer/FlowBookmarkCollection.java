@@ -106,10 +106,10 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
         final String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
         if(StringUtils.isNotBlank(mode)) {
             if("Passive".equals(mode)) {
-                host.setFTPConnectMode(FTPConnectMode.PASV);
+                host.setFTPConnectMode(FTPConnectMode.passive);
             }
             if("Active".equals(mode)) {
-                host.setFTPConnectMode(FTPConnectMode.PORT);
+                host.setFTPConnectMode(FTPConnectMode.active);
             }
         }
         final String protocol = bookmark.stringForKey("Protocol");

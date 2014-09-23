@@ -51,10 +51,10 @@ public class FTPDataFallback {
             throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
-            if(session.getConnectMode().equals(FTPConnectMode.PASV)) {
+            if(session.getConnectMode().equals(FTPConnectMode.passive)) {
                 session.getClient().enterLocalPassiveMode();
             }
-            else if(session.getConnectMode().equals(FTPConnectMode.PORT)) {
+            else if(session.getConnectMode().equals(FTPConnectMode.active)) {
                 session.getClient().enterLocalActiveMode();
             }
             return action.execute();

@@ -75,7 +75,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
-        host.setFTPConnectMode(FTPConnectMode.PORT);
+        host.setFTPConnectMode(FTPConnectMode.active);
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
