@@ -31,13 +31,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private bool _supressed;
 
         public DialogLimitedListProgressListener(WindowController controller)
-            : base(new Integer(Preferences.instance().getInteger("browser.model.size.limit")))
+            : base()
         {
             _controller = controller;
-        }
-
-        public DialogLimitedListProgressListener(WindowController controller, Integer limit) : base(limit)
-        {
         }
 
         public override void chunk(Path parent, AttributedList list)
