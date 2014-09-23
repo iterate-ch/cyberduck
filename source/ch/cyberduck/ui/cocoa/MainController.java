@@ -129,6 +129,8 @@ public class MainController extends BundleController implements NSApplication.De
     /// 0x2d2d2d2d
     public static final int keyAEResult = 757935405;
 
+    private final Preferences preferences = Preferences.instance();
+
     public MainController() {
         this.loadBundle();
     }
@@ -166,7 +168,7 @@ public class MainController extends BundleController implements NSApplication.De
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName())));
+                        LocalFactory.createLocal(preferences.getProperty("queue.download.folder"), file.getName())));
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {
@@ -262,7 +264,7 @@ public class MainController extends BundleController implements NSApplication.De
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
             final String identifier = entry.getKey();
-            item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
+            item.setState(preferences.getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
         }
     }
@@ -270,9 +272,9 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void columnMenuClicked(final NSMenuItem sender) {
         final String identifier = sender.representedObject();
-        final boolean enabled = !Preferences.instance().getBoolean(identifier);
+        final boolean enabled = !preferences.getBoolean(identifier);
         sender.setState(enabled ? NSCell.NSOnState : NSCell.NSOffState);
-        Preferences.instance().setProperty(identifier, enabled);
+        preferences.setProperty(identifier, enabled);
         BrowserController.updateBrowserTableColumns();
     }
 
@@ -456,12 +458,14 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void bugreportMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.bug"));
+        BrowserLauncherFactory.get().open(
+                MessageFormat.format(preferences.getProperty("website.bug"),
+                        preferences.getProperty("application.version")));
     }
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help"));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.help"));
     }
 
     @Action
@@ -478,17 +482,17 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void websiteMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.home"));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.home"));
     }
 
     @Action
     public void forumMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.forum"));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.forum"));
     }
 
     @Action
     public void donateMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
     }
 
     @Action
@@ -506,8 +510,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void feedbackMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("mail.feedback")
-                + "?subject=" + Preferences.instance().getProperty("application.name") + "-" + Preferences.instance().getProperty("application.version"));
+        BrowserLauncherFactory.get().open(preferences.getProperty("mail.feedback")
+                + "?subject=" + preferences.getProperty("application.name") + "-" + preferences.getProperty("application.version"));
     }
 
     @Action
@@ -565,7 +569,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(l instanceof Donation) {
                     if(l.verify()) {
                         try {
-                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                            f.copy(LocalFactory.createLocal(preferences.getProperty("application.support.path"), f.getName()));
                         }
                         catch(AccessDeniedException e) {
                             log.warn(e.getMessage());
@@ -598,7 +602,7 @@ public class MainController extends BundleController implements NSApplication.De
                         alert.setShowsHelp(true);
                         alert.setDelegate(new ProxyController() {
                             public boolean alertShowHelp(NSAlert alert) {
-                                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                                StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
                                 site.append("/").append("faq");
                                 BrowserLauncherFactory.get().open(site.toString());
                                 return true;
@@ -623,7 +627,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
-                    final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                    final Local profiles = LocalFactory.createLocal(preferences.getProperty("application.support.path"), "Profiles");
                     try {
                         profiles.mkdir();
                         f.copy(LocalFactory.createLocal(profiles, f.getName()));
@@ -808,7 +812,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(log.isDebugEnabled()) {
             log.debug("applicationShouldOpenUntitledFile");
         }
-        return Preferences.instance().getBoolean("browser.open.untitled");
+        return preferences.getBoolean("browser.open.untitled");
     }
 
     /**
@@ -826,7 +830,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Mounts the default bookmark if any
      */
     private void openDefaultBookmark(BrowserController controller) {
-        String defaultBookmark = Preferences.instance().getProperty("browser.open.bookmark.default");
+        String defaultBookmark = preferences.getProperty("browser.open.bookmark.default");
         if(null == defaultBookmark) {
             log.info("No default bookmark configured");
             return; //No default bookmark given
@@ -918,13 +922,13 @@ public class MainController extends BundleController implements NSApplication.De
             log.info(String.format("Current locale:%s", java.util.Locale.getDefault()));
             log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
         }
-        if(Preferences.instance().getBoolean("browser.open.untitled")) {
+        if(preferences.getBoolean("browser.open.untitled")) {
             MainController.newDocument();
         }
-        if(Preferences.instance().getBoolean("queue.window.open.default")) {
+        if(preferences.getBoolean("queue.window.open.default")) {
             this.showTransferQueueClicked(null);
         }
-        if(Preferences.instance().getBoolean("browser.serialize")) {
+        if(preferences.getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
                 public Void run() throws BackgroundException {
@@ -957,8 +961,8 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             public void cleanup() {
-                if(Preferences.instance().getBoolean("browser.open.untitled")) {
-                    if(Preferences.instance().getProperty("browser.open.bookmark.default") != null) {
+                if(preferences.getBoolean("browser.open.untitled")) {
+                    if(preferences.getProperty("browser.open.bookmark.default") != null) {
                         openDefaultBookmark(MainController.newDocument());
                     }
                 }
@@ -1026,8 +1030,8 @@ public class MainController extends BundleController implements NSApplication.De
                 //
             }
         });
-        if(Preferences.instance().getBoolean("defaulthandler.reminder")
-                && Preferences.instance().getInteger("uses") > 0) {
+        if(preferences.getBoolean("defaulthandler.reminder")
+                && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
                     Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
                     new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
@@ -1045,7 +1049,7 @@ public class MainController extends BundleController implements NSApplication.De
                 int choice = alert.runModal(); //alternate
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
-                    Preferences.instance().setProperty("defaulthandler.reminder", false);
+                    preferences.setProperty("defaulthandler.reminder", false);
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
@@ -1104,7 +1108,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                     if(t.isEmpty()) {
                         // Flag as imported
-                        Preferences.instance().setProperty(t.getConfiguration(), true);
+                        preferences.setProperty(t.getConfiguration(), true);
                     }
                 }
                 try {
@@ -1136,12 +1140,12 @@ public class MainController extends BundleController implements NSApplication.De
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty(t.getConfiguration(), true);
+                        preferences.setProperty(t.getConfiguration(), true);
                     }
                     if(choice == SheetCallback.DEFAULT_OPTION) {
                         bookmarks.addAll(t);
                         // Flag as imported
-                        Preferences.instance().setProperty(t.getConfiguration(), true);
+                        preferences.setProperty(t.getConfiguration(), true);
                     }
                 }
                 thirdpartySemaphore.countDown();
@@ -1172,7 +1176,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 if(c.isEmpty()) {
                     final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
-                            Preferences.instance().getProperty("application.bookmarks.path")
+                            preferences.getProperty("application.bookmarks.path")
                     )) {
                         private static final long serialVersionUID = -6110285052565190698L;
 
@@ -1225,7 +1229,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Saved browsers
      */
     private AbstractHostCollection sessions = new FolderBookmarkCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+            LocalFactory.createLocal(preferences.getProperty("application.support.path"), "Sessions"));
 
     /**
      * Display donation reminder dialog
@@ -1255,7 +1259,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         // Determine if there are any open connections
         for(BrowserController browser : MainController.getBrowsers()) {
-            if(Preferences.instance().getBoolean("browser.serialize")) {
+            if(preferences.getBoolean("browser.serialize")) {
                 if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized
@@ -1266,7 +1270,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
             if(browser.isConnected()) {
-                if(Preferences.instance().getBoolean("browser.disconnect.confirm")) {
+                if(preferences.getBoolean("browser.disconnect.confirm")) {
                     final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Quit"),
                             LocaleFactory.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
                             LocaleFactory.localizedString("Quit Anyway"), //default
@@ -1278,7 +1282,7 @@ public class MainController extends BundleController implements NSApplication.De
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
-                        Preferences.instance().setProperty("browser.disconnect.confirm", false);
+                        preferences.setProperty("browser.disconnect.confirm", false);
                     }
                     if(choice == SheetCallback.ALTERNATE_OPTION) {
                         // Cancel. Quit has been interrupted. Delete any saved sessions so far.
@@ -1316,15 +1320,15 @@ public class MainController extends BundleController implements NSApplication.De
         }
         final License l = LicenseFactory.find();
         if(!l.verify()) {
-            final String lastversion = Preferences.instance().getProperty("donate.reminder");
+            final String lastversion = preferences.getProperty("donate.reminder");
             if(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString().equals(lastversion)) {
                 // Do not display if same version is installed
                 return NSApplication.NSTerminateNow;
             }
             final Calendar nextreminder = Calendar.getInstance();
-            nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
+            nextreminder.setTimeInMillis(preferences.getLong("donate.reminder.date"));
             // Display donationPrompt every n days
-            nextreminder.add(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("y"));
+            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("y"));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
             }
@@ -1335,7 +1339,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
-            final int uses = Preferences.instance().getInteger("uses");
+            final int uses = preferences.getInteger("uses");
             donationController = new WindowController() {
                 @Override
                 protected String getBundleName() {
@@ -1349,7 +1353,7 @@ public class MainController extends BundleController implements NSApplication.De
                     this.neverShowDonationCheckbox = neverShowDonationCheckbox;
                     this.neverShowDonationCheckbox.setTarget(this.id());
                     this.neverShowDonationCheckbox.setState(
-                            Preferences.instance().getProperty("donate.reminder").equals(
+                            preferences.getProperty("donate.reminder").equals(
                                     NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString())
                                     ? NSCell.NSOnState : NSCell.NSOffState
                     );
@@ -1366,7 +1370,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                 public void closeDonationSheet(final NSButton sender) {
                     if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
-                        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
+                        BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
                     }
                     this.terminate();
                 }
@@ -1379,11 +1383,11 @@ public class MainController extends BundleController implements NSApplication.De
 
                 private void terminate() {
                     if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
-                        Preferences.instance().setProperty("donate.reminder",
+                        preferences.setProperty("donate.reminder",
                                 NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
                     }
                     // Remember this reminder date
-                    Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
+                    preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
                     // Quit again
                     app.replyToApplicationShouldTerminate(true);
                 }
@@ -1411,8 +1415,8 @@ public class MainController extends BundleController implements NSApplication.De
         RendezvousFactory.instance().quit();
 
         //Writing usage info
-        Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
-        Preferences.instance().save();
+        preferences.setProperty("uses", preferences.getInteger("uses") + 1);
+        preferences.save();
     }
 
     public void applicationWillRestartAfterUpdate(ID updater) {
