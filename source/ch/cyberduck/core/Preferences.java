@@ -517,7 +517,7 @@ public abstract class Preferences {
          * connection is attached.
          */
         defaults.put("ftp.datachannel.verify", String.valueOf(false));
-        defaults.put("ftp.socket.buffer", String.valueOf(131072));
+        defaults.put("ftp.socket.buffer", String.valueOf(0));
 
         defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
 
@@ -841,6 +841,10 @@ public abstract class Preferences {
          * Transfer read buffer size
          */
         defaults.put("connection.chunksize", String.valueOf(32768));
+        /**
+         * Buffer size for wrapped buffered streams
+         */
+        defaults.put("connection.buffer", String.valueOf(8192));
         /**
          * SO_SNDBUF
          */

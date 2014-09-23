@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +41,9 @@ public final class StreamCopier {
     private StreamListener listener
             = new DisabledStreamListener();
 
+    private Integer buffer
+            = Preferences.instance().getInteger("connection.buffer");
+
     /**
      * Buffer size
      */
@@ -54,6 +59,11 @@ public final class StreamCopier {
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
         this.cancel = cancel;
         this.progress = progress;
+    }
+
+    public StreamCopier withBuffer(final Integer buffer) {
+        this.buffer = buffer;
+        return this;
     }
 
     public StreamCopier withFlushing(boolean keepFlushing) {
@@ -92,6 +102,10 @@ public final class StreamCopier {
      * @param out The stream to write to
      */
     public void transfer(final InputStream in, final OutputStream out) throws IOException, ConnectionCanceledException {
+        this.transfer(new BufferedInputStream(in, buffer), new BufferedOutputStream(out, buffer));
+    }
+
+    private void transfer(final BufferedInputStream in, final BufferedOutputStream out) throws IOException, ConnectionCanceledException {
         if(offset > 0) {
             skip(in, offset);
         }

@@ -77,6 +77,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                 }
             };
             try {
+                // Wrap with digest stream if available
                 in = this.decorate(local.getInputStream(), digest);
                 out = writer.write(file, status);
                 new StreamCopier(cancel, progress)
@@ -106,7 +107,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     protected InputStream decorate(final InputStream in, final Digest digest) throws IOException {
-        return new BufferedInputStream(in);
+        return in;
     }
 
     protected Digest digest() throws IOException {
