@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
         }
 
-        public override void chunk(AttributedList list)
+        public override void chunk(Path parent, AttributedList list)
         {
             if (_supressed)
             {
@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             try
             {
-                base.chunk(list);
+                base.chunk(parent, list);
             }
             catch (ListCanceledException e)
             {
