@@ -184,7 +184,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     protected FTPConnectMode getConnectMode() {
-        if(null == host.getFTPConnectMode()) {
+        if(FTPConnectMode.unknown == host.getFTPConnectMode()) {
             if(ProxyFactory.get().usePassiveFTP()) {
                 return FTPConnectMode.passive;
             }

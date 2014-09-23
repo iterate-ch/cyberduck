@@ -25,7 +25,12 @@ import ch.cyberduck.core.LocaleFactory;
  * @version $Id$
  */
 public enum FTPConnectMode {
-
+    unknown {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Default");
+        }
+    },
     /**
      * Represents PORT connect mode
      */

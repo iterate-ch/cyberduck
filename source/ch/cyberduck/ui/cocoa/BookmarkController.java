@@ -377,22 +377,18 @@ public class BookmarkController extends WindowController {
         this.connectmodePopup.setTarget(this.id());
         this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
         this.connectmodePopup.removeAllItems();
-        this.connectmodePopup.addItemWithTitle(DEFAULT);
-        this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
         for(FTPConnectMode m : FTPConnectMode.values()) {
             this.connectmodePopup.addItemWithTitle(m.toString());
             this.connectmodePopup.lastItem().setRepresentedObject(m.name());
+            if(m.equals(FTPConnectMode.unknown)) {
+                this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
+            }
         }
     }
 
     @Action
     public void connectmodePopupClicked(final NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(DEFAULT)) {
-            host.setFTPConnectMode(null);
-        }
-        else {
-            host.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
-        }
+        host.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         this.itemChanged();
     }
 
@@ -404,22 +400,18 @@ public class BookmarkController extends WindowController {
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
-        this.transferPopup.addItemWithTitle(DEFAULT);
-        this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Host.TransferType t : Host.TransferType.values()) {
             this.transferPopup.addItemWithTitle(t.toString());
             this.transferPopup.lastItem().setRepresentedObject(t.name());
+            if(t.equals(Host.TransferType.unknown)) {
+                this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
+            }
         }
     }
 
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(DEFAULT)) {
-            host.setTransfer(null);
-        }
-        else {
-            host.setTransfer(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
-        }
+        host.setTransfer(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
         this.itemChanged();
     }
 
@@ -747,21 +739,11 @@ public class BookmarkController extends WindowController {
         protocolPopup.selectItemAtIndex(
                 protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode()))
         );
-        if(null == host.getTransfer()) {
-            transferPopup.selectItemWithTitle(DEFAULT);
-        }
-        else {
-            transferPopup.selectItemWithTitle(host.getTransfer().toString());
-        }
+        transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(host.getTransfer().name()));
         encodingPopup.setEnabled(host.getProtocol().isEncodingConfigurable());
         connectmodePopup.setEnabled(host.getProtocol().getType() == Protocol.Type.ftp);
         if(host.getProtocol().getType() == Protocol.Type.ftp) {
-            if(null == host.getFTPConnectMode()) {
-                connectmodePopup.selectItemWithTitle(DEFAULT);
-            }
-            else {
-                connectmodePopup.selectItemWithTitle(host.getFTPConnectMode().toString());
-            }
+            connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(host.getFTPConnectMode().name()));
         }
         pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.ssh);
         if(host.getCredentials().isPublicKeyAuthentication()) {

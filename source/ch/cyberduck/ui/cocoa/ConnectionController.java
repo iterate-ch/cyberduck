@@ -492,13 +492,14 @@ public class ConnectionController extends SheetController {
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.removeAllItems();
-        this.connectmodePopup.addItemWithTitle(DEFAULT);
-        this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
         for(FTPConnectMode m : FTPConnectMode.values()) {
             this.connectmodePopup.addItemWithTitle(m.toString());
             this.connectmodePopup.lastItem().setRepresentedObject(m.name());
+            if(m.equals(FTPConnectMode.unknown)) {
+                this.connectmodePopup.selectItem(this.connectmodePopup.lastItem());
+                this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
+            }
         }
-        this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
     @Outlet
@@ -575,12 +576,7 @@ public class ConnectionController extends SheetController {
                     portField.intValue(),
                     pathField.stringValue());
             if(protocol.getType() == Protocol.Type.ftp) {
-                if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
-                    host.setFTPConnectMode(null);
-                }
-                else {
-                    host.setFTPConnectMode(FTPConnectMode.valueOf(connectmodePopup.selectedItem().representedObject()));
-                }
+                host.setFTPConnectMode(FTPConnectMode.valueOf(connectmodePopup.selectedItem().representedObject()));
             }
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(usernameField.stringValue());

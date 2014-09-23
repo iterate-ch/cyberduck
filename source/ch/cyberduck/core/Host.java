@@ -89,12 +89,14 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The connect mode to use if FTP
      */
-    private FTPConnectMode connectMode;
+    private FTPConnectMode connectMode
+            = FTPConnectMode.unknown;
 
     /**
      * The maximum number of concurrent sessions to this host
      */
-    private TransferType transfer;
+    private TransferType transfer
+            = TransferType.unknown;
 
     /**
      * The custom download folder
@@ -269,11 +271,11 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setObjectForKey(credentials.getIdentity(), "Private Key File Dictionary");
         }
         if(protocol.getType() == Protocol.Type.ftp) {
-            if(null != connectMode) {
+            if(connectMode != FTPConnectMode.unknown) {
                 dict.setStringForKey(this.getFTPConnectMode().name(), "FTP Connect Mode");
             }
         }
-        if(null != transfer) {
+        if(transfer != TransferType.unknown) {
             dict.setStringForKey(transfer.name(), "Transfer Connection");
             dict.setStringForKey(String.valueOf(transfer.getMaxConnections()), "Maximum Connections");
         }
@@ -297,6 +299,12 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     public enum TransferType {
+        unknown {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Default");
+            }
+        },
         browser {
             @Override
             public int getMaxConnections() {
