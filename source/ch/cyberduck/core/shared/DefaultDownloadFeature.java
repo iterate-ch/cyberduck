@@ -26,12 +26,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,8 +67,9 @@ public class DefaultDownloadFeature implements Download {
                         .transfer(new ThrottledInputStream(in, throttle), out);
             }
             finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
+                final StreamCloser c = new StreamCloser();
+                c.close(in);
+                c.close(out);
             }
         }
         catch(IOException e) {

@@ -25,16 +25,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -87,8 +86,9 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                         .transfer(in, new ThrottledOutputStream(out, throttle));
             }
             finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
+                final StreamCloser c = new StreamCloser();
+                c.close(in);
+                c.close(out);
             }
             try {
                 final Output response = out.getResponse();
