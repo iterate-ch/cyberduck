@@ -204,12 +204,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void RegisterImplementations()
         {
+            UserPreferences.Register();
+            LocalImpl.Register();
             LicenseImpl.Register();
             Proxy.Register();
-            LocalImpl.Register();
             RecycleLocalTrashFeature.Register();
             LocaleImpl.Register();
-            UserPreferences.Register();
             Keychain.Register();
             PlistWriter.Register();
             PlistSerializer.Register();
