@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @version $Id$
@@ -54,7 +53,7 @@ public abstract class LicenseFactory extends Factory<License> {
         }
 
         @Override
-        protected License create() {
+        public License create() {
             try {
                 return delegate.open().iterator().next();
             }
