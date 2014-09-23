@@ -47,6 +47,11 @@ public class ReceiptFactory extends LicenseFactory {
     }
 
     @Override
+    protected License create() {
+        return new DefaultLicenseFactory(this).create();
+    }
+
+    @Override
     protected License open(final Local file) {
         // Verify immediately and exit if not a valid receipt
         final ReceiptVerifier verifier = new ReceiptVerifier(file);

@@ -39,6 +39,11 @@ public class DonationKeyFactory extends LicenseFactory {
     }
 
     @Override
+    protected License create() {
+        return new DefaultLicenseFactory(this).create();
+    }
+
+    @Override
     protected License open(final Local file) {
         return new Donation(file);
     }

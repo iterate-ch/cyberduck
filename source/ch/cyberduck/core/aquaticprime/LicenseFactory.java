@@ -35,12 +35,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @version $Id$
  */
 public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = Logger.getLogger(LicenseFactory.class);
+
+    /**
+     * Delegate returning the first key found.
+     */
+    public static final class DefaultLicenseFactory extends Factory<License> {
+        private LicenseFactory delegate;
+
+        public DefaultLicenseFactory(final LicenseFactory delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        protected License create() {
+            try {
+                return delegate.open().iterator().next();
+            }
+            catch(AccessDeniedException e) {
+                log.error(String.format("Failure finding receipt %s", e.getMessage()));
+            }
+            return LicenseFactory.EMPTY_LICENSE;
+        }
+    }
 
     /**
      * Registered factories
@@ -67,17 +90,6 @@ public abstract class LicenseFactory extends Factory<License> {
     protected LicenseFactory(final Local folder, final String extension) {
         this.folder = folder;
         this.extension = extension;
-    }
-
-    @Override
-    protected License create() {
-        try {
-            return this.open().iterator().next();
-        }
-        catch(AccessDeniedException e) {
-            log.error(String.format("Failure finding receipt %s", e.getMessage()));
-        }
-        return LicenseFactory.EMPTY_LICENSE;
     }
 
     /**
