@@ -508,7 +508,7 @@ public abstract class Preferences {
          */
         defaults.put("http.connections.total", String.valueOf(Integer.MAX_VALUE));
         defaults.put("http.manager.timeout", String.valueOf(0)); // Inifinite
-        defaults.put("http.socket.buffer", String.valueOf(131072));
+        defaults.put("http.socket.buffer", String.valueOf(8192));
         defaults.put("http.credentials.charset", "ISO-8859-1");
 
         /**
