@@ -18,36 +18,59 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
  */
 public class StreamCloser {
 
-    private ThreadFactory f = new NamedThreadFactory("close");
+    private final Preferences preferences
+            = Preferences.instance();
+
+    private final ThreadFactory f
+            = new NamedThreadFactory("close");
 
     public void close(final InputStream in) {
+        final CountDownLatch signal = new CountDownLatch(1);
         new NamedThreadFactory("close").newThread(new Runnable() {
             @Override
             public void run() {
                 IOUtils.closeQuietly(in);
+                signal.countDown();
             }
         }).start();
+        try {
+            signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS);
+        }
+        catch(InterruptedException e) {
+            //
+        }
     }
 
     public void close(final OutputStream out) {
+        final CountDownLatch signal = new CountDownLatch(1);
         new NamedThreadFactory("close").newThread(new Runnable() {
             @Override
             public void run() {
                 IOUtils.closeQuietly(out);
+                signal.countDown();
             }
         }).start();
+        try {
+            signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS);
+        }
+        catch(InterruptedException e) {
+            //
+        }
     }
 }
