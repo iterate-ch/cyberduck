@@ -52,7 +52,8 @@ public abstract class AlertController extends SheetController {
     }
 
     public void setAccessoryView(final NSView view) {
-        view.setFrame(new NSRect(300, view.frame().size.height.floatValue()));
+        view.setFrame(new NSRect(alert.window().contentView().frame().size.width.floatValue(),
+                view.frame().size.height.floatValue()));
         alert.setAccessoryView(view);
     }
 
