@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.ftp;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -43,7 +43,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
 
-            openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+            openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format",
+                                                                 "Credentials");
 
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -131,10 +132,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { ; }
         }
 
-        public string SelectedConnectMode
+        public FTPConnectMode SelectedConnectMode
         {
-            get { return comboBoxConnectMode.Text; }
-            set { comboBoxConnectMode.Text = value; }
+            get { return (FTPConnectMode) comboBoxConnectMode.SelectedValue; }
+            set { comboBoxConnectMode.SelectedValue = value; }
         }
 
         public string SelectedEncoding
@@ -143,9 +144,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxEncoding.Text = value; }
         }
 
-        public string SelectedTransferMode
+        public Host.TransferType SelectedTransferMode
         {
-            get { return string.Empty; }
+            get { return null; }
             set { ; }
         }
 
@@ -314,22 +315,25 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateTimezones(List<string> timezones)
         {
-            ;
+            //
         }
 
-        public void PopulateConnectModes(List<string> connectModes)
+        public void PopulateConnectModes(List<KeyValuePair<string, FTPConnectMode>> modes)
         {
-            comboBoxConnectMode.DataSource = connectModes;
+            comboBoxConnectMode.DataSource = null;
+            comboBoxConnectMode.DataSource = modes;
+            comboBoxConnectMode.ValueMember = "Key";
+            comboBoxConnectMode.DisplayMember = "Value";
         }
 
-        public void PopulateTransferModes(List<string> transferModes)
+        public void PopulateTransferModes(List<KeyValuePair<string, Host.TransferType>> modes)
         {
-            ;
+            //
         }
 
         public void ShowDownloadFolderBrowser(string path)
         {
-            ;
+            //
         }
 
         public void ShowPrivateKeyBrowser(string path)

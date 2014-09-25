@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -29,30 +29,19 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
-using java.lang;
 using org.apache.log4j;
-using Exception = System.Exception;
 using Object = java.lang.Object;
-using String = System.String;
 using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class BookmarkController : WindowController<IBookmarkView>
     {
-        private const String TimezoneIdPrefixes =
-            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+        private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
-        private static readonly String Auto = LocaleFactory.localizedString("Auto");
-        private static readonly String ConnectmodeActive = LocaleFactory.localizedString("Active");
-        private static readonly String ConnectmodePassive = LocaleFactory.localizedString("Passive");
+        private static readonly string Auto = LocaleFactory.localizedString("Auto");
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
-
-        private static readonly string TransferBrowserconnection =
-            LocaleFactory.localizedString("Use browser connection");
-
-        private static readonly string TransferNewconnection = LocaleFactory.localizedString("Open new connection");
 
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
@@ -77,8 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Init();
         }
 
-        private BookmarkController(Host host)
-            : this(ObjectFactory.GetInstance<IBookmarkView>(), host)
+        private BookmarkController(Host host) : this(ObjectFactory.GetInstance<IBookmarkView>(), host)
         {
             _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
         }
@@ -111,7 +99,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitTransferModes()
         {
-            List<string> modes = new List<string> {Default, TransferNewconnection, TransferBrowserconnection};
+            List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
+            foreach (Host.TransferType t in Host.TransferType.values())
+            {
+                modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
+            }
             View.PopulateTransferModes(modes);
         }
 
@@ -178,35 +170,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedTransferEvent()
         {
-            if (View.SelectedTransferMode.Equals(Default))
-            {
-                _host.setMaxConnections(null);
-            }
-            else if (View.SelectedTransferMode.Equals(TransferBrowserconnection))
-            {
-                _host.setMaxConnections(new Integer(1));
-            }
-            else if (View.SelectedTransferMode.Equals(TransferNewconnection))
-            {
-                _host.setMaxConnections(new Integer(-1));
-            }
+            _host.setTransfer(View.SelectedTransferMode);
             ItemChanged();
         }
 
         private void View_ChangedConnectModeEvent()
         {
-            if (View.SelectedConnectMode.Equals(Default))
-            {
-                _host.setFTPConnectMode(null);
-            }
-            else if (View.SelectedConnectMode.Equals(ConnectmodeActive))
-            {
-                _host.setFTPConnectMode(FTPConnectMode.PORT);
-            }
-            else if (View.SelectedConnectMode.Equals(ConnectmodePassive))
-            {
-                _host.setFTPConnectMode(FTPConnectMode.PASV);
-            }
+            _host.setFTPConnectMode(View.SelectedConnectMode);
             ItemChanged();
         }
 
@@ -307,8 +277,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitConnectModes()
         {
-            List<string> connectModesList = new List<string> {Default, ConnectmodeActive, ConnectmodePassive};
-            View.PopulateConnectModes(connectModesList);
+            List<KeyValuePair<string, FTPConnectMode>> modes = new List<KeyValuePair<string, FTPConnectMode>>();
+            foreach (FTPConnectMode m in FTPConnectMode.values())
+            {
+                modes.Add(new KeyValuePair<string, FTPConnectMode>(m.toString(), m));
+            }
+            View.PopulateConnectModes(modes);
         }
 
         private void View_ChangedProtocolEvent()
@@ -424,8 +398,10 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.UsernameEnabled = true;
-                if (Preferences.instance().getProperty("connection.login.name").Equals(
-                    Preferences.instance().getProperty("connection.login.anon.name")))
+                if (
+                    Preferences.instance()
+                               .getProperty("connection.login.name")
+                               .Equals(Preferences.instance().getProperty("connection.login.anon.name")))
                 {
                     View.Username = String.Empty;
                 }
@@ -504,34 +480,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AnonymousEnabled = _host.getProtocol().isAnonymousConfigurable();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
-
-            if (null == _host.getMaxConnections())
-            {
-                View.SelectedTransferMode = Default;
-            }
-            else
-            {
-                View.SelectedTransferMode = _host.getMaxConnections().intValue() == 1
-                                                ? TransferBrowserconnection
-                                                : TransferNewconnection;
-            }
-
+            View.SelectedTransferMode = _host.getTransfer();
             View.EncodingFieldEnabled = _host.getProtocol().isEncodingConfigurable();
             View.ConnectModeFieldEnabled = _host.getProtocol().getType() == Protocol.Type.ftp;
             if (_host.getProtocol().getType() == Protocol.Type.ftp)
             {
-                if (null == _host.getFTPConnectMode())
-                {
-                    View.SelectedConnectMode = Default;
-                }
-                else if (_host.getFTPConnectMode().equals(FTPConnectMode.PASV))
-                {
-                    View.SelectedConnectMode = ConnectmodePassive;
-                }
-                else if (_host.getFTPConnectMode().equals(FTPConnectMode.PORT))
-                {
-                    View.SelectedConnectMode = ConnectmodeActive;
-                }
+                View.SelectedConnectMode = _host.getFTPConnectMode();
             }
             View.PkCheckboxEnabled = _host.getProtocol().getType() == Protocol.Type.ssh;
             if (_host.getCredentials().isPublicKeyAuthentication())
@@ -563,8 +517,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.SelectedTimezone =
-                            TimeZone.getTimeZone(
-                                Preferences.instance().getProperty("ftp.timezone.default")).getID();
+                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID();
                     }
                 }
             }

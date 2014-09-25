@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
+using ch.cyberduck.core.ftp;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -40,9 +41,9 @@ namespace Ch.Cyberduck.Ui.Controller
         string Nickname { get; set; }
         string URL { get; set; }
         string DownloadFolder { set; }
-        string SelectedConnectMode { get; set; }
+        FTPConnectMode SelectedConnectMode { get; set; }
         string SelectedEncoding { get; set; }
-        string SelectedTransferMode { get; set; }
+        Host.TransferType SelectedTransferMode { get; set; }
         string SelectedDownloadFolder { get; }
         string WebURL { get; set; }
         string WebUrlButtonToolTip { set; }
@@ -69,12 +70,11 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
         void PopulateEncodings(List<string> encodings);
         void PopulateTimezones(List<string> timezones);
-        void PopulateConnectModes(List<string> connectModes);
-        void PopulateTransferModes(List<string> transferModes);
+        void PopulateConnectModes(List<KeyValuePair<string, FTPConnectMode>> connectModes);
+        void PopulateTransferModes(List<KeyValuePair<string, Host.TransferType>> modes);
 
         void ShowDownloadFolderBrowser(string path);
         void ShowPrivateKeyBrowser(string path);
-
         // Delegates
         event VoidHandler ChangedEncodingEvent;
         event VoidHandler ChangedNicknameEvent;

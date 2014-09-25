@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -60,8 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Init();
         }
 
-        private ConnectionController()
-            : this(ObjectFactory.GetInstance<IConnectionView>())
+        private ConnectionController() : this(ObjectFactory.GetInstance<IConnectionView>())
         {
         }
 
@@ -75,25 +74,10 @@ namespace Ch.Cyberduck.Ui.Controller
             get
             {
                 Protocol protocol = View.SelectedProtocol;
-                Host host = new Host(
-                    protocol,
-                    View.Hostname,
-                    Integer.parseInt(View.Port),
-                    View.Path);
+                Host host = new Host(protocol, View.Hostname, Integer.parseInt(View.Port), View.Path);
                 if (protocol.getType() == Protocol.Type.ftp)
                 {
-                    if (View.SelectedConnectMode.Equals(Default))
-                    {
-                        host.setFTPConnectMode(null);
-                    }
-                    else if (View.SelectedConnectMode.Equals(ConnectmodeActive))
-                    {
-                        host.setFTPConnectMode(FTPConnectMode.PORT);
-                    }
-                    else if (View.SelectedConnectMode.Equals(ConnectmodePassive))
-                    {
-                        host.setFTPConnectMode(FTPConnectMode.PASV);
-                    }
+                    host.setFTPConnectMode(View.SelectedConnectMode);
                 }
                 Credentials credentials = host.getCredentials();
                 credentials.setUsername(View.Username);
@@ -127,7 +111,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Controllers.Add(parent, c);
                 parent.View.ViewClosedEvent += delegate
                     {
-                        Controllers.Remove(parent);                        
+                        Controllers.Remove(parent);
                         c.View.Close();
                     };
             }
@@ -157,12 +141,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.Username = Preferences.instance().getProperty("connection.login.name");
             View.PkLabel = LocaleFactory.localizedString("No private key selected");
-            View.SavePasswordChecked = Preferences.instance().getBoolean(
-                "connection.login.useKeychain") && Preferences.instance().getBoolean("connection.login.addKeychain");
+            View.SavePasswordChecked = Preferences.instance().getBoolean("connection.login.useKeychain") &&
+                                       Preferences.instance().getBoolean("connection.login.addKeychain");
             View.AnonymousChecked = false;
             View.PkCheckboxState = false;
             View.SelectedEncoding = Default;
-            View.SelectedConnectMode = Default;
+            View.SelectedConnectMode = FTPConnectMode.unknown;
             View.ChangedProtocolEvent += View_ChangedProtocolEvent;
             View.ChangedPortEvent += View_ChangedPortEvent;
             View.ChangedUsernameEvent += View_ChangedUsernameEvent;
@@ -303,10 +287,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = PasswordStoreFactory.get().getPassword(protocol.getScheme(),
-                                                                       Integer.parseInt(View.Port),
-                                                                       View.Hostname,
-                                                                       View.Username);
+                View.Password = PasswordStoreFactory.get()
+                                                    .getPassword(protocol.getScheme(), Integer.parseInt(View.Port),
+                                                                 View.Hostname, View.Username);
             }
         }
 
@@ -395,9 +378,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!string.IsNullOrEmpty(View.Hostname))
             {
-                String url = View.SelectedProtocol.getScheme().toString() + "://" + View.Username
-                             + "@" + View.Hostname + ":" + View.Port
-                             + PathNormalizer.normalize(View.Path);
+                String url = View.SelectedProtocol.getScheme().toString() + "://" + View.Username + "@" + View.Hostname +
+                             ":" + View.Port + PathNormalizer.normalize(View.Path);
                 View.URL = url;
             }
             else
@@ -455,8 +437,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitConnectModes()
         {
-            List<string> connectModesList = new List<string> {Default, ConnectmodeActive, ConnectmodePassive};
-            View.PopulateConnectModes(connectModesList);
+            List<KeyValuePair<string, FTPConnectMode>> modes = new List<KeyValuePair<string, FTPConnectMode>>();
+            foreach (FTPConnectMode m in FTPConnectMode.values())
+            {
+                modes.Add(new KeyValuePair<string, FTPConnectMode>(m.toString(), m));
+            }
+            View.PopulateConnectModes(modes);
         }
 
 
@@ -467,7 +453,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void OnReachability(object state)
         {
-            Log.debug("OnRechability");
             background(new ReachabilityAction(this, View.Hostname));
         }
 
