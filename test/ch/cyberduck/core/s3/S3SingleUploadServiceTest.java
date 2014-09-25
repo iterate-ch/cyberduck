@@ -42,7 +42,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(BufferedInputStream.class, new S3SingleUploadService(new S3Session(new Host("h"))).decorate(n, null).getClass());
+        assertSame(NullInputStream.class, new S3SingleUploadService(new S3Session(new Host("h"))).decorate(n, null).getClass());
     }
 
     @Test

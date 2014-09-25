@@ -36,7 +36,7 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractTestCase {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(BufferedInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).decorate(n, null).getClass());
+        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).decorate(n, null).getClass());
     }
 
     @Test
