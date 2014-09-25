@@ -20,7 +20,6 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 
@@ -39,9 +38,7 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
     public Type determine(final BackgroundException failure) {
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(cause instanceof SSLException) {
-            if(StringUtils.contains(cause.getMessage(), "Received close_notify during handshake")) {
-                return Type.network;
-            }
+            return Type.network;
         }
         if(cause instanceof NoHttpResponseException) {
             return Type.network;
