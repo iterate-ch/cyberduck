@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.WindowController;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSView;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
 
 /**
@@ -73,7 +74,7 @@ public class PanelAlertCallback implements AlertCallback {
                     new DefaultProviderHelpService().help(host.getProtocol());
                 }
             };
-            if(log.length() > 0) {
+            if(!StringUtils.isBlank(log)) {
                 final TranscriptController transcript = new TranscriptController() {
                     @Override
                     public boolean isOpen() {
