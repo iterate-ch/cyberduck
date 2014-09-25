@@ -291,8 +291,8 @@
 "Show Hidden Files" = "Versteckte Dateien anzeigen";
 
 /* Toggle Toolbar on Windows */
-"Hide Toolbar" = "Hide Toolbar";
-"Show Toolbar" = "Show Toolbar";
+"Hide Toolbar" = "Symbolleiste ausblenden";
+"Show Toolbar" = "Symbolleiste einblenden";
 
 /* Update sources */
 "Release" = "Release";
