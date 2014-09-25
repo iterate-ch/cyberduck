@@ -55,7 +55,11 @@ public abstract class LicenseFactory extends Factory<License> {
         @Override
         public License create() {
             try {
-                return delegate.open().iterator().next();
+                final List<License> list = delegate.open();
+                if(list.isEmpty()) {
+                    return LicenseFactory.EMPTY_LICENSE;
+                }
+                return list.iterator().next();
             }
             catch(AccessDeniedException e) {
                 log.error(String.format("Failure finding receipt %s", e.getMessage()));
@@ -132,7 +136,11 @@ public abstract class LicenseFactory extends Factory<License> {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         try {
-            return factories.get(NATIVE_PLATFORM).open().iterator().next();
+            final List<License> list = factories.get(NATIVE_PLATFORM).open();
+            if(list.isEmpty()) {
+                return LicenseFactory.EMPTY_LICENSE;
+            }
+            return list.iterator().next();
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure finding receipt %s", e.getMessage()));
