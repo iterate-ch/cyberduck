@@ -18,12 +18,15 @@ package ch.cyberduck.core.http;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 
 import org.apache.http.Header;
 import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.HttpRequestExecutor;
@@ -35,6 +38,9 @@ import java.io.IOException;
  */
 public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
 
+    private final PreferencesUseragentProvider useragentProvider
+            = new PreferencesUseragentProvider();
+
     private TranscriptListener listener;
 
     public LoggingHttpRequestExecutor(final TranscriptListener listener) {
@@ -44,6 +50,9 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     @Override
     public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
             throws HttpException, IOException {
+        if(!request.containsHeader(HttpHeaders.USER_AGENT)) {
+            request.addHeader(new BasicHeader(HttpHeaders.USER_AGENT, useragentProvider.get()));
+        }
         listener.log(true, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
             listener.log(true, header.toString());
