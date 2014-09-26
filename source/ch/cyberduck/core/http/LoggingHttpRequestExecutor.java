@@ -22,6 +22,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 
 import org.apache.http.Header;
+import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
@@ -53,20 +54,31 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
         if(!request.containsHeader(HttpHeaders.USER_AGENT)) {
             request.addHeader(new BasicHeader(HttpHeaders.USER_AGENT, useragentProvider.get()));
         }
+        super.preProcess(request, processor, context);
+    }
+
+    @Override
+    protected HttpResponse doSendRequest(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
         listener.log(true, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
             listener.log(true, header.toString());
         }
-        super.preProcess(request, processor, context);
+        return super.doSendRequest(request, conn, context);
     }
 
     @Override
     public void postProcess(final HttpResponse response, final HttpProcessor processor, final HttpContext context)
             throws HttpException, IOException {
+        super.postProcess(response, processor, context);
+    }
+
+    @Override
+    protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
+        final HttpResponse response = super.doReceiveResponse(request, conn, context);
         listener.log(false, response.getStatusLine().toString());
         for(Header header : response.getAllHeaders()) {
             listener.log(false, header.toString());
         }
-        super.postProcess(response, processor, context);
+        return response;
     }
 }
