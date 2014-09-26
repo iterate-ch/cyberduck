@@ -84,8 +84,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private S3AccessControlListFeature acl
             = new S3AccessControlListFeature(this);
 
-    private DistributionConfiguration cdn
-            = new WebsiteCloudFrontDistributionConfiguration(this);
+    private DistributionConfiguration cdn;
 
     private Preferences preferences
             = Preferences.instance();
@@ -401,6 +400,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         if(type == Write.class) {
             return (T) new S3WriteFeature(this);
         }
+        if(type == Download.class) {
+            return (T) new S3ThresholdDownloadService(this);
+        }
         if(type == Upload.class) {
             return (T) new S3ThresholdUploadService(this);
         }
@@ -485,6 +487,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             return null;
         }
         if(type == DistributionConfiguration.class) {
+            if(null == cdn) {
+                cdn = new WebsiteCloudFrontDistributionConfiguration(S3Session.this);
+            }
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
