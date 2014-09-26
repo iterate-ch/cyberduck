@@ -16,14 +16,14 @@
 // yves@cyberduck.ch
 // 
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.local;
 using ch.cyberduck.ui.growl;
+using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
 {
@@ -49,7 +49,8 @@ namespace Ch.Cyberduck.Ui.Growl
                 {
                     Text = LocaleFactory.get().localize("Donate…", "Main")
                 };
-            itemDonate.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
+            itemDonate.Click +=
+                delegate { BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")); };
             ToolStripMenuItem itemKey = new ToolStripMenuItem {Text = LicenseFactory.find().ToString(), Enabled = false};
             ToolStripMenuItem itemExit = new ToolStripMenuItem
                 {

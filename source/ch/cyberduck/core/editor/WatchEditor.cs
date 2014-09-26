@@ -17,7 +17,6 @@
 // 
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
@@ -43,27 +42,11 @@ namespace Ch.Cyberduck.Core.Editor
         {
             ch.cyberduck.core.Local local = getLocal();
             Application application = getApplication();
-
-            Process process = new Process();
             if (application == null || Utils.IsBlank(application.getIdentifier()))
             {
                 application = ch.cyberduck.core.editor.EditorFactory.instance().getDefaultEditor();
-                if (application != null && Utils.IsNotBlank(application.getIdentifier()))
-                {
-                    process.StartInfo.FileName = Utils.GetExecutableFromEditCommand(application.getIdentifier());
-                    process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
-                }
-                else
-                {
-                    process.StartInfo.FileName = local.getAbsolute();
-                }
             }
-            else
-            {
-                process.StartInfo.FileName = Utils.GetExecutableFromEditCommand(application.getIdentifier());
-                process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
-            }
-            if (Utils.StartProcess(process))
+            if (ApplicationLauncherFactory.get().open(local, application))
             {
                 Watch();
             }

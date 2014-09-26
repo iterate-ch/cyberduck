@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 
+using System.Diagnostics;
 using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Core.Local
@@ -24,7 +25,9 @@ namespace Ch.Cyberduck.Core.Local
     {
         public bool open(string url)
         {
-            return Utils.StartProcess(url);
+            Process process = new Process();
+            process.StartInfo.FileName = url;
+            return Utils.StartProcess(process);
         }
 
         public static void Register()

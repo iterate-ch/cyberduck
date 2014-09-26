@@ -24,6 +24,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;
@@ -182,7 +183,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Utils.StartProcess(View.URL);
+            BrowserLauncherFactory.get().open(View.URL);
         }
 
         private void View_ChangedAnonymousCheckboxEvent()

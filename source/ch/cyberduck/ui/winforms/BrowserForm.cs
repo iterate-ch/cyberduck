@@ -570,12 +570,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void BeginBrowserUpdate()
         {
-            browser.BeginUpdate();    
+            browser.BeginUpdate();
         }
 
         public void EndBrowserUpdate()
         {
-            browser.EndUpdate();    
+            browser.EndUpdate();
         }
 
         public void SetBrowserModel(IEnumerable<Path> model)
@@ -1017,7 +1017,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             button.FlatStyle = FlatStyle.Flat;
 
             button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
-            button.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
+            button.Click +=
+                delegate { BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")); };
             menu.Items.Add(button);
         }
 
@@ -1192,7 +1193,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             for (int i = 0; i < pair1.Value.Count; i++)
                             {
-                                Utils.StartProcess(pair1.Value[i]);
+                                BrowserLauncherFactory.get().open(pair1.Value[i]);
                             }
                         };
                     foreach (string url in pair.Value)

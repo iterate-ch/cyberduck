@@ -252,7 +252,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="activeRegister">Register to select (connections settings=4)</param>
         private void LaunchIEOptions(int activeRegister)
         {
-            Utils.StartProcess("rundll32.exe", "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
+            ApplicationLauncherFactory.get()
+                                      .open(new Application("rundll32.exe"),
+                                            "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
         }
 
         private void View_UpdateFeedChangedEvent()

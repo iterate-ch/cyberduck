@@ -1,4 +1,4 @@
-//
+// 
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -24,6 +24,7 @@ using System.IO;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -2097,7 +2098,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         View.EditIcon =
                             IconCache.Instance.GetFileIconFromExecutable(
-                                Utils.GetExecutableFromEditCommand(editCommand), IconCache.IconSize.Large).ToBitmap();
+                                WindowsApplicationLauncher.GetExecutableCommand(editCommand), IconCache.IconSize.Large)
+                                     .ToBitmap();
                         return;
                     }
                 }
@@ -2956,8 +2958,12 @@ namespace Ch.Cyberduck.Ui.Controller
             public bool accept(Host host)
             {
                 return BookmarkNameProvider.toString(host).ToLower().Contains(_searchString.ToLower()) ||
-                       (null == host.getComment() ? false : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
-                       (null == host.getCredentials().getUsername() ? false : host.getCredentials().getUsername().ToLower().Contains(_searchString.ToLower())) ||
+                       (null == host.getComment()
+                            ? false
+                            : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
+                       (null == host.getCredentials().getUsername()
+                            ? false
+                            : host.getCredentials().getUsername().ToLower().Contains(_searchString.ToLower())) ||
                        host.getHostname().ToLower().Contains(_searchString.ToLower());
             }
         }

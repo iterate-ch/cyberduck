@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -108,15 +108,6 @@ namespace Ch.Cyberduck.Core
                 return "." + extension;
             }
             return String.Empty;
-        }
-
-        public static string GetExecutableFromEditCommand(string command)
-        {
-            if (IsNotBlank(command) && command.Contains(".exe"))
-            {
-                return command.Substring(0, command.LastIndexOf(".exe") + 4);
-            }
-            return command;
         }
 
         public static string SafeString(string s)
@@ -419,6 +410,24 @@ namespace Ch.Cyberduck.Core
             return appCmds;
         }
 
+        public static bool StartProcess(Process process)
+        {
+            try
+            {
+                process.Start();
+                return true;
+            }
+            catch (InvalidOperationException e)
+            {
+                Log.error(e);
+            }
+            catch (Win32Exception e)
+            {
+                Log.error(String.Format("Error while StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
+            }
+            return false;
+        }
+
         /// <summary>
         /// Extract open command
         /// </summary>
@@ -528,47 +537,13 @@ namespace Ch.Cyberduck.Core
             return null;
         }
 
-        public static bool StartProcess(string filename, string args)
-        {
-            Process process = new Process();
-            process.StartInfo.FileName = filename;
-            if (IsNotBlank(args))
-            {
-                process.StartInfo.Arguments = args;
-            }
-            return StartProcess(process);
-        }
-
-        public static bool StartProcess(string filename)
-        {
-            return StartProcess(filename, null);
-        }
-
-        public static bool StartProcess(Process process)
-        {
-            try
-            {
-                process.Start();
-                return true;
-            }
-            catch (InvalidOperationException e)
-            {
-                Log.error(e);
-            }
-            catch (Win32Exception e)
-            {
-                Log.error(String.Format("Error while StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
-            }
-            return false;
-        }
-
         public static DialogResult CommandBox(IWin32Window owner, string title, string mainInstruction, string content,
                                               string expandedInfo, string help, string verificationText,
                                               string commandButtons, bool showCancelButton, SysIcons mainIcon,
                                               SysIcons footerIcon, DialogResponseHandler handler)
         {
             TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { StartProcess(url); };
+            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
             DialogResult result = dialog.ShowCommandBox(owner, title, mainInstruction, content, expandedInfo,
                                                         FormatHelp(help), verificationText, commandButtons,
                                                         showCancelButton, mainIcon, footerIcon);
@@ -606,7 +581,7 @@ namespace Ch.Cyberduck.Core
                                               DialogResponseHandler handler)
         {
             TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { StartProcess(url); };
+            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
             DialogResult result = dialog.MessageBox(owner, title, message, content, expandedInfo, FormatHelp(help),
                                                     verificationText, TaskDialogButtons.OK, SysIcons.Information,
                                                     SysIcons.Information);
