@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -157,7 +158,7 @@ public class S3SessionTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = AccessDeniedException.class)
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("s3.key"), "s"
@@ -183,9 +184,14 @@ public class S3SessionTest extends AbstractTestCase {
                 return true;
             }
         });
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
-        assertTrue(set.get());
-        session.close();
+        try {
+            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        }
+        catch(BackgroundException e) {
+            assertTrue(set.get());
+            throw e;
+        }
+        fail();
     }
 
     @Test
