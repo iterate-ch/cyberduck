@@ -38,7 +38,6 @@ import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
@@ -362,23 +361,19 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
             throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
-        try {
-            final Path home = new S3HomeFinderService(this).find();
-            cache.put(home.getReference(), this.list(home, new ListProgressListener() {
-                @Override
-                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-                    try {
-                        cancel.verify();
-                    }
-                    catch(ConnectionCanceledException e) {
-                        throw new ListCanceledException(list);
-                    }
+
+        final Path home = new S3HomeFinderService(this).find();
+        cache.put(home.getReference(), this.list(home, new ListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                try {
+                    cancel.verify();
                 }
-            }));
-        }
-        catch(BackgroundException e) {
-            throw new LoginFailureException(e.getMessage(), e.getCause());
-        }
+                catch(ConnectionCanceledException e) {
+                    throw new ListCanceledException(list);
+                }
+            }
+        }));
     }
 
     @Override
