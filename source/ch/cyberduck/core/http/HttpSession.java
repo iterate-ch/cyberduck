@@ -40,7 +40,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
@@ -64,6 +63,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
+import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpRequestExecutor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -161,24 +162,29 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         else {
             builder.disableContentCompression();
         }
-        builder.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                log(true, request.getRequestLine().toString());
-                for(Header header : request.getAllHeaders()) {
-                    log(true, header.toString());
+        builder.setRequestExecutor(
+                new HttpRequestExecutor() {
+                    @Override
+                    public void preProcess(final HttpRequest request, final HttpProcessor processor, final HttpContext context)
+                            throws HttpException, IOException {
+                        log(true, request.getRequestLine().toString());
+                        for(Header header : request.getAllHeaders()) {
+                            log(true, header.toString());
+                        }
+                        super.preProcess(request, processor, context);
+                    }
+
+                    @Override
+                    public void postProcess(final HttpResponse response, final HttpProcessor processor, final HttpContext context)
+                            throws HttpException, IOException {
+                        log(false, response.getStatusLine().toString());
+                        for(Header header : response.getAllHeaders()) {
+                            log(false, header.toString());
+                        }
+                        super.postProcess(response, processor, context);
+                    }
                 }
-            }
-        });
-        builder.addInterceptorLast(new HttpResponseInterceptor() {
-            @Override
-            public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-                log(false, response.getStatusLine().toString());
-                for(Header header : response.getAllHeaders()) {
-                    log(false, header.toString());
-                }
-            }
-        });
+        );
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(preferences.getProperty("http.credentials.charset"))))
