@@ -17,6 +17,7 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.security.Principal;
@@ -240,6 +241,7 @@ public class FTPSessionTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testConnectMutualTls() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
