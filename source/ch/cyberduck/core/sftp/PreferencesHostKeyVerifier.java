@@ -38,7 +38,8 @@ import net.schmizz.sshj.common.KeyType;
 public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback {
 
     @Override
-    public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(final String hostname, final int port, final PublicKey key)
+            throws ConnectionCanceledException, ChecksumException {
         final String lookup = Preferences.instance().getProperty(this.getFormat(hostname, key));
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
             return true;
