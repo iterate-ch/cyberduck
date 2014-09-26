@@ -101,11 +101,13 @@ public final class StreamCopier {
      * @param in  The stream to read from
      * @param out The stream to write to
      */
-    public void transfer(final InputStream in, final OutputStream out) throws IOException, ConnectionCanceledException {
+    public void transfer(final InputStream in, final OutputStream out)
+            throws IOException, ConnectionCanceledException {
         this.transfer(new BufferedInputStream(in, buffer), new BufferedOutputStream(out, buffer));
     }
 
-    private void transfer(final BufferedInputStream in, final BufferedOutputStream out) throws IOException, ConnectionCanceledException {
+    private void transfer(final BufferedInputStream in, final BufferedOutputStream out)
+            throws IOException, ConnectionCanceledException {
         if(offset > 0) {
             skip(in, offset);
         }
