@@ -80,6 +80,8 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     private Preferences preferences
             = Preferences.instance();
 
+    private HttpClientBuilder builder;
+
     protected HttpSession(final Host host) {
         super(host);
         hostnameVerifier.setTarget(host.getHostname());
@@ -95,81 +97,83 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         hostnameVerifier.setTarget(host.getHostname());
     }
 
-    public HttpClientBuilder connect() {
-        final SocketConfigurator configurator = new DefaultSocketConfigurator();
-        // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
-        // factory to be used to create the java.net.Socket instances for the given protocol
-        final Registry<ConnectionSocketFactory> registry = this.registry(configurator).build();
-        final HttpClientBuilder builder = HttpClients.custom();
-        if(preferences.getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.get();
-            if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
-                if(proxy.isHTTPSProxyEnabled(host)) {
-                    final HttpHost h = new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host));
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Setup proxy %s", h));
+    public HttpClientBuilder builder() {
+        if(null == builder) {
+            builder = HttpClients.custom();
+            final SocketConfigurator configurator = new DefaultSocketConfigurator();
+            // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
+            // factory to be used to create the java.net.Socket instances for the given protocol
+            final Registry<ConnectionSocketFactory> registry = this.registry(configurator).build();
+            if(preferences.getBoolean("connection.proxy.enable")) {
+                final Proxy proxy = ProxyFactory.get();
+                if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
+                    if(proxy.isHTTPSProxyEnabled(host)) {
+                        final HttpHost h = new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host));
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Setup proxy %s", h));
+                        }
+                        builder.setProxy(h);
                     }
-                    builder.setProxy(h);
+                }
+                if(Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
+                    if(proxy.isHTTPProxyEnabled(host)) {
+                        final HttpHost h = new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host));
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Setup proxy %s", h));
+                        }
+                        builder.setProxy(h);
+                    }
                 }
             }
-            if(Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
-                if(proxy.isHTTPProxyEnabled(host)) {
-                    final HttpHost h = new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host));
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Setup proxy %s", h));
-                    }
-                    builder.setProxy(h);
+            final HttpClientConnectionManager manager = this.pool(registry);
+            builder.setUserAgent(new PreferencesUseragentProvider().get());
+            builder.setConnectionManager(manager);
+            builder.setDefaultSocketConfig(SocketConfig.custom()
+                    .setTcpNoDelay(true)
+                    .setSoTimeout(this.timeout())
+                    .build());
+            builder.setDefaultRequestConfig(RequestConfig.custom()
+                    .setRedirectsEnabled(true)
+                            // Disable use of Expect: Continue by default for all methods
+                    .setExpectContinueEnabled(false)
+                    .setAuthenticationEnabled(true)
+                    .setConnectTimeout(timeout())
+                            // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+                    .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
+                    .setStaleConnectionCheckEnabled(true)
+                    .setSocketTimeout(timeout())
+                    .build());
+            builder.setDefaultConnectionConfig(ConnectionConfig.custom()
+                    .setBufferSize(preferences.getInteger("http.socket.buffer"))
+                    .setCharset(Charset.forName(getEncoding()))
+                    .build());
+            builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
+            builder.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                    hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
                 }
+            });
+            if(preferences.getBoolean("http.compression.enable")) {
+                builder.addInterceptorLast(new RequestAcceptEncoding());
+                builder.addInterceptorLast(new ResponseContentEncoding());
             }
-        }
-        final HttpClientConnectionManager manager = this.pool(registry);
-        builder.setUserAgent(new PreferencesUseragentProvider().get());
-        builder.setConnectionManager(manager);
-        builder.setDefaultSocketConfig(SocketConfig.custom()
-                .setTcpNoDelay(true)
-                .setSoTimeout(this.timeout())
-                .build());
-        builder.setDefaultRequestConfig(RequestConfig.custom()
-                .setRedirectsEnabled(true)
-                        // Disable use of Expect: Continue by default for all methods
-                .setExpectContinueEnabled(false)
-                .setAuthenticationEnabled(true)
-                .setConnectTimeout(timeout())
-                        // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-                .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
-                .setStaleConnectionCheckEnabled(true)
-                .setSocketTimeout(timeout())
-                .build());
-        builder.setDefaultConnectionConfig(ConnectionConfig.custom()
-                .setBufferSize(preferences.getInteger("http.socket.buffer"))
-                .setCharset(Charset.forName(getEncoding()))
-                .build());
-        builder.setRetryHandler(new DisabledHttpRequestRetryHandler());
-        builder.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                hostnameVerifier.setTarget(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName());
+            else {
+                builder.disableContentCompression();
             }
-        });
-        if(preferences.getBoolean("http.compression.enable")) {
-            builder.addInterceptorLast(new RequestAcceptEncoding());
-            builder.addInterceptorLast(new ResponseContentEncoding());
+            builder.setRequestExecutor(
+                    new LoggingHttpRequestExecutor(this)
+            );
+            builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
+                    .register(AuthSchemes.BASIC, new BasicSchemeFactory(
+                            Charset.forName(preferences.getProperty("http.credentials.charset"))))
+                    .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
+                            Charset.forName(preferences.getProperty("http.credentials.charset"))))
+                    .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
+                    .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
+                    .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory())
+                    .build());
         }
-        else {
-            builder.disableContentCompression();
-        }
-        builder.setRequestExecutor(
-                new LoggingHttpRequestExecutor(this)
-        );
-        builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
-                .register(AuthSchemes.BASIC, new BasicSchemeFactory(
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
-                .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))))
-                .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
-                .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
-                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory())
-                .build());
         return builder;
     }
 

@@ -99,7 +99,7 @@ public class CloudFrontDistributionConfiguration
 
             @Override
             protected HttpClient initHttpConnection() {
-                return session.connect().build();
+                return session.builder().build();
             }
         };
     }

@@ -122,7 +122,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
 
         @Override
         protected HttpClient initHttpConnection() {
-            final HttpClientBuilder builder = connect();
+            final HttpClientBuilder builder = builder();
             builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
             return builder.build();
         }
