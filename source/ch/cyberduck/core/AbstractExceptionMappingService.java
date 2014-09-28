@@ -74,8 +74,7 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
         if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-            return new ConnectionRefusedException(
-                    LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
+            return new ConnectionRefusedException(buffer.toString(), e);
         }
         return new BackgroundException(
                 LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);

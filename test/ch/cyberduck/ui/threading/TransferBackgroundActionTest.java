@@ -223,7 +223,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 options, new DisabledTransferPrompt(), new DisabledTransferErrorCallback()) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
-                throw new ConnectionRefusedException("m", "d", new SocketException());
+                throw new ConnectionRefusedException("d", new SocketException());
             }
 
             @Override
