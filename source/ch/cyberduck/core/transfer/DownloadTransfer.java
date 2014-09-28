@@ -17,20 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
@@ -215,7 +202,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final LoginCallback login) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -244,7 +231,7 @@ public class DownloadTransfer extends Transfer {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
-            }, status, login);
+            }, status, callback);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {

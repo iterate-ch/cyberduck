@@ -3,6 +3,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -100,7 +101,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
                 new SwiftSegmentService(session, ".segments-test/"), new SwiftWriteFeature(session), (long) (content.length / 2), 4);
 
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledLoginController());
+                status, new DisabledConnectionCallback());
 
         assertEquals(1048576 + 1048576 + 1, status.getCurrent());
         assertTrue(status.isComplete());

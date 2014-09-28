@@ -18,12 +18,12 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
@@ -280,17 +280,16 @@ public abstract class Transfer implements Serializable {
 
     /**
      * The actual transfer implementation
-     *
-     * @param session Session
+     *  @param session Session
      * @param file    Remote
      * @param local   Local
      * @param options Quarantine option
      * @param status  Transfer status
-     * @param login   Login prompt
+     * @param callback
      */
     public abstract void transfer(Session<?> session, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  LoginCallback login) throws BackgroundException;
+                                  ConnectionCallback callback) throws BackgroundException;
 
     public void start() {
         state = State.running;

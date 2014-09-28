@@ -17,9 +17,9 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -62,7 +62,7 @@ public class SwiftThresholdUploadService implements Upload {
 
     @Override
     public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status, final LoginCallback callback) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final Upload feature;
         if(status.getLength() > threshold) {
             if(!Preferences.instance().getBoolean("openstack.upload.largeobject")) {

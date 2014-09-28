@@ -18,9 +18,9 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,7 +51,7 @@ public class DefaultUploadFeature implements Upload<Void> {
     @Override
     public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
                        final StreamListener listener, final TransferStatus status,
-                       final LoginCallback callback) throws BackgroundException {
+                       final ConnectionCallback callback) throws BackgroundException {
         try {
             InputStream in = null;
             OutputStream out = null;

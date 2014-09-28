@@ -135,7 +135,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
             }
         };
@@ -174,7 +174,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                 //
             }
         };
@@ -341,7 +341,7 @@ public class UploadTransferTest extends AbstractTestCase {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);

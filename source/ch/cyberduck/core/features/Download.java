@@ -17,8 +17,8 @@ package ch.cyberduck.core.features;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -31,5 +31,5 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface Download {
 
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
-                  TransferStatus status, LoginCallback callback) throws BackgroundException;
+                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 }

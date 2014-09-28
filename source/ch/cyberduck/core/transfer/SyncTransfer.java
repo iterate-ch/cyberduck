@@ -18,10 +18,10 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
@@ -135,16 +135,16 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status, final LoginCallback login) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.transfer(session, file, local, options, status, login);
+            download.transfer(session, file, local, options, status, callback);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.transfer(session, file, local, options, status, login);
+            upload.transfer(session, file, local, options, status, callback);
         }
     }
 

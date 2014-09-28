@@ -17,8 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -99,7 +99,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus status, final LoginCallback callback) throws BackgroundException {
+                                final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {

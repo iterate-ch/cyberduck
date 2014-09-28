@@ -17,9 +17,9 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -51,7 +51,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
 
     @Override
     public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                         final StreamListener listener, final TransferStatus status, final LoginCallback callback) throws BackgroundException {
+                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return this.upload(file, local, throttle, listener, status, status, status);
     }
 

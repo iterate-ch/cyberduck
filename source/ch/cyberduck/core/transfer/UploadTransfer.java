@@ -18,13 +18,13 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
@@ -203,7 +203,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final LoginCallback login) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -232,7 +232,7 @@ public class UploadTransfer extends Transfer {
                 public void sent(long bytes) {
                     addTransferred(bytes);
                 }
-            }, status, login);
+            }, status, callback);
         }
         else if(file.isDirectory()) {
             session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
