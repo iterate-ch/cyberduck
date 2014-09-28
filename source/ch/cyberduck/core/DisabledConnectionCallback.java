@@ -19,9 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LoginCanceledException;
-
-import static org.junit.Assert.fail;
 
 /**
  * @version $Id$
