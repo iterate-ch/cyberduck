@@ -34,7 +34,7 @@ import java.text.MessageFormat;
 public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
     private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
 
-    private final FailureDiagnostics<BackgroundException> diagnostics
+    private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
     public BackgroundException map(final String message, final T failure) {
@@ -73,12 +73,11 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             log.warn(String.format("No message for failure %s", e));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
-        final BackgroundException failure = new BackgroundException(
-                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
-        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+        if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
             return new ConnectionRefusedException(
                     LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
         }
-        return failure;
+        return new BackgroundException(
+                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
     }
 }

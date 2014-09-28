@@ -76,7 +76,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private ConnectionService connection;
 
-    private final FailureDiagnostics<BackgroundException> diagnostics
+    private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
     private Growl growl = GrowlFactory.get();

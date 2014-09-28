@@ -32,10 +32,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * @version $Id$
  */
-public final class DefaultFailureDiagnostics implements FailureDiagnostics<BackgroundException> {
+public final class DefaultFailureDiagnostics implements FailureDiagnostics<Exception> {
 
     @Override
-    public Type determine(final BackgroundException failure) {
+    public Type determine(final Exception failure) {
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(cause instanceof SSLException) {
             return Type.network;

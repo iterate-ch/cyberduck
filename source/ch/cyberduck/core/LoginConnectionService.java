@@ -48,7 +48,7 @@ public class LoginConnectionService implements ConnectionService {
 
     private Proxy proxy;
 
-    private final FailureDiagnostics<BackgroundException> diagnostics
+    private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
     private AtomicBoolean canceled
