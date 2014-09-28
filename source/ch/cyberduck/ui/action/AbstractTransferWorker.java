@@ -94,7 +94,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     private Cache<TransferItem> cache
             = new Cache<TransferItem>(Integer.MAX_VALUE);
 
-    private FailureDiagnostics<BackgroundException> diagnostics
+    private FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
