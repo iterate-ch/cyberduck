@@ -18,8 +18,8 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -61,8 +61,9 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus status, final LoginCallback prompt) throws BackgroundException {
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt)
+            throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
                 // Disabled by user
