@@ -26,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,9 +35,6 @@ public class StreamCloser {
 
     private final Preferences preferences
             = Preferences.instance();
-
-    private final ThreadFactory f
-            = new NamedThreadFactory("close");
 
     public void close(final InputStream in) {
         final CountDownLatch signal = new CountDownLatch(1);
