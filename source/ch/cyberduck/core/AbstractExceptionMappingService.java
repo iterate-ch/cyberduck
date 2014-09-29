@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -73,7 +74,11 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             log.warn(String.format("No message for failure %s", e));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
-        if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+        final FailureDiagnostics.Type type = diagnostics.determine(e);
+        if(type == FailureDiagnostics.Type.dismiss) {
+            return new ConnectionCanceledException(e);
+        }
+        if(type == FailureDiagnostics.Type.network) {
             return new ConnectionRefusedException(buffer.toString(), e);
         }
         return new BackgroundException(

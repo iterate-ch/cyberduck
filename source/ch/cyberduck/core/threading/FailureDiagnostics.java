@@ -24,6 +24,7 @@ package ch.cyberduck.core.threading;
 public interface FailureDiagnostics<T> {
 
     public enum Type {
+        dismiss,
         network,
         application
     }

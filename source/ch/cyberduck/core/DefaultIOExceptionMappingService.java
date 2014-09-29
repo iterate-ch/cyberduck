@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
-import java.net.SocketException;
 
 /**
  * @version $Id$
@@ -42,18 +40,6 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
-        if(failure instanceof SocketException) {
-            if(failure.getMessage().equals("Software caused connection abort")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
-                return new ConnectionCanceledException(failure);
-            }
-            if(failure.getMessage().equals("Socket closed")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
-                return new ConnectionCanceledException(failure);
-            }
-        }
         if(failure instanceof SSLException) {
             return new SSLExceptionMappingService().map((SSLException) failure);
         }
