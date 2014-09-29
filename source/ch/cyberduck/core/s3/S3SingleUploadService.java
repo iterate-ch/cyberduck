@@ -39,15 +39,12 @@ import java.text.MessageFormat;
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
-    private S3Session session;
-
     public S3SingleUploadService(final S3Session session) {
         this(session, new S3WriteFeature(session));
     }
 
     public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {
         super(writer);
-        this.session = session;
     }
 
     @Override
