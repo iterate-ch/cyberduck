@@ -281,6 +281,15 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             release(session);
                         }
                     }
+
+                    @Override
+                    public String toString() {
+                        final StringBuilder sb = new StringBuilder("TransferCallable{");
+                        sb.append("file=").append(file);
+                        sb.append(", local=").append(local);
+                        sb.append('}');
+                        return sb.toString();
+                    }
                 });
             }
             else {
@@ -359,6 +368,15 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     finally {
                         release(session);
                     }
+                }
+
+                @Override
+                public String toString() {
+                    final StringBuilder sb = new StringBuilder("TransferCallable{");
+                    sb.append("file=").append(file);
+                    sb.append(", local=").append(local);
+                    sb.append('}');
+                    return sb.toString();
                 }
             });
         }
