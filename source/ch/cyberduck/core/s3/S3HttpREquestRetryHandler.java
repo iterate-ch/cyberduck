@@ -66,15 +66,18 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
     @Override
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
         if(super.retryRequest(exception, executionCount, context)) {
-            final HttpUriRequest method = (HttpUriRequest) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
-            log.warn(String.format("Retrying request %s", method));
-            try {
-                // Build the authorization string for the method.
-                authorizer.authorizeHttpRequest(method, context);
-                return true;
-            }
-            catch(ServiceException e) {
-                log.warn("Unable to generate updated authorization string for retried request", e);
+            final Object attribute = context.getAttribute(HttpCoreContext.HTTP_REQUEST);
+            if(attribute instanceof HttpUriRequest) {
+                final HttpUriRequest method = (HttpUriRequest) attribute;
+                log.warn(String.format("Retrying request %s", method));
+                try {
+                    // Build the authorization string for the method.
+                    authorizer.authorizeHttpRequest(method, context);
+                    return true;
+                }
+                catch(ServiceException e) {
+                    log.warn("Unable to generate updated authorization string for retried request", e);
+                }
             }
         }
         return false;
