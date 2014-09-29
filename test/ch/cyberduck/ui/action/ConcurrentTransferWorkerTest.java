@@ -34,9 +34,10 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
@@ -154,19 +155,31 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
 
     @Test
     public void testConcurrentSessions() throws Exception {
-        final CountDownLatch lock = new CountDownLatch(2);
+        final int files = 5;
+        final int connections = 3;
+        final CountDownLatch lock = new CountDownLatch(files);
+        final CountDownLatch d = new CountDownLatch(connections - 1);
         final Set<Path> transferred = new HashSet<Path>();
-        final Transfer t = new DownloadTransfer(new Host("test.cyberduck.ch"),
-                Arrays.asList(
-                        new TransferItem(new Path("/t1", EnumSet.of(Path.Type.file)), new NullLocal("/t1")),
-                        new TransferItem(new Path("/t2", EnumSet.of(Path.Type.file)), new NullLocal("/t2")))
+        final List<TransferItem> list = new ArrayList<TransferItem>();
+        for(int i = 1; i <= files; i++) {
+            list.add(new TransferItem(new Path("/t" + i, EnumSet.of(Path.Type.file)), new NullLocal("/t" + i)));
+        }
+        final Transfer t = new DownloadTransfer(new Host("test.cyberduck.ch"), list
         ) {
             @Override
             public void transfer(final Session<?> session, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback) throws BackgroundException {
+                assertNotNull(session);
                 transferred.add(file);
                 lock.countDown();
+                d.countDown();
+                try {
+                    d.await();
+                }
+                catch(InterruptedException e) {
+                    fail();
+                }
             }
 
             @Override
@@ -174,20 +187,24 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 return new AbstractDownloadFilter(null, session, null) {
                     @Override
                     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                        assertFalse(transferred.contains(file));
                         return true;
                     }
 
                     @Override
                     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                        assertFalse(transferred.contains(file));
                         return new TransferStatus();
                     }
 
                     @Override
                     public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+                        assertFalse(transferred.contains(file));
                     }
 
                     @Override
                     public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                        assertTrue(transferred.contains(file));
                     }
                 };
             }
@@ -211,11 +228,12 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener(), 2);
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener(), connections);
 
         assertTrue(worker.run());
         lock.await();
-        assertTrue(transferred.contains(new Path("/t1", EnumSet.of(Path.Type.file))));
-        assertTrue(transferred.contains(new Path("/t2", EnumSet.of(Path.Type.file))));
+        for(int i = 1; i <= files; i++) {
+            assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
+        }
     }
 }
