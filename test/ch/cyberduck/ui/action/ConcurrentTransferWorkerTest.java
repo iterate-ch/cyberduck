@@ -17,31 +17,29 @@ package ch.cyberduck.ui.action;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.*;
@@ -152,5 +150,72 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         }).start();
         worker.release(reuse);
         lock.await();
+    }
+
+    @Test
+    public void testConcurrentSessions() throws Exception {
+        final CountDownLatch lock = new CountDownLatch(2);
+        final Set<Path> transferred = new HashSet<Path>();
+        final Transfer t = new DownloadTransfer(new Host("test.cyberduck.ch"),
+                Arrays.asList(
+                        new TransferItem(new Path("/t1", EnumSet.of(Path.Type.file)), new NullLocal("/t1")),
+                        new TransferItem(new Path("/t2", EnumSet.of(Path.Type.file)), new NullLocal("/t2")))
+        ) {
+            @Override
+            public void transfer(final Session<?> session, final Path file, final Local local,
+                                 final TransferOptions options, final TransferStatus status,
+                                 final ConnectionCallback callback) throws BackgroundException {
+                transferred.add(file);
+                lock.countDown();
+            }
+
+            @Override
+            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action) {
+                return new AbstractDownloadFilter(null, session, null) {
+                    @Override
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                        return true;
+                    }
+
+                    @Override
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                        return new TransferStatus();
+                    }
+
+                    @Override
+                    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+                    }
+
+                    @Override
+                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                    }
+                };
+            }
+        };
+        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
+            @Override
+            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
+                return true;
+            }
+
+            @Override
+            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
+                return true;
+            }
+        };
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt() {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+                new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener(), 2);
+
+        assertTrue(worker.run());
+        lock.await();
+        assertTrue(transferred.contains(new Path("/t1", EnumSet.of(Path.Type.file))));
+        assertTrue(transferred.contains(new Path("/t2", EnumSet.of(Path.Type.file))));
     }
 }
