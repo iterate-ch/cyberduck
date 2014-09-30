@@ -60,17 +60,13 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-            // Content-MD5 not set. Need to verify ourselves instad of S3
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
+        // Content-MD5 not set. Need to verify ourselves instad of S3
+        try {
+            return MessageDigest.getInstance("MD5");
         }
-        return digest;
+        catch(NoSuchAlgorithmException e) {
+            throw new IOException(e.getMessage(), e);
+        }
     }
 
     @Override
