@@ -127,11 +127,6 @@ public interface Protocol {
     boolean isUTCTimezone();
 
     /**
-     * @return Locations for containers
-     */
-    Set<Location.Name> getRegions();
-
-    /**
      * @return Human readable short name
      */
     String getName();
@@ -196,6 +191,11 @@ public interface Protocol {
      * @return Authentication context path
      */
     String getContext();
+
+    /**
+     * @return Available regions
+     */
+    Set<Location.Name> getRegions();
 
     /**
      * @return Default region
