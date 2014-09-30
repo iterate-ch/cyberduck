@@ -41,6 +41,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(container));
         container.attributes().setRegion("ORD1");
         assertFalse(list.contains(container));
+        session.close();
     }
 
     @Test
@@ -59,5 +60,6 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
         assertFalse(list.contains(container));
         container.attributes().setRegion("ORD");
         assertTrue(list.contains(container));
+        session.close();
     }
 }

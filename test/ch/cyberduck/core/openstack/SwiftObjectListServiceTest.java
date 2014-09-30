@@ -70,6 +70,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                 fail();
             }
         }
+        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -109,5 +110,6 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(placeholder));
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder.getReference()).getType());
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
+        session.close();
     }
 }

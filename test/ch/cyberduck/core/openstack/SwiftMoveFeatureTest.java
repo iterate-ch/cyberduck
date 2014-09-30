@@ -19,8 +19,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -62,6 +62,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        session.close();
     }
 
     @Test
@@ -85,6 +86,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        session.close();
     }
 
     @Test(expected = NotfoundException.class)

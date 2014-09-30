@@ -2,9 +2,9 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -80,6 +80,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals("storage101.dfw1.clouddrive.com", test.getOrigin().getHost());
         assertEquals(URI.create("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch"),
                 test.getOrigin());
+        session.close();
     }
 
     @Test
@@ -132,5 +133,6 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         assertEquals(1, test.getContainers().size());
         assertEquals(URI.create("https://region-a.geo-1.objects.hpcloudsvc.com/v1/88650632417788/test.cyberduck.ch"),
                 test.getOrigin());
+        session.close();
     }
 }

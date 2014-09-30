@@ -19,8 +19,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -53,6 +53,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(container));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
         assertFalse(new SwiftFindFeature(session).find(container));
+        session.close();
     }
 
     @Test
@@ -70,5 +71,6 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
+        session.close();
     }
 }
