@@ -188,6 +188,9 @@ public class SFTPSession extends Session<SSHClient> {
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with authentication method %s", auth));
+                if(!client.isConnected()) {
+                    throw e;
+                }
                 cancel.verify();
                 lastFailure = e;
                 continue;
