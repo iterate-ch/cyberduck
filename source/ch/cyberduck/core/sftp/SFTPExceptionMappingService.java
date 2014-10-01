@@ -46,6 +46,9 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
 
     @Override
     public BackgroundException map(final IOException e) {
+        if(ExceptionUtils.getRootCause(e) instanceof SSHException) {
+            return this.map((SSHException) ExceptionUtils.getRootCause(e));
+        }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(ExceptionUtils.getRootCause(e) != null) {

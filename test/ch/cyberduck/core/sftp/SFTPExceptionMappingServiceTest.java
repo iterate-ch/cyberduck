@@ -19,11 +19,15 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.exception.LoginFailureException;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.net.SocketException;
+
+import net.schmizz.sshj.common.DisconnectReason;
+import net.schmizz.sshj.common.SSHException;
+import net.schmizz.sshj.transport.TransportException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,4 +41,11 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
         assertEquals(SocketException.class,
                 new SFTPExceptionMappingService().map(new SocketException("Unexpected end of sftp stream.")).getCause().getClass());
     }
+
+    @Test
+    public void testWrapped() throws Exception {
+        assertEquals(LoginFailureException.class,
+                new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
+    }
+
 }
