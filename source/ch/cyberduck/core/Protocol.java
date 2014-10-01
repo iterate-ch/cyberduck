@@ -50,10 +50,7 @@ public interface Protocol {
         ssh {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                if(credentials.isPublicKeyAuthentication()) {
-                    return StringUtils.isNotBlank(credentials.getUsername());
-                }
-                return super.validate(credentials, options);
+                return StringUtils.isNotBlank(credentials.getUsername());
             }
         },
         s3,
