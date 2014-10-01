@@ -47,7 +47,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
         this.append(buffer, failure.getMessage());
         final Throwable cause = ExceptionUtils.getRootCause(failure);
         if(null != cause) {
-            if(!StringUtils.equals(failure.getMessage(), cause.getMessage())) {
+            if(!StringUtils.contains(failure.getMessage(), cause.getMessage())) {
                 this.append(buffer, cause.getMessage());
             }
         }
