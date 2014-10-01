@@ -56,6 +56,8 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
         for(Identity identity : agent.getIdentities()) {
             try {
                 session.getClient().auth(host.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
+                // Successfully authenticated
+                break;
             }
             catch(UserAuthException e) {
                 cancel.verify();
