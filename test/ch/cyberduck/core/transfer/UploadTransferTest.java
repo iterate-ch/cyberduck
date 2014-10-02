@@ -135,7 +135,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
             }
         };
@@ -147,7 +147,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledLoginController()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController()).run();
         assertEquals(1, c.get());
     }
 
@@ -174,7 +174,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
                 //
             }
         };
@@ -183,7 +183,7 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.rename;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledLoginController()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController()).run();
     }
 
     @Test
@@ -192,7 +192,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
@@ -209,7 +209,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), table);
         worker.prepare(test, new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -223,7 +223,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
@@ -249,7 +249,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 new ResumeFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -341,7 +341,7 @@ public class UploadTransferTest extends AbstractTestCase {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);
@@ -357,7 +357,7 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledLoginController(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), filter);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRename());

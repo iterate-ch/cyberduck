@@ -80,7 +80,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractTestCase {
 
     private void test(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
 
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));

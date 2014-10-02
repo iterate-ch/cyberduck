@@ -182,7 +182,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
             }
 
             @Override
-            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action) {
+            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
                 return new AbstractDownloadFilter(null, session, null) {
                     @Override
                     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {

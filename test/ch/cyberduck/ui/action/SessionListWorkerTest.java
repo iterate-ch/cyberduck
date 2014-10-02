@@ -32,7 +32,7 @@ public class SessionListWorkerTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Cache cache = new Cache();
         final SessionListWorker worker = new SessionListWorker(session, cache, new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());

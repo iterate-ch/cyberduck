@@ -52,7 +52,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
 
     protected void delete(final Host host, final Path container) throws ch.cyberduck.core.exception.BackgroundException {
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -74,7 +74,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(

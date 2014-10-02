@@ -46,7 +46,7 @@ public class S3LoggingFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final LoggingConfiguration configuration = new S3LoggingFeature(session).getConfiguration(
                 new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))

@@ -57,7 +57,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return 2000;
             }
         };
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
@@ -90,7 +90,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         host.setFTPConnectMode(FTPConnectMode.active);
         final AtomicInteger count = new AtomicInteger();
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {

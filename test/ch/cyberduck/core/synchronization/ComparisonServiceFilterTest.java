@@ -2,6 +2,7 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
@@ -69,7 +70,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, TimeZone.getDefault());
+        }, TimeZone.getDefault(), new DisabledProgressListener());
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
@@ -112,7 +113,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, TimeZone.getDefault());
+        }, TimeZone.getDefault(), new DisabledProgressListener());
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -144,7 +145,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, TimeZone.getDefault());
+        }, TimeZone.getDefault(), new DisabledProgressListener());
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -176,7 +177,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, TimeZone.getDefault());
+        }, TimeZone.getDefault(), new DisabledProgressListener());
         assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -240,7 +241,7 @@ public class ComparisonServiceFilterTest extends AbstractTestCase {
                 }
                 return super.getFeature(type);
             }
-        }, TimeZone.getDefault());
+        }, TimeZone.getDefault(), new DisabledProgressListener());
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {

@@ -31,7 +31,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(null),
                 false, false).list(new DisabledListProgressListener());
@@ -52,7 +52,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("ORD"),
                 false, false).list(new DisabledListProgressListener());

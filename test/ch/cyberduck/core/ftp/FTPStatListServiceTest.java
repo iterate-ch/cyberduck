@@ -55,7 +55,7 @@ public class FTPStatListServiceTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final ListService service = new FTPStatListService(session,
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));

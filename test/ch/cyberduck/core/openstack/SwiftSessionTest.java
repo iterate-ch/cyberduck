@@ -81,7 +81,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 "a", "s"
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
@@ -140,7 +140,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("oraclecloud.key"), properties.getProperty("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
@@ -153,7 +153,7 @@ public class SwiftSessionTest extends AbstractTestCase {
                 properties.getProperty("evault.openstack.key"), properties.getProperty("evault.openstack.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {

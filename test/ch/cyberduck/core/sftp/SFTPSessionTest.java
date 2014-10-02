@@ -32,7 +32,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
         assertFalse(session.isSecured());
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
@@ -78,7 +78,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.workdir();
     }
 
@@ -107,7 +107,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            }, session);
+            }, new DisabledTranscriptListener());
         }
         catch(Exception e) {
             assertTrue(verify.get());

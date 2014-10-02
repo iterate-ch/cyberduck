@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -44,7 +45,8 @@ public class CompareFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptEqual() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-                new NullSession(new Host("t")), new UploadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
+                new NullSession(new Host("t")), new UploadFilterOptions(),
+                new ComparisonServiceFilter(new NullSession(new Host("t")), null, new DisabledProgressListener()) {
             @Override
             public Comparison compare(final Path file, final Local local) throws BackgroundException {
                 return Comparison.equal;
@@ -58,7 +60,8 @@ public class CompareFilterTest extends AbstractTestCase {
     @Test
     public void testAcceptDirectory() throws Exception {
         final CompareFilter filter = new CompareFilter(new DisabledUploadSymlinkResolver(),
-                new NullSession(new Host("t")), new UploadFilterOptions(), new ComparisonServiceFilter(new NullSession(new Host("t")), null) {
+                new NullSession(new Host("t")), new UploadFilterOptions(),
+                new ComparisonServiceFilter(new NullSession(new Host("t")), null, new DisabledProgressListener()) {
             @Override
             public Comparison compare(final Path file, final Local local) throws BackgroundException {
                 return Comparison.equal;

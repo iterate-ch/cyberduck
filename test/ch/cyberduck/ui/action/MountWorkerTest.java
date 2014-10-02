@@ -33,7 +33,7 @@ public class MountWorkerTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/notfound");
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), session);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Cache cache = new Cache();
         final MountWorker worker = new MountWorker(session, cache, new DisabledListProgressListener());

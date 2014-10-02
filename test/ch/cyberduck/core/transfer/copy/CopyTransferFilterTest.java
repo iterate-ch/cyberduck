@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -141,11 +142,11 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), Cache.<Path>empty());
         final NullSession session = new NullSession(new Host("h"));
         final TransferStatus status = f.prepare(source, null, new TransferStatus());
-        f.complete(source, null, new TransferOptions(), status, session);
+        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(source, null, new TransferOptions(), status, session);
+        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }
