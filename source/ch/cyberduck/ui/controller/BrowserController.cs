@@ -3010,6 +3010,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 ((Compress) BrowserController._session.getFeature(typeof (Compress))).archive(_archive,
                                                                                               BrowserController.Workdir,
                                                                                               _selectedJava,
+                                                                                              BrowserController,
                                                                                               BrowserController);
                 return true;
             }
@@ -3286,6 +3287,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override object run()
             {
                 ((Compress) BrowserController._session.getFeature(typeof (Compress))).unarchive(_archive, _selected,
+                                                                                                BrowserController,
                                                                                                 BrowserController);
                 return true;
             }
