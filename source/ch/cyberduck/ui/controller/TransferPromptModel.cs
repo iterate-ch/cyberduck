@@ -220,7 +220,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 Transfer transfer, TransferAction action, Cache cache)
                 : base(
                     controller, session,
-                    new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache, controller))
+                    new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
             {
             }
 
@@ -231,7 +231,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
                                                        Session session, Transfer transfer, TransferAction action,
-                                                       Cache cache) : base(session, transfer, action, cache)
+                                                       Cache cache) : base(session, transfer, action, cache, controller)
                 {
                     _model = model;
                     _controller = controller;
