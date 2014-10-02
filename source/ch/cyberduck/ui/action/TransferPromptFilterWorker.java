@@ -55,7 +55,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     private Cache<TransferItem> cache;
 
     public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
-                                      final Cache cache) {
+                                      final Cache<TransferItem> cache) {
         this.session = session;
         this.cache = cache;
         this.action = action;
