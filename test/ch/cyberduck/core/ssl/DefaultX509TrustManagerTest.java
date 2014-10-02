@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -14,7 +15,7 @@ import java.security.cert.X509Certificate;
  */
 public class DefaultX509TrustManagerTest extends AbstractTestCase {
 
-    @Test
+    @Test(expected = CertificateExpiredException.class)
     public void testCheckServerTrusted() throws Exception {
         final DefaultX509TrustManager m = new DefaultX509TrustManager();
         InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
