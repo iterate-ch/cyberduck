@@ -27,8 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLHandshakeException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.text.MessageFormat;
 
 /**
@@ -74,7 +76,8 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
-            if(cause instanceof SocketTimeoutException) {
+            if(cause instanceof InterruptedIOException) {
+                // Handling socket timeouts
                 return new ConnectionTimeoutException(buffer.toString(), failure);
             }
             if(cause instanceof SocketException) {
@@ -84,6 +87,12 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                 if(StringUtils.equals(cause.getMessage(), "Socket closed")) {
                     return new ConnectionCanceledException(failure);
                 }
+                return new ConnectionRefusedException(buffer.toString(), failure);
+            }
+            if(cause instanceof UnknownHostException) {
+                return new ConnectionRefusedException(buffer.toString(), failure);
+            }
+            if(cause instanceof SSLHandshakeException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
