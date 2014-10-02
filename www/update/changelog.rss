@@ -4,7 +4,7 @@
      xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
         <title>Cyberduck Changelog</title>
-        <link>http://cyberduck.io/changelog</link>
+        <link>https://cyberduck.io/changelog</link>
         <description>Cyberduck Changelog.</description>
         <language>en-us</language>
         <copyright>Copyright 2001-2014 David V. Kocher</copyright>
