@@ -61,7 +61,6 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         return run.call();
     }
 
-
     @Override
     public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         return this.connected(new Connected<Distribution>() {
