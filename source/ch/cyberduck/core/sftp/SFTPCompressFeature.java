@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
 
@@ -39,21 +40,25 @@ public class SFTPCompressFeature implements Compress {
     /**
      * Create compressed archive.
      *
-     * @param archive Archive format description
-     * @param workdir Working directory
-     * @param files   List of files to archive
+     * @param archive    Archive format description
+     * @param workdir    Working directory
+     * @param files      List of files to archive
+     * @param transcript Transcript
      */
-    public void archive(final Archive archive, final Path workdir, final List<Path> files, final ProgressListener listener) throws BackgroundException {
-        command.send(archive.getCompressCommand(workdir, files), listener);
+    public void archive(final Archive archive, final Path workdir, final List<Path> files,
+                        final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
+        command.send(archive.getCompressCommand(workdir, files), listener, transcript);
     }
 
     /**
      * Unpack compressed archive
      *
-     * @param archive Archive format description
-     * @param file    File to decompress
+     * @param archive    Archive format description
+     * @param file       File to decompress
+     * @param transcript Transcript
      */
-    public void unarchive(final Archive archive, final Path file, final ProgressListener listener) throws BackgroundException {
-        command.send(archive.getDecompressCommand(file), listener);
+    public void unarchive(final Archive archive, final Path file,
+                          final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
+        command.send(archive.getDecompressCommand(file), listener, transcript);
     }
 }
