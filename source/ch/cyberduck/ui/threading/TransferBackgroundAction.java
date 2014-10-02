@@ -19,7 +19,6 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
@@ -115,7 +114,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.listener = listener;
         this.prompt = prompt;
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, new DisabledProgressListener(), login);
+            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, progress, login);
         }
         else {
             this.worker = new ConcurrentTransferWorker(connection, transfer, options, meter, prompt, error, login, progress, controller);
