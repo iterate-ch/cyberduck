@@ -70,10 +70,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private AtomicInteger size = new AtomicInteger();
 
-    private ProgressListener progressListener;
-
-    private TranscriptListener transcriptListener;
-
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
@@ -89,10 +85,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final LoginCallback login, final ProgressListener progressListener,
                                     final TranscriptListener transcriptListener,
                                     final Integer connections) {
-        super(transfer, options, prompt, meter, error, login);
+        super(transfer, options, prompt, meter, error, progressListener, login);
         this.connect = connect;
-        this.progressListener = progressListener;
-        this.transcriptListener = transcriptListener;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setMaxTotal(connections);
@@ -200,8 +194,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Activate session %s", session));
             }
-            session.addProgressListener(progressListener);
-            session.addTranscriptListener(transcriptListener);
             connect.check(session, Cache.<Path>empty());
         }
 
@@ -211,8 +203,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Destroy session %s", session));
             }
-            session.removeProgressListener(progressListener);
-            session.removeTranscriptListener(transcriptListener);
             session.close();
         }
 

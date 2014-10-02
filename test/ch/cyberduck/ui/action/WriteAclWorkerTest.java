@@ -2,6 +2,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -46,7 +47,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                 throw new UnsupportedOperationException();
             }
-        }, Collections.<Path>emptyList(), acl, true) {
+        }, Collections.<Path>emptyList(), acl, true, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 //
@@ -80,7 +81,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                 throw new UnsupportedOperationException();
             }
-        }, Collections.singletonList(t), acl, true) {
+        }, Collections.singletonList(t), acl, true, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 //
@@ -116,7 +117,7 @@ public class WriteAclWorkerTest extends AbstractTestCase {
             public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
                 throw new UnsupportedOperationException();
             }
-        }, Collections.singletonList(t), acl, true) {
+        }, Collections.singletonList(t), acl, true, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 //

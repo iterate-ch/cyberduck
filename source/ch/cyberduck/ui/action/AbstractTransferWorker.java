@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
@@ -97,20 +98,23 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     private FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
+    private ProgressListener listener;
+
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final LoginCallback login) {
+                                  final ProgressListener listener, final LoginCallback login) {
         this.transfer = transfer;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
         this.login = login;
         this.options = options;
+        this.listener = listener;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final LoginCallback login, final Cache<TransferItem> cache) {
+                                  final ProgressListener listener, final LoginCallback login, final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -118,11 +122,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.error = error;
         this.login = login;
         this.cache = cache;
+        this.listener = listener;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final LoginCallback login,
-                                  final TransferErrorCallback error,
+                                  final TransferErrorCallback error, final ProgressListener listener,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
@@ -131,6 +136,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.error = error;
         this.login = login;
         this.table = table;
+        this.listener = listener;
     }
 
     protected abstract Session<?> borrow() throws BackgroundException;
@@ -231,7 +237,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
                         final Session<?> session = borrow();
-                        session.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                         try {
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent);
@@ -323,10 +329,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         try {
                             if(status.isRename()) {
                                 // Save with different name
-                                transfer.transfer(session, status.getRename().remote, local, options, status, login);
+                                transfer.transfer(session, status.getRename().remote, local, options, status, login, listener);
                             }
                             else {
-                                transfer.transfer(session, file, local, options, status, login);
+                                transfer.transfer(session, file, local, options, status, login, listener);
                             }
                         }
                         catch(ConnectionCanceledException e) {
@@ -357,7 +363,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         if(!status.isFailure()) {
                             // Post process of file.
                             try {
-                                filter.complete(file, local, options, status, session);
+                                filter.complete(file, local, options, status, listener);
                             }
                             catch(BackgroundException e) {
                                 log.warn(String.format("Ignore failure in completion filter for %s", file));

@@ -166,10 +166,9 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         }
         final Transfer t = new DownloadTransfer(new Host("test.cyberduck.ch"), list
         ) {
+
             @Override
-            public void transfer(final Session<?> session, final Path file, final Local local,
-                                 final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback callback) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
                 assertNotNull(session);
                 transferred.add(file);
                 lock.countDown();

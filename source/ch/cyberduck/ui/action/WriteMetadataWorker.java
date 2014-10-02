@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -51,12 +52,16 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
      */
     private Map<String, String> metadata;
 
+    private ProgressListener listener;
+
     protected WriteMetadataWorker(final Session session, final Headers feature,
-                                  final List<Path> files, final Map<String, String> metadata) {
+                                  final List<Path> files, final Map<String, String> metadata,
+                                  final ProgressListener listener) {
         this.session = session;
         this.feature = feature;
         this.files = files;
         this.metadata = metadata;
+        this.listener = listener;
     }
 
     @Override
@@ -73,7 +78,7 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
                         metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
                     }
                 }
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                         file.getName()));
                 feature.setMetadata(file, metadata);
                 file.attributes().setMetadata(metadata);

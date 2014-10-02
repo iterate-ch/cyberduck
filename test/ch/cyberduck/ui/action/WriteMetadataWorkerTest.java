@@ -1,6 +1,7 @@
 package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -37,7 +38,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
                 fail();
             }
-        }, files, Collections.<String, String>emptyMap()) {
+        }, files, Collections.<String, String>emptyMap(), new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
@@ -66,7 +67,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
             public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
                 fail();
             }
-        }, files, updated) {
+        }, files, updated, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -100,7 +101,7 @@ public class WriteMetadataWorkerTest extends AbstractTestCase {
                 assertEquals("v2", meta.get("key"));
                 assertEquals("hash", meta.get("nullified"));
             }
-        }, files, updated) {
+        }, files, updated, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();

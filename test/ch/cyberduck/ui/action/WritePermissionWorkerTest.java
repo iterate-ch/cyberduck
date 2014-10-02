@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -75,7 +76,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(path), permission, true
+        }, Arrays.<Path>asList(path), permission, true, new DisabledProgressListener()
         ) {
         };
         worker.run();
@@ -124,7 +125,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(a), permission, true
+        }, Arrays.<Path>asList(a), permission, true, new DisabledProgressListener()
         ) {
         };
         worker.run();
@@ -167,7 +168,7 @@ public class WritePermissionWorkerTest extends AbstractTestCase {
                     fail();
                 }
             }
-        }, Arrays.<Path>asList(path), permission, true
+        }, Arrays.<Path>asList(path), permission, true, new DisabledProgressListener()
         ) {
         };
         worker.run();

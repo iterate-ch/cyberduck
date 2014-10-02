@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -40,9 +41,12 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
      */
     private List<Path> files;
 
-    public CalculateSizeWorker(final Session session, final List<Path> files) {
+    private ProgressListener listener;
+
+    protected CalculateSizeWorker(final Session session, final List<Path> files, final ProgressListener listener) {
         this.session = session;
         this.files = files;
+        this.listener = listener;
     }
 
     private Long total = 0L;
@@ -67,7 +71,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        session.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
         if(p.isDirectory()) {
             for(Path next : session.list(p, new ActionListProgressListener(this))) {

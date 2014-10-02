@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -53,13 +54,17 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
      */
     private boolean recursive;
 
+    private ProgressListener listener;
+
     public WritePermissionWorker(final Session session, final UnixPermission feature, final List<Path> files,
-                                 final Permission permission, final boolean recursive) {
+                                 final Permission permission, final boolean recursive,
+                                 final ProgressListener listener) {
         this.session = session;
         this.feature = feature;
         this.files = files;
         this.permission = permission;
         this.recursive = recursive;
+        this.listener = listener;
     }
 
     @Override
@@ -124,7 +129,7 @@ public abstract class WritePermissionWorker extends Worker<Boolean> {
         final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
                 file.attributes().getPermission().isSticky(), file.attributes().getPermission().isSetuid(),
                 file.attributes().getPermission().isSetgid());
-        session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), merged));
         feature.setUnixPermission(file, merged);
         file.attributes().setPermission(merged);

@@ -22,6 +22,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -54,13 +55,17 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
      */
     private boolean recursive;
 
+    private ProgressListener listener;
+
     public WriteAclWorker(final Session session, final AclPermission feature, final List<Path> files,
-                          final Acl acl, final boolean recursive) {
+                          final Acl acl, final boolean recursive,
+                          final ProgressListener listener) {
         this.session = session;
         this.feature = feature;
         this.files = files;
         this.acl = acl;
         this.recursive = recursive;
+        this.listener = listener;
     }
 
     @Override
@@ -76,7 +81,7 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
             throw new ConnectionCanceledException();
         }
         if(!acl.equals(file.attributes().getAcl())) {
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                     file.getName(), acl));
             feature.setPermission(file, acl);
             file.attributes().setAcl(acl);
