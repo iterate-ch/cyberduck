@@ -51,7 +51,7 @@ public class CredentialsTest extends AbstractTestCase {
         Credentials c = new DefaultCredentials("user", "");
         assertTrue(c.validate(new FTPProtocol(), new LoginOptions()));
         assertFalse(c.validate(new DAVProtocol(), new LoginOptions()));
-        assertFalse(c.validate(new SFTPProtocol(), new LoginOptions()));
+        assertTrue(c.validate(new SFTPProtocol(), new LoginOptions()));
     }
 
     @Test
