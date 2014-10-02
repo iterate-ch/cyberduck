@@ -18,6 +18,8 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.TranscriptListener;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
@@ -26,7 +28,13 @@ import org.apache.commons.net.ftp.FTPCmd;
 /**
  * @version $Id$
  */
-public abstract class LoggingProtocolCommandListener implements ProtocolCommandListener {
+public class LoggingProtocolCommandListener implements ProtocolCommandListener, TranscriptListener {
+
+    private final TranscriptListener transcript;
+
+    protected LoggingProtocolCommandListener(final TranscriptListener transcript) {
+        this.transcript = transcript;
+    }
 
     @Override
     public void protocolCommandSent(final ProtocolCommandEvent event) {
@@ -42,5 +50,8 @@ public abstract class LoggingProtocolCommandListener implements ProtocolCommandL
         this.log(false, StringUtils.chomp(event.getMessage()));
     }
 
-    public abstract void log(boolean request, String event);
+    @Override
+    public void log(boolean request, String event) {
+        transcript.log(request, event);
+    }
 }

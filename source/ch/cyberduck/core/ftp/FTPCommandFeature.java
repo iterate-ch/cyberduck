@@ -22,6 +22,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 
+import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -39,16 +40,21 @@ public class FTPCommandFeature implements Command {
     }
 
     @Override
-    public void send(final String command, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
+    public void send(final String command, final ProgressListener progress, final TranscriptListener transcript) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
-        listener.message(command);
+        progress.message(command);
+        final ProtocolCommandListener listener = new LoggingProtocolCommandListener(transcript);
         try {
+            session.getClient().addProtocolCommandListener(listener);
             session.getClient().sendSiteCommand(command);
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
+        }
+        finally {
+            session.getClient().removeProtocolCommandListener(listener);
         }
     }
 }

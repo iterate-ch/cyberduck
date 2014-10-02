@@ -167,13 +167,19 @@ public class FTPSession extends SSLSession<FTPClient> {
             final CustomTrustSSLProtocolSocketFactory f
                     = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager());
 
-            final FTPClient client = new FTPClient(f, f.getSSLContext());
-            client.addProtocolCommandListener(new LoggingProtocolCommandListener() {
+            final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(transcript);
+            final FTPClient client = new FTPClient(f, f.getSSLContext()) {
                 @Override
-                public void log(boolean request, String event) {
-                    transcript.log(request, event);
+                public void disconnect() throws IOException {
+                    try {
+                        super.disconnect();
+                    }
+                    finally {
+                        this.removeProtocolCommandListener(listener);
+                    }
                 }
-            });
+            };
+            client.addProtocolCommandListener(listener);
             this.configure(client);
             client.connect(new PunycodeConverter().convert(host.getHostname()), host.getPort());
             client.setTcpNoDelay(false);
