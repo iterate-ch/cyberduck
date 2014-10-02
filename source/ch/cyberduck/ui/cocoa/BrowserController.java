@@ -443,7 +443,7 @@ public class BrowserController extends WindowController
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
                     }
-                }, this, download, options,
+                }, this, this, download, options,
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt() {
@@ -2342,7 +2342,7 @@ public class BrowserController extends WindowController
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
                 background(new WorkerBackgroundAction(BrowserController.this, session, cache,
-                                new MoveWorker(session, selected) {
+                                new MoveWorker(session, selected, BrowserController.this) {
                                     @Override
                                     public void cleanup(final Boolean result) {
                                         reload(changed, new ArrayList<Path>(selected.values()));
@@ -2846,7 +2846,7 @@ public class BrowserController extends WindowController
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());
                 }
-            }, this, transfer, new TransferOptions()) {
+            }, this, this, transfer, new TransferOptions()) {
                 @Override
                 public void finish() {
                     if(transfer.isComplete()) {

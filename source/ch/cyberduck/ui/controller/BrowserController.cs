@@ -2267,7 +2267,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this,
+                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this, this,
                                                                 transfer, new TransferOptions()));
             }
             else
@@ -2974,9 +2974,9 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public CallbackTransferBackgroundAction(TransferCallback callback, BrowserController controller,
-                                                    TransferListener transferListener, ProgressListener progressListener,
+                                                    TransferListener transferListener, ProgressListener progressListener, TranscriptListener transcriptListener,
                                                     Transfer transfer, TransferOptions options)
-                : base(controller, controller._session, transferListener, progressListener, transfer, options)
+                : base(controller, controller._session, transferListener, progressListener, transcriptListener, transfer, options)
             {
                 _callback = callback;
                 _transfer = transfer;
@@ -3176,7 +3176,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, IList<Path> changed)
-                    : base(controller._session, files)
+                    : base(controller._session, files, controller)
                 {
                     _controller = controller;
                     _files = files;
