@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -53,8 +54,10 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     private TransferErrorCallback callback;
 
+    private ProgressListener listener;
+
     public SaveBackgroundAction(final AbstractEditor editor, final Session session,
-                                final TransferErrorCallback callback) {
+                                final TransferErrorCallback callback, final ProgressListener listener) {
         this.editor = editor;
         this.session = session;
         this.callback = callback;
@@ -67,12 +70,13 @@ public class SaveBackgroundAction extends Worker<Transfer> {
             }
 
             @Override
-            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
-                return super.filter(session, action).withOptions(new UploadFilterOptions()
+            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+                return super.filter(session, action, listener).withOptions(new UploadFilterOptions()
                         .withTemporary(Preferences.instance().getBoolean("editor.upload.temporary"))
                         .withPermission(Preferences.instance().getBoolean("editor.upload.permissions.change")));
             }
         };
+        this.listener = listener;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
         }
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledLoginController());
+                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, listener, new DisabledLoginController());
         worker.run();
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));

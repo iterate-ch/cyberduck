@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -42,7 +43,7 @@ public class AbstractEditorTest extends AbstractTestCase {
 
     private class DisabledEditor extends AbstractEditor {
         public DisabledEditor(final Application application, final Session session, final Path file) {
-            super(application, session, file, new DisabledTransferErrorCallback());
+            super(application, session, file, new DisabledTransferErrorCallback(), new DisabledProgressListener());
         }
 
         @Override

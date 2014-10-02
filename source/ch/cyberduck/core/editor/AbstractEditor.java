@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -80,8 +81,10 @@ public abstract class AbstractEditor implements Editor {
 
     private TransferErrorCallback callback;
 
+    private ProgressListener listener;
+
     public AbstractEditor(final Application application, final Session session, final Path file,
-                          final TransferErrorCallback callback) {
+                          final TransferErrorCallback callback, final ProgressListener listener) {
         this.application = application;
         if(file.isSymbolicLink() && Preferences.instance().getBoolean("editor.upload.symboliclink.resolve")) {
             this.remote = file.getSymlinkTarget();
@@ -92,6 +95,7 @@ public abstract class AbstractEditor implements Editor {
         this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
         this.callback = callback;
+        this.listener = listener;
     }
 
     /**
@@ -152,7 +156,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open() {
-        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback) {
+        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback, listener) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -184,7 +188,7 @@ public abstract class AbstractEditor implements Editor {
         // If checksum still the same no need for save
         final String current;
         try {
-            session.message(MessageFormat.format(
+            listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
             current = new MD5ChecksumCompute().compute(local.getInputStream());
         }
@@ -203,7 +207,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, callback);
+            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, callback, listener);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

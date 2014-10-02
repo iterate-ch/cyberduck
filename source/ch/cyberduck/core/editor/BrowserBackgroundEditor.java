@@ -47,7 +47,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     public BrowserBackgroundEditor(final Controller controller,
                                    final Session session,
                                    final Application application, final Path path) {
-        super(application, session, path, new DisabledTransferErrorCallback());
+        super(application, session, path, new DisabledTransferErrorCallback(), controller);
         this.controller = controller;
         this.session = session;
     }
