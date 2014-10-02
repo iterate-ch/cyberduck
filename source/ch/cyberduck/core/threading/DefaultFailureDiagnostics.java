@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.log4j.Logger;
@@ -43,18 +42,6 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Excep
             }
             if(cause instanceof NoHttpResponseException) {
                 return Type.network;
-            }
-            if(cause instanceof SocketException) {
-                if(StringUtils.equals(cause.getMessage(), "Software caused connection abort")) {
-                    // Do not report as failed if socket opening interrupted
-                    log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
-                    return Type.dismiss;
-                }
-                if(StringUtils.equals(cause.getMessage(), "Socket closed")) {
-                    // Do not report as failed if socket opening interrupted
-                    log.warn(String.format("Suppressed socket exception %s", failure.getMessage()));
-                    return Type.dismiss;
-                }
             }
             if(cause instanceof SocketException
                     || cause instanceof TimeoutException // Used in Promise#retrieve

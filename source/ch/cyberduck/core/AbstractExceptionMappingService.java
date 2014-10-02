@@ -21,12 +21,14 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 
 /**
@@ -34,9 +36,6 @@ import java.text.MessageFormat;
  */
 public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
     private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
-
-    private final FailureDiagnostics<Exception> diagnostics
-            = new DefaultFailureDiagnostics();
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);
@@ -69,19 +68,26 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
         return buffer;
     }
 
-    protected BackgroundException wrap(final T e, final StringBuilder buffer) {
+    protected BackgroundException wrap(final T failure, final StringBuilder buffer) {
         if(buffer.toString().isEmpty()) {
-            log.warn(String.format("No message for failure %s", e));
+            log.warn(String.format("No message for failure %s", failure));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
-        final FailureDiagnostics.Type type = diagnostics.determine(e);
-        if(type == FailureDiagnostics.Type.dismiss) {
-            return new ConnectionCanceledException(e);
-        }
-        if(type == FailureDiagnostics.Type.network) {
-            return new ConnectionRefusedException(buffer.toString(), e);
+        for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(cause instanceof SocketTimeoutException) {
+                return new ConnectionTimeoutException(buffer.toString(), failure);
+            }
+            if(cause instanceof SocketException) {
+                if(StringUtils.equals(cause.getMessage(), "Software caused connection abort")) {
+                    return new ConnectionCanceledException(failure);
+                }
+                if(StringUtils.equals(cause.getMessage(), "Socket closed")) {
+                    return new ConnectionCanceledException(failure);
+                }
+                return new ConnectionRefusedException(buffer.toString(), failure);
+            }
         }
         return new BackgroundException(
-                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), e);
+                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), failure);
     }
 }
