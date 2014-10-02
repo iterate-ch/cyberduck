@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -227,7 +226,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(local.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(temporary.get(file), file, status.isExists(), new DisabledProgressListener());
+                    move.move(temporary.get(file), file, status.isExists(), listener);
                     temporary.remove(file);
                 }
             }
