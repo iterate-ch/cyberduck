@@ -60,7 +60,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, target, false);
+        new SwiftMoveFeature(session).move(test, target, false, new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
@@ -84,7 +84,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(target);
-        new SwiftMoveFeature(session).move(test, target, false);
+        new SwiftMoveFeature(session).move(test, target, false, new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
@@ -104,7 +104,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
-        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false);
+        new SwiftMoveFeature(session).move(test, new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), false, new DisabledProgressListener());
     }
 
     @Test

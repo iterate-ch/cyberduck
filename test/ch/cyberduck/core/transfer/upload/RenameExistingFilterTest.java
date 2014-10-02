@@ -10,6 +10,7 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
@@ -49,7 +50,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
+                        public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
                             assertNotSame(file.getName(), renamed.getName());
                             c.set(true);
                         }
@@ -110,7 +111,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, boolean exists) throws BackgroundException {
+                        public void move(final Path f, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
                                 assertEquals(file, f);
                             }
@@ -209,7 +210,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, boolean exists) throws BackgroundException {
+                        public void move(final Path f, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
                             assertFalse(moved.get());
                             assertEquals(file, f);
                             moved.set(true);

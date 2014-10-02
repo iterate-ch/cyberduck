@@ -38,7 +38,7 @@ public class S3MoveFeatureTest extends AbstractTestCase {
         new S3TouchFeature(session).touch(test);
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertTrue(new S3FindFeature(session).find(test));
-        new S3MoveFeature(session).move(test, renamed, false);
+        new S3MoveFeature(session).move(test, renamed, false, new DisabledProgressListener());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(renamed), new DisabledLoginController(), new DisabledProgressListener());

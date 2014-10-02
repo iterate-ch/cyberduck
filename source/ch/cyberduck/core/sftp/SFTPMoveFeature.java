@@ -18,8 +18,8 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
 
@@ -43,10 +43,10 @@ public class SFTPMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
             if(new SFTPFindFeature(session).find(renamed)) {
-                new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginController(), new DisabledProgressListener());
+                new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginController(), listener);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
         }

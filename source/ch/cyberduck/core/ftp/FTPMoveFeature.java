@@ -19,8 +19,8 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -49,12 +49,12 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists) throws BackgroundException {
+    public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
             if(exists) {
                 final Delete delete = session.getFeature(Delete.class);
                 try {
-                    delete.delete(Collections.singletonList(renamed), new DisabledLoginController(), new DisabledProgressListener());
+                    delete.delete(Collections.singletonList(renamed), new DisabledLoginController(), listener);
                 }
                 catch(NotfoundException e) {
                     log.warn(String.format("Failure deleting file %s %s", renamed, e));

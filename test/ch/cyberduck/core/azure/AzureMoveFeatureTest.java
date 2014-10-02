@@ -39,7 +39,7 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
         new AzureTouchFeature(session).touch(test);
         assertTrue(new AzureFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureMoveFeature(session).move(test, target, false);
+        new AzureMoveFeature(session).move(test, target, false, new DisabledProgressListener());
         assertFalse(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(target));
         new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());

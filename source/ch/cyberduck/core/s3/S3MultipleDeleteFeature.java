@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -60,7 +59,7 @@ public class S3MultipleDeleteFeature implements Delete {
 
     public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
         if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt, new DisabledProgressListener());
+            new S3DefaultDeleteFeature(session).delete(files, prompt, listener);
         }
         else {
             final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();

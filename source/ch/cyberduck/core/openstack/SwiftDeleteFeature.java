@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginController;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -77,7 +76,7 @@ public class SwiftDeleteFeature implements Delete {
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(!segments.isEmpty()) {
                         // Clean up any old segments
-                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController(), new DisabledProgressListener());
+                        new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginController(), listener);
                     }
                 }
                 else if(file.isDirectory()) {

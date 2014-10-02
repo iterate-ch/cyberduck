@@ -468,7 +468,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                     if(!session.getFeature(Move.class).isSupported(file)) {
                         return false;
                     }
-                    session.getFeature(Move.class).move(file, new Path(destination, EnumSet.of(Path.Type.file)), false);
+                    session.getFeature(Move.class).move(file, new Path(destination, EnumSet.of(Path.Type.file)), false, new DisabledProgressListener());
                     return true;
                 }
             });

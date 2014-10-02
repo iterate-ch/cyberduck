@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -69,7 +68,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
         if(files.size() == 1) {
-            new SwiftDeleteFeature(session).delete(files, prompt, new DisabledProgressListener());
+            new SwiftDeleteFeature(session).delete(files, prompt, listener);
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
@@ -104,7 +103,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
             }
             catch(GenericException e) {
                 if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                    new SwiftDeleteFeature(session).delete(files, prompt, new DisabledProgressListener());
+                    new SwiftDeleteFeature(session).delete(files, prompt, listener);
                     return;
                 }
                 else {
