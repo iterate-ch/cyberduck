@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
@@ -72,7 +71,7 @@ public class S3MoveFeature implements Move {
             }
             else if(file.isDirectory()) {
                 for(Path i : session.list(file, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, new DisabledProgressListener());
+                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, listener);
                 }
             }
         }
