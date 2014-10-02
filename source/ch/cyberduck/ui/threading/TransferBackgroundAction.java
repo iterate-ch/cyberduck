@@ -19,7 +19,6 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -27,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -91,8 +91,9 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Session session,
                                     final TransferListener listener,
                                     final ProgressListener progress,
+                                    final TranscriptListener transcript,
                                     final Transfer transfer, final TransferOptions options) {
-        this(controller, session, listener, progress, transfer, options,
+        this(controller, session, listener, progress, transcript, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, session),
                 TransferErrorCallbackControllerFactory.get(controller));
     }
@@ -101,13 +102,14 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final Session session,
                                     final TransferListener listener,
                                     final ProgressListener progress,
+                                    final TranscriptListener transcript,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
         super(controller, session, Cache.<Path>empty(), progress);
         final LoginCallback login = LoginControllerFactory.get(controller);
         this.connection = new LoginConnectionService(login,
                 HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
-                PasswordStoreFactory.get(), progress, new DisabledTranscriptListener());
+                PasswordStoreFactory.get(), progress, transcript);
         this.meter = new TransferSpeedometer(transfer);
         this.transfer = transfer;
         this.options = options;
