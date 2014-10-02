@@ -2,9 +2,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
 import org.junit.Test;
@@ -15,7 +17,7 @@ import java.net.SocketException;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3HttpREquestRetryHandlerTest extends AbstractTestCase {
 
@@ -27,6 +29,8 @@ public class S3HttpREquestRetryHandlerTest extends AbstractTestCase {
                 //
             }
         }, 1);
-        assertTrue(h.retryRequest(new SSLException(new SocketException("Broken pipe")), 1, new HttpClientContext()));
+        final HttpClientContext context = new HttpClientContext();
+        context.setAttribute(HttpCoreContext.HTTP_REQUEST, new HttpHead());
+        assertTrue(h.retryRequest(new SSLException(new SocketException("Broken pipe")), 1, context));
     }
 }
