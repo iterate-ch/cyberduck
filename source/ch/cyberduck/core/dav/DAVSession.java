@@ -32,6 +32,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
@@ -111,8 +112,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
-        final HttpClientBuilder builder = this.builder();
+    public DAVClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+        final HttpClientBuilder builder = this.builder(transcript);
         builder.setRedirectStrategy(new SardineRedirectStrategy() {
             @Override
             protected boolean isRedirectable(final String method) {
@@ -151,7 +152,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+                      final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
         client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
                 // Windows credentials. Provide empty string for NTLM domain by default.
                 preferences.getProperty("webdav.ntlm.workstation"),

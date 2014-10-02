@@ -19,10 +19,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -51,8 +52,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
@@ -69,8 +70,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
@@ -87,8 +88,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(container, null);
         assertTrue(new S3FindFeature(session).find(container));
@@ -105,8 +106,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
         for(int i = 0; i < 1010; i++) {
@@ -123,8 +124,8 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container, container), new DisabledLoginController());
     }

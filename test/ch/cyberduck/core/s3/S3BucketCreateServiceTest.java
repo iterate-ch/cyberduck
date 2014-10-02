@@ -48,7 +48,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
         final S3FindFeature find = new S3FindFeature(session);
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);

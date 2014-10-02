@@ -6,6 +6,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,8 +31,8 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Region lookup = new SwiftRegionService(session).lookup((String) null);
@@ -52,8 +53,8 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
         final Host host = new Host(protocol, "region-a.geo-1.identity.hpcloudsvc.com", 35357);
         host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Region lookup = new SwiftRegionService(session).lookup((String) null);
         assertEquals("region-a.geo-1", lookup.getRegionId());
         assertNotNull(lookup.getStorageUrl());

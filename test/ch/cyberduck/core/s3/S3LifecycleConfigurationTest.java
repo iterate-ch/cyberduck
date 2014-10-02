@@ -43,7 +43,7 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
         assertEquals(31, new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("lifecycle-cyberduck-test", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
@@ -60,7 +60,7 @@ public class S3LifecycleConfigurationTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("bucket", EnumSet.of(Path.Type.directory))
         ));

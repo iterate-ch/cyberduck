@@ -99,7 +99,7 @@ public class CloudFrontDistributionConfiguration
 
             @Override
             protected HttpClient initHttpConnection() {
-                return session.builder().build();
+                return session.builder(new DisabledTranscriptListener()).build();
             }
         };
     }
@@ -149,7 +149,7 @@ public class CloudFrontDistributionConfiguration
     /**
      * @param method Distribution method
      * @return Origin server hostname. This is not the same as the container for
-     *         custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
+     * custom origin configurations and website endpoints. <bucketname>.s3.amazonaws.com
      */
     protected URI getOrigin(final Path container, final Distribution.Method method) {
         return URI.create(String.format("http://%s.%s", container.getName(), session.getHost().getProtocol().getDefaultHostname()));

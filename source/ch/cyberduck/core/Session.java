@@ -53,9 +53,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
 
     protected C client;
 
-    private Set<ConnectionListener> connectionListeners
-            = Collections.synchronizedSet(new HashSet<ConnectionListener>(0));
-
     private Set<TranscriptListener> transcriptListeners
             = Collections.synchronizedSet(new HashSet<TranscriptListener>(0));
 
@@ -107,47 +104,44 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     /**
      * Connect to host
      *
-     * @param key Host identity verification callback
+     * @param key        Host identity verification callback
+     * @param transcript Transcript
      * @return Client
      * @throws BackgroundException
      */
-    public C open(final HostKeyCallback key) throws BackgroundException {
+    public C open(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
-            listener.connectionWillOpen();
-        }
-        client = this.connect(key);
+        client = this.connect(key, transcript);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
         // Update status flag
         state = State.open;
-        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
-            listener.connectionDidOpen();
-        }
         return client;
     }
 
-    protected abstract C connect(HostKeyCallback key) throws BackgroundException;
+    protected abstract C connect(HostKeyCallback key, TranscriptListener transcript) throws BackgroundException;
 
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final TranscriptListener transcript)
             throws BackgroundException {
-        this.login(keychain, prompt, cancel, Cache.<Path>empty());
+        this.login(keychain, prompt, cancel, Cache.<Path>empty(), transcript);
     }
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @param keychain Password store
-     * @param prompt   Prompt
-     * @param cancel   Cancel callback
-     * @param cache    Directory listing cache
+     * @param keychain   Password store
+     * @param prompt     Prompt
+     * @param cancel     Cancel callback
+     * @param cache      Directory listing cache
+     * @param transcript Listener
      */
-    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache)
+    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache,
+                               TranscriptListener transcript)
             throws BackgroundException;
 
     /**

@@ -19,6 +19,7 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
@@ -106,7 +107,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         final LoginCallback login = LoginControllerFactory.get(controller);
         this.connection = new LoginConnectionService(login,
                 HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
-                PasswordStoreFactory.get(), progress);
+                PasswordStoreFactory.get(), progress, new DisabledTranscriptListener());
         this.meter = new TransferSpeedometer(transfer);
         this.transfer = transfer;
         this.options = options;

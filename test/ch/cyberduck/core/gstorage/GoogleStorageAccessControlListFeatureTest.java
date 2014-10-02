@@ -3,10 +3,11 @@ package ch.cyberduck.core.gstorage;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
@@ -32,7 +33,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         )));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -44,7 +45,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
@@ -64,7 +65,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null
         )));
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -76,7 +77,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);

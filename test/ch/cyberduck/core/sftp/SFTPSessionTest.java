@@ -32,11 +32,11 @@ public class SFTPSessionTest extends AbstractTestCase {
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
         assertFalse(session.isSecured());
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertTrue(session.isSecured());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
@@ -62,7 +62,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             login.connect(session, Cache.<Path>empty());
         }
@@ -78,7 +78,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), session));
         session.workdir();
     }
 
@@ -107,7 +107,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            });
+            }, session);
         }
         catch(Exception e) {
             assertTrue(verify.get());
@@ -132,7 +132,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             login.connect(session, Cache.<Path>empty());
         }
@@ -169,7 +169,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             login.connect(session, Cache.<Path>empty());
         }

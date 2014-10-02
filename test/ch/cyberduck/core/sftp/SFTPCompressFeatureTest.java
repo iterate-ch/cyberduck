@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -37,7 +36,7 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final SFTPCompressFeature feature = new SFTPCompressFeature(session);
         for(Archive archive : Archive.getKnownArchives()) {
             final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -49,8 +48,8 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
                 }
             }, new DisabledTranscriptListener());
             assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.<Path>singletonList(test))));
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(),
-                    new DisabledProgressListener());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController()
+            );
             assertFalse(new SFTPFindFeature(session).find(test));
             feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)), new ProgressListener() {
                 @Override
@@ -61,9 +60,9 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
             assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                     Collections.<Path>singletonList(test)
-            )), new DisabledLoginController(), new DisabledProgressListener());
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(),
-                    new DisabledProgressListener());
+            )), new DisabledLoginController());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController()
+            );
         }
         session.close();
     }

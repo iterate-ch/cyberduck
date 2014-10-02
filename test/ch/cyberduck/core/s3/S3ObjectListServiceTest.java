@@ -41,8 +41,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
@@ -67,8 +67,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
@@ -83,8 +83,8 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
@@ -97,7 +97,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         final AttributedList<Path> list
                 = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
@@ -115,7 +115,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         final AttributedList<Path> list
                 = new S3ObjectListService(session).list(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
@@ -134,7 +134,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         assertEquals(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
         final AttributedList<Path> list
                 = new S3ObjectListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
@@ -150,10 +150,10 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), session);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch",
-                EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         final PathAttributes att = new PathAttributes();
         assertTrue(list.contains(new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), att).getReference()));
@@ -168,10 +168,10 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         assertTrue(session.isConnected());
         Cache cache = new Cache();
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache, new DisabledTranscriptListener());
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         // Test for Illegal character in path at index 40: https://s3.lts2.evault.com:443/cyberduck space/?max-keys=1000&prefix&delimiter=%2F
         final AttributedList<Path> list

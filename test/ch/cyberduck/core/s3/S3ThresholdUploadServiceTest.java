@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
@@ -42,7 +43,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         ));
         final S3Session session = new S3Session(host);
         new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, Cache.<Path>empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
 
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session, 1L);
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

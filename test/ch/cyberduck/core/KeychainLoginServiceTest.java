@@ -25,7 +25,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         LoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
         l.login(session, Cache.<Path>empty(), new ProgressListener() {
             int i = 0;
@@ -43,7 +43,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
                 }
                 i++;
             }
-        }, null);
+        }, new DisabledTranscriptListener(), null);
     }
 
 
@@ -55,7 +55,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             public void message(final String message) {
                 //
             }
-        }, null);
+        }, new DisabledTranscriptListener(), null);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -65,7 +65,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         ));
         final AtomicBoolean warned = new AtomicBoolean(false);
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         LoginService l = new KeychainLoginService(new DisabledLoginController() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message,
@@ -80,8 +80,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
                 public void message(final String message) {
                     //
                 }
-            },
-                    null);
+            }, new DisabledTranscriptListener(), null);
             fail();
         }
         catch(LoginCanceledException e) {

@@ -27,6 +27,7 @@ import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.SocketConfigurator;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -97,7 +98,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         hostnameVerifier.setTarget(host.getHostname());
     }
 
-    public HttpClientBuilder builder() {
+    public HttpClientBuilder builder(final TranscriptListener transcript) {
         if(null == builder) {
             builder = HttpClients.custom();
             final SocketConfigurator configurator = new DefaultSocketConfigurator();
@@ -162,7 +163,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                 builder.disableContentCompression();
             }
             builder.setRequestExecutor(
-                    new LoggingHttpRequestExecutor(this)
+                    new LoggingHttpRequestExecutor(transcript)
             );
             builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                     .register(AuthSchemes.BASIC, new BasicSchemeFactory(

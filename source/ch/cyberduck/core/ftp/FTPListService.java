@@ -22,6 +22,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginConnectionService;
@@ -163,8 +165,13 @@ public class FTPListService implements ListService {
                     }
                     else {
                         log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
-                        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
-                                new DisabledPasswordStore(), session).connect(session, Cache.<Path>empty());
+                        new LoginConnectionService(
+                                new DisabledLoginController(),
+                                new DisabledHostKeyCallback(),
+                                new DisabledPasswordStore(),
+                                new DisabledProgressListener(),
+                                new DisabledTranscriptListener()
+                        ).connect(session, Cache.<Path>empty());
                     }
                     this.remove(Command.stat);
                 }

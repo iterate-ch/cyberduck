@@ -42,6 +42,8 @@ public class LoginConnectionService implements ConnectionService {
 
     private ProgressListener listener;
 
+    private TranscriptListener transcript;
+
     private Resolver resolver;
 
     private LoginService login;
@@ -57,24 +59,27 @@ public class LoginConnectionService implements ConnectionService {
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
-                                  final ProgressListener listener) {
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript) {
         this(key,
                 new KeychainLoginService(prompt, keychain),
                 new Resolver(),
                 ProxyFactory.get(),
-                listener);
+                listener, transcript);
     }
 
     public LoginConnectionService(final HostKeyCallback key,
                                   final LoginService login,
                                   final Resolver resolver,
                                   final Proxy proxy,
-                                  final ProgressListener listener) {
+                                  final ProgressListener listener,
+                                  final TranscriptListener transcript) {
         this.key = key;
         this.listener = listener;
         this.resolver = resolver;
         this.login = login;
         this.proxy = proxy;
+        this.transcript = transcript;
     }
 
     /**
@@ -151,7 +156,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.open(key);
+        session.open(key, transcript);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));
@@ -160,7 +165,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            login.login(session, cache, listener, new CancelCallback() {
+            login.login(session, cache, listener, transcript, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
                     if(canceled.get()) {

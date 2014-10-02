@@ -19,7 +19,18 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -121,7 +132,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback controller,
-                      final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+                      final CancelCallback cancel, final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(
@@ -180,7 +191,7 @@ public class GoogleStorageSession extends S3Session {
             }
         }
         else {
-            super.login(keychain, controller, cancel, cache);
+            super.login(keychain, controller, cancel, cache, transcript);
         }
     }
 

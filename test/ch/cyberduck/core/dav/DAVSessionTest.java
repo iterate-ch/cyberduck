@@ -44,10 +44,10 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         final AttributedList<Path> list = session.list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory)).getReference()));
@@ -65,10 +65,10 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         final DAVSession session = new DAVSession(host);
         assertFalse(session.alert());
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isSecured());
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         }
         catch(BackgroundException e) {
             assertEquals("Method Not Allowed. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -82,8 +82,8 @@ public class DAVSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         try {
             session.list(session.workdir(), new DisabledListProgressListener());
         }
@@ -100,8 +100,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         session.close();
     }
 
@@ -112,8 +112,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -123,8 +123,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         session.close();
     }
@@ -136,8 +136,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/redir-gone");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
     }
 
     @Test
@@ -147,8 +147,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         session.close();
     }
@@ -160,8 +160,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
@@ -177,7 +177,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertNotNull(session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
         session.close();
     }
@@ -199,7 +199,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.addTranscriptListener(new TranscriptListener() {
+        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
                 if(request) {
@@ -209,8 +209,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 }
             }
         });
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         session.close();
     }
 
@@ -221,7 +220,8 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/digest");
         final DAVSession session = new DAVSession(host);
-        session.addTranscriptListener(new TranscriptListener() {
+        Preferences.instance().setProperty("webdav.basic.preemptive", false);
+        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
                 if(request) {
@@ -231,8 +231,6 @@ public class DAVSessionTest extends AbstractTestCase {
                 }
             }
         });
-        Preferences.instance().setProperty("webdav.basic.preemptive", false);
-        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginController() {
             @Override
             public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason,
@@ -243,7 +241,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 assertFalse(options.publickey);
                 throw new LoginCanceledException();
             }
-        }, null);
+        }, null, new DisabledTranscriptListener());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -255,9 +253,9 @@ public class DAVSessionTest extends AbstractTestCase {
         host.setDefaultPath("/namespace");
         final DAVSession session = new DAVSession(host);
         Preferences.instance().setProperty("webdav.basic.preemptive", true);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         }
         catch(LoginFailureException e) {
             assertEquals("Unauthorized. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -282,10 +280,10 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/w/webdav/");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
@@ -297,10 +295,10 @@ public class DAVSessionTest extends AbstractTestCase {
                 "webdav", "webdav"
         ));
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
@@ -312,10 +310,10 @@ public class DAVSessionTest extends AbstractTestCase {
                 "webdav", "webdav"
         ));
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
@@ -327,10 +325,10 @@ public class DAVSessionTest extends AbstractTestCase {
                 "webdav", "webdav"
         ));
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         assertTrue(session.isSecured());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         assertNotNull(session.workdir());
         assertFalse(session.getAcceptedIssuers().isEmpty());
         session.close();
@@ -339,8 +337,8 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testUnrecognizedName() throws Exception {
         final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "sds-security.selfhost.eu", 8000));
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
     }
 
     @Test
@@ -370,7 +368,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 //
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         c.connect(session, Cache.<Path>empty());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
@@ -417,7 +415,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 },
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         c.connect(session, Cache.<Path>empty());
     }
 
@@ -443,7 +441,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledLoginController(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             c.connect(session, Cache.<Path>empty());
         }
@@ -475,7 +473,7 @@ public class DAVSessionTest extends AbstractTestCase {
                 new DisabledLoginController(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener());
+                new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
             c.connect(session, Cache.<Path>empty());
         }

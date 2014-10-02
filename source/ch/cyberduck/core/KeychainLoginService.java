@@ -44,7 +44,7 @@ public class KeychainLoginService implements LoginService {
 
     @Override
     public void login(final Session session, final Cache cache,
-                      final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
+                      final ProgressListener listener, final TranscriptListener transcript, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         this.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
@@ -53,7 +53,7 @@ public class KeychainLoginService implements LoginService {
         if(session.alert()) {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
-                    bookmark.getProtocol().getName()),
+                            bookmark.getProtocol().getName()),
                     MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
                             bookmark.getCredentials().getPasswordPlaceholder()),
                     LocaleFactory.localizedString("Continue", "Credentials"),
@@ -66,7 +66,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(keychain, controller, cancel, cache);
+            session.login(keychain, controller, cancel, cache, transcript);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -88,7 +88,7 @@ public class KeychainLoginService implements LoginService {
                 bookmark.getCredentials().setPassword(null);
                 throw c;
             }
-            this.login(session, cache, listener, cancel);
+            this.login(session, cache, listener, transcript, cancel);
         }
     }
 

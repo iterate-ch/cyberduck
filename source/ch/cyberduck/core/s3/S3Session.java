@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
@@ -104,7 +105,9 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * Exposing protected methods
      */
     public class RequestEntityRestStorageService extends RestS3Service {
-        public RequestEntityRestStorageService(final Jets3tProperties configuration) {
+        private TranscriptListener listener;
+
+        public RequestEntityRestStorageService(final Jets3tProperties configuration, final TranscriptListener listener) {
             super(host.getCredentials().isAnonymousLogin() ? null :
                             new AWSCredentials(null, null) {
                                 @Override
@@ -118,11 +121,12 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                                 }
                             },
                     new PreferencesUseragentProvider().get(), null, configuration);
+            this.listener = listener;
         }
 
         @Override
         protected HttpClient initHttpConnection() {
-            final HttpClientBuilder builder = builder();
+            final HttpClientBuilder builder = builder(listener);
             builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
             return builder.build();
         }
@@ -351,13 +355,13 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
-        return new RequestEntityRestStorageService(this.configure());
+    public RequestEntityRestStorageService connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+        return new RequestEntityRestStorageService(this.configure(), transcript);
     }
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache)
+                      final Cache<Path> cache, final TranscriptListener transcript)
             throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));

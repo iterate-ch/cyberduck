@@ -42,8 +42,8 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     public void message(final String message) {
                         //
                     }
-                }
-        );
+                },
+                new DisabledTranscriptListener());
         try {
             s.check(session, Cache.<Path>empty());
         }
@@ -79,7 +79,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     public void message(final String message) {
                         //
                     }
-                });
+                }, new DisabledTranscriptListener());
         s.check(session, Cache.<Path>empty());
     }
 
@@ -92,7 +92,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     public void message(final String message) {
                         //
                     }
-                });
+                }, new DisabledTranscriptListener());
         s.check(new FTPSession(new Host("")), Cache.<Path>empty());
     }
 
@@ -105,7 +105,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                     public void message(final String message) {
                         //
                     }
-                });
+                }, new DisabledTranscriptListener());
         final AtomicBoolean connected = new AtomicBoolean();
         final AtomicBoolean disconnected = new AtomicBoolean();
         try {
@@ -117,7 +117,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
 
                 @Override
-                public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
+                public FTPClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
                     connected.set(true);
                     return null;
                 }

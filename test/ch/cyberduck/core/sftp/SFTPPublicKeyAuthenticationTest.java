@@ -2,8 +2,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -37,7 +37,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
@@ -59,7 +59,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key.putty")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         final AtomicBoolean p = new AtomicBoolean();
         assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController() {
             @Override
@@ -83,7 +83,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         final AtomicBoolean p = new AtomicBoolean();
         assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController() {
             @Override
@@ -107,7 +107,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.ecdsa")), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
+        session.open(new DisabledHostKeyCallback(), session);
         assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginController() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {

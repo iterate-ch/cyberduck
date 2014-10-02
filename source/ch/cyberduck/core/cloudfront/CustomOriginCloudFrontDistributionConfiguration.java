@@ -19,6 +19,7 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -55,7 +56,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
-            session.open(new DisabledHostKeyCallback());
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         }
         return run.call();
     }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
@@ -98,8 +99,8 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public Client connect(final HostKeyCallback key) throws BackgroundException {
-        return new Client(super.builder().build());
+    public Client connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+        return new Client(super.builder(transcript).build());
     }
 
     @Override
@@ -114,7 +115,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
+                      final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {

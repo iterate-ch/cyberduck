@@ -98,7 +98,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         this.progressListener = progressListener;
         this.transcriptListener = transcriptListener;
         this.connection = new LoginConnectionService(prompt, key,
-                PasswordStoreFactory.get(), progressListener);
+                PasswordStoreFactory.get(), progressListener, transcriptListener);
     }
 
     public BackgroundException getException() {

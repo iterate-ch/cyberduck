@@ -53,7 +53,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener());
@@ -73,7 +73,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledLoginController(), new DisabledProgressListener(), new DisabledTranscriptListener());
@@ -86,7 +86,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
             @Override
             public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
                 return true;
@@ -109,7 +109,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
             @Override
             public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
                 return true;
@@ -210,7 +210,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
             }
         };
         final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginController(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()) {
+                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
             @Override
             public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
                 return true;
