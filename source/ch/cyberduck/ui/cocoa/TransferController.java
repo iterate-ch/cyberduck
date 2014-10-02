@@ -714,7 +714,7 @@ public final class TransferController extends WindowController implements NSTool
                     public void progress(final TransferProgress status) {
                         progress.progress(status);
                     }
-                }, progress, transfer, options) {
+                }, progress, transcript, transfer, options) {
             @Override
             public void init() {
                 super.init();

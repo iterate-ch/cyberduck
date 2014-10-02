@@ -641,7 +641,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                             TransferCallback callback)
                 : base(
                     controller, SessionFactory.create(transfer.getHost()), controller.GetController(transfer),
-                    controller.GetController(transfer), transfer, options)
+                    controller.GetController(transfer), controller.GetController(transfer), transfer, options)
             {
                 _transfer = transfer;
                 _callback = callback;
