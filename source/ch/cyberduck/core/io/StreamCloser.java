@@ -19,6 +19,7 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +37,7 @@ public class StreamCloser {
     private final Preferences preferences
             = Preferences.instance();
 
-    public void close(final InputStream in) {
+    public void close(final InputStream in) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
         new NamedThreadFactory("close").newThread(new Runnable() {
             @Override
@@ -46,14 +47,16 @@ public class StreamCloser {
             }
         }).start();
         try {
-            signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS);
+            if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
+                throw new ConnectionTimeoutException("Timeout closing input stream", null);
+            }
         }
         catch(InterruptedException e) {
-            //
+            throw new ConnectionTimeoutException(e.getMessage(), e);
         }
     }
 
-    public void close(final OutputStream out) {
+    public void close(final OutputStream out) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);
         new NamedThreadFactory("close").newThread(new Runnable() {
             @Override
@@ -63,10 +66,12 @@ public class StreamCloser {
             }
         }).start();
         try {
-            signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS);
+            if(!signal.await(preferences.getInteger("connection.timeout.seconds"), TimeUnit.SECONDS)) {
+                throw new ConnectionTimeoutException("Timeout closing output stream", null);
+            }
         }
         catch(InterruptedException e) {
-            //
+            throw new ConnectionTimeoutException(e.getMessage(), e);
         }
     }
 }
