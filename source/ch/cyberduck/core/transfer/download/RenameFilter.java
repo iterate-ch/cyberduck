@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -68,7 +69,7 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(local.exists()) {
             // Set renamed target
             status.rename(status.getRename().local);

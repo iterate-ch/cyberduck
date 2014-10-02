@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
@@ -48,7 +49,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final Path p = new Path("t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertNull(status.getRename().local);
-        f.apply(p, local, new TransferStatus());
+        f.apply(p, local, new TransferStatus(), new DisabledProgressListener());
     }
 
     @Test
@@ -71,7 +72,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
         assertNotNull(status.getRename().local);
         assertFalse(r.get());
-        f.apply(p, local, status);
+        f.apply(p, local, status, new DisabledProgressListener());
         assertEquals("t", local.getName());
         assertEquals("t", local.getName());
         assertNotEquals("t", status.getRename().local.getName());

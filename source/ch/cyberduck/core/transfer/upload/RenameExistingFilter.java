@@ -61,16 +61,16 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(!options.temporary || local.isDirectory()) {
             // Rename existing file before putting new file in place
             if(status.isExists()) {
-                this.rename(file);
+                this.rename(file, listener);
             }
         }
     }
 
-    private void rename(final Path file) throws BackgroundException {
+    private void rename(final Path file, final ProgressListener listener) throws BackgroundException {
         Path renamed = file;
         while(find.find(renamed)) {
             final String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -94,7 +94,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(this.options.temporary) {
                 // If uploaded with temporary name rename existing file after upload
                 // is complete but before temporary upload is renamed
-                this.rename(file);
+                this.rename(file, listener);
             }
         }
         super.complete(file, local, options, status, listener);

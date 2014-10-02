@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.LocalTrashFactory;
@@ -43,7 +44,7 @@ public class TrashFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public void apply(Path file, final Local local, TransferStatus status) throws BackgroundException {
+    public void apply(Path file, final Local local, TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(local.exists()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Trash file %s", local));

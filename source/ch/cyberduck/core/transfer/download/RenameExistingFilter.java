@@ -21,6 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -68,7 +69,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(local.exists()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", local, status.getRename().local));

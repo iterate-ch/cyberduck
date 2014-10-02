@@ -45,7 +45,7 @@ public interface TransferPathFilter {
     TransferStatus prepare(Path file, Local local, TransferStatus parent)
             throws BackgroundException;
 
-    void apply(Path file, Local local, TransferStatus status)
+    void apply(Path file, Local local, TransferStatus status, final ProgressListener listener)
             throws BackgroundException;
 
     /**

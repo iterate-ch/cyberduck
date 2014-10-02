@@ -79,7 +79,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
         };
         f.prepare(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
         assertFalse(c.get());
-        f.apply(p, new NullLocal("/", "t"), new TransferStatus().exists(true));
+        f.apply(p, new NullLocal("/", "t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(c.get());
     }
 
@@ -280,7 +280,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
             public boolean isDirectory() {
                 return true;
             }
-        }, new TransferStatus().exists(true));
+        }, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(moved.get());
     }
 }
