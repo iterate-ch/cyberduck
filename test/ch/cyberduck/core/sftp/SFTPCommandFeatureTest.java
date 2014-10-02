@@ -19,10 +19,11 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
@@ -42,23 +43,22 @@ public class SFTPCommandFeatureTest extends AbstractTestCase {
                 properties.getProperty("sftp.user"), properties.getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final StringBuilder t = new StringBuilder();
-        session.addTranscriptListener(new TranscriptListener() {
+        new SFTPCommandFeature(session).send("ps", new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                assertEquals("ps", message);
+            }
+        }, new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
                 if(!request) {
                     t.append(message);
                 }
-            }
-        });
-        new SFTPCommandFeature(session).send("ps", new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                assertEquals("ps", message);
             }
         });
         assertTrue("PID TTY          TIME CMD22417 ?        00:00:00 sshd22418 ?        00:00:00 sftp-server22427 ?        00:00:00 ps", t.toString().startsWith(

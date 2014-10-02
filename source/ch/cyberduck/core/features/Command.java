@@ -19,6 +19,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 /**
@@ -29,7 +30,8 @@ public interface Command {
     /**
      * Sends an arbitrary command to the server
      *
-     * @param command Command to send
+     * @param command    Command to send
+     * @param transcript Listener
      */
-    void send(String command, ProgressListener listener) throws BackgroundException;
+    void send(String command, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;
 }

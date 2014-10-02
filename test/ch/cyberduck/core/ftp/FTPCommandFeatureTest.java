@@ -19,10 +19,11 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
@@ -42,23 +43,22 @@ public class FTPCommandFeatureTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final StringBuilder t = new StringBuilder();
-        session.addTranscriptListener(new TranscriptListener() {
+        new FTPCommandFeature(session).send("HELP", new ProgressListener() {
+            @Override
+            public void message(final String message) {
+                assertEquals("HELP", message);
+            }
+        }, new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
                 if(!request) {
                     t.append(message);
                 }
-            }
-        });
-        new FTPCommandFeature(session).send("HELP", new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                assertEquals("HELP", message);
             }
         });
         assertEquals("214 CHMOD UMASK HELP", t.toString());

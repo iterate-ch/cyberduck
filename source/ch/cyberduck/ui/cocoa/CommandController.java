@@ -117,7 +117,7 @@ public class CommandController extends SheetController implements TranscriptList
                 @Override
                 public Void run() throws BackgroundException {
                     final Command feature = session.getFeature(Command.class);
-                    feature.send(command, this);
+                    feature.send(command, this, CommandController.this);
                     return null;
                 }
 

@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Command;
@@ -48,7 +49,7 @@ public class SFTPCommandFeature implements Command {
     }
 
     @Override
-    public void send(final String command, final ProgressListener listener) throws BackgroundException {
+    public void send(final String command, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Send command %s", command));
         }
@@ -75,7 +76,7 @@ public class SFTPCommandFeature implements Command {
                     if(null == line) {
                         break;
                     }
-                    session.log(false, line);
+                    transcript.log(false, line);
                 }
                 // Here is the output from stderr
                 final StringBuilder error = new StringBuilder();
@@ -84,7 +85,7 @@ public class SFTPCommandFeature implements Command {
                     if(null == line) {
                         break;
                     }
-                    session.log(false, line);
+                    transcript.log(false, line);
                     // Standard error output contains all status messages, not only errors.
                     if(StringUtils.isNotBlank(error.toString())) {
                         error.append(" ");
