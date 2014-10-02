@@ -160,7 +160,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     private void filter() {
         controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, Cache.<Path>empty(),
-                        new TransferPromptFilterWorker(session, transfer, action, cache) {
+                        new TransferPromptFilterWorker(session, transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;

@@ -20,9 +20,9 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -54,12 +54,15 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
 
     private Cache<TransferItem> cache;
 
+    private ProgressListener listener;
+
     public TransferPromptFilterWorker(final Session session, final Transfer transfer, final TransferAction action,
-                                      final Cache<TransferItem> cache) {
+                                      final Cache<TransferItem> cache, final ProgressListener listener) {
         this.session = session;
         this.cache = cache;
         this.action = action;
         this.transfer = transfer;
+        this.listener = listener;
     }
 
     @Override
@@ -71,7 +74,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             }
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
-        final TransferPathFilter filter = transfer.filter(session, action, new DisabledProgressListener());
+        final TransferPathFilter filter = transfer.filter(session, action, listener);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
