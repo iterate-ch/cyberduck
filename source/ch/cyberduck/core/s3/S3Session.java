@@ -105,8 +105,6 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
      * Exposing protected methods
      */
     public class RequestEntityRestStorageService extends RestS3Service {
-        private TranscriptListener listener;
-
         public RequestEntityRestStorageService(final Jets3tProperties configuration, final TranscriptListener listener) {
             super(host.getCredentials().isAnonymousLogin() ? null :
                             new AWSCredentials(null, null) {
@@ -121,14 +119,14 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                                 }
                             },
                     new PreferencesUseragentProvider().get(), null, configuration);
-            this.listener = listener;
+            final HttpClientBuilder builder = builder(listener);
+            builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
+            this.setHttpClient(builder.build());
         }
 
         @Override
         protected HttpClient initHttpConnection() {
-            final HttpClientBuilder builder = builder(listener);
-            builder.setRetryHandler(new S3HttpREquestRetryHandler(this));
-            return builder.build();
+            return null;
         }
 
         @Override
