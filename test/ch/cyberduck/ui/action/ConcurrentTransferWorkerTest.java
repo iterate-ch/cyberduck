@@ -197,7 +197,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                     }
 
                     @Override
-                    public void apply(final Path file, final Local local, final TransferStatus status) throws BackgroundException {
+                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
                         assertFalse(transferred.contains(file));
                     }
 
