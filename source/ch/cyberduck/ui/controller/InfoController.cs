@@ -2566,7 +2566,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                            Acl acl)
                     : base(
                         controller.Session, (AclPermission) controller.Session.getFeature(typeof (AclPermission)), files,
-                        acl, true)
+                        acl, true, controller)
                 {
                     _infoController = infoController;
                 }
@@ -2652,7 +2652,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
                     : base(
                         infoController._controller.Session,
-                        (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata)
+                        (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata, infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2684,7 +2684,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     : base(
                         infoController._controller.Session,
                         (UnixPermission) infoController._controller.Session.getFeature(typeof (UnixPermission)), files,
-                        permission, recursive)
+                        permission, recursive, infoController._controller)
                 {
                     _infoController = infoController;
                 }

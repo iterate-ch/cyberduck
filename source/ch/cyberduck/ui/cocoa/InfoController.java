@@ -965,7 +965,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleAclSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                             new WriteAclWorker(controller.getSession(), controller.getSession().getFeature(AclPermission.class),
-                                    files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
+                                    files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleAclSettings(true);
@@ -1259,7 +1259,8 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class), files, update) {
+                            new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class),
+                                    files, update, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
@@ -2390,7 +2391,8 @@ public class InfoController extends ToolbarWindowController {
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
                             new WritePermissionWorker(controller.getSession(),
-                                    controller.getSession().getFeature(UnixPermission.class), files, permission, recursive) {
+                                    controller.getSession().getFeature(UnixPermission.class),
+                                    files, permission, recursive, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);
@@ -2761,7 +2763,7 @@ public class InfoController extends ToolbarWindowController {
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
             this.background(new WorkerBackgroundAction<Long>(controller, controller.getSession(), controller.getCache(),
-                    new CalculateSizeWorker(controller.getSession(), files) {
+                    new CalculateSizeWorker(controller.getSession(), files, controller) {
                         @Override
                         public void cleanup(final Long size) {
                             updateSize(size);
