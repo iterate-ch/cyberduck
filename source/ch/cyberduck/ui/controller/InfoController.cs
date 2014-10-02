@@ -2209,7 +2209,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     _infoController.ToggleMetadataSettings(true);
                     _infoController.SetMetadata(metadata);
-                    //todo attachmetadatahandler?
                 }
             }
         }
@@ -2256,7 +2255,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerCalculateSizeWorker(InfoController infoController, List files)
-                    : base(infoController._controller.Session, files)
+                    : base(infoController._controller.Session, files, infoController._controller)
                 {
                     _infoController = infoController;
                 }
