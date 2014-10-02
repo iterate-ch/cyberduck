@@ -123,8 +123,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         this.message(this.getActivity());
-        session.addProgressListener(this);
-        session.addTranscriptListener(this);
     }
 
     @Override
@@ -208,16 +206,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     protected void close(final Session session) throws BackgroundException {
         session.close();
-    }
-
-    @Override
-    public void finish() {
-        session.removeProgressListener(this);
-        // It is important _not_ to do this in #cleanup as otherwise
-        // the listeners are still registered when the next BackgroundAction
-        // is already running
-        session.removeTranscriptListener(this);
-        super.finish();
     }
 
     @Override

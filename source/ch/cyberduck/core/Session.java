@@ -35,15 +35,12 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @version $Id$
  */
-public abstract class Session<C> implements TranscriptListener, ProgressListener {
+public abstract class Session<C> {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -52,12 +49,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     protected Host host;
 
     protected C client;
-
-    private Set<TranscriptListener> transcriptListeners
-            = Collections.synchronizedSet(new HashSet<TranscriptListener>(0));
-
-    private Set<ProgressListener> progressListeners
-            = Collections.synchronizedSet(new HashSet<ProgressListener>(0));
 
     /**
      * Connection attempt being made.
@@ -256,38 +247,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
      */
     public State getState() {
         return state;
-    }
-
-    public void addTranscriptListener(final TranscriptListener listener) {
-        transcriptListeners.add(listener);
-    }
-
-    public void removeTranscriptListener(final TranscriptListener listener) {
-        transcriptListeners.remove(listener);
-    }
-
-    /**
-     * Log the message to all subscribed transcript listeners
-     *
-     * @param message Log line
-     * @see TranscriptListener
-     */
-    @Override
-    public void log(final boolean request, final String message) {
-        if(log.isInfoEnabled()) {
-            log.info(message);
-        }
-        for(TranscriptListener listener : transcriptListeners.toArray(new TranscriptListener[transcriptListeners.size()])) {
-            listener.log(request, message);
-        }
-    }
-
-    public void addProgressListener(final ProgressListener listener) {
-        progressListeners.add(listener);
-    }
-
-    public void removeProgressListener(final ProgressListener listener) {
-        progressListeners.remove(listener);
     }
 
     /**
