@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -48,8 +49,8 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
                 }
             }, new DisabledTranscriptListener());
             assertTrue(new SFTPFindFeature(session).find(archive.getArchive(Collections.<Path>singletonList(test))));
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController()
-            );
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(),
+                    new DisabledProgressListener());
             assertFalse(new SFTPFindFeature(session).find(test));
             feature.unarchive(archive, archive.getArchive(Collections.<Path>singletonList(test)), new ProgressListener() {
                 @Override
@@ -60,9 +61,9 @@ public class SFTPCompressFeatureTest extends AbstractTestCase {
             assertTrue(new SFTPFindFeature(session).find(test));
             new SFTPDeleteFeature(session).delete(Collections.singletonList(archive.getArchive(
                     Collections.<Path>singletonList(test)
-            )), new DisabledLoginController());
-            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController()
-            );
+            )), new DisabledLoginController(), new DisabledProgressListener());
+            new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(),
+                    new DisabledProgressListener());
         }
         session.close();
     }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -56,7 +57,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test(expected = NotfoundException.class)
@@ -71,7 +72,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -96,7 +97,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(test));
         assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
         assertTrue(find.find(test));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(find.find(test));
         assertFalse(find.find(placeholder));
         session.close();
@@ -118,7 +119,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         new SwiftDirectoryFeature(session).mkdir(placeholder);
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertTrue(find.find(placeholder));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(find.find(placeholder));
         session.close();
     }

@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -44,7 +45,7 @@ public class DAVDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
         for(Path file : files) {
             boolean skip = false;
@@ -57,7 +58,7 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 session.getClient().delete(new DAVPathEncoder().encode(file));

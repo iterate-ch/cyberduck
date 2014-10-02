@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -118,7 +119,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginController());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginController()).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 

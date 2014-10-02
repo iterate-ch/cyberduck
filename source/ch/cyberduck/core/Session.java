@@ -291,22 +291,6 @@ public abstract class Session<C> implements TranscriptListener, ProgressListener
     }
 
     /**
-     * Notifies all progress listeners
-     *
-     * @param message The message to be displayed in a status field
-     * @see ProgressListener
-     */
-    @Override
-    public void message(final String message) {
-        if(log.isInfoEnabled()) {
-            log.info(message);
-        }
-        for(ProgressListener listener : progressListeners.toArray(new ProgressListener[progressListeners.size()])) {
-            listener.message(message);
-        }
-    }
-
-    /**
      * @param file     Directory
      * @param listener Callback
      */

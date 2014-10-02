@@ -40,7 +40,7 @@ public class AzureCopyFeatureTest extends AbstractTestCase {
         new AzureCopyFeature(session).copy(test, copy);
         assertTrue(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(copy));
-        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

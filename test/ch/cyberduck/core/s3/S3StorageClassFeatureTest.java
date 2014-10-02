@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -83,7 +84,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
         assertEquals("REDUCED_REDUNDANCY", feature.getClass(test));
         assertEquals("REDUCED_REDUNDANCY", session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getStorageClass());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

@@ -8,6 +8,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -41,10 +42,10 @@ public class SFTPSymlinkFeatureTest extends AbstractTestCase {
         assertTrue(new SFTPFindFeature(session).find(link));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
                 session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()).get(link.getReference()).getType());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SFTPFindFeature(session).find(link));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

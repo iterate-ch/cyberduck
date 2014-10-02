@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -82,7 +83,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 
@@ -114,7 +115,7 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         assertTrue(feature.append(test, 0L, Cache.<Path>empty()).append);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -148,6 +149,6 @@ public class DAVWriteFeatureTest extends AbstractTestCase {
         final PathAttributes attributes = new DAVAttributesFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
         assertTrue(redirected.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 }

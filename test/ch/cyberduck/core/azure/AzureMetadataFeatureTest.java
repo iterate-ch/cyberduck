@@ -43,7 +43,7 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 
@@ -68,7 +68,7 @@ public class AzureMetadataFeatureTest extends AbstractTestCase {
         // Make sure content type is not deleted
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("application/octet-stream", metadata.get("Content-Type"));
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

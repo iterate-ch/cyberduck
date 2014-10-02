@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -60,7 +61,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         new DAVMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class DAVMoveFeatureTest extends AbstractTestCase {
         new DAVMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test(expected = NotfoundException.class)

@@ -42,7 +42,7 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
         new AzureMoveFeature(session).move(test, target, false);
         assertFalse(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(target));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test

@@ -20,6 +20,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
@@ -28,5 +29,5 @@ import java.util.List;
  * @version $Id$
  */
 public interface Delete {
-    void delete(List<Path> files, final LoginCallback prompt) throws BackgroundException;
+    void delete(List<Path> files, LoginCallback prompt, ProgressListener listener) throws BackgroundException;
 }

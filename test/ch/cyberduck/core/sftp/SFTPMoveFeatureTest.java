@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -57,7 +58,7 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         new SFTPMoveFeature(session).move(test, target, false);
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -75,7 +76,7 @@ public class SFTPMoveFeatureTest extends AbstractTestCase {
         new SFTPMoveFeature(session).move(test, target, false);
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test(expected = NotfoundException.class)

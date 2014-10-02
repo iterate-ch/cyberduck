@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -52,7 +53,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, null);
         assertTrue(new SwiftFindFeature(session).find(container));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(container));
         session.close();
     }
@@ -70,7 +71,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new SwiftFindFeature(session).find(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
     }

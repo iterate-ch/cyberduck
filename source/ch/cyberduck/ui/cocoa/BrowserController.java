@@ -2498,7 +2498,7 @@ public class BrowserController extends WindowController
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
-                        new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files) {
+                        new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files, this) {
                             @Override
                             public void cleanup(final Boolean result) {
                                 reload(files, false);

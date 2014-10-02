@@ -20,6 +20,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,7 +51,8 @@ public class AzureMoveFeature implements Move {
     public void move(final Path file, final Path renamed, final boolean exists) throws BackgroundException {
         if(file.isFile()) {
             new AzureCopyFeature(session).copy(file, renamed);
-            new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginController());
+            new AzureDeleteFeature(session).delete(Collections.singletonList(file),
+                    new DisabledLoginController(), new DisabledProgressListener());
         }
         else if(file.isDirectory()) {
             for(Path i : session.list(file, new DisabledListProgressListener())) {

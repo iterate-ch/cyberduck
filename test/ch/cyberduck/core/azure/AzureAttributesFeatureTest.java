@@ -56,7 +56,7 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", attributes.getChecksum());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

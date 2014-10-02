@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -79,7 +80,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
         assertTrue(metadata.containsKey("X-Object-Meta-Test"));
         assertEquals(v, metadata.get("X-Object-Meta-Test"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

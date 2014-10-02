@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -62,7 +63,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         new SwiftMoveFeature(session).move(test, target, false);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 
@@ -86,7 +87,7 @@ public class SwiftMoveFeatureTest extends AbstractTestCase {
         new SwiftMoveFeature(session).move(test, target, false);
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 

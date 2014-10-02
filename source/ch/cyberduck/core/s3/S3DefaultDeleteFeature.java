@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -46,12 +47,12 @@ public class S3DefaultDeleteFeature implements Delete {
         this.session = session;
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
         for(Path file : files) {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                     file.getName()));
             try {
                 try {
@@ -79,7 +80,7 @@ public class S3DefaultDeleteFeature implements Delete {
         }
         for(Path file : files) {
             if(containerService.isContainer(file)) {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
                 // Finally delete bucket itself
                 try {

@@ -18,11 +18,13 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -56,9 +58,9 @@ public class S3MultipleDeleteFeature implements Delete {
         this.versioning = session.getFeature(Versioning.class);
     }
 
-    public void delete(final List<Path> files, final LoginCallback prompt) throws BackgroundException {
+    public void delete(final List<Path> files, final LoginCallback prompt, final ProgressListener listener) throws BackgroundException {
         if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt);
+            new S3DefaultDeleteFeature(session).delete(files, prompt, new DisabledProgressListener());
         }
         else {
             final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
@@ -66,7 +68,7 @@ public class S3MultipleDeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     continue;
                 }
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                         file.getName()));
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
@@ -99,7 +101,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             for(Path file : files) {
                 if(containerService.isContainer(file)) {
-                    session.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                             file.getName()));
                     // Finally delete bucket itself
                     try {
@@ -116,8 +118,7 @@ public class S3MultipleDeleteFeature implements Delete {
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException
-     *          Authentication canceled for MFA delete
+     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
     protected void delete(final Path container, final List<ObjectKeyAndVersion> keys, final LoginCallback prompt)
             throws BackgroundException {

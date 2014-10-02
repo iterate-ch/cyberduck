@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -44,10 +45,14 @@ public abstract class DeleteWorker extends Worker<Boolean> {
 
     private LoginCallback prompt;
 
-    public DeleteWorker(final Session session, final LoginCallback prompt, final List<Path> files) {
+    private ProgressListener listener;
+
+    public DeleteWorker(final Session session, final LoginCallback prompt, final List<Path> files,
+                        final ProgressListener listener) {
         this.session = session;
         this.prompt = prompt;
         this.files = files;
+        this.listener = listener;
     }
 
     @Override
@@ -60,7 +65,7 @@ public abstract class DeleteWorker extends Worker<Boolean> {
             recursive.addAll(this.compile(file));
         }
         final Delete feature = session.getFeature(Delete.class);
-        feature.delete(recursive, prompt);
+        feature.delete(recursive, prompt, listener);
         return true;
     }
 

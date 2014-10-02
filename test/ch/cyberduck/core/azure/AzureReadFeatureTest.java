@@ -77,7 +77,7 @@ public class AzureReadFeatureTest extends AbstractTestCase {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

@@ -37,7 +37,7 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new AzureDirectoryFeature(session).mkdir(container, null);
         assertTrue(new AzureFindFeature(session).find(container));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new AzureFindFeature(session).find(container));
     }
 
@@ -55,7 +55,7 @@ public class AzureDirectoryFeatureTest extends AbstractTestCase {
                 EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new AzureDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new AzureFindFeature(session).find(placeholder));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new AzureFindFeature(session).find(placeholder));
     }
 }

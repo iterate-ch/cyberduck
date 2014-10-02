@@ -6,6 +6,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -59,7 +60,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         new SwiftTouchFeature(session).touch(test2);
         assertTrue(new SwiftFindFeature(session).find(test1));
         assertTrue(new SwiftFindFeature(session).find(test2));
-        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController());
+        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(test1));
         assertFalse(new SwiftFindFeature(session).find(test2));
         session.close();
@@ -79,6 +80,6 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginController());
+        ), new DisabledLoginController(), new DisabledProgressListener());
     }
 }

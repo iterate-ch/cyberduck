@@ -7,6 +7,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -97,7 +98,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         new SwiftDirectoryFeature(session).mkdir(container, "ORD");
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginController());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController()).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 

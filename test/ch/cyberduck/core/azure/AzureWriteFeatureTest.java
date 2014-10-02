@@ -60,7 +60,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }

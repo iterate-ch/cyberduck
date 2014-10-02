@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -59,7 +60,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new FTPMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 
@@ -78,7 +79,7 @@ public class FTPMoveFeatureTest extends AbstractTestCase {
         new FTPMoveFeature(session).move(test, target, false);
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController());
+        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 

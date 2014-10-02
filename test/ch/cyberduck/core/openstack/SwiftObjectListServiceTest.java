@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -110,7 +111,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(list.contains(placeholder));
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder.getReference()).getType());
-        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }
