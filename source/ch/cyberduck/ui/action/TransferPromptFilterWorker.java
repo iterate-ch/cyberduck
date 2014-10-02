@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Session;
@@ -70,7 +71,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             }
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
-        final TransferPathFilter filter = transfer.filter(session, action);
+        final TransferPathFilter filter = transfer.filter(session, action, new DisabledProgressListener());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }

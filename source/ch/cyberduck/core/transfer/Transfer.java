@@ -25,6 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -251,11 +252,12 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param session Session
-     * @param action  Transfer action for duplicate files
+     * @param session  Session
+     * @param action   Transfer action for duplicate files
+     * @param listener Progress listener
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public abstract TransferPathFilter filter(Session<?> session, TransferAction action);
+    public abstract TransferPathFilter filter(Session<?> session, TransferAction action, ProgressListener listener);
 
     /**
      * @param session         Session
@@ -280,16 +282,18 @@ public abstract class Transfer implements Serializable {
 
     /**
      * The actual transfer implementation
-     *  @param session Session
-     * @param file    Remote
-     * @param local   Local
-     * @param options Quarantine option
-     * @param status  Transfer status
-     * @param callback
+     *
+     * @param session  Session
+     * @param file     Remote
+     * @param local    Local
+     * @param options  Quarantine option
+     * @param status   Transfer status
+     * @param callback Prompt
+     * @param listener Listener
      */
     public abstract void transfer(Session<?> session, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback callback) throws BackgroundException;
+                                  ConnectionCallback callback, ProgressListener listener) throws BackgroundException;
 
     public void start() {
         state = State.running;

@@ -24,6 +24,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -94,15 +95,17 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
-                comparison = new CachingComparisonServiceFilter(new ComparisonServiceFilter(session, session.getHost().getTimezone())),
-                download.filter(session, TransferAction.overwrite),
-                upload.filter(session, TransferAction.overwrite),
+                comparison = new CachingComparisonServiceFilter(
+                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener)
+                ),
+                download.filter(session, TransferAction.overwrite, listener),
+                upload.filter(session, TransferAction.overwrite, listener),
                 action
         );
     }
@@ -135,16 +138,16 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.transfer(session, file, local, options, status, callback);
+            download.transfer(session, file, local, options, status, callback, listener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.transfer(session, file, local, options, status, callback);
+            upload.transfer(session, file, local, options, status, callback, listener);
         }
     }
 

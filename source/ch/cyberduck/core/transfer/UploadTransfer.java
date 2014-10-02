@@ -28,6 +28,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -137,7 +138,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AbstractUploadFilter filter(final Session<?> session, final TransferAction action) {
+    public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
@@ -156,7 +157,7 @@ public class UploadTransfer extends Transfer {
             return new SkipFilter(resolver, session).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session).withCache(cache);
+            return new CompareFilter(resolver, session, listener).withCache(cache);
         }
         return new OverwriteFilter(resolver, session).withCache(cache);
     }
@@ -203,7 +204,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -223,7 +224,7 @@ public class UploadTransfer extends Transfer {
             }
         }
         if(file.isFile()) {
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
             final Upload upload = session.getFeature(Upload.class);
@@ -235,7 +236,7 @@ public class UploadTransfer extends Transfer {
             }, status, callback);
         }
         else if(file.isDirectory()) {
-            session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                     file.getName()));
             if(!status.isExists()) {
                 session.getFeature(Directory.class).mkdir(file);

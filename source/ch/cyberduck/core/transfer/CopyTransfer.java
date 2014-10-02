@@ -27,6 +27,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
@@ -133,7 +134,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action) {
+    public TransferPathFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
@@ -168,13 +169,14 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path source,
-                         final Local n, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public void transfer(final Session<?> session, final Path source, final Local n,
+                         final TransferOptions options, final TransferStatus status,
+                         final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
-        session.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.isFile()) {
             if(session.getHost().equals(destination.getHost())) {
@@ -193,7 +195,7 @@ public class CopyTransfer extends Transfer {
         }
         else {
             if(!status.isExists()) {
-                session.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
                 destination.getFeature(Directory.class).mkdir(copy);
             }

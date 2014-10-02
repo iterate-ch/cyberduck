@@ -182,7 +182,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     throw new ConnectionCanceledException();
                 }
                 // Determine transfer filter implementation from selected overwrite action
-                final TransferPathFilter filter = transfer.filter(session, action);
+                final TransferPathFilter filter = transfer.filter(session, action, listener);
                 // Reset the cached size of the transfer and progress value
                 transfer.reset();
                 // Calculate information about the files in advance to give progress information

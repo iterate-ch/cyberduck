@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.Comparison;
@@ -37,9 +38,10 @@ public class CompareFilter extends AbstractUploadFilter {
 
     private ComparisonServiceFilter comparisonService;
 
-    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
+    public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
+                         final ProgressListener listener) {
         super(symlinkResolver, session, new UploadFilterOptions());
-        this.comparisonService = new ComparisonServiceFilter(session, session.getHost().getTimezone());
+        this.comparisonService = new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener);
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
