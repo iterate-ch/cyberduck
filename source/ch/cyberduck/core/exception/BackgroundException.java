@@ -18,14 +18,9 @@ package ch.cyberduck.core.exception;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 /**
  * @version $Id$
