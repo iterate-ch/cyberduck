@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
