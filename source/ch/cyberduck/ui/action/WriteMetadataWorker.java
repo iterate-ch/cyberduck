@@ -22,7 +22,6 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
@@ -38,8 +37,6 @@ import java.util.Map;
  */
 public abstract class WriteMetadataWorker extends Worker<Boolean> {
 
-    private Session<?> session;
-
     private Headers feature;
 
     /**
@@ -54,10 +51,9 @@ public abstract class WriteMetadataWorker extends Worker<Boolean> {
 
     private ProgressListener listener;
 
-    protected WriteMetadataWorker(final Session session, final Headers feature,
+    protected WriteMetadataWorker(final Headers feature,
                                   final List<Path> files, final Map<String, String> metadata,
                                   final ProgressListener listener) {
-        this.session = session;
         this.feature = feature;
         this.files = files;
         this.metadata = metadata;

@@ -1259,7 +1259,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             this.background(new WorkerBackgroundAction<Boolean>(controller, controller.getSession(), controller.getCache(),
-                            new WriteMetadataWorker(controller.getSession(), controller.getSession().getFeature(Headers.class),
+                            new WriteMetadataWorker(controller.getSession().getFeature(Headers.class),
                                     files, update, controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {

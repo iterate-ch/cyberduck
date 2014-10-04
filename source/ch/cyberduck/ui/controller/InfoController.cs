@@ -2650,7 +2650,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
                     : base(
-                        infoController._controller.Session,
                         (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata, infoController._controller)
                 {
                     _infoController = infoController;
