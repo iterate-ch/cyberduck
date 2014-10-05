@@ -77,7 +77,10 @@ public final class LoginOptions {
         return anonymous;
     }
 
-    public LoginOptions(Protocol protocol) {
+    /**
+     * Defer login options from protocol
+     */
+    public LoginOptions(final Protocol protocol) {
         publickey = protocol.getType() == Protocol.Type.ssh;
         anonymous = protocol.isAnonymousConfigurable();
     }
