@@ -101,7 +101,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             }
 
             @Override
-            public Local select() throws LoginCanceledException {
+            public Local select(final Local identity) throws LoginCanceledException {
                 select.set(true);
                 return new NullLocal("t");
             }

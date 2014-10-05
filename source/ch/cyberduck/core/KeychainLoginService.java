@@ -44,8 +44,10 @@ public class KeychainLoginService implements LoginService {
 
     @Override
     public void login(final Session session, final Cache cache,
-                      final ProgressListener listener, final TranscriptListener transcript, final CancelCallback cancel) throws BackgroundException {
+                      final ProgressListener listener, final TranscriptListener transcript,
+                      final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
+        // Obtain password from keychain or prompt
         this.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
                         "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
@@ -99,7 +101,7 @@ public class KeychainLoginService implements LoginService {
         final Credentials credentials = bookmark.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
-                credentials.setIdentity(controller.select());
+                credentials.setIdentity(controller.select(credentials.getIdentity()));
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)

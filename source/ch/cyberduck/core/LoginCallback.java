@@ -40,7 +40,8 @@ public interface LoginCallback extends ConnectionCallback {
     /**
      * Prompt to open file for reading.
      *
+     * @param identity File
      * @return Selected file or null
      */
-    Local select() throws LoginCanceledException;
+    Local select(final Local identity) throws LoginCanceledException;
 }

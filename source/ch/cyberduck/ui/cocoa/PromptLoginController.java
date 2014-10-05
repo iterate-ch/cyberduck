@@ -378,7 +378,7 @@ public final class PromptLoginController implements LoginCallback {
 
     private NSOpenPanel select;
 
-    public Local select() throws LoginCanceledException {
+    public Local select(final Local identity) throws LoginCanceledException {
         return this.select(parent, new SheetCallback() {
             @Override
             public void callback(final int returncode) {

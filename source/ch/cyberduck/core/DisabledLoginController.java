@@ -41,7 +41,7 @@ public class DisabledLoginController implements LoginCallback {
     }
 
     @Override
-    public Local select() throws LoginCanceledException {
+    public Local select(final Local identity) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 }

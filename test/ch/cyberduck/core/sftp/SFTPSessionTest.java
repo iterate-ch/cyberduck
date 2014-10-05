@@ -149,7 +149,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
             @Override
-            public Local select() throws LoginCanceledException {
+            public Local select(final Local identity) throws LoginCanceledException {
                 return new NullLocal("k");
             }
 

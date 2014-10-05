@@ -109,9 +109,9 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser.Invoke(d);
         }
 
-        public Local select()
+        public Local select(Local identity)
         {
-            throw new LoginCanceledException();
+            return identity;
         }
 
         public static void Register()
