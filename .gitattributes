@@ -2265,6 +2265,7 @@ profiles/GMX[!!-~]Mediacenter.cyberduckprofile -text svneol=unset#application/oc
 profiles/GreenQloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/Lunacloud.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Memset[!!-~](1.0).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Memset[!!-~](Keystone).cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Oktawave[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
