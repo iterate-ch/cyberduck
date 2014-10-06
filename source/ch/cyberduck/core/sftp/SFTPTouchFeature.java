@@ -28,6 +28,7 @@ import java.util.EnumSet;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.OpenMode;
+import net.schmizz.sshj.sftp.RemoteFile;
 
 /**
  * @version $Id$
@@ -48,10 +49,8 @@ public class SFTPTouchFeature implements Touch {
                 final FileAttributes attr = new FileAttributes.Builder()
                         .withPermissions(Integer.parseInt(permission.getMode(), 8))
                         .build();
-                // Even if specified above when creating the file handle, we still need to update the
-                // permissions after the creating the file. SSH_FXP_OPEN does not support setting
-                // attributes in version 4 or lower.
-                session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT), attr);
+                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT), attr);
+                handle.close();
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
