@@ -36,6 +36,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Excep
 
     @Override
     public Type determine(final Exception failure) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determine cause for failure %s", failure));
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return Type.network;
