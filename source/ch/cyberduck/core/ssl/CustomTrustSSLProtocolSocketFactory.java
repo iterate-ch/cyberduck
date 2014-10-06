@@ -52,7 +52,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     private SSLContext context;
 
-    private static final List<String> ENABLED_SSL_PROTOCOLS = new ArrayList<String>();
+    private static final List<String> ENABLED_SSL_PROTOCOLS
+            = new ArrayList<String>();
 
     static {
         for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
@@ -100,7 +101,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 }
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Enabled cipher suites %s", Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                    log.info(String.format("Enabled cipher suites %s",
+                            Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
                 }
             }
             catch(Exception e) {
@@ -116,7 +118,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     private Socket handshake(final SocketGetter f) throws IOException {
         final Socket socket = f.create();
-        this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
+        this.configure(socket, ENABLED_SSL_PROTOCOLS.toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Handshake for socket %s", socket));
         }
@@ -152,7 +154,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(final String host, final int port, final InetAddress clientHost, final int clientPort)
+    public Socket createSocket(final String host, final int port,
+                               final InetAddress clientHost, final int clientPort)
             throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
@@ -173,7 +176,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(final InetAddress host, final int port, final InetAddress localHost, final int localPort) throws IOException {
+    public Socket createSocket(final InetAddress host, final int port,
+                               final InetAddress localHost, final int localPort) throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
