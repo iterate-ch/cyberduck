@@ -117,7 +117,9 @@ public abstract class Session<C> {
 
     protected abstract C connect(HostKeyCallback key, TranscriptListener transcript) throws BackgroundException;
 
-    public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final TranscriptListener transcript)
+    public void login(final PasswordStore keychain,
+                      final LoginCallback prompt, final CancelCallback cancel,
+                      final TranscriptListener transcript)
             throws BackgroundException {
         this.login(keychain, prompt, cancel, Cache.<Path>empty(), transcript);
     }
@@ -131,8 +133,9 @@ public abstract class Session<C> {
      * @param cache      Directory listing cache
      * @param transcript Listener
      */
-    public abstract void login(PasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache,
-                               TranscriptListener transcript)
+    public abstract void login(PasswordStore keychain,
+                               LoginCallback prompt, CancelCallback cancel,
+                               Cache<Path> cache, TranscriptListener transcript)
             throws BackgroundException;
 
     /**
