@@ -22,13 +22,10 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class Receipt extends AbstractLicense {
-    private static final Logger log = Logger.getLogger(Receipt.class);
 
     private String guid;
 
