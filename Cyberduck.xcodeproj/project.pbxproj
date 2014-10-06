@@ -1471,7 +1471,7 @@
 		47CE3BF71799309F0031DB9F /* transfer-copy.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-copy.tiff"; sourceTree = "<group>"; };
 		47CE3BF81799309F0031DB9F /* transfer-move.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-move.tiff"; sourceTree = "<group>"; };
 		47CE3BF91799309F0031DB9F /* transfer-sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-sync.tiff"; sourceTree = "<group>"; };
-		47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		47CF43A31508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Alert.strings; sourceTree = "<group>"; };
 		47CF43A41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Archive.strings; sourceTree = "<group>"; };
 		47CF43A51508FCC000647729 /* ar */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ar; path = ar.lproj/Bookmark.nib; sourceTree = "<group>"; };
