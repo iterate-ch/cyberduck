@@ -47,52 +47,87 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSim
 	return [Proxy isSimpleHostnameExcluded];
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
-	return [Proxy isSOCKSProxyEnabled:JNFJavaToNSString(env, target)];
-}
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *env,  jobject this, jstring target)
-{
-	return [[Proxy getSOCKSProxyPort:JNFJavaToNSString(env, target)] intValue];
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *env, jobject this, jstring target)
-{
-	return JNFNSToJavaString(env, [Proxy getSOCKSProxyHost:JNFJavaToNSString(env, target)]);
-}
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
-{
-	return [Proxy isHTTPProxyEnabled:JNFJavaToNSString(env, target)];
-}
-
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *env, jobject this, jstring target)
-{
-	return [[Proxy getHTTPProxyPort:JNFJavaToNSString(env, target)] intValue];
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *env, jobject this, jstring target)
-{
-	return JNFNSToJavaString(env, [Proxy getHTTPProxyHost:JNFJavaToNSString(env, target)]);
-}
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *env, jobject this, jstring target)
-{
-	return [Proxy isHTTPSProxyEnabled:JNFJavaToNSString(env, target)];
-}
-
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *env, jobject this, jstring target)
-{
-	return [[Proxy getHTTPSProxyPort:JNFJavaToNSString(env, target)] intValue];
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *env, jobject this, jstring target)
-{
-	return JNFNSToJavaString(env, [Proxy getHTTPSProxyHost:JNFJavaToNSString(env, target)]);
+	return (*env)->NewStringUTF(env, [[Proxy find:JNFJavaToNSString(env, target)] UTF8String]);
 }
 
 @implementation Proxy
+
++ (NSString*)find:(NSString*)targetURL
+{
+    NSDictionary *defaultConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
+    if(!defaultConfiguration) {
+        // No proxy settings have been defined
+        return nil;
+    }
+	NSArray *proxyConfigurations = (NSArray *)CFNetworkCopyProxiesForURL((CFURLRef)[NSURL URLWithString:targetURL], (CFDictionaryRef) defaultConfiguration);
+    CFRelease(defaultConfiguration);
+    if(!proxyConfigurations) {
+        // No proxy settings have been defined
+        return nil;
+    }
+    NSEnumerator *enumerator = [proxyConfigurations objectEnumerator];
+    NSDictionary *proxyConfiguration;
+    while((proxyConfiguration = [enumerator nextObject]) != nil) {
+        // Every proxy dictionary has an entry for kCFProxyTypeKey
+        if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeKey] isEqualToString:(NSString *)kCFProxyTypeNone]) {
+            return nil;
+        }
+        // Look for PAC configuration
+        if([[proxyConfiguration objectForKey:(NSString *)kCFProxyTypeAutoConfigurationURL] boolValue]) {
+            // If the type is kCFProxyTypeAutoConfigurationURL, it has an entry for kCFProxyAutoConfigurationURLKey
+            NSString *pacLocation = [proxyConfiguration objectForKey:(NSString *)kCFProxyAutoConfigurationURLKey];
+            if(!pacLocation) {
+                CFRelease(proxyConfiguration);
+                continue;
+            }
+            // Obtain from URL for automatic proxy configuration
+            NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:NULL];
+            if(!pacScript) {
+                CFRelease(proxyConfiguration);
+                continue;
+            }
+            CFErrorRef error = NULL;
+            // Executes a proxy auto configuration script to determine the best proxy to use to retrieve a specified URL
+            NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &error);
+            if(error) {
+                CFRelease(error);
+                CFRelease(proxyConfiguration);
+                continue;
+            }
+            NSEnumerator *enumerator = [pacProxies objectEnumerator];
+            NSDictionary *dict;
+            NSString *proxyUrl = nil;
+            while (nil != (dict = [enumerator nextObject])) {
+                proxyUrl = [Proxy evaluate:dict];
+                if(nil != proxyUrl) {
+                    // Break on first match
+                    break;
+                }
+            }
+            CFRelease(proxyConfiguration);
+            CFRelease(pacProxies);
+            return proxyUrl;
+        }
+        else {
+            NSString *proxyUrl = [Proxy evaluate:proxyConfiguration];
+            CFRelease(proxyConfiguration);
+            return proxyUrl;
+        }
+    }
+    // Empty list
+    return nil;
+}
+
++ (NSString*)evaluate:(NSDictionary *) dict
+{
+   return [NSString stringWithFormat:@"%@://%@:%@",
+           [dict objectForKey:(NSString *)kCFProxyTypeKey],
+           [dict objectForKey:(NSString *)kCFProxyHostNameKey],
+           [dict objectForKey:(NSString *)kCFProxyPortNumberKey]];
+}
 
 + (BOOL)usePassiveFTP
 {
@@ -106,122 +141,25 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
 }
 
 + (NSEnumerator*)getProxiesExceptionList {
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-    NSEnumerator *exceptions = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExceptionsList] objectEnumerator];
-	if (proxies != NULL) {
-        CFRelease(proxies);
+	NSDictionary *proxyConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
+    if(!proxyConfiguration) {
+        // No proxy settings have been defined
+        return nil;
     }
+    NSEnumerator *exceptions = [[proxyConfiguration objectForKey:(NSString *)kCFNetworkProxiesExceptionsList] objectEnumerator];
+    CFRelease(proxyConfiguration);
     return exceptions;
 }
 
 + (BOOL)isSimpleHostnameExcluded {
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return NO;
-	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExcludeSimpleHostnames] boolValue];
-	if (proxies != NULL) {
-        CFRelease(proxies);
+	NSDictionary *proxyConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
+    if(!proxyConfiguration) {
+        // No proxy settings have been defined
+        return nil;
     }
+    BOOL enabled = [proxyConfiguration objectForKey:(NSString *)kCFNetworkProxiesExcludeSimpleHostnames];
+    CFRelease(proxyConfiguration);
 	return enabled;
-}
-
-+ (BOOL)isSOCKSProxyEnabled:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return NO;
-	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSEnable] boolValue];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return enabled;
-}
-
-+ (NSString *)getSOCKSProxyHost:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSString *hostname = [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSProxy] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [hostname autorelease];
-}
-
-+ (NSNumber *)getSOCKSProxyPort:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSNumber *port = [[proxies objectForKey:(NSNumber *)kSCPropNetProxiesSOCKSPort] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [port autorelease];
-}
-
-+ (BOOL)isHTTPProxyEnabled:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return NO;
-	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPEnable] boolValue];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return enabled;
-}
-
-+ (NSString *)getHTTPProxyHost:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSString *hostname = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPProxy] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [hostname autorelease];
-}
-
-+ (NSNumber *)getHTTPProxyPort:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSNumber *port = [[proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPPort] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [port autorelease];
-}
-
-+ (BOOL)isHTTPSProxyEnabled:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return NO;
-	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSEnable] boolValue];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return enabled;
-}
-
-+ (NSString *)getHTTPSProxyHost:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSString *hostname = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSProxy] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [hostname autorelease];
-}
-
-+ (NSNumber *)getHTTPSProxyPort:(NSString*)targetURL
-{
-	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
-	NSNumber *port = [[proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPSPort] retain];
-	if (proxies != NULL) {
-        CFRelease(proxies);
-    }
-	return [port autorelease];
 }
 
 @end

@@ -197,7 +197,7 @@
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
     <Compile Include="core\DefaultPathReferenceFactory.cs" />
-    <Compile Include="core\Proxy.cs" />
+    <Compile Include="core\SystemProxy.cs" />
     <Compile Include="core\serializer\impl\HostPlistReader.cs" />
     <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
     <Compile Include="core\serializer\impl\PlistReader.cs" />

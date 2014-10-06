@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.SocketConfigurator;
 import ch.cyberduck.core.TranscriptListener;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -102,28 +104,24 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         if(null == builder) {
             builder = HttpClients.custom();
             final SocketConfigurator configurator = new DefaultSocketConfigurator();
-            // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the default port and the socket
-            // factory to be used to create the java.net.Socket instances for the given protocol
-            final Registry<ConnectionSocketFactory> registry = this.registry(configurator).build();
+            // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
+            // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
+            final Registry<ConnectionSocketFactory> registry = this.registry().build();
             if(preferences.getBoolean("connection.proxy.enable")) {
-                final Proxy proxy = ProxyFactory.get();
-                if(Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
-                    if(proxy.isHTTPSProxyEnabled(host)) {
-                        final HttpHost h = new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host));
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Setup proxy %s", h));
-                        }
-                        builder.setProxy(h);
+                final Proxy proxy = ProxyFactory.get().find(host);
+                if(proxy.getType() == Proxy.Type.HTTP) {
+                    final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.http.name());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Setup proxy %s", h));
                     }
+                    builder.setProxy(h);
                 }
-                if(Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
-                    if(proxy.isHTTPProxyEnabled(host)) {
-                        final HttpHost h = new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host));
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Setup proxy %s", h));
-                        }
-                        builder.setProxy(h);
+                if(proxy.getType() == Proxy.Type.HTTPS) {
+                    final HttpHost h = new HttpHost(proxy.getHostname(), proxy.getPort(), Scheme.https.name());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Setup proxy %s", h));
                     }
+                    builder.setProxy(h);
                 }
             }
             final HttpClientConnectionManager manager = this.pool(registry);
@@ -178,14 +176,17 @@ public abstract class HttpSession<C> extends SSLSession<C> {
         return builder;
     }
 
-    protected RegistryBuilder<ConnectionSocketFactory> registry(final SocketConfigurator configurator) {
+    protected RegistryBuilder<ConnectionSocketFactory> registry() {
         return RegistryBuilder.<ConnectionSocketFactory>create()
                 .register(Scheme.http.toString(), new PlainConnectionSocketFactory() {
                     @Override
-                    public Socket createSocket(HttpContext context) throws IOException {
-                        final Socket socket = super.createSocket(context);
-                        configurator.configure(socket);
-                        return socket;
+                    public Socket createSocket(final HttpContext context) throws IOException {
+                        return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+                            @Override
+                            public String getTarget() {
+                                return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                            }
+                        }).createSocket();
                     }
                 })
                 .register(Scheme.https.toString(), new SSLConnectionSocketFactory(
@@ -193,10 +194,13 @@ public abstract class HttpSession<C> extends SSLSession<C> {
                         hostnameVerifier
                 ) {
                     @Override
-                    public Socket createSocket(HttpContext context) throws IOException {
-                        final Socket socket = super.createSocket(context);
-                        configurator.configure(socket);
-                        return socket;
+                    public Socket createSocket(final HttpContext context) throws IOException {
+                        return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+                            @Override
+                            public String getTarget() {
+                                return context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString();
+                            }
+                        }).createSocket();
                     }
 
                     @Override

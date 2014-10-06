@@ -1,9 +1,8 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,41 +15,62 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 /**
- * @version $Id$
- */
-public interface Proxy {
+* @version $Id$
+*/
+public final class Proxy {
 
-    /**
-     * Configure default proxy settings to connect to host
-     *
-     * @param host Host to connect to
-     */
-    void configure(Host host);
+    public enum Type {
+        /**
+         * Represents a direct connection, or the absence of a proxy.
+         */
+        DIRECT,
+        HTTP,
+        HTTPS,
+        /**
+         * Represents a SOCKS (V4 or V5) proxy.
+         */
+        SOCKS
+    }
 
-    /**
-     * @return True if PASV should be used by default
-     */
-    boolean usePassiveFTP();
+    private Type type;
+    private String hostname;
+    private int port;
 
-    boolean isSOCKSProxyEnabled(Host host);
+    private Proxy(final Type type) {
+        this.type = type;
+    }
 
-    String getSOCKSProxyHost(Host host);
+    public Proxy(final Type type, final String hostname, final int port) {
+        this.type = type;
+        this.hostname = hostname;
+        this.port = port;
+    }
 
-    int getSOCKSProxyPort(Host host);
+    public Type getType() {
+        return type;
+    }
 
-    boolean isHTTPProxyEnabled(Host host);
+    public String getHostname() {
+        return hostname;
+    }
 
-    String getHTTPProxyHost(Host host);
+    public int getPort() {
+        return port;
+    }
 
-    int getHTTPProxyPort(Host host);
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Proxy{");
+        sb.append("type=").append(type);
+        sb.append(", hostname='").append(hostname).append('\'');
+        sb.append(", port=").append(port);
+        sb.append('}');
+        return sb.toString();
+    }
 
-    boolean isHTTPSProxyEnabled(Host host);
-
-    String getHTTPSProxyHost(Host host);
-
-    int getHTTPSProxyPort(Host host);
+    public static final Proxy DIRECT = new Proxy(Type.DIRECT);
 }

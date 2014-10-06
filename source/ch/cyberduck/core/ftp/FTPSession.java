@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.ProxySocketFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -46,6 +47,7 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -122,6 +124,12 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     protected void configure(final FTPClient client) throws IOException {
+        client.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return host.getHostname();
+            }
+        }));
         client.setControlEncoding(this.getEncoding());
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
@@ -193,6 +201,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     protected FTPConnectMode getConnectMode() {
         if(FTPConnectMode.unknown == host.getFTPConnectMode()) {
             if(ProxyFactory.get().usePassiveFTP()) {
+                // Default to PASV
                 return FTPConnectMode.passive;
             }
             return FTPConnectMode.active;

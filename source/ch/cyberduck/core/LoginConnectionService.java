@@ -48,8 +48,6 @@ public class LoginConnectionService implements ConnectionService {
 
     private LoginService login;
 
-    private Proxy proxy;
-
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
@@ -64,21 +62,18 @@ public class LoginConnectionService implements ConnectionService {
         this(key,
                 new KeychainLoginService(prompt, keychain),
                 new Resolver(),
-                ProxyFactory.get(),
                 listener, transcript);
     }
 
     public LoginConnectionService(final HostKeyCallback key,
                                   final LoginService login,
                                   final Resolver resolver,
-                                  final Proxy proxy,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
         this.key = key;
         this.listener = listener;
         this.resolver = resolver;
         this.login = login;
-        this.proxy = proxy;
         this.transcript = transcript;
     }
 
@@ -136,9 +131,6 @@ public class LoginConnectionService implements ConnectionService {
             this.close(session, cache);
         }
         final Host bookmark = session.getHost();
-
-        // Configuring proxy if any
-        proxy.configure(bookmark);
 
         // Try to resolve the hostname first
         final HostnameConfigurator configurator = HostnameConfiguratorFactory.get(bookmark.getProtocol());

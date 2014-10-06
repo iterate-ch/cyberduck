@@ -243,6 +243,7 @@
 		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
+		47CE81A3199E28FA00CF9CE6 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */; };
 		47E72E0E162865000002F049 /* Editor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E07162865000002F049 /* Editor.h */; };
 		47E72E0F162865000002F049 /* NSAppleEventDescriptor-Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E08162865000002F049 /* NSAppleEventDescriptor-Extensions.h */; };
 		47E72E10162865000002F049 /* ODBEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E09162865000002F049 /* ODBEditor.h */; };
@@ -1470,6 +1471,7 @@
 		47CE3BF71799309F0031DB9F /* transfer-copy.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-copy.tiff"; sourceTree = "<group>"; };
 		47CE3BF81799309F0031DB9F /* transfer-move.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-move.tiff"; sourceTree = "<group>"; };
 		47CE3BF91799309F0031DB9F /* transfer-sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "transfer-sync.tiff"; sourceTree = "<group>"; };
+		47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		47CF43A31508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Alert.strings; sourceTree = "<group>"; };
 		47CF43A41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Archive.strings; sourceTree = "<group>"; };
 		47CF43A51508FCC000647729 /* ar */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ar; path = ar.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1658,6 +1660,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47CE81A3199E28FA00CF9CE6 /* CFNetwork.framework in Frameworks */,
 				4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				474523E21076B70000823467 /* Foundation.framework in Frameworks */,
 				4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */,
@@ -1813,6 +1816,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */,
 				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,

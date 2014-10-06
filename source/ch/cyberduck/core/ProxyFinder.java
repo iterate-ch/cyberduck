@@ -19,28 +19,14 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class ProxyFactory extends Factory<ProxyFinder> {
-
+public interface ProxyFinder {
     /**
-     * Registered factories
+     * @return True if PASV should be used by default
      */
-    private static final Map<Platform, ProxyFactory> factories = new HashMap<Platform, ProxyFactory>();
+    boolean usePassiveFTP();
 
-    public static void addFactory(Platform platform, ProxyFactory f) {
-        factories.put(platform, f);
-    }
-
-    public static ProxyFinder get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
-    }
-
+    Proxy find(Host target);
 }

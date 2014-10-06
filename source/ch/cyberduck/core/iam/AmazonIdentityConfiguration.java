@@ -17,7 +17,18 @@ package ch.cyberduck.core.iam;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainLoginService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -60,8 +71,12 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         configuration.setUserAgent(ua.get());
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
-        configuration.setProxyHost(ProxyFactory.get().getHTTPSProxyHost(host));
-        configuration.setProxyPort(ProxyFactory.get().getHTTPSProxyPort(host));
+        final Proxy proxy = ProxyFactory.get().find(host);
+        if(proxy.getType() == Proxy.Type.HTTP
+                || proxy.getType() == Proxy.Type.HTTPS) {
+            configuration.setProxyHost(proxy.getHostname());
+            configuration.setProxyPort(proxy.getPort());
+        }
         // Create new IAM credentials
         client = new AmazonIdentityManagementClient(
                 new com.amazonaws.auth.AWSCredentials() {
