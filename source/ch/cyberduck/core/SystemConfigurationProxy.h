@@ -45,10 +45,6 @@ extern "C" {
 
 + (BOOL)usePassiveFTP;
 
-+ (NSEnumerator*)getProxiesExceptionList;
-
-+ (BOOL)isSimpleHostnameExcluded;
-
 + (NSString *)find:(NSString*)targetURL;
 
 @end

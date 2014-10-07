@@ -21,12 +21,9 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
 
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -70,11 +67,6 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
 
     @Override
     public Proxy find(final Host target) {
-        final URI proxy;
-
-        if(this.isExcluded(target)) {
-            return Proxy.DIRECT;
-        }
         final String route = this.findNative(provider.get(target));
         if(null == route) {
             if(log.isInfoEnabled()) {
@@ -83,7 +75,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
             // Direct
             return Proxy.DIRECT;
         }
-        proxy = URI.create(route);
+        final URI proxy = URI.create(route);
         try {
             return new Proxy(Proxy.Type.valueOf(StringUtils.upperCase(proxy.getScheme())),
                     proxy.getHost(), proxy.getPort());
@@ -95,72 +87,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
     }
 
     /**
-     * @param hostname Hostname or CIDR notation
-     * @return True if host is excluded in native proxy configuration
-     */
-    protected boolean isExcluded(final Host target) {
-        try {
-            if(InetAddress.getLocalHost().equals(InetAddress.getByName(target.getHostname()))) {
-                return true;
-            }
-        }
-        catch(UnknownHostException e) {
-            // Should not happen as we resolve addresses before attempting to connect
-            log.warn(e.getMessage());
-        }
-        if(!target.getHostname().contains(".")) {
-            // Non fully qualified hostname
-            if(this.isSimpleHostnameExcludedNative()) {
-                return true;
-            }
-        }
-        for(String exception : this.getProxyExceptionsNative()) {
-            if(StringUtils.isBlank(exception)) {
-                continue;
-            }
-            if(this.isExcluded(target, exception)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean isExcluded(final Host target, final String exception) {
-        if(this.matches(exception, target.getHostname())) {
-            return true;
-        }
-        try {
-            final SubnetUtils subnet = new SubnetUtils(exception);
-            try {
-                final String ip = InetAddress.getByName(target.getHostname()).getHostAddress();
-                if(subnet.getInfo().isInRange(ip)) {
-                    return true;
-                }
-            }
-            catch(UnknownHostException e) {
-                // Should not happen as we resolve addresses before attempting to connect
-                log.warn(e.getMessage());
-            }
-        }
-        catch(IllegalArgumentException e) {
-            // A hostname pattern but not CIDR. Does not
-            // match n.n.n.n/m where n=1-3 decimal digits, m = 1-3 decimal digits in range 1-32
-            log.debug("Invalid CIDR notation:" + e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Check to see if the hostname is excluded from proxy settings
-     *
-     * @return Exception patterns
-     */
-    public native String[] getProxyExceptionsNative();
-
-    public native boolean isSimpleHostnameExcludedNative();
-
-    /**
-     * SOCKS proxy setting enabled
+     * Find SOCKS and HTTP proxy settings
      *
      * @param target The URL the application intends to access
      * @return Proxy URL or null if direct connection

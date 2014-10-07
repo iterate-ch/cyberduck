@@ -24,29 +24,6 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePa
 	return [Proxy usePassiveFTP];
 }
 
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getProxyExceptionsNative(JNIEnv *env, jobject this)
-{
-    jint i = 0;
-    NSArray* exceptions;
-    NSEnumerator* list = [Proxy getProxiesExceptionList];
-    if(nil == list) {
-        exceptions = [NSArray array];
-    }
-    else {
-        exceptions = [list allObjects];
-    }
-    jobjectArray result = (jobjectArray)(*env)->NewObjectArray(env, [exceptions count], (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
-    for(i = 0; i < [exceptions count]; i++) {
-        (*env)->SetObjectArrayElement(env, result, i, JNFNSToJavaString(env, [exceptions objectAtIndex:i]));
-    }
-    return result;
-}
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSimpleHostnameExcludedNative(JNIEnv *env, jobject this)
-{
-	return [Proxy isSimpleHostnameExcluded];
-}
-
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
 
@@ -138,28 +115,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
         CFRelease(proxies);
     }
     return enabled;
-}
-
-+ (NSEnumerator*)getProxiesExceptionList {
-	NSDictionary *proxyConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
-    if(!proxyConfiguration) {
-        // No proxy settings have been defined
-        return nil;
-    }
-    NSEnumerator *exceptions = [[proxyConfiguration objectForKey:(NSString *)kCFNetworkProxiesExceptionsList] objectEnumerator];
-    CFRelease(proxyConfiguration);
-    return exceptions;
-}
-
-+ (BOOL)isSimpleHostnameExcluded {
-	NSDictionary *proxyConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
-    if(!proxyConfiguration) {
-        // No proxy settings have been defined
-        return NO;
-    }
-    BOOL enabled = [proxyConfiguration objectForKey:(NSString *)kCFNetworkProxiesExcludeSimpleHostnames];
-    CFRelease(proxyConfiguration);
-	return enabled;
 }
 
 @end
