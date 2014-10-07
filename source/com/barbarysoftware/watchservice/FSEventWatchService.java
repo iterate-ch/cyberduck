@@ -24,28 +24,28 @@ import com.sun.jna.Pointer;
  *
  * @author Steve McLeod
  */
-class MacOSXWatchService extends AbstractWatchService {
+public class FSEventWatchService extends AbstractWatchService {
 
-    // need to keep reference to callbacks to prevent garbage collection
-    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
-    private final List<CarbonAPI.FSEventStreamCallback> callbackList = new ArrayList<CarbonAPI.FSEventStreamCallback>();
-    private final List<CFRunLoopThread> threadList = new ArrayList<CFRunLoopThread>();
+    private CFRunLoopThread thread;
 
     @Override
-    WatchKey register(WatchableFile watchableFile, WatchEvent.Kind<?>[] events, WatchEvent.Modifier... modifers) throws IOException {
+    public WatchKey register(final WatchableFile watchableFile, WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) {
         final File file = watchableFile.getFile();
         final Map<File, Long> lastModifiedMap = createLastModifiedMap(file);
         final String s = file.getAbsolutePath();
-        final Pointer[] values = {CFStringRef.toCFString(s).getPointer()};
+        final Pointer[] values = {
+                CFStringRef.toCFString(s).getPointer()
+        };
         final CFArrayRef pathsToWatch = CarbonAPI.INSTANCE.CFArrayCreate(null, values, CFIndex.valueOf(1), null);
         final MacOSXWatchKey watchKey = new MacOSXWatchKey(this, events);
 
-        final double latency = 1.0; /* Latency in seconds */
+        final double latency = 1.0; // Latency in seconds
 
-        final long kFSEventStreamEventIdSinceNow = -1; //  this is 0xFFFFFFFFFFFFFFFF
+        final long kFSEventStreamEventIdSinceNow = -1; // This is 0xFFFFFFFFFFFFFFFF
+        final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
         final int kFSEventStreamCreateFlagNoDefer = 0x00000002;
+        final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
         final CarbonAPI.FSEventStreamCallback callback = new Callback(watchKey, lastModifiedMap);
-        callbackList.add(callback);
         final FSEventStreamRef stream = CarbonAPI.INSTANCE.FSEventStreamCreate(
                 Pointer.NULL,
                 callback,
@@ -55,14 +55,13 @@ class MacOSXWatchService extends AbstractWatchService {
                 latency,
                 kFSEventStreamCreateFlagNoDefer);
 
-        final CFRunLoopThread thread = new CFRunLoopThread(stream);
+        thread = new CFRunLoopThread(stream);
         thread.setDaemon(true);
         thread.start();
-        threadList.add(thread);
         return watchKey;
     }
 
-    public static class CFRunLoopThread extends Thread {
+    private static final class CFRunLoopThread extends Thread {
 
         private final FSEventStreamRef streamRef;
         private CFRunLoopRef runLoop;
@@ -91,7 +90,7 @@ class MacOSXWatchService extends AbstractWatchService {
 
     private Map<File, Long> createLastModifiedMap(File folder) {
         Map<File, Long> lastModifiedMap = new ConcurrentHashMap<File, Long>();
-        for (File file : recursiveListFiles(folder)) {
+        for(File file : recursiveListFiles(folder)) {
             lastModifiedMap.put(file, file.lastModified());
         }
         return lastModifiedMap;
@@ -104,10 +103,11 @@ class MacOSXWatchService extends AbstractWatchService {
             if(null == children) {
                 return files;
             }
-            for (File file : children) {
-                if (file.isDirectory()) {
+            for(File file : children) {
+                if(file.isDirectory()) {
                     files.addAll(recursiveListFiles(file));
-                } else {
+                }
+                else {
                     files.add(file);
                 }
             }
@@ -117,12 +117,8 @@ class MacOSXWatchService extends AbstractWatchService {
 
     @Override
     void implClose() throws IOException {
-        for (CFRunLoopThread thread : threadList) {
-            CarbonAPI.INSTANCE.CFRunLoopStop(thread.getRunLoop());
-            CarbonAPI.INSTANCE.FSEventStreamStop(thread.getStreamRef());
-        }
-        threadList.clear();
-        callbackList.clear();
+        CarbonAPI.INSTANCE.CFRunLoopStop(thread.getRunLoop());
+        CarbonAPI.INSTANCE.FSEventStreamStop(thread.getStreamRef());
     }
 
 
@@ -132,18 +128,20 @@ class MacOSXWatchService extends AbstractWatchService {
         private final boolean reportModifyEvents;
         private final boolean reportDeleteEvents;
 
-        public MacOSXWatchKey(MacOSXWatchService macOSXWatchService, WatchEvent.Kind<?>[] events) {
-            super(macOSXWatchService);
+        public MacOSXWatchKey(FSEventWatchService FSEventWatchService, WatchEvent.Kind<?>[] events) {
+            super(FSEventWatchService);
             boolean reportCreateEvents = false;
             boolean reportModifyEvents = false;
             boolean reportDeleteEvents = false;
 
-            for (WatchEvent.Kind<?> event : events) {
-                if (event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_CREATE) {
+            for(WatchEvent.Kind<?> event : events) {
+                if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_CREATE) {
                     reportCreateEvents = true;
-                } else if (event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_MODIFY) {
+                }
+                else if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_MODIFY) {
                     reportModifyEvents = true;
-                } else if (event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_DELETE) {
+                }
+                else if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_DELETE) {
                     reportDeleteEvents = true;
                 }
             }
@@ -187,27 +185,24 @@ class MacOSXWatchService extends AbstractWatchService {
         public void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents,
                            Pointer eventPaths, Pointer /* array of unsigned int */ eventFlags, /* array of unsigned long */ Pointer eventIds) {
             final int length = numEvents.intValue();
-
-            for (String folderName : eventPaths.getStringArray(0, length)) {
-
+            for(String folderName : eventPaths.getStringArray(0, length)) {
                 final Set<File> filesOnDisk = recursiveListFiles(new File(folderName));
-
-                for (File file : findCreatedFiles(filesOnDisk)) {
-                    if (watchKey.isReportCreateEvents()) {
+                for(File file : findCreatedFiles(filesOnDisk)) {
+                    if(watchKey.isReportCreateEvents()) {
                         watchKey.signalEvent(StandardWatchEventKind.ENTRY_CREATE, file);
                     }
                     lastModifiedMap.put(file, file.lastModified());
                 }
 
-                for (File file : findModifiedFiles(filesOnDisk)) {
-                    if (watchKey.isReportModifyEvents()) {
+                for(File file : findModifiedFiles(filesOnDisk)) {
+                    if(watchKey.isReportModifyEvents()) {
                         watchKey.signalEvent(StandardWatchEventKind.ENTRY_MODIFY, file);
                     }
                     lastModifiedMap.put(file, file.lastModified());
                 }
 
-                for (File file : findDeletedFiles(folderName, filesOnDisk)) {
-                    if (watchKey.isReportDeleteEvents()) {
+                for(File file : findDeletedFiles(folderName, filesOnDisk)) {
+                    if(watchKey.isReportDeleteEvents()) {
                         watchKey.signalEvent(StandardWatchEventKind.ENTRY_DELETE, file);
                     }
                     lastModifiedMap.remove(file);
@@ -217,9 +212,9 @@ class MacOSXWatchService extends AbstractWatchService {
 
         private List<File> findModifiedFiles(Set<File> filesOnDisk) {
             List<File> modifiedFileList = new ArrayList<File>();
-            for (File file : filesOnDisk) {
+            for(File file : filesOnDisk) {
                 final Long lastModified = lastModifiedMap.get(file);
-                if (lastModified != null && lastModified != file.lastModified()) {
+                if(lastModified != null && lastModified != file.lastModified()) {
                     modifiedFileList.add(file);
                 }
             }
@@ -228,8 +223,8 @@ class MacOSXWatchService extends AbstractWatchService {
 
         private List<File> findCreatedFiles(Set<File> filesOnDisk) {
             List<File> createdFileList = new ArrayList<File>();
-            for (File file : filesOnDisk) {
-                if (!lastModifiedMap.containsKey(file)) {
+            for(File file : filesOnDisk) {
+                if(!lastModifiedMap.containsKey(file)) {
                     createdFileList.add(file);
                 }
             }
@@ -238,8 +233,8 @@ class MacOSXWatchService extends AbstractWatchService {
 
         private List<File> findDeletedFiles(String folderName, Set<File> filesOnDisk) {
             List<File> deletedFileList = new ArrayList<File>();
-            for (File file : lastModifiedMap.keySet()) {
-                if (file.getAbsolutePath().startsWith(folderName) && !filesOnDisk.contains(file)) {
+            for(File file : lastModifiedMap.keySet()) {
+                if(file.getAbsolutePath().startsWith(folderName) && !filesOnDisk.contains(file)) {
                     deletedFileList.add(file);
                 }
             }

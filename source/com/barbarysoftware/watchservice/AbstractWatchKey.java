@@ -32,17 +32,17 @@ import java.util.List;
  * Base implementation class for watch keys.
  */
 
-abstract class AbstractWatchKey extends WatchKey {
+abstract class AbstractWatchKey implements WatchKey {
 
     /**
      * Maximum size of event list (in the future this may be tunable)
      */
-    static final int MAX_EVENT_LIST_SIZE = 512;
+    private static final int MAX_EVENT_LIST_SIZE = 512;
 
     /**
      * Special event to signal overflow
      */
-    static final Event<Void> OVERFLOW_EVENT =
+    private static final Event<Void> OVERFLOW_EVENT =
             new Event<Void>(StandardWatchEventKind.OVERFLOW, null);
 
     /**
@@ -75,8 +75,8 @@ abstract class AbstractWatchKey extends WatchKey {
      * Enqueues this key to the watch service
      */
     final void signal() {
-        synchronized (this) {
-            if (state == State.READY) {
+        synchronized(this) {
+            if(state == State.READY) {
                 state = State.SIGNALLED;
                 watcher.enqueueKey(this);
             }
@@ -85,30 +85,32 @@ abstract class AbstractWatchKey extends WatchKey {
 
     /**
      * Adds the event to this key and signals it.
-     * @param kind   event kind
+     *
+     * @param kind    event kind
      * @param context context
      */
     @SuppressWarnings("unchecked")
     final void signalEvent(WatchEvent.Kind<?> kind, Object context) {
-        synchronized (this) {
+        synchronized(this) {
             int size = events.size();
-            if (size > 1) {
+            if(size > 1) {
                 // don't let list get too big
-                if (size >= MAX_EVENT_LIST_SIZE) {
+                if(size >= MAX_EVENT_LIST_SIZE) {
                     kind = StandardWatchEventKind.OVERFLOW;
                     context = null;
                 }
 
                 // repeated event
                 WatchEvent<?> prev = events.get(size - 1);
-                if (kind == prev.kind()) {
+                if(kind == prev.kind()) {
                     boolean isRepeat;
-                    if (context == null) {
+                    if(context == null) {
                         isRepeat = (prev.context() == null);
-                    } else {
+                    }
+                    else {
                         isRepeat = context.equals(prev.context());
                     }
-                    if (isRepeat) {
+                    if(isRepeat) {
                         ((Event<?>) prev).increment();
                         return;
                     }
@@ -123,7 +125,7 @@ abstract class AbstractWatchKey extends WatchKey {
 
     @Override
     public final List<WatchEvent<?>> pollEvents() {
-        synchronized (this) {
+        synchronized(this) {
             List<WatchEvent<?>> result = events;
             events = new ArrayList<WatchEvent<?>>();
             return result;
@@ -132,11 +134,12 @@ abstract class AbstractWatchKey extends WatchKey {
 
     @Override
     public final boolean reset() {
-        synchronized (this) {
-            if (state == State.SIGNALLED && isValid()) {
-                if (events.isEmpty()) {
+        synchronized(this) {
+            if(state == State.SIGNALLED && isValid()) {
+                if(events.isEmpty()) {
                     state = State.READY;
-                } else {
+                }
+                else {
                     // pending events so re-queue key
                     watcher.enqueueKey(this);
                 }

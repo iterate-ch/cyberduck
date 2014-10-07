@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 import com.barbarysoftware.watchservice.ClosedWatchServiceException;
+import com.barbarysoftware.watchservice.FSEventWatchService;
 import com.barbarysoftware.watchservice.WatchEvent;
 import com.barbarysoftware.watchservice.WatchKey;
 import com.barbarysoftware.watchservice.WatchService;
@@ -51,7 +52,7 @@ public final class FileWatcher implements FileWatcherCallback {
     private ThreadPool pool;
 
     public FileWatcher() {
-        monitor = WatchService.newWatchService();
+        monitor = new FSEventWatchService();
         pool = new ThreadPool(1, "watcher");
     }
 

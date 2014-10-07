@@ -1,20 +1,24 @@
 package com.barbarysoftware.watchservice;
 
-import java.util.concurrent.TimeUnit;
-
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-public abstract class WatchService implements Closeable {
+public interface WatchService extends Closeable {
 
-    protected WatchService() {
-    }
+    /**
+     * Register the given object with this watch service
+     */
+    WatchKey register(WatchableFile watchableFile,
+                      WatchEvent.Kind<?>[] events,
+                      WatchEvent.Modifier... modifers)
+            throws IOException;
 
     /**
      * Closes this watch service.
      * <p/>
      * <p> If a thread is currently blocked in the {@link #take take} or {@link
-     * #poll(long,TimeUnit) poll} methods waiting for a key to be queued then
+     * #poll(long, TimeUnit) poll} methods waiting for a key to be queued then
      * it immediately receives a {@link ClosedWatchServiceException}. Any
      * valid keys associated with this watch service are {@link WatchKey#isValid
      * invalidated}.
@@ -26,7 +30,7 @@ public abstract class WatchService implements Closeable {
      *
      * @throws IOException if an I/O error occurs
      */
-    public abstract void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Retrieves and removes the next watch key, or {@code null} if none are
@@ -35,7 +39,7 @@ public abstract class WatchService implements Closeable {
      * @return the next watch key, or {@code null}
      * @throws ClosedWatchServiceException if this watch service is closed
      */
-    public abstract WatchKey poll();
+    WatchKey poll();
 
     /**
      * Retrieves and removes the next watch key, waiting if necessary up to the
@@ -49,7 +53,7 @@ public abstract class WatchService implements Closeable {
      *                                     for the next key
      * @throws InterruptedException        if interrupted while waiting
      */
-    public abstract WatchKey poll(long timeout, TimeUnit unit)
+    WatchKey poll(long timeout, TimeUnit unit)
             throws InterruptedException;
 
     /**
@@ -60,10 +64,5 @@ public abstract class WatchService implements Closeable {
      *                                     for the next key
      * @throws InterruptedException        if interrupted while waiting
      */
-    public abstract WatchKey take() throws InterruptedException;
-
-    public static WatchService newWatchService() {
-        return new MacOSXWatchService();
-    }
-
+    WatchKey take() throws InterruptedException;
 }

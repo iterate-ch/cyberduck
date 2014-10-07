@@ -30,17 +30,17 @@ import java.util.List;
 /**
  * A token representing the registration of a {@link Watchable watchable} object
  * with a {@link WatchService}.
- *
+ * <p/>
  * <p> A watch key is created when a watchable object is registered with a watch
  * service. The key remains {@link #isValid valid} until:
  * <ol>
- *   <li> It is cancelled, explicitly, by invoking its {@link #cancel cancel}
- *     method, or</li>
- *   <li> Cancelled implicitly, because the object is no longer accessible,
- *     or </li>
- *   <li> By {@link WatchService#close closing} the watch service. </li>
+ * <li> It is cancelled, explicitly, by invoking its {@link #cancel cancel}
+ * method, or</li>
+ * <li> Cancelled implicitly, because the object is no longer accessible,
+ * or </li>
+ * <li> By {@link WatchService#close closing} the watch service. </li>
  * </ol>
- *
+ * <p/>
  * <p> A watch key has a state. When initially created the key is said to be
  * <em>ready</em>. When an event is detected then the key is <em>signalled</em>
  * and queued so that it can be retrieved by invoking the watch service's {@link
@@ -53,7 +53,7 @@ import java.util.List;
  * retrieves and removes all events accumulated for the object. When initially
  * created, a watch key has no pending events. Typically events are retrieved
  * when the key is in the signalled state leading to the following idiom:
- *
+ * <p/>
  * <pre>
  *     for (;;) {
  *         // retrieve key
@@ -71,7 +71,7 @@ import java.util.List;
  *         }
  *     }
  * </pre>
- *
+ * <p/>
  * <p> Watch keys are safe for use by multiple concurrent threads. Where there
  * are several threads retrieving signalled keys from a watch service then care
  * should be taken to ensure that the {@code reset} method is only invoked after
@@ -81,35 +81,31 @@ import java.util.List;
  * @since 1.7
  */
 
-public abstract class WatchKey {
-    /**
-     * Initializes a new instance of this class.
-     */
-    protected WatchKey() { }
+public interface WatchKey {
 
     /**
      * Tells whether or not this watch key is valid.
-     *
+     * <p/>
      * <p> A watch key is valid upon creation and remains until it is cancelled,
      * or its watch service is closed.
      *
-     * @return  {@code true} if, and only if, this watch key is valid
+     * @return {@code true} if, and only if, this watch key is valid
      */
-    public abstract boolean isValid();
+    boolean isValid();
 
     /**
      * Retrieves and removes all pending events for this watch key, returning
      * a {@code List} of the events that were retrieved.
-     *
+     * <p/>
      * <p> Note that this method does not wait if there are no events pending.
      *
-     * @return  the list of the events retrieved; may be empty
+     * @return the list of the events retrieved; may be empty
      */
-    public abstract List<WatchEvent<?>> pollEvents();
+    List<WatchEvent<?>> pollEvents();
 
     /**
      * Resets this watch key.
-     *
+     * <p/>
      * <p> If this watch key has been cancelled or this watch key is already in
      * the ready state then invoking this method has no effect. Otherwise
      * if there are pending events for the object then this watch key is
@@ -117,11 +113,11 @@ public abstract class WatchKey {
      * events then the watch key is put into the ready state and will remain in
      * that state until an event is detected or the watch key is cancelled.
      *
-     * @return  {@code true} if the watch key is valid and has been reset, and
-     *          {@code false} if the watch key could not be reset because it is
-     *          no longer {@link #isValid valid}
+     * @return {@code true} if the watch key is valid and has been reset, and
+     * {@code false} if the watch key could not be reset because it is
+     * no longer {@link #isValid valid}
      */
-    public abstract boolean reset();
+    boolean reset();
 
     /**
      * Cancels the registration with the watch service. Upon return the watch key
@@ -130,9 +126,9 @@ public abstract class WatchKey {
      * removed. Pending events, if any, remain pending and may be retrieved by
      * invoking the {@link #pollEvents pollEvents} method after the key is
      * cancelled.
-     *
+     * <p/>
      * <p> If this watch key has already been cancelled then invoking this
      * method has no effect.  Once cancelled, a watch key remains forever invalid.
      */
-    public abstract void cancel();
+    void cancel();
 }

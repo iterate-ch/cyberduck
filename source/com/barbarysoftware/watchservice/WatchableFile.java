@@ -15,28 +15,25 @@ public class WatchableFile implements Watchable {
         return file;
     }
 
-    public WatchKey register(WatchService watcher,
-                             WatchEvent.Kind<?>[] events,
-                             WatchEvent.Modifier... modifiers)
-            throws IOException {
-        if(!(watcher instanceof AbstractWatchService)) {
-            throw new ProviderMismatchException();
-        }
-        return ((AbstractWatchService) watcher).register(this, events, modifiers);
+    public WatchKey register(final WatchService watcher,
+                             final WatchEvent.Kind<?>[] events,
+                             final WatchEvent.Modifier... modifiers) throws IOException {
+        return watcher.register(this, events, modifiers);
     }
 
     private static final WatchEvent.Modifier[] NO_MODIFIERS = new WatchEvent.Modifier[0];
 
-    public final WatchKey register(WatchService watcher,
-                                   WatchEvent.Kind<?>... events)
+    public final WatchKey register(final WatchService watcher,
+                                   final WatchEvent.Kind<?>... events)
             throws IOException {
         return register(watcher, events, NO_MODIFIERS);
     }
 
     @Override
     public String toString() {
-        return "Path{" +
-                "file=" + file +
-                '}';
+        final StringBuilder sb = new StringBuilder("WatchableFile{");
+        sb.append("file=").append(file);
+        sb.append('}');
+        return sb.toString();
     }
 }

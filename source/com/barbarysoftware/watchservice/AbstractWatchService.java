@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * Base implementation class for watch services.
  */
 
-abstract class AbstractWatchService extends WatchService {
+abstract class AbstractWatchService implements WatchService {
 
     // signaled keys waiting to be dequeued
     private final LinkedBlockingDeque pendingKeys =
@@ -57,14 +57,6 @@ abstract class AbstractWatchService extends WatchService {
 
     protected AbstractWatchService() {
     }
-
-    /**
-     * Register the given object with this watch service
-     */
-    abstract WatchKey register(WatchableFile watchableFile,
-                               WatchEvent.Kind<?>[] events,
-                               WatchEvent.Modifier... modifers)
-            throws IOException;
 
     // used by AbstractWatchKey to enqueue key
 

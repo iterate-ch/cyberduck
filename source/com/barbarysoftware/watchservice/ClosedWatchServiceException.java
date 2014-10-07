@@ -31,9 +31,8 @@ package com.barbarysoftware.watchservice;
  */
 
 public class ClosedWatchServiceException
-    extends IllegalStateException
-{
-    static final long serialVersionUID = 1853336266231677732L;
+        extends IllegalStateException {
+    private static final long serialVersionUID = 1853336266231677732L;
 
     /**
      * Constructs an instance of this class.
