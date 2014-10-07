@@ -53,7 +53,7 @@ using ArrayList = System.Collections.ArrayList;
 using Keychain = Ch.Cyberduck.Core.Keychain;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
-using Proxy = Ch.Cyberduck.Core.Proxy;
+using SystemProxy = Ch.Cyberduck.Core.SystemProxy;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -207,7 +207,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UserPreferences.Register();
             LocalImpl.Register();
             LicenseImpl.Register();
-            Proxy.Register();
+            SystemProxy.Register();
             RecycleLocalTrashFeature.Register();
             LocaleImpl.Register();
             Keychain.Register();
