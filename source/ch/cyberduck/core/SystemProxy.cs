@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Core
                 return Proxy.DIRECT;
             }
             Uri proxy = _system.GetProxy(new Uri(target));
-            return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), new InetSocketAddress(proxy.Host, proxy.Port));
+            return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
         }
 
         public static void Register()
