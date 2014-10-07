@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -47,12 +49,15 @@ public class FileWatcherTest extends AbstractTestCase {
                     fail();
                 }
                 try {
-                    delete.await();
+                    delete.await(1L, TimeUnit.SECONDS);
                 }
                 catch(InterruptedException e) {
                     fail();
                 }
                 catch(BrokenBarrierException e) {
+                    fail();
+                }
+                catch(TimeoutException e) {
                     fail();
                 }
             }
@@ -66,12 +71,15 @@ public class FileWatcherTest extends AbstractTestCase {
                     fail();
                 }
                 try {
-                    create.await();
+                    create.await(1L, TimeUnit.SECONDS);
                 }
                 catch(InterruptedException e) {
                     fail();
                 }
                 catch(BrokenBarrierException e) {
+                    fail();
+                }
+                catch(TimeoutException e) {
                     fail();
                 }
             }
