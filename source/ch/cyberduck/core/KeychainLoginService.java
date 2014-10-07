@@ -47,6 +47,7 @@ public class KeychainLoginService implements LoginService {
                       final ProgressListener listener, final TranscriptListener transcript,
                       final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
+
         // Obtain password from keychain or prompt
         this.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
@@ -147,6 +148,16 @@ public class KeychainLoginService implements LoginService {
                 controller.prompt(bookmark.getProtocol(), credentials,
                         LocaleFactory.localizedString("Login", "Login"),
                         appender.toString(), options);
+            }
+        }
+        else {
+            if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+                final String password = keychain.find(bookmark);
+                if(StringUtils.isNotBlank(password)) {
+                    credentials.setPassword(password);
+                    // No need to reinsert found password to the keychain.
+                    credentials.setSaved(false);
+                }
             }
         }
     }

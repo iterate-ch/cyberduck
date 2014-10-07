@@ -119,7 +119,34 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         credentials.setIdentity(new NullLocal("t"));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         l.validate(host, "m", new LoginOptions(host.getProtocol()).publickey(true));
+        assertFalse(credentials.isSaved());
         assertTrue(keychain.get());
         assertTrue(select.get());
+    }
+
+    @Test
+    public void testFindPasswordSftp() throws Exception {
+        final AtomicBoolean keychain = new AtomicBoolean(false);
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
+            @Override
+            public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
+                    throws LoginCanceledException {
+                fail();
+            }
+        }, new DisabledPasswordStore() {
+            @Override
+            public String find(final Host host) {
+                keychain.set(true);
+                return "P";
+            }
+        }
+        );
+        final Credentials credentials = new Credentials();
+        credentials.setUsername("u");
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
+        l.validate(host, "m", new LoginOptions(host.getProtocol()));
+        assertTrue(keychain.get());
+        assertFalse(host.getCredentials().isSaved());
+        assertEquals("P", host.getCredentials().getPassword());
     }
 }
