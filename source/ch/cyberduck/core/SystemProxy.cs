@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Core
             string target = new HostUrlProvider(false).get(host);
             if (_system.IsBypassed(new Uri(target)))
             {
-                return Proxy.NO_PROXY;
+                return Proxy.DIRECT;
             }
             Uri proxy = _system.GetProxy(new Uri(target));
             return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), new InetSocketAddress(proxy.Host, proxy.Port));
