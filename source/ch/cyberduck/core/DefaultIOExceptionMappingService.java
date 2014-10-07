@@ -35,7 +35,7 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
     private static final Logger log = Logger.getLogger(DefaultIOExceptionMappingService.class);
 
     public BackgroundException map(final IOException failure, final Path directory) {
-        return this.map("Connection failed", failure, directory);
+        return super.map("Connection failed", failure, directory);
     }
 
     @Override
