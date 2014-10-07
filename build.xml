@@ -157,6 +157,7 @@
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
                 <include name="ch/cyberduck/ui/**/*.class"/>
+                <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/core.jar"
