@@ -2758,9 +2758,11 @@ public class BrowserController extends WindowController
     public void uploadButtonClicked(final ID sender) {
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
+        uploadPanel.setCanChooseFiles(session.getFeature(Touch.class).isSupported(
+                new UploadTargetFinder(workdir).find(this.getSelectedPath())
+        ));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
-        uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(LocaleFactory.localizedString("Upload"));
         if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
@@ -3775,9 +3777,7 @@ public class BrowserController extends WindowController
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isBrowser() && this.isMounted() && session.getFeature(Touch.class).isSupported(
-                    new UploadTargetFinder(workdir).find(this.getSelectedPath())
-            );
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isBrowser() && this.isMounted();

@@ -284,7 +284,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             log.debug(String.format("Accept drop for destination %s", destination));
         }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             // Mount .webloc URLs dragged to browser window
             if(o != null) {
                 if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
@@ -300,7 +300,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(controller.isMounted()) {
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
                     if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
@@ -364,7 +364,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             // Dragging URLs to mount new session
-            NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -391,15 +391,26 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
-            final Touch feature = controller.getSession().getFeature(Touch.class);
-            if(!feature.isSupported(destination)) {
-                // Target file system does not support creating files. Creating files is not supported
-                // for example in root of cloud storage accounts.
-                return NSDraggingInfo.NSDragOperationNone;
-            }
             // Files dragged form other application
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 this.setDropRowAndDropOperation(view, destination, row);
+                final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                if(o != null) {
+                    if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
+                        final NSArray elements = Rococoa.cast(o, NSArray.class);
+                        for(int i = 0; i < elements.count().intValue(); i++) {
+                            final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                            if(local.isFile()) {
+                                final Touch feature = controller.getSession().getFeature(Touch.class);
+                                if(!feature.isSupported(destination)) {
+                                    // Target file system does not support creating files. Creating files is not supported
+                                    // for example in root of cloud storage accounts.
+                                    return NSDraggingInfo.NSDragOperationNone;
+                                }
+                            }
+                        }
+                    }
+                }
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             // Files dragged from browser
