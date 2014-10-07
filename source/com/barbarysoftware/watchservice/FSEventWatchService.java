@@ -119,6 +119,8 @@ public class FSEventWatchService extends AbstractWatchService {
     void implClose() throws IOException {
         CarbonAPI.INSTANCE.CFRunLoopStop(thread.getRunLoop());
         CarbonAPI.INSTANCE.FSEventStreamStop(thread.getStreamRef());
+        CarbonAPI.INSTANCE.FSEventStreamInvalidate(thread.getStreamRef());
+        CarbonAPI.INSTANCE.FSEventStreamRelease(thread.getStreamRef());
     }
 
 
