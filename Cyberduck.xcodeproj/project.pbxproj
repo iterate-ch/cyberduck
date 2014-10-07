@@ -30,6 +30,7 @@
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
 		4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */; };
 		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
+		471C664419E3E20700D7266E /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
 		471F77AD180439B500A4C196 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -243,7 +244,6 @@
 		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
-		47CE81A3199E28FA00CF9CE6 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47CE81A2199E28FA00CF9CE6 /* CFNetwork.framework */; };
 		47E72E0E162865000002F049 /* Editor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E07162865000002F049 /* Editor.h */; };
 		47E72E0F162865000002F049 /* NSAppleEventDescriptor-Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E08162865000002F049 /* NSAppleEventDescriptor-Extensions.h */; };
 		47E72E10162865000002F049 /* ODBEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E09162865000002F049 /* ODBEditor.h */; };
@@ -1660,7 +1660,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47CE81A3199E28FA00CF9CE6 /* CFNetwork.framework in Frameworks */,
+				471C664419E3E20700D7266E /* CoreServices.framework in Frameworks */,
 				4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */,
 				474523E21076B70000823467 /* Foundation.framework in Frameworks */,
 				4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */,
