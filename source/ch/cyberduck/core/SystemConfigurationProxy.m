@@ -155,7 +155,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
 	NSDictionary *proxyConfiguration = (NSDictionary *)CFNetworkCopySystemProxySettings();
     if(!proxyConfiguration) {
         // No proxy settings have been defined
-        return nil;
+        return NO;
     }
     BOOL enabled = [proxyConfiguration objectForKey:(NSString *)kCFNetworkProxiesExcludeSimpleHostnames];
     CFRelease(proxyConfiguration);
