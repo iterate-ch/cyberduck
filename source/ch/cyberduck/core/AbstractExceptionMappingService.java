@@ -22,12 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLException;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -75,6 +76,9 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             log.warn(String.format("No message for failure %s", failure));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
         }
+        if(failure instanceof SSLException) {
+            return new SSLExceptionMappingService().map((SSLException) failure);
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof InterruptedIOException) {
                 // Handling socket timeouts
@@ -90,9 +94,6 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
             if(cause instanceof UnknownHostException) {
-                return new ConnectionRefusedException(buffer.toString(), failure);
-            }
-            if(cause instanceof SSLHandshakeException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }

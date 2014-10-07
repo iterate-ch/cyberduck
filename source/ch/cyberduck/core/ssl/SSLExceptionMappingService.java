@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +30,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLKeyException;
-import javax.net.ssl.SSLProtocolException;
 import java.net.SocketException;
 import java.security.cert.CertificateException;
 
@@ -178,7 +177,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         if(ExceptionUtils.getRootCause(failure) instanceof SocketException) {
             // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
             this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
-            return this.wrap(failure, buffer);
+            return new ConnectionRefusedException(buffer.toString(), failure);
         }
         if(failure instanceof SSLHandshakeException) {
             if(ExceptionUtils.getRootCause(failure) instanceof CertificateException) {
@@ -186,6 +185,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
             }
+            return new ConnectionRefusedException(buffer.toString(), failure);
         }
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
@@ -197,15 +197,6 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         if(buffer.length() == 0) {
             this.append(buffer, message);
         }
-        if(failure instanceof SSLProtocolException) {
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        if(failure instanceof SSLHandshakeException) {
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        if(failure instanceof SSLKeyException) {
-            return new InteroperabilityException(buffer.toString(), failure);
-        }
-        return this.wrap(failure, buffer);
+        return new InteroperabilityException(buffer.toString(), failure);
     }
 }

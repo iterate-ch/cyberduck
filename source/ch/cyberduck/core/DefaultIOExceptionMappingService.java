@@ -19,13 +19,11 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
 
 /**
@@ -40,9 +38,6 @@ public class DefaultIOExceptionMappingService extends AbstractExceptionMappingSe
 
     @Override
     public BackgroundException map(final IOException failure) {
-        if(failure instanceof SSLException) {
-            return new SSLExceptionMappingService().map((SSLException) failure);
-        }
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
