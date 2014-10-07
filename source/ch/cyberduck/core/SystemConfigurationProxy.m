@@ -124,7 +124,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
 + (NSString*)evaluate:(NSDictionary *) dict
 {
    return [NSString stringWithFormat:@"%@://%@:%@",
-           [dict objectForKey:(NSString *)kCFProxyTypeKey],
+           [[dict objectForKey:(NSString *)kCFProxyTypeKey] componentsSeparatedByString:@"kCFProxyType"][1],
            [dict objectForKey:(NSString *)kCFProxyHostNameKey],
            [dict objectForKey:(NSString *)kCFProxyPortNumberKey]];
 }
