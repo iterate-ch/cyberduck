@@ -46,7 +46,7 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));

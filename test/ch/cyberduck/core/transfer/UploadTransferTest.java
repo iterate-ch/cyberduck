@@ -193,7 +193,7 @@ public class UploadTransferTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer");
@@ -224,7 +224,7 @@ public class UploadTransferTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer", name);

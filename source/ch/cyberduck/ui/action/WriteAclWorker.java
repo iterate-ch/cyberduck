@@ -91,7 +91,7 @@ public abstract class WriteAclWorker extends Worker<Boolean> {
                 // No recursion when changing container ACL
             }
             else if(file.isDirectory()) {
-                for(Path child : session.list(file, new ActionListProgressListener(this))) {
+                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(child);
                 }
             }

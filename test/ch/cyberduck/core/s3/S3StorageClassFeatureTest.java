@@ -59,7 +59,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
@@ -74,7 +74,7 @@ public class S3StorageClassFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);

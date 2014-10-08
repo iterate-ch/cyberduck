@@ -42,6 +42,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
     private boolean suppressed;
 
     public PromptLimitedListProgressListener(final WindowController controller) {
+        super(controller);
         this.controller = controller;
     }
 

@@ -40,7 +40,7 @@ import java.util.EnumSet;
 /**
  * @version $Id$
  */
-public abstract class Session<C> {
+public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -49,6 +49,8 @@ public abstract class Session<C> {
     protected Host host;
 
     protected C client;
+
+    private TranscriptListener listener;
 
     /**
      * Connection attempt being made.
@@ -106,7 +108,8 @@ public abstract class Session<C> {
         }
         // Update status flag
         state = State.opening;
-        client = this.connect(key, transcript);
+        listener = transcript;
+        client = this.connect(key);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
         }
@@ -115,27 +118,25 @@ public abstract class Session<C> {
         return client;
     }
 
-    protected abstract C connect(HostKeyCallback key, TranscriptListener transcript) throws BackgroundException;
+    protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
     public void login(final PasswordStore keychain,
-                      final LoginCallback prompt, final CancelCallback cancel,
-                      final TranscriptListener transcript)
+                      final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
-        this.login(keychain, prompt, cancel, Cache.<Path>empty(), transcript);
+        this.login(keychain, prompt, cancel, Cache.<Path>empty());
     }
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @param keychain   Password store
-     * @param prompt     Prompt
-     * @param cancel     Cancel callback
-     * @param cache      Directory listing cache
-     * @param transcript Listener
+     * @param keychain Password store
+     * @param prompt   Prompt
+     * @param cancel   Cancel callback
+     * @param cache    Directory listing cache
      */
     public abstract void login(PasswordStore keychain,
                                LoginCallback prompt, CancelCallback cancel,
-                               Cache<Path> cache, TranscriptListener transcript)
+                               Cache<Path> cache)
             throws BackgroundException;
 
     /**
@@ -174,6 +175,7 @@ public abstract class Session<C> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
+            listener = null;
         }
     }
 
@@ -253,6 +255,20 @@ public abstract class Session<C> {
     }
 
     /**
+     * Log the message to all subscribed transcript listeners
+     *
+     * @param message Log line
+     * @see TranscriptListener
+     */
+    @Override
+    public void log(final boolean request, final String message) {
+        if(log.isInfoEnabled()) {
+            log.info(message);
+        }
+        listener.log(request, message);
+    }
+
+    /**
      * @param file     Directory
      * @param listener Callback
      */
@@ -268,7 +284,7 @@ public abstract class Session<C> {
         if(type == DistributionConfiguration.class) {
             if(null == cloudfront) {
                 // Use login context of current session
-                cloudfront = new CustomOriginCloudFrontDistributionConfiguration(host);
+                cloudfront = new CustomOriginCloudFrontDistributionConfiguration(host, this);
             }
             return (T) cloudfront;
         }

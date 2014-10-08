@@ -146,7 +146,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         }
         else if(!cache.isCached(directory.getReference())) {
             controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, Cache.<Path>empty(),
-                    new TransferPromptListWorker(session, transfer, directory.remote, directory.local) {
+                    new TransferPromptListWorker(session, transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
                             cache.put(directory.getReference(), new AttributedList<TransferItem>(list));

@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private bool _supressed;
 
         public DialogLimitedListProgressListener(WindowController controller)
-            : base()
+            : base(controller)
         {
             _controller = controller;
         }

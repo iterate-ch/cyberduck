@@ -219,8 +219,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public FilterAction(TransferPromptModel model, TransferPromptController controller, Session session,
                                 Transfer transfer, TransferAction action, Cache cache)
                 : base(
-                    controller, session,
-                    new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
+                    controller, session, new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
             {
             }
 
@@ -231,7 +230,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
                                                        Session session, Transfer transfer, TransferAction action,
-                                                       Cache cache) : base(session, transfer, action, cache, controller)
+                                                       Cache cache)
+                    : base(session, transfer, action, cache, controller)
                 {
                     _model = model;
                     _controller = controller;
@@ -253,7 +253,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
                                             Session session, TransferItem directory, Transfer transfer, Cache cache)
                 : base(
-                    controller, session, new InnerTransferPromptListWorker(model, session, transfer, directory, cache))
+                    controller, session, new InnerTransferPromptListWorker(model, controller, session, transfer, directory, cache))
             {
             }
 
@@ -263,9 +263,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferItem _directory;
                 private readonly TransferPromptModel _model;
 
-                public InnerTransferPromptListWorker(TransferPromptModel model, Session session, Transfer transfer,
-                                                     TransferItem directory, Cache cache)
-                    : base(session, transfer, directory.remote, directory.local)
+                public InnerTransferPromptListWorker(TransferPromptModel model, TransferPromptController controller,
+                                                     Session session, Transfer transfer, TransferItem directory,
+                                                     Cache cache)
+                    : base(session, transfer, directory.remote, directory.local, controller)
                 {
                     _model = model;
                     _directory = directory;

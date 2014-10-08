@@ -42,7 +42,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
@@ -68,7 +68,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
@@ -84,7 +84,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
@@ -151,7 +151,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final AttributedList<Path> list = new S3ObjectListService(session).list(new Path("versioning.test.cyberduck.ch",
                         EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
@@ -171,7 +171,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
         Cache cache = new Cache();
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache, new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), cache);
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
         // Test for Illegal character in path at index 40: https://s3.lts2.evault.com:443/cyberduck space/?max-keys=1000&prefix&delimiter=%2F
         final AttributedList<Path> list

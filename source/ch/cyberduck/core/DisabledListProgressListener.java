@@ -28,4 +28,9 @@ public class DisabledListProgressListener implements ListProgressListener {
     public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
         //
     }
+
+    @Override
+    public void message(final String message) {
+        //
+    }
 }

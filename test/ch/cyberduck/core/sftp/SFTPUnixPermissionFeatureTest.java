@@ -55,7 +55,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
@@ -74,7 +74,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
@@ -92,7 +92,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -110,7 +110,7 @@ public class SFTPUnixPermissionFeatureTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test);
         final SFTPUnixPermissionFeature feature = new SFTPUnixPermissionFeature(session);

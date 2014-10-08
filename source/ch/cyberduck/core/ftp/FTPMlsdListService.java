@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -64,7 +65,7 @@ public class FTPMlsdListService implements ListService {
                         throw new FTPExceptionMappingService().map(e);
                     }
                 }
-            });
+            }, listener);
             return reader.read(directory, list, listener);
         }
         catch(IOException e) {

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
@@ -46,12 +47,16 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
 
     private Transfer transfer;
 
+    private ProgressListener listener;
+
     public TransferPromptListWorker(final Session session, final Transfer transfer,
-                                    final Path directory, final Local local) {
+                                    final Path directory, final Local local,
+                                    final ProgressListener listener) {
         this.session = session;
         this.directory = directory;
         this.local = local;
         this.transfer = transfer;
+        this.listener = listener;
     }
 
     @Override
@@ -59,7 +64,7 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List directory %s", directory));
         }
-        return transfer.list(session, directory, local, new ActionListProgressListener(this));
+        return transfer.list(session, directory, local, new ActionListProgressListener(this, listener));
     }
 
     @Override

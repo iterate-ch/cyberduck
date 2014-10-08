@@ -50,7 +50,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(container);
@@ -68,7 +68,7 @@ public class SwiftMetadataFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));

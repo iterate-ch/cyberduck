@@ -49,7 +49,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), "t", EnumSet.of(Path.Type.file));
         try {
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());

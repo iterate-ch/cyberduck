@@ -60,7 +60,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
@@ -91,7 +91,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
@@ -114,7 +114,7 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
                 EnumSet.of(Path.Type.volume, Path.Type.directory)), "test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));

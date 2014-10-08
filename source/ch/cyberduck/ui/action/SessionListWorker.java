@@ -87,6 +87,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     }
 
     @Override
+    public void message(final String message) {
+        listener.message(message);
+    }
+
+    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
                 directory.getName());

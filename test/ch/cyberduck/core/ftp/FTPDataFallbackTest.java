@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -58,7 +59,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
@@ -77,7 +78,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return super.fallback(action);
             }
         };
-        f.data(path, action);
+        f.data(path, action, new DisabledProgressListener());
         assertEquals(1, count.get());
         session.close();
     }
@@ -91,7 +92,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
         final AtomicInteger count = new AtomicInteger();
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
@@ -109,7 +110,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
                 return super.fallback(action);
             }
         };
-        f.data(new Path("test", EnumSet.of(Path.Type.file)), action);
+        f.data(new Path("test", EnumSet.of(Path.Type.file)), action, new DisabledProgressListener());
         assertEquals(1, count.get());
         session.close();
     }

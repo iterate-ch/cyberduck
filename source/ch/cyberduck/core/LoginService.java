@@ -28,13 +28,11 @@ public interface LoginService {
     /**
      * Attempts to login using the credentials provided from the login controller. Repeat failed
      * login attempts until canceled by the user.
-     *
-     * @param session    Session
+     *  @param session    Session
      * @param cache      Directory listing cache
      * @param listener   Authentication message callback
-     * @param transcript Listener
      * @param cancel     Cancel callback while authentication is in progress
      */
-    void login(Session session, Cache cache, ProgressListener listener, TranscriptListener transcript, CancelCallback cancel)
+    void login(Session session, Cache cache, ProgressListener listener, CancelCallback cancel)
             throws BackgroundException;
 }

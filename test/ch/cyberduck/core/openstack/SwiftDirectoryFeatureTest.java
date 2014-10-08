@@ -49,7 +49,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, null);
         assertTrue(new SwiftFindFeature(session).find(container));
@@ -65,7 +65,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));

@@ -83,7 +83,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
@@ -112,7 +112,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));

@@ -30,7 +30,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ProxySocketFactory;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -170,12 +169,12 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public FTPClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+    public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
                     = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(), this.getKeyManager());
 
-            final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(transcript);
+            final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
             final FTPClient client = new FTPClient(f, f.getSSLContext()) {
                 @Override
                 public void disconnect() throws IOException {
@@ -221,7 +220,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         try {
             if(super.alert() && this.isTLSSupported()) {
                 // Propose protocol change if AUTH TLS is available.

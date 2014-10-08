@@ -38,7 +38,7 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         new DefaultAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -58,7 +58,7 @@ public class FTPAttributesFeatureTest extends AbstractTestCase {
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Cache cache = new Cache(1);
         final DefaultAttributesFeature f = new DefaultAttributesFeature(session, cache);
         final Path file = new Path(session.workdir(), "test", EnumSet.of(Path.Type.file));

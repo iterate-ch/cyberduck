@@ -50,7 +50,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session,
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
@@ -66,7 +66,7 @@ public class FTPDefaultListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session,
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);

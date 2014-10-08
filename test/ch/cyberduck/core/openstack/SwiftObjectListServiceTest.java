@@ -53,7 +53,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
@@ -83,7 +83,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
     }
@@ -96,7 +96,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final String basename = UUID.randomUUID().toString();

@@ -157,7 +157,7 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
-            login.login(session, cache, listener, transcript, new CancelCallback() {
+            login.login(session, cache, listener, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
                     if(canceled.get()) {

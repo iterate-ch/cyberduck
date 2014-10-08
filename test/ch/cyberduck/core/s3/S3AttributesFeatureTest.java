@@ -38,7 +38,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
@@ -59,7 +59,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFeature(session).find(container);
         assertEquals(-1L, attributes.getSize());
@@ -75,7 +75,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFeature f = new S3AttributesFeature(session);
@@ -90,7 +90,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
@@ -108,7 +108,7 @@ public class S3AttributesFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
         // Retrieve latest object version
         attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");

@@ -169,8 +169,8 @@ public class FTPListService implements ListService {
                                 new DisabledLoginController(),
                                 new DisabledHostKeyCallback(),
                                 new DisabledPasswordStore(),
-                                new DisabledProgressListener(),
-                                new DisabledTranscriptListener()
+                                listener,
+                                session
                         ).connect(session, Cache.<Path>empty());
                     }
                     this.remove(Command.stat);

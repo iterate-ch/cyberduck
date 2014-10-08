@@ -32,7 +32,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(null),
                 false, false).list(new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
@@ -53,7 +53,7 @@ public class SwiftContainerListServiceTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final List<Path> list = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion("ORD"),
                 false, false).list(new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));

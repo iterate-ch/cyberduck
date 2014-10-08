@@ -84,7 +84,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class SwiftSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class SwiftSessionTest extends AbstractTestCase {
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options) throws LoginCanceledException {
                 //
             }
-        }, new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledCancelCallback());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
         session.close();

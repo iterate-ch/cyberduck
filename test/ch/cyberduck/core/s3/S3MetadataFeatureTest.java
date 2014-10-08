@@ -52,7 +52,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(container);
         assertTrue(metadata.isEmpty());
@@ -67,7 +67,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(new Path(container, "test.txt", EnumSet.of(Path.Type.file)));
         assertFalse(metadata.isEmpty());
@@ -89,7 +89,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);

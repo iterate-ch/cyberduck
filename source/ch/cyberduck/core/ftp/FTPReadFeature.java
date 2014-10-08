@@ -17,6 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -66,7 +67,7 @@ public class FTPReadFeature implements Read {
                         throw new FTPExceptionMappingService().map(e);
                     }
                 }
-            });
+            }, new DisabledProgressListener());
             return new CountingInputStream(in) {
                 @Override
                 public void close() throws IOException {

@@ -53,7 +53,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final VersioningConfiguration configuration
                 = new S3VersioningFeature(session).getConfiguration(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
@@ -70,7 +70,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final VersioningConfiguration configuration
                 = new S3VersioningFeature(session).getConfiguration(new Path("versioning.test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
@@ -86,7 +86,7 @@ public class S3VersioningFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3DirectoryFeature(session).mkdir(container, null);
         final Versioning feature = new S3VersioningFeature(session);

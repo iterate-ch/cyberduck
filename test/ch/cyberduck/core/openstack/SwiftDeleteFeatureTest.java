@@ -54,7 +54,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
@@ -68,7 +68,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -83,7 +83,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path placeholder = new Path(new Path(container, "t", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
@@ -111,7 +111,7 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path placeholder = new Path(container,

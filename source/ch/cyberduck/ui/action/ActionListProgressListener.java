@@ -20,6 +20,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
@@ -30,8 +31,11 @@ public class ActionListProgressListener implements ListProgressListener {
 
     private Worker worker;
 
-    public ActionListProgressListener(final Worker worker) {
+    private ProgressListener delegate;
+
+    public ActionListProgressListener(final Worker worker, final ProgressListener delegate) {
         this.worker = worker;
+        this.delegate = delegate;
     }
 
     @Override
@@ -39,5 +43,10 @@ public class ActionListProgressListener implements ListProgressListener {
         if(worker.isCanceled()) {
             throw new ListCanceledException(list);
         }
+    }
+
+    @Override
+    public void message(final String message) {
+        delegate.message(message);
     }
 }

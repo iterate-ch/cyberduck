@@ -106,7 +106,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public SSHClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+    public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
             final DefaultConfig configuration = new DefaultConfig();
             if("zlib".equals(preferences.getProperty("ssh.compression"))) {
@@ -159,7 +159,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
         if(host.getCredentials().isAnonymousLogin()) {
             methods.add(new SFTPNoneAuthentication(this));
@@ -208,7 +208,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         final String banner = client.getUserAuth().getBanner();
         if(StringUtils.isNotBlank(banner)) {
-            transcript.log(false, banner);
+            this.log(false, banner);
         }
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
@@ -234,7 +234,7 @@ public class SFTPSession extends Session<SSHClient> {
             sftp = new SFTPEngine(client) {
                 @Override
                 public Promise<Response, SFTPException> request(final Request req) throws IOException {
-                    transcript.log(true, String.format("%d %s", req.getRequestID(), req.getType()));
+                    log(true, String.format("%d %s", req.getRequestID(), req.getType()));
                     return super.request(req);
                 }
             }.init();

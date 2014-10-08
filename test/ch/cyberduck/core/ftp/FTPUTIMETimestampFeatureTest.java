@@ -55,7 +55,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -75,7 +75,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertNull(session.getFeature(Timestamp.class));
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertNotNull(session.getFeature(Timestamp.class));
         session.close();
     }

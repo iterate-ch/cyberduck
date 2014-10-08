@@ -117,7 +117,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
 
                 @Override
-                public FTPClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+                public FTPClient connect(final HostKeyCallback key) throws BackgroundException {
                     connected.set(true);
                     return null;
                 }

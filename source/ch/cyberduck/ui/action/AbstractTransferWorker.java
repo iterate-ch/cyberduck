@@ -252,7 +252,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(file.isDirectory()) {
                                 // Call recursively for all children
                                 final List<TransferItem> children
-                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this));
+                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, listener));
                                 // Put into cache for later reference when transferring
                                 cache.put(file.getReference(), new AttributedList<TransferItem>(children));
                                 // Call recursively

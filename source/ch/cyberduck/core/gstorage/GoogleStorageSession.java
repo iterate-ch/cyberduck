@@ -29,7 +29,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -132,7 +131,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback controller,
-                      final CancelCallback cancel, final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
+                      final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
             // Project ID needs OAuth2 authentication
             final OAuth2Credentials oauth = new OAuth2Credentials(
@@ -191,7 +190,7 @@ public class GoogleStorageSession extends S3Session {
             }
         }
         else {
-            super.login(keychain, controller, cancel, cache, transcript);
+            super.login(keychain, controller, cancel, cache);
         }
     }
 

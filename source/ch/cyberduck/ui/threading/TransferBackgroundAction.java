@@ -87,6 +87,8 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private Growl growl = GrowlFactory.get();
 
+    private int repeat = 0;
+
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
                                     final TransferListener listener,
@@ -177,6 +179,11 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         progressTimer.cancel(false);
         listener.stop(transfer);
         timerPool.shutdown();
+    }
+
+    @Override
+    protected int retry() {
+        return super.retry();
     }
 
     @Override

@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Session;
@@ -44,10 +45,13 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private Host origin;
 
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
+    private TranscriptListener transcript;
+
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin, final TranscriptListener transcript) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
         this.origin = origin;
+        this.transcript = this.transcript;
     }
 
     private static interface Connected<T> extends Callable<T> {
@@ -56,7 +60,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
-            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            session.open(new DisabledHostKeyCallback(), transcript);
         }
         return run.call();
     }

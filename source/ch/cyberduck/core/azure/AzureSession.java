@@ -30,7 +30,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -104,7 +103,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public CloudBlobClient connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+    public CloudBlobClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
             credentials = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), StringUtils.EMPTY);
             // Client configured with no credentials
@@ -125,7 +124,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache, final TranscriptListener transcript) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         // Update credentials
         credentials.setCredentials(new Credentials(
                 host.getCredentials().getUsername(), host.getCredentials().getPassword()));

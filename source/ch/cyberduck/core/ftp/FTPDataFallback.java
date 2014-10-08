@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -47,9 +48,10 @@ public class FTPDataFallback {
 
     /**
      * @param action Action that needs to open a data connection
+     * @param listener
      * @return True if action was successful
      */
-    protected <T> T data(final Path file, final DataConnectionAction<T> action)
+    protected <T> T data(final Path file, final DataConnectionAction<T> action, final ProgressListener listener)
             throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
@@ -94,8 +96,8 @@ public class FTPDataFallback {
                                     new DisabledLoginController(),
                                     new DisabledHostKeyCallback(),
                                     new DisabledPasswordStore(),
-                                    new DisabledProgressListener(),
-                                    new DisabledTranscriptListener()
+                                    listener,
+                                    session
                             ).connect(session, Cache.<Path>empty());
                         }
                         return this.fallback(action);

@@ -43,7 +43,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
                 }
                 i++;
             }
-        }, new DisabledTranscriptListener(), null);
+        }, null);
     }
 
 
@@ -55,7 +55,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
             public void message(final String message) {
                 //
             }
-        }, new DisabledTranscriptListener(), null);
+        }, null);
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -80,7 +80,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
                 public void message(final String message) {
                     //
                 }
-            }, new DisabledTranscriptListener(), null);
+            }, null);
             fail();
         }
         catch(LoginCanceledException e) {

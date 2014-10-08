@@ -56,7 +56,7 @@ public class FTPStatListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final ListService service = new FTPStatListService(session,
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())));
         final Path directory = session.workdir();

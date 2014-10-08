@@ -46,7 +46,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
@@ -78,7 +78,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        }, new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);

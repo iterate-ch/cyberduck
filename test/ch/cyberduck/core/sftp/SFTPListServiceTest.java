@@ -40,7 +40,7 @@ public class SFTPListServiceTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = new SFTPListService(session).list(home, new DisabledListProgressListener());
         assertTrue(list.contains(new Path(home, "test", EnumSet.of(Path.Type.file)).getReference()));

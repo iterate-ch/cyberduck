@@ -21,6 +21,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -353,19 +354,19 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
-        return new RequestEntityRestStorageService(this.configure(), transcript);
+    public RequestEntityRestStorageService connect(final HostKeyCallback key) throws BackgroundException {
+        return new RequestEntityRestStorageService(this.configure(), this);
     }
 
     @Override
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache, final TranscriptListener transcript)
+                      final Cache<Path> cache)
             throws BackgroundException {
         client.setProviderCredentials(host.getCredentials().isAnonymousLogin() ? null :
                 new AWSCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
 
         final Path home = new S3HomeFinderService(this).find();
-        cache.put(home.getReference(), this.list(home, new ListProgressListener() {
+        cache.put(home.getReference(), this.list(home, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                 try {

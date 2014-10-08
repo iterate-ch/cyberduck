@@ -29,7 +29,7 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Set<Location.Name> locations = new SwiftLocationFeature(session).getLocations();
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("DFW")));
         assertTrue(locations.contains(new SwiftLocationFeature.SwiftRegion("ORD")));

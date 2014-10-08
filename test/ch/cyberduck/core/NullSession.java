@@ -25,7 +25,7 @@ public class NullSession extends FTPSession {
     }
 
     @Override
-    public void login(final PasswordStore keychain, final LoginCallback prompt, CancelCallback cancel, final TranscriptListener transcript) throws BackgroundException {
+    public void login(final PasswordStore keychain, final LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
         //
     }
 

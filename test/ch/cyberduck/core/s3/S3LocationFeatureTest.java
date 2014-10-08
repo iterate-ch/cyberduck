@@ -47,7 +47,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("EU"), new S3LocationFeature(session).getLocation(
                 new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
         ));

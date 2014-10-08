@@ -34,7 +34,7 @@ public class SwiftWriteFeatureTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");

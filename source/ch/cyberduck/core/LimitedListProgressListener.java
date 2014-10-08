@@ -39,6 +39,17 @@ public class LimitedListProgressListener implements ListProgressListener {
     private Integer directory
             = preferences.getInteger("browser.list.limit.directory");
 
+    private ProgressListener delegate;
+
+    public LimitedListProgressListener(final ProgressListener delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public void message(final String message) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
         if(parent.isVolume()) {

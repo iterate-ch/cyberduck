@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,7 +57,7 @@ public class FTPAttributesFeature implements Attributes {
                         throw new FTPExceptionMappingService().map(e);
                     }
                 }
-            });
+            }, new DisabledProgressListener());
             final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
             final AttributedList<Path> attributes
                     = reader.read(file.getParent(), list, new DisabledListProgressListener());

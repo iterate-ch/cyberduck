@@ -36,7 +36,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
