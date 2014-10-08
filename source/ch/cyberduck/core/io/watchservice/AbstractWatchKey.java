@@ -40,12 +40,6 @@ abstract class AbstractWatchKey implements WatchKey {
     private static final int MAX_EVENT_LIST_SIZE = 512;
 
     /**
-     * Special event to signal overflow
-     */
-    private static final Event<Void> OVERFLOW_EVENT =
-            new Event<Void>(StandardWatchEventKind.OVERFLOW, null);
-
-    /**
      * Possible key states
      */
     private static enum State {
