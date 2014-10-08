@@ -21,7 +21,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
@@ -47,8 +46,8 @@ public class FTPDataFallback {
     }
 
     /**
-     * @param action Action that needs to open a data connection
-     * @param listener
+     * @param action   Action that needs to open a data connection
+     * @param listener Progress callback
      * @return True if action was successful
      */
     protected <T> T data(final Path file, final DataConnectionAction<T> action, final ProgressListener listener)
@@ -97,7 +96,7 @@ public class FTPDataFallback {
                                     new DisabledHostKeyCallback(),
                                     new DisabledPasswordStore(),
                                     listener,
-                                    session
+                                    new DisabledTranscriptListener()
                             ).connect(session, Cache.<Path>empty());
                         }
                         return this.fallback(action);
