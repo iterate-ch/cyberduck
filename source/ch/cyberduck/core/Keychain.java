@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
+import ch.cyberduck.core.ssl.DEREncoder;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
@@ -123,20 +124,6 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      */
     public synchronized native void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
-    /**
-     * @param certificates Chain of certificates
-     * @return ASN.1 DER encoded
-     */
-    private Object[] getEncoded(final List<X509Certificate> certificates) throws CertificateException {
-        final Object[] encoded = new Object[certificates.size()];
-        int i = 0;
-        for(X509Certificate certificate : certificates) {
-            encoded[i] = certificate.getEncoded();
-            i++;
-        }
-        return encoded;
-    }
-
     @Override
     public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
         return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
@@ -166,7 +153,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         if(certificates.isEmpty()) {
             return false;
         }
-        final Object[] encoded = this.getEncoded(certificates);
+        final Object[] encoded = new DEREncoder().getEncoded(certificates);
         final AtomicBoolean trusted = new AtomicBoolean(false);
         new ProxyController() {
             //
@@ -195,7 +182,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
         if(certificates.isEmpty()) {
             return false;
         }
-        final Object[] encoded = this.getEncoded(certificates);
+        final Object[] encoded = new DEREncoder().getEncoded(certificates);
         final AtomicBoolean accepted = new AtomicBoolean(false);
         new ProxyController() {
             //
@@ -234,7 +221,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             certificates.add(manager.getCertificate(alias, keyTypes, issuers));
         }
         try {
-            final Object[] encoded = this.getEncoded(certificates);
+            final Object[] encoded = new DEREncoder().getEncoded(certificates);
             final AtomicReference<byte[]> select = new AtomicReference<byte[]>();
             new ProxyController() {
                 //
