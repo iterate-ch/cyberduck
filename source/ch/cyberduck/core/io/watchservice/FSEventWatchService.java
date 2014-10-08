@@ -1,5 +1,11 @@
 package ch.cyberduck.core.io.watchservice;
 
+import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
+import ch.cyberduck.core.io.watchservice.jna.CFIndex;
+import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
+import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
+import ch.cyberduck.core.io.watchservice.jna.CarbonAPI;
+import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import java.io.File;
@@ -13,12 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
-import ch.cyberduck.core.io.watchservice.jna.CFIndex;
-import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
-import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
-import ch.cyberduck.core.io.watchservice.jna.CarbonAPI;
-import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
@@ -179,38 +179,38 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
     private static final class Callback implements CarbonAPI.FSEventStreamCallback {
-        private final MacOSXWatchKey watchKey;
-        private final Map<File, Long> lastModifiedMap;
+        private final MacOSXWatchKey key;
+        private final Map<File, Long> timestamps;
 
-        private Callback(MacOSXWatchKey watchKey, Map<File, Long> lastModifiedMap) {
-            this.watchKey = watchKey;
-            this.lastModifiedMap = lastModifiedMap;
+        private Callback(MacOSXWatchKey key, Map<File, Long> timestamps) {
+            this.key = key;
+            this.timestamps = timestamps;
         }
 
         public void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents,
                            Pointer eventPaths, Pointer /* array of unsigned int */ eventFlags, /* array of unsigned long */ Pointer eventIds) {
             final int length = numEvents.intValue();
-            for(String folderName : eventPaths.getStringArray(0, length)) {
-                final Set<File> filesOnDisk = recursiveListFiles(new File(folderName));
+            for(String folder : eventPaths.getStringArray(0, length)) {
+                final Set<File> filesOnDisk = recursiveListFiles(new File(folder));
                 for(File file : findCreatedFiles(filesOnDisk)) {
-                    if(watchKey.isReportCreateEvents()) {
-                        watchKey.signalEvent(StandardWatchEventKind.ENTRY_CREATE, file);
+                    if(key.isReportCreateEvents()) {
+                        key.signalEvent(StandardWatchEventKind.ENTRY_CREATE, file);
                     }
-                    lastModifiedMap.put(file, file.lastModified());
+                    timestamps.put(file, file.lastModified());
                 }
 
                 for(File file : findModifiedFiles(filesOnDisk)) {
-                    if(watchKey.isReportModifyEvents()) {
-                        watchKey.signalEvent(StandardWatchEventKind.ENTRY_MODIFY, file);
+                    if(key.isReportModifyEvents()) {
+                        key.signalEvent(StandardWatchEventKind.ENTRY_MODIFY, file);
                     }
-                    lastModifiedMap.put(file, file.lastModified());
+                    timestamps.put(file, file.lastModified());
                 }
 
-                for(File file : findDeletedFiles(folderName, filesOnDisk)) {
-                    if(watchKey.isReportDeleteEvents()) {
-                        watchKey.signalEvent(StandardWatchEventKind.ENTRY_DELETE, file);
+                for(File file : findDeletedFiles(folder, filesOnDisk)) {
+                    if(key.isReportDeleteEvents()) {
+                        key.signalEvent(StandardWatchEventKind.ENTRY_DELETE, file);
                     }
-                    lastModifiedMap.remove(file);
+                    timestamps.remove(file);
                 }
             }
         }
@@ -218,7 +218,7 @@ public class FSEventWatchService extends AbstractWatchService {
         private List<File> findModifiedFiles(Set<File> filesOnDisk) {
             List<File> modifiedFileList = new ArrayList<File>();
             for(File file : filesOnDisk) {
-                final Long lastModified = lastModifiedMap.get(file);
+                final Long lastModified = timestamps.get(file);
                 if(lastModified != null && lastModified != file.lastModified()) {
                     modifiedFileList.add(file);
                 }
@@ -229,7 +229,7 @@ public class FSEventWatchService extends AbstractWatchService {
         private List<File> findCreatedFiles(Set<File> filesOnDisk) {
             List<File> createdFileList = new ArrayList<File>();
             for(File file : filesOnDisk) {
-                if(!lastModifiedMap.containsKey(file)) {
+                if(!timestamps.containsKey(file)) {
                     createdFileList.add(file);
                 }
             }
@@ -238,7 +238,7 @@ public class FSEventWatchService extends AbstractWatchService {
 
         private List<File> findDeletedFiles(String folderName, Set<File> filesOnDisk) {
             List<File> deletedFileList = new ArrayList<File>();
-            for(File file : lastModifiedMap.keySet()) {
+            for(File file : timestamps.keySet()) {
                 if(file.getAbsolutePath().startsWith(folderName) && !filesOnDisk.contains(file)) {
                     deletedFileList.add(file);
                 }
