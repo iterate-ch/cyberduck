@@ -416,6 +416,7 @@ public class BrowserController extends WindowController
             log.debug(String.format("Select row at index :%d", row));
         }
         if(-1 == row) {
+            log.warn(String.format("Failed to select path %s", reference));
             return;
         }
         final NSInteger index = new NSInteger(row);
