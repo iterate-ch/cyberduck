@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -30,7 +29,6 @@ import java.io.IOException;
  * @version $Id$
  */
 public class DefaultIOExceptionMappingService extends AbstractExceptionMappingService<IOException> {
-    private static final Logger log = Logger.getLogger(DefaultIOExceptionMappingService.class);
 
     public BackgroundException map(final IOException failure, final Path directory) {
         return super.map("Connection failed", failure, directory);
