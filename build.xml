@@ -149,7 +149,6 @@
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
                 <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
-                <include name="com/barbarysoftware/**/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/ui.jar"

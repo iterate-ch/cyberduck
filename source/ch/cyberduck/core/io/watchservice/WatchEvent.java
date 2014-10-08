@@ -23,7 +23,7 @@
  * have any questions.
  */
 
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 /**
  * An event or a repeated event for an object that is registered with a {@link

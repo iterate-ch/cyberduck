@@ -1,4 +1,4 @@
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.barbarysoftware.jna.CFArrayRef;
-import com.barbarysoftware.jna.CFIndex;
-import com.barbarysoftware.jna.CFRunLoopRef;
-import com.barbarysoftware.jna.CFStringRef;
-import com.barbarysoftware.jna.CarbonAPI;
-import com.barbarysoftware.jna.FSEventStreamRef;
+import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
+import ch.cyberduck.core.io.watchservice.jna.CFIndex;
+import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
+import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
+import ch.cyberduck.core.io.watchservice.jna.CarbonAPI;
+import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
@@ -137,13 +137,13 @@ public class FSEventWatchService extends AbstractWatchService {
             boolean reportDeleteEvents = false;
 
             for(WatchEvent.Kind<?> event : events) {
-                if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_CREATE) {
+                if(event == StandardWatchEventKind.ENTRY_CREATE) {
                     reportCreateEvents = true;
                 }
-                else if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_MODIFY) {
+                else if(event == StandardWatchEventKind.ENTRY_MODIFY) {
                     reportModifyEvents = true;
                 }
-                else if(event == com.barbarysoftware.watchservice.StandardWatchEventKind.ENTRY_DELETE) {
+                else if(event == StandardWatchEventKind.ENTRY_DELETE) {
                     reportDeleteEvents = true;
                 }
             }

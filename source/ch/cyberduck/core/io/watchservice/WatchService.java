@@ -1,4 +1,4 @@
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 import java.io.Closeable;
 import java.io.IOException;

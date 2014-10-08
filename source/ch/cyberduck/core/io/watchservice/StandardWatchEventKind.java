@@ -23,7 +23,7 @@
  * have any questions.
  */
 
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 /**
  * Defines the <em>standard</em> event kinds.

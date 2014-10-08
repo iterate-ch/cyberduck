@@ -1,4 +1,4 @@
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 import java.io.File;
 import java.io.IOException;

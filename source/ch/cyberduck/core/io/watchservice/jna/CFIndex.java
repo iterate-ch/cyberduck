@@ -1,4 +1,4 @@
-package com.barbarysoftware.jna;
+package ch.cyberduck.core.io.watchservice.jna;
 
 import com.sun.jna.NativeLong;
 

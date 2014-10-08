@@ -23,7 +23,7 @@
  * have any questions.
  */
 
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 import java.util.ArrayList;
 import java.util.List;

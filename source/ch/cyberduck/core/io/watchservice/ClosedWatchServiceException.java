@@ -23,7 +23,7 @@
  * have any questions.
  */
 
-package com.barbarysoftware.watchservice;
+package ch.cyberduck.core.io.watchservice;
 
 /**
  * Unchecked exception thrown when an attempt is made to invoke an operation on
