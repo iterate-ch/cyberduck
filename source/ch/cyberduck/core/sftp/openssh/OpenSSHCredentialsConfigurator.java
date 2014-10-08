@@ -39,7 +39,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
         this(new OpenSshConfig(LocalFactory.createLocal(Local.HOME, ".ssh/config")));
     }
 
-    public OpenSSHCredentialsConfigurator(OpenSshConfig configuration) {
+    public OpenSSHCredentialsConfigurator(final OpenSshConfig configuration) {
         this.configuration = configuration;
     }
 

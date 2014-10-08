@@ -38,7 +38,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
         this(new OpenSshConfig(LocalFactory.createLocal(Local.HOME, ".ssh/config")));
     }
 
-    public OpenSSHHostnameConfigurator(OpenSshConfig configuration) {
+    public OpenSSHHostnameConfigurator(final OpenSshConfig configuration) {
         this.configuration = configuration;
     }
 

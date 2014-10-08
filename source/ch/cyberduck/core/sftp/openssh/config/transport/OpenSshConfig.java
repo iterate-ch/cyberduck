@@ -81,7 +81,7 @@ public class OpenSshConfig {
 
     /**
      * Obtain the user's configuration data.
-     * <p>
+     * <p/>
      * The configuration file is always returned to the caller, even if no file
      * exists in the user's home directory at the time the call was made. Lookup
      * requests are cached and are automatically updated if the user modifies
@@ -126,7 +126,7 @@ public class OpenSshConfig {
         return h;
     }
 
-    private synchronized Map<String, Host> refresh() {
+    private Map<String, Host> refresh() {
         final long mtime = configuration.attributes().getModificationDate();
         if(mtime != lastModified) {
             try {
@@ -284,11 +284,11 @@ public class OpenSshConfig {
 
     /**
      * Configuration of one "Host" block in the configuration file.
-     * <p>
+     * <p/>
      * If returned from {@link OpenSshConfig#lookup(String)} some or all of the
      * properties may not be populated. The properties which are not populated
      * should be defaulted by the caller.
-     * <p>
+     * <p/>
      * When returned from {@link OpenSshConfig#lookup(String)} any wildcard
      * entries which appear later in the configuration file will have been
      * already merged into this block.
