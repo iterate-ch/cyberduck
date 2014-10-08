@@ -35,11 +35,8 @@ public class DisconnectWorker extends Worker<Void> {
 
     private Session<?> session;
 
-    private Cache cache;
-
     public DisconnectWorker(final Session<?> session, final Cache cache) {
         this.session = session;
-        this.cache = cache;
     }
 
     @Override
