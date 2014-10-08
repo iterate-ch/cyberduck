@@ -47,7 +47,7 @@ public class LimitedListProgressListener implements ListProgressListener {
 
     @Override
     public void message(final String message) {
-        throw new UnsupportedOperationException();
+        delegate.message(message);
     }
 
     @Override
