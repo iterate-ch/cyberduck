@@ -73,7 +73,6 @@ public class MemoryPreferences extends Preferences {
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
         defaults.put("connection.ssl.keystore.provider", "Apple");
         super.setDefaults();
-        defaults.put("local.normalize.unicode", String.valueOf(false));
     }
 
     @Override
