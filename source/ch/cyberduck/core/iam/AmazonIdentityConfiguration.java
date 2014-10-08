@@ -72,10 +72,11 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         final Proxy proxy = ProxyFactory.get().find(host);
-        if(proxy.getType() == Proxy.Type.HTTP
-                || proxy.getType() == Proxy.Type.HTTPS) {
-            configuration.setProxyHost(proxy.getHostname());
-            configuration.setProxyPort(proxy.getPort());
+        switch(proxy.getType()) {
+            case HTTP:
+            case HTTPS:
+                configuration.setProxyHost(proxy.getHostname());
+                configuration.setProxyPort(proxy.getPort());
         }
         // Create new IAM credentials
         client = new AmazonIdentityManagementClient(
