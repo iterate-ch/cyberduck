@@ -185,7 +185,6 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
             }
-            return new ConnectionRefusedException(buffer.toString(), failure);
         }
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
