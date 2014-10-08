@@ -273,7 +273,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                 throw e;
                             }
-                            // Prompt to continue or abort
+                            // Prompt to continue or abort for application errors
                             if(error.prompt(e)) {
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
@@ -343,7 +343,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                 throw e;
                             }
-                            // Prompt to continue or abort
+                            // Prompt to continue or abort for application errors
                             if(error.prompt(e)) {
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
