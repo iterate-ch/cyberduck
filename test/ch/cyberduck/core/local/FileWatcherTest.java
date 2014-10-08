@@ -26,7 +26,8 @@ public class FileWatcherTest extends AbstractTestCase {
     @Test
     public void testAddListener() throws Exception {
         final FileWatcher watcher = new FileWatcher();
-        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
+//        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/fé", UUID.randomUUID().toString());
         final CyclicBarrier create = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new FileWatcherListener() {

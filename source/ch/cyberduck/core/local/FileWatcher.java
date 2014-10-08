@@ -20,7 +20,14 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.io.watchservice.ClosedWatchServiceException;
+import ch.cyberduck.core.io.watchservice.FSEventWatchService;
+import ch.cyberduck.core.io.watchservice.WatchEvent;
+import ch.cyberduck.core.io.watchservice.WatchKey;
+import ch.cyberduck.core.io.watchservice.WatchService;
+import ch.cyberduck.core.io.watchservice.WatchableFile;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.log4j.Logger;
 
@@ -32,13 +39,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
-import ch.cyberduck.core.io.watchservice.ClosedWatchServiceException;
-import ch.cyberduck.core.io.watchservice.FSEventWatchService;
-import ch.cyberduck.core.io.watchservice.WatchEvent;
-import ch.cyberduck.core.io.watchservice.WatchKey;
-import ch.cyberduck.core.io.watchservice.WatchService;
-import ch.cyberduck.core.io.watchservice.WatchableFile;
-
 import static ch.cyberduck.core.io.watchservice.StandardWatchEventKind.*;
 
 /**
@@ -46,6 +46,8 @@ import static ch.cyberduck.core.io.watchservice.StandardWatchEventKind.*;
  */
 public final class FileWatcher implements FileWatcherCallback {
     private static Logger log = Logger.getLogger(FileWatcher.class);
+
+    private NFCNormalizer normalizer = new NFCNormalizer();
 
     private WatchService monitor;
 
@@ -96,7 +98,8 @@ public final class FileWatcher implements FileWatcherCallback {
                         }
                         // The filename is the context of the event.
                         final WatchEvent<File> ev = (WatchEvent<File>) event;
-                        if(event.context().equals(new File(file.getAbsolute()).getCanonicalFile())) {
+                        if(normalizer.normalize(event.context().toString())
+                                .equals(new File(file.getAbsolute()).getCanonicalFile().getAbsolutePath())) {
                             callback(ev);
                         }
                         else {
