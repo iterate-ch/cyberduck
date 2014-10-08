@@ -27,14 +27,14 @@ public interface ConnectionCallback {
     /**
      * Display warning sheet. Block connection until decision is made.
      *
-     * @param title            Title in alert window
-     * @param message          Message in alert window
-     * @param continueButton   Button title for default button
-     * @param disconnectButton Button title for other button
-     * @param preference       Where to save preference if dismissed
+     * @param title         Title in alert window
+     * @param message       Message in alert window
+     * @param defaultButton Button title for default button
+     * @param cancelButton  Button title for other button
+     * @param preference    Where to save preference if dismissed
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException If the other option has been selected.
      */
-    void warn(Protocol protocol, String title, String message, String continueButton, String disconnectButton,
+    void warn(Protocol protocol, String title, String message, String defaultButton, String cancelButton,
               String preference) throws ConnectionCanceledException;
 
 }
