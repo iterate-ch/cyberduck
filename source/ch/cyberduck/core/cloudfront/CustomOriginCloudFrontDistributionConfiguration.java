@@ -19,7 +19,6 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -51,7 +50,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(ProtocolFactory.S3_SSL, ProtocolFactory.S3_SSL.getDefaultHostname(), origin.getCdnCredentials())));
         this.origin = origin;
-        this.transcript = this.transcript;
+        this.transcript = transcript;
     }
 
     private static interface Connected<T> extends Callable<T> {
