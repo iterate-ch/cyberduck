@@ -1,5 +1,7 @@
 package ch.cyberduck.core.io.watchservice;
 
+import ch.cyberduck.core.threading.NamedThreadFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
@@ -26,15 +29,18 @@ import com.sun.jna.Pointer;
  */
 public class FSEventWatchService extends AbstractWatchService {
 
-    private CFRunLoopThread thread;
+    private CFRunLoop thread;
+
+    private ThreadFactory threadFactory
+            = new NamedThreadFactory("fsevent");
 
     @Override
-    public WatchKey register(final WatchableFile watchableFile, WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) {
-        final File file = watchableFile.getFile();
-        final Map<File, Long> lastModifiedMap = createLastModifiedMap(file);
-        final String s = file.getAbsolutePath();
+    public WatchKey register(final WatchableFile file,
+                             final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers)
+            throws IOException {
+        final Map<File, Long> lastModifiedMap = createLastModifiedMap(file.getFile());
         final Pointer[] values = {
-                CFStringRef.toCFString(s).getPointer()
+                CFStringRef.toCFString(file.getFile().getCanonicalPath()).getPointer()
         };
         final CFArrayRef pathsToWatch = CarbonAPI.INSTANCE.CFArrayCreate(null, values, CFIndex.valueOf(1), null);
         final MacOSXWatchKey watchKey = new MacOSXWatchKey(this, events);
@@ -54,19 +60,16 @@ public class FSEventWatchService extends AbstractWatchService {
                 kFSEventStreamEventIdSinceNow,
                 latency,
                 kFSEventStreamCreateFlagNoDefer);
-
-        thread = new CFRunLoopThread(stream);
-        thread.setDaemon(true);
-        thread.start();
+        threadFactory.newThread(thread = new CFRunLoop(stream)).start();
         return watchKey;
     }
 
-    private static final class CFRunLoopThread extends Thread {
+    private static final class CFRunLoop implements Runnable {
 
         private final FSEventStreamRef streamRef;
         private CFRunLoopRef runLoop;
 
-        public CFRunLoopThread(FSEventStreamRef streamRef) {
+        public CFRunLoop(final FSEventStreamRef streamRef) {
             this.streamRef = streamRef;
         }
 
