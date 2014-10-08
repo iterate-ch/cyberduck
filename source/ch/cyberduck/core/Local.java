@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,8 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.EnumSet;
-
-import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -61,16 +60,7 @@ public abstract class Local extends AbstractPath implements Referenceable, Seria
 
     protected void setPath(final String name) {
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
-            if(!Normalizer.isNormalized(name, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
-                // Canonical decomposition followed by canonical composition (default)
-                path = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Normalized local path %s to %s", name, path));
-                }
-            }
-            else {
-                path = name;
-            }
+            path = new NFCNormalizer().normalize(name);
         }
         else {
             path = name;
