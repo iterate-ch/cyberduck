@@ -50,7 +50,6 @@ public interface CarbonAPI extends Library {
     void CFRunLoopStop(CFRunLoopRef rl);
 
     public interface FSEventStreamCallback extends Callback {
-        @SuppressWarnings({"UnusedDeclaration"})
         void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents, Pointer eventPaths, Pointer eventFlags, Pointer eventIds);
     }
 }
