@@ -32,14 +32,14 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
-import com.barbarysoftware.watchservice.ClosedWatchServiceException;
-import com.barbarysoftware.watchservice.FSEventWatchService;
-import com.barbarysoftware.watchservice.WatchEvent;
-import com.barbarysoftware.watchservice.WatchKey;
-import com.barbarysoftware.watchservice.WatchService;
-import com.barbarysoftware.watchservice.WatchableFile;
+import ch.cyberduck.core.io.watchservice.ClosedWatchServiceException;
+import ch.cyberduck.core.io.watchservice.FSEventWatchService;
+import ch.cyberduck.core.io.watchservice.WatchEvent;
+import ch.cyberduck.core.io.watchservice.WatchKey;
+import ch.cyberduck.core.io.watchservice.WatchService;
+import ch.cyberduck.core.io.watchservice.WatchableFile;
 
-import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
+import static ch.cyberduck.core.io.watchservice.StandardWatchEventKind.*;
 
 /**
  * @version $Id$

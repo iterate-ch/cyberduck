@@ -20,7 +20,7 @@ package ch.cyberduck.core.local;
 
 import java.io.File;
 
-import com.barbarysoftware.watchservice.WatchEvent;
+import ch.cyberduck.core.io.watchservice.WatchEvent;
 
 /**
  * @version $Id$
