@@ -28,7 +28,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
         assertTrue(new S3UrlProvider(session).toUrl(p).filter(DescriptiveUrl.Type.http).contains(
                 new DescriptiveUrl(URI.create("http://bucket.s3.amazonaws.com/f/key%20f"))
         ));
-        assertEquals(4, new S3UrlProvider(session, new DisabledPasswordStore() {
+        assertEquals(5, new S3UrlProvider(session, new DisabledPasswordStore() {
             @Override
             public String find(final Host host) {
                 return "k";
@@ -85,7 +85,7 @@ public class S3UrlProviderTest extends AbstractTestCase {
                 return "k";
             }
         });
-        assertTrue(provider.createSignedUrl(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
+        assertTrue(provider.sign(new Path("/test.cyberduck.ch/test", EnumSet.of(Path.Type.file)), 30).getUrl().startsWith(
                 "https://test.cyberduck.ch.s3.amazonaws.com/test?AWSAccessKeyId=AKIAIUTN5UDAA36D3RLQ&Expires="));
     }
 

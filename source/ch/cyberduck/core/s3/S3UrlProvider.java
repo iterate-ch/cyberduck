@@ -43,6 +43,7 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -71,16 +72,19 @@ public class S3UrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             // Publicly accessible URL of given object
-            list.add(this.createBucketUrl(file, session.getHost().getProtocol().getScheme()));
-            list.add(this.createBucketUrl(file, Scheme.http));
+            list.add(this.toUrl(file, session.getHost().getProtocol().getScheme()));
+            list.add(this.toUrl(file, Scheme.http));
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
-                list.add(this.createSignedUrl(file, 60 * 60));
+                // In one hour
+                list.add(this.sign(file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
-                list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
-                // Week
-                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
-                // Month
-                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60 * 4));
+                list.add(this.sign(file, (int) TimeUnit.SECONDS.toSeconds(Preferences.instance().getInteger("s3.url.expire.seconds"))));
+                // 1 Week
+                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(7)));
+                // 1 Month
+                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(30)));
+                // 1 Year
+                list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
             // Torrent
             final S3Service service = new RestS3Service(
@@ -104,7 +108,7 @@ public class S3UrlProvider implements UrlProvider {
      * @param scheme Protocol
      * @return URL to be displayed in browser
      */
-    protected DescriptiveUrl createBucketUrl(final Path file, final Scheme scheme) {
+    protected DescriptiveUrl toUrl(final Path file, final Scheme scheme) {
         final StringBuilder url = new StringBuilder(scheme.name());
         url.append("://");
         if(file.isRoot()) {
@@ -132,11 +136,12 @@ public class S3UrlProvider implements UrlProvider {
      * browser access to resources that would normally require authentication. The signature in the query
      * string secures the request.
      *
+     * @param seconds Expire in n seconds from now in default timezone
      * @return A signed URL with a limited validity over time.
      */
-    protected DescriptiveUrl createSignedUrl(final Path file, final int seconds) {
+    protected DescriptiveUrl sign(final Path file, final int seconds) {
         // Determine expiry time for URL
-        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        final Calendar expiry = Calendar.getInstance(TimeZone.getDefault());
         expiry.add(Calendar.SECOND, seconds);
         // Generate URL
         final S3Service client = new RestS3Service(
@@ -158,7 +163,7 @@ public class S3UrlProvider implements UrlProvider {
                 null, expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure(), false)), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
+                        UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
         );
     }
 
