@@ -360,9 +360,7 @@ public final class KeychainStore extends KeyStoreSpi {
                 addedEntries.put(lowerAlias, entry);
             }
             catch(Exception nsae) {
-                KeyStoreException ke = new KeyStoreException("Key protection algorithm not found: " + nsae);
-                ke.initCause(nsae);
-                throw ke;
+                throw new KeyStoreException("Key protection algorithm not found: " + nsae, nsae);
             }
         }
     }
@@ -402,7 +400,7 @@ public final class KeychainStore extends KeyStoreSpi {
             }
             catch(IOException ioe) {
                 throw new KeyStoreException("key is not encoded as "
-                        + "EncryptedPrivateKeyInfo");
+                        + "EncryptedPrivateKeyInfo", ioe);
             }
 
             entry.date = new Date();
