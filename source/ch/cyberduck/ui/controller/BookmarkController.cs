@@ -29,6 +29,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.browser;
 using org.apache.log4j;
 using Object = java.lang.Object;
 using TimeZone = java.util.TimeZone;
@@ -210,7 +211,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedEncodingEvent()
         {
-            Log.debug("encodingSelectionChanged");
             if (View.SelectedEncoding.Equals(Default))
             {
                 _host.setEncoding(null);
@@ -287,7 +287,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedProtocolEvent()
         {
-            Log.debug("protocolSelectionChanged");
             Protocol selected = View.SelectedProtocol;
             _host.setPort(selected.getDefaultPort());
             if (!_host.getProtocol().isHostnameConfigurable())
@@ -385,7 +384,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenDownloadFolderEvent()
         {
-            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.getDownloadFolder().getAbsolute()));
+            Local folder = new DownloadDirectoryFinder().find(_host);
+            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(folder.getAbsolute()));
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -416,7 +416,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenDownloadFolderBrowserEvent()
         {
-            View.ShowDownloadFolderBrowser(_host.getDownloadFolder().getAbsolute());
+            Local folder = new DownloadDirectoryFinder().find(_host);
+            View.ShowDownloadFolderBrowser(folder.getAbsolute());
         }
 
         private void View_ChangedBrowserDownloadPathEvent()
@@ -469,7 +470,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Hostname = _host.getHostname();
             View.HostFieldEnabled = _host.getProtocol().isHostnameConfigurable();
             View.Nickname = BookmarkNameProvider.toString(_host);
-            View.DownloadFolder = _host.getDownloadFolder().getAbsolute();
+            View.DownloadFolder = new DownloadDirectoryFinder().find(_host).getAbsolute();
             View.URL = new HostUrlProvider(true, true).get(_host);
             View.Port = _host.getPort().ToString();
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();

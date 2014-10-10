@@ -1671,7 +1671,7 @@ namespace Ch.Cyberduck.Ui.Controller
             string folder =
                 View.SynchronizeDialog(
                     String.Format(LocaleFactory.localizedString("Synchronize {0} with"), selected.getName()),
-                    Environment.SpecialFolder.Desktop, null);
+                    new UploadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
                 transfer(new SyncTransfer(_session.getHost(),
@@ -1703,13 +1703,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                          ? EnumSet.of(AbstractPath.Type.directory)
                                          : EnumSet.of(AbstractPath.Type.file)), local);
                 });
-            transfer(new UploadTransfer(_session.getHost(), downloads));
+            transfer(new UploadTransfer(Session.getHost(), downloads));
         }
 
         private void View_DownloadTo()
         {
-            string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"),
-                                                  Environment.SpecialFolder.Desktop, null);
+            string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"), 
+                new DownloadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
                 IList<TransferItem> downloads = new List<TransferItem>();
@@ -1719,7 +1719,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    LocalFactory.createLocal(LocalFactory.createLocal(folder),
                                                                             file.getName())));
                 }
-                transfer(new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
+                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
             }
         }
 
@@ -1730,11 +1730,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadAs()
         {
-            string filename = View.DownloadAsDialog(null, SelectedPath.getName());
+            string filename = View.DownloadAsDialog(new DownloadDirectoryFinder().find(Session.getHost()), SelectedPath.getName());
             if (null != filename)
             {
                 Path selected = SelectedPath;
-                transfer(new DownloadTransfer(_session.getHost(), selected, LocalFactory.createLocal(filename)),
+                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.createLocal(filename)),
                          new List<Path>());
             }
         }

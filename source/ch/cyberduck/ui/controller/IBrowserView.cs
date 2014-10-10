@@ -109,10 +109,10 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulatePaths(List<string> paths);
         void PopulateEncodings(List<string> encodings);
         void StartSearch();
-        String DownloadAsDialog(string initialDirectory, string fileName);
-        String DownloadToDialog(string description, Environment.SpecialFolder root, string selectedPath);
-        String[] UploadDialog(string root);
-        String SynchronizeDialog(string description, Environment.SpecialFolder root, string selectedPath);
+        String DownloadAsDialog(Local initialDirectory, string fileName);
+        String DownloadToDialog(string description, Local initialDirectory, string selectedPath);
+        String[] UploadDialog(Local initialDirectory);
+        String SynchronizeDialog(string description, Local initialDirectory, string selectedPath);
 
         event ValidateCommand ContextMenuEnabled;
 

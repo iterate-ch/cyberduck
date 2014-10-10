@@ -2717,7 +2717,7 @@ public class BrowserController extends WindowController
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
                 selection.getName()));
         syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
+        syncPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2726,7 +2726,9 @@ public class BrowserController extends WindowController
     public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            if(sheet.filenames().count().intValue() > 0) {
+            if(sheet.filename() != null) {
+                final Local target = LocalFactory.createLocal(sheet.filename());
+                new UploadDirectoryFinder().save(session.getHost(), target.getParent());
                 final Path selected;
                 if(this.getSelectionCount() == 1 && this.getSelectedPath().isDirectory()) {
                     selected = this.getSelectedPath();
@@ -2734,9 +2736,7 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                this.transfer(new SyncTransfer(session.getHost(),
-                                new TransferItem(selected, LocalFactory.createLocal(sheet.filenames().lastObject().toString())))
-                );
+                this.transfer(new SyncTransfer(session.getHost(), new TransferItem(selected, target)));
             }
         }
     }

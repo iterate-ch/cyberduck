@@ -396,12 +396,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { searchTextBox.Text = value; }
         }
 
-        public String DownloadAsDialog(string initialDirectory, string fileName)
+        public String DownloadAsDialog(Local initialDirectory, string fileName)
         {
             saveFileDialog.FileName = fileName;
             if (null != initialDirectory)
             {
-                saveFileDialog.InitialDirectory = initialDirectory;
+                saveFileDialog.InitialDirectory = initialDirectory.getAbsolute();
             }
             if (DialogResult.OK == saveFileDialog.ShowDialog(this))
             {
@@ -410,9 +410,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             return null;
         }
 
-        public String DownloadToDialog(string description, Environment.SpecialFolder root, string selectedPath)
+        public String DownloadToDialog(string description, Local initialDirectory, string selectedPath)
         {
-            folderBrowserDialog.RootFolder = root;
+            folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
             folderBrowserDialog.Description = description;
             if (null != selectedPath)
             {
@@ -425,9 +425,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             return null;
         }
 
-        public String SynchronizeDialog(string description, Environment.SpecialFolder root, string selectedPath)
+        public String SynchronizeDialog(string description, Local initialDirectory, string selectedPath)
         {
-            folderBrowserDialog.RootFolder = root;
+            folderBrowserDialog.RootFolder = Environment.SpecialFolder.Desktop;
             folderBrowserDialog.Description = description;
             if (null != selectedPath)
             {
@@ -440,13 +440,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             return null;
         }
 
-        public String[] UploadDialog(string root)
+        public String[] UploadDialog(Local initialDirectory)
         {
             SelectFileAndFolderDialog dialog = SelectFileAndFolderDialog.Instance;
             dialog.AcceptFiles = true;
-            if (null != root)
+            if (null != initialDirectory)
             {
-                dialog.Path = root;
+                dialog.Path = initialDirectory.getAbsolute();
             }
             string selectText = LocaleFactory.localizedString("Choose");
             string canelText = LocaleFactory.localizedString("Cancel");
