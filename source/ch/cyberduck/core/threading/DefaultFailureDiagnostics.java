@@ -18,6 +18,10 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ResolveFailedException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.log4j.Logger;
@@ -38,6 +42,15 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Excep
     public Type determine(final Exception failure) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determine cause for failure %s", failure));
+        }
+        if(failure instanceof ConnectionTimeoutException) {
+            return Type.network;
+        }
+        if(failure instanceof ConnectionRefusedException) {
+            return Type.network;
+        }
+        if(failure instanceof ResolveFailedException) {
+            return Type.network;
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
