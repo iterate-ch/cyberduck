@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -42,93 +43,69 @@ public class ServiceExceptionMappingService extends AbstractExceptionMappingServ
         if(e.getCause() instanceof ServiceException) {
             return this.map((ServiceException) e.getCause());
         }
+        final StringBuilder buffer = new StringBuilder();
         final int code = e.getResponseCode();
         if(StringUtils.isNotBlank(e.getErrorMessage())) {
             // S3 protocol message parsed from XML
             final String message = e.getErrorMessage();
-            return this.map(e, message, code);
+            this.append(buffer, message);
         }
         else {
-            final StringBuilder buffer = new StringBuilder();
             if(null == e.getCause()) {
                 this.append(buffer, e.getMessage());
             }
             else {
                 this.append(buffer, e.getCause().getMessage());
             }
-            if(HttpStatus.SC_NOT_FOUND == code) {
-                return new NotfoundException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_FORBIDDEN == code) {
-                return new AccessDeniedException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_UNAUTHORIZED == code) {
-                // Actually never returned by S3 but always 403
-                return new LoginFailureException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_BAD_REQUEST == code) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_NOT_IMPLEMENTED == code) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_SERVICE_UNAVAILABLE == code) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(e.getCause() instanceof IOException) {
-                return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
-            }
-            return this.wrap(e, buffer);
         }
-    }
-
-    protected BackgroundException map(final ServiceException cause,
-                                      final String message, final int code) {
-        final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, message);
-        if(HttpStatus.SC_BAD_REQUEST == code) {
-            return new InteroperabilityException(buffer.toString(), cause);
-        }
-        if(HttpStatus.SC_NOT_IMPLEMENTED == code) {
-            return new InteroperabilityException(buffer.toString(), cause);
-        }
-        if(HttpStatus.SC_SERVICE_UNAVAILABLE == code) {
-            return new InteroperabilityException(buffer.toString(), cause);
-        }
-        if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
-            return new InteroperabilityException(buffer.toString(), cause);
+        if(HttpStatus.SC_NOT_FOUND == code) {
+            return new NotfoundException(buffer.toString(), e);
         }
         if(HttpStatus.SC_FORBIDDEN == code) {
-            if(cause.getErrorCode().equals("SignatureDoesNotMatch")) {
-                return new LoginFailureException(buffer.toString(), cause);
+            if(StringUtils.isNotBlank(e.getErrorCode())) {
+                if(e.getErrorCode().equals("SignatureDoesNotMatch")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidAccessKeyId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidClientTokenId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("InvalidSecurity")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("MissingClientTokenId")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
+                if(e.getErrorCode().equals("MissingAuthenticationToken")) {
+                    return new LoginFailureException(buffer.toString(), e);
+                }
             }
-            if(cause.getErrorCode().equals("InvalidAccessKeyId")) {
-                return new LoginFailureException(buffer.toString(), cause);
-            }
-            if(cause.getErrorCode().equals("InvalidClientTokenId")) {
-                return new LoginFailureException(buffer.toString(), cause);
-            }
-            if(cause.getErrorCode().equals("InvalidSecurity")) {
-                return new LoginFailureException(buffer.toString(), cause);
-            }
-            if(cause.getErrorCode().equals("MissingClientTokenId")) {
-                return new LoginFailureException(buffer.toString(), cause);
-            }
-            if(cause.getErrorCode().equals("MissingAuthenticationToken")) {
-                return new LoginFailureException(buffer.toString(), cause);
-            }
-            return new AccessDeniedException(buffer.toString(), cause);
+            return new AccessDeniedException(buffer.toString(), e);
         }
         if(HttpStatus.SC_UNAUTHORIZED == code) {
             // Actually never returned by S3 but always 403
-            return new LoginFailureException(buffer.toString(), cause);
+            return new LoginFailureException(buffer.toString(), e);
         }
-        if(HttpStatus.SC_NOT_FOUND == code) {
-            return new NotfoundException(buffer.toString(), cause);
+        if(HttpStatus.SC_BAD_REQUEST == code) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
-        return this.wrap(cause, buffer);
+        if(HttpStatus.SC_NOT_IMPLEMENTED == code) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(HttpStatus.SC_SERVICE_UNAVAILABLE == code) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(HttpStatus.SC_METHOD_NOT_ALLOWED == code) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        if(HttpStatus.SC_PAYMENT_REQUIRED == code) {
+            return new QuotaException(buffer.toString(), e);
+        }
+        if(e.getCause() instanceof IOException) {
+            return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
+        }
+        return this.wrap(e, buffer);
     }
 }
