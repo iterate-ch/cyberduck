@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
@@ -428,7 +429,7 @@ public class BookmarkController extends WindowController {
         this.downloadPathPopup.removeAllItems();
 
         // Default download folder
-        this.addDownloadPath(action, host.getDownloadFolder());
+        this.addDownloadPath(action, new DownloadDirectoryFinder().find(host));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         this.addDownloadPath(action, LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder")));
         // Shortcut to the Desktop
@@ -451,7 +452,7 @@ public class BookmarkController extends WindowController {
             downloadPathPopup.lastItem().setTarget(this.id());
             downloadPathPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(f, 16));
             downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
-            if(host.getDownloadFolder().equals(f)) {
+            if(new DownloadDirectoryFinder().find(host).equals(f)) {
                 downloadPathPopup.selectItem(downloadPathPopup.lastItem());
             }
         }
@@ -485,7 +486,7 @@ public class BookmarkController extends WindowController {
             }
         }
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
-        final Local folder = host.getDownloadFolder();
+        final Local folder = new DownloadDirectoryFinder().find(host);
         item.setTitle(folder.getDisplayName());
         item.setRepresentedObject(folder.getAbsolute());
         item.setImage(IconCacheFactory.<NSImage>get().fileIcon(folder, 16));

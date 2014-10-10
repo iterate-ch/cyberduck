@@ -90,7 +90,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
                 panel.setPrompt(LocaleFactory.localizedString("Choose"));
                 final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
                 if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
-                    NSArray selected = panel.filenames();
+                    final NSArray selected = panel.filenames();
                     final NSEnumerator enumerator = selected.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {

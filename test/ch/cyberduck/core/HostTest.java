@@ -22,6 +22,7 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
 import org.junit.Test;
 
@@ -60,14 +61,6 @@ public class HostTest extends AbstractTestCase {
         Host host = new Host("test");
         host.setWebURL("http://localhost/~dkocher");
         assertEquals("http://localhost/~dkocher", host.getWebURL());
-    }
-
-    @Test
-    public void testDownloadFolder() {
-        Host host = new Host("localhost");
-        assertTrue("~/Desktop".equals(host.getDownloadFolder().getAbbreviatedPath()) || "~/Downloads".equals(host.getDownloadFolder().getAbbreviatedPath()));
-        host.setDownloadFolder(LocalFactory.createLocal("/t"));
-        assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
     }
 
     @Test

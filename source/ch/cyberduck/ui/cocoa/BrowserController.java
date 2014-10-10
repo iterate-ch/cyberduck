@@ -64,8 +64,10 @@ import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.action.RevertWorker;
 import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilter;
+import ch.cyberduck.ui.browser.UploadDirectoryFinder;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -2646,22 +2648,20 @@ public class BrowserController extends WindowController
         downloadToPanel.setCanChooseFiles(false);
         downloadToPanel.setAllowsMultipleSelection(false);
         downloadToPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        downloadToPanel.beginSheetForDirectory(
-                session.getHost().getDownloadFolder().getAbsolute(),
+        downloadToPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 null, this.window, this.id(),
-                Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"),
-                null);
+                Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            String folder;
-            if((folder = sheet.filename()) != null) {
+            if(sheet.filename() != null) {
+                final Local target = LocalFactory.createLocal(sheet.filename());
+                new DownloadDirectoryFinder().save(session.getHost(), target);
                 final List<TransferItem> downloads = new ArrayList<TransferItem>();
                 for(Path file : this.getSelectedPaths()) {
-                    downloads.add(new TransferItem(
-                            file, LocalFactory.createLocal(LocalFactory.createLocal(folder), file.getName())));
+                    downloads.add(new TransferItem(file, LocalFactory.createLocal(target, file.getName())));
                 }
                 this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
             }
@@ -2678,20 +2678,20 @@ public class BrowserController extends WindowController
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
         downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
-        downloadAsPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
+        downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 this.getSelectedPath().getName(), this.window, this.id(),
-                Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
-                null);
+                Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
-    public void downloadAsPanelDidEnd_returnCode_contextInfo(NSSavePanel sheet, int returncode, final ID contextInfo) {
+    public void downloadAsPanelDidEnd_returnCode_contextInfo(final NSSavePanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            String filename;
-            if((filename = sheet.filename()) != null) {
-                final Path selected = this.getSelectedPath();
-                this.transfer(new DownloadTransfer(session.getHost(), selected,
-                        LocalFactory.createLocal(filename)), Collections.<Path>emptyList());
+            if(sheet.filename() != null) {
+                final Local target = LocalFactory.createLocal(sheet.filename());
+                new DownloadDirectoryFinder().save(session.getHost(), target.getParent());
+                final List<TransferItem> downloads
+                        = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
+                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
             }
         }
     }
@@ -2717,7 +2717,7 @@ public class BrowserController extends WindowController
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
                 selection.getName()));
         syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
+        syncPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2744,9 +2744,10 @@ public class BrowserController extends WindowController
     @Action
     public void downloadButtonClicked(final ID sender) {
         final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        final Local folder = new DownloadDirectoryFinder().find(session.getHost());
         for(Path file : this.getSelectedPaths()) {
             downloads.add(new TransferItem(
-                    file, LocalFactory.createLocal(session.getHost().getDownloadFolder(), file.getName())));
+                    file, LocalFactory.createLocal(folder, file.getName())));
         }
         this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
     }
@@ -2776,7 +2777,7 @@ public class BrowserController extends WindowController
             uploadPanelHiddenFilesCheckbox.sizeToFit();
             uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
         }
-        uploadPanel.beginSheetForDirectory(session.getHost().getDownloadFolder().getAbsolute(),
+        uploadPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(session.getHost()).getAbsolute(),
                 null, this.window,
                 this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
@@ -2798,6 +2799,7 @@ public class BrowserController extends WindowController
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.createLocal(next.toString());
+                new UploadDirectoryFinder().save(session.getHost(), local.getParent());
                 uploads.add(new TransferItem(
                         new Path(destination, local.getName(),
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local

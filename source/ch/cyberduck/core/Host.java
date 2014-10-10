@@ -104,6 +104,11 @@ public class Host implements Serializable, Comparable<Host> {
     private Local downloadFolder;
 
     /**
+     * The custom download folder
+     */
+    private Local uploadFolder;
+
+    /**
      * The timezone the server is living in
      */
     private TimeZone timezone;
@@ -279,9 +284,12 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(transfer.name(), "Transfer Connection");
             dict.setStringForKey(String.valueOf(transfer.getMaxConnections()), "Maximum Connections");
         }
-        if(!this.isDefaultDownloadFolder()) {
-            dict.setStringForKey(this.getDownloadFolder().getAbbreviatedPath(), "Download Folder");
-            dict.setObjectForKey(this.getDownloadFolder(), "Download Folder Dictionary");
+        if(null != downloadFolder) {
+            dict.setStringForKey(downloadFolder.getAbbreviatedPath(), "Download Folder");
+            dict.setObjectForKey(downloadFolder, "Download Folder Dictionary");
+        }
+        if(null != uploadFolder) {
+            dict.setObjectForKey(uploadFolder, "Upload Folder Dictionary");
         }
         if(null != timezone) {
             dict.setStringForKey(this.getTimezone().getID(), "Timezone");
@@ -512,10 +520,6 @@ public class Host implements Serializable, Comparable<Host> {
      * @return Absolute path
      */
     public Local getDownloadFolder() {
-        if(null == downloadFolder) {
-            return LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder")).withBookmark(
-                    Preferences.instance().getProperty("queue.download.folder.bookmark"));
-        }
         return downloadFolder;
     }
 
@@ -525,17 +529,15 @@ public class Host implements Serializable, Comparable<Host> {
      * @param folder Absolute path
      */
     public void setDownloadFolder(final Local folder) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set download folder for bookmark %s to %s", hostname, folder));
-        }
         downloadFolder = folder;
     }
 
-    /**
-     * @return True if no custom download location is set
-     */
-    public boolean isDefaultDownloadFolder() {
-        return null == downloadFolder;
+    public Local getUploadFolder() {
+        return uploadFolder;
+    }
+
+    public void setUploadFolder(final Local folder) {
+        this.uploadFolder = folder;
     }
 
     /**

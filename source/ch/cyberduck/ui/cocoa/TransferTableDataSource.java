@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
@@ -181,7 +182,7 @@ public class TransferTableDataSource extends ListDataSource {
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(
-                        download, LocalFactory.createLocal(host.getDownloadFolder(), download.getName())));
+                        download, LocalFactory.createLocal(new DownloadDirectoryFinder().find(host), download.getName())));
             }
             collection.add(row.intValue(), new DownloadTransfer(host, downloads));
             view.reloadData();

@@ -44,6 +44,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
@@ -714,7 +715,7 @@ public class MainController extends BundleController implements NSApplication.De
                 boolean found = false;
                 // Pick the bookmark with the same download location
                 for(Local file : files) {
-                    if(file.isChild(bookmark.getDownloadFolder())) {
+                    if(file.isChild(new DownloadDirectoryFinder().find(bookmark))) {
                         bookmarksPopup.selectItemAtIndex(new NSInteger(i));
                         found = true;
                         break;

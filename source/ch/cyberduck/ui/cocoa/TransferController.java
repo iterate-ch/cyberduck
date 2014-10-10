@@ -48,6 +48,7 @@ import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -886,7 +887,7 @@ public final class TransferController extends WindowController implements NSTool
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.createLocal(
-                        pasteboard.getSession().getHost().getDownloadFolder(),
+                        new DownloadDirectoryFinder().find(pasteboard.getSession().getHost()),
                         download.getName())));
             }
             this.add(new DownloadTransfer(pasteboard.getSession().getHost(), downloads));

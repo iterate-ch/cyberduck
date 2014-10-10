@@ -144,6 +144,10 @@ public class HostDictionary {
             if(downloadObj != null) {
                 bookmark.setDownloadFolder(new LocalDictionary().deserialize(downloadObj));
             }
+            Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
+            if(uploadObj != null) {
+                bookmark.setUploadFolder(new LocalDictionary().deserialize(uploadObj));
+            }
             Object timezoneObj = dict.stringForKey("Timezone");
             if(timezoneObj != null) {
                 bookmark.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
