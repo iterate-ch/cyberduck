@@ -33,6 +33,8 @@ import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferItemCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -57,7 +59,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @version $Id$
  */
-public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean> {
+public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean> implements TransferItemCallback {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     private Transfer transfer;
@@ -86,8 +88,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     private TransferPrompt prompt;
 
     private Growl growl = GrowlFactory.get();
-
-    private int repeat = 0;
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,
@@ -118,10 +118,10 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.listener = listener;
         this.prompt = prompt;
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, progress, login);
+            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, this, progress, login);
         }
         else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options, meter, prompt, error, login, progress, controller);
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options, meter, prompt, error, this, login, progress, controller);
         }
     }
 
@@ -145,6 +145,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
             final Session target = ((CopyTransfer) transfer).getDestination();
             super.close(target);
         }
+    }
+
+    @Override
+    public void complete(final TransferItem item) {
+        // Reset repeat counter. #8223
+        repeat = 0;
     }
 
     @Override
@@ -179,11 +185,6 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         progressTimer.cancel(false);
         listener.stop(transfer);
         timerPool.shutdown();
-    }
-
-    @Override
-    protected int retry() {
-        return super.retry();
     }
 
     @Override

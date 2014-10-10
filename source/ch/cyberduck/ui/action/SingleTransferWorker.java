@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferItemCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
@@ -43,25 +44,25 @@ public class SingleTransferWorker extends AbstractTransferWorker {
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
                                 final LoginCallback login) {
-        super(transfer, options, prompt, meter, error, listener, login);
+        super(transfer, options, prompt, meter, error, callback, listener, login);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
                                 final LoginCallback login, final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, meter, error, listener, login, cache);
+        super(transfer, options, prompt, meter, error, callback, listener, login, cache);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
                                 final LoginCallback login, final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, meter, login, error, listener, table);
+        super(transfer, options, prompt, meter, login, error, callback, listener, table);
         this.session = session;
     }
 

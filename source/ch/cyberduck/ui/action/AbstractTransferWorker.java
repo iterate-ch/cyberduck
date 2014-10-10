@@ -36,6 +36,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferItemCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -74,6 +75,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      */
     private TransferErrorCallback error;
 
+    private TransferItemCallback callback;
+
     /**
      * Login prompt
      */
@@ -102,7 +105,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final ProgressListener listener, final LoginCallback login) {
+                                  final TransferItemCallback callback, final ProgressListener listener, final LoginCallback login) {
         this.transfer = transfer;
         this.prompt = prompt;
         this.meter = meter;
@@ -110,11 +113,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.login = login;
         this.options = options;
         this.listener = listener;
+        this.callback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final ProgressListener listener, final LoginCallback login, final Cache<TransferItem> cache) {
+                                  final TransferItemCallback callback, final ProgressListener listener, final LoginCallback login, final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -123,11 +127,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.login = login;
         this.cache = cache;
         this.listener = listener;
+        this.callback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final LoginCallback login,
-                                  final TransferErrorCallback error, final ProgressListener listener,
+                                  final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
@@ -137,6 +142,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.login = login;
         this.table = table;
         this.listener = listener;
+        this.callback = callback;
     }
 
     protected abstract Session<?> borrow() throws BackgroundException;
@@ -193,7 +199,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                 meter.reset();
                 // Transfer all files sequentially
                 for(TransferItem next : transfer.getRoots()) {
-                    this.transfer(next.remote, next.local, filter);
+                    this.transfer(next, filter);
                 }
                 this.await();
             }
@@ -313,13 +319,13 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      * @param file   File
      * @param filter Filter to apply to exclude files from transfer
      */
-    public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
+    public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
         // Only transfer if accepted by filter and stored in table with transfer status
-        if(table.containsKey(file)) {
-            final TransferStatus status = table.get(file);
+        if(table.containsKey(item.remote)) {
+            final TransferStatus status = table.get(item.remote);
             this.submit(new TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
@@ -329,11 +335,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         try {
                             if(status.isRename()) {
                                 // Save with different name
-                                transfer.transfer(session, status.getRename().remote, local, options, status, login, listener);
+                                transfer.transfer(session, status.getRename().remote, item.local, options, status, login, listener);
                             }
                             else {
-                                transfer.transfer(session, file, local, options, status, login, listener);
+                                transfer.transfer(session, item.remote, item.local, options, status, login, listener);
                             }
+                            callback.complete(item);
                         }
                         catch(ConnectionCanceledException e) {
                             throw e;
@@ -353,23 +360,23 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             }
                         }
                         // Recursive
-                        if(file.isDirectory()) {
-                            for(TransferItem f : cache.get(file.getReference())) {
+                        if(item.remote.isDirectory()) {
+                            for(TransferItem f : cache.get(item.remote.getReference())) {
                                 // Recursive
-                                transfer(f.remote, f.local, filter);
+                                transfer(f, filter);
                             }
-                            cache.remove(file.getReference());
+                            cache.remove(item.remote.getReference());
                         }
                         if(!status.isFailure()) {
                             // Post process of file.
                             try {
-                                filter.complete(file, local, options, status, listener);
+                                filter.complete(item.remote, item.local, options, status, listener);
                             }
                             catch(BackgroundException e) {
-                                log.warn(String.format("Ignore failure in completion filter for %s", file));
+                                log.warn(String.format("Ignore failure in completion filter for %s", item));
                             }
                         }
-                        return table.remove(file);
+                        return table.remove(item.remote);
                     }
                     finally {
                         release(session);
@@ -379,15 +386,14 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                 @Override
                 public String toString() {
                     final StringBuilder sb = new StringBuilder("TransferCallable{");
-                    sb.append("file=").append(file);
-                    sb.append(", local=").append(local);
+                    sb.append("item=").append(item);
                     sb.append('}');
                     return sb.toString();
                 }
             });
         }
         else {
-            log.warn(String.format("Skip file %s with unknown transfer status", file));
+            log.warn(String.format("Skip file %s with unknown transfer status", item));
         }
     }
 

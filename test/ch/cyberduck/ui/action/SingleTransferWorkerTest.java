@@ -17,6 +17,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -69,20 +70,20 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
             @Override
-            public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
-                if(file.equals(root)) {
+            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+                if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, new NullLocal("l") {
+                super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
                     public AttributedList<Local> list() {
                         AttributedList<Local> l = new AttributedList<Local>();
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
                     }
-                }, filter);
+                }), filter);
                 assertFalse(cache.containsKey(child.getReference()));
             }
         }.run();
@@ -124,13 +125,13 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
             @Override
-            public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
-                if(file.equals(root)) {
+            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+                if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, local, filter);
+                super.transfer(item, filter);
                 assertFalse(cache.containsKey(child.getReference()));
             }
         }.run();
@@ -167,14 +168,14 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
             @Override
-            public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
-                if(file.equals(root)) {
+            public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
+                if(item.remote.equals(root)) {
                     assertTrue(cache.containsKey(root.getReference()));
                 }
-                super.transfer(file, new NullLocal("l"), filter);
-                if(file.equals(root)) {
+                super.transfer(new TransferItem(item.remote, new NullLocal("l")), filter);
+                if(item.remote.equals(root)) {
                     assertFalse(cache.containsKey(root.getReference()));
                 }
             }
@@ -208,9 +209,9 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 public TransferAction prompt() {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), new DisabledProgressListener(), new DisabledLoginController(), Cache.<TransferItem>empty()) {
+            }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), Cache.<TransferItem>empty()) {
                 @Override
-                public void transfer(final Path file, final Local local, final TransferPathFilter filter) throws BackgroundException {
+                public void transfer(final TransferItem file, final TransferPathFilter filter) throws BackgroundException {
                     // Expected not found
                     fail();
                 }

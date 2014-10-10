@@ -23,6 +23,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -86,7 +87,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
         }
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, listener, new DisabledLoginController());
+                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(), listener, new DisabledLoginController());
         worker.run();
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));
