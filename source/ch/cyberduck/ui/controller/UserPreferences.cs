@@ -99,11 +99,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             get
             {
-                string homePath = (Environment.OSVersion.Platform == PlatformID.Unix ||
+                return (Environment.OSVersion.Platform == PlatformID.Unix ||
                                    Environment.OSVersion.Platform == PlatformID.MacOSX)
                                       ? Environment.GetEnvironmentVariable("HOME")
                                       : Environment.GetEnvironmentVariable("USERPROFILE");
-                return homePath;
             }
         }
 
@@ -334,6 +333,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("path.symboliclink.resolve", true.ToString());
             // Resolve local links uploading target file instead. Currently not supporting shortcuts on Windows.
             defaults.put("local.symboliclink.resolve", true.ToString());
+
+            defaults.put("local.user.home", HomeFolder);
 
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
