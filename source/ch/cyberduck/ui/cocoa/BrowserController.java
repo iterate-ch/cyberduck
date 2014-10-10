@@ -2825,7 +2825,7 @@ public class BrowserController extends WindowController
      * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
-        // Determine from current browser sesssion if new connection should be opened for transfers
+        // Determine from current browser session if new connection should be opened for transfers
         this.transfer(transfer, selected, session.getMaxConnections() == 1);
     }
 
@@ -3885,50 +3885,54 @@ public class BrowserController extends WindowController
     @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
-        if(identifier.equals(TOOLBAR_EDIT)) {
-            Application editor = null;
-            final Path selected = this.getSelectedPath();
-            if(null != selected) {
-                if(this.isEditable(selected)) {
-                    // Choose editor for selected file
-                    editor = EditorFactory.instance().getEditor(selected.getName());
+        switch(identifier) {
+            case TOOLBAR_EDIT: {
+                Application editor = null;
+                final Path selected = this.getSelectedPath();
+                if(null != selected) {
+                    if(this.isEditable(selected)) {
+                        // Choose editor for selected file
+                        editor = EditorFactory.instance().getEditor(selected.getName());
+                    }
                 }
-            }
-            if(null == editor) {
-                // No editor found
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-            }
-            else {
-                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(editor, 32));
-            }
-        }
-        else if(identifier.equals(TOOLBAR_DISCONNECT)) {
-            if(this.isActivityRunning()) {
-                item.setLabel(LocaleFactory.localizedString("Stop"));
-                item.setPaletteLabel(LocaleFactory.localizedString("Stop"));
-                item.setToolTip(LocaleFactory.localizedString("Cancel current operation in progress"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
-            }
-            else {
-                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-                item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
-            }
-        }
-        else if(identifier.equals(TOOLBAR_ARCHIVE)) {
-            final Path selected = getSelectedPath();
-            if(null != selected) {
-                if(Archive.isArchive(selected.getName())) {
-                    item.setLabel(LocaleFactory.localizedString("Unarchive", "Archive"));
-                    item.setPaletteLabel(LocaleFactory.localizedString("Unarchive"));
-                    item.setAction(Foundation.selector("unarchiveButtonClicked:"));
+                if(null == editor) {
+                    // No editor found
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
                 }
                 else {
-                    item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
-                    item.setPaletteLabel(LocaleFactory.localizedString("Archive"));
-                    item.setAction(Foundation.selector("archiveButtonClicked:"));
+                    item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(editor, 32));
                 }
+                break;
+            }
+            case TOOLBAR_DISCONNECT:
+                if(this.isActivityRunning()) {
+                    item.setLabel(LocaleFactory.localizedString("Stop"));
+                    item.setPaletteLabel(LocaleFactory.localizedString("Stop"));
+                    item.setToolTip(LocaleFactory.localizedString("Cancel current operation in progress"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("stop", 32));
+                }
+                else {
+                    item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                    item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                    item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
+                }
+                break;
+            case TOOLBAR_ARCHIVE: {
+                final Path selected = getSelectedPath();
+                if(null != selected) {
+                    if(Archive.isArchive(selected.getName())) {
+                        item.setLabel(LocaleFactory.localizedString("Unarchive", "Archive"));
+                        item.setPaletteLabel(LocaleFactory.localizedString("Unarchive"));
+                        item.setAction(Foundation.selector("unarchiveButtonClicked:"));
+                    }
+                    else {
+                        item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
+                        item.setPaletteLabel(LocaleFactory.localizedString("Archive"));
+                        item.setAction(Foundation.selector("archiveButtonClicked:"));
+                    }
+                }
+                break;
             }
         }
         return validateItem(item.action());
@@ -3951,252 +3955,233 @@ public class BrowserController extends WindowController
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
         }
         final NSToolbarItem item = toolbarItems.get(itemIdentifier);
-        if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
-            item.setLabel(LocaleFactory.localizedString("View"));
-            item.setPaletteLabel(LocaleFactory.localizedString("View"));
-            item.setToolTip(LocaleFactory.localizedString("Switch Browser View"));
-            item.setView(browserSwitchView);
-            // Add a menu representation for text mode of toolbar
-            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("View"), null, StringUtils.EMPTY);
-            NSMenu viewSubmenu = NSMenu.menu();
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
-                    Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
-            viewSubmenu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(0);
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
-                    Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
-            viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
-            viewMenu.setSubmenu(viewSubmenu);
-            item.setMenuFormRepresentation(viewMenu);
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
-            item.setToolTip(LocaleFactory.localizedString("Connect to server"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("connectButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
-            item.setToolTip(LocaleFactory.localizedString("Show Transfers window"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("queue.tiff", 32));
-            item.setAction(Foundation.selector("showTransferQueueClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
-            item.setLabel(LocaleFactory.localizedString("Action"));
-            item.setPaletteLabel(LocaleFactory.localizedString("Action"));
-            if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
-                item.setView(actionPopupButton);
+        switch(itemIdentifier) {
+            case TOOLBAR_BROWSER_VIEW:
+                item.setLabel(LocaleFactory.localizedString("View"));
+                item.setPaletteLabel(LocaleFactory.localizedString("View"));
+                item.setToolTip(LocaleFactory.localizedString("Switch Browser View"));
+                item.setView(browserSwitchView);
                 // Add a menu representation for text mode of toolbar
-                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
-                NSMenu toolSubmenu = NSMenu.menu();
-                for(int i = 1; i < actionPopupButton.menu().numberOfItems().intValue(); i++) {
-                    NSMenuItem template = actionPopupButton.menu().itemAtIndex(new NSInteger(i));
-                    toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
-                            template.action(),
-                            template.keyEquivalent()));
+                NSMenuItem viewMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("View"), null, StringUtils.EMPTY);
+                NSMenu viewSubmenu = NSMenu.menu();
+                viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("List"),
+                        Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                viewSubmenu.itemWithTitle(LocaleFactory.localizedString("List")).setTag(0);
+                viewSubmenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Outline"),
+                        Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
+                viewSubmenu.itemWithTitle(LocaleFactory.localizedString("Outline")).setTag(1);
+                viewMenu.setSubmenu(viewSubmenu);
+                item.setMenuFormRepresentation(viewMenu);
+                return item;
+            case TOOLBAR_NEW_CONNECTION:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_CONNECTION));
+                item.setToolTip(LocaleFactory.localizedString("Connect to server"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("connect.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("connectButtonClicked:"));
+                return item;
+            case TOOLBAR_TRANSFERS:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_TRANSFERS));
+                item.setToolTip(LocaleFactory.localizedString("Show Transfers window"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("queue.tiff", 32));
+                item.setAction(Foundation.selector("showTransferQueueClicked:"));
+                return item;
+            case TOOLBAR_TOOLS:
+                item.setLabel(LocaleFactory.localizedString("Action"));
+                item.setPaletteLabel(LocaleFactory.localizedString("Action"));
+                if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
+                    item.setView(actionPopupButton);
+                    // Add a menu representation for text mode of toolbar
+                    NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
+                    NSMenu toolSubmenu = NSMenu.menu();
+                    for(int i = 1; i < actionPopupButton.menu().numberOfItems().intValue(); i++) {
+                        NSMenuItem template = actionPopupButton.menu().itemAtIndex(new NSInteger(i));
+                        toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
+                                template.action(),
+                                template.keyEquivalent()));
+                    }
+                    toolMenu.setSubmenu(toolSubmenu);
+                    item.setMenuFormRepresentation(toolMenu);
                 }
-                toolMenu.setSubmenu(toolSubmenu);
-                item.setMenuFormRepresentation(toolMenu);
-            }
-            else {
-                NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
-                temporary.setPaletteLabel(LocaleFactory.localizedString("Action"));
-                temporary.setImage(IconCacheFactory.<NSImage>get().iconNamed("advanced.tiff", 32));
-                return temporary;
-            }
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
-            item.setToolTip(LocaleFactory.localizedString("Connect to server"));
-            item.setView(quickConnectPopup);
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
-            item.setToolTip(LocaleFactory.localizedString("Character Encoding"));
-            item.setView(this.encodingPopup);
-            // Add a menu representation for text mode of toolbar
-            NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_ENCODING),
-                    Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
-            String[] charsets = MainController.availableCharsets();
-            NSMenu charsetMenu = NSMenu.menu();
-            for(String charset : charsets) {
-                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
-            }
-            encodingMenu.setSubmenu(charsetMenu);
-            item.setMenuFormRepresentation(encodingMenu);
-            item.setMinSize(this.encodingPopup.frame().size);
-            item.setMaxSize(this.encodingPopup.frame().size);
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_REFRESH)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
-            item.setToolTip(LocaleFactory.localizedString("Refresh directory listing"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("reloadButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_DOWNLOAD)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
-            item.setToolTip(LocaleFactory.localizedString("Download file"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("downloadButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_UPLOAD)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
-            item.setToolTip(LocaleFactory.localizedString("Upload local file to the remote host"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("uploadButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_SYNCHRONIZE)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
-            item.setToolTip(LocaleFactory.localizedString("Synchronize files"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("syncButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
-            item.setToolTip(LocaleFactory.localizedString("Show file attributes"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("infoButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_WEBVIEW));
-            item.setPaletteLabel(LocaleFactory.localizedString("Open in Web Browser"));
-            item.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
-            final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
-            if(null == browser) {
-                item.setEnabled(false);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
-            }
-            else {
-                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(browser, 32));
-            }
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("openBrowserButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_EDIT)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
-            item.setToolTip(LocaleFactory.localizedString("Edit file in external editor"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff"));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("editButtonClicked:"));
-            // Add a menu representation for text mode of toolbar
-            NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_EDIT),
-                    Foundation.selector("editButtonClicked:"), StringUtils.EMPTY);
-            NSMenu editMenu = NSMenu.menu();
-            editMenu.setAutoenablesItems(true);
-            editMenu.setDelegate(editMenuDelegate.id());
-            toolbarMenu.setSubmenu(editMenu);
-            item.setMenuFormRepresentation(toolbarMenu);
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_DELETE)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
-            item.setToolTip(LocaleFactory.localizedString("Delete file"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("deleteFileButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_NEW_FOLDER)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
-            item.setToolTip(LocaleFactory.localizedString("Create New Folder"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("createFolderButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_NEW_BOOKMARK)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
-            item.setToolTip(LocaleFactory.localizedString("New Bookmark"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bookmark", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
-            item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("disconnectButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
-            final ApplicationFinder finder = ApplicationFinderFactory.get();
-            final Application application
-                    = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
+                else {
+                    NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
+                    temporary.setPaletteLabel(LocaleFactory.localizedString("Action"));
+                    temporary.setImage(IconCacheFactory.<NSImage>get().iconNamed("advanced.tiff", 32));
+                    return temporary;
+                }
+                return item;
+            case TOOLBAR_QUICK_CONNECT:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICK_CONNECT));
+                item.setToolTip(LocaleFactory.localizedString("Connect to server"));
+                item.setView(quickConnectPopup);
+                return item;
+            case TOOLBAR_ENCODING:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_ENCODING));
+                item.setToolTip(LocaleFactory.localizedString("Character Encoding"));
+                item.setView(this.encodingPopup);
+                // Add a menu representation for text mode of toolbar
+                NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_ENCODING),
+                        Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
+                String[] charsets = MainController.availableCharsets();
+                NSMenu charsetMenu = NSMenu.menu();
+                for(String charset : charsets) {
+                    charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
+                }
+                encodingMenu.setSubmenu(charsetMenu);
+                item.setMenuFormRepresentation(encodingMenu);
+                item.setMinSize(this.encodingPopup.frame().size);
+                item.setMaxSize(this.encodingPopup.frame().size);
+                return item;
+            case TOOLBAR_REFRESH:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_REFRESH));
+                item.setToolTip(LocaleFactory.localizedString("Refresh directory listing"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("reload.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("reloadButtonClicked:"));
+                return item;
+            case TOOLBAR_DOWNLOAD:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DOWNLOAD));
+                item.setToolTip(LocaleFactory.localizedString("Download file"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("download.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("downloadButtonClicked:"));
+                return item;
+            case TOOLBAR_UPLOAD:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_UPLOAD));
+                item.setToolTip(LocaleFactory.localizedString("Upload local file to the remote host"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("upload.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("uploadButtonClicked:"));
+                return item;
+            case TOOLBAR_SYNCHRONIZE:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_SYNCHRONIZE));
+                item.setToolTip(LocaleFactory.localizedString("Synchronize files"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("sync.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("syncButtonClicked:"));
+                return item;
+            case TOOLBAR_GET_INFO:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_GET_INFO));
+                item.setToolTip(LocaleFactory.localizedString("Show file attributes"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("info.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("infoButtonClicked:"));
+                return item;
+            case TOOLBAR_WEBVIEW:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_WEBVIEW));
+                item.setPaletteLabel(LocaleFactory.localizedString("Open in Web Browser"));
+                item.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
+                final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
+                if(null == browser) {
+                    item.setEnabled(false);
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
+                }
+                else {
+                    item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(browser, 32));
+                }
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("openBrowserButtonClicked:"));
+                return item;
+            case TOOLBAR_EDIT:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_EDIT));
+                item.setToolTip(LocaleFactory.localizedString("Edit file in external editor"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff"));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("editButtonClicked:"));
+                // Add a menu representation for text mode of toolbar
+                NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_EDIT),
+                        Foundation.selector("editButtonClicked:"), StringUtils.EMPTY);
+                NSMenu editMenu = NSMenu.menu();
+                editMenu.setAutoenablesItems(true);
+                editMenu.setDelegate(editMenuDelegate.id());
+                toolbarMenu.setSubmenu(editMenu);
+                item.setMenuFormRepresentation(toolbarMenu);
+                return item;
+            case TOOLBAR_DELETE:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DELETE));
+                item.setToolTip(LocaleFactory.localizedString("Delete file"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("delete.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("deleteFileButtonClicked:"));
+                return item;
+            case TOOLBAR_NEW_FOLDER:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_FOLDER));
+                item.setToolTip(LocaleFactory.localizedString("Create New Folder"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("createFolderButtonClicked:"));
+                return item;
+            case TOOLBAR_NEW_BOOKMARK:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_NEW_BOOKMARK));
+                item.setToolTip(LocaleFactory.localizedString("New Bookmark"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("bookmark", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
+                return item;
+            case TOOLBAR_DISCONNECT:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_DISCONNECT));
+                item.setToolTip(LocaleFactory.localizedString("Disconnect from server"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("eject.tiff", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("disconnectButtonClicked:"));
+                return item;
+            case TOOLBAR_TERMINAL:
+                final ApplicationFinder finder = ApplicationFinderFactory.get();
+                final Application application
+                        = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
 
-            item.setLabel(application.getName());
-            item.setPaletteLabel(application.getName());
-            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("openTerminalButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
-            item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
-            item.setPaletteLabel(LocaleFactory.localizedString("Archive", "Archive"));
-            item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.archiveutility"), 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("archiveButtonClicked:"));
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
-            if(quicklook.isAvailable()) {
-                quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
-                quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
-                quicklookButton.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSQuickLookTemplate"));
-                quicklookButton.sizeToFit();
-                quicklookButton.setTarget(this.id());
-                quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
-                item.setView(quicklookButton);
-            }
-            else {
-                item.setEnabled(false);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
-            }
-            return item;
-        }
-        else if(itemIdentifier.equals(TOOLBAR_LOG)) {
-            item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
-            item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
-            item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log", 32));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("toggleLogDrawer:"));
-            return item;
+                item.setLabel(application.getName());
+                item.setPaletteLabel(application.getName());
+                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("openTerminalButtonClicked:"));
+                return item;
+            case TOOLBAR_ARCHIVE:
+                item.setLabel(LocaleFactory.localizedString("Archive", "Archive"));
+                item.setPaletteLabel(LocaleFactory.localizedString("Archive", "Archive"));
+                item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.archiveutility"), 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("archiveButtonClicked:"));
+                return item;
+            case TOOLBAR_QUICKLOOK:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_QUICKLOOK));
+                if(quicklook.isAvailable()) {
+                    quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
+                    quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
+                    quicklookButton.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSQuickLookTemplate"));
+                    quicklookButton.sizeToFit();
+                    quicklookButton.setTarget(this.id());
+                    quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
+                    item.setView(quicklookButton);
+                }
+                else {
+                    item.setEnabled(false);
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
+                }
+                return item;
+            case TOOLBAR_LOG:
+                item.setLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+                item.setPaletteLabel(LocaleFactory.localizedString(TOOLBAR_LOG));
+                item.setToolTip(LocaleFactory.localizedString("Toggle Log Drawer"));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("log", 32));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("toggleLogDrawer:"));
+                return item;
         }
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
