@@ -44,7 +44,7 @@
         <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
     </taskdef>
     <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-        <classpath path="${lib.ext}/ant-dotnet-1.0.jar"/>
+        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
     </taskdef>
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
         <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
