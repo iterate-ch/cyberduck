@@ -22,7 +22,6 @@ import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -32,7 +31,6 @@ import java.util.UUID;
  * @version $Id$
  */
 public class Host implements Serializable, Comparable<Host> {
-    private static final Logger log = Logger.getLogger(Host.class);
 
     /**
      * The protocol identifier.
