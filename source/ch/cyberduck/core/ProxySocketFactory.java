@@ -60,6 +60,11 @@ public class ProxySocketFactory extends SocketFactory {
         this.proxyFinder = proxyFinder;
     }
 
+    /**
+     * @param target Proxy hostname
+     * @return Socket factory configured with SOCKS proxy if route is determined to be proxied. Otherwise
+     * direct connection socket factory.
+     */
     private SocketFactory factory(final String target) {
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = proxyFinder.find(new Host(protocol, target));
@@ -77,7 +82,10 @@ public class ProxySocketFactory extends SocketFactory {
     @Override
     public Socket createSocket() throws IOException {
         final String target = hostnameCallback.getTarget();
-        log.warn(String.format("Use target hostname %s for proxy configuration", target));
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Use target hostname %s determined from callback %s for proxy configuration",
+                    hostnameCallback, target));
+        }
         final Socket socket = this.factory(target).createSocket();
         configurator.configure(socket);
         return socket;
