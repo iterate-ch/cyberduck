@@ -63,6 +63,7 @@ public class MemoryPreferences extends Preferences {
     @Override
     protected void setDefaults() {
         defaults.put("logging.config", "log4j.xml");
+        super.setDefaults();
         defaults.put("application.support.path", System.getProperty("java.io.tmpdir"));
         defaults.put("application.profiles.path", System.getProperty("java.io.tmpdir"));
         defaults.put("application.receipt.path", System.getProperty("java.io.tmpdir"));
@@ -72,7 +73,6 @@ public class MemoryPreferences extends Preferences {
         defaults.put("application.version", "0");
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
         defaults.put("connection.ssl.keystore.provider", "Apple");
-        super.setDefaults();
     }
 
     @Override
