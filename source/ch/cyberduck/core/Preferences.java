@@ -884,6 +884,7 @@ public abstract class Preferences {
          * Enable ZLIB compression
          */
         defaults.put("ssh.compression", "zlib");
+        defaults.put("ssh.subsystem.name", "sftp");
 
         defaults.put("archive.default", "tar.gz");
 
