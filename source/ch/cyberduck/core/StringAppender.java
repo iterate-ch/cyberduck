@@ -26,12 +26,26 @@ public final class StringAppender {
 
     private final StringBuilder buffer;
 
+    private char suffix;
+
     public StringAppender() {
         this.buffer = new StringBuilder();
+        this.suffix = '.';
+    }
+
+    public StringAppender(final char suffix) {
+        this.buffer = new StringBuilder();
+        this.suffix = suffix;
     }
 
     public StringAppender(final StringBuilder buffer) {
         this.buffer = buffer;
+        this.suffix = '.';
+    }
+
+    public StringAppender(final StringBuilder buffer, final char suffix) {
+        this.buffer = buffer;
+        this.suffix = suffix;
     }
 
     public StringAppender append(final String message) {
@@ -48,7 +62,7 @@ public final class StringAppender {
         if(buffer.charAt(buffer.length() - 1) == ':') {
             buffer.deleteCharAt(buffer.length() - 1);
         }
-        buffer.append(".");
+        buffer.append(suffix);
 //        if(StringUtils.isAlpha(String.valueOf(buffer.charAt(buffer.length() - 1)))) {
 //            buffer.append(".");
 //        }
