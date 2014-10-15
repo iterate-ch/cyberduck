@@ -337,7 +337,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(status.getRename().remote != null) {
                                 transfer.transfer(session, status.getRename().remote, item.local, options, status, login, listener);
                             }
-                            if(status.getRename().local != null) {
+                            else if(status.getRename().local != null) {
                                 transfer.transfer(session, item.remote, status.getRename().local, options, status, login, listener);
                             }
                             else {
