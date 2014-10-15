@@ -93,12 +93,6 @@ public class AbstractTestCase {
         Locale.setDefault(Locale.ENGLISH);
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
-        PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new PreferencesFactory() {
-            @Override
-            protected Preferences create() {
-                return new MemoryPreferences();
-            }
-        });
         BundleLocale.register();
         NSImageIconCache.register();
         PlistDeserializer.register();
