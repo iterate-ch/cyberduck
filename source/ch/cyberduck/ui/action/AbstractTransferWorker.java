@@ -333,9 +333,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     final Session<?> session = borrow();
                     try {
                         try {
-                            if(status.isRename()) {
-                                // Save with different name
+                            // Save with different name
+                            if(status.getRename().remote != null) {
                                 transfer.transfer(session, status.getRename().remote, item.local, options, status, login, listener);
+                            }
+                            if(status.getRename().local != null) {
+                                transfer.transfer(session, item.remote, status.getRename().local, options, status, login, listener);
                             }
                             else {
                                 transfer.transfer(session, item.remote, item.local, options, status, login, listener);

@@ -255,7 +255,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         if(this.isAppend()) {
             return false;
         }
-        return rename.remote != null;
+        return rename.remote != null || rename.local != null;
     }
 
     public void setRename(final Rename rename) {
