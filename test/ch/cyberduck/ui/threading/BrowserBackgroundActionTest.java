@@ -13,7 +13,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.HostKeyCallbackFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 
 import org.junit.Before;
@@ -39,7 +39,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
                 return null;
             }
         });
-        HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyControllerFactory() {
+        HostKeyCallbackFactory.addFactory(Factory.NATIVE_PLATFORM, new HostKeyCallbackFactory() {
             @Override
             public HostKeyCallback create(final Controller c, final Protocol protocol) {
                 return null;

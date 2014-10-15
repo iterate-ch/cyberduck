@@ -40,7 +40,7 @@ public abstract class CertificateStoreFactory extends Factory<CertificateStore> 
     public static CertificateStore get() {
         if(null == store) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+                return new DisabledCertificateStore();
             }
             store = factories.get(NATIVE_PLATFORM).create();
         }

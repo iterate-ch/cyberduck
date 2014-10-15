@@ -40,7 +40,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.HostKeyControllerFactory;
+import ch.cyberduck.ui.HostKeyCallbackFactory;
 import ch.cyberduck.ui.LoginControllerFactory;
 import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.TransferPromptControllerFactory;
@@ -110,7 +110,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         super(controller, session, Cache.<Path>empty(), progress);
         final LoginCallback login = LoginControllerFactory.get(controller);
         this.connection = new LoginConnectionService(login,
-                HostKeyControllerFactory.get(controller, transfer.getHost().getProtocol()),
+                HostKeyCallbackFactory.get(controller, transfer.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progress, transcript);
         this.meter = new TransferSpeedometer(transfer);
         this.transfer = transfer;

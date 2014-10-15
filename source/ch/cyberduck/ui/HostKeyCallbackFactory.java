@@ -19,8 +19,8 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Protocol;
 
@@ -30,15 +30,15 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class HostKeyControllerFactory extends Factory<HostKeyCallback> {
+public abstract class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
 
     public abstract HostKeyCallback create(Controller c, Protocol protocol);
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, HostKeyControllerFactory> factories
-            = new HashMap<Platform, HostKeyControllerFactory>();
+    private static final Map<Platform, HostKeyCallbackFactory> factories
+            = new HashMap<Platform, HostKeyCallbackFactory>();
 
     /**
      * @param c Window controller
@@ -46,12 +46,12 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyCallback> 
      */
     public static HostKeyCallback get(final Controller c, final Protocol protocol) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledHostKeyCallback();
         }
         return factories.get(NATIVE_PLATFORM).create(c, protocol);
     }
 
-    public static void addFactory(Platform p, HostKeyControllerFactory f) {
+    public static void addFactory(Platform p, HostKeyCallbackFactory f) {
         factories.put(p, f);
     }
 }

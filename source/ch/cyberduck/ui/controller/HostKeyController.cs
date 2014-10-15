@@ -109,10 +109,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Register()
         {
-            HostKeyControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            HostKeyCallbackFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
-        private class Factory : HostKeyControllerFactory
+        private class Factory : HostKeyCallbackFactory
         {
             protected override object create()
             {

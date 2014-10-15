@@ -19,8 +19,8 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.LoginCallback;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public abstract class LoginControllerFactory extends Factory<LoginCallback> {
      */
     public static LoginCallback get(final Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledLoginController();
         }
         return factories.get(NATIVE_PLATFORM).create(c);
     }

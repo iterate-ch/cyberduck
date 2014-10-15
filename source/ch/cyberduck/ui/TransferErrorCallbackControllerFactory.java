@@ -18,7 +18,7 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public abstract class TransferErrorCallbackControllerFactory extends Factory<Tra
      */
     public static TransferErrorCallback get(final Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledTransferErrorCallback();
         }
         return factories.get(NATIVE_PLATFORM).create(c);
     }

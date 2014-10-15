@@ -22,15 +22,6 @@ package ch.cyberduck.core;
  */
 public class DisabledPasswordStore extends HostPasswordStore {
 
-    public static void register() {
-        PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
-            @Override
-            protected HostPasswordStore create() {
-                return new DisabledPasswordStore();
-            }
-        });
-    }
-
     @Override
     public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
         return null;

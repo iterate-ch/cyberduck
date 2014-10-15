@@ -28,15 +28,6 @@ import java.util.List;
  */
 public class DisabledCertificateStore implements CertificateStore {
 
-    public static void register() {
-        CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new CertificateStoreFactory() {
-            @Override
-            protected CertificateStore create() {
-                return new DisabledCertificateStore();
-            }
-        });
-    }
-
     @Override
     public boolean isTrusted(final String hostname, List<X509Certificate> certificates) {
         return true;

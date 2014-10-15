@@ -42,7 +42,7 @@ public abstract class PasswordStoreFactory extends Factory<HostPasswordStore> {
     public static HostPasswordStore get() {
         if(null == store) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+                return new DisabledPasswordStore();
             }
             store = factories.get(NATIVE_PLATFORM).create();
         }

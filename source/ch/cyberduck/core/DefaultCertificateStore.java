@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultCertificateStore implements CertificateStore {
 
@@ -48,7 +48,8 @@ public class DefaultCertificateStore implements CertificateStore {
         }
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
-            throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
+            throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",
+                    Arrays.toString(issuers)));
         }
         for(String alias : aliases) {
             return store.getCertificate(alias, keyTypes, issuers);
@@ -75,6 +76,6 @@ public class DefaultCertificateStore implements CertificateStore {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 }
