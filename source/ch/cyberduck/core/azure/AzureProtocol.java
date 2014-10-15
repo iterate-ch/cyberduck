@@ -82,4 +82,9 @@ public class AzureProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.https;
     }
+
+    @Override
+    public String[] getSchemes() {
+        return new String[]{this.getScheme().name(), "azure"};
+    }
 }
