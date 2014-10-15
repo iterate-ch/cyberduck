@@ -41,7 +41,7 @@ import java.util.EnumSet;
 /**
  * @version $Id$
  */
-public abstract class Local extends AbstractPath implements Referenceable, Serializable {
+public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
     /**
