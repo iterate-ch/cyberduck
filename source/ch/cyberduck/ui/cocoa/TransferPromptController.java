@@ -436,9 +436,7 @@ public abstract class TransferPromptController extends SheetController
         final TransferAction defaultAction
                 = TransferAction.forName(preferences.getProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name())));
 
-        final TransferAction[] actions = this.getTransferActions();
-
-        for(TransferAction action : actions) {
+        for(TransferAction action : TransferAction.forTransfer(transfer)) {
             this.actionPopup.addItemWithTitle(action.getTitle());
             this.actionPopup.lastItem().setRepresentedObject(action.name());
             if(action.equals(defaultAction)) {
@@ -450,17 +448,6 @@ public abstract class TransferPromptController extends SheetController
         }
         this.actionPopup.setTarget(this.id());
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
-    }
-
-    protected TransferAction[] getTransferActions() {
-        return new TransferAction[]{
-                TransferAction.resume,
-                TransferAction.overwrite,
-                TransferAction.rename,
-                TransferAction.renameexisting,
-                TransferAction.skip,
-                TransferAction.comparison
-        };
     }
 
     @Action

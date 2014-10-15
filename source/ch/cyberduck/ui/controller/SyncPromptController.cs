@@ -34,14 +34,5 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             get { return "Synchronize"; }
         }
-
-        protected override IDictionary<TransferAction, string> GetTransferActions()
-        {
-            IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            actions.Add(TransferAction.download, TransferAction.download.getTitle());
-            actions.Add(TransferAction.upload, TransferAction.upload.getTitle());
-            actions.Add(TransferAction.mirror, TransferAction.mirror.getTitle());
-            return actions;
-        }
     }
 }

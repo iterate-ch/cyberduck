@@ -69,13 +69,4 @@ public class SyncPromptController extends TransferPromptController {
         }
         view.sizeToFit();
     }
-
-    @Override
-    protected TransferAction[] getTransferActions() {
-        return new TransferAction[]{
-                TransferAction.download,
-                TransferAction.upload,
-                TransferAction.mirror
-        };
-    }
 }

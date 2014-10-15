@@ -259,12 +259,10 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            actions.Add(TransferAction.resume, TransferAction.resume.getTitle());
-            actions.Add(TransferAction.overwrite, TransferAction.overwrite.getTitle());
-            actions.Add(TransferAction.rename, TransferAction.rename.getTitle());
-            actions.Add(TransferAction.renameexisting, TransferAction.renameexisting.getTitle());
-            actions.Add(TransferAction.skip, TransferAction.skip.getTitle());
-            actions.Add(TransferAction.comparison, TransferAction.comparison.getTitle());
+            foreach (TransferAction action in Transferaction.forTransfer(Transfer))
+            {
+                actions.Add(action, action.getTitle());
+            }
             return actions;
         }
 

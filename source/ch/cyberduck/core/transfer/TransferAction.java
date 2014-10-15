@@ -22,7 +22,9 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +37,24 @@ public abstract class TransferAction {
 
     public static TransferAction forName(final String name) {
         return registry.get(name);
+    }
+
+    public static List<TransferAction> forTransfer(final Transfer t) {
+        switch(t.getType()) {
+            case sync:
+                return Arrays.asList(TransferAction.download,
+                        TransferAction.upload,
+                        TransferAction.mirror
+                );
+            default:
+                return Arrays.asList(TransferAction.resume,
+                        TransferAction.overwrite,
+                        TransferAction.rename,
+                        TransferAction.renameexisting,
+                        TransferAction.skip,
+                        TransferAction.comparison
+                );
+        }
     }
 
     private String name;
