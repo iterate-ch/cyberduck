@@ -103,7 +103,6 @@ public class AbstractTestCase {
         ProfilePlistReader.register();
         ProtocolFactory.register();
         LaunchServicesApplicationFinder.register();
-        NSObjectPathReference.register();
         UserDefaultsDateFormatter.register();
         WorkspaceApplicationLauncher.register();
         SystemConfigurationProxy.register();
