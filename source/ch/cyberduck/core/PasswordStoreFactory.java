@@ -42,9 +42,11 @@ public abstract class PasswordStoreFactory extends Factory<HostPasswordStore> {
     public static HostPasswordStore get() {
         if(null == store) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                return new DisabledPasswordStore();
+                store = new DisabledPasswordStore();
             }
-            store = factories.get(NATIVE_PLATFORM).create();
+            else {
+                store = factories.get(NATIVE_PLATFORM).create();
+            }
         }
         return store;
     }
