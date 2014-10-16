@@ -10,9 +10,7 @@
 		470168310EED9EA8005E2CCF /* Archive.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168130EED9EA7005E2CCF /* Archive.strings */; };
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
 		47022C231018663600488C19 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
-		4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4704C3A91664F94F00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
-		4704C3AA1664F95E00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3AB1664F96400B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3AC1664F96700B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		4704C3AD1664FB2E00B17020 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
@@ -63,9 +61,6 @@
 		474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474166A406C6555E00AC0BD2 /* InfoPlist.strings */; };
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
 		474520F21076B60600823467 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
-		474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
-		474523921076B6A900823467 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		474523981076B6D800823467 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474523971076B6D800823467 /* Carbon.framework */; };
 		474523E21076B70000823467 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		474524B11076B7DA00823467 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		474524B71076B7FC00823467 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -244,13 +239,6 @@
 		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
-		47E72E0E162865000002F049 /* Editor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E07162865000002F049 /* Editor.h */; };
-		47E72E0F162865000002F049 /* NSAppleEventDescriptor-Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E08162865000002F049 /* NSAppleEventDescriptor-Extensions.h */; };
-		47E72E10162865000002F049 /* ODBEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E09162865000002F049 /* ODBEditor.h */; };
-		47E72E11162865000002F049 /* ODBEditorSuite.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E72E0A162865000002F049 /* ODBEditorSuite.h */; };
-		47E72E12162865000002F049 /* Editor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E72E0B162865000002F049 /* Editor.m */; };
-		47E72E13162865000002F049 /* NSAppleEventDescriptor-Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E72E0C162865000002F049 /* NSAppleEventDescriptor-Extensions.m */; };
-		47E72E14162865000002F049 /* ODBEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E72E0D162865000002F049 /* ODBEditor.m */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
 		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
@@ -272,13 +260,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4739EF670856981300405FD3;
 			remoteInfo = libKeychain;
-		};
-		471E214D0A1734D7009E164E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4739EF83085698F600405FD3;
-			remoteInfo = libODBEdit;
 		};
 		471E21510A1734D7009E164E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -698,7 +679,6 @@
 		47341E0A09A09CE90065FF57 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Crash.strings; sourceTree = "<group>"; };
 		4734425A102DEABD00C04C43 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EF94085698F700405FD3 /* libODBEdit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libODBEdit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		473A7017182259350055C76C /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = base64.m; sourceTree = "<group>"; };
@@ -1643,18 +1623,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF8D085698F600405FD3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4704C3AA1664F95E00B17020 /* JavaNativeFoundation.framework in Frameworks */,
-				4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */,
-				474523921076B6A900823467 /* Foundation.framework in Frameworks */,
-				474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */,
-				474523981076B6D800823467 /* Carbon.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA80856990900405FD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1784,7 +1752,6 @@
 			children = (
 				471D2C5505A2505600675163 /* Cyberduck.app */,
 				4739EF730856981400405FD3 /* libKeychain.dylib */,
-				4739EF94085698F700405FD3 /* libODBEdit.dylib */,
 				4739EFB00856990900405FD3 /* libProxy.dylib */,
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
@@ -2295,17 +2262,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF84085698F600405FD3 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				47E72E0E162865000002F049 /* Editor.h in Headers */,
-				47E72E0F162865000002F049 /* NSAppleEventDescriptor-Extensions.h in Headers */,
-				47E72E10162865000002F049 /* ODBEditor.h in Headers */,
-				47E72E11162865000002F049 /* ODBEditorSuite.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA40856990900405FD3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2442,7 +2398,6 @@
 				4797D28D1628299700340E1C /* PBXTargetDependency */,
 				479BF7811725A6FE006854BF /* PBXTargetDependency */,
 				471E214C0A1734D7009E164E /* PBXTargetDependency */,
-				471E214E0A1734D7009E164E /* PBXTargetDependency */,
 				471E21520A1734D7009E164E /* PBXTargetDependency */,
 				471E21540A1734D7009E164E /* PBXTargetDependency */,
 				471E21580A1734D7009E164E /* PBXTargetDependency */,
@@ -2491,24 +2446,6 @@
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
 			productReference = 4739EF730856981400405FD3 /* libKeychain.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		4739EF83085698F600405FD3 /* libODBEdit */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4739EF92085698F600405FD3 /* Build configuration list for PBXNativeTarget "libODBEdit" */;
-			buildPhases = (
-				4739EF84085698F600405FD3 /* Headers */,
-				4739EF89085698F600405FD3 /* Sources */,
-				4739EF8D085698F600405FD3 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = libODBEdit;
-			productInstallPath = /usr/local/lib;
-			productName = keychainLib;
-			productReference = 4739EF94085698F700405FD3 /* libODBEdit.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EFA30856990900405FD3 /* libProxy */ = {
@@ -2770,7 +2707,6 @@
 			targets = (
 				471D2C0B05A2505500675163 /* app */,
 				4739EF670856981300405FD3 /* libKeychain */,
-				4739EF83085698F600405FD3 /* libODBEdit */,
 				4739EFA30856990900405FD3 /* libProxy */,
 				4739EFB10856991200405FD3 /* libLocal */,
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
@@ -2968,16 +2904,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4739EF89085698F600405FD3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				47E72E12162865000002F049 /* Editor.m in Sources */,
-				47E72E13162865000002F049 /* NSAppleEventDescriptor-Extensions.m in Sources */,
-				47E72E14162865000002F049 /* ODBEditor.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EFA60856990900405FD3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3095,11 +3021,6 @@
 			isa = PBXTargetDependency;
 			target = 4739EF670856981300405FD3 /* libKeychain */;
 			targetProxy = 471E214B0A1734D7009E164E /* PBXContainerItemProxy */;
-		};
-		471E214E0A1734D7009E164E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4739EF83085698F600405FD3 /* libODBEdit */;
-			targetProxy = 471E214D0A1734D7009E164E /* PBXContainerItemProxy */;
 		};
 		471E21520A1734D7009E164E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4464,20 +4385,6 @@
 			};
 			name = Release;
 		};
-		4739EF93085698F600405FD3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libODBEdit;
-			};
-			name = Release;
-		};
 		4739EFAF0856990900405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4656,21 +4563,6 @@
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
-			};
-			name = Debug;
-		};
-		47A8AD65100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
-				);
-				LD_DYLIB_INSTALL_NAME = "";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libODBEdit;
 			};
 			name = Debug;
 		};
@@ -4946,15 +4838,6 @@
 			buildConfigurations = (
 				4739EF720856981300405FD3 /* Release */,
 				47A8AD64100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4739EF92085698F600405FD3 /* Build configuration list for PBXNativeTarget "libODBEdit" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4739EF93085698F600405FD3 /* Release */,
-				47A8AD65100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
