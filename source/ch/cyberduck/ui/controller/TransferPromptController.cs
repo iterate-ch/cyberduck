@@ -27,6 +27,7 @@ using ch.cyberduck.core.shared;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
+using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -259,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            foreach (TransferAction action in TransferAction.forTransfer(Transfer))
+            foreach (TransferAction action in Utils.ConvertFromJavaList<TransferAction>(TransferAction.forTransfer(Transfer)))
             {
                 actions.Add(action, action.getTitle());
             }
