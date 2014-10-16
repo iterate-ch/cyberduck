@@ -29,11 +29,6 @@ import static org.junit.Assert.*;
 
 public class PathTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testDictionaryDirectory() {
         Path path = new Path("/path", EnumSet.of(Path.Type.directory));
