@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -13,6 +14,11 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class AttributedListTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testAdd() throws Exception {
