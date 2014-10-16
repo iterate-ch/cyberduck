@@ -259,7 +259,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            foreach (TransferAction action in Transferaction.forTransfer(Transfer))
+            foreach (TransferAction action in TransferAction.forTransfer(Transfer))
             {
                 actions.Add(action, action.getTitle());
             }
