@@ -66,14 +66,14 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        final AtomicBoolean b = new AtomicBoolean();
+        final AtomicBoolean put = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
                 if(request) {
                     if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
-                        b.set(true);
+                        put.set(true);
                     }
                 }
             }
@@ -83,6 +83,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
+        assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
