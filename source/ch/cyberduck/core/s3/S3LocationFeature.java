@@ -84,7 +84,11 @@ public class S3LocationFeature implements Location {
 
         @Override
         public String toString() {
-            return LocaleFactory.localizedString(this.getIdentifier(), "S3");
+            final String identifier = getIdentifier();
+            if(null == identifier) {
+                return LocaleFactory.localizedString("Unknown");
+            }
+            return LocaleFactory.localizedString(identifier, "S3");
         }
     }
 }

@@ -88,6 +88,10 @@ public class SwiftLocationFeature implements Location {
 
         @Override
         public String toString() {
+            final String identifier = getIdentifier();
+            if(null == identifier) {
+                return LocaleFactory.localizedString("Unknown");
+            }
             return LocaleFactory.localizedString(this.getIdentifier(), "Mosso");
         }
     }
