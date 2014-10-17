@@ -44,10 +44,6 @@ public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
         Native.load("LaunchServicesFileDescriptor");
     }
 
-    private LaunchServicesFileDescriptor() {
-        //
-    }
-
     @Override
     public String getKind(final String filename) {
         if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {

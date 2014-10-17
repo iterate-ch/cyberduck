@@ -43,10 +43,6 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
         }
     }
 
-    private WorkspaceApplicationLauncher() {
-        //
-    }
-
     @Override
     public boolean open(final Local file) {
         synchronized(NSWorkspace.class) {
