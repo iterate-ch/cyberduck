@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
@@ -86,10 +87,17 @@ public class SwiftObjectListService implements ListService {
                             log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
                         }
                     }
-                    final Path child = new Path(directory, PathNormalizer.name(object.getName()),
-                            "application/directory".equals(object.getMimeType())
-                                    ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file),
-                            attributes);
+                    final EnumSet<AbstractPath.Type> types;
+                    if("application/directory".equals(object.getMimeType())) {
+                        types = EnumSet.of(Path.Type.directory);
+                    }
+                    else {
+                        types = EnumSet.of(Path.Type.file);
+                    }
+                    if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
+                        types.add(Path.Type.placeholder);
+                    }
+                    final Path child = new Path(directory, PathNormalizer.name(object.getName()), types, attributes);
                     if(child.isDirectory()) {
                         if(children.contains(child.getReference())) {
                             // There is already a placeholder object
