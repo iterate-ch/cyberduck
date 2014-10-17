@@ -57,9 +57,6 @@ public class S3DefaultDeleteFeature implements Delete {
             try {
                 try {
                     if(file.isDirectory()) {
-                        // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                        // default directory placeholder formats has the format `/placeholder/' as a key.
-                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file) + Path.DELIMITER);
                         // Always returning 204 even if the key does not exist.
                         // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
                         session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));

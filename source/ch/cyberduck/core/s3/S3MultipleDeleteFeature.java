@@ -72,10 +72,6 @@ public class S3MultipleDeleteFeature implements Delete {
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
                 if(file.isDirectory()) {
-                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                    // default directory placeholder formats has the format `/placeholder/' as a key.
-                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file) + Path.DELIMITER,
-                            file.attributes().getVersionId()));
                     // Always returning 204 even if the key does not exist.
                     // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
                     keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
