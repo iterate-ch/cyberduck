@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -243,7 +243,6 @@ namespace Ch.Cyberduck.Core
             foreach (Charset charset in collection)
             {
                 string name = charset.displayName();
-                Console.WriteLine(name);
                 if (!(name.StartsWith("IBM") || ((name.StartsWith("x-") && !name.StartsWith("x-Mac")))))
                 {
                     charsets.Add(name);
