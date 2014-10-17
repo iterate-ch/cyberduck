@@ -27,6 +27,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 
@@ -58,16 +60,28 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMakePlaceholder() throws Exception {
+    public void testCreatePlaceholder() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final AtomicBoolean b = new AtomicBoolean();
+        final String name = UUID.randomUUID().toString();
+        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(("PUT /" + name + "%2F HTTP/1.1").equals(message)) {
+                        b.set(true);
+                    }
+                }
+            }
+        });
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
+        assertTrue(b.get());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
