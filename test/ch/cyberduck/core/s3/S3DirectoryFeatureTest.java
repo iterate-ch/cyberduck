@@ -28,6 +28,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -83,6 +84,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(b.get());
         assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }

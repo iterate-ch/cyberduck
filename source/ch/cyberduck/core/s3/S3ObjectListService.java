@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
@@ -144,8 +145,9 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path file = new Path(parent, PathNormalizer.name(key),
-                        object.isDirectoryPlaceholder() ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file));
+                final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
+                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                final Path file = new Path(parent, PathNormalizer.name(key), types);
                 file.attributes().setChecksum(object.getETag());
                 final Date lastmodified = object.getLastModifiedDate();
                 if(lastmodified != null) {
@@ -167,11 +169,8 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
-                if(children.contains(file.getReference())) {
-                    // There is already a placeholder object
-                    continue;
-                }
+                final Path file = new Path(parent, PathNormalizer.name(key),
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
             }

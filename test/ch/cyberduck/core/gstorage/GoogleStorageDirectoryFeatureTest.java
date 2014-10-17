@@ -28,9 +28,9 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -91,9 +91,11 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
                 return null;
             }
         }, new DisabledLoginController(), new DisabledCancelCallback());
-        final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
