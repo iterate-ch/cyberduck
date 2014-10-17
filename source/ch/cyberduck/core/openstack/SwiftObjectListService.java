@@ -87,13 +87,8 @@ public class SwiftObjectListService implements ListService {
                             log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
                         }
                     }
-                    final EnumSet<AbstractPath.Type> types;
-                    if("application/directory".equals(object.getMimeType())) {
-                        types = EnumSet.of(Path.Type.directory);
-                    }
-                    else {
-                        types = EnumSet.of(Path.Type.file);
-                    }
+                    final EnumSet<AbstractPath.Type> types = "application/directory"
+                            .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
                         types.add(Path.Type.placeholder);
                     }

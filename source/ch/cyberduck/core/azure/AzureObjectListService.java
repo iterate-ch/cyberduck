@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -91,10 +92,12 @@ public class AzureObjectListService implements ListService {
                         attributes.setETag(blob.getProperties().getEtag());
                         attributes.setChecksum(blob.getProperties().getContentMD5());
                     }
-                    final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()),
-                            object instanceof CloudBlobDirectory
-                                    ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file),
-                            attributes);
+                    final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                    if(StringUtils.endsWith(object.getUri().getPath(), String.valueOf(Path.DELIMITER))) {
+                        types.add(Path.Type.placeholder);
+                    }
+                    final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), types, attributes);
                     children.add(child);
                 }
                 listener.chunk(directory, children);
