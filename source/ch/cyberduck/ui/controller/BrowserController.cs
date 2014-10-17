@@ -1008,7 +1008,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Download()
         {
-            Download(SelectedPaths, _session.getHost().getDownloadFolder());
+            Download(SelectedPaths, new DownloadDirectoryFinder().find(_session.getHost()));
         }
 
         private bool View_ValidateRevertFile()
@@ -1708,8 +1708,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadTo()
         {
-            string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"), 
-                new DownloadDirectoryFinder().find(Session.getHost()), null);
+            string folder = View.DownloadToDialog(LocaleFactory.localizedString("Download To…"),
+                                                  new DownloadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
                 IList<TransferItem> downloads = new List<TransferItem>();
@@ -1730,7 +1730,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DownloadAs()
         {
-            string filename = View.DownloadAsDialog(new DownloadDirectoryFinder().find(Session.getHost()), SelectedPath.getName());
+            string filename = View.DownloadAsDialog(new DownloadDirectoryFinder().find(Session.getHost()),
+                                                    SelectedPath.getName());
             if (null != filename)
             {
                 Path selected = SelectedPath;
@@ -2267,8 +2268,8 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this, this,
-                                                                transfer, new TransferOptions()));
+                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this,
+                                                                this, transfer, new TransferOptions()));
             }
             else
             {
@@ -2974,9 +2975,12 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public CallbackTransferBackgroundAction(TransferCallback callback, BrowserController controller,
-                                                    TransferListener transferListener, ProgressListener progressListener, TranscriptListener transcriptListener,
-                                                    Transfer transfer, TransferOptions options)
-                : base(controller, controller._session, transferListener, progressListener, transcriptListener, transfer, options)
+                                                    TransferListener transferListener, ProgressListener progressListener,
+                                                    TranscriptListener transcriptListener, Transfer transfer,
+                                                    TransferOptions options)
+                : base(
+                    controller, controller._session, transferListener, progressListener, transcriptListener, transfer,
+                    options)
             {
                 _callback = callback;
                 _transfer = transfer;
