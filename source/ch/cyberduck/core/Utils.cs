@@ -243,7 +243,8 @@ namespace Ch.Cyberduck.Core
             foreach (Charset charset in collection)
             {
                 string name = charset.displayName();
-                if (!(name.StartsWith("IBM") || name.StartsWith("x-") || name.StartsWith("X-")))
+                Console.WriteLine(name);
+                if (!(name.StartsWith("IBM") || ((name.StartsWith("x-") && !name.StartsWith("x-Mac")))))
                 {
                     charsets.Add(name);
                 }

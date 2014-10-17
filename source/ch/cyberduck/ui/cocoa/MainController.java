@@ -1548,7 +1548,7 @@ public class MainController extends BundleController implements NSApplication.De
         List<String> charsets = new Collection<String>();
         for(Charset charset : Charset.availableCharsets().values()) {
             final String name = charset.displayName();
-            if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
+            if(!(name.startsWith("IBM") || ((name.startsWith("x-") && !name.startsWith("x-Mac")))))
                 charsets.add(name);
             }
         }
