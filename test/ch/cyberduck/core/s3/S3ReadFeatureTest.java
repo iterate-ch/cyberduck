@@ -15,6 +15,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
@@ -26,8 +27,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -76,6 +76,27 @@ public class S3ReadFeatureTest extends AbstractTestCase {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
+    public void testDownloadGzip() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        final TransferStatus status = new TransferStatus();
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final InputStream in = new S3ReadFeature(session).read(new Path(container,
+                "189584543480_CloudTrail_us-east-1_20141017T0910Z_CoraJxmlIWYQI2wc.json.gz",
+                EnumSet.of(Path.Type.file)), status);
+        assertNotNull(in);
+        new StreamCopier(status, status).transfer(in, new NullOutputStream());
+        assertEquals(1457L, status.getCurrent());
+        assertEquals(1457L, status.getLength());
+        in.close();
         session.close();
     }
 }
