@@ -1225,7 +1225,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateEncodings()
         {
             List<string> encodings = new List<string>();
-            encodings.AddRange(Utils.AvailableCharsets());
+            encodings.AddRange(new DefaultCharsetProvider().availableCharsets());
             View.PopulateEncodings(encodings);
         }
 

@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -29,7 +29,6 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Microsoft.Win32;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
-using java.nio.charset;
 using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
@@ -230,27 +229,6 @@ namespace Ch.Cyberduck.Core
                 result.Add((T) next);
             }
             return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>The available character sets available on this platform</returns>
-        public static string[] AvailableCharsets()
-        {
-            List<string> charsets = new List<string>();
-            object[] collection = Charset.availableCharsets().values().toArray();
-            foreach (Charset charset in collection)
-            {
-                string name = charset.displayName();
-                if (!(name.StartsWith("IBM") || ((name.StartsWith("x-") && !name.StartsWith("x-Mac")))))
-                {
-                    charsets.Add(name);
-                }
-            }
-            charsets.AddRange(ExtendedCharsets);
-            charsets.Sort();
-            return charsets.ToArray();
         }
 
         public static IList<KeyValuePair<string, string>> OpenWithListForExtension(String ext)

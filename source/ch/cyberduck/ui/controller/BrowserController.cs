@@ -1106,7 +1106,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateEncodings()
         {
             List<string> list = new List<string>();
-            list.AddRange(Utils.AvailableCharsets());
+            list.AddRange(new DefaultCharsetProvider().availableCharsets());
             View.PopulateEncodings(list);
             View.SelectedEncoding = Preferences.instance().getProperty("browser.charset.encoding");
         }

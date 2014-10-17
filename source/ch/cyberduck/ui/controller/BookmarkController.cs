@@ -254,7 +254,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitEncodings()
         {
             List<string> encodings = new List<string> {Default};
-            encodings.AddRange(Utils.AvailableCharsets());
+            encodings.AddRange(new DefaultCharsetProvider().availableCharsets());
             View.PopulateEncodings(encodings);
         }
 
