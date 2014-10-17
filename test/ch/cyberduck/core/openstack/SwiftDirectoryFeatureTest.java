@@ -28,6 +28,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 
 import org.junit.Test;
 
@@ -85,6 +86,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
+        assertTrue(new DefaultFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
