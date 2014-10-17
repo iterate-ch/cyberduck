@@ -24,7 +24,9 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collections;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -58,8 +60,11 @@ public class SwiftDirectoryFeature implements Directory {
                 session.getClient().createContainer(regionService.lookup(region), file.getName());
             }
             else {
-                // Create virtual directory. Use region of parent container.
-                new SwiftTouchFeature(session).touch(file);
+                // Create virtual directory.
+                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(),
+                        new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
+                        Collections.<String, String>emptyMap());
             }
         }
         catch(GenericException e) {

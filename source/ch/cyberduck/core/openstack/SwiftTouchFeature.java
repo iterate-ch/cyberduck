@@ -50,18 +50,10 @@ public class SwiftTouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            if(file.isDirectory()) {
-                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(),
-                        new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
-                        Collections.<String, String>emptyMap());
-            }
-            else {
-                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
-                        containerService.getContainer(file).getName(),
-                        new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
-                        Collections.<String, String>emptyMap());
-            }
+            session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                    containerService.getContainer(file).getName(),
+                    new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
+                    Collections.<String, String>emptyMap());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);

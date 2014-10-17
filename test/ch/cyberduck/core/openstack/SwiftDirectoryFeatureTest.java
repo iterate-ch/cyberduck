@@ -27,12 +27,14 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TranscriptListener;
 
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -64,11 +66,22 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final AtomicBoolean b = new AtomicBoolean();
+        final String name = UUID.randomUUID().toString();
+        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
+            @Override
+            public void log(final boolean request, final String message) {
+                if(request) {
+                    if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                        b.set(true);
+                    }
+                }
+            }
+        });
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null);
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
