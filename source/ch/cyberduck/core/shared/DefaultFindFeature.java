@@ -32,15 +32,15 @@ import ch.cyberduck.core.features.Find;
  */
 public class DefaultFindFeature implements Find {
 
-    private Session session;
+    private Session<?> session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public DefaultFindFeature(final Session session) {
-        this(session, Cache.empty());
+        this(session, Cache.<Path>empty());
     }
 
-    public DefaultFindFeature(final Session session, final Cache cache) {
+    public DefaultFindFeature(final Session session, final Cache<Path> cache) {
         this.session = session;
         this.cache = cache;
     }

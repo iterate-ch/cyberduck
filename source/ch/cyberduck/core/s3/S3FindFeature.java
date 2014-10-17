@@ -36,7 +36,7 @@ public class S3FindFeature implements Find {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public S3FindFeature(final S3Session session) {
         this.session = session;
@@ -68,7 +68,7 @@ public class S3FindFeature implements Find {
             final boolean found;
             if(file.isDirectory() && !file.isVolume()) {
                 found = session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
-                        containerService.getKey(file) + Path.DELIMITER);
+                        containerService.getKey(file));
             }
             else {
                 found = session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),

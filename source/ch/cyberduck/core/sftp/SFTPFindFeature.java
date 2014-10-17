@@ -33,7 +33,7 @@ public class SFTPFindFeature implements Find {
 
     private SFTPSession session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public SFTPFindFeature(final SFTPSession session) {
         this.session = session;
