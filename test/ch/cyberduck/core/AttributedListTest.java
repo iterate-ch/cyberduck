@@ -2,7 +2,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -15,22 +14,27 @@ import static org.junit.Assert.*;
  */
 public class AttributedListTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        NSObjectPathReference.register();
-    }
-
     @Test
     public void testAdd() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();
-        assertTrue(list.add(new Path("/a", EnumSet.of(Path.Type.directory))));
+        assertTrue(list.add(new Path("/a", EnumSet.of(Path.Type.directory)) {
+            @Override
+            public PathReference getReference() {
+                return new NSObjectPathReference(this);
+            }
+        }));
         assertTrue(list.contains(new NSObjectPathReference(NSString.stringWithString("[directory]-/a"))));
     }
 
     @Test
     public void testRemove() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();
-        assertTrue(list.add(new Path("/a", EnumSet.of(Path.Type.directory))));
+        assertTrue(list.add(new Path("/a", EnumSet.of(Path.Type.directory)) {
+            @Override
+            public PathReference getReference() {
+                return new NSObjectPathReference(this);
+            }
+        }));
         assertTrue(list.contains(new NSObjectPathReference(NSString.stringWithString("[directory]-/a"))));
         list.remove(0);
         assertFalse(list.contains(new NSObjectPathReference(NSString.stringWithString("[directory]-/a"))));
@@ -39,7 +43,12 @@ public class AttributedListTest extends AbstractTestCase {
     @Test
     public void testFilter() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();
-        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory)) {
+            @Override
+            public PathReference getReference() {
+                return new NSObjectPathReference(this);
+            }
+        };
         assertTrue(list.add(a));
         assertTrue(list.filter(new NullComparator(), new Filter<Path>() {
             @Override
