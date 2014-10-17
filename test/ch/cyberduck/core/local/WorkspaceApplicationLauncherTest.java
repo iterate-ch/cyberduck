@@ -21,7 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -32,17 +31,12 @@ import java.util.concurrent.Callable;
  */
 public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        WorkspaceApplicationLauncher.register();
-    }
-
     @Test
     public void testOpen() throws Exception {
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                ApplicationLauncherFactory.get().open(new NullLocal("t"));
+                new WorkspaceApplicationLauncher().open(new NullLocal("t"));
                 return null;
             }
         }, 5);
@@ -52,7 +46,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
                 final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
                 LocalTouchFactory.get().touch(file);
                 file.delete(true);
-                ApplicationLauncherFactory.get().open(file);
+                new WorkspaceApplicationLauncher().open(file);
                 return null;
             }
         }, 5);
@@ -63,7 +57,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                ApplicationLauncherFactory.get().bounce(new NullLocal("t"));
+                new WorkspaceApplicationLauncher().bounce(new NullLocal("t"));
                 return null;
             }
         }, 5);
@@ -73,7 +67,7 @@ public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
                 final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
                 LocalTouchFactory.get().touch(file);
                 file.delete(true);
-                ApplicationLauncherFactory.get().bounce(file);
+                new WorkspaceApplicationLauncher().bounce(file);
                 return null;
             }
         }, 5);

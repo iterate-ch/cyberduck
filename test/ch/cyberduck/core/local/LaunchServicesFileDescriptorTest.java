@@ -20,7 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -30,19 +29,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        LaunchServicesFileDescriptor.register();
-        FinderLocal.register();
-    }
-
     @Test
     public void testGetKind() throws Exception {
-        assertTrue(FileDescriptorFactory.get().getKind("/tmp/t.txt").startsWith("Plain"));
+        assertTrue(new LaunchServicesFileDescriptor().getKind("/tmp/t.txt").startsWith("Plain"));
     }
 
     @Test
     public void testGetKindWithoutExtension() throws Exception {
-        assertTrue(FileDescriptorFactory.get().getKind("txt").startsWith("Plain"));
+        assertTrue(new LaunchServicesFileDescriptor().getKind("txt").startsWith("Plain"));
     }
 }
