@@ -482,7 +482,7 @@ public class ConnectionController extends SheetController {
         this.encodingPopup.removeAllItems();
         this.encodingPopup.addItemWithTitle(DEFAULT);
         this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(MainController.availableCharsets()));
+        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingPopup.selectItemWithTitle(DEFAULT);
     }
 

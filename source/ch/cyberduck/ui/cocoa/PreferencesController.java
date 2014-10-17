@@ -580,7 +580,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.encodingCombobox.setTarget(this.id());
         this.encodingCombobox.setAction(Foundation.selector("encodingComboboxClicked:"));
         this.encodingCombobox.removeAllItems();
-        this.encodingCombobox.addItemsWithTitles(NSArray.arrayWithObjects(MainController.availableCharsets()));
+        this.encodingCombobox.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingCombobox.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
     }
 

@@ -2654,8 +2654,10 @@ source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/AtomicBoolean.cs -text
+source/ch/cyberduck/core/CharsetProvider.java -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
+source/ch/cyberduck/core/DefaultCharsetProvider.java -text
 source/ch/cyberduck/core/DefaultPathReferenceFactory.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text

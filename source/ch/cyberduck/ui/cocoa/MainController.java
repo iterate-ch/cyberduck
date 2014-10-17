@@ -241,7 +241,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
-        for(String charset : availableCharsets()) {
+        for(String charset : new DefaultCharsetProvider().availableCharsets()) {
             this.encodingMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
         }
     }
@@ -1539,20 +1539,6 @@ public class MainController extends BundleController implements NSApplication.De
     @Override
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
-    }
-
-    /**
-     * @return The available character sets available on this platform
-     */
-    public static String[] availableCharsets() {
-        List<String> charsets = new Collection<String>();
-        for(Charset charset : Charset.availableCharsets().values()) {
-            final String name = charset.displayName();
-            if(!(name.startsWith("IBM") || ((name.startsWith("x-") && !name.startsWith("x-Mac")))))
-                charsets.add(name);
-            }
-        }
-        return charsets.toArray(new String[charsets.size()]);
     }
 
     @Override

@@ -2093,7 +2093,7 @@ public class BrowserController extends WindowController
         this.encodingPopup.setTarget(this.id());
         this.encodingPopup.setAction(Foundation.selector("encodingButtonClicked:"));
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(MainController.availableCharsets()));
+        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingPopup.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
     }
 
@@ -4026,7 +4026,7 @@ public class BrowserController extends WindowController
                 // Add a menu representation for text mode of toolbar
                 NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(TOOLBAR_ENCODING),
                         Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
-                String[] charsets = MainController.availableCharsets();
+                String[] charsets = new DefaultCharsetProvider().availableCharsets();
                 NSMenu charsetMenu = NSMenu.menu();
                 for(String charset : charsets) {
                     charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
