@@ -14,8 +14,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import com.amazonaws.services.identitymanagement.model.MalformedPolicyDocumentException;
-
 import static org.junit.Assert.*;
 
 /**
@@ -30,15 +28,15 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         ));
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
-        try {
-            iam.create(username, "{}", new DisabledLoginController());
-            fail();
-        }
-        catch(BackgroundException e) {
-            assertEquals("Cannot write user configuration.", e.getMessage());
-            assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
-            iam.delete(username, new DisabledLoginController());
-        }
+//        try {
+//            iam.create(username, "{}", new DisabledLoginController());
+//            fail();
+//        }
+//        catch(BackgroundException e) {
+//            assertEquals("Cannot write user configuration.", e.getMessage());
+//            assertEquals(MalformedPolicyDocumentException.class, e.getCause().getClass());
+//            iam.delete(username, new DisabledLoginController());
+//        }
         iam.create(username, "{\n" +
                 "  \"Version\": \"2012-10-17\",\n" +
                 "  \"Statement\": [\n" +
