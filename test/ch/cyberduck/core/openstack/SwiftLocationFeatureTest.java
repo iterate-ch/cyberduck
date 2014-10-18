@@ -42,6 +42,6 @@ public class SwiftLocationFeatureTest extends AbstractTestCase {
     public void testLocationNull() throws Exception {
         final SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(null);
         assertNull(region.getIdentifier());
-        assertEquals("", region.toString());
+        assertEquals("Unknown", region.toString());
     }
 }
