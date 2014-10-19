@@ -80,19 +80,24 @@ public abstract class LicenseFactory extends Factory<License> {
 
     protected Local folder;
 
-    private String extension;
+    private Filter<Local> filter;
 
     protected LicenseFactory() {
         this(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path")));
     }
 
     protected LicenseFactory(final Local folder) {
-        this(folder, "cyberducklicense");
+        this(folder, new Filter<Local>() {
+            @Override
+            public boolean accept(final Local file) {
+                return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
+            }
+        });
     }
 
-    protected LicenseFactory(final Local folder, final String extension) {
+    protected LicenseFactory(final Local folder, final Filter<Local> filter) {
         this.folder = folder;
-        this.extension = extension;
+        this.filter = filter;
     }
 
     /**
@@ -104,12 +109,7 @@ public abstract class LicenseFactory extends Factory<License> {
     public List<License> open() throws AccessDeniedException {
         final List<License> keys = new ArrayList<License>();
         if(folder.exists()) {
-            for(Local key : folder.list().filter(new Filter<Local>() {
-                @Override
-                public boolean accept(final Local file) {
-                    return extension.equals(FilenameUtils.getExtension(file.getName()));
-                }
-            })) {
+            for(Local key : folder.list().filter(filter)) {
                 keys.add(this.open(key));
             }
         }
