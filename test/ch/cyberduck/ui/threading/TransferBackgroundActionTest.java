@@ -20,6 +20,7 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginController;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.MainAction;
@@ -75,10 +77,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 };
             }
         };
-        final Path test = new Path("/home/jenkins/transfer/test", EnumSet.of(Path.Type.file));
+        final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
+        final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
 
-        final Path copy = new Path(new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy));
 
         final AbstractController controller = new AbstractController() {
@@ -89,7 +92,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SFTPSession(host), new TransferListener() {
+        final SFTPSession session = new SFTPSession(host);
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, session, new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -115,6 +119,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
+
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -127,10 +133,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         )));
 
-        final Path test = new Path("/home/jenkins/transfer/test", EnumSet.of(Path.Type.file));
+        final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
+        final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
 
-        final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
                 Collections.singletonMap(test, copy));
 
@@ -167,6 +174,8 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
+
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
