@@ -18,11 +18,13 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -43,7 +45,7 @@ public class ReceiptFactory extends LicenseFactory {
     private static final int APPSTORE_VALIDATION_FAILURE = 173;
 
     public ReceiptFactory() {
-        super(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")));
+        super(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")), StringUtils.EMPTY);
     }
 
     @Override
