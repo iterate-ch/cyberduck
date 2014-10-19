@@ -316,7 +316,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     }
 
     /**
-     * @param file   File
+     * @param item   Transfer
      * @param filter Filter to apply to exclude files from transfer
      */
     public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
@@ -333,16 +333,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     final Session<?> session = borrow();
                     try {
                         try {
-                            // Save with different name
-                            if(status.getRename().remote != null) {
-                                transfer.transfer(session, status.getRename().remote, item.local, options, status, login, listener);
-                            }
-                            else if(status.getRename().local != null) {
-                                transfer.transfer(session, item.remote, status.getRename().local, options, status, login, listener);
-                            }
-                            else {
-                                transfer.transfer(session, item.remote, item.local, options, status, login, listener);
-                            }
+                            transfer.transfer(session,
+                                    status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                    status.getRename().local != null ? status.getRename().local : item.local,
+                                    options, status, login, listener);
                             callback.complete(item);
                         }
                         catch(ConnectionCanceledException e) {
