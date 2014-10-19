@@ -115,12 +115,13 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         action.call();
         assertTrue(t.getDestination().isConnected());
         action.finish();
+        assertNull(action.getException());
         assertTrue(start.get());
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -137,7 +138,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
 
-        final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(),
                 Collections.singletonMap(test, copy));
 
@@ -170,12 +171,11 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         action.prepare();
         action.call();
         action.finish();
+        assertNull(action.getException());
         assertTrue(start.get());
         assertTrue(stop.get());
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
-
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
     }
 
     @Test
@@ -254,7 +254,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         // Connect, prepare and run
         action.call();
         assertFalse(alert.get());
-//        assertTrue(action.hasFailed());
+        assertNotNull(action.getException());
         assertTrue(paused.get());
         assertEquals(true, options.resumeRequested);
     }
