@@ -69,12 +69,13 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(new Path(container, "test.txt", EnumSet.of(Path.Type.file)));
+        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
-        assertTrue(metadata.containsKey("test"));
-        assertEquals("Cyberduck", metadata.get("test"));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
@@ -103,7 +104,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertEquals("AES256", encryption.getEncryption(test));
 
         final S3MetadataFeature feature = new S3MetadataFeature(session);
-        feature.setMetadata(test, Collections.<String, String>singletonMap("Test", v));
+        feature.setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("test"));
@@ -112,7 +113,7 @@ public class S3MetadataFeatureTest extends AbstractTestCase {
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
         assertEquals("AES256", encryption.getEncryption(test));
 
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
         session.close();
     }
 }
