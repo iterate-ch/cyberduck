@@ -19,13 +19,19 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
+
+import java.net.SocketTimeoutException;
+import java.util.EnumSet;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -65,5 +71,15 @@ public class SwiftExceptionMappingServiceTest extends AbstractTestCase {
                         return "reason";
                     }
                 })).getDetail());
+    }
+
+    @Test
+    public void testSocketTimeout() throws Exception {
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map(new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
     }
 }

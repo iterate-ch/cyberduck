@@ -19,11 +19,16 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 
 import org.junit.Test;
 
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.EnumSet;
 
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.SSHException;
@@ -48,4 +53,13 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
                 new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
     }
 
+    @Test
+    public void testSocketTimeout() throws Exception {
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map(new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
+    }
 }

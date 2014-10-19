@@ -18,12 +18,18 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.net.SocketTimeoutException;
+import java.util.EnumSet;
 
 import com.github.sardine.impl.SardineException;
 
@@ -42,5 +48,15 @@ public class DAVExceptionMappingServiceTest extends AbstractTestCase {
                 new DAVExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
         assertEquals(NotfoundException.class,
                 new DAVExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
+    }
+
+    @Test
+    public void testSocketTimeout() throws Exception {
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map(new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException()).getClass());
+        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+                .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
     }
 }
