@@ -18,6 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -31,7 +33,7 @@ public class Application {
     }
 
     public Application(final String identifier, final String name) {
-        this.identifier = identifier;
+        this.identifier = StringUtils.lowerCase(identifier);
         this.name = name;
     }
 
