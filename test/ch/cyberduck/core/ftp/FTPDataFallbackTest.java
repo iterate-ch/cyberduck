@@ -66,7 +66,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
             @Override
             public Void execute() throws BackgroundException {
                 if(count.get() == 0) {
-                    throw new BackgroundException(new SocketTimeoutException());
+                    throw new FTPExceptionMappingService().map(new SocketTimeoutException());
                 }
                 return null;
             }
@@ -98,7 +98,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
             @Override
             public Void execute() throws BackgroundException {
                 if(count.get() == 0) {
-                    throw new BackgroundException(new FTPException(500, "m"));
+                    throw new FTPExceptionMappingService().map(new FTPException(500, "m"));
                 }
                 return null;
             }

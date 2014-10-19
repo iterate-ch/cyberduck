@@ -26,12 +26,14 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 /**
  * @version $Id$
@@ -62,51 +64,62 @@ public class FTPDataFallback {
             }
             return action.execute();
         }
-        catch(BackgroundException failure) {
-            if(failure.getCause() instanceof FTPException) {
-                log.warn(String.format("Server denied data socket %s", failure.getMessage()));
-                // Fallback handling
-                if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+        catch(ConnectionTimeoutException failure) {
+            log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                try {
                     try {
-                        return this.fallback(action);
+                        session.getClient().completePendingCommand();
+                        // Expect 421 response
+                        log.warn(String.format("Aborted connection %d %s",
+                                session.getClient().getReplyCode(), session.getClient().getReplyString()));
                     }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
-                        // Throw original error message
+                    catch(IOException e) {
+                        log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
+                        // Reconnect
+                        new LoginConnectionService(
+                                new DisabledLoginController(),
+                                new DisabledHostKeyCallback(),
+                                new DisabledPasswordStore(),
+                                listener,
+                                new DisabledTranscriptListener()
+                        ).connect(session, Cache.<Path>empty());
                     }
+                    return this.fallback(action);
                 }
-                throw failure;
+                catch(BackgroundException e) {
+                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
+                    // Throw original error message
+                }
             }
-            if(failure.getCause() instanceof SocketTimeoutException) {
-                log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
-                // Fallback handling
-                if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                    try {
-                        try {
-                            session.getClient().completePendingCommand();
-                            // Expect 421 response
-                            log.warn(String.format("Aborted connection %d %s",
-                                    session.getClient().getReplyCode(), session.getClient().getReplyString()));
-                        }
-                        catch(IOException e) {
-                            log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
-                            // Reconnect
-                            new LoginConnectionService(
-                                    new DisabledLoginController(),
-                                    new DisabledHostKeyCallback(),
-                                    new DisabledPasswordStore(),
-                                    listener,
-                                    new DisabledTranscriptListener()
-                            ).connect(session, Cache.<Path>empty());
-                        }
-                        return this.fallback(action);
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
-                        // Throw original error message
-                    }
+            throw failure;
+        }
+        catch(InteroperabilityException failure) {
+            log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                try {
+                    return this.fallback(action);
                 }
-                throw failure;
+                catch(BackgroundException e) {
+                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
+                    // Throw original error message
+                }
+            }
+            throw failure;
+        }
+        catch(AccessDeniedException failure) {
+            log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                try {
+                    return this.fallback(action);
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
+                    // Throw original error message
+                }
             }
             throw failure;
         }
