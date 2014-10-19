@@ -214,7 +214,6 @@
             <param name="codesign.certificate" value="Mac Developer: David Kocher (DF448WW9PY)"/>
         </antcall>
         <antcall target="verify-signature"/>
-        <antcall target="verify-spctl"/>
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
         <property name="build.absolute" location="${build}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
