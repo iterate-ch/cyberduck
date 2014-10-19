@@ -18,7 +18,6 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
@@ -46,6 +45,10 @@ public class ReceiptFactory extends LicenseFactory {
 
     public ReceiptFactory() {
         super(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")), StringUtils.EMPTY);
+    }
+
+    public ReceiptFactory(final Local folder) {
+        super(folder, StringUtils.EMPTY);
     }
 
     @Override
