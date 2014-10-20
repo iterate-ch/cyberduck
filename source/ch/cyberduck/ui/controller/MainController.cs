@@ -227,11 +227,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Rendezvous.Register();
             ProtocolFactory.register();
             WindowsTemporaryFileService.Register();
+            RegistryApplicationFinder.Register();
             EditorFactory.Register();
             WindowsApplicationLauncher.Register();
             Win32FileDescriptor.Register();
             ExplorerRevealService.Register();
-            RegistryApplicationFinder.Register();
             TaskbarApplicationBadgeLabeler.Register();
             DefaultBrowserLauncher.Register();
             NotifyImpl.Register();
