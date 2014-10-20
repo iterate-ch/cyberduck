@@ -71,16 +71,8 @@ public class S3MultipleDeleteFeature implements Delete {
                         file.getName()));
                 final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-                if(file.isDirectory()) {
-                    // Always returning 204 even if the key does not exist.
-                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file),
-                            file.attributes().getVersionId()));
-                    // AWS does not return 404 for non-existing keys
-                }
-                else {
-                    keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-                }
+                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
                 if(map.containsKey(container)) {
                     map.get(container).addAll(keys);
                 }

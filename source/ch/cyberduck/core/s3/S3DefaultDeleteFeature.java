@@ -56,15 +56,8 @@ public class S3DefaultDeleteFeature implements Delete {
                     file.getName()));
             try {
                 try {
-                    if(file.isDirectory()) {
-                        // Always returning 204 even if the key does not exist.
-                        // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-                        // AWS does not return 404 for non-existing keys
-                    }
-                    else {
-                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-                    }
+                    // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                    session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(ServiceException e) {
                     throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);

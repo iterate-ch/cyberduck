@@ -66,21 +66,15 @@ public class S3FindFeature implements Find {
         }
         try {
             final boolean found;
-            if(file.isDirectory() && !file.isVolume()) {
-                found = session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
-                        containerService.getKey(file));
-            }
-            else {
-                found = session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
-                        containerService.getKey(file));
-            }
-            if(found) {
+            if(session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
+                    containerService.getKey(file))) {
                 list.add(file);
+                return true;
             }
             else {
                 list.attributes().addHidden(file);
+                return false;
             }
-            return found;
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
