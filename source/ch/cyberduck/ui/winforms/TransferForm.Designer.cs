@@ -408,7 +408,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // cleanUptoolStripButton
             // 
             this.cleanUptoolStripButton.AutoToolTip = false;
-            this.cleanUptoolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.cleanAll;
+            this.cleanUptoolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.cleanall;
             this.cleanUptoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cleanUptoolStripButton.Name = "cleanUptoolStripButton";
             this.cleanUptoolStripButton.Size = new System.Drawing.Size(59, 51);

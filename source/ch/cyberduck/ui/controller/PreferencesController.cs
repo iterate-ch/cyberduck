@@ -87,6 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DuplicateDownloadOverwriteChangedEvent += View_DuplicateDownloadOverwriteChangedEvent;
             View.DuplicateUploadOverwriteChangedEvent += View_DuplicateUploadOverwriteChangedEvent;
             View.UploadWithTemporaryFilenameChangedEvent += View_UploadWithTemporaryFilenameChangedEvent;
+            View.BookmarkSizeChangedEvent += View_BookmarkSizeChangedEvent;
 
             View.ChmodDownloadChangedEvent += View_ChmodDownloadChangedEvent;
             View.ChmodDownloadUseDefaultChangedEvent += View_ChmodDownloadUseDefaultChangedEvent;
@@ -216,6 +217,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     PopulateBookmarks();
                     SelectDefaultBookmark(selected);
                 });
+        }
+
+        private void View_BookmarkSizeChangedEvent()
+        {
+            Preferences.instance().setProperty("bookmark.icon.size", View.BookmarkSize);
+            foreach (BrowserController b in MainController.Browsers)
+            {
+                b.UpdateBookmarks();
+            }
         }
 
         private void View_DefaultEncryptionChangedEvent()
@@ -885,15 +895,22 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateDefaultProtocols();
             View.DefaultProtocol =
                 ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-            View.InfoWindowShowsCurrentSelection = Preferences.instance().getBoolean("browser.info.inspector");
-            View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
-            View.DoubleClickEditor = Preferences.instance().getBoolean("browser.doubleclick.edit");
-            View.ReturnKeyRenames = Preferences.instance().getBoolean("browser.enterkey.rename");
             View.AlternatingRowBackground = Preferences.instance().getBoolean("browser.alternatingRows");
             View.VerticalLines = Preferences.instance().getBoolean("browser.verticalLines");
             View.HorizontalLines = Preferences.instance().getBoolean("browser.horizontalLines");
             PopulateEncodings();
             View.DefaultEncoding = Preferences.instance().getProperty("browser.charset.encoding");
+
+            #endregion
+
+            #region Browser
+
+            View.InfoWindowShowsCurrentSelection = Preferences.instance().getBoolean("browser.info.inspector");
+            View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
+            View.DoubleClickEditor = Preferences.instance().getBoolean("browser.doubleclick.edit");
+            View.ReturnKeyRenames = Preferences.instance().getBoolean("browser.enterkey.rename");
+            PopulateBookmarkSize();
+            View.BookmarkSize = Preferences.instance().getInteger("bookmark.icon.size");
 
             #endregion
 
@@ -1033,6 +1050,15 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             #endregion
+        }
+
+        private void PopulateBookmarkSize()
+        {
+            List<KeyValuePair<int, string>> sizes = new List<KeyValuePair<int, string>>();
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.SmallBookmarkSize, LocaleFactory.localizedString("Use Small Icons", "Preferences")));
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.MediumBookmarkSize, LocaleFactory.localizedString("Use Medium Icons", "Preferences")));
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController.LargeBookmarkSize, LocaleFactory.localizedString("Use Large Icons", "Preferences")));
+            View.PopulateBookmarkSize(sizes);
         }
 
         private void PopulateDefaultEncryption()

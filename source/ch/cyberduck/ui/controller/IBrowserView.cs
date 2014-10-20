@@ -100,6 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidatePathsCombobox; //path history combobox
         void StartActivityAnimation();
         void StopActivityAnimation();
+        void UpdateBookmarks();
         event ValidateCommand ValidateSearchField;
 
         event SetComparatorHandler SetComparator;

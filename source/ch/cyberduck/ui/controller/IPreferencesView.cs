@@ -33,10 +33,14 @@ namespace Ch.Cyberduck.Ui.Controller
         Protocol DefaultProtocol { set; get; }
         Application DefaultEditor { set; get; }
         bool AlwaysUseDefaultEditor { set; get; }
+        
         bool ShowHiddenFiles { set; get; }
         bool DoubleClickEditor { set; get; }
         bool ReturnKeyRenames { set; get; }
         bool InfoWindowShowsCurrentSelection { set; get; }
+        void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
+        int BookmarkSize { set; get; }
+
         bool AlternatingRowBackground { set; get; }
         bool HorizontalLines { set; get; }
         bool VerticalLines { set; get; }
@@ -135,6 +139,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler AutomaticUpdateChangedEvent;
         event VoidHandler CheckForUpdateEvent;
         event VoidHandler UpdateFeedChangedEvent;
+        event VoidHandler BookmarkSizeChangedEvent;
 
         event VoidHandler UseSystemProxyChangedEvent;
         event VoidHandler ChangeSystemProxyEvent;

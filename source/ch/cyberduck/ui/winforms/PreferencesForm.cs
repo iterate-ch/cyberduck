@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -718,6 +718,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler LocaleChanged = delegate { };
         public event VoidHandler UploadWithTemporaryFilenameChangedEvent = delegate { };
         public event VoidHandler UpdateFeedChangedEvent = delegate { };
+        public event VoidHandler BookmarkSizeChangedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -739,6 +740,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return (string) gdPresentationsComboBox.SelectedValue; }
             set { gdPresentationsComboBox.SelectedValue = value; }
+        }
+
+        public int BookmarkSize
+        {
+            get { return (int) bookmarkSizeComboBox.SelectedValue; }
+            set { bookmarkSizeComboBox.SelectedValue = value; }
         }
 
         public string SpreadsheetExportFormat
@@ -817,6 +824,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             gdDocumentsComboBox.DataSource = formats;
             gdDocumentsComboBox.ValueMember = "Key";
             gdDocumentsComboBox.DisplayMember = "Value";
+        }
+
+        public void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes)
+        {
+            bookmarkSizeComboBox.DataSource = sizes;
+            bookmarkSizeComboBox.ValueMember = "Key";
+            bookmarkSizeComboBox.DisplayMember = "Value";
         }
 
         public void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats)
@@ -1479,6 +1493,21 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void defaultEncryptionComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DefaultEncryptionChangedEvent();
+        }
+
+        private void browserButton_Click(object sender, EventArgs e)
+        {
+            if (!browserButton.Checked)
+            {
+                DisableAll();
+                browserButton.Checked = true;
+                panelManager.SelectedPanel = managedBrowserPanel;
+            }
+        }
+
+        private void bookmarkSizeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            BookmarkSizeChangedEvent();
         }
     }
 }

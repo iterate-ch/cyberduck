@@ -44,6 +44,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
 
+        public const int SmallBookmarkSize = 16;
+        public const int MediumBookmarkSize = 32;
+        public const int LargeBookmarkSize = 64;
+
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
 

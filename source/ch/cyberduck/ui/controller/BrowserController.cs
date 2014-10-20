@@ -614,6 +614,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return items;
         }
 
+        public void UpdateBookmarks()
+        {
+            View.UpdateBookmarks();
+        }
+
         private bool View_ValidateDuplicateBookmark()
         {
             return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 1;

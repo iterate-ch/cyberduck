@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -243,8 +243,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <remarks>This color is used when the error is not selected or when the listview
         /// has a translucent selection mechanism.</remarks>
-        [Category("Appearance - ObjectListView"),
-         Description("The color of the host"),
+        [Category("Appearance - ObjectListView"), Description("The color of the host"),
          DefaultValue(typeof (Color), "Black")]
         public Color HostColor
         {
@@ -289,8 +288,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <remarks>This color is used when the task is not selected or when the listview
         /// has a translucent selection mechanism.</remarks>
-        [Category("Appearance - ObjectListView"),
-         Description("The color of the description"),
+        [Category("Appearance - ObjectListView"), Description("The color of the description"),
          DefaultValue(typeof (Color), "Red")]
         public Color DescriptionColor
         {
@@ -510,14 +508,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
     }
 
-    /// <summary>
-    /// This renderer draws a bookmark
-    /// </summary>
-    /// <remarks>
-    /// <para>This class works best with FullRowSelect = true.</para>
-    /// <para>It's not designed to work with cell editing -- it will work but will look odd.</para>
-    /// </remarks>
-    public class BookmarkRenderer : BaseRenderer
+    public abstract class AbstractBookmarkRenderer : BaseRenderer
     {
         private Size cellPadding = new Size(2, 2);
         private Color hostnameColor = Color.Black;
@@ -583,9 +574,10 @@ namespace Ch.Cyberduck.Ui.Controller
             get
             {
                 if (HostnameColor.IsEmpty || (IsItemSelected && ListView.Focused && !ListView.UseTranslucentSelection))
+                {
                     return GetForegroundColor();
-                else
-                    return HostnameColor;
+                }
+                return HostnameColor;
             }
         }
 
@@ -724,19 +716,153 @@ namespace Ch.Cyberduck.Ui.Controller
         public override void Render(Graphics g, Rectangle r)
         {
             DrawBackground(g, r);
-            DrawBookmark(g, r,
-                         Aspect as String,
-                         HostnameAspectGetter(RowObject) as String,
-                         UrlAspectGetter(RowObject) as String,
-                         NotesAspectGetter(RowObject) as String);
+            DrawBookmark(g, r, Aspect as String, HostnameAspectGetter(RowObject) as String,
+                         UrlAspectGetter(RowObject) as String, NotesAspectGetter(RowObject) as String);
         }
 
-        public virtual void DrawBookmark(Graphics g,
-                                         Rectangle r,
-                                         String nickname,
-                                         String hostname,
-                                         String url,
-                                         String notes)
+        public abstract void DrawBookmark(Graphics g, Rectangle r, String nickname, String hostname, String url,
+                                          String notes);
+
+        protected override void HandleHitTest(Graphics g, OlvListViewHitTestInfo hti, int x, int y)
+        {
+            if (Bounds.Contains(x, y))
+                hti.HitTestLocation = HitTestLocation.Text;
+        }
+    }
+
+    public class SmallBookmarkRenderer : AbstractBookmarkRenderer
+    {
+        public override void DrawBookmark(Graphics g, Rectangle r, String nickname, String hostname, String url,
+                                          String notes)
+        {
+            Rectangle cellBounds = r;
+            cellBounds.Inflate(-CellPadding.Width, -CellPadding.Height);
+            Rectangle textBounds = cellBounds;
+
+            // Color the background if the row is selected and we're not using a translucent selection
+            if (IsItemSelected && !ListView.UseTranslucentSelection)
+            {
+                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                {
+                    g.FillRectangle(b, textBounds);
+                }
+            }
+
+            // Draw the nickname field
+            if (!String.IsNullOrEmpty(nickname))
+            {
+                using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                {
+                    fmt.Trimming = StringTrimming.EllipsisCharacter;
+                    fmt.Alignment = StringAlignment.Near;
+                    fmt.LineAlignment = StringAlignment.Near;
+                    Font f = NicknameFontOrDefault;
+                    using (SolidBrush b = new SolidBrush(NicknameColorOrDefault))
+                    {
+                        g.DrawString(nickname, f, b, textBounds, fmt);
+                    }
+
+                    // How tall was the URL field?
+                    SizeF size = g.MeasureString(nickname, f, textBounds.Width, fmt);
+                    textBounds.Y += (int) size.Height;
+                    textBounds.Y += NicknameHostnameSpace;
+                    textBounds.Height -= (int) size.Height;
+                }
+            }
+        }
+    }
+
+    public class MediumBookmarkRenderer : AbstractBookmarkRenderer
+    {
+        public override void DrawBookmark(Graphics g, Rectangle r, string nickname, string hostname, string url,
+                                          string notes)
+        {
+            Rectangle cellBounds = r;
+            cellBounds.Inflate(-CellPadding.Width, -CellPadding.Height);
+            Rectangle textBounds = cellBounds;
+
+            // Color the background if the row is selected and we're not using a translucent selection
+            if (IsItemSelected && !ListView.UseTranslucentSelection)
+            {
+                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                {
+                    g.FillRectangle(b, textBounds);
+                }
+            }
+
+            // Draw the nickname field
+            if (!String.IsNullOrEmpty(nickname))
+            {
+                using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                {
+                    fmt.Trimming = StringTrimming.EllipsisCharacter;
+                    fmt.Alignment = StringAlignment.Near;
+                    fmt.LineAlignment = StringAlignment.Near;
+                    Font f = NicknameFontOrDefault;
+                    using (SolidBrush b = new SolidBrush(NicknameColorOrDefault))
+                    {
+                        g.DrawString(nickname, f, b, textBounds, fmt);
+                    }
+                    SizeF size = g.MeasureString(nickname, f, textBounds.Width, fmt);
+                    textBounds.Y += (int)size.Height;
+                    textBounds.Y += NicknameHostnameSpace;
+                    textBounds.Height -= (int)size.Height;
+                }
+            }
+
+            // Draw the hostname field
+            if (!String.IsNullOrEmpty(hostname))
+            {
+                using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                {
+                    fmt.Trimming = StringTrimming.EllipsisCharacter;
+                    fmt.Alignment = StringAlignment.Near;
+                    fmt.LineAlignment = StringAlignment.Near;
+                    Font f = HostnameFontOrDefault;
+                    using (SolidBrush b = new SolidBrush(HostnameColorOrDefault))
+                    {
+                        g.DrawString(hostname, f, b, textBounds, fmt);
+                    }
+                    SizeF size = g.MeasureString(hostname, f, textBounds.Width, fmt);
+                    textBounds.Y += (int)size.Height;
+                    textBounds.Y += HostnameUrlSpace;
+                    textBounds.Height -= (int)size.Height;
+                }
+            }
+
+            // Draw the URL field
+            if (!String.IsNullOrEmpty(url))
+            {
+                using (StringFormat fmt = new StringFormat(StringFormatFlags.NoWrap))
+                {
+                    fmt.Trimming = StringTrimming.EllipsisPath;
+                    fmt.Alignment = StringAlignment.Near;
+                    fmt.LineAlignment = StringAlignment.Near;
+                    Font f = UrlFontOrDefault;
+                    using (SolidBrush b = new SolidBrush(UrlColorOrDefault))
+                    {
+                        g.DrawString(url, f, b, textBounds, fmt);
+                    }
+                    SizeF size = g.MeasureString(url, f, textBounds.Width, fmt);
+                    textBounds.Y += (int)size.Height;
+                    textBounds.Y += UrlNotesSpace;
+                    textBounds.Height -= (int)size.Height;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// This renderer draws a bookmark
+    /// </summary>
+    /// <remarks>
+    /// <para>This class works best with FullRowSelect = true.</para>
+    /// <para>It's not designed to work with cell editing -- it will work but will look odd.</para>
+    /// </remarks>
+    public class LargeBookmarkRenderer : AbstractBookmarkRenderer
+    {
+        public override void DrawBookmark(Graphics g, Rectangle r, String nickname, String hostname, String url,
+                                          String notes)
         {
             Rectangle cellBounds = r;
             cellBounds.Inflate(-CellPadding.Width, -CellPadding.Height);
@@ -839,12 +965,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-
-        protected override void HandleHitTest(Graphics g, OlvListViewHitTestInfo hti, int x, int y)
-        {
-            if (Bounds.Contains(x, y))
-                hti.HitTestLocation = HitTestLocation.Text;
-        }
     }
 
     /// <summary>
@@ -926,10 +1046,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 FillBrush.Dispose();
             }
-            FillBrush = new LinearGradientBrush(bounds,
-                                                Color.FromArgb(64, Color.LightBlue),
-                                                Color.FromArgb(64, Color.DodgerBlue),
-                                                LinearGradientMode.Vertical);
+            FillBrush = new LinearGradientBrush(bounds, Color.FromArgb(64, Color.LightBlue),
+                                                Color.FromArgb(64, Color.DodgerBlue), LinearGradientMode.Vertical);
             return bounds;
         }
     }

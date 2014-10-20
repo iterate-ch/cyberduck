@@ -174,7 +174,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Add(string.Empty);
             bonjourMenuStrip.Items.Add(string.Empty);
 
-            ConfigureBookmarkList(bookmarkListView, bookmarkDescriptionColumn, bookmarkImageColumn, activeColumn);
+            UpdateBookmarks();
 
             newBookmarkToolStripButton.Tag = ResourcesBundle.addPressed;
             editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
@@ -379,6 +379,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
 
+        public void UpdateBookmarks()
+        {
+            ConfigureBookmarkList(bookmarkListView, bookmarkDescriptionColumn, bookmarkImageColumn, activeColumn);
+        }
 
         public bool ComboboxPathEnabled
         {
@@ -895,17 +899,17 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public AspectGetterDelegate BookmarkHostnameGetter
         {
-            set { ((BookmarkRenderer) bookmarkDescriptionColumn.Renderer).HostnameAspectGetter = value; }
+            set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).HostnameAspectGetter = value; }
         }
 
         public AspectGetterDelegate BookmarkUrlGetter
         {
-            set { ((BookmarkRenderer) bookmarkDescriptionColumn.Renderer).UrlAspectGetter = value; }
+            set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).UrlAspectGetter = value; }
         }
 
         public AspectGetterDelegate BookmarkNotesGetter
         {
-            set { ((BookmarkRenderer) bookmarkDescriptionColumn.Renderer).NotesAspectGetter = value; }
+            set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).NotesAspectGetter = value; }
         }
 
         public ImageGetterDelegate BookmarkStatusImageGetter
@@ -1561,8 +1565,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn,
                                            OLVColumn activeColumn)
-        {
-            l.RowHeight = 72;
+        {            
             l.ShowGroups = false;
             l.UseOverlays = false;
             l.OwnerDraw = true;
@@ -1572,26 +1575,63 @@ namespace Ch.Cyberduck.Ui.Winforms
             l.HideSelection = false;
             l.AllowDrop = true;
             l.DropSink = new HostDropSink(this);
-            l.DragSource = new HostDragSource(this);
+            l.DragSource = new HostDragSource(this);            
 
-            BookmarkRenderer bookmarkRenderer = new BookmarkRenderer();
-            Font smallerFont = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
-            bookmarkRenderer.NicknameFont = new Font(bookmarkListView.Font, FontStyle.Bold);
-            bookmarkRenderer.HostnameFont = smallerFont;
-            bookmarkRenderer.UrlFont = smallerFont;
-            bookmarkRenderer.NotesFont = smallerFont;
-            bookmarkRenderer.UrlNotesSpace = 3;
+            int size = Preferences.instance().getInteger("bookmark.icon.size");
+            AbstractBookmarkRenderer previous = (AbstractBookmarkRenderer) descColumn.Renderer;
 
-            descColumn.Renderer = bookmarkRenderer;
+            AbstractBookmarkRenderer r;
+            Font f;
+            switch (size)
+            {
+                case BookmarkController.SmallBookmarkSize:
+                    r = new SmallBookmarkRenderer();
+                    r.NicknameFont = new Font(bookmarkListView.Font, FontStyle.Bold);
+
+                    l.RowHeight = 24;
+                    imageColumn.Width = 25;
+                    f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
+                    break;
+                case BookmarkController.MediumBookmarkSize:
+                    r = new MediumBookmarkRenderer();
+                    l.RowHeight = 42;
+                    imageColumn.Width = 40;
+                    f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 2);
+
+                    break;
+                case BookmarkController.LargeBookmarkSize:
+                default:
+                    r = new LargeBookmarkRenderer();
+
+                    l.RowHeight = 72;
+                    imageColumn.Width = 90;
+                    f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
+                    break;
+            }            
+            r.NicknameFont = new Font(f, FontStyle.Bold);
+            r.HostnameFont = f;
+            r.UrlFont = f;
+            r.NotesFont = f;
+            r.UrlNotesSpace = 3;
+
+            descColumn.Renderer = r;
             descColumn.FillsFreeSpace = true;
 
-            imageColumn.Width = 90;
+            
             imageColumn.TextAlign = HorizontalAlignment.Center;
             imageColumn.CellVerticalAlignment = StringAlignment.Center;
             imageColumn.Renderer = new FixedImageRenderer();
 
             activeColumn.CellVerticalAlignment = StringAlignment.Center;
             activeColumn.Renderer = new FixedImageRenderer();
+
+            if (previous != null)
+            {
+                r.HostnameAspectGetter = previous.HostnameAspectGetter;
+                r.NotesAspectGetter = previous.NotesAspectGetter;
+                r.UrlAspectGetter = previous.UrlAspectGetter;
+                l.RebuildColumns();
+            }
         }
 
         private void EnableViewToolStripButton(ToolStripButton cb)
