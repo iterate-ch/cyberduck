@@ -5,6 +5,7 @@ Changelog. Last modified: $Date$
 
 4.5.3 [https://trac.cyberduck.io/milestone/4.5.3]
 - [Feature] Support PAC files for proxy configuration (Mac) (#2607)
+- [Feature] Customizable bookmark icon size (Windows) (#6444)
 - [Bugfix] Interoperability with SSH Tectia Server (#8166)
 - [Bugfix] Interoperability with Eucalyptus Object Storage (S3) (#8216)
 - [Bugfix] Reconnect on disconnect (#8205)
