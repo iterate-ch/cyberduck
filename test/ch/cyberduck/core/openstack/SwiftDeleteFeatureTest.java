@@ -88,14 +88,21 @@ public class SwiftDeleteFeatureTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final Path placeholder = new Path(new Path(container, "t", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                "placeholder-" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final String name = "placeholder-" + UUID.randomUUID().toString();
+        final Path placeholder = new Path(
+                new Path(container, "t", EnumSet.of(Path.Type.directory)),
+                name, EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertFalse(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);
-        assertTrue(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
+        // Must contain placeholder object returned
+        assertTrue(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(new Path(
+                new Path(container, "t", EnumSet.of(Path.Type.directory)),
+                name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        // No directory file at this level
+        assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(placeholder));
         assertFalse(list.list(placeholder.getParent(), new DisabledListProgressListener()).contains(test));
         assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
         assertTrue(find.find(test));
