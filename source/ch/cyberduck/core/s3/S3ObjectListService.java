@@ -142,7 +142,7 @@ public class S3ObjectListService implements ListService {
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
                 final String key = PathNormalizer.normalize(object.getKey());
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
                 final EnumSet<AbstractPath.Type> types = object.isDirectoryPlaceholder()
@@ -166,7 +166,7 @@ public class S3ObjectListService implements ListService {
                     continue;
                 }
                 final String key = PathNormalizer.normalize(common);
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
                 final Path file = new Path(parent, PathNormalizer.name(key),
@@ -197,7 +197,7 @@ public class S3ObjectListService implements ListService {
             if((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest()) {
                 // Latest version already in default listing
                 final String key = PathNormalizer.normalize(marker.getKey());
-                if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
+                if(new Path(bucket, key, EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(parent)) {
                     continue;
                 }
                 final Path p = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.file));
