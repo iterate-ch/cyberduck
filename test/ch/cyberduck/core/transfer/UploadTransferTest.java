@@ -117,10 +117,30 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
-                l.add(new NullLocal(this.getAbsolute(), "a"));
-                l.add(new NullLocal(this.getAbsolute(), "b"));
-                l.add(new NullLocal(this.getAbsolute(), "c"));
+                l.add(new NullLocal(this.getAbsolute(), "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
+                l.add(new NullLocal(this.getAbsolute(), "b") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
+                l.add(new NullLocal(this.getAbsolute(), "c") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
                 return l;
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         };
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
@@ -158,10 +178,30 @@ public class UploadTransferTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
-                l.add(new NullLocal(this.getAbsolute(), "a"));
-                l.add(new NullLocal(this.getAbsolute(), "b"));
-                l.add(new NullLocal(this.getAbsolute(), "c"));
+                l.add(new NullLocal(this.getAbsolute(), "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
+                l.add(new NullLocal(this.getAbsolute(), "b") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
+                l.add(new NullLocal(this.getAbsolute(), "c") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
                 return l;
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         };
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));

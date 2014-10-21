@@ -100,7 +100,13 @@ public class SyncTransferTest extends AbstractTestCase {
         Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.upload, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
-        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
+        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
+
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                },
                 new TransferStatus().exists(true)));
     }
 
@@ -110,7 +116,14 @@ public class SyncTransferTest extends AbstractTestCase {
         Transfer t = new SyncTransfer(new Host("t"), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final TransferPathFilter filter = t.filter(new NullSession(new Host("t")), TransferAction.mirror, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
-        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
+        assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
+
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+
+                },
                 new TransferStatus().exists(true)));
     }
 
@@ -159,7 +172,12 @@ public class SyncTransferTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 final AttributedList<Local> list = new AttributedList<Local>();
-                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a"));
+                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
                 return list;
             }
         };
@@ -167,7 +185,12 @@ public class SyncTransferTest extends AbstractTestCase {
         Transfer t = new SyncTransfer(new Host("t"), new TransferItem(root, directory));
         final List<TransferItem> list = t.list(session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a");
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        };
         assertFalse(t.filter(session, TransferAction.download, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.upload, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
         assertTrue(t.filter(session, TransferAction.mirror, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
