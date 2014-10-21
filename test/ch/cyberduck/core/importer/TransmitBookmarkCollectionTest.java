@@ -23,7 +23,7 @@ public class TransmitBookmarkCollectionTest extends AbstractTestCase {
     public void testParse() throws Exception {
         TransmitBookmarkCollection c = new TransmitBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/com.panic.Transmit.plist"));
+        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/com.panic.Transmit.plist"));
         assertEquals(1, c.size());
     }
 }

@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly AbstractHostCollection _sessions =
             new FolderBookmarkCollection(
-                LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+                LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
@@ -275,7 +275,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 string filename = args[0];
                 Logger.debug("applicationOpenFile:" + filename);
-                Local f = LocalFactory.createLocal(filename);
+                Local f = LocalFactory.get(filename);
                 if (f.exists())
                 {
                     if ("cyberducklicense".Equals(f.getExtension()))
@@ -284,7 +284,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (license.verify())
                         {
                             f.copy(
-                                LocalFactory.createLocal(
+                                LocalFactory.get(
                                     Preferences.instance().getProperty("application.support.path"), f.getName()));
                             if (DialogResult.OK ==
                                 _bc.InfoBox(license.ToString(),
@@ -329,10 +329,10 @@ namespace Ch.Cyberduck.Ui.Controller
                             NewBrowser().AddBookmark(host);
                             // Register in application support
                             Local profiles =
-                                LocalFactory.createLocal(
+                                LocalFactory.get(
                                     Preferences.instance().getProperty("application.support.path"), "Profiles");
                             profiles.mkdir();
-                            f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                            f.copy(LocalFactory.get(profiles, f.getName()));
                         }
                     }
                     else if ("duck".Equals(f.getExtension()))
@@ -550,7 +550,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         FolderBookmarkCollection defaults =
                             new FolderBookmarkCollection(
-                                LocalFactory.createLocal(Preferences.instance()
+                                LocalFactory.get(Preferences.instance()
                                                                     .getProperty("application.bookmarks.path")));
                         defaults.load();
                         foreach (Host bookmark in defaults)

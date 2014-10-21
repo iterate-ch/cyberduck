@@ -47,7 +47,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.transmit.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.transmit.location"));
     }
 
     @Override

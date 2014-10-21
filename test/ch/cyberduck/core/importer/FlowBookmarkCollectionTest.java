@@ -23,7 +23,7 @@ public class FlowBookmarkCollectionTest extends AbstractTestCase {
     public void testParse() throws AccessDeniedException {
         FlowBookmarkCollection c = new FlowBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist"));
+        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist"));
         assertEquals(3, c.size());
     }
 }

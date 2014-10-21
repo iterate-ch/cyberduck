@@ -42,7 +42,7 @@ public class UploadTransferTest extends AbstractTestCase {
     public void testSerialize() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host("t"), test,
-                LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
+                LocalFactory.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
@@ -58,7 +58,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory)) {
         };
         Transfer t = new UploadTransfer(new Host("t"), root,
-                LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
+                LocalFactory.get(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         assertTrue(t.list(new NullSession(new Host("t")), root, new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {

@@ -182,7 +182,7 @@ public class TransferTableDataSource extends ListDataSource {
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(
-                        download, LocalFactory.createLocal(new DownloadDirectoryFinder().find(host), download.getName())));
+                        download, LocalFactory.get(new DownloadDirectoryFinder().find(host), download.getName())));
             }
             collection.add(row.intValue(), new DownloadTransfer(host, downloads));
             view.reloadData();

@@ -40,6 +40,6 @@ public class CloudberryAzureBookmarkCollection extends CloudberryBookmarkCollect
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.cloudberry.azure.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.cloudberry.azure.location"));
     }
 }

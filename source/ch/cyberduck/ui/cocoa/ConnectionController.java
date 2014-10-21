@@ -433,7 +433,7 @@ public class ConnectionController extends SheetController {
             publicKeyPanel.setAllowsMultipleSelection(false);
             publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
+            publicKeyPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
                     null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -450,7 +450,7 @@ public class ConnectionController extends SheetController {
             final NSObject selected = window.filenames().lastObject();
             if(selected != null) {
                 pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        LocalFactory.createLocal(selected.toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                        LocalFactory.get(selected.toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
                 pkLabel.setTextColor(NSColor.textColor());
             }
             passField.setEnabled(false);
@@ -584,7 +584,7 @@ public class ConnectionController extends SheetController {
             credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
             if(protocol.getScheme().equals(Scheme.sftp)) {
                 if(pkCheckbox.state() == NSCell.NSOnState) {
-                    credentials.setIdentity(LocalFactory.createLocal(pkLabel.stringValue()));
+                    credentials.setIdentity(LocalFactory.get(pkLabel.stringValue()));
                 }
             }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {

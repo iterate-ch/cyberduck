@@ -23,7 +23,7 @@ public class FlashFxp4UserBookmarkCollectionTest extends AbstractTestCase {
     public void testParse() throws Exception {
         FlashFxpBookmarkCollection c = new FlashFxp4UserBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/FlashFXP-Sites.dat"));
+        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/FlashFXP-Sites.dat"));
         assertEquals(4, c.size());
         assertEquals("ftp.intel.com", c.get(1).getHostname());
         assertEquals("ftp.sierra.com", c.get(2).getHostname());

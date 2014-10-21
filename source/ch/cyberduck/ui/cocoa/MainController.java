@@ -87,7 +87,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,7 +168,7 @@ public class MainController extends BundleController implements NSApplication.De
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.createLocal(preferences.getProperty("queue.download.folder"), file.getName())));
+                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())));
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {
@@ -472,13 +471,13 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void licenseMenuClicked(final ID sender) {
         ApplicationLauncherFactory.get().open(
-                LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("License", "txt")));
+                LocalFactory.get(NSBundle.mainBundle().pathForResource_ofType("License", "txt")));
     }
 
     @Action
     public void acknowledgmentsMenuClicked(final ID sender) {
         ApplicationLauncherFactory.get().open(
-                LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")));
+                LocalFactory.get(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")));
     }
 
     @Action
@@ -555,7 +554,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(log.isDebugEnabled()) {
             log.debug(String.format("Open file %s", filename));
         }
-        final Local f = LocalFactory.createLocal(filename);
+        final Local f = LocalFactory.get(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
                 final Host bookmark = HostReaderFactory.get().read(f);
@@ -570,7 +569,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(l instanceof Donation) {
                     if(l.verify()) {
                         try {
-                            f.copy(LocalFactory.createLocal(preferences.getProperty("application.support.path"), f.getName()));
+                            f.copy(LocalFactory.get(preferences.getProperty("application.support.path"), f.getName()));
                         }
                         catch(AccessDeniedException e) {
                             log.warn(e.getMessage());
@@ -628,10 +627,10 @@ public class MainController extends BundleController implements NSApplication.De
                     final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
-                    final Local profiles = LocalFactory.createLocal(preferences.getProperty("application.support.path"), "Profiles");
+                    final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"), "Profiles");
                     try {
                         profiles.mkdir();
-                        f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                        f.copy(LocalFactory.get(profiles, f.getName()));
                     }
                     catch(AccessDeniedException e) {
                         log.warn(e.getMessage());
@@ -1176,7 +1175,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 if(c.isEmpty()) {
-                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
+                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.get(
                             preferences.getProperty("application.bookmarks.path")
                     )) {
                         private static final long serialVersionUID = -6110285052565190698L;
@@ -1218,7 +1217,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     List<Local> files = new ArrayList<Local>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        files.add(LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        files.add(LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     }
                     this.upload(files);
                 }
@@ -1230,7 +1229,7 @@ public class MainController extends BundleController implements NSApplication.De
      * Saved browsers
      */
     private AbstractHostCollection sessions = new FolderBookmarkCollection(
-            LocalFactory.createLocal(preferences.getProperty("application.support.path"), "Sessions"));
+            LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"));
 
     /**
      * Display donation reminder dialog

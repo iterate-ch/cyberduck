@@ -493,7 +493,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         final String volume = session.getHost().getHostname();
-        Local target = LocalFactory.createLocal("/Volumes/" + volume);
+        Local target = LocalFactory.get("/Volumes/" + volume);
         if(target.exists()) {
             // Make sure we do not mount to a already existing path
             final String parent = target.getParent().getAbsolute();
@@ -501,7 +501,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             while(target.exists()) {
                 no++;
                 String proposal = String.format("%s-%d", volume, no);
-                target = LocalFactory.createLocal(parent, proposal);
+                target = LocalFactory.get(parent, proposal);
             }
         }
         final Local mountpoint = target;
@@ -517,7 +517,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                     }
                 }
                 final Path workdir = session.workdir();
-                final Local folder = LocalFactory.createLocal(delegate.options.mountpoint, workdir.getAbsolute());
+                final Local folder = LocalFactory.get(delegate.options.mountpoint, workdir.getAbsolute());
                 reveal.reveal(folder);
                 return null;
             }

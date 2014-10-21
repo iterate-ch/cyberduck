@@ -61,7 +61,7 @@ public class SwiftSessionTest extends AbstractTestCase {
     @Test
     public void testConnectRackspaceLon() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
+                LocalFactory.get("profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         ));

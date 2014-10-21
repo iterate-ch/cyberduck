@@ -268,7 +268,7 @@ namespace Ch.Cyberduck.Core
                 }
                 else
                 {
-                    map.Add(new KeyValuePair<string, string>(LocalFactory.createLocal(exe).getName(), exe));
+                    map.Add(new KeyValuePair<string, string>(LocalFactory.get(exe).getName(), exe));
                 }
             }
             map.Sort(
@@ -507,7 +507,7 @@ namespace Ch.Cyberduck.Core
                         cmd = command.Substring(0, i);
                 }
 
-                if (null != cmd && LocalFactory.createLocal(cmd).exists())
+                if (null != cmd && LocalFactory.get(cmd).exists())
                 {
                     return cmd;
                 }

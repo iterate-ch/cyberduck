@@ -717,7 +717,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 host = destination;
                             }
-                            Local local = LocalFactory.createLocal(filename);
+                            Local local = LocalFactory.get(filename);
                             // Upload to the remote host this bookmark points to
                             roots.Add(
                                 new TransferItem(
@@ -745,7 +745,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (string file in data.GetFileDropList())
                     {
                         _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
-                                                  HostReaderFactory.get().read(LocalFactory.createLocal(file)));
+                                                  HostReaderFactory.get().read(LocalFactory.get(file)));
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.BelowItem)
@@ -754,14 +754,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (string file in data.GetFileDropList())
                     {
                         _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
-                                                  HostReaderFactory.get().read(LocalFactory.createLocal(file)));
+                                                  HostReaderFactory.get().read(LocalFactory.get(file)));
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.Background)
                 {
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.createLocal(file)));
+                        _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.get(file)));
                     }
                 }
             }
@@ -878,7 +878,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                              }
 
                                                                              Local file =
-                                                                                 LocalFactory.createLocal(_dropFolder,
+                                                                                 LocalFactory.get(_dropFolder,
                                                                                                           filename);
                                                                              HostWriterFactory.get().write(host, file);
                                                                          }
@@ -1436,7 +1436,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<TransferItem> items = new List<TransferItem>();
             foreach (Path selected in downloads)
             {
-                items.Add(new TransferItem(selected, LocalFactory.createLocal(downloadFolder, selected.getName())));
+                items.Add(new TransferItem(selected, LocalFactory.get(downloadFolder, selected.getName())));
             }
             Transfer q = new DownloadTransfer(_session.getHost(), Utils.ConvertToJavaList(items));
             transfer(q, new List<Path>());
@@ -1680,7 +1680,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != folder)
             {
                 transfer(new SyncTransfer(_session.getHost(),
-                                          new TransferItem(selected, LocalFactory.createLocal(folder))));
+                                          new TransferItem(selected, LocalFactory.get(folder))));
             }
         }
 
@@ -1700,7 +1700,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
             List downloads = Utils.ConvertToJavaList(paths, delegate(string path)
                 {
-                    Local local = LocalFactory.createLocal(path);
+                    Local local = LocalFactory.get(path);
                     return
                         new TransferItem(
                             new Path(destination, local.getName(),
@@ -1721,7 +1721,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path file in SelectedPaths)
                 {
                     downloads.Add(new TransferItem(file,
-                                                   LocalFactory.createLocal(LocalFactory.createLocal(folder),
+                                                   LocalFactory.get(LocalFactory.get(folder),
                                                                             file.getName())));
                 }
                 transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
@@ -1740,7 +1740,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != filename)
             {
                 Path selected = SelectedPath;
-                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.createLocal(filename)),
+                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.get(filename)),
                          new List<Path>());
             }
         }
@@ -1886,7 +1886,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                      delegate
                                                                          {
                                                                              Download(SelectedPaths,
-                                                                                      LocalFactory.createLocal(
+                                                                                      LocalFactory.get(
                                                                                           _dropFolder));
                                                                          });
                                                              })
@@ -1965,7 +1965,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     IList<TransferItem> roots = new List<TransferItem>();
                     foreach (string file in dropList)
                     {
-                        Local local = LocalFactory.createLocal(file);
+                        Local local = LocalFactory.get(file);
                         roots.Add(
                             new TransferItem(
                                 new Path(destination, local.getName(),

@@ -36,7 +36,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private OpenSshConfig configuration;
 
     public OpenSSHCredentialsConfigurator() {
-        this(new OpenSshConfig(LocalFactory.createLocal(Local.HOME, ".ssh/config")));
+        this(new OpenSshConfig(LocalFactory.get(Local.HOME, ".ssh/config")));
     }
 
     public OpenSSHCredentialsConfigurator(final OpenSshConfig configuration) {
@@ -59,12 +59,12 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                 else {
                     // No custom public key authentication configuration
                     if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
-                        final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
+                        final Local rsa = LocalFactory.get(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
                             credentials.setIdentity(rsa);
                         }
                         else {
-                            final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
+                            final Local dsa = LocalFactory.get(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
                                 credentials.setIdentity(dsa);
                             }

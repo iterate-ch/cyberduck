@@ -82,7 +82,7 @@ public class TransferDictionary {
                 final String localObjDeprecated
                         = DeserializerFactory.createDeserializer(rootDict).stringForKey("Local");
                 if(localObjDeprecated != null) {
-                    Local local = LocalFactory.createLocal(localObjDeprecated);
+                    Local local = LocalFactory.get(localObjDeprecated);
                     item.setLocal(local);
                 }
                 final Object localObj

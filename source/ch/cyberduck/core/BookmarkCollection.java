@@ -40,7 +40,7 @@ public class BookmarkCollection extends AbstractHostCollection {
      * Legacy default bookmark file
      */
     private static final BookmarkCollection DEFAULT_COLLECTION = new BookmarkCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
     );
 
     /**

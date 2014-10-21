@@ -48,7 +48,7 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.crossftp.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.crossftp.location"));
     }
 
     @Override

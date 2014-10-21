@@ -51,7 +51,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.smartftp.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.smartftp.location"));
     }
 
     @Override
@@ -169,7 +169,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 current.setDefaultPath(elementText);
             }
             else if(name.equals("PrivateKey")) {
-                current.getCredentials().setIdentity(LocalFactory.createLocal(elementText));
+                current.getCredentials().setIdentity(LocalFactory.get(elementText));
             }
             else if(name.equals("FavoriteItem")) {
                 add(current);

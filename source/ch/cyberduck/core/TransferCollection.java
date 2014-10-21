@@ -40,7 +40,7 @@ public class TransferCollection extends Collection<Transfer> {
     private static final long serialVersionUID = -6879481152545265228L;
 
     private static final TransferCollection DEFAULT_COLLECTION = new TransferCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist")
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Queue.plist")
     );
 
     public static TransferCollection defaultCollection() {

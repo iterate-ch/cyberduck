@@ -57,7 +57,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private final NSRect NSZeroRect = new NSRect(0, 0);
 
     private static final Local FOLDER_PATH
-            = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
+            = LocalFactory.get(Preferences.instance().getProperty("application.support.path"));
 
     /**
      * Cache limited to n entries

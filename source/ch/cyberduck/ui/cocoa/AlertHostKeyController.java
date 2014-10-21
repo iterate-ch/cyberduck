@@ -74,7 +74,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private WindowController parent;
 
     public AlertHostKeyController(final WindowController c) {
-        this(c, LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
+        this(c, LocalFactory.get(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
                 Preferences.instance().getProperty("ssh.knownhosts.bookmark")
         ));
     }

@@ -77,7 +77,7 @@ public final class ProtocolFactory {
         register(GOOGLESTORAGE_SSL);
         register(AZURE);
         // Order determines list in connection dropdown
-        final Local bundled = LocalFactory.createLocal(Preferences.instance().getProperty("application.profiles.path"));
+        final Local bundled = LocalFactory.get(Preferences.instance().getProperty("application.profiles.path"));
         if(bundled.exists()) {
             try {
                 for(Local f : bundled.list().filter(new Filter<Local>() {
@@ -102,7 +102,7 @@ public final class ProtocolFactory {
             }
         }
         // Load thirdparty protocols
-        final Local library = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+        final Local library = LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Profiles");
         if(library.exists()) {
             try {
                 for(Local profile : library.list().filter(new Filter<Local>() {

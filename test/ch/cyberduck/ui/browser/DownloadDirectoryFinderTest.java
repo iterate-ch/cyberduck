@@ -35,9 +35,9 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
         assertEquals("~/Downloads", finder.find(host).getAbbreviatedPath());
         // Does not exist
-        host.setDownloadFolder(LocalFactory.createLocal("/t"));
+        host.setDownloadFolder(LocalFactory.get("/t"));
         assertEquals("~/Downloads", finder.find(host).getAbbreviatedPath());
-        host.setDownloadFolder(LocalFactory.createLocal("~/Documents"));
+        host.setDownloadFolder(LocalFactory.get("~/Documents"));
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
     }
 }

@@ -127,7 +127,7 @@ public class DownloadTransfer extends Transfer {
             final List<TransferItem> children = new ArrayList<TransferItem>();
             // Return copy with filtered result only
             for(Path f : new AttributedList<Path>(list.filter(comparator, filter))) {
-                children.add(new TransferItem(f, LocalFactory.createLocal(local, f.getName())));
+                children.add(new TransferItem(f, LocalFactory.get(local, f.getName())));
             }
             return children;
         }

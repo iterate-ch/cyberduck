@@ -43,7 +43,7 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
             }
 
         }
-        final Local directory = LocalFactory.createLocal(preferences.getProperty("queue.download.folder")).withBookmark(
+        final Local directory = LocalFactory.get(preferences.getProperty("queue.download.folder")).withBookmark(
                 preferences.getProperty("queue.download.folder.bookmark"));
         if(log.isInfoEnabled()) {
             log.info(String.format("Suggest default download folder %s for bookmark %s", directory, bookmark));

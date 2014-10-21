@@ -41,7 +41,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testHttpProfile() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/S3 (HTTP).cyberduckprofile"));
+                LocalFactory.get("profiles/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
         ));
@@ -254,7 +254,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Ignore
     public void testBucketVirtualHostStyleGreenQloud() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+                LocalFactory.get("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
@@ -262,7 +262,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+                LocalFactory.get("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
@@ -270,7 +270,7 @@ public class S3SessionTest extends AbstractTestCase {
     @Test
     public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
+                LocalFactory.get("profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }

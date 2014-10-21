@@ -35,7 +35,7 @@ public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
     public void testLookup() throws Exception {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
         assertEquals("cyberduck.ch", c.getHostname("alias"));
     }
 
@@ -43,7 +43,7 @@ public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
     public void testPort() throws Exception {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
         assertEquals(555, c.getPort("portalias"));
         assertEquals(-1, c.getPort(null));
     }

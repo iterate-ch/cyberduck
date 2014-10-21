@@ -23,7 +23,7 @@ public class FetchBookmarkCollectionTest extends AbstractTestCase {
     public void testGetFile() throws Exception {
         FetchBookmarkCollection c = new FetchBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist"));
+        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist"));
         assertEquals(2, c.size());
     }
 }

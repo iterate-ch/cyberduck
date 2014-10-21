@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, e) => BrowserLauncherFactory.get().open(e.LinkText);
 
             ackButton.Click +=
-                delegate { ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")); };
+                delegate { ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")); };
         }
 
         public string AssemblyTitle

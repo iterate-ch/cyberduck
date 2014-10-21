@@ -187,14 +187,14 @@ public class UserDefaultsPreferences extends Preferences {
                     true);
             if(directories.count().intValue() == 0) {
                 log.error("Failed searching for application support directory");
-                defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support", applicationName).getAbbreviatedPath());
+                defaults.put("application.support.path", LocalFactory.get("~/Library/Application Support", applicationName).getAbbreviatedPath());
             }
             else {
                 final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Found application support directory in %s", directory));
                 }
-                defaults.put("application.support.path", LocalFactory.createLocal(directory, applicationName).getAbbreviatedPath());
+                defaults.put("application.support.path", LocalFactory.get(directory, applicationName).getAbbreviatedPath());
             }
             defaults.put("application.name", applicationName);
             defaults.put("application.version",
@@ -215,7 +215,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
         defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
         defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
-        if(LocalFactory.createLocal("~/Downloads").exists()) {
+        if(LocalFactory.get("~/Downloads").exists()) {
             // For 10.5 this usually exists and should be preferrred
             defaults.put("queue.download.folder", "~/Downloads");
         }

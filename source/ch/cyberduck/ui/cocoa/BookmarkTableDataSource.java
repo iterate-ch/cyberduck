@@ -397,7 +397,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     Host host = null;
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
-                        final Local local = LocalFactory.createLocal(filename);
+                        final Local local = LocalFactory.get(filename);
                         if(filename.endsWith(".duck")) {
                             // Adding a previously exported bookmark file from the Finder
                             Host bookmark = HostReaderFactory.get().read(local);
@@ -571,7 +571,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         if(null != dropDestination) {
             final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
             for(Host bookmark : pasteboard) {
-                final Local file = LocalFactory.createLocal(dropDestination.path(),
+                final Local file = LocalFactory.get(dropDestination.path(),
                         String.format("%s.duck", StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
                 try {
                     HostWriterFactory.get().write(bookmark, file);

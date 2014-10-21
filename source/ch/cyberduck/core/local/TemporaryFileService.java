@@ -56,11 +56,11 @@ public class TemporaryFileService {
      * @return Path with /temporary directory/<uid>/shortened absolute parent path/<region><versionid>/filename
      */
     public Local create(final String uid, final Path file) {
-        final Local folder = LocalFactory.createLocal(
+        final Local folder = LocalFactory.get(
                 new File(Preferences.instance().getProperty("tmp.dir"),
                         uid + String.valueOf(Path.DELIMITER) +
                                 this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()).getAbsolutePath());
-        return LocalFactory.createLocal(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));
+        return LocalFactory.get(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));
     }
 
     protected String shorten(final String path) {

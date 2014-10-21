@@ -144,7 +144,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         options.addObject("noapplexattr");
         // This option makes MacFUSE deny all types of access to Apple Double (._) files and .DS_Store files. Any existing files will become apparently non-existent. New files that match the criteria will be disallowed from being created.
         options.addObject("noappledouble");
-        mountpoint = LocalFactory.createLocal(String.format("/Volumes/%s", volume));
+        mountpoint = LocalFactory.get(String.format("/Volumes/%s", volume));
         if(mountpoint.exists()) {
             // Make sure we do not mount to a already existing path
             final String parent = mountpoint.getParent().getAbsolute();
@@ -152,7 +152,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             while(mountpoint.exists()) {
                 no++;
                 String proposal = volume + "-" + no;
-                mountpoint = LocalFactory.createLocal(parent, proposal);
+                mountpoint = LocalFactory.get(parent, proposal);
             }
         }
         filesystem.mountAtPath_withOptions_shouldForeground_detachNewThread(
@@ -205,7 +205,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
             log.warn(String.format("Mount finished with %s", notification));
             unmount = new CountDownLatch(1);
             try {
-                Local folder = LocalFactory.createLocal(mountpoint, session.workdir().getAbsolute());
+                Local folder = LocalFactory.get(mountpoint, session.workdir().getAbsolute());
                 reveal.reveal(folder);
             }
             catch(BackgroundException e) {

@@ -26,7 +26,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
 
     @Test
     public void testVerifyServerHostKey() throws Exception {
-        final Local l = LocalFactory.createLocal("./knownhosts.test");
+        final Local l = LocalFactory.get("./knownhosts.test");
         try {
             final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(l) {
                 @Override
@@ -54,7 +54,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
     @Test
     public void testVerifyIndexError() throws Exception {
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
-                LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/known_hosts.invalidline")) {
+                LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/known_hosts.invalidline")) {
             @Override
             protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
                 return false;
@@ -73,7 +73,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
         // |1|Gf2LppqPUrz9Tfl4QyS/bDqX0yw=|EWSG6Gl45mO6ZX1ENbmQUGCndF8= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLcNI58jw4+R7St2mDugzg46mEexty3p8AjWmc7OCy5vHoJRXzJwiKdUlbgE0YglnCz8MNvwQwKK0dnQDI3uJZ8=
 
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
-                LocalFactory.createLocal("test/ch/cyberduck/core/sftp", "openssh/known_hosts.ecdsa")) {
+                LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/known_hosts.ecdsa")) {
             @Override
             protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
                 return false;

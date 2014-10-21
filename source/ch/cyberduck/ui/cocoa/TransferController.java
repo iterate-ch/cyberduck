@@ -560,7 +560,7 @@ public final class TransferController extends WindowController implements NSTool
             final String local = transfer.getLocal();
             if(local != null) {
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(local, LocalFactory.createLocal(local)));
+                        HyperlinkAttributedStringFactory.create(local, LocalFactory.get(local)));
             }
             else {
                 localField.setStringValue(StringUtils.EMPTY);
@@ -886,7 +886,7 @@ public final class TransferController extends WindowController implements NSTool
             }
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
-                downloads.add(new TransferItem(download, LocalFactory.createLocal(
+                downloads.add(new TransferItem(download, LocalFactory.get(
                         new DownloadDirectoryFinder().find(pasteboard.getSession().getHost()),
                         download.getName())));
             }

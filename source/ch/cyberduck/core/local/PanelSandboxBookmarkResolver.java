@@ -94,7 +94,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
                     final NSEnumerator enumerator = selected.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {
-                        final Local f = LocalFactory.createLocal(next.toString());
+                        final Local f = LocalFactory.get(next.toString());
                         bookmark.set(f.getBookmark());
                     }
                 }

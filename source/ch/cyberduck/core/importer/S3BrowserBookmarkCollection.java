@@ -56,7 +56,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.s3browser.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.s3browser.location"));
     }
 
     @Override

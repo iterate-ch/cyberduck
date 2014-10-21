@@ -44,19 +44,19 @@ public abstract class LocalFactory extends Factory<Local> {
 
     protected abstract Local create(Local parent, String name);
 
-    public static Local createLocal(Local parent, String name) {
+    public static Local get(Local parent, String name) {
         return getFactory().create(parent, name);
     }
 
     protected abstract Local create(String parent, String name);
 
-    public static Local createLocal(String parent, String name) {
+    public static Local get(String parent, String name) {
         return getFactory().create(parent, name);
     }
 
     protected abstract Local create(String path);
 
-    public static Local createLocal(String path) {
+    public static Local get(String path) {
         return getFactory().create(path);
     }
 }

@@ -100,7 +100,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     public void testProfileHPCloud() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile"));
+                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         try {
             s.getRequest(host, new DisabledLoginController());
@@ -121,7 +121,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     public void testProfileLondon() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Rackspace UK.cyberduckprofile"));
+                LocalFactory.get("profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertEquals("/v2.0/tokens", profile.getContext());
         assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host, new DisabledLoginController()).iterator().next().getURI());

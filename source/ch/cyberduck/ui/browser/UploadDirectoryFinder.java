@@ -42,7 +42,7 @@ public class UploadDirectoryFinder implements DirectoryFinder {
                 return bookmark.getUploadFolder();
             }
         }
-        final Local directory = LocalFactory.createLocal(preferences.getProperty("local.user.home"));
+        final Local directory = LocalFactory.get(preferences.getProperty("local.user.home"));
         if(log.isInfoEnabled()) {
             log.info(String.format("Suggest default upload folder %s for bookmark %s", directory, bookmark));
         }

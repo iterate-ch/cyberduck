@@ -61,7 +61,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                status.rename(LocalFactory.createLocal(local.getParent().getAbsolute(), proposal));
+                status.rename(LocalFactory.get(local.getParent().getAbsolute(), proposal));
             }
             while(status.getRename().local.exists());
         }

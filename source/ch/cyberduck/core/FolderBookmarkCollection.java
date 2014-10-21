@@ -36,7 +36,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
             = Preferences.instance();
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
     ) {
         private static final long serialVersionUID = 6302021296403107371L;
 

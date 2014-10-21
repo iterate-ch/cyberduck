@@ -58,7 +58,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      * @return File for bookmark
      */
     public Local getFile(final Host bookmark) {
-        return LocalFactory.createLocal(folder, String.format("%s.duck", bookmark.getUuid()));
+        return LocalFactory.get(folder, String.format("%s.duck", bookmark.getUuid()));
     }
 
     public Local getFolder() {

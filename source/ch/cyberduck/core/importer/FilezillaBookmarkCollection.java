@@ -50,7 +50,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 current.setComment(elementText);
             }
             else if(name.equals("LocalDir")) {
-                current.setDownloadFolder(LocalFactory.createLocal(elementText));
+                current.setDownloadFolder(LocalFactory.get(elementText));
             }
             else if(name.equals("RemoteDir")) {
                 if(StringUtils.isNotBlank(elementText)) {

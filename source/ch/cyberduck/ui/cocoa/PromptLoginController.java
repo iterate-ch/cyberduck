@@ -305,7 +305,7 @@ public final class PromptLoginController implements LoginCallback {
                                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                                     final NSObject selected = select.filenames().lastObject();
                                     if(selected != null) {
-                                        credentials.setIdentity(LocalFactory.createLocal(selected.toString()));
+                                        credentials.setIdentity(LocalFactory.get(selected.toString()));
                                         update();
                                     }
                                 }
@@ -402,7 +402,7 @@ public final class PromptLoginController implements LoginCallback {
                 select.setAllowsMultipleSelection(false);
                 select.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
                 select.setPrompt(LocaleFactory.localizedString("Choose"));
-                select.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
+                select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
                         null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
             }
 
@@ -415,7 +415,7 @@ public final class PromptLoginController implements LoginCallback {
         if(sheet.returnCode() == SheetCallback.DEFAULT_OPTION) {
             final NSObject selected = select.filenames().lastObject();
             if(selected != null) {
-                return LocalFactory.createLocal(selected.toString());
+                return LocalFactory.get(selected.toString());
             }
         }
         throw new LoginCanceledException();

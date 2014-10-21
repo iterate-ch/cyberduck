@@ -88,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (View.PkCheckboxState)
                     {
-                        credentials.setIdentity(LocalFactory.createLocal(View.PkLabel));
+                        credentials.setIdentity(LocalFactory.get(View.PkLabel));
                     }
                 }
                 if (View.SelectedEncoding.Equals(Default))

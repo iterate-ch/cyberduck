@@ -376,7 +376,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
         {
-            _host.getCredentials().setIdentity(null == e.KeyFile ? null : LocalFactory.createLocal(e.KeyFile));
+            _host.getCredentials().setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
             Update();
             ItemChanged();
         }
@@ -389,7 +389,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_OpenDownloadFolderEvent()
         {
             Local folder = new DownloadDirectoryFinder().find(_host);
-            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(folder.getAbsolute()));
+            ApplicationLauncherFactory.get().open(LocalFactory.get(folder.getAbsolute()));
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -426,7 +426,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedBrowserDownloadPathEvent()
         {
-            _host.setDownloadFolder(LocalFactory.createLocal(View.SelectedDownloadFolder));
+            _host.setDownloadFolder(LocalFactory.get(View.SelectedDownloadFolder));
             ItemChanged();
             Update();
         }

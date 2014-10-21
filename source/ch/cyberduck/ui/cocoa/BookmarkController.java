@@ -419,13 +419,13 @@ public class BookmarkController extends WindowController {
         // Default download folder
         this.addDownloadPath(action, new DownloadDirectoryFinder().find(host));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.addDownloadPath(action, LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder")));
+        this.addDownloadPath(action, LocalFactory.get(Preferences.instance().getProperty("queue.download.folder")));
         // Shortcut to the Desktop
-        this.addDownloadPath(action, LocalFactory.createLocal("~/Desktop"));
+        this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, LocalFactory.createLocal("~"));
+        this.addDownloadPath(action, LocalFactory.get("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
+        this.addDownloadPath(action, LocalFactory.get("~/Downloads"));
         // Choose another folder
 
         // Choose another folder
@@ -460,7 +460,7 @@ public class BookmarkController extends WindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            final Local folder = LocalFactory.createLocal(sender.representedObject());
+            final Local folder = LocalFactory.get(sender.representedObject());
             host.setDownloadFolder(folder);
             this.itemChanged();
         }
@@ -470,7 +470,7 @@ public class BookmarkController extends WindowController {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             final NSObject selected = sheet.filenames().lastObject();
             if(selected != null) {
-                host.setDownloadFolder(LocalFactory.createLocal(selected.toString()));
+                host.setDownloadFolder(LocalFactory.get(selected.toString()));
             }
         }
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
@@ -573,7 +573,7 @@ public class BookmarkController extends WindowController {
             publicKeyPanel.setAllowsMultipleSelection(false);
             publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(), null, this.window(), this.id(),
+            publicKeyPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
@@ -585,7 +585,7 @@ public class BookmarkController extends WindowController {
         if(returncode == NSPanel.NSOKButton) {
             final NSObject selected = publicKeyPanel.filenames().lastObject();
             if(selected != null) {
-                final Local key = LocalFactory.createLocal(selected.toString());
+                final Local key = LocalFactory.get(selected.toString());
                 host.getCredentials().setIdentity(key);
             }
         }

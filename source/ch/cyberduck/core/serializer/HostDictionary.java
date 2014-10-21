@@ -84,7 +84,7 @@ public class HostDictionary {
             // Legacy
             String keyObjDeprecated = dict.stringForKey("Private Key File");
             if(keyObjDeprecated != null) {
-                bookmark.getCredentials().setIdentity(LocalFactory.createLocal(keyObjDeprecated));
+                bookmark.getCredentials().setIdentity(LocalFactory.get(keyObjDeprecated));
             }
             Object keyObj = dict.objectForKey("Private Key File Dictionary");
             if(keyObj != null) {
@@ -138,7 +138,7 @@ public class HostDictionary {
             // Legacy
             Object downloadObjDeprecated = dict.stringForKey("Download Folder");
             if(downloadObjDeprecated != null) {
-                bookmark.setDownloadFolder(LocalFactory.createLocal(downloadObjDeprecated.toString()));
+                bookmark.setDownloadFolder(LocalFactory.get(downloadObjDeprecated.toString()));
             }
             Object downloadObj = dict.objectForKey("Download Folder Dictionary");
             if(downloadObj != null) {

@@ -62,7 +62,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      */
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.wsftp.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.wsftp.location"));
     }
 
     @Override

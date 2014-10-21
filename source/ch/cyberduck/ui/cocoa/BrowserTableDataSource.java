@@ -307,7 +307,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         final List<TransferItem> roots = new ArrayList<TransferItem>();
                         for(int i = 0; i < elements.count().intValue(); i++) {
-                            final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                            final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                             roots.add(new TransferItem(new Path(destination, local.getName(),
                                     local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                         }
@@ -399,7 +399,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         for(int i = 0; i < elements.count().intValue(); i++) {
-                            final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                            final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                             if(local.isFile()) {
                                 final Touch feature = controller.getSession().getFeature(Touch.class);
                                 if(!feature.isSupported(destination)) {
@@ -553,11 +553,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
-            final Local destination = LocalFactory.createLocal(url.path());
+            final Local destination = LocalFactory.get(url.path());
             final PathPasteboard pasteboard = controller.getPasteboard();
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path p : pasteboard) {
-                downloads.add(new TransferItem(p, LocalFactory.createLocal(destination, p.getName())));
+                downloads.add(new TransferItem(p, LocalFactory.get(destination, p.getName())));
                 // Add to returned path names
                 promisedDragNames.addObject(NSString.stringWithString(p.getName()));
             }
@@ -587,7 +587,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             // kTemporaryFolderType
-            final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
+            final boolean dock = destination.equals(LocalFactory.get("~/Library/Caches/TemporaryItems"));
             if(dock) {
                 for(Path p : pasteboard) {
                     // Drag to application icon in dock.

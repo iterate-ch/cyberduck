@@ -83,7 +83,7 @@ public abstract class LicenseFactory extends Factory<License> {
     private Filter<Local> filter;
 
     protected LicenseFactory() {
-        this(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path")));
+        this(LocalFactory.get(Preferences.instance().getProperty("application.support.path")));
     }
 
     protected LicenseFactory(final Local folder) {

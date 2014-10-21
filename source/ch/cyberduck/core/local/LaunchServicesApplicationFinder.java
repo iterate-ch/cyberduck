@@ -192,7 +192,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                     }
                     if(null == name) {
                         log.warn(String.format("Failed to determine bundle name for %s", path));
-                        name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+                        name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
                     }
                 }
                 else {

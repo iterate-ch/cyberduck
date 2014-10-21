@@ -58,7 +58,7 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.totalcommander.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.totalcommander.location"));
     }
 
     @Override

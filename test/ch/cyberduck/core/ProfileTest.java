@@ -15,10 +15,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testEquals() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                LocalFactory.get("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(profile, ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                LocalFactory.get("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());
@@ -30,10 +30,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testEqualsDifferentScheme() throws Exception {
         final Profile https = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
+                LocalFactory.get("profiles/Openstack Swift (Swauth).cyberduckprofile")
         );
         final Profile http = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
+                LocalFactory.get("profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
         assertNotEquals(https, http);
     }
@@ -41,10 +41,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testEqualsContexts() throws Exception {
         final Profile keystone = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Openstack Swift (Keystone).cyberduckprofile")
+                LocalFactory.get("profiles/Openstack Swift (Keystone).cyberduckprofile")
         );
         final Profile swauth = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
+                LocalFactory.get("profiles/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotEquals(keystone, swauth);
     }
@@ -52,10 +52,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testProviderProfileHPCloud() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
+                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile")
         );
         assertEquals(profile, ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
+                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.swift, profile.getType());
         assertEquals(new SwiftProtocol(), profile.getProtocol());
@@ -79,10 +79,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testProviderProfileS3HTTP() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/S3 (HTTP).cyberduckprofile")
+                LocalFactory.get("profiles/S3 (HTTP).cyberduckprofile")
         );
         assertEquals(profile, ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/S3 (HTTP).cyberduckprofile")
+                LocalFactory.get("profiles/S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());
@@ -102,10 +102,10 @@ public class ProfileTest extends AbstractTestCase {
     @Test
     public void testProviderProfileS3HTTPS() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/S3 (HTTPS).cyberduckprofile")
+                LocalFactory.get("profiles/S3 (HTTPS).cyberduckprofile")
         );
         assertEquals(profile, ProfileReaderFactory.get().read(
-                LocalFactory.createLocal("profiles/S3 (HTTPS).cyberduckprofile")
+                LocalFactory.get("profiles/S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());

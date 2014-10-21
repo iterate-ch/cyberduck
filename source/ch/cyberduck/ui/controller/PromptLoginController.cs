@@ -199,7 +199,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
         {
-            _credentials.setIdentity(null == e.KeyFile ? null : LocalFactory.createLocal(e.KeyFile));
+            _credentials.setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
             Update();
         }
 

@@ -80,7 +80,7 @@ public class DownloadController extends AlertController {
             final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
                     EnumSet.of(detector.detect(host.getDefaultPath())));
             final Transfer transfer = new DownloadTransfer(host, file,
-                    LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
+                    LocalFactory.get(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);
         }
     }

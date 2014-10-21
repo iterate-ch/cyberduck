@@ -2657,11 +2657,11 @@ public class BrowserController extends WindowController
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
-                final Local target = LocalFactory.createLocal(sheet.filename());
+                final Local target = LocalFactory.get(sheet.filename());
                 new DownloadDirectoryFinder().save(session.getHost(), target);
                 final List<TransferItem> downloads = new ArrayList<TransferItem>();
                 for(Path file : this.getSelectedPaths()) {
-                    downloads.add(new TransferItem(file, LocalFactory.createLocal(target, file.getName())));
+                    downloads.add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
                 this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
             }
@@ -2687,7 +2687,7 @@ public class BrowserController extends WindowController
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
-                final Local target = LocalFactory.createLocal(sheet.filename());
+                final Local target = LocalFactory.get(sheet.filename());
                 new DownloadDirectoryFinder().save(session.getHost(), target.getParent());
                 final List<TransferItem> downloads
                         = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
@@ -2727,7 +2727,7 @@ public class BrowserController extends WindowController
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
-                final Local target = LocalFactory.createLocal(sheet.filename());
+                final Local target = LocalFactory.get(sheet.filename());
                 new UploadDirectoryFinder().save(session.getHost(), target.getParent());
                 final Path selected;
                 if(this.getSelectionCount() == 1 && this.getSelectedPath().isDirectory()) {
@@ -2747,7 +2747,7 @@ public class BrowserController extends WindowController
         final Local folder = new DownloadDirectoryFinder().find(session.getHost());
         for(Path file : this.getSelectedPaths()) {
             downloads.add(new TransferItem(
-                    file, LocalFactory.createLocal(folder, file.getName())));
+                    file, LocalFactory.get(folder, file.getName())));
         }
         this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.<Path>emptyList());
     }
@@ -2798,7 +2798,7 @@ public class BrowserController extends WindowController
             final List<TransferItem> uploads = new ArrayList<TransferItem>();
             NSObject next;
             while((next = iterator.nextObject()) != null) {
-                final Local local = LocalFactory.createLocal(next.toString());
+                final Local local = LocalFactory.get(next.toString());
                 new UploadDirectoryFinder().save(session.getHost(), local.getParent());
                 uploads.add(new TransferItem(
                         new Path(destination, local.getName(),
@@ -3097,7 +3097,7 @@ public class BrowserController extends WindowController
                     final Path workdir = this.workdir();
                     final List<TransferItem> uploads = new ArrayList<TransferItem>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
-                        final Local local = LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString());
+                        final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
                         uploads.add(new TransferItem(new Path(workdir, local.getName(),
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                     }

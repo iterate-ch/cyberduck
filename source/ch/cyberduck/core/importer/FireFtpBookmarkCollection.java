@@ -60,7 +60,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.fireftp.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.fireftp.location"));
     }
 
     /**
@@ -161,7 +161,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                 current.setNickname(value);
             }
             else if("privatekey".equals(name)) {
-                current.getCredentials().setIdentity(LocalFactory.createLocal(value));
+                current.getCredentials().setIdentity(LocalFactory.get(value));
             }
             else if("pasvmode".equals(name)) {
                 if(Boolean.TRUE.toString().equals(value)) {

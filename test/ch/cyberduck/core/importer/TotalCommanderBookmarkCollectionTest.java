@@ -38,7 +38,7 @@ public class TotalCommanderBookmarkCollectionTest extends AbstractTestCase{
     public void testParse() throws Exception {
         TotalCommanderBookmarkCollection c = new TotalCommanderBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/wcx_ftp.ini"));
+        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/wcx_ftp.ini"));
         assertEquals(2, c.size());
         assertEquals("sudo.ch", c.get(0).getHostname());
         assertEquals("fo|cyberduck.io session bookmark", c.get(1).getNickname());

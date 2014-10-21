@@ -16,7 +16,7 @@ public class DonationTest extends AbstractTestCase {
 
     @Test
     public void testVerify() throws Exception {
-        final Local f = LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), "f.cyberducklicense");
+        final Local f = LocalFactory.get(System.getProperty("java.io.tmpdir"), "f.cyberducklicense");
         Donation r = new Donation(f);
         assertFalse(r.verify());
         LocalTouchFactory.get().touch(f);

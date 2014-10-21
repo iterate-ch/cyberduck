@@ -1649,7 +1649,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //direct commands
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
                          (sender, args) =>
-                         ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")),
+                         ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                          (sender, args) =>
@@ -1667,7 +1667,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                          (sender, args) =>
-                         ApplicationLauncherFactory.get().open(LocalFactory.createLocal("License.txt")), () => true);
+                         ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
                          (sender, args) => UpdateController.Instance.ForceCheckForUpdates(false), () => true);
         }

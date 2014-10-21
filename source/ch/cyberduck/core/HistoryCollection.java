@@ -31,7 +31,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     private static final long serialVersionUID = 2270155702956300755L;
 
     private static final HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "History")
     );
 
     public HistoryCollection(final Local f) {
@@ -47,7 +47,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
 
     @Override
     public Local getFile(final Host bookmark) {
-        return LocalFactory.createLocal(folder, String.format("%s.duck",
+        return LocalFactory.get(folder, String.format("%s.duck",
                 StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
     }
 

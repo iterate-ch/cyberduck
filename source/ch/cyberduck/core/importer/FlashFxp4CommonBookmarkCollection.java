@@ -40,6 +40,6 @@ public class FlashFxp4CommonBookmarkCollection extends FlashFxpBookmarkCollectio
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flashfxp4.common.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.flashfxp4.common.location"));
     }
 }

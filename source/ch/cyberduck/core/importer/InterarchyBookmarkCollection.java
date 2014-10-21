@@ -46,7 +46,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.interarchy.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.interarchy.location"));
     }
 
     @Override

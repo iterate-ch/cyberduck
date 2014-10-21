@@ -64,7 +64,7 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Tra
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
-                        local = LocalFactory.createLocal(parent, proposal);
+                        local = LocalFactory.get(parent, proposal);
                     }
                     while(local.exists());
                     if(log.isInfoEnabled()) {

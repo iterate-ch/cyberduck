@@ -44,7 +44,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
     }
 
     private static final MultipleFolderBookmarkCollection DEFAULT_COLLECTION = new MultipleFolderBookmarkCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
     );
 
     public static MultipleFolderBookmarkCollection defaultCollection() {

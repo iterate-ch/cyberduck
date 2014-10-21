@@ -40,6 +40,6 @@ public class CloudberryGoogleBookmarkCollection extends CloudberryBookmarkCollec
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.cloudberry.google.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.cloudberry.google.location"));
     }
 }

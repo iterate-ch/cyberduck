@@ -44,7 +44,7 @@ public class ReceiptFactory extends LicenseFactory {
     private static final int APPSTORE_VALIDATION_FAILURE = 173;
 
     public ReceiptFactory() {
-        super(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")),
+        super(LocalFactory.get(Preferences.instance().getProperty("application.receipt.path")),
                 new Filter<Local>() {
                     @Override
                     public boolean accept(final Local file) {
@@ -78,10 +78,10 @@ public class ReceiptFactory extends LicenseFactory {
                 log.info(String.format("Valid receipt %s in %s", receipt, file));
             }
             // Copy to Application Support for users switching versions
-            final Local support = LocalFactory.createLocal(
+            final Local support = LocalFactory.get(
                     Preferences.instance().getProperty("application.support.path"));
             try {
-                file.copy(LocalFactory.createLocal(support, String.format("%s.cyberduckreceipt", receipt.getName())));
+                file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt", receipt.getName())));
             }
             catch(AccessDeniedException e) {
                 log.warn(e.getMessage());

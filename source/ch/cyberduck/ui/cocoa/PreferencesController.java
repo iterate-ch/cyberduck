@@ -385,7 +385,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     private static class EditorOpenPanelDelegate extends ProxyController {
         public boolean panel_shouldShowFilename(ID panel, String path) {
-            final Local f = LocalFactory.createLocal(path);
+            final Local f = LocalFactory.get(path);
             if(f.isDirectory()) {
                 return true;
             }
@@ -402,7 +402,7 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                String path = LocalFactory.createLocal(filename).getAbsolute();
+                String path = LocalFactory.get(filename).getAbsolute();
                 NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
                     log.error("Loading bundle failed:" + path);
@@ -1129,7 +1129,7 @@ public class PreferencesController extends ToolbarWindowController {
     private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     // The currently set download folder
-    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(preferences.getProperty("queue.download.folder"));
+    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
@@ -1141,11 +1141,11 @@ public class PreferencesController extends ToolbarWindowController {
         this.addDownloadPath(action, DEFAULT_DOWNLOAD_FOLDER);
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
-        this.addDownloadPath(action, LocalFactory.createLocal("~/Desktop"));
+        this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, LocalFactory.createLocal("~"));
+        this.addDownloadPath(action, LocalFactory.get("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
+        this.addDownloadPath(action, LocalFactory.get("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
@@ -1187,12 +1187,12 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                final Local folder = LocalFactory.createLocal(filename);
+                final Local folder = LocalFactory.get(filename);
                 preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
                 preferences.setProperty("queue.download.folder.bookmark", folder.getBookmark());
             }
         }
-        final Local custom = LocalFactory.createLocal(preferences.getProperty("queue.download.folder"));
+        final Local custom = LocalFactory.get(preferences.getProperty("queue.download.folder"));
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
         item.setTitle(custom.getDisplayName());
         item.setRepresentedObject(custom.getAbsolute());

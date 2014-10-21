@@ -35,7 +35,7 @@ public class LocalDictionary {
         if(StringUtils.isBlank(path)) {
             return null;
         }
-        final Local file = LocalFactory.createLocal(path);
+        final Local file = LocalFactory.get(path);
         final String data = dict.stringForKey("Bookmark");
         if(StringUtils.isNotBlank(data)) {
             file.setBookmark(data);

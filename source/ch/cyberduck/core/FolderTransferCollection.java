@@ -40,7 +40,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
 
     private static final FolderTransferCollection TRANSFER_COLLECTION = new FolderTransferCollection(
-            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Transfers"));
+            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Transfers"));
 
     /**
      * @return Singleton instance
@@ -76,7 +76,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
      * @return File for transfer
      */
     public Local getFile(final Transfer transfer) {
-        return LocalFactory.createLocal(folder, String.format("%s.cyberducktransfer", transfer.getUuid()));
+        return LocalFactory.get(folder, String.format("%s.cyberducktransfer", transfer.getUuid()));
     }
 
     public Local getFolder() {

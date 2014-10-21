@@ -82,7 +82,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     }
 
     public void reveal(final NSMenuItem sender) {
-        reveal.reveal(LocalFactory.createLocal(sender.representedObject()));
+        reveal.reveal(LocalFactory.get(sender.representedObject()));
     }
 
     @Override

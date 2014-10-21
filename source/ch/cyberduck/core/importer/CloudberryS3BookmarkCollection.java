@@ -40,6 +40,6 @@ public class CloudberryS3BookmarkCollection extends CloudberryBookmarkCollection
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.cloudberry.s3.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.cloudberry.s3.location"));
     }
 }

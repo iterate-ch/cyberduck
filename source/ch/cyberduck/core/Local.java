@@ -198,7 +198,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
         }
         for(File file : files) {
-            children.add(LocalFactory.createLocal(file.getAbsolutePath()));
+            children.add(LocalFactory.get(file.getAbsolutePath()));
         }
         return children;
     }
@@ -233,7 +233,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local getSymlinkTarget() throws NotfoundException {
         try {
-            return LocalFactory.createLocal(this, new File(path).getCanonicalPath());
+            return LocalFactory.get(this, new File(path).getCanonicalPath());
         }
         catch(IOException e) {
             throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
@@ -259,11 +259,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public Local getVolume() {
-        return LocalFactory.createLocal(String.valueOf(this.getDelimiter()));
+        return LocalFactory.get(String.valueOf(this.getDelimiter()));
     }
 
     public Local getParent() {
-        return LocalFactory.createLocal(new File(path).getParentFile().getAbsolutePath());
+        return LocalFactory.get(new File(path).getParentFile().getAbsolutePath());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.winscp.location"));
+        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.winscp.location"));
     }
 
     @Override

@@ -219,7 +219,7 @@ public class OpenSshConfig {
             else if("IdentityFile".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityFile == null) {
-                        c.identityFile = LocalFactory.createLocal(dequote(argValue));
+                        c.identityFile = LocalFactory.get(dequote(argValue));
                     }
                 }
             }

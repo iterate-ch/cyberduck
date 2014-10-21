@@ -38,7 +38,7 @@ public class HistoryCollectionTest extends AbstractTestCase {
         final CountDownLatch lock = new CountDownLatch(1);
         final CountDownLatch loaded = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
-        final HistoryCollection c = new HistoryCollection(LocalFactory.createLocal("test/ch/cyberduck/core/history")) {
+        final HistoryCollection c = new HistoryCollection(LocalFactory.get("test/ch/cyberduck/core/history")) {
             @Override
             protected void sort() {
                 if(loaded.getCount() == 0) {
