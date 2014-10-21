@@ -91,16 +91,13 @@ public class SwiftObjectListService implements ListService {
                     final EnumSet<AbstractPath.Type> types = "application/directory"
                             .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
-                        types.add(Path.Type.placeholder);
-                    }
-                    final Path child = new Path(directory, PathNormalizer.name(object.getName()), types, attributes);
-                    if(child.isDirectory()) {
-                        if(children.contains(child.getReference())) {
+                        if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attributes))) {
                             // There is already a placeholder object
                             continue;
                         }
+                        types.add(Path.Type.placeholder);
                     }
-                    children.add(child);
+                    children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attributes));
                     marker = object.getName();
                 }
                 listener.chunk(directory, children);

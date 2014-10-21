@@ -108,6 +108,27 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testListPlaceholderParent() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("ORD");
+        final String name = UUID.randomUUID().toString();
+        final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
+        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener());
+        assertTrue(list.contains(placeholder));
+        assertFalse(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
     public void testPlaceholderAndObjectSameName() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
