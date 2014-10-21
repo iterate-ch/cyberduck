@@ -26,7 +26,7 @@ public class WatchableFile implements Watchable {
     public final WatchKey register(final WatchService watcher,
                                    final WatchEvent.Kind<?>... events)
             throws IOException {
-        return register(watcher, events, NO_MODIFIERS);
+        return this.register(watcher, events, NO_MODIFIERS);
     }
 
     @Override
