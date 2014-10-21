@@ -186,6 +186,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             public boolean isFile() {
                 return true;
             }
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
         }, new TransferStatus().exists(true)));
     }
 
@@ -225,6 +230,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             public boolean isFile() {
                 return true;
             }
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
         };
         assertTrue(f.accept(t, l, new TransferStatus().exists(true)));
         assertEquals(3L, f.prepare(t, l, new TransferStatus().exists(true)).getLength());
@@ -253,6 +263,11 @@ public class ResumeFilterTest extends AbstractTestCase {
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {

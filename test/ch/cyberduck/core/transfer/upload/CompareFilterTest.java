@@ -54,7 +54,12 @@ public class CompareFilterTest extends AbstractTestCase {
         }
         );
         final Path file = new Path("/", EnumSet.of(Path.Type.file));
-        assertFalse(filter.accept(file, new NullLocal("t"), new TransferStatus().exists(true)));
+        assertFalse(filter.accept(file, new NullLocal("t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -68,7 +73,12 @@ public class CompareFilterTest extends AbstractTestCase {
             }
         });
         assertTrue(
-                filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n"),
+                filter.accept(new Path("/n", EnumSet.of(Path.Type.directory)), new NullLocal("/n") {
+                            @Override
+                            public boolean exists() {
+                                return true;
+                            }
+                        },
                         new TransferStatus().exists(true)));
     }
 }

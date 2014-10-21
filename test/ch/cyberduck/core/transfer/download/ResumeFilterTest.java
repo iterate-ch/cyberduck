@@ -70,6 +70,11 @@ public class ResumeFilterTest extends AbstractTestCase {
             public boolean isFile() {
                 return true;
             }
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
         };
         p.attributes().setSize(2L);
         final TransferStatus status = f.prepare(p, local, new TransferStatus());
@@ -81,7 +86,12 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepareDirectoryExists() throws Exception {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host("h")));
         Path p = new Path("a", EnumSet.of(Path.Type.directory));
-        final NullLocal local = new NullLocal("a");
+        final NullLocal local = new NullLocal("a") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        };
         final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true));
         assertTrue(status.isExists());
     }

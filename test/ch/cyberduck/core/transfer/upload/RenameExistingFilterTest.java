@@ -38,7 +38,14 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     public void testAccept() throws Exception {
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        assertTrue(f.accept(t, new NullLocal("/", "t"), new TransferStatus().exists(true)));
+        assertTrue(f.accept(t, new NullLocal("/", "t") {
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
+
+        }, new TransferStatus().exists(true)));
     }
 
     @Test

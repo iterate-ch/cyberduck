@@ -57,9 +57,23 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testAcceptRemoteExists() throws Exception {
         final OverwriteFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host("h")));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)) {
-        }, new NullLocal("t"), new TransferStatus()));
+        }, new NullLocal("t") {
+
+            @Override
+            public boolean exists() {
+                return true;
+            }
+
+        }, new TransferStatus()));
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)) {
-        }, new NullLocal("t"), new TransferStatus()
+        }, new NullLocal("t") {
+
+                                @Override
+                                public boolean exists() {
+                                    return true;
+                                }
+
+                            }, new TransferStatus()
         ));
     }
 
