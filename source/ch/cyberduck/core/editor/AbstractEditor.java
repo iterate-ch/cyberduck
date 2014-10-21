@@ -216,6 +216,16 @@ public abstract class AbstractEditor implements Editor {
     }
 
     @Override
+    protected void finalize() throws Throwable {
+        try {
+            this.delete();
+        }
+        finally {
+            super.finalize();
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if(this == o) {
             return true;
