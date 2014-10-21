@@ -12,10 +12,8 @@ import static org.junit.Assert.assertEquals;
 public class LicenseFactoryTest extends AbstractTestCase {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFindReceipt() throws Exception {
         DonationKeyFactory.register();
-        assertEquals(LicenseFactory.EMPTY_LICENSE, LicenseFactory.find());
-//        ReceiptFactory.register();
-        assertEquals(LicenseFactory.EMPTY_LICENSE, LicenseFactory.find());
+        assertEquals(new Receipt(null, "c42c030b8670"), LicenseFactory.find());
     }
 }
