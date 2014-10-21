@@ -14,7 +14,7 @@ import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyCallbackFactory;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.LoginCallbackFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class BrowserBackgroundActionTest extends AbstractTestCase {
 
     @Before
     public void factory() {
-        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginControllerFactory() {
+        LoginCallbackFactory.addFactory(Factory.NATIVE_PLATFORM, new LoginCallbackFactory() {
             @Override
             public LoginCallback create(final Controller c) {
                 return null;

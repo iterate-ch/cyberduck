@@ -116,7 +116,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Register()
         {
-            LoginControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            LoginCallbackFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         private void View_ChangedPkCheckboxEvent()
@@ -237,7 +237,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class Factory : LoginControllerFactory
+        private class Factory : LoginCallbackFactory
         {
             protected override object create()
             {

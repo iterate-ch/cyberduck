@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyCallbackFactory;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.LoginCallbackFactory;
 
 /**
  * @version $Id$
@@ -36,14 +36,14 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
 
     public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(session, cache, controller, controller, controller,
-                LoginControllerFactory.get(controller), HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+                LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
         this.controller = controller;
     }
 
     public ControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache,
                                       final ProgressListener listener) {
         super(session, cache, controller, listener, controller,
-                LoginControllerFactory.get(controller), HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+                LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
         this.controller = controller;
     }
 

@@ -29,15 +29,15 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class LoginControllerFactory extends Factory<LoginCallback> {
+public abstract class LoginCallbackFactory extends Factory<LoginCallback> {
 
     public abstract LoginCallback create(Controller c);
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, LoginControllerFactory> factories
-            = new HashMap<Platform, LoginControllerFactory>();
+    private static final Map<Platform, LoginCallbackFactory> factories
+            = new HashMap<Platform, LoginCallbackFactory>();
 
     /**
      * @param c Window controller
@@ -50,7 +50,7 @@ public abstract class LoginControllerFactory extends Factory<LoginCallback> {
         return factories.get(NATIVE_PLATFORM).create(c);
     }
 
-    public static void addFactory(Platform p, LoginControllerFactory f) {
+    public static void addFactory(Platform p, LoginCallbackFactory f) {
         factories.put(p, f);
     }
 }

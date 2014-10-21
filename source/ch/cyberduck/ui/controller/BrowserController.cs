@@ -2789,7 +2789,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DeletePathsImpl(ICollection<Path> files)
         {
-            background(new DeleteAction(this, LoginControllerFactory.get(this), Utils.ConvertToJavaList(files)));
+            background(new DeleteAction(this, LoginCallbackFactory.get(this), Utils.ConvertToJavaList(files)));
         }
 
         public void SetPathFilter(string searchString)

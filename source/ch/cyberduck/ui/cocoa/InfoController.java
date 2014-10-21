@@ -47,7 +47,7 @@ import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.s3.VersioningConfiguration;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ReadAclWorker;
 import ch.cyberduck.ui.action.ReadMetadataWorker;
@@ -103,7 +103,7 @@ public class InfoController extends ToolbarWindowController {
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    private LoginCallback prompt = LoginControllerFactory.get(this);
+    private LoginCallback prompt = LoginCallbackFactory.get(this);
 
     private PathContainerService containerService
             = new PathContainerService();

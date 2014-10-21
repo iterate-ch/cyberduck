@@ -57,7 +57,7 @@ import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.action.DeleteWorker;
 import ch.cyberduck.ui.action.DisconnectWorker;
 import ch.cyberduck.ui.action.MountWorker;
@@ -2501,7 +2501,7 @@ public class BrowserController extends WindowController
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new WorkerBackgroundAction<Boolean>(this, session, cache,
-                        new DeleteWorker(session, LoginControllerFactory.get(BrowserController.this), files, this) {
+                        new DeleteWorker(session, LoginCallbackFactory.get(BrowserController.this), files, this) {
                             @Override
                             public void cleanup(final Boolean result) {
                                 reload(files, false);

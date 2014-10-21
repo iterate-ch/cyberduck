@@ -33,7 +33,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.LoginControllerFactory;
+import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -62,10 +62,10 @@ public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
     public static void register() {
-        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        LoginCallbackFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
-    private static class Factory extends LoginControllerFactory {
+    private static class Factory extends LoginCallbackFactory {
         @Override
         protected LoginCallback create() {
             throw new FactoryException();

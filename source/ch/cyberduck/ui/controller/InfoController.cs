@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View = ObjectFactory.GetInstance<IInfoView>();
             _controller = controller;
-            _prompt = LoginControllerFactory.get(this);
+            _prompt = LoginCallbackFactory.get(this);
             Files = files;
 
             _controller.View.ViewClosedEvent += delegate
