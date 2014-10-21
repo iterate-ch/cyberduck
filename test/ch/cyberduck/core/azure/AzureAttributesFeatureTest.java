@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -33,7 +33,7 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureAttributesFeature f = new AzureAttributesFeature(session);
@@ -46,7 +46,7 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
@@ -56,7 +56,7 @@ public class AzureAttributesFeatureTest extends AbstractTestCase {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("1B2M2Y8AsgTpgAmY7PhCfg==", attributes.getChecksum());
-        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

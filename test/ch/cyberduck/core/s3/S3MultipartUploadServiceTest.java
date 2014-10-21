@@ -5,7 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -47,7 +47,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 2);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
@@ -60,7 +60,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         status.setMime("text/plain");
         Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginController());
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -69,7 +69,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -81,7 +81,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartUploadService m = new S3MultipartUploadService(session, 5 * 1024L, 1);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -99,7 +99,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3MultipartUploadService m = new S3MultipartUploadService(session, 5242880L, 5);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -115,7 +115,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -127,7 +127,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -148,7 +148,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         throw new RuntimeException();
                     }
                 }
-            }, status, new DisabledLoginController());
+            }, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -162,7 +162,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
         new S3MultipartUploadService(session, 10485760L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-                new DisabledLoginController());
+                new DisabledLoginCallback());
         assertEquals(random.length, append.getCurrent(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -173,7 +173,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -185,7 +185,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -206,7 +206,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
                         throw new RuntimeException();
                     }
                 }
-            }, status, new DisabledLoginController());
+            }, status, new DisabledLoginCallback());
         }
         catch(BackgroundException e) {
             // Expected
@@ -220,7 +220,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         new S3MultipartUploadService(session, 10485760L, 1).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), append,
-                new DisabledLoginController());
+                new DisabledLoginCallback());
         assertEquals(32769L, append.getCurrent(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -231,7 +231,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(random, buffer);
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

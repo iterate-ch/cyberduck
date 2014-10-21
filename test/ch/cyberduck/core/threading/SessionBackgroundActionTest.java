@@ -53,7 +53,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DisabledHostKeyCallback()
+        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -91,7 +91,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DisabledHostKeyCallback()
+        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -129,7 +129,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DisabledHostKeyCallback()
+        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {
@@ -167,7 +167,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DisabledHostKeyCallback()
+        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
             public Object run() throws BackgroundException {

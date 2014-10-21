@@ -22,7 +22,7 @@ package ch.cyberduck.core.fs.kfs;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -375,7 +375,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         log.debug("kfsremove_f:" + path);
                         final Path file = new Path(path, EnumSet.of(Path.Type.file));
                         session.getFeature(Delete.class).delete(
-                                Collections.singletonList(file), new DisabledLoginController(), new DisabledProgressListener());
+                                Collections.singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
                         return true;
                     }
                 });
@@ -476,7 +476,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                         log.debug("kfsrmdir_f:" + path);
                         final Path directory = new Path(path, EnumSet.of(Path.Type.directory));
                         session.getFeature(Delete.class).delete(
-                                Collections.singletonList(directory), new DisabledLoginController(), new DisabledProgressListener());
+                                Collections.singletonList(directory), new DisabledLoginCallback(), new DisabledProgressListener());
                         return true;
                     }
                 });

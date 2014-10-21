@@ -42,7 +42,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = session.workdir();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
@@ -68,7 +68,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.list);
         service.remove(FTPListService.Command.stat);
@@ -96,7 +96,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
@@ -112,7 +112,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
@@ -128,7 +128,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path l = new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -148,7 +148,7 @@ public class FTPListServiceTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.lista);
         service.remove(FTPListService.Command.mlsd);

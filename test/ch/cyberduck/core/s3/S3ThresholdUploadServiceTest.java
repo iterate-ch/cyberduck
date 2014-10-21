@@ -5,7 +5,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -42,7 +42,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
                 properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
         ));
         final S3Session session = new S3Session(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
 
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session, 1L);
@@ -56,7 +56,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status,
-                new DisabledLoginController());
+                new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -66,7 +66,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

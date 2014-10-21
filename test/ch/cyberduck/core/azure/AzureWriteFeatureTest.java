@@ -5,7 +5,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -39,7 +39,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
@@ -60,7 +60,7 @@ public class AzureWriteFeatureTest extends AbstractTestCase {
         IOUtils.readFully(in, buffer);
         IOUtils.closeQuietly(in);
         assertArrayEquals(content, buffer);
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 }

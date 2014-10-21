@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -46,11 +46,11 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(session.getFeature(Find.class).find(bucket));
         session.close();
     }

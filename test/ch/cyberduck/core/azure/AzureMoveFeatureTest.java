@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -32,7 +32,7 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
                 properties.getProperty("azure.account"), properties.getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -42,7 +42,7 @@ public class AzureMoveFeatureTest extends AbstractTestCase {
         new AzureMoveFeature(session).move(test, target, false, new DisabledProgressListener());
         assertFalse(new AzureFindFeature(session).find(test));
         assertTrue(new AzureFindFeature(session).find(target));
-        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginController(), new DisabledProgressListener());
+        new AzureDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 
     @Test

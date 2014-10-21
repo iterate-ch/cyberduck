@@ -35,7 +35,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
                 properties.getProperty("ftp.user"), properties.getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
@@ -49,7 +49,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final ListService list = new FTPMlsdListService(session);
         final Path directory = session.workdir();
@@ -64,7 +64,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
         final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
         final ListService s = new FTPMlsdListService(session);
         final Path directory = session.workdir();

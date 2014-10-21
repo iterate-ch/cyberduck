@@ -21,7 +21,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -52,11 +52,11 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(container, null);
         assertTrue(new SwiftFindFeature(session).find(container));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(container));
         session.close();
     }
@@ -79,7 +79,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
                 }
             }
         });
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
@@ -87,7 +87,7 @@ public class SwiftDirectoryFeatureTest extends AbstractTestCase {
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));
         assertTrue(new DefaultFindFeature(session).find(placeholder));
-        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginController(), new DisabledProgressListener());
+        new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(placeholder));
         session.close();
     }

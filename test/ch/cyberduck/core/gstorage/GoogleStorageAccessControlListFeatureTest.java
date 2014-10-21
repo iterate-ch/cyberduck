@@ -5,7 +5,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -46,7 +46,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
@@ -57,7 +57,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
         f.setPermission(test, acl);
         acl.addAll(new Acl.CanonicalUser("00b4903a976d2139c3b4ffbe7c61eccdb69e545fde42445d455befdad73b1455", "dkocher"), new Acl.Role(Acl.Role.FULL));
         assertEquals(acl, f.getPermission(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -78,7 +78,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractTestCase 
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = f.getPermission(container);

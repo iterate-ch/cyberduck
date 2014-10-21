@@ -5,7 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -83,12 +83,12 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
-                new DisabledLoginController());
+                new DisabledLoginCallback());
         assertTrue(website.isEnabled());
         assertEquals(URI.create("http://test.cyberduck.ch.storage.googleapis.com"), website.getUrl());
         assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory))));
@@ -112,14 +112,14 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractT
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
-        configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginController());
-        assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginController()).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginController(), new DisabledProgressListener());
+        configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginCallback());
+        assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback()).isEnabled());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 

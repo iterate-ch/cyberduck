@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -52,7 +52,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         session.close();
     }
@@ -77,7 +77,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -124,7 +124,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
                     }
                     return null;
                 }
-            }, new DisabledLoginController(), new DisabledCancelCallback());
+            }, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
 //            assertEquals("Access denied. 4082461033721 is not a valid project id spec. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -143,7 +143,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController() {
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Protocol protocol, final Credentials credentials,
                                final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -163,7 +163,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             fail();
         }
         catch(LoginFailureException e) {

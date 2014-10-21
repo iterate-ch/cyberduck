@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -53,14 +53,14 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
     protected void delete(final Host host, final Path container) throws ch.cyberduck.core.exception.BackgroundException {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test1);
         new SwiftTouchFeature(session).touch(test2);
         assertTrue(new SwiftFindFeature(session).find(test1));
         assertTrue(new SwiftFindFeature(session).find(test2));
-        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginController(), new DisabledProgressListener());
+        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new SwiftFindFeature(session).find(test1));
         assertFalse(new SwiftFindFeature(session).find(test2));
         session.close();
@@ -75,11 +75,11 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ), new DisabledLoginController(), new DisabledProgressListener());
+        ), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 }

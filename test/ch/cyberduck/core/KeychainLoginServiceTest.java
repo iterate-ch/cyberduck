@@ -26,7 +26,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        LoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
+        LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
         l.login(session, Cache.<Path>empty(), new ProgressListener() {
             int i = 0;
 
@@ -49,7 +49,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCancel() throws Exception {
-        LoginService l = new KeychainLoginService(new DisabledLoginController(), new DisabledPasswordStore());
+        LoginService l = new KeychainLoginService(new DisabledLoginCallback(), new DisabledPasswordStore());
         l.login(new FTPSession(new Host(new FTPProtocol(), "h")), Cache.<Path>empty(), new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -66,7 +66,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         final AtomicBoolean warned = new AtomicBoolean(false);
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        LoginService l = new KeychainLoginService(new DisabledLoginController() {
+        LoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message,
                              final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
@@ -93,7 +93,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     public void testFindPasswordPrivateKey() throws Exception {
         final AtomicBoolean keychain = new AtomicBoolean(false);
         final AtomicBoolean select = new AtomicBoolean(false);
-        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
@@ -126,7 +126,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     @Test
     public void testFindPasswordSftp() throws Exception {
         final AtomicBoolean keychain = new AtomicBoolean(false);
-        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials, String title, String reason, LoginOptions options)
                     throws LoginCanceledException {

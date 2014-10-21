@@ -5,7 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -59,7 +59,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
         final S3SingleUploadService service = new S3SingleUploadService(write);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -74,14 +74,14 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         status.setLength(random.getBytes().length);
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginController());
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -103,7 +103,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                 }
                 return null;
             }
-        }, new DisabledLoginController(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -115,12 +115,12 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.getBytes().length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginController());
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = session.list(container,
                 new DisabledListProgressListener()).get(test.getReference()).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -133,7 +133,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -141,6 +141,6 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         LocalTouchFactory.get().touch(local);
         final TransferStatus status = new TransferStatus();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledLoginController());
+                status, new DisabledLoginCallback());
     }
 }

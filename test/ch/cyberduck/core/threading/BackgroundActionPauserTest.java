@@ -20,7 +20,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -58,7 +58,7 @@ public class BackgroundActionPauserTest extends AbstractTestCase {
             public void log(final boolean request, final String message) {
                 //
             }
-        }, new DisabledLoginController(), new DisabledHostKeyCallback()
+        }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
             protected boolean connect(final Session session) throws BackgroundException {

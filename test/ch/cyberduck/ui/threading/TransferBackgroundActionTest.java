@@ -20,7 +20,7 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -121,7 +121,7 @@ public class TransferBackgroundActionTest extends AbstractTestCase {
         assertTrue(t.isComplete());
         assertNotNull(t.getTimestamp());
 
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginController(), new DisabledProgressListener());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new DisabledProgressListener());
     }
 
     @Test

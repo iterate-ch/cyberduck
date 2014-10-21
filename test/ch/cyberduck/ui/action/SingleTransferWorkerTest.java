@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -70,7 +70,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -125,7 +125,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -168,7 +168,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), cache) {
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferPathFilter filter) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -209,7 +209,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
                 public TransferAction prompt() {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), Cache.<TransferItem>empty()) {
+            }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), Cache.<TransferItem>empty()) {
                 @Override
                 public void transfer(final TransferItem file, final TransferPathFilter filter) throws BackgroundException {
                     // Expected not found

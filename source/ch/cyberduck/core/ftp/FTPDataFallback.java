@@ -19,7 +19,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
@@ -79,7 +79,7 @@ public class FTPDataFallback {
                         log.warn(String.format("Ignore failure completing pending command %s", e.getMessage()));
                         // Reconnect
                         new LoginConnectionService(
-                                new DisabledLoginController(),
+                                new DisabledLoginCallback(),
                                 new DisabledHostKeyCallback(),
                                 new DisabledPasswordStore(),
                                 listener,

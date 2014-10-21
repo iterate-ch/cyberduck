@@ -42,7 +42,7 @@ public class FTPSessionTest extends AbstractTestCase {
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginController(),
+                new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
@@ -63,7 +63,7 @@ public class FTPSessionTest extends AbstractTestCase {
                 Preferences.instance().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, Cache.<Path>empty());
     }
 
@@ -77,7 +77,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
 //        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         final Path path = session.workdir();
         assertNotNull(path);
@@ -106,11 +106,11 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginController(), new DisabledProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -124,7 +124,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -136,7 +136,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.list(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
@@ -151,7 +151,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals("/", session.workdir().getAbsolute());
     }
 
@@ -179,7 +179,7 @@ public class FTPSessionTest extends AbstractTestCase {
         assertNotNull(session.getClient());
         assertEquals(new FTPProtocol(), host.getProtocol());
         final AtomicBoolean warned = new AtomicBoolean();
-        KeychainLoginService l = new KeychainLoginService(new DisabledLoginController() {
+        KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
             @Override
             public void warn(final Protocol protocol, final String title, final String message, final String continueButton,
                              final String disconnectButton, final String preference) throws LoginCanceledException {
@@ -210,7 +210,7 @@ public class FTPSessionTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertNull(session.getFeature(UnixPermission.class));
         assertNull(session.getFeature(Timestamp.class));
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
         session.close();
@@ -260,7 +260,7 @@ public class FTPSessionTest extends AbstractTestCase {
                     }
                 }));
         final LoginConnectionService c = new LoginConnectionService(
-                new DisabledLoginController(),
+                new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());

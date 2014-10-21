@@ -22,9 +22,9 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 /**
  * @version $Id$
  */
-public class DisabledLoginController implements LoginCallback {
+public class DisabledLoginCallback implements LoginCallback {
 
-    public DisabledLoginController() {
+    public DisabledLoginCallback() {
         super();
     }
 

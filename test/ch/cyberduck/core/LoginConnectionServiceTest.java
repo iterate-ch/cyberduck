@@ -29,7 +29,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testCheckUnknown() throws Exception {
         final FTPSession session = new FTPSession(new Host("unknownhost.local"));
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new HostKeyCallback() {
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException {
                 assertEquals(Session.State.opening, session.getState());
@@ -72,7 +72,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
                 }
                 )
         );
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
@@ -85,7 +85,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override
@@ -98,7 +98,7 @@ public class LoginConnectionServiceTest extends AbstractTestCase {
 
     @Test(expected = ConnectionCanceledException.class)
     public void testCheckReconnect() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginController(), new DisabledHostKeyCallback(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
                 new ProgressListener() {
                     @Override

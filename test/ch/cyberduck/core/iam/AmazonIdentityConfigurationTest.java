@@ -2,7 +2,7 @@ package ch.cyberduck.core.iam;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -46,9 +46,9 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
                 "      \"Resource\": \"*\"\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}", new DisabledLoginController());
+                "}", new DisabledLoginCallback());
         assertNotNull(iam.getCredentials(username));
-        iam.delete(username, new DisabledLoginController());
+        iam.delete(username, new DisabledLoginCallback());
         assertNull(iam.getCredentials(username));
     }
 
@@ -57,7 +57,7 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 "key", "secret"
         ));
-        new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginController());
+        new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginCallback());
     }
 
     @Test(expected = BackgroundException.class)
@@ -68,7 +68,7 @@ public class AmazonIdentityConfigurationTest extends AbstractTestCase {
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, 1);
         final String username = UUID.randomUUID().toString();
         try {
-            iam.create(username, "{}", new DisabledLoginController());
+            iam.create(username, "{}", new DisabledLoginCallback());
             fail();
         }
         catch(BackgroundException e) {

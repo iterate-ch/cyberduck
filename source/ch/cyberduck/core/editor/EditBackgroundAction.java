@@ -18,7 +18,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -84,7 +84,7 @@ public class EditBackgroundAction extends Worker<Transfer> {
         options.open = false;
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(), listener, new DisabledLoginController());
+                new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(), listener, new DisabledLoginCallback());
         worker.run();
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));

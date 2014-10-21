@@ -3,7 +3,7 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -62,7 +62,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginController(),
+        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener()) {
             @Override
@@ -92,7 +92,7 @@ public class DeleteWorkerTest extends AbstractTestCase {
                 return null;
             }
         };
-        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginController(),
+        final DeleteWorker worker = new DeleteWorker(session, new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
                 new DisabledProgressListener()) {
             @Override

@@ -20,7 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -114,7 +114,7 @@ public class SwiftContainerListService implements RootListService {
                                     public void run() {
                                         for(Distribution.Method method : feature.getMethods(container)) {
                                             try {
-                                                feature.read(container, method, new DisabledLoginController());
+                                                feature.read(container, method, new DisabledLoginCallback());
                                             }
                                             catch(BackgroundException e) {
                                                 log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));

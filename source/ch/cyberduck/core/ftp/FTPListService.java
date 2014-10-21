@@ -20,7 +20,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.ListProgressListener;
@@ -165,7 +165,7 @@ public class FTPListService implements ListService {
                     else {
                         log.warn(String.format("Command STAT failed with I/O error %s", e.getMessage()));
                         new LoginConnectionService(
-                                new DisabledLoginController(),
+                                new DisabledLoginCallback(),
                                 new DisabledHostKeyCallback(),
                                 new DisabledPasswordStore(),
                                 listener,

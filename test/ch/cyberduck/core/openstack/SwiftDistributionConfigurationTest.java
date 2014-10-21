@@ -5,7 +5,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -60,11 +60,11 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
-        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
+        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertEquals("http://2b72124779a6075376a9-dc3ef5db7541ebd1f458742f9170bbe4.r64.cf1.rackcdn.com/d/f",
@@ -91,14 +91,14 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
                 properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         new SwiftDirectoryFeature(session).mkdir(container, "ORD");
-        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginController());
-        assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController()).isEnabled());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginController(), new DisabledProgressListener());
+        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
+        assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();
     }
 
@@ -114,12 +114,12 @@ public class SwiftDistributionConfigurationTest extends AbstractTestCase {
         host.setCredentials(properties.getProperty("hpcloud.key"), properties.getProperty("hpcloud.secret"));
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session);
         final Path container = new Path(new Path(String.valueOf(Path.DELIMITER),
                 EnumSet.of(Path.Type.volume, Path.Type.directory)), "test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("region-a.geo-1");
-        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginController());
+        final Distribution test = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertNotNull(test);
         assertEquals(Distribution.DOWNLOAD, test.getMethod());
         assertArrayEquals(new String[]{}, test.getCNAMEs());

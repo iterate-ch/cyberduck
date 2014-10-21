@@ -19,7 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.ProgressListener;
@@ -52,7 +52,7 @@ public class AzureMoveFeature implements Move {
         if(file.isFile()) {
             new AzureCopyFeature(session).copy(file, renamed);
             new AzureDeleteFeature(session).delete(Collections.singletonList(file),
-                    new DisabledLoginController(), listener);
+                    new DisabledLoginCallback(), listener);
         }
         else if(file.isDirectory()) {
             for(Path i : session.list(file, new DisabledListProgressListener())) {

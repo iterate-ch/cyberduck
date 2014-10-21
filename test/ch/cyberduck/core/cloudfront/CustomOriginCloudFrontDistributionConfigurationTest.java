@@ -2,7 +2,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -86,7 +86,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledTranscriptListener());
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
+        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
         assertNull(distribution.getId());
         assertEquals("myhost.localdomain", distribution.getOrigin().getHost());
         assertEquals("Unknown", distribution.getStatus());
@@ -102,7 +102,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         origin.getCdnCredentials().setPassword(properties.getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(origin, new DisabledTranscriptListener());
-        final Distribution distribution = configuration.read(new Path("/public_html", EnumSet.of(Path.Type.directory)), Distribution.CUSTOM, new DisabledLoginController());
+        final Distribution distribution = configuration.read(new Path("/public_html", EnumSet.of(Path.Type.directory)), Distribution.CUSTOM, new DisabledLoginCallback());
         assertEquals("E230LC0UG2YLKV", distribution.getId());
         assertEquals("http://test.cyberduck.ch/public_html", distribution.getOrigin().toString());
         assertEquals("http://test.cyberduck.ch/f", configuration.toUrl(new Path("/public_html/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.origin).getUrl());
@@ -119,6 +119,6 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends Abstrac
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DisabledTranscriptListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.read(container, Distribution.CUSTOM, new DisabledLoginController());
+        configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
 }

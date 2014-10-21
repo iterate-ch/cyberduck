@@ -17,7 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,7 +46,7 @@ public class SFTPMoveFeature implements Move {
     public void move(final Path file, final Path renamed, boolean exists, final ProgressListener listener) throws BackgroundException {
         try {
             if(new SFTPFindFeature(session).find(renamed)) {
-                new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginController(), listener);
+                new SFTPDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), listener);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
         }

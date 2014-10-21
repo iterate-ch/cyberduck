@@ -2,7 +2,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -103,7 +103,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractTest
         final WebsiteCloudFrontDistributionConfiguration configuration
                 = new WebsiteCloudFrontDistributionConfiguration(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginController());
+        final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
         assertEquals("The specified bucket does not have a website configuration", distribution.getStatus());
     }
 

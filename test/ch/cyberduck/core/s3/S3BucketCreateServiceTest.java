@@ -20,7 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
@@ -59,7 +59,7 @@ public class S3BucketCreateServiceTest extends AbstractTestCase {
             create.create(bucket, region.getIdentifier());
             bucket.attributes().setRegion(region.getIdentifier());
             assertTrue(find.find(bucket));
-            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginController(), new DisabledProgressListener());
+            delete.delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new DisabledProgressListener());
             assertFalse(find.find(bucket));
         }
         session.close();

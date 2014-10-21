@@ -21,7 +21,7 @@ package ch.cyberduck.core.fs.fuse;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginController;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -420,7 +420,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 public Boolean run() throws BackgroundException {
                     final Path directory = new Path(path, EnumSet.of(Path.Type.directory));
                     session.getFeature(Delete.class).delete(
-                            Collections.singletonList(directory), new DisabledLoginController(), new DisabledProgressListener());
+                            Collections.singletonList(directory), new DisabledLoginCallback(), new DisabledProgressListener());
                     return true;
                 }
             });
@@ -443,7 +443,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                 public Boolean run() throws BackgroundException {
                     final Path file = new Path(path, EnumSet.of(Path.Type.file));
                     session.getFeature(Delete.class).delete(
-                            Collections.singletonList(file), new DisabledLoginController(), new DisabledProgressListener());
+                            Collections.singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
                     return true;
                 }
             });

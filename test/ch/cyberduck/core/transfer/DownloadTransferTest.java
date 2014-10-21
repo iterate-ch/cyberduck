@@ -61,7 +61,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             public TransferAction prompt() {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
@@ -152,7 +152,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final Map<Path, TransferStatus> table
@@ -164,7 +164,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))
@@ -186,7 +186,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer/test");
@@ -204,7 +204,7 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginController(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, local, new TransferStatus().exists(true),
                 new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))

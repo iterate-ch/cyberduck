@@ -36,7 +36,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginController(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(session.isSecured());
         assertNotNull(session.workdir());
         assertTrue(session.isConnected());
@@ -51,7 +51,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         ));
         final SFTPSession session = new SFTPSession(host);
         final AtomicBoolean fail = new AtomicBoolean();
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials,
                                String title, String reason, LoginOptions options)
@@ -120,7 +120,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         final AtomicBoolean change = new AtomicBoolean();
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(Protocol protocol, Credentials credentials,
                                String title, String reason, LoginOptions options)
@@ -147,7 +147,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("anonymous", null));
         final Session session = new SFTPSession(host);
         final AtomicBoolean change = new AtomicBoolean();
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginController() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Local select(final Local identity) throws LoginCanceledException {
                 return new NullLocal("k");
