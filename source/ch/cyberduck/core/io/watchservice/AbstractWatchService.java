@@ -36,8 +36,8 @@ import java.util.concurrent.TimeUnit;
 abstract class AbstractWatchService implements WatchService {
 
     // signaled keys waiting to be dequeued
-    private final LinkedBlockingDeque pendingKeys =
-            new LinkedBlockingDeque();
+    private final LinkedBlockingDeque<WatchKey> pendingKeys =
+            new LinkedBlockingDeque<WatchKey>();
 
     // special key to indicate that watch service is closed
     private final WatchKey CLOSE_KEY = new AbstractWatchKey(null) {
