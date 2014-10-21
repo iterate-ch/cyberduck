@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import org.apache.commons.codec.binary.Hex;
@@ -43,6 +44,10 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session) {
         super(new SwiftWriteFeature(session));
+    }
+
+    public SwiftSmallObjectUploadFeature(final AbstractHttpWriteFeature<StorageObject> writer) {
+        super(writer);
     }
 
     @Override
