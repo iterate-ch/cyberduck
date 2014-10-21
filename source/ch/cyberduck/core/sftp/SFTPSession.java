@@ -293,8 +293,8 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new SFTPListService(this).list(file, listener);
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return new SFTPListService(this).list(directory, listener);
     }
 
     @Override

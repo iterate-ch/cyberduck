@@ -269,10 +269,10 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @param file     Directory
+     * @param directory     Directory
      * @param listener Callback
      */
-    public abstract AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
+    public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {

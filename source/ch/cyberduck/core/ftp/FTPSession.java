@@ -305,8 +305,8 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return listService.list(file, listener);
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return listService.list(directory, listener);
     }
 
     @Override

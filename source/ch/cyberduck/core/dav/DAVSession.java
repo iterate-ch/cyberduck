@@ -215,8 +215,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new DAVListService(this).list(file, listener);
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return new DAVListService(this).list(directory, listener);
     }
 
     @Override

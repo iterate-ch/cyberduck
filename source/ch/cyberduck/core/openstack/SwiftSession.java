@@ -167,13 +167,13 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        if(directory.isRoot()) {
             return new AttributedList<Path>(new SwiftContainerListService(this,
                     new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(listener));
         }
         else {
-            return new SwiftObjectListService(this).list(file, listener);
+            return new SwiftObjectListService(this).list(directory, listener);
         }
     }
 
