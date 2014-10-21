@@ -47,11 +47,6 @@ public abstract class AbstractEditor implements Editor {
     private static final Logger log = Logger.getLogger(AbstractEditor.class);
 
     /**
-     * The file has been closed in the editor while the upload was in progress
-     */
-    private boolean closed;
-
-    /**
      * File has changed but not uploaded yet
      */
     private boolean modified;
@@ -119,17 +114,6 @@ public abstract class AbstractEditor implements Editor {
 
     public Application getApplication() {
         return application;
-    }
-
-    protected void setClosed(boolean closed) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set deferred delete flag for %s", local));
-        }
-        this.closed = closed;
-    }
-
-    public boolean isClosed() {
-        return closed;
     }
 
     public boolean isModified() {

@@ -101,9 +101,6 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     @Override
     public void cleanup(final Transfer upload) {
-        if(editor.isClosed()) {
-            editor.delete();
-        }
         editor.setModified(false);
     }
 
