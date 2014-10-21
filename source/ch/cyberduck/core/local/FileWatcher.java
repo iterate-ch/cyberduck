@@ -53,6 +53,9 @@ public final class FileWatcher implements FileWatcherCallback {
 
     private ThreadPool pool;
 
+    private Set<FileWatcherListener> listeners
+            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
+
     public FileWatcher() {
         monitor = new FSEventWatchService();
         pool = new ThreadPool(1, "watcher");
@@ -143,9 +146,6 @@ public final class FileWatcher implements FileWatcherCallback {
             log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
         }
     }
-
-    private Set<FileWatcherListener> listeners
-            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
 
     public void addListener(final FileWatcherListener listener) {
         listeners.add(listener);
