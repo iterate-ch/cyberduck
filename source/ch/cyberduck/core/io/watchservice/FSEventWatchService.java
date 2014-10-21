@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,8 @@ public class FSEventWatchService extends AbstractWatchService {
 
     private final FSEvents library = FSEvents.library;
 
-    private CFRunLoop thread;
+    private Map<WatchKey, CFRunLoop> loops
+            = new HashMap<WatchKey, CFRunLoop>();
 
     private ThreadFactory threadFactory
             = new NamedThreadFactory("fsevent");
@@ -75,7 +77,9 @@ public class FSEventWatchService extends AbstractWatchService {
                 kFSEventStreamEventIdSinceNow,
                 latency,
                 kFSEventStreamCreateFlagNoDefer);
-        threadFactory.newThread(thread = new CFRunLoop(stream)).start();
+        final CFRunLoop thread = new CFRunLoop(stream);
+        loops.put(watchKey, thread);
+        threadFactory.newThread(thread).start();
         return watchKey;
     }
 
@@ -145,17 +149,19 @@ public class FSEventWatchService extends AbstractWatchService {
 
     @Override
     protected void release() throws IOException {
-        // Tells the daemon to stop sending events
-        library.FSEventStreamStop(thread.getStreamRef());
-        // Removes the stream from the specified run loop
-        library.FSEventStreamUnscheduleFromRunLoop(thread.getStreamRef(), thread.getRunLoop(),
-                CFStringRef.toCFString("kCFRunLoopDefaultMode"));
-        // Remove the stream from the run loops upon which it has been scheduled
-        library.FSEventStreamInvalidate(thread.getStreamRef());
-        // Release reference to the stream
-        library.FSEventStreamRelease(thread.getStreamRef());
+        for(CFRunLoop l : loops.values()) {
+            // Tells the daemon to stop sending events
+            library.FSEventStreamStop(l.getStreamRef());
+            // Removes the stream from the specified run loop
+            library.FSEventStreamUnscheduleFromRunLoop(l.getStreamRef(), l.getRunLoop(),
+                    CFStringRef.toCFString("kCFRunLoopDefaultMode"));
+            // Remove the stream from the run loops upon which it has been scheduled
+            library.FSEventStreamInvalidate(l.getStreamRef());
+            // Release reference to the stream
+            library.FSEventStreamRelease(l.getStreamRef());
+        }
+        loops.clear();
     }
-
 
     private final class MacOSXWatchKey extends AbstractWatchKey {
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
@@ -188,7 +194,8 @@ public class FSEventWatchService extends AbstractWatchService {
         @Override
         public boolean isValid() {
             return !cancelled.get()
-                    && thread.isStarted()
+                    && loops.containsKey(this)
+                    && loops.get(this).isStarted()
                     && watcher().isOpen();
         }
 
