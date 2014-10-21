@@ -6,8 +6,8 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
-public interface CarbonAPI extends Library {
-    CarbonAPI INSTANCE = (CarbonAPI) Native.loadLibrary("Carbon", CarbonAPI.class);
+public interface FSEvents extends Library {
+    final FSEvents library = (FSEvents) Native.loadLibrary("Carbon", FSEvents.class);
 
     CFArrayRef CFArrayCreate(
             CFAllocatorRef allocator, // always set to Pointer.NULL
@@ -42,6 +42,8 @@ public interface CarbonAPI extends Library {
     void FSEventStreamRelease(FSEventStreamRef streamRef);
 
     void FSEventStreamScheduleWithRunLoop(FSEventStreamRef streamRef, CFRunLoopRef runLoop, CFStringRef runLoopMode);
+
+    void FSEventStreamUnscheduleFromRunLoop(FSEventStreamRef streamRef, CFRunLoopRef runLoop, CFStringRef runLoopMode);
 
     CFRunLoopRef CFRunLoopGetCurrent();
 

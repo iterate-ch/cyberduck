@@ -4,13 +4,16 @@ import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
 import ch.cyberduck.core.io.watchservice.jna.CFIndex;
 import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
 import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
-import ch.cyberduck.core.io.watchservice.jna.CarbonAPI;
 import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
+import ch.cyberduck.core.io.watchservice.jna.FSEvents;
 import ch.cyberduck.core.threading.NamedThreadFactory;
+
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +31,43 @@ import com.sun.jna.Pointer;
  * @author Steve McLeod
  */
 public class FSEventWatchService extends AbstractWatchService {
+    private static final Logger log = Logger.getLogger(FSEventWatchService.class);
+
+    private final FSEvents library = FSEvents.library;
 
     private CFRunLoop thread;
 
     private ThreadFactory threadFactory
             = new NamedThreadFactory("fsevent");
 
+    public FSEventWatchService() {
+        if(log.isDebugEnabled()) {
+            log.debug("Create new watch service");
+        }
+    }
+
     @Override
     public WatchKey register(final WatchableFile file,
                              final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers)
             throws IOException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register file %s for events %s", file, Arrays.toString(events)));
+        }
         final Map<File, Long> lastModifiedMap = createLastModifiedMap(file.getFile());
         final Pointer[] values = {
                 CFStringRef.toCFString(file.getFile().getCanonicalPath()).getPointer()
         };
-        final CFArrayRef pathsToWatch = CarbonAPI.INSTANCE.CFArrayCreate(null, values, CFIndex.valueOf(1), null);
+        final CFArrayRef pathsToWatch = library.CFArrayCreate(null, values, CFIndex.valueOf(1), null);
         final MacOSXWatchKey watchKey = new MacOSXWatchKey(this, events);
 
         final double latency = 1.0; // Latency in seconds
 
         final long kFSEventStreamEventIdSinceNow = -1; // This is 0xFFFFFFFFFFFFFFFF
-        final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
+        // final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
         final int kFSEventStreamCreateFlagNoDefer = 0x00000002;
-        final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
-        final CarbonAPI.FSEventStreamCallback callback = new Callback(watchKey, lastModifiedMap);
-        final FSEventStreamRef stream = CarbonAPI.INSTANCE.FSEventStreamCreate(
+        // final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
+        final FSEvents.FSEventStreamCallback callback = new Callback(watchKey, lastModifiedMap);
+        final FSEventStreamRef stream = library.FSEventStreamCreate(
                 Pointer.NULL,
                 callback,
                 Pointer.NULL,
@@ -64,7 +79,7 @@ public class FSEventWatchService extends AbstractWatchService {
         return watchKey;
     }
 
-    private static final class CFRunLoop implements Runnable {
+    private final class CFRunLoop implements Runnable {
 
         private final FSEventStreamRef streamRef;
         private CFRunLoopRef runLoop;
@@ -75,11 +90,13 @@ public class FSEventWatchService extends AbstractWatchService {
 
         @Override
         public void run() {
-            runLoop = CarbonAPI.INSTANCE.CFRunLoopGetCurrent();
-            final CFStringRef runLoopMode = CFStringRef.toCFString("kCFRunLoopDefaultMode");
-            CarbonAPI.INSTANCE.FSEventStreamScheduleWithRunLoop(streamRef, runLoop, runLoopMode);
-            CarbonAPI.INSTANCE.FSEventStreamStart(streamRef);
-            CarbonAPI.INSTANCE.CFRunLoopRun();
+            runLoop = FSEvents.library.CFRunLoopGetCurrent();
+            // Schedule an FSEventStream on a runloop
+            library.FSEventStreamScheduleWithRunLoop(streamRef, runLoop,
+                    CFStringRef.toCFString("kCFRunLoopDefaultMode"));
+            // Start receiving events on the stream
+            library.FSEventStreamStart(streamRef);
+            library.CFRunLoopRun();
         }
 
         public CFRunLoopRef getRunLoop() {
@@ -120,10 +137,15 @@ public class FSEventWatchService extends AbstractWatchService {
 
     @Override
     void implClose() throws IOException {
-        CarbonAPI.INSTANCE.CFRunLoopStop(thread.getRunLoop());
-        CarbonAPI.INSTANCE.FSEventStreamStop(thread.getStreamRef());
-        CarbonAPI.INSTANCE.FSEventStreamInvalidate(thread.getStreamRef());
-        CarbonAPI.INSTANCE.FSEventStreamRelease(thread.getStreamRef());
+        // Tells the daemon to stop sending events
+        library.FSEventStreamStop(thread.getStreamRef());
+        // Removes the stream from the specified run loop
+        library.FSEventStreamUnscheduleFromRunLoop(thread.getStreamRef(), thread.getRunLoop(),
+                CFStringRef.toCFString("kCFRunLoopDefaultMode"));
+        // Remove the stream from the run loops upon which it has been scheduled
+        library.FSEventStreamInvalidate(thread.getStreamRef());
+        // Release reference to the stream
+        library.FSEventStreamRelease(thread.getStreamRef());
     }
 
 
@@ -133,8 +155,8 @@ public class FSEventWatchService extends AbstractWatchService {
         private final boolean reportModifyEvents;
         private final boolean reportDeleteEvents;
 
-        public MacOSXWatchKey(FSEventWatchService FSEventWatchService, WatchEvent.Kind<?>[] events) {
-            super(FSEventWatchService);
+        public MacOSXWatchKey(final FSEventWatchService service, final WatchEvent.Kind<?>[] events) {
+            super(service);
             boolean reportCreateEvents = false;
             boolean reportModifyEvents = false;
             boolean reportDeleteEvents = false;
@@ -178,11 +200,11 @@ public class FSEventWatchService extends AbstractWatchService {
         }
     }
 
-    private static final class Callback implements CarbonAPI.FSEventStreamCallback {
+    private static final class Callback implements FSEvents.FSEventStreamCallback {
         private final MacOSXWatchKey key;
         private final Map<File, Long> timestamps;
 
-        private Callback(MacOSXWatchKey key, Map<File, Long> timestamps) {
+        private Callback(final MacOSXWatchKey key, final Map<File, Long> timestamps) {
             this.key = key;
             this.timestamps = timestamps;
         }
