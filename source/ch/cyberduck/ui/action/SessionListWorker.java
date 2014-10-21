@@ -39,13 +39,13 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
 
     private Session<?> session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     private Path directory;
 
     private ListProgressListener listener;
 
-    protected SessionListWorker(final Session<?> session, final Cache cache, final Path directory,
+    protected SessionListWorker(final Session<?> session, final Cache<Path> cache, final Path directory,
                                 final ListProgressListener listener) {
         this.session = session;
         this.cache = cache;

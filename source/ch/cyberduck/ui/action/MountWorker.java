@@ -39,11 +39,11 @@ public class MountWorker extends Worker<Path> {
 
     private Session<?> session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     private ListProgressListener listener;
 
-    protected MountWorker(final Session<?> session, final Cache cache, final ListProgressListener listener) {
+    protected MountWorker(final Session<?> session, final Cache<Path> cache, final ListProgressListener listener) {
         this.session = session;
         this.cache = cache;
         this.listener = listener;
