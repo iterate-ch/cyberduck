@@ -65,7 +65,6 @@ public class S3FindFeature implements Find {
             return false;
         }
         try {
-            final boolean found;
             if(session.getClient().isObjectInBucket(containerService.getContainer(file).getName(),
                     containerService.getKey(file))) {
                 list.add(file);
