@@ -27,7 +27,6 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -74,9 +73,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public ConcurrentTransferWorker(final ConnectionService connect,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
-                                    final TransferItemCallback callback, final LoginCallback login, final ProgressListener progressListener,
-                                    final TranscriptListener transcriptListener) {
-        this(connect, transfer, options, meter, prompt, error, callback, login, progressListener, transcriptListener,
+                                    final TransferItemCallback callback, final LoginCallback login, final ProgressListener progressListener) {
+        this(connect, transfer, options, meter, prompt, error, callback, login, progressListener,
                 Preferences.instance().getInteger("queue.session.pool.size"));
     }
 
@@ -84,7 +82,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final TransferItemCallback callback, final LoginCallback login, final ProgressListener progressListener,
-                                    final TranscriptListener transcriptListener,
                                     final Integer connections) {
         super(transfer, options, prompt, meter, error, callback, progressListener, login);
         this.connect = connect;
