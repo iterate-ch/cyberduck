@@ -132,8 +132,7 @@ abstract class AbstractWatchService implements WatchService {
     abstract void implClose() throws IOException;
 
     @Override
-    public final void close()
-            throws IOException {
+    public final void close() throws IOException {
         synchronized(closeLock) {
             // nothing to do if already closed
             if(closed) {
