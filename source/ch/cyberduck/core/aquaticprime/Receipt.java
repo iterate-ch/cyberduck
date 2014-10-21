@@ -62,4 +62,26 @@ public class Receipt extends AbstractLicense {
     public String getName() {
         return guid;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Receipt receipt = (Receipt) o;
+        if(guid != null ? !guid.equals(receipt.guid) : receipt.guid != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (guid != null ? guid.hashCode() : 0);
+        return result;
+    }
 }
