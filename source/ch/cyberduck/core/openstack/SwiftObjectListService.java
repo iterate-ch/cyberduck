@@ -70,7 +70,8 @@ public class SwiftObjectListService implements ListService {
             do {
                 final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(new SwiftRegionService(session).lookup(container), container.getName(),
-                        containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory), null, limit, marker, Path.DELIMITER);
+                        containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
+                        null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setOwner(container.attributes().getOwner());

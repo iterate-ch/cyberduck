@@ -89,7 +89,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPlaceholderSameObject() throws Exception {
+    public void testListPlaceholder() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
@@ -98,7 +98,26 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("DFW");
+        container.attributes().setRegion("SYD");
+        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        assertTrue(list.isEmpty());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
+    public void testPlaceholderAndObjectSameName() throws Exception {
+        final SwiftSession session = new SwiftSession(
+                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("SYD");
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
         final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));
