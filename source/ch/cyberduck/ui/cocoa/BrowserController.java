@@ -2344,7 +2344,7 @@ public class BrowserController extends WindowController
                 final ArrayList<Path> changed = new ArrayList<Path>();
                 changed.addAll(selected.keySet());
                 changed.addAll(selected.values());
-                background(new WorkerBackgroundAction(BrowserController.this, session, cache,
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, session, cache,
                                 new MoveWorker(session, selected, BrowserController.this) {
                                     @Override
                                     public void cleanup(final Boolean result) {
@@ -2591,8 +2591,9 @@ public class BrowserController extends WindowController
 
     @Action
     public void editMenuClicked(final NSMenuItem sender) {
+        final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = EditorFactory.instance().create(this, session,
+            final Editor editor = factory.create(this, session,
                     new Application(sender.representedObject()), selected);
             editor.open();
         }
@@ -2600,8 +2601,9 @@ public class BrowserController extends WindowController
 
     @Action
     public void editButtonClicked(final ID sender) {
+        final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = EditorFactory.instance().create(this, session, selected);
+            final Editor editor = factory.create(this, session, selected);
             editor.open();
         }
     }
@@ -3310,7 +3312,7 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-                background(new WorkerBackgroundAction(BrowserController.this, session, cache,
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
                         new MountWorker(session, cache, new PromptLimitedListProgressListener(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -3697,12 +3699,13 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
+                final EditorFactory factory = EditorFactory.instance();
                 for(Path s : this.getSelectedPaths()) {
                     if(!this.isEditable(s)) {
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.instance().getEditor(s.getName())) {
+                    if(null == factory.getEditor(s.getName())) {
                         return false;
                     }
                 }
