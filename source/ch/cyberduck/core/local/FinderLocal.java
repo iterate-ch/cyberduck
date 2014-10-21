@@ -161,7 +161,12 @@ public class FinderLocal extends Local {
     @Override
     public String getBookmark() {
         if(StringUtils.isBlank(bookmark)) {
-            bookmark = new PanelSandboxBookmarkResolver().create(this);
+            try {
+                bookmark = new PanelSandboxBookmarkResolver().create(this);
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure resolving bookmark %s", bookmark));
+            }
         }
         return bookmark;
     }

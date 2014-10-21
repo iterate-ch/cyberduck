@@ -110,7 +110,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
     }
 
     @Override
-    public String create(final Local file) {
+    public String create(final Local file) throws AccessDeniedException {
         if(file.exists()) {
             // Create new security scoped bookmark
             final ObjCObjectByReference error = new ObjCObjectByReference();
@@ -119,7 +119,7 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
             if(null == data) {
                 final NSError f = error.getValueAs(NSError.class);
                 log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
-                return null;
+                throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
             final String encoded = data.base64EncodedString();
             if(log.isDebugEnabled()) {
