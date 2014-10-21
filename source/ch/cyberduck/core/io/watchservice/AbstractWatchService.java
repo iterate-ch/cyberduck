@@ -129,7 +129,7 @@ abstract class AbstractWatchService implements WatchService {
      * Closes this watch service. This method is invoked by the close
      * method to perform the actual work of closing the watch service.
      */
-    abstract void implClose() throws IOException;
+    abstract void release() throws IOException;
 
     @Override
     public final void close() throws IOException {
@@ -140,7 +140,7 @@ abstract class AbstractWatchService implements WatchService {
             }
             closed = true;
 
-            implClose();
+            release();
 
             // clear pending keys and queue special key to ensure that any
             // threads blocked in take/poll wakeup
