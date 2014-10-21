@@ -44,8 +44,7 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param application Editor
      * @param path        Remote file
      */
-    public BrowserBackgroundEditor(final Controller controller,
-                                   final Session session,
+    public BrowserBackgroundEditor(final Controller controller, final Session session,
                                    final Application application, final Path path) {
         super(application, session, path, new DisabledTransferErrorCallback(), controller);
         this.controller = controller;

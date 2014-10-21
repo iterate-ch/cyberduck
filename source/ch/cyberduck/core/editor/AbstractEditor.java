@@ -84,7 +84,8 @@ public abstract class AbstractEditor implements Editor {
     private ProgressListener listener;
 
     public AbstractEditor(final Application application, final Session session, final Path file,
-                          final TransferErrorCallback callback, final ProgressListener listener) {
+                          final TransferErrorCallback callback,
+                          final ProgressListener listener) {
         this.application = application;
         if(file.isSymbolicLink() && Preferences.instance().getBoolean("editor.upload.symboliclink.resolve")) {
             this.remote = file.getSymlinkTarget();
