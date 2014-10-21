@@ -82,7 +82,10 @@ public class FSEventWatchService extends AbstractWatchService {
     private final class CFRunLoop implements Runnable {
 
         private final FSEventStreamRef streamRef;
+
         private CFRunLoopRef runLoop;
+
+        private boolean started;
 
         public CFRunLoop(final FSEventStreamRef streamRef) {
             this.streamRef = streamRef;
@@ -96,6 +99,7 @@ public class FSEventWatchService extends AbstractWatchService {
                     CFStringRef.toCFString("kCFRunLoopDefaultMode"));
             // Start receiving events on the stream
             library.FSEventStreamStart(streamRef);
+            started = true;
             library.CFRunLoopRun();
         }
 
@@ -105,6 +109,10 @@ public class FSEventWatchService extends AbstractWatchService {
 
         public FSEventStreamRef getStreamRef() {
             return streamRef;
+        }
+
+        public boolean isStarted() {
+            return started;
         }
     }
 
@@ -149,7 +157,7 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
 
-    private static final class MacOSXWatchKey extends AbstractWatchKey {
+    private final class MacOSXWatchKey extends AbstractWatchKey {
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
         private final boolean reportCreateEvents;
         private final boolean reportModifyEvents;
@@ -179,7 +187,9 @@ public class FSEventWatchService extends AbstractWatchService {
 
         @Override
         public boolean isValid() {
-            return !cancelled.get() && watcher().isOpen();
+            return !cancelled.get()
+                    && thread.isStarted()
+                    && watcher().isOpen();
         }
 
         @Override
