@@ -92,7 +92,11 @@ public class LimitedRendezvousListener implements RendezvousListener {
     private boolean acquire() {
         if(limit.getAvailablePermits() > 0) {
             try {
+                // Blocking if limit is exceeded
                 limit.acquire();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Acquired lock for %s", limit));
+                }
                 return true;
             }
             catch(InterruptedException e) {
