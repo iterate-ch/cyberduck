@@ -20,11 +20,8 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.concurrent.TimedSemaphore;
 import org.apache.log4j.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractRendezvous implements Rendezvous {
     private static final Logger log = Logger.getLogger(AbstractRendezvous.class);
@@ -90,7 +86,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
     @Override
     public void init() {
-        notifier = new LimitedRendezvousListener();
+        notifier = new LimitedRendezvousListener(listeners);
     }
 
     @Override
@@ -226,65 +222,4 @@ public abstract class AbstractRendezvous implements Rendezvous {
         notifier.serviceLost(host);
     }
 
-    private final class LimitedRendezvousListener implements RendezvousListener {
-        /**
-         * Rate limit for notifications
-         */
-        private TimedSemaphore limit = new TimedSemaphore(
-                1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit"));
-
-        public void quit() {
-            limit.shutdown();
-        }
-
-        @Override
-        public void serviceResolved(final String identifier, final Host host) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
-            }
-            if(Preferences.instance().getBoolean("rendezvous.loopback.suppress")) {
-                try {
-                    if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Suppressed Rendezvous notification for %s", host));
-                        }
-                        return;
-                    }
-                }
-                catch(UnknownHostException e) {
-                    //Ignore
-                }
-            }
-            if(this.acquire()) {
-                for(RendezvousListener listener : listeners) {
-                    listener.serviceResolved(identifier, host);
-                }
-            }
-        }
-
-        @Override
-        public void serviceLost(final Host servicename) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Service with name %s lost", servicename));
-            }
-            if(this.acquire()) {
-                for(RendezvousListener listener : listeners) {
-                    listener.serviceLost(servicename);
-                }
-            }
-        }
-
-        private boolean acquire() {
-            if(limit.getAvailablePermits() > 0) {
-                try {
-                    limit.acquire();
-                    return true;
-                }
-                catch(InterruptedException e) {
-                    log.warn(String.format("Failure acquiring lock %s", e.getMessage()));
-                }
-            }
-            return false;
-        }
-    }
 }
