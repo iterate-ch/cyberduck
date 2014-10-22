@@ -43,7 +43,7 @@ public class FTPDefaultListService implements ListService {
     public FTPDefaultListService(final FTPSession session, final CompositeFileEntryParser parser, final FTPListService.Command command) {
         this.session = session;
         this.command = command;
-        this.reader = new FTPListResponseReader(session, parser);
+        this.reader = new FTPListResponseReader(parser);
     }
 
     @Override

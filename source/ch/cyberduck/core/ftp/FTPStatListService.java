@@ -44,7 +44,7 @@ public class FTPStatListService implements ListService {
 
     public FTPStatListService(final FTPSession session, final FTPFileEntryParser parser) {
         this.session = session;
-        this.reader = new FTPListResponseReader(session, parser);
+        this.reader = new FTPListResponseReader(parser);
     }
 
     @Override

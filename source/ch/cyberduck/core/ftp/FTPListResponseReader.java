@@ -42,7 +42,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
 
     private FTPFileEntryParser parser;
 
-    public FTPListResponseReader(final FTPSession session, final FTPFileEntryParser parser) {
+    public FTPListResponseReader(final FTPFileEntryParser parser) {
         this.parser = parser;
     }
 
