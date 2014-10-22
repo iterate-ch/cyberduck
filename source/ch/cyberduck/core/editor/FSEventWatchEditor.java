@@ -85,6 +85,9 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
 
     @Override
     public void delete() {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Close monitor %s for %s", monitor, local));
+        }
         monitor.close(local);
         super.delete();
     }
