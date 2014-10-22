@@ -1,6 +1,5 @@
 package ch.cyberduck.core.io.watchservice;
 
-import ch.cyberduck.core.io.watchservice.jna.CFArrayRef;
 import ch.cyberduck.core.io.watchservice.jna.CFIndex;
 import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
 import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
@@ -39,6 +38,9 @@ public class FSEventWatchService extends AbstractWatchService {
     private Map<WatchKey, CFRunLoop> loops
             = new HashMap<WatchKey, CFRunLoop>();
 
+    private Map<WatchKey, FSEvents.FSEventStreamCallback> callbacks
+            = new HashMap<WatchKey, FSEvents.FSEventStreamCallback>();
+
     private ThreadFactory threadFactory
             = new NamedThreadFactory("fsevent");
 
@@ -55,12 +57,10 @@ public class FSEventWatchService extends AbstractWatchService {
         if(log.isInfoEnabled()) {
             log.info(String.format("Register file %s for events %s", file, Arrays.toString(events)));
         }
-        final Map<File, Long> lastModifiedMap = createLastModifiedMap(file.getFile());
         final Pointer[] values = {
-                CFStringRef.toCFString(file.getFile().getCanonicalPath()).getPointer()
-        };
-        final CFArrayRef pathsToWatch = library.CFArrayCreate(null, values, CFIndex.valueOf(1), null);
-        final MacOSXWatchKey watchKey = new MacOSXWatchKey(this, events);
+                CFStringRef.toCFString(file.getFile().getCanonicalPath()).getPointer()};
+
+        final MacOSXWatchKey key = new MacOSXWatchKey(this, events);
 
         final double latency = 1.0; // Latency in seconds
 
@@ -68,19 +68,21 @@ public class FSEventWatchService extends AbstractWatchService {
         // final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
         final int kFSEventStreamCreateFlagNoDefer = 0x00000002;
         // final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
-        final FSEvents.FSEventStreamCallback callback = new Callback(watchKey, lastModifiedMap);
+        final Map<File, Long> timestamps = createLastModifiedMap(file.getFile());
+        final FSEvents.FSEventStreamCallback callback = new Callback(key, timestamps);
         final FSEventStreamRef stream = library.FSEventStreamCreate(
                 Pointer.NULL,
                 callback,
                 Pointer.NULL,
-                pathsToWatch,
+                library.CFArrayCreate(null, values, CFIndex.valueOf(1), null),
                 kFSEventStreamEventIdSinceNow,
                 latency,
                 kFSEventStreamCreateFlagNoDefer);
         final CFRunLoop thread = new CFRunLoop(stream);
-        loops.put(watchKey, thread);
+        loops.put(key, thread);
+        callbacks.put(key, callback);
         threadFactory.newThread(thread).start();
-        return watchKey;
+        return key;
     }
 
     private final class CFRunLoop implements Runnable {
@@ -161,6 +163,7 @@ public class FSEventWatchService extends AbstractWatchService {
             library.FSEventStreamRelease(l.getStreamRef());
         }
         loops.clear();
+        callbacks.clear();
     }
 
     private final class MacOSXWatchKey extends AbstractWatchKey {
@@ -194,6 +197,7 @@ public class FSEventWatchService extends AbstractWatchService {
         @Override
         public boolean isValid() {
             return !cancelled.get()
+                    && callbacks.containsKey(this)
                     && loops.containsKey(this)
                     && loops.get(this).isStarted()
                     && watcher().isOpen();
