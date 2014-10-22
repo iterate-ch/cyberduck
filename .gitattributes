@@ -2690,8 +2690,8 @@ source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
 source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
-source/ch/cyberduck/core/local/LocalImpl.cs -text
 source/ch/cyberduck/core/local/RecycleLocalTrashFeature.cs -text
+source/ch/cyberduck/core/local/SystemLocal.cs -text
 source/ch/cyberduck/core/local/TaskbarApplicationBadgeLabeler.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
@@ -3035,7 +3035,7 @@ test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist -text
 test/ch/cyberduck/core/importer/com.panic.Transmit.plist -text svneol=unset#unset
 test/ch/cyberduck/core/importer/org.mozdev.fireftp/fjpxtvk8.default/fireFTPsites.dat -text
 test/ch/cyberduck/core/importer/wcx_ftp.ini -text
-test/ch/cyberduck/core/local/LocalImplTest.cs -text svneol=unset#application/octet-stream
+test/ch/cyberduck/core/local/SystemLocalTest.cs -text svneol=unset#application/octet-stream
 test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck -text
 test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
 test/ch/cyberduck/core/serializer/impl/Private[!!-~]Key[!!-~]Legacy.duck -text

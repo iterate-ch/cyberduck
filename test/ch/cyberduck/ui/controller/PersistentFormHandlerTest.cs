@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             UserPreferences.Register();
             DictionaryLocale.Register();
-            LocalImpl.Register();
+            SystemLocal.Register();
         }
 
         [Test]

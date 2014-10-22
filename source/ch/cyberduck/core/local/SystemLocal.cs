@@ -26,23 +26,23 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public class LocalImpl : ch.cyberduck.core.Local
+    public class SystemLocal : ch.cyberduck.core.Local
     {
         protected const int ErrorAccessDenied = 5;
         protected const int ErrorFileNotFound = 2;
-        private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (SystemLocal).FullName);
 
         private LocalAttributes _info;
 
-        public LocalImpl(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
+        public SystemLocal(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
         {
         }
 
-        public LocalImpl(ch.cyberduck.core.Local parent, string name) : base(parent.getAbsolute() + '\\' + name)
+        public SystemLocal(ch.cyberduck.core.Local parent, string name) : base(parent.getAbsolute() + '\\' + name)
         {
         }
 
-        public LocalImpl(string path)
+        public SystemLocal(string path)
             : base(
                 Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
                 MakeValidFilename(FilenameUtils.getName(path)))
@@ -138,22 +138,22 @@ namespace Ch.Cyberduck.Core.Local
         {
             protected override ch.cyberduck.core.Local create(ch.cyberduck.core.Local parent, string name)
             {
-                return new LocalImpl(parent, name);
+                return new SystemLocal(parent, name);
             }
 
             protected override ch.cyberduck.core.Local create(string parent, string name)
             {
-                return new LocalImpl(parent, name);
+                return new SystemLocal(parent, name);
             }
 
             protected override ch.cyberduck.core.Local create(string path)
             {
-                return new LocalImpl(path);
+                return new SystemLocal(path);
             }
 
             protected override object create()
             {
-                return new LocalImpl(Environment.GetEnvironmentVariable("HOME"));
+                return new SystemLocal(Environment.GetEnvironmentVariable("HOME"));
             }
         }
     }

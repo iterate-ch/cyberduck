@@ -205,7 +205,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static void RegisterImplementations()
         {
             UserPreferences.Register();
-            LocalImpl.Register();
+            SystemLocal.Register();
             LicenseImpl.Register();
             SystemProxy.Register();
             RecycleLocalTrashFeature.Register();

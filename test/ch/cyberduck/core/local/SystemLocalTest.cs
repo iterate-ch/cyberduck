@@ -23,32 +23,32 @@ using NUnit.Framework;
 namespace Ch.Cyberduck.Core.Local
 {
     [TestFixture]
-    public class LocalImplTest
+    public class SystemLocalTest
     {
         [SetUp]
         public void Init()
         {
             UserPreferences.Register();
             DictionaryLocale.Register();
-            LocalImpl.Register();
+            SystemLocal.Register();
         }
 
         [Test]
         public void AbsolutePaths()
         {
-            LocalImpl l = new LocalImpl(@"G:\");
+            SystemLocal l = new SystemLocal(@"G:\");
             Assert.AreEqual(@"G:\", l.getAbsolute());
             Assert.AreEqual(string.Empty, l.getName());
 
-            l = new LocalImpl(@"C:\path\relative");
+            l = new SystemLocal(@"C:\path\relative");
             Assert.AreEqual(@"relative", l.getName());
             Assert.AreEqual(@"C:\path\relative", l.getAbsolute());
 
-            l = new LocalImpl(@"C:\path", "cyberduck.log");
+            l = new SystemLocal(@"C:\path", "cyberduck.log");
             Assert.AreEqual(@"cyberduck.log", l.getName());
             Assert.AreEqual(@"C:\path\cyberduck.log", l.getAbsolute());
 
-            l = new LocalImpl(@"C:\path", "Sessions");
+            l = new SystemLocal(@"C:\path", "Sessions");
             Assert.AreEqual(@"Sessions", l.getName());
             Assert.AreEqual(@"C:\path\Sessions", l.getAbsolute());
         }
