@@ -28,7 +28,7 @@ import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
-import ch.cyberduck.core.editor.WatchEditorFactory;
+import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -131,7 +131,7 @@ public final class MainApplication {
                 WorkspaceTrashFeature.register();
                 IOKitSleepPreventer.register();
                 TemporaryFileService.register();
-                WatchEditorFactory.register();
+                FSEventWatchEditorFactory.register();
                 QuartzQuickLook.register();
                 PromptLoginController.register();
                 AlertHostKeyController.register();

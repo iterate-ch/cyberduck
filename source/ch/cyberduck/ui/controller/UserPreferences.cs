@@ -299,7 +299,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
 
-            defaults.put("editor.bundleIdentifier", new EditorFactory.Notepad().getIdentifier());
+            defaults.put("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
 
             defaults.put("notifications.timeout.milliseconds", "300");
 

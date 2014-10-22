@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -39,14 +38,14 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class WatchEditorTest extends AbstractTestCase {
+public class FSEventWatchEditorTest extends AbstractTestCase {
 
     @Test
     public void testTemporaryPath() throws Exception {
         final Path path = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
-        final WatchEditor editor = new WatchEditor(new AbstractController() {
+        final FSEventWatchEditor editor = new FSEventWatchEditor(new AbstractController() {
             @Override
             public <T> Future<T> background(final BackgroundAction<T> runnable) {
                 return null;
@@ -75,7 +74,7 @@ public class WatchEditorTest extends AbstractTestCase {
     public void testSymlinkTarget() throws Exception {
         final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
-        final WatchEditor editor = new WatchEditor(new AbstractController() {
+        final FSEventWatchEditor editor = new FSEventWatchEditor(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 //

@@ -30,28 +30,28 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class WatchEditorFactoryTest extends AbstractTestCase {
+public class FSEventWatchEditorFactoryTest extends AbstractTestCase {
 
     @Test
     public void testGetEditor() throws Exception {
-        assertEquals("TextEdit", new WatchEditorFactory().getDefaultEditor().getName());
-        assertEquals("TextEdit", new WatchEditorFactory().getEditor("f.txt").getName());
-        assertEquals("Preview", new WatchEditorFactory().getEditor("f.png").getName());
+        assertEquals("TextEdit", new FSEventWatchEditorFactory().getDefaultEditor().getName());
+        assertEquals("TextEdit", new FSEventWatchEditorFactory().getEditor("f.txt").getName());
+        assertEquals("Preview", new FSEventWatchEditorFactory().getEditor("f.png").getName());
     }
 
     @Test
     public void getGetConfigured() throws Exception {
-        final List<Application> e = new WatchEditorFactory().getConfigured();
+        final List<Application> e = new FSEventWatchEditorFactory().getConfigured();
         assertFalse(e.isEmpty());
     }
 
     @Test
     public void testGetEditors() throws Exception {
-        final List<Application> e = new WatchEditorFactory().getEditors();
+        final List<Application> e = new FSEventWatchEditorFactory().getEditors();
         assertFalse(e.isEmpty());
         assertTrue(e.contains(new Application("com.apple.TextEdit", null)));
-        assertFalse(new WatchEditorFactory().getEditors("f.txt").isEmpty());
-        assertTrue(new WatchEditorFactory().getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
+        assertFalse(new FSEventWatchEditorFactory().getEditors("f.txt").isEmpty());
+        assertTrue(new FSEventWatchEditorFactory().getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
 //        assertTrue(new WatchEditorFactory().getEditors("f.txt").contains(new Application("com.macromates.textmate", null)));
     }
 }

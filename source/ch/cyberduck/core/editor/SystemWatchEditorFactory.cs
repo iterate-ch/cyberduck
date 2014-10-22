@@ -27,16 +27,17 @@ using java.util;
 using org.apache.log4j;
 using Controller = ch.cyberduck.ui.Controller;
 using Path = ch.cyberduck.core.Path;
+using EditorFactory = ch.cyberduck.core.editor.EditorFactory;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class EditorFactory : ch.cyberduck.core.editor.EditorFactory
+    public class SystemWatchEditorFactory : EditorFactory
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (EditorFactory).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditorFactory).Name);
 
         private readonly IList<Application> _registeredEditors = new List<Application>();
 
-        public EditorFactory()
+        public SystemWatchEditorFactory()
         {
             _registeredEditors.Add(new Dreamweaver());
             _registeredEditors.Add(new Notepad());
@@ -46,7 +47,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         public static void Register()
         {
-            addFactory(NATIVE_PLATFORM, new EditorFactory());
+            addFactory(NATIVE_PLATFORM, new SystemWatchEditorFactory());
         }
 
         protected override List getConfigured()
@@ -56,7 +57,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         public override ch.cyberduck.core.editor.Editor create(Controller c, Session s, Application application, Path path)
         {
-            return new WatchEditor((BrowserController) c, s, application, path);
+            return new SystemWatchEditor((BrowserController) c, s, application, path);
         }
 
         protected override object create()

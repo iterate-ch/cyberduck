@@ -32,16 +32,16 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class WatchEditorFactory extends EditorFactory {
+public class FSEventWatchEditorFactory extends EditorFactory {
     private final List<Application> editors = new ArrayList<Application>();
 
     public static void register() {
-        EditorFactory.addFactory(WatchEditorFactory.NATIVE_PLATFORM, new WatchEditorFactory());
+        EditorFactory.addFactory(FSEventWatchEditorFactory.NATIVE_PLATFORM, new FSEventWatchEditorFactory());
     }
 
     private final ApplicationFinder finder = ApplicationFinderFactory.get();
 
-    protected WatchEditorFactory() {
+    protected FSEventWatchEditorFactory() {
         this.add(new Application("com.apple.TextEdit", "TextEdit"));
         this.add(new Application("com.apple.Xcode", "Xcode"));
         this.add(new Application("com.apple.dt.Xcode", "Xcode"));
@@ -84,7 +84,7 @@ public class WatchEditorFactory extends EditorFactory {
 
     @Override
     public Editor create(final Controller c, final Session session, final Application application, final Path file) {
-        return new WatchEditor(c, session, application, file);
+        return new FSEventWatchEditor(c, session, application, file);
     }
 
     @Override

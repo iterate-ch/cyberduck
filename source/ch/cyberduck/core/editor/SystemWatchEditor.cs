@@ -28,12 +28,12 @@ using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class WatchEditor : BrowserBackgroundEditor
+    public class SystemWatchEditor : BrowserBackgroundEditor
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public WatchEditor(BrowserController controller, Session session, Application application, Path path)
+        public SystemWatchEditor(BrowserController controller, Session session, Application application, Path path)
             : base(controller, session, application, path)
         {
         }

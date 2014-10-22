@@ -228,7 +228,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register();
             WindowsTemporaryFileService.Register();
             RegistryApplicationFinder.Register();
-            EditorFactory.Register();
+            SystemWatchEditorFactory.Register();
             WindowsApplicationLauncher.Register();
             Win32FileDescriptor.Register();
             ExplorerRevealService.Register();

@@ -36,8 +36,8 @@ import java.io.IOException;
  *
  * @version $Id$
  */
-public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherListener {
-    private static final Logger log = Logger.getLogger(WatchEditor.class);
+public class FSEventWatchEditor extends BrowserBackgroundEditor implements FileWatcherListener {
+    private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
     private FileWatcher monitor = new FileWatcher();
 
@@ -48,8 +48,8 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      * @param application Editor application
      * @param file        Remote file
      */
-    public WatchEditor(final Controller controller, final Session session,
-                       final Application application, final Path file) {
+    public FSEventWatchEditor(final Controller controller, final Session session,
+                              final Application application, final Path file) {
         super(controller, session, application, file);
     }
 
