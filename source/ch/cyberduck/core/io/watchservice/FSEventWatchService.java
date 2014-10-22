@@ -50,6 +50,13 @@ public class FSEventWatchService extends AbstractWatchService {
         }
     }
 
+    private static final int kFSEventStreamCreateFlagNone = 0x00000000;
+    private static final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
+    private static final int kFSEventStreamCreateFlagNoDefer = 0x00000002;
+    private static final int kFSEventStreamCreateFlagWatchRoot = 0x00000004;
+    private static final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
+    private static final int kFSEventStreamCreateFlagFileEvents = 0x00000010;
+
     @Override
     public WatchKey register(final WatchableFile file,
                              final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers)
@@ -64,20 +71,13 @@ public class FSEventWatchService extends AbstractWatchService {
 
         final double latency = 1.0; // Latency in seconds
 
-        final long kFSEventStreamEventIdSinceNow = -1; // This is 0xFFFFFFFFFFFFFFFF
-        // final int kFSEventStreamCreateFlagUseCFTypes = 0x00000001;
-        final int kFSEventStreamCreateFlagNoDefer = 0x00000002;
-        // final int kFSEventStreamCreateFlagIgnoreSelf = 0x00000008;
         final Map<File, Long> timestamps = createLastModifiedMap(file.getFile());
         final FSEvents.FSEventStreamCallback callback = new Callback(key, timestamps);
         final FSEventStreamRef stream = library.FSEventStreamCreate(
-                Pointer.NULL,
-                callback,
-                Pointer.NULL,
+                Pointer.NULL, callback, Pointer.NULL,
                 library.CFArrayCreate(null, values, CFIndex.valueOf(1), null),
-                kFSEventStreamEventIdSinceNow,
-                latency,
-                kFSEventStreamCreateFlagNoDefer);
+                -1, latency,
+                kFSEventStreamCreateFlagNoDefer | kFSEventStreamCreateFlagIgnoreSelf);
         final CFRunLoop thread = new CFRunLoop(stream);
         loops.put(key, thread);
         callbacks.put(key, callback);
