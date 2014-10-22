@@ -27,9 +27,9 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.I18n
 {
-    public class LocaleImpl : Locale
+    public class DictionaryLocale : Locale
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (LocaleImpl).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (DictionaryLocale).FullName);
         private static readonly Regex StringsRegex = new Regex("\"?(.*?)\"?[ ]*=[ ]*\"(.*)\"", RegexOptions.Compiled);
 
         private readonly IDictionary<string, Dictionary<string, string>> _cache =
@@ -109,7 +109,7 @@ namespace Ch.Cyberduck.Core.I18n
         {
             protected override object create()
             {
-                return new LocaleImpl();
+                return new DictionaryLocale();
             }
         }
     }

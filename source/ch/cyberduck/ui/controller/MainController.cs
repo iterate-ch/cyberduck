@@ -209,7 +209,7 @@ namespace Ch.Cyberduck.Ui.Controller
             LicenseImpl.Register();
             SystemProxy.Register();
             RecycleLocalTrashFeature.Register();
-            LocaleImpl.Register();
+            DictionaryLocale.Register();
             Keychain.Register();
             PlistWriter.Register();
             PlistSerializer.Register();

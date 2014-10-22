@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Core.Local
         public void Init()
         {
             UserPreferences.Register();
-            LocaleImpl.Register();
+            DictionaryLocale.Register();
             LocalImpl.Register();
         }
 

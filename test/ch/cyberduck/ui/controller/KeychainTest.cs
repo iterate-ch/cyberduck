@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void Init()
         {
             UserPreferences.Register();
-            LocaleImpl.Register();
+            DictionaryLocale.Register();
             LocalImpl.Register();
             Keychain.Register();
         }
