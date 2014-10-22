@@ -47,11 +47,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PanelSandboxBookmarkResolver extends ProxyController implements SandboxBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
 
+    private final Preferences preferences = Preferences.instance();
+
     @Override
     public NSURL resolve(final Local file) throws AccessDeniedException {
         final NSData bookmark;
         if(null == file.getBookmark()) {
-            if(Preferences.instance().getBoolean("local.bookmark.resolve.prompt")) {
+            if(preferences.getBoolean("local.bookmark.resolve.prompt")) {
                 // Prompt user if no bookmark reference is available
                 bookmark = NSData.dataWithBase64EncodedString(this.choose(file));
             }
