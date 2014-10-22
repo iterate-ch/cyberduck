@@ -94,8 +94,7 @@ abstract class AbstractWatchService implements WatchService {
     }
 
     @Override
-    public final WatchKey poll(long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public final WatchKey poll(long timeout, TimeUnit unit) throws InterruptedException {
         checkOpen();
         WatchKey key = (WatchKey) pendingKeys.poll(timeout, unit);
         checkKey(key);
@@ -103,8 +102,7 @@ abstract class AbstractWatchService implements WatchService {
     }
 
     @Override
-    public final WatchKey take()
-            throws InterruptedException {
+    public final WatchKey take() throws InterruptedException {
         checkOpen();
         WatchKey key = (WatchKey) pendingKeys.take();
         checkKey(key);

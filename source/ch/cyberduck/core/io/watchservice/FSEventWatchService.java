@@ -120,7 +120,7 @@ public class FSEventWatchService extends AbstractWatchService {
         }
     }
 
-    private Map<File, Long> createLastModifiedMap(File folder) {
+    private static Map<File, Long> createLastModifiedMap(final File folder) {
         Map<File, Long> lastModifiedMap = new ConcurrentHashMap<File, Long>();
         for(File file : recursiveListFiles(folder)) {
             lastModifiedMap.put(file, file.lastModified());
@@ -128,7 +128,7 @@ public class FSEventWatchService extends AbstractWatchService {
         return lastModifiedMap;
     }
 
-    private static Set<File> recursiveListFiles(File folder) {
+    private static Set<File> recursiveListFiles(final File folder) {
         Set<File> files = new HashSet<File>();
         if(folder.isDirectory()) {
             final File[] children = folder.listFiles();
@@ -254,9 +254,9 @@ public class FSEventWatchService extends AbstractWatchService {
             }
         }
 
-        private List<File> findModifiedFiles(Set<File> filesOnDisk) {
+        private List<File> findModifiedFiles(final Set<File> files) {
             List<File> modifiedFileList = new ArrayList<File>();
-            for(File file : filesOnDisk) {
+            for(File file : files) {
                 final Long lastModified = timestamps.get(file);
                 if(lastModified != null && lastModified != file.lastModified()) {
                     modifiedFileList.add(file);
@@ -265,9 +265,9 @@ public class FSEventWatchService extends AbstractWatchService {
             return modifiedFileList;
         }
 
-        private List<File> findCreatedFiles(Set<File> filesOnDisk) {
+        private List<File> findCreatedFiles(final Set<File> files) {
             List<File> createdFileList = new ArrayList<File>();
-            for(File file : filesOnDisk) {
+            for(File file : files) {
                 if(!timestamps.containsKey(file)) {
                     createdFileList.add(file);
                 }
@@ -275,14 +275,24 @@ public class FSEventWatchService extends AbstractWatchService {
             return createdFileList;
         }
 
-        private List<File> findDeletedFiles(String folderName, Set<File> filesOnDisk) {
+        private List<File> findDeletedFiles(final String folder, final Set<File> files) {
             List<File> deletedFileList = new ArrayList<File>();
             for(File file : timestamps.keySet()) {
-                if(file.getAbsolutePath().startsWith(folderName) && !filesOnDisk.contains(file)) {
+                if(file.getAbsolutePath().startsWith(folder) && !files.contains(file)) {
                     deletedFileList.add(file);
                 }
             }
             return deletedFileList;
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            try {
+                log.warn(String.format("Callback for %s is finalized", key));
+            }
+            finally {
+                super.finalize();
+            }
         }
     }
 }
