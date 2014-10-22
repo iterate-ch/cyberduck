@@ -174,7 +174,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         }
 
         @Override
-        public Session create() throws Exception {
+        public Session create() {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create new session for host %s in pool", host));
             }
@@ -187,7 +187,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         }
 
         @Override
-        public void activateObject(final PooledObject<Session> p) throws Exception {
+        public void activateObject(final PooledObject<Session> p) throws BackgroundException {
             final Session session = p.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Activate session %s", session));
@@ -196,7 +196,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         }
 
         @Override
-        public void destroyObject(final PooledObject<Session> p) throws Exception {
+        public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
             final Session session = p.getObject();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Destroy session %s", session));
