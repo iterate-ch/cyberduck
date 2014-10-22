@@ -80,7 +80,7 @@ namespace Ch.Cyberduck.Core.Editor
             save();
         }
 
-        protected override void delete()
+        public override void delete()
         {
             _watcher.EnableRaisingEvents = false;
             RemoveHandlers();

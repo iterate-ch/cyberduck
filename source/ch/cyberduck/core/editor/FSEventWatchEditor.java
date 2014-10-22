@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
@@ -36,7 +35,7 @@ import java.io.IOException;
  *
  * @version $Id$
  */
-public class FSEventWatchEditor extends BrowserBackgroundEditor implements FileWatcherListener {
+public class FSEventWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
     private FileWatcher monitor = new FileWatcher();
@@ -71,44 +70,22 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor implements FileW
      * Watch the file for changes
      */
     public void watch() throws IOException {
+        this.watch(new DefaultEditorListener(this));
+    }
+
+    public void watch(final FileWatcherListener listener) throws IOException {
         try {
             monitor.register(local).await();
         }
         catch(InterruptedException e) {
             throw new IOException(String.format("Failure monitoring file %s", local), e);
         }
-        monitor.addListener(this);
+        monitor.addListener(listener);
     }
 
     @Override
-    protected void delete() {
+    public void delete() {
         monitor.close(local);
-        monitor.removeListener(this);
         super.delete();
-    }
-
-    @Override
-    public void fileWritten(final Local file) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("File %s written", file));
-        }
-        this.save();
-    }
-
-    @Override
-    public void fileDeleted(final Local file) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("File %s deleted", file));
-        }
-        monitor.close(local);
-        monitor.removeListener(this);
-    }
-
-    @Override
-    public void fileCreated(final Local file) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("File %s created", file));
-        }
-        this.save();
     }
 }

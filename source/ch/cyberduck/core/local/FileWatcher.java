@@ -159,6 +159,7 @@ public final class FileWatcher implements FileWatcherCallback {
         try {
             monitor.close();
             pool.shutdown();
+            listeners.clear();
         }
         catch(IOException e) {
             log.error(String.format("Failure closing file watcher monitor"), e);

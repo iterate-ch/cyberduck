@@ -124,7 +124,8 @@ public abstract class AbstractEditor implements Editor {
         this.modified = modified;
     }
 
-    protected void delete() {
+    @Override
+    public void delete() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Delete edited file %s", local));
         }

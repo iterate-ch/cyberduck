@@ -24,6 +24,11 @@ package ch.cyberduck.core.editor;
 public interface Editor {
 
     /**
+     * Move edited file to trash
+     */
+    void delete();
+
+    /**
      * Download file and open in editor
      */
     void open();
