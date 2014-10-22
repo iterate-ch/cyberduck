@@ -194,7 +194,7 @@ public abstract class Preferences {
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
-        defaults.put("rendezvous.loopback.supress", String.valueOf(true));
+        defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
         defaults.put("rendezvous.notification.limit", String.valueOf(30));
 
         defaults.put("growl.enable", String.valueOf(true));

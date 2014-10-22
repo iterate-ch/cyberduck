@@ -242,7 +242,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
             }
-            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+            if(Preferences.instance().getBoolean("rendezvous.loopback.suppress")) {
                 try {
                     if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
                         if(log.isInfoEnabled()) {
