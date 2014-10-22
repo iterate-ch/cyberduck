@@ -161,11 +161,12 @@ public class SFTPSession extends Session<SSHClient> {
     public void login(final PasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         final List<SFTPAuthentication> methods = new ArrayList<SFTPAuthentication>();
-        if(host.getCredentials().isAnonymousLogin()) {
+        final Credentials credentials = host.getCredentials();
+        if(credentials.isAnonymousLogin()) {
             methods.add(new SFTPNoneAuthentication(this));
         }
         else {
-            if(host.getCredentials().isPublicKeyAuthentication()) {
+            if(credentials.isPublicKeyAuthentication()) {
                 methods.add(new SFTPPublicKeyAuthentication(this));
             }
             else {
@@ -193,7 +194,7 @@ public class SFTPSession extends Session<SSHClient> {
                         disconnectListener.getFailure());
             }
             catch(LoginFailureException e) {
-                log.warn(String.format("Login failed with authentication method %s", auth));
+                log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
                 if(!client.isConnected()) {
                     throw e;
                 }
@@ -213,7 +214,7 @@ public class SFTPSession extends Session<SSHClient> {
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
             if(client.getUserAuth().hadPartialSuccess()) {
-                final Credentials additional = new HostCredentials(host, host.getCredentials().getUsername(), null, false);
+                final Credentials additional = new HostCredentials(host, credentials.getUsername(), null, false);
                 prompt.prompt(host.getProtocol(), additional,
                         LocaleFactory.localizedString("Partial authentication success", "Credentials"),
                         LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions());
