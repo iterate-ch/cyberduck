@@ -61,6 +61,14 @@ public final class FileWatcher implements FileWatcherCallback {
         pool = new ThreadPool(1, "watcher");
     }
 
+    public void addListener(final FileWatcherListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(final FileWatcherListener listener) {
+        listeners.remove(listener);
+    }
+
     public CountDownLatch register(final Local file) {
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
@@ -145,14 +153,6 @@ public final class FileWatcher implements FileWatcherCallback {
         else {
             log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
         }
-    }
-
-    public void addListener(final FileWatcherListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(final FileWatcherListener listener) {
-        listeners.remove(listener);
     }
 
     public void close(final Local local) {
