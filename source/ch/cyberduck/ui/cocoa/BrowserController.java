@@ -1305,6 +1305,11 @@ public class BrowserController extends WindowController
                 return true;
             }
 
+            @Override
+            public boolean outlineView_isGroupItem(final NSOutlineView view, final NSObject item) {
+                return false;
+            }
+
             /**
              * @see NSOutlineView.Delegate
              */

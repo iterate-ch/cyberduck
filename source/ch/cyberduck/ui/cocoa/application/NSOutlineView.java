@@ -34,22 +34,22 @@ public abstract class NSOutlineView extends NSTableView {
     public static final NSInteger NSOutlineViewDropOnItemIndex = new NSInteger(-1);
 
     public static interface DataSource {
-        NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
+        NSInteger outlineView_numberOfChildrenOfItem(NSOutlineView view, NSObject item);
 
-        NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item);
+        NSObject outlineView_child_ofItem(NSOutlineView outlineView, NSInteger index, NSObject item);
 
-        void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                              final NSTableColumn tableColumn, NSObject item);
+        void outlineView_setObjectValue_forTableColumn_byItem(NSOutlineView outlineView, NSObject value,
+                                                              NSTableColumn tableColumn, NSObject item);
 
-        NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item);
+        NSObject outlineView_objectValueForTableColumn_byItem(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item);
 
-        boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item);
+        boolean outlineView_isItemExpandable(NSOutlineView view, NSObject item);
 
-        NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row);
+        NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(NSOutlineView outlineView, NSDraggingInfo info, NSObject item, NSInteger row);
 
-        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row);
+        boolean outlineView_acceptDrop_item_childIndex(NSOutlineView outlineView, NSDraggingInfo info, NSObject item, NSInteger row);
 
-        boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
+        boolean outlineView_writeItems_toPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard);
 
         NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
     }
@@ -57,11 +57,13 @@ public abstract class NSOutlineView extends NSTableView {
     public static interface Delegate {
         void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSObject item);
 
-        boolean outlineView_shouldExpandItem(final NSOutlineView view, final NSObject item);
+        boolean outlineView_shouldExpandItem(NSOutlineView view, NSObject item);
 
         void outlineViewItemDidExpand(NSNotification notification);
 
         void outlineViewItemDidCollapse(NSNotification notification);
+
+        boolean outlineView_isGroupItem(NSOutlineView view, NSObject item);
     }
 
     /**
