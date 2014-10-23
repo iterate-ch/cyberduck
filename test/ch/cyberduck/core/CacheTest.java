@@ -15,7 +15,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testLookup() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         assertNull(cache.lookup(new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory)))));
         final Object u = new Object();
         final AttributedList<Path> list = new AttributedList<Path>();
@@ -37,7 +37,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testIsHidden() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new AttributedList<Path>(
                 Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
@@ -54,7 +54,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testIsEmpty() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         assertTrue(cache.isEmpty());
         cache.put(new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory))), new AttributedList<Path>());
         assertFalse(cache.isEmpty());
@@ -62,7 +62,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testContainsKey() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         assertFalse(cache.containsKey(new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory)))));
         cache.put(new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory))), new AttributedList<Path>());
         final PathReference reference = new DefaultPathReference(new Path("/", EnumSet.of(Path.Type.directory)));
@@ -72,7 +72,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testInvalidate() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         final AttributedList<Path> list = new AttributedList<Path>();
         final PathReference reference = new DefaultPathReference(new Path("/t", EnumSet.of(Path.Type.directory)));
         cache.put(reference, list);
@@ -85,14 +85,14 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testGet() throws Exception {
-        Cache cache = new Cache();
+        Cache<Path> cache = new Cache<Path>();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         assertEquals(AttributedList.<Path>emptyList(), cache.get(file.getReference()));
     }
 
     @Test
     public void testDisabledCache() throws Exception {
-        Cache cache = Cache.<Path>empty();
+        Cache<Path> cache = Cache.<Path>empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file.getReference(), AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file.getReference()));
