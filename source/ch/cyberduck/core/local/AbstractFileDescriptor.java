@@ -36,4 +36,9 @@ public abstract class AbstractFileDescriptor implements FileDescriptor {
         }
         return LocaleFactory.localizedString("Unknown");
     }
+
+    @Override
+    public String getKind(final String filename) {
+        return LocaleFactory.localizedString("Unknown");
+    }
 }
