@@ -28,6 +28,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +49,11 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     @Override
     public String getName() {
-        return ApplicationFinderFactory.get().getDescription(this.getBundleIdentifier()).getName();
+        final Application application = ApplicationFinderFactory.get().getDescription(this.getBundleIdentifier());
+        if(null == application) {
+            return LocaleFactory.localizedString("Unknown");
+        }
+        return application.getName();
     }
 
     @Override
