@@ -42,10 +42,6 @@ public final class WorkspaceIconService implements IconService {
         }
     }
 
-    public WorkspaceIconService() {
-        //
-    }
-
     @Override
     public boolean set(final Local file, final String image) {
         return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));

@@ -45,10 +45,6 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
         Native.load("LaunchServicesQuarantineService");
     }
 
-    protected LaunchServicesQuarantineService() {
-        //
-    }
-
     private static final Object lock = new Object();
 
     /**
