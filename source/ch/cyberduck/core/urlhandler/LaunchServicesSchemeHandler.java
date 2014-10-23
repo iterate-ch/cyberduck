@@ -47,10 +47,6 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         Native.load("LaunchServicesSchemeHandler");
     }
 
-    public LaunchServicesSchemeHandler() {
-        //
-    }
-
     /**
      * See ApplicationServices/ApplicationServices.h#LSSetDefaultHandlerForURLScheme
      * Register this bundle identifier as the default application for all schemes
