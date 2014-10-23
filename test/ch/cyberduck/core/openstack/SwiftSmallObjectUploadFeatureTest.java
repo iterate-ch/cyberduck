@@ -23,8 +23,6 @@ import ch.cyberduck.core.Host;
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
-import java.io.BufferedInputStream;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
