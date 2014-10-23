@@ -196,7 +196,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     @Override
     public PathReference getReference() {
-        return PathReferenceFactory.createPathReference(this);
+        return PathReferenceFactory.get(this);
     }
 
     public PathAttributes attributes() {

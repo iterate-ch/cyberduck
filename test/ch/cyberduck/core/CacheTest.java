@@ -32,7 +32,7 @@ public class CacheTest extends AbstractTestCase {
                 return StringUtils.EMPTY;
             }
         }, list);
-        assertNotNull(cache.lookup(PathReferenceFactory.createPathReference(file)));
+        assertNotNull(cache.lookup(PathReferenceFactory.get(file)));
     }
 
     @Test

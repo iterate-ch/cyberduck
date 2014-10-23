@@ -36,7 +36,7 @@ public abstract class PathReferenceFactory extends Factory<PathReference> {
         factories.put(platform, f);
     }
 
-    public static <T> PathReference<T> createPathReference(final Path param) {
+    public static <T> PathReference<T> get(final Path param) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             return new DefaultPathReferenceFactory().create(param);
         }

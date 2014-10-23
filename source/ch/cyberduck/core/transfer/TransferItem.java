@@ -48,7 +48,7 @@ public class TransferItem implements Referenceable, Serializable {
 
     @Override
     public PathReference getReference() {
-        return PathReferenceFactory.createPathReference(remote);
+        return PathReferenceFactory.get(remote);
     }
 
     @Override
