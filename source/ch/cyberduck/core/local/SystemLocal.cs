@@ -59,6 +59,10 @@ namespace Ch.Cyberduck.Core.Local
             return getAbsolute().Equals(Directory.GetDirectoryRoot(getAbsolute()));
         }
 
+        public override String getAbbreviatedPath() {
+            return getAbsolute();
+        }
+
         public override bool exists()
         {
             string path = getAbsolute();

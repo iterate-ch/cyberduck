@@ -228,7 +228,11 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return A shortened path representation.
      */
     public String getAbbreviatedPath() {
-        return path;
+        final String abb = StringUtils.removeStart(path, Preferences.instance().getProperty("local.user.home"));
+        if(StringUtils.equals(abb, path)) {
+            return path;
+        }
+        return String.format("~%s", abb);
     }
 
     public Local getSymlinkTarget() throws NotfoundException {
