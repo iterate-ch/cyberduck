@@ -38,7 +38,7 @@ public abstract class DeserializerFactory<T> extends Factory {
         factories.put(platform, f);
     }
 
-    public static <T> Deserializer createDeserializer(T dict) {
+    public static <T> Deserializer get(T dict) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

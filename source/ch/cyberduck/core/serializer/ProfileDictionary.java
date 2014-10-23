@@ -33,7 +33,7 @@ public class ProfileDictionary {
     private static final Logger log = Logger.getLogger(ProfileDictionary.class);
 
     public Profile deserialize(Object serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
             final Protocol parent = ProtocolFactory.forName(protocol);

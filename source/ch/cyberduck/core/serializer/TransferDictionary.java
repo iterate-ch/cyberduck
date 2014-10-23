@@ -45,7 +45,7 @@ public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
 
     public <T> Transfer deserialize(final T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final Object hostObj = dict.objectForKey("Host");
         if(null == hostObj) {
             log.warn("Missing host in transfer");
@@ -80,13 +80,13 @@ public class TransferDictionary {
                 final TransferItem item = new TransferItem(remote);
                 // Legacy
                 final String localObjDeprecated
-                        = DeserializerFactory.createDeserializer(rootDict).stringForKey("Local");
+                        = DeserializerFactory.get(rootDict).stringForKey("Local");
                 if(localObjDeprecated != null) {
                     Local local = LocalFactory.get(localObjDeprecated);
                     item.setLocal(local);
                 }
                 final Object localObj
-                        = DeserializerFactory.createDeserializer(rootDict).objectForKey("Local Dictionary");
+                        = DeserializerFactory.get(rootDict).objectForKey("Local Dictionary");
                 if(localObj != null) {
                     Local local = new LocalDictionary().deserialize(localObj);
                     if(null == local) {

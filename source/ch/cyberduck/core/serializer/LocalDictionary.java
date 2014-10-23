@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LocalDictionary {
 
     public <T> Local deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final String path = dict.stringForKey("Path");
         if(StringUtils.isBlank(path)) {
             return null;

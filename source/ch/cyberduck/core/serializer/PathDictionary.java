@@ -31,7 +31,7 @@ import java.util.EnumSet;
 public class PathDictionary {
 
     public <T> Path deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
@@ -44,7 +44,7 @@ public class PathDictionary {
         if(attributesObj != null) {
             PathAttributes attributes = new PathAttributesDictionary().deserialize(attributesObj);
             // Legacy
-            String legacyTypeObj = DeserializerFactory.createDeserializer(attributesObj).stringForKey("Type");
+            String legacyTypeObj = DeserializerFactory.get(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
                 if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
                     type.add(AbstractPath.Type.file);

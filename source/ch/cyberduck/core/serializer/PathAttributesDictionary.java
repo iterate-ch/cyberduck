@@ -24,12 +24,12 @@ import ch.cyberduck.core.PathAttributes;
 import java.util.Collections;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PathAttributesDictionary {
 
     public <T> PathAttributes deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final PathAttributes attributes = new PathAttributes();
         String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {

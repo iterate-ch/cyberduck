@@ -40,7 +40,7 @@ public class HostDictionary {
 
 
     public <T> Host deserialize(final T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {
             final Host bookmark = new Host(hostnameObj.toString());

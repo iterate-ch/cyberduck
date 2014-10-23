@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 public class TransferItemDictionary {
 
     public <T> TransferItem deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         final Path remote = new PathDictionary().deserialize(dict.objectForKey("Remote"));
         final Object localObj = dict.objectForKey("Local Dictionary");
         if(localObj != null) {

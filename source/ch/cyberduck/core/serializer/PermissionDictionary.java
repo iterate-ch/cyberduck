@@ -27,7 +27,7 @@ import ch.cyberduck.core.Permission;
 public class PermissionDictionary {
 
     public <T> Permission deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer dict = DeserializerFactory.get(serialized);
         return new Permission(dict.stringForKey("Mask"));
     }
 }
