@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -55,7 +56,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
         };
         assertTrue(r.add(action));
         action.finish();
-        lock.await();
+        lock.await(1, TimeUnit.SECONDS);
         r.remove(action);
         assertFalse(r.contains(action));
         assertNull(r.getCurrent());
@@ -94,7 +95,7 @@ public class BackgroundActionRegistryTest extends AbstractTestCase {
                 lock.countDown();
             }
         }).start();
-        lock.await();
+        lock.await(1, TimeUnit.SECONDS);
         assertTrue(r.size() == 1);
         r.remove(action);
         assertTrue(r.isEmpty());

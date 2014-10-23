@@ -9,6 +9,7 @@ import ch.cyberduck.core.threading.MainAction;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +42,7 @@ public class AbstractControllerTest extends AbstractTestCase {
                 assertEquals("background-1", Thread.currentThread().getName());
                 entry.countDown();
                 try {
-                    exit.await();
+                    exit.await(1, TimeUnit.SECONDS);
                 }
                 catch(InterruptedException e) {
                     fail();
@@ -73,7 +74,7 @@ public class AbstractControllerTest extends AbstractTestCase {
                 return lock;
             }
         });
-        entry.await();
+        entry.await(1, TimeUnit.SECONDS);
         assertTrue(controller.getActions().contains(action));
         exit.countDown();
     }
@@ -99,6 +100,6 @@ public class AbstractControllerTest extends AbstractTestCase {
                 });
             }
         }.start();
-        entry.await();
+        entry.await(1, TimeUnit.SECONDS);
     }
 }

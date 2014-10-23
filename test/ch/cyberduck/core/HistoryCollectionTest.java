@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +50,7 @@ public class HistoryCollectionTest extends AbstractTestCase {
                     @Override
                     public int compare(Host o1, Host o2) {
                         try {
-                            lock.await();
+                            lock.await(1, TimeUnit.SECONDS);
                         }
                         catch(InterruptedException e) {
                             fail();
@@ -76,12 +77,12 @@ public class HistoryCollectionTest extends AbstractTestCase {
                 }
             }
         }.start();
-        loaded.await();
+        loaded.await(1, TimeUnit.SECONDS);
         assertEquals(1, c.size());
         final Host host = c.get(0);
         // Add again to history upon connect before history finished loading
         assertTrue(c.add(host));
         lock.countDown();
-        exit.await();
+        exit.await(1, TimeUnit.SECONDS);
     }
 }

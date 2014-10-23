@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,8 +51,8 @@ public class ProxyControllerTest extends AbstractTestCase {
                         }, false);
                     }
                 }.start();
-                entry.await();
-                invoked.await();
+                entry.await(1, TimeUnit.SECONDS);
+                invoked.await(1, TimeUnit.SECONDS);
                 assertTrue(c.get());
                 return null;
             }
@@ -85,7 +86,7 @@ public class ProxyControllerTest extends AbstractTestCase {
                         }, true);
                     }
                 }.start();
-                entry.await();
+                entry.await(1, TimeUnit.SECONDS);
                 assertTrue(c.get());
                 return null;
             }
@@ -107,7 +108,7 @@ public class ProxyControllerTest extends AbstractTestCase {
             @Override
             public Object run() throws BackgroundException {
                 try {
-                    connectLatch.await();
+                    connectLatch.await(1, TimeUnit.MINUTES);
                 }
                 catch(InterruptedException e) {
                     fail();
@@ -169,6 +170,6 @@ public class ProxyControllerTest extends AbstractTestCase {
             }
         });
         connectLatch.countDown();
-        mounted.await();
+        mounted.await(1, TimeUnit.MINUTES);
     }
 }
