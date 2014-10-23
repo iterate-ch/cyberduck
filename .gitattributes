@@ -2808,7 +2808,7 @@ source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
-source/ch/cyberduck/ui/growl/NotifyImpl.cs -text
+source/ch/cyberduck/ui/growl/ToolstripNotificationService.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.resx -text

@@ -234,7 +234,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ExplorerRevealService.Register();
             TaskbarApplicationBadgeLabeler.Register();
             DefaultBrowserLauncher.Register();
-            NotifyImpl.Register();
+            ToolstripNotificationService.Register();
         }
 
         private static void ConfigureLogging()

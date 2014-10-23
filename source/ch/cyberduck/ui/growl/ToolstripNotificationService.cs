@@ -27,7 +27,7 @@ using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
 {
-    internal class NotifyImpl : ch.cyberduck.ui.growl.Growl
+    internal class ToolstripNotificationService : ch.cyberduck.ui.growl.Growl
     {
         private readonly NotifyIcon _icon = new NotifyIcon();
 
@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Growl
         {
             protected override object create()
             {
-                return new NotifyImpl();
+                return new ToolstripNotificationService();
             }
         }
     }

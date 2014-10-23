@@ -233,7 +233,7 @@
     <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
-    <Compile Include="ui\growl\NotifyImpl.cs" />
+    <Compile Include="ui\growl\ToolstripNotificationService.cs" />
     <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
       <SubType>Component</SubType>
     </Compile>
