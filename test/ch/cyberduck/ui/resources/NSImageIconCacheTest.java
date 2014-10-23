@@ -44,7 +44,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(16, icon.size().width.intValue());
         assertEquals(16, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(32, icon.size().width.intValue());
         assertEquals(32, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(64, icon.size().width.intValue());
         assertEquals(64, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(128, icon.size().width.intValue());
         assertEquals(128, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(256, icon.size().width.intValue());
         assertEquals(256, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertFalse(icon.isTemplate());
         assertEquals(512, icon.size().width.intValue());
         assertEquals(512, icon.size().height.intValue());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
-        assertEquals(1, icon.representations().count().intValue());
+        assertTrue(icon.representations().count().intValue() >= 1);
     }
 
     @Test
