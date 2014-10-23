@@ -48,7 +48,7 @@ public final class QuartzQuickLook implements QuickLook {
 
     private final QLPreviewPanel panel;
 
-    private QuartzQuickLook() {
+    public QuartzQuickLook() {
         panel = QLPreviewPanel.sharedPreviewPanel();
     }
 

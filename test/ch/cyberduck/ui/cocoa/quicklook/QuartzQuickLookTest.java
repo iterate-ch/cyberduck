@@ -4,7 +4,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -18,14 +17,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class QuartzQuickLookTest extends AbstractTestCase {
 
-    @BeforeClass
-    public static void register() {
-        QuartzQuickLook.register();
-    }
-
     @Test
     public void testSelect() throws Exception {
-        QuickLook q = QuickLookFactory.get();
+        QuickLook q = new QuartzQuickLook();
         final List<Local> files = new ArrayList<Local>();
         files.add(new NullLocal("f"));
         files.add(new NullLocal("b"));
@@ -34,11 +28,11 @@ public class QuartzQuickLookTest extends AbstractTestCase {
 
     @Test
     public void testIsAvailable() throws Exception {
-        assertTrue(QuickLookFactory.get().isAvailable());
+        assertTrue(new QuartzQuickLook().isAvailable());
     }
 
     @Test
     public void testOpen() throws Exception {
-        assertFalse(QuickLookFactory.get().isOpen());
+        assertFalse(new QuartzQuickLook().isOpen());
     }
 }
