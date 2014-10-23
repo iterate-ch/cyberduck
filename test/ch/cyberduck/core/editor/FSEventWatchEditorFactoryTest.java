@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.junit.Test;
 
@@ -34,24 +35,27 @@ public class FSEventWatchEditorFactoryTest extends AbstractTestCase {
 
     @Test
     public void testGetEditor() throws Exception {
-        assertEquals("TextEdit", new FSEventWatchEditorFactory().getDefaultEditor().getName());
-        assertEquals("TextEdit", new FSEventWatchEditorFactory().getEditor("f.txt").getName());
-        assertEquals("Preview", new FSEventWatchEditorFactory().getEditor("f.png").getName());
+        final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
+        assertEquals("TextEdit", f.getDefaultEditor().getName());
+        assertEquals("TextEdit", f.getEditor("f.txt").getName());
+        assertEquals("Preview", f.getEditor("f.png").getName());
     }
 
     @Test
     public void getGetConfigured() throws Exception {
-        final List<Application> e = new FSEventWatchEditorFactory().getConfigured();
+        final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
+        final List<Application> e = f.getConfigured();
         assertFalse(e.isEmpty());
     }
 
     @Test
     public void testGetEditors() throws Exception {
-        final List<Application> e = new FSEventWatchEditorFactory().getEditors();
+        final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
+        final List<Application> e = f.getEditors();
         assertFalse(e.isEmpty());
         assertTrue(e.contains(new Application("com.apple.TextEdit", null)));
-        assertFalse(new FSEventWatchEditorFactory().getEditors("f.txt").isEmpty());
-        assertTrue(new FSEventWatchEditorFactory().getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
+        assertFalse(f.getEditors("f.txt").isEmpty());
+        assertTrue(f.getEditors("f.txt").contains(new Application("com.apple.TextEdit", null)));
 //        assertTrue(new WatchEditorFactory().getEditors("f.txt").contains(new Application("com.macromates.textmate", null)));
     }
 }

@@ -39,9 +39,15 @@ public class FSEventWatchEditorFactory extends EditorFactory {
         EditorFactory.addFactory(FSEventWatchEditorFactory.NATIVE_PLATFORM, new FSEventWatchEditorFactory());
     }
 
-    private final ApplicationFinder finder = ApplicationFinderFactory.get();
+    private ApplicationFinder finder;
 
-    protected FSEventWatchEditorFactory() {
+    public FSEventWatchEditorFactory() {
+        this(ApplicationFinderFactory.get());
+    }
+
+    public FSEventWatchEditorFactory(final ApplicationFinder finder) {
+        super(finder);
+        this.finder = finder;
         this.add(new Application("com.apple.TextEdit", "TextEdit"));
         this.add(new Application("com.apple.Xcode", "Xcode"));
         this.add(new Application("com.apple.dt.Xcode", "Xcode"));

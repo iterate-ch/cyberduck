@@ -50,8 +50,15 @@ public abstract class EditorFactory extends Factory<Editor> {
     private final Preferences preferences
             = Preferences.instance();
 
-    private final ApplicationFinder applicationFinder
-            = ApplicationFinderFactory.get();
+    private ApplicationFinder applicationFinder;
+
+    public EditorFactory() {
+        this(ApplicationFinderFactory.get());
+    }
+
+    public EditorFactory(final ApplicationFinder applicationFinder) {
+        this.applicationFinder = applicationFinder;
+    }
 
     public static void addFactory(Factory.Platform platform, EditorFactory f) {
         factories.put(platform, f);
