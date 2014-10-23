@@ -7,11 +7,9 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -22,11 +20,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class OverwriteFilterTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        WorkspaceApplicationLauncher.register();
-    }
 
     @Test
     public void testAccept() throws Exception {

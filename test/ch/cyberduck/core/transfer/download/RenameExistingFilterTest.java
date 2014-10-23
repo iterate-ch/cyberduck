@@ -8,12 +8,9 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
-import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -25,12 +22,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class RenameExistingFilterTest extends AbstractTestCase {
-
-    @BeforeClass
-    public static void register() {
-        UserDefaultsDateFormatter.register();
-        WorkspaceApplicationLauncher.register();
-    }
 
     @Test
     public void testPrepare() throws Exception {
