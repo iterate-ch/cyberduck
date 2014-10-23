@@ -204,7 +204,7 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                     // Prompt user to choose a filter
-                    return prompt.prompt();
+                    return prompt.prompt(download);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action

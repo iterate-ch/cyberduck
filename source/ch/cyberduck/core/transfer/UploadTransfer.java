@@ -181,19 +181,19 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
-            for(TransferItem f : roots) {
+            for(TransferItem upload : roots) {
                 final Write write = session.getFeature(Write.class);
-                final Write.Append append = write.append(f.remote, f.local.attributes().getSize(), cache);
+                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
-                    if(f.remote.isDirectory()) {
-                        if(this.list(session, f.remote, f.local, new DisabledListProgressListener()).isEmpty()) {
+                    if(upload.remote.isDirectory()) {
+                        if(this.list(session, upload.remote, upload.local, new DisabledListProgressListener()).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
                     // Prompt user to choose a filter
-                    return prompt.prompt();
+                    return prompt.prompt(upload);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action

@@ -58,7 +58,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
@@ -160,7 +160,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
@@ -200,7 +200,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
@@ -238,7 +238,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(TransferAction.callback, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
                 return TransferAction.callback;
             }
@@ -263,7 +263,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return TransferAction.callback;
             }
@@ -288,7 +288,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(TransferAction.callback, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
                 return TransferAction.callback;
             }
@@ -313,7 +313,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return TransferAction.callback;
             }
@@ -327,7 +327,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertEquals(TransferAction.resume, t.action(new NullSession(new Host("t")), true, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }

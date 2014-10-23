@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Invoke(delegate { View.StatusLabel = msg; });
         }
 
-        public virtual TransferAction prompt()
+        public virtual TransferAction prompt(TransferItem file)
         {
             if (Log.isDebugEnabled())
             {

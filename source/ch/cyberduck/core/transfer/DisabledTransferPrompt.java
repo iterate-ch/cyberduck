@@ -24,7 +24,7 @@ package ch.cyberduck.core.transfer;
 public class DisabledTransferPrompt implements TransferPrompt {
 
     @Override
-    public TransferAction prompt() {
+    public TransferAction prompt(final TransferItem file) {
         return TransferAction.cancel;
     }
 

@@ -160,7 +160,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     @Override
-    public TransferAction prompt() {
+    public TransferAction prompt(final TransferItem file) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer));
         }

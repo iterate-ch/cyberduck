@@ -224,7 +224,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),

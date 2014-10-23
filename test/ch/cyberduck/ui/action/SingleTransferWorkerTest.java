@@ -67,7 +67,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         };
         new SingleTransferWorker(new NullSession(new Host("t")), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
@@ -122,7 +122,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         };
         new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
@@ -165,7 +165,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         };
         final SingleTransferWorker worker = new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), cache) {
@@ -206,7 +206,7 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         try {
             new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
                 @Override
-                public TransferAction prompt() {
+                public TransferAction prompt(final TransferItem file) {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), Cache.<TransferItem>empty()) {

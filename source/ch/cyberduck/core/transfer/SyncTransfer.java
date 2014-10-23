@@ -60,10 +60,13 @@ public class SyncTransfer extends Transfer {
 
     private CachingComparisonServiceFilter comparison;
 
+    private TransferItem item;
+
     public SyncTransfer(final Host host, final TransferItem item) {
         super(host, Collections.singletonList(item),
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
+        this.item = item;
     }
 
     private void init() {
@@ -133,7 +136,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
         // Prompt for synchronization.
-        return prompt.prompt();
+        return prompt.prompt(item);
     }
 
     @Override

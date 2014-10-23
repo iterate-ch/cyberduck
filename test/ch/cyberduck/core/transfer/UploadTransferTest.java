@@ -163,7 +163,7 @@ public class UploadTransferTest extends AbstractTestCase {
         options.resumeRequested = true;
         new SingleTransferWorker(session, t, options, new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
@@ -220,7 +220,7 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
@@ -245,7 +245,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
@@ -285,7 +285,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
@@ -393,7 +393,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }

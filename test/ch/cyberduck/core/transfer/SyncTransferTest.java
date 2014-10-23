@@ -76,7 +76,7 @@ public class SyncTransferTest extends AbstractTestCase {
         final AtomicBoolean prompt = new AtomicBoolean();
         assertEquals(null, t.action(new NullSession(new Host("t")), false, false, new DisabledTransferPrompt() {
             @Override
-            public TransferAction prompt() {
+            public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
                 return null;
             }

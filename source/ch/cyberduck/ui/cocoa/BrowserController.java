@@ -449,7 +449,7 @@ public class BrowserController extends WindowController
                 }, this, this, download, options,
                         new TransferPrompt() {
                             @Override
-                            public TransferAction prompt() {
+                            public TransferAction prompt(final TransferItem file) {
                                 return TransferAction.comparison;
                             }
 

@@ -26,9 +26,10 @@ import ch.cyberduck.core.ProgressListener;
 public interface TransferPrompt extends ProgressListener {
 
     /**
+     * @param file File
      * @return Transfer action selected in prompt for overwriting files
      */
-    TransferAction prompt();
+    TransferAction prompt(TransferItem file);
 
     /**
      * @param file File
