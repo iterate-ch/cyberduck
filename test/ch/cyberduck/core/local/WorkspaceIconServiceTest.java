@@ -2,11 +2,9 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
