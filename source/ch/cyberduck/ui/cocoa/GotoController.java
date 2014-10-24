@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,8 +73,8 @@ public class GotoController extends AlertController {
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return (NSObject) cache.get(workdir.getReference()).filter(comparator, filter).get(
-                    row.intValue()).getReference().unique();
+            return NSString.stringWithString(cache.get(workdir.getReference())
+                    .filter(comparator, filter).get(row.intValue()).getName());
         }
     }
 
