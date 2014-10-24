@@ -114,10 +114,13 @@ public class SwiftContainerListService implements RootListService {
                                     public void run() {
                                         for(Distribution.Method method : feature.getMethods(container)) {
                                             try {
-                                                feature.read(container, method, new DisabledLoginCallback());
+                                                final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                                                if(log.isInfoEnabled()) {
+                                                    log.info(String.format("Cached distribution %s", distribution));
+                                                }
                                             }
                                             catch(BackgroundException e) {
-                                                log.warn(String.format("Failure preloading CDN configuration for container %s %s", container, e.getMessage()));
+                                                log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
                                             }
                                         }
                                     }
