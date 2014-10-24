@@ -471,7 +471,16 @@ public class Distribution {
 
     @Override
     public String toString() {
-        return this.getId();
+        final StringBuilder sb = new StringBuilder("Distribution{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", reference='").append(reference).append('\'');
+        sb.append(", origin=").append(origin);
+        sb.append(", enabled=").append(enabled);
+        sb.append(", logging=").append(logging);
+        sb.append(", url=").append(url);
+        sb.append(", status='").append(status).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override
