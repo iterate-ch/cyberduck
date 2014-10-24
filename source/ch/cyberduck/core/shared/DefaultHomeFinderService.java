@@ -34,7 +34,7 @@ import java.util.EnumSet;
  */
 public class DefaultHomeFinderService implements Home {
 
-    private Session session;
+    private Session<?> session;
 
     public DefaultHomeFinderService(final Session session) {
         this.session = session;

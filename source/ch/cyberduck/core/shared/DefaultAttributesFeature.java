@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.Attributes;
  */
 public class DefaultAttributesFeature implements Attributes {
 
-    private Session session;
+    private Session<?> session;
 
     private Cache cache;
 
