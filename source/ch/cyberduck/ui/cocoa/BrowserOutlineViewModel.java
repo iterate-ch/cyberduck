@@ -178,7 +178,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 if(-1 == draggingColumn || 0 == draggingColumn) {
                     if(destination.isDirectory()) {
                         // Drop target is directory
-                        view.setDropItem((NSObject) destination.getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
+                        view.setDropItem(item, NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(view, destination, row, draggingInfo);
                     }
                 }
