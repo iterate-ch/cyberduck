@@ -71,7 +71,7 @@ public final class MainApplication {
         //
     }
 
-    public static void main(String[] arguments) {
+    public static void main(String... arguments) {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(final Thread t, final Throwable e) {
