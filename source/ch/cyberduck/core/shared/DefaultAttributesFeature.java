@@ -35,13 +35,13 @@ public class DefaultAttributesFeature implements Attributes {
 
     private Session<?> session;
 
-    private Cache cache;
+    private Cache<Path> cache;
 
     public DefaultAttributesFeature(final Session session) {
-        this(session, Cache.empty());
+        this(session, Cache.<Path>empty());
     }
 
-    public DefaultAttributesFeature(final Session session, final Cache cache) {
+    public DefaultAttributesFeature(final Session session, final Cache<Path> cache) {
         this.session = session;
         this.cache = cache;
     }
