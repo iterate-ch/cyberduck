@@ -23,6 +23,8 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -103,6 +105,14 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
                             Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                    ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
+                        @Override
+                        public void handshakeCompleted(final HandshakeCompletedEvent event) {
+                            log.info(String.format("Completed handshake with negotiated cipher suite %s",
+                                    event.getCipherSuite()));
+                            ((SSLSocket) socket).removeHandshakeCompletedListener(this);
+                        }
+                    });
                 }
             }
             catch(Exception e) {
