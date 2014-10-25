@@ -118,7 +118,7 @@ public class S3ObjectListService implements ListService {
             return children;
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new ServiceExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, directory);

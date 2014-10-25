@@ -83,7 +83,7 @@ public class SFTPListService implements ListService {
             return children;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new SFTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 

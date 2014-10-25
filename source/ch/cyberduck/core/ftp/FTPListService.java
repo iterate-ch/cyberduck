@@ -195,7 +195,7 @@ public class FTPListService implements ListService {
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 
@@ -239,7 +239,7 @@ public class FTPListService implements ListService {
             return list;
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new FTPExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 }

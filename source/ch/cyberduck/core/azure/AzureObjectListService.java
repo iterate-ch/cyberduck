@@ -107,7 +107,7 @@ public class AzureObjectListService implements ListService {
             return children;
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

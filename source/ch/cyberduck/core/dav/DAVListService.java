@@ -75,7 +75,7 @@ public class DAVListService implements ListService {
             return children;
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Listing directory failed", e, directory);
+            throw new DAVExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, directory);

@@ -106,7 +106,7 @@ public class S3BucketListService implements RootListService {
             }
         }
         catch(ServiceException failure) {
-            throw new ServiceExceptionMappingService().map("Listing directory failed", failure);
+            throw new ServiceExceptionMappingService().map("Listing directory {0} failed", failure);
         }
     }
 
