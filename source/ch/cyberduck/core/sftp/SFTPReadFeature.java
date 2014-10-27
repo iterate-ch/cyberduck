@@ -84,7 +84,7 @@ public class SFTPReadFeature implements Read {
             return in;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Download failed", e, file);
+            throw new SFTPExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

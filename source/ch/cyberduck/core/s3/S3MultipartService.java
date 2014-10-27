@@ -60,7 +60,7 @@ public class S3MultipartService {
                         null, nextKeyMarker, nextUploadIdMarker, null, true);
             }
             catch(S3ServiceException e) {
-                final BackgroundException failure = new ServiceExceptionMappingService().map("Upload failed", e, file);
+                final BackgroundException failure = new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
                 if(failure instanceof NotfoundException) {
                     return null;
                 }
@@ -91,7 +91,7 @@ public class S3MultipartService {
             return session.getClient().multipartListParts(multipart);
         }
         catch(S3ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload failed", e);
+            throw new ServiceExceptionMappingService().map("Upload {0} failed", e);
         }
     }
 }

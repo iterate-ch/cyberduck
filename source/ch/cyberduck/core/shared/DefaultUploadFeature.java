@@ -72,7 +72,7 @@ public class DefaultUploadFeature implements Upload<Void> {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 }

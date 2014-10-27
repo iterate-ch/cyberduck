@@ -189,7 +189,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     reference = complete.getEtag();
                 }
                 if(!expected.equals(reference)) {
-                    throw new ChecksumException("Upload failed",
+                    throw new ChecksumException("Upload {0} failed",
                             MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                     expected, reference));
                 }
@@ -203,7 +203,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload failed", e, file);
+            throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 
@@ -262,7 +262,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             // Obtain locally-calculated MD5 hash.
             final String expected = Hex.encodeHexString(digest.digest());
             if(!expected.equals(part.getETag())) {
-                throw new ChecksumException("Upload failed",
+                throw new ChecksumException("Upload {0} failed",
                         MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                 expected, part.getETag()));
             }

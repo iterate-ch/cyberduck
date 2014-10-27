@@ -69,10 +69,10 @@ public class DAVReadFeature implements Read {
             return stream;
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Download failed", e, file);
+            throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

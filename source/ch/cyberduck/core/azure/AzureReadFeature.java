@@ -74,7 +74,7 @@ public class AzureReadFeature implements Read {
             return in;
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Download failed", e, file);
+            throw new AzureExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

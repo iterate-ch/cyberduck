@@ -73,7 +73,7 @@ public class DefaultDownloadFeature implements Download {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 }

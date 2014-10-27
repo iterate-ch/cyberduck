@@ -86,7 +86,7 @@ public class FTPWriteFeature extends AppendWriteFeature {
             };
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Upload failed", e, file);
+            throw new FTPExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

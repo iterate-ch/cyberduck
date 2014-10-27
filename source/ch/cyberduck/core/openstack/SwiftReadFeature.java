@@ -74,7 +74,7 @@ public class SwiftReadFeature implements Read {
             return stream;
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Download failed", e, file);
+            throw new SwiftExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

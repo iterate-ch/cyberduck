@@ -101,7 +101,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
             return out;
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Upload failed", e, file);
+            throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

@@ -102,7 +102,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

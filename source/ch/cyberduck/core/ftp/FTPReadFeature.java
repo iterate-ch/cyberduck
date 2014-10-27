@@ -90,7 +90,7 @@ public class FTPReadFeature implements Read {
             };
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Download failed", e, file);
+            throw new FTPExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

@@ -97,7 +97,7 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
             final String expected = Hex.encodeHexString(digest.digest());
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!expected.equals(etag)) {
-                throw new ChecksumException("Upload failed",
+                throw new ChecksumException("Upload {0} failed",
                         MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                 expected, etag));
             }

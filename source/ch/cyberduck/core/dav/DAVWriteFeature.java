@@ -90,10 +90,10 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                             decorate(file, headers, status), new ETagResponseHandler());
                 }
                 catch(SardineException e) {
-                    throw new DAVExceptionMappingService().map("Upload failed", e, file);
+                    throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload failed", e, file);
+                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 
