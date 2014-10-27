@@ -51,9 +51,17 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
     public BackgroundException map(final String message, final T failure, final Path file) {
         final BackgroundException exception = this.map(failure);
         final StringBuilder m = new StringBuilder();
-        this.append(m, String.format("%s (%s)",
-                MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
-                file.getAbsolute()));
+        final String formatted = MessageFormat.format(StringUtils.chomp(
+                LocaleFactory.localizedString(message, "Error")), file.getName());
+        if(StringUtils.contains(formatted, String.format("%s ", file.getName()))
+                || StringUtils.contains(formatted, String.format(" %s", file.getName()))) {
+            this.append(m, formatted);
+        }
+        else {
+            this.append(m, String.format("%s (%s)",
+                    MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
+                    file.getAbsolute()));
+        }
         exception.setMessage(m.toString());
         return exception;
     }

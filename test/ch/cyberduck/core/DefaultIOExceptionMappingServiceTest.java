@@ -56,7 +56,8 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
     public void testPlaceholder() throws Exception {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
-        assertEquals("N message (/n).", e.getMessage());
+        assertEquals("N message.", e.getMessage());
+        assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
     }
 
     @Test
@@ -67,5 +68,16 @@ public class DefaultIOExceptionMappingServiceTest extends AbstractTestCase {
                 .getDetail());
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
                 .getDetail());
+    }
+
+    @Test
+    public void testMapPathName() throws Exception {
+        final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
+        assertEquals("Download n failed.", s.map("Download {0} failed", new SocketException("s"),
+                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+        assertEquals("Download failed n.", s.map("Download failed {0}", new SocketException("s"),
+                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+        assertEquals("Download failed (/n).", s.map("Download failed", new SocketException("s"),
+                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
     }
 }
