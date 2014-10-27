@@ -22,7 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ListCanceledException extends ConnectionCanceledException {
     private static final long serialVersionUID = 7637613473871074200L;
@@ -35,6 +35,11 @@ public class ListCanceledException extends ConnectionCanceledException {
     }
 
     public ListCanceledException(final AttributedList<Path> chunk) {
+        this.chunk = chunk;
+    }
+
+    public ListCanceledException(final AttributedList<Path> chunk, final Throwable cause) {
+        super(cause);
         this.chunk = chunk;
     }
 

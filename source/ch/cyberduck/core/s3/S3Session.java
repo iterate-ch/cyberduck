@@ -373,7 +373,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
                     cancel.verify();
                 }
                 catch(ConnectionCanceledException e) {
-                    throw new ListCanceledException(list);
+                    throw new ListCanceledException(list, e);
                 }
             }
         }));
