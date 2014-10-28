@@ -55,7 +55,7 @@ public class SFTPDeleteFeatureTest extends AbstractTestCase {
             new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
         }
         catch(NotfoundException e) {
-            assertEquals("Cannot delete t (/home/jenkins/t).",
+            assertEquals("Cannot delete t.",
                     e.getMessage());
             assertEquals("No such file. Please contact your web hosting service provider for assistance.",
                     e.getDetail());
