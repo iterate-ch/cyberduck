@@ -33,8 +33,6 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.S3Service;
-import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -87,14 +85,7 @@ public class S3UrlProvider implements UrlProvider {
                 list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
             // Torrent
-            final S3Service service = new RestS3Service(
-                    new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword())) {
-                @Override
-                public String getEndpoint() {
-                    return session.getHost().getHostname();
-                }
-            };
-            list.add(new DescriptiveUrl(URI.create(service.createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+            list.add(new DescriptiveUrl(URI.create(new S3UrlSigner(session.getHost()).createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
                     DescriptiveUrl.Type.torrent,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
@@ -143,24 +134,15 @@ public class S3UrlProvider implements UrlProvider {
         // Determine expiry time for URL
         final Calendar expiry = Calendar.getInstance(TimeZone.getDefault());
         expiry.add(Calendar.SECOND, seconds);
-        // Generate URL
-        final S3Service client = new RestS3Service(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(), session.getHost().getCredentials().getPassword())) {
-            @Override
-            public String getEndpoint() {
-                return session.getHost().getHostname();
-            }
-        };
         final String secret = store.find(session.getHost());
         if(StringUtils.isBlank(secret)) {
             log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
-        client.setProviderCredentials(
-                new AWSCredentials(session.getHost().getCredentials().getUsername(), secret));
-        return new DescriptiveUrl(URI.create(client.createSignedUrl("GET",
-                containerService.getContainer(file).getName(), containerService.getKey(file), null,
-                null, expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure(), false)), DescriptiveUrl.Type.signed,
+        return new DescriptiveUrl(URI.create(new S3UrlSigner(session.getHost()).createSignedUrl(
+                new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
+                containerService.getContainer(file).getName(), containerService.getKey(file),
+                expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure())), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
