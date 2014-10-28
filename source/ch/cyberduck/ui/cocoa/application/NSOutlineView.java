@@ -59,7 +59,11 @@ public abstract class NSOutlineView extends NSTableView {
 
         boolean outlineView_shouldExpandItem(NSOutlineView view, NSObject item);
 
+        void outlineViewItemWillExpand(NSNotification notification);
+
         void outlineViewItemDidExpand(NSNotification notification);
+
+        void outlineViewItemWillCollapse(NSNotification notification);
 
         void outlineViewItemDidCollapse(NSNotification notification);
 

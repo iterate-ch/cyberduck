@@ -48,8 +48,31 @@ import java.util.List;
 public class BrowserOutlineViewModel extends BrowserTableDataSource implements NSOutlineView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
 
-    public BrowserOutlineViewModel(final BrowserController controller, final Cache cache) {
+    public BrowserOutlineViewModel(final BrowserController controller, final Cache<Path> cache) {
         super(controller, cache);
+    }
+
+    @Override
+    public void render(final NSTableView view, final List<Path> folders) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reload table view %s for changes files %s", view, folders));
+        }
+        if(folders.isEmpty()) {
+            view.reloadData();
+        }
+        else {
+            final NSOutlineView outline = (NSOutlineView) view;
+            for(Path folder : folders) {
+                if(folder.equals(controller.workdir())) {
+                    outline.reloadData();
+                    break;
+                }
+                else {
+                    outline.reloadItem_reloadChildren((NSObject) folder.getReference().unique(), true);
+                }
+            }
+        }
+        controller.setStatus();
     }
 
     @Override
@@ -85,7 +108,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         if(controller.isMounted()) {
             if(null == item) {
-                return new NSInteger(this.list(controller.workdir()).size());
+                return new NSInteger(this.get(controller.workdir()).size());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
@@ -110,16 +133,16 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             if(null == lookup) {
                 return new NSInteger(0);
             }
-            return new NSInteger(this.list(lookup).size());
+            return new NSInteger(this.get(lookup).size());
         }
         return new NSInteger(0);
     }
 
     /**
      * @see NSOutlineView.DataSource
-     *      Invoked by outlineView, and returns the child item at the specified index. Children
-     *      of a given parent item are accessed sequentially. If item is null, this method should
-     *      return the appropriate child item of the root object
+     * Invoked by outlineView, and returns the child item at the specified index. Children
+     * of a given parent item are accessed sequentially. If item is null, this method should
+     * return the appropriate child item of the root object
      */
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {

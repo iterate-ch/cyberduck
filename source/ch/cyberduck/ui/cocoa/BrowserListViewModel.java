@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -41,15 +42,25 @@ import java.util.List;
  * @version $Id$
  */
 public class BrowserListViewModel extends BrowserTableDataSource implements NSTableView.DataSource {
+    private static final Logger log = Logger.getLogger(BrowserListViewModel.class);
 
-    public BrowserListViewModel(final BrowserController controller, final Cache cache) {
+    public BrowserListViewModel(final BrowserController controller, final Cache<Path> cache) {
         super(controller, cache);
+    }
+
+    @Override
+    public void render(final NSTableView view, final List<Path> folders) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Reload table view %s for changes files %s", view, folders));
+        }
+        view.reloadData();
+        controller.setStatus();
     }
 
     @Override
     public NSInteger numberOfRowsInTableView(final NSTableView view) {
         if(controller.isMounted()) {
-            return new NSInteger(this.list(this.controller.workdir()).size());
+            return new NSInteger(this.get(this.controller.workdir()).size());
         }
         return new NSInteger(0);
     }

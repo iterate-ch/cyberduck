@@ -63,8 +63,10 @@ import ch.cyberduck.ui.action.DisconnectWorker;
 import ch.cyberduck.ui.action.MountWorker;
 import ch.cyberduck.ui.action.MoveWorker;
 import ch.cyberduck.ui.action.RevertWorker;
+import ch.cyberduck.ui.action.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
+import ch.cyberduck.ui.browser.PathReloadFinder;
 import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilter;
 import ch.cyberduck.ui.browser.UploadDirectoryFinder;
@@ -77,6 +79,7 @@ import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -98,6 +101,7 @@ import ch.cyberduck.ui.resources.IconCacheFactory;
 import ch.cyberduck.ui.threading.TransferBackgroundAction;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -119,10 +123,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -201,6 +207,9 @@ public class BrowserController extends WindowController
     private final Navigation navigation = new Navigation();
 
     private PathPasteboard pasteboard;
+
+    private ListProgressListener listener
+            = new PromptLimitedListProgressListener(this);
 
     /**
      * Caching files listings of previously listed directories
@@ -331,94 +340,99 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * @param preserveSelection All selected files should be reselected after reloading the view
      */
-    public void reload(boolean preserveSelection) {
-        this.reload(preserveSelection, true);
-    }
-
-    /**
-     * @param preserveSelection All selected files should be reselected after reloading the view
-     * @param scroll            Scroll to current selection
-     */
-    public void reload(boolean preserveSelection, boolean scroll) {
-        this.reload(Collections.<Path>emptyList(), preserveSelection, scroll);
-    }
-
-    /**
-     * @param changed           Modified files. Invalidate its parents
-     * @param preserveSelection All selected files should be reselected after reloading the view
-     */
-    public void reload(final List<Path> changed, boolean preserveSelection) {
-        this.reload(changed, preserveSelection, true);
-    }
-
-    /**
-     * @param preserveSelection All selected files should be reselected after reloading the view
-     * @param scroll            Scroll to current selection
-     */
-    public void reload(final List<Path> changed, boolean preserveSelection, boolean scroll) {
-        if(preserveSelection) {
-            //Remember the previously selected paths
-            this.reload(changed, this.getSelectedPaths(), scroll);
+    protected void reload() {
+        if(this.isMounted()) {
+            this.reload(Collections.singleton(workdir), Collections.<Path>emptyList(), false);
         }
         else {
-            this.reload(changed, Collections.<Path>emptyList(), scroll);
+            final NSTableView browser = this.getSelectedBrowserView();
+            final BrowserTableDataSource model = this.getSelectedBrowserModel();
+            model.render(browser, Collections.<Path>emptyList());
         }
     }
 
     /**
-     * Make the broser reload its content. Will make use of the cache.
-     *
-     * @param selected The items to be selected
-     */
-    protected void reload(final List<Path> selected) {
-        this.reload(Collections.<Path>emptyList(), selected);
-    }
-
-    /**
-     * Make the broser reload its content. Will make use of the cache.
+     * Make the browser reload its content. Will make use of the cache.
      *
      * @param selected The items to be selected
      */
     protected void reload(final List<Path> changed, final List<Path> selected) {
-        this.reload(changed, selected, true);
+        this.reload(new PathReloadFinder().find(changed), selected, true);
     }
 
-    protected void reload(final List<Path> changed, final List<Path> selected, boolean scroll) {
+    /**
+     * Make the browser reload its content. Will make use of the cache.
+     *
+     * @param folders  Folders to render
+     * @param selected The items to be selected
+     */
+    protected void reload(final Set<Path> folders, final List<Path> selected) {
+        this.reload(folders, selected, true);
+    }
+
+    protected void reload(final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
-        for(Path p : changed) {
-            // This will force the model to list this directory
-            cache.invalidate(p.getParent().getReference());
-        }
-        // Tell the browser view to reload the data. This will request all paths from the browser model
-        // which will refetch paths from the server marked as invalid.
+        final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.reloadData();
-        if(changed.isEmpty()) {
-            browser.deselectAll(null);
-            for(Path path : selected) {
-                this.selectRow(path.getReference(), true, scroll);
-                // Only scroll to the first in the list
-                scroll = false;
-            }
+        if(folders.isEmpty()) {
+            // Render empty browser
+            model.render(browser, Collections.<Path>emptyList());
         }
-        this.setStatus();
+        for(final Path folder : folders) {
+            final PathReference reference = folder.getReference();
+            if(invalidate) {
+                // Invalidate cache
+                cache.invalidate(reference);
+            }
+            else {
+                if(cache.isCached(reference)) {
+                    model.render(browser, Collections.singletonList(folder));
+                    select(selected);
+                    return;
+                }
+            }
+            // Delay render until path is cached in the background
+            this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
+                            new SessionListWorker(session, cache, folder, listener) {
+                                @Override
+                                public void cleanup(final AttributedList<Path> list) {
+                                    model.render(browser, Collections.singletonList(folder));
+                                    select(selected);
+                                }
+                            }
+                    )
+            );
+        }
     }
 
-    private void selectRow(final PathReference reference, final boolean expand, final boolean scroll) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Select row with reference %s", reference));
-        }
+    private void select(final List<Path> selected) {
         final NSTableView browser = this.getSelectedBrowserView();
-        int row = this.getSelectedBrowserModel().indexOf(browser, reference);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Select row at index :%d", row));
+        if(CollectionUtils.isEqualCollection(this.getSelectedPaths(), selected)) {
+            return;
         }
+        browser.deselectAll(null);
+        for(Path path : selected) {
+            select(path.getReference(), true, true);
+        }
+    }
+
+    /**
+     * @param reference Path to select
+     * @param expand    Keep previous selection
+     * @param scroll    Scroll to selection
+     */
+    private void select(final PathReference reference, final boolean expand, final boolean scroll) {
+        final NSTableView browser = this.getSelectedBrowserView();
+        final BrowserTableDataSource model = this.getSelectedBrowserModel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Select row for reference %s", reference));
+        }
+        int row = model.indexOf(browser, reference);
         if(-1 == row) {
-            log.warn(String.format("Failed to select path %s", reference));
+            log.warn(String.format("Failed to find row for %s", reference));
             return;
         }
         final NSInteger index = new NSInteger(row);
@@ -906,7 +920,7 @@ public class BrowserController extends WindowController
         // Remove any custom file filter
         this.setPathFilter(null);
         // Update from model
-        this.reload(true);
+        this.reload();
         // Focus on browser view
         this.getFocus();
     }
@@ -1041,7 +1055,7 @@ public class BrowserController extends WindowController
             if(row < children.size()) {
                 return children.get(row);
             }
-            log.warn("No item at row:" + row);
+            log.warn(String.format("No item at row %d", row));
             return null;
         }
     }
@@ -1093,7 +1107,7 @@ public class BrowserController extends WindowController
                             IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier()
             );
-            reload(true);
+            reload();
         }
 
         @Override
@@ -1309,19 +1323,35 @@ public class BrowserController extends WindowController
                 return false;
             }
 
-            /**
-             * @see NSOutlineView.Delegate
-             */
             @Override
-            public void outlineViewItemDidExpand(NSNotification notification) {
-                setStatus();
+            public void outlineViewItemWillExpand(final NSNotification notification) {
+                final NSObject object = Rococoa.cast(notification.userInfo(), NSDictionary.class).objectForKey("NSObject");
+                final NSObjectPathReference reference = new NSObjectPathReference(object);
+                final Path directory = cache.lookup(reference);
+                if(null == directory) {
+                    return;
+                }
+                reload(Collections.singleton(directory), getSelectedPaths(), false);
             }
 
             /**
              * @see NSOutlineView.Delegate
              */
             @Override
-            public void outlineViewItemDidCollapse(NSNotification notification) {
+            public void outlineViewItemDidExpand(final NSNotification notification) {
+                //
+            }
+
+            @Override
+            public void outlineViewItemWillCollapse(final NSNotification notification) {
+                //
+            }
+
+            /**
+             * @see NSOutlineView.Delegate
+             */
+            @Override
+            public void outlineViewItemDidCollapse(final NSNotification notification) {
                 setStatus();
             }
 
@@ -1567,7 +1597,7 @@ public class BrowserController extends WindowController
         table.sizeToFit();
         table.setAutosaveName("browser.autosave");
         table.setAutosaveTableColumns(true);
-        this.reload(false);
+        this.reload();
     }
 
     private BookmarkTableDataSource bookmarkModel;
@@ -1835,7 +1865,7 @@ public class BrowserController extends WindowController
         }
         else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
             this.setPathFilter(searchField.stringValue());
-            this.reload(true);
+            this.reload();
         }
     }
 
@@ -2274,19 +2304,24 @@ public class BrowserController extends WindowController
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
+            final Set<Path> folders = new HashSet<Path>();
             switch(browserSwitchView.selectedSegment()) {
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
-                            cache.invalidate(new NSObjectPathReference(item));
+                            final Path folder = cache.lookup(new NSObjectPathReference(item));
+                            if(null == folder) {
+                                continue;
+                            }
+                            folders.add(folder);
                         }
                     }
                     break;
                 }
             }
-            cache.invalidate(this.workdir().getReference());
-            this.reload(true);
+            folders.add(workdir);
+            this.reload(folders, this.getSelectedPaths(), true);
         }
     }
 
@@ -2508,7 +2543,7 @@ public class BrowserController extends WindowController
                         new DeleteWorker(session, LoginCallbackFactory.get(BrowserController.this), files, this) {
                             @Override
                             public void cleanup(final Boolean result) {
-                                reload(files, false);
+                                reload(files, Collections.<Path>emptyList());
                             }
                         }
                 )
@@ -2520,7 +2555,7 @@ public class BrowserController extends WindowController
                 new RevertWorker(session, files) {
                     @Override
                     public void cleanup(final Boolean result) {
-                        reload(files, false);
+                        reload(files, files);
                     }
                 }
         ));
@@ -2846,7 +2881,7 @@ public class BrowserController extends WindowController
                 invoke(new WindowMainAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        reload(selected, selected, true);
+                        reload(selected, selected);
                     }
                 });
             }
@@ -2936,7 +2971,7 @@ public class BrowserController extends WindowController
             sender.setState(NSCell.NSOnState);
         }
         if(this.isMounted()) {
-            this.reload(true);
+            this.reload();
         }
     }
 
@@ -3246,8 +3281,12 @@ public class BrowserController extends WindowController
         window.endEditingFor(browser);
         // Update the working directory if listing is successful
         workdir = directory;
-        // Change to last selected browser view
-        this.reload(workdir != null ? selected : Collections.<Path>emptyList());
+        if(this.isMounted()) {
+            this.reload(Collections.singleton(directory), selected, false);
+        }
+        else {
+            this.reload(Collections.<Path>emptySet(), selected, false);
+        }
         this.setNavigation(this.isMounted());
     }
 
@@ -3317,7 +3356,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
-                        new MountWorker(session, cache, new PromptLimitedListProgressListener(BrowserController.this)) {
+                        new MountWorker(session, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 if(null == workdir) {
@@ -3703,13 +3742,12 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
-                final EditorFactory factory = EditorFactory.instance();
                 for(Path s : this.getSelectedPaths()) {
                     if(!this.isEditable(s)) {
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == factory.getEditor(s.getName())) {
+                    if(null == EditorFactory.instance().getEditor(s.getName())) {
                         return false;
                     }
                 }

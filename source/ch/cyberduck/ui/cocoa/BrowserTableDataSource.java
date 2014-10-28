@@ -22,7 +22,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -45,7 +44,6 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.ui.action.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
@@ -64,7 +62,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.pasteboard.PathPasteboard;
 import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -96,38 +93,17 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     protected Cache<Path> cache;
 
-    private ListProgressListener listener;
-
     protected BrowserTableDataSource(final BrowserController controller, final Cache<Path> cache) {
         this.controller = controller;
         this.cache = cache;
-        this.listener = new PromptLimitedListProgressListener(controller);
     }
 
     /**
-     * Must be efficient; called very frequently by the table view
+     * Tell the browser view to reload the data
      *
-     * @param directory The directory to fetch the children from
-     * @return The cached or newly fetched file listing of the directory
+     * @param folders Changed files
      */
-    protected AttributedList<Path> list(final Path directory) {
-        if(!cache.isCached(directory.getReference())) {
-            // Reloading a working directory that is not cached yet would cause the interface to freeze;
-            // Delay until path is cached in the background
-            controller.background(new WorkerBackgroundAction(controller, controller.getSession(), cache,
-                            new SessionListWorker(controller.getSession(), cache, directory, listener) {
-                                @Override
-                                public void cleanup(final AttributedList<Path> list) {
-                                    if(controller.getActions().isEmpty()) {
-                                        controller.reload(true, false);
-                                    }
-                                }
-                            }
-                    )
-            );
-        }
-        return this.get(directory);
-    }
+    public abstract void render(final NSTableView view, final List<Path> folders);
 
     protected AttributedList<Path> get(final Path directory) {
         return cache.get(directory.getReference()).filter(controller.getComparator(), controller.getFilter());
