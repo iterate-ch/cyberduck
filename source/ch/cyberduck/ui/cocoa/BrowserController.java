@@ -501,7 +501,6 @@ public class BrowserController extends WindowController
      * @return All selected paths or an empty list if there is no selection
      */
     protected List<Path> getSelectedPaths() {
-        final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final AbstractBrowserTableDelegate<Path> delegate = this.getSelectedBrowserDelegate();
         final NSTableView view = this.getSelectedBrowserView();
         final NSIndexSet iterator = view.selectedRowIndexes();
