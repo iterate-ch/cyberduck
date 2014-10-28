@@ -32,10 +32,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_sparkle_Sandbox_isSandboxed(JN
         return NO;
     }
     static SecRequirementRef sandboxRequirement = NULL;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        SecRequirementCreateWithString(CFSTR("entitlement[\"com.apple.security.app-sandbox\"] exists"), kSecCSDefaultFlags, &sandboxRequirement);
-    });
+    SecRequirementCreateWithString(CFSTR("entitlement[\"com.apple.security.app-sandbox\"] exists"), kSecCSDefaultFlags, &sandboxRequirement);
     if (!sandboxRequirement) {
         return NO;
     }
