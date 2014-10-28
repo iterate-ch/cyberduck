@@ -92,7 +92,8 @@ public class SwiftObjectListService implements ListService {
                             .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
                         if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attributes))) {
-                            // There is already a placeholder object
+                            // There is already a real placeholder file with application/directory MIME type. Only
+                            // add virtual directory if the placeholder object is missing
                             continue;
                         }
                         types.add(Path.Type.placeholder);
