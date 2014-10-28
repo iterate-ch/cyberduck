@@ -59,6 +59,22 @@ public class DAVSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = InteroperabilityException.class)
+    public void test_unrecognized_name() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "webdav.opendrive.com", new Credentials(
+                Preferences.instance().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        try {
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        }
+        catch(InteroperabilityException e) {
+            assertEquals("Handshake alert:  unrecognized_name. Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
+    @Test(expected = InteroperabilityException.class)
     public void testSsl() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
                 Preferences.instance().getProperty("connection.login.anon.name"), null
