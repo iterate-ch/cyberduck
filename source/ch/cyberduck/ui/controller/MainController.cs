@@ -36,7 +36,6 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using Ch.Cyberduck.core.local;
 using Microsoft.VisualBasic.ApplicationServices;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
