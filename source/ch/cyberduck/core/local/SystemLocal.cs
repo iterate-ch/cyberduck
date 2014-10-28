@@ -132,33 +132,5 @@ namespace Ch.Cyberduck.Core.Local
             }
             return name;
         }
-
-        public static void Register()
-        {
-            LocalFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : LocalFactory
-        {
-            protected override ch.cyberduck.core.Local create(ch.cyberduck.core.Local parent, string name)
-            {
-                return new SystemLocal(parent, name);
-            }
-
-            protected override ch.cyberduck.core.Local create(string parent, string name)
-            {
-                return new SystemLocal(parent, name);
-            }
-
-            protected override ch.cyberduck.core.Local create(string path)
-            {
-                return new SystemLocal(path);
-            }
-
-            protected override object create()
-            {
-                return new SystemLocal(Environment.GetEnvironmentVariable("HOME"));
-            }
-        }
-    }
+   }
 }

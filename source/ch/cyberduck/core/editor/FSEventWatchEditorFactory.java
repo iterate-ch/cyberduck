@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
@@ -34,10 +33,6 @@ import java.util.List;
  */
 public class FSEventWatchEditorFactory extends EditorFactory {
     private final List<Application> editors = new ArrayList<Application>();
-
-    public static void register() {
-        EditorFactory.addFactory(FSEventWatchEditorFactory.NATIVE_PLATFORM, new FSEventWatchEditorFactory());
-    }
 
     private ApplicationFinder finder;
 
@@ -91,10 +86,5 @@ public class FSEventWatchEditorFactory extends EditorFactory {
     @Override
     public Editor create(final Controller c, final Session session, final Application application, final Path file) {
         return new FSEventWatchEditor(c, session, application, file);
-    }
-
-    @Override
-    protected Editor create() {
-        throw new FactoryException("Not supported");
     }
 }

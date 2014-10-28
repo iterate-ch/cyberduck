@@ -20,6 +20,7 @@ package ch.cyberduck.ui.browser;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 
 import org.junit.Test;
 
@@ -33,6 +34,6 @@ public class UploadDirectoryFinderTest extends AbstractTestCase {
         final Host host = new Host("localhost");
         assertNull(host.getDownloadFolder());
         final UploadDirectoryFinder finder = new UploadDirectoryFinder();
-        assertEquals("~", finder.find(host).getAbbreviatedPath());
+        assertEquals(new Local(System.getProperty("user.home")), finder.find(host));
     }
 }

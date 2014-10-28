@@ -21,28 +21,16 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class TransferWriterFactory extends Factory<Writer<Transfer>> {
+public class TransferWriterFactory extends Factory<Writer<Transfer>> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, TransferWriterFactory> factories
-            = new HashMap<Platform, TransferWriterFactory>();
-
-    public static void addFactory(Factory.Platform platform, TransferWriterFactory f) {
-        factories.put(platform, f);
+    protected TransferWriterFactory() {
+        super("factory.writer.transfer.class");
     }
 
     public static Writer<Transfer> get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new TransferWriterFactory().create();
     }
 }

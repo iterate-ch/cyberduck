@@ -19,17 +19,6 @@ import java.text.MessageFormat;
 public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
 
-    public static void register() {
-        TerminalServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends TerminalServiceFactory {
-        @Override
-        protected TerminalService create() {
-            return new ApplescriptTerminalService();
-        }
-    }
-
     private ApplicationFinder finder
             = ApplicationFinderFactory.get();
 

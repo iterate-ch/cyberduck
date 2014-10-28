@@ -32,18 +32,5 @@ namespace Ch.Cyberduck.Core.Local
             }
             return false;
         }
-
-        public static void Register()
-        {
-            RevealServiceFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : RevealServiceFactory
-        {
-            protected override object create()
-            {
-                return new ExplorerRevealService();
-            }
-        }
     }
 }

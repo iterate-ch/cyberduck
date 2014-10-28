@@ -24,9 +24,9 @@ using ch.cyberduck.core.local;
 using java.io;
 using org.apache.commons.io;
 
-namespace Ch.Cyberduck.core.local
+namespace Ch.Cyberduck.Core.Local
 {
-    internal class WindowsTemporaryFileService : TemporaryFileService
+    public sealed class WindowsTemporaryFileService : TemporaryFileService
     {
         protected override String shorten(string path) {
             if (path.Length > 240)
@@ -41,19 +41,6 @@ namespace Ch.Cyberduck.core.local
             MD5 md5 = MD5.Create();
             byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
             return Convert.ToBase64String(hash);
-        }
-
-        public static void Register()
-        {
-            TemporaryFileServiceFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : TemporaryFileServiceFactory
-        {
-            protected override object create()
-            {
-                return new WindowsTemporaryFileService();
-            }
         }
     }
 }

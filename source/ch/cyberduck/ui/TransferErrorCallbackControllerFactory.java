@@ -18,37 +18,61 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
+public class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
+    private static final Logger log = Logger.getLogger(TransferErrorCallbackControllerFactory.class);
 
-    public abstract TransferErrorCallback create(Controller c);
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, TransferErrorCallbackControllerFactory> factories
-            = new HashMap<Platform, TransferErrorCallbackControllerFactory>();
+    @Override
+    protected TransferErrorCallback create() {
+        throw new FactoryException();
+    }
+
+    public TransferErrorCallback create(final Controller c) {
+        try {
+            final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(
+                    preferences.getProperty("factory.transfererrorcallback.class"));
+            final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for %s", c.getClass()));
+                // Call default constructor for disabled implementations
+                return name.newInstance();
+            }
+            return constructor.newInstance(c);
+        }
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+    }
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static TransferErrorCallback get(final Controller c) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DisabledTransferErrorCallback();
-        }
-        return factories.get(NATIVE_PLATFORM).create(c);
-    }
-
-    public static void addFactory(Platform p, TransferErrorCallbackControllerFactory f) {
-        factories.put(p, f);
+        return new TransferErrorCallbackControllerFactory().create(c);
     }
 }

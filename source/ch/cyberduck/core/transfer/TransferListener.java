@@ -24,7 +24,7 @@ package ch.cyberduck.core.transfer;
 public interface TransferListener {
 
     /**
-     * The transfers are about to start transfering
+     * The transfers are about to start transferring
      */
     void start(Transfer transfer);
 

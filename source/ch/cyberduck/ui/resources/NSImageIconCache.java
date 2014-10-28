@@ -43,17 +43,6 @@ import java.util.Map;
 public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
-    public static void register() {
-        IconCacheFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends IconCacheFactory {
-        @Override
-        protected IconCache create() {
-            return new NSImageIconCache();
-        }
-    }
-
     private final NSRect NSZeroRect = new NSRect(0, 0);
 
     private static final Local FOLDER_PATH
@@ -64,7 +53,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     private Map<String, NSImage> cache;
 
-    protected NSImageIconCache() {
+    public NSImageIconCache() {
         if(0 == Preferences.instance().getInteger("icon.cache.size")) {
             cache = new HashMap<String, NSImage>() {
                 @Override

@@ -24,7 +24,7 @@ using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    internal class TaskbarApplicationBadgeLabeler : ApplicationBadgeLabeler
+    public sealed class TaskbarApplicationBadgeLabeler : ApplicationBadgeLabeler
     {
         public void badge(string text)
         {
@@ -52,22 +52,6 @@ namespace Ch.Cyberduck.Core.Local
                     }
                     TransferController.Instance.TaskbarOverlayIcon(Icon.FromHandle(bm.GetHicon()), text);
                 }
-            }
-        }
-
-        public static void Register()
-        {
-            if (Utils.IsWin7OrLater)
-            {
-                ApplicationBadgeLabelerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-            }
-        }
-
-        private class Factory : ApplicationBadgeLabelerFactory
-        {
-            protected override object create()
-            {
-                return new TaskbarApplicationBadgeLabeler();
             }
         }
     }

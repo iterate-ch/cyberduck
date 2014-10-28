@@ -18,32 +18,25 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class PreferencesFactory extends Factory<Preferences> {
+public final class PreferencesFactory {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, PreferencesFactory> factories = new HashMap<Platform, PreferencesFactory>();
-
-    public static void addFactory(Platform platform, PreferencesFactory f) {
-        factories.put(platform, f);
+    private PreferencesFactory() {
+        //
     }
 
-    private static Preferences l;
+    private static Preferences preferences;
 
-    public static Preferences get() {
-        if(null == l) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                return new MemoryPreferences();
-            }
-            l = factories.get(NATIVE_PLATFORM).create();
+    public static synchronized void set(final Preferences p) {
+        preferences = p;
+    }
+
+    public static synchronized Preferences get() {
+        if(null == preferences) {
+            preferences = new MemoryPreferences();
         }
-        return l;
+        return preferences;
     }
 }

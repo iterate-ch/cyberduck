@@ -74,7 +74,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private ImageList _protocolIcons;
 
-        private IconCache()
+        public IconCache()
         {
         }
 

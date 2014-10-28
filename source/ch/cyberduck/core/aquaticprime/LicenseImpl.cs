@@ -31,7 +31,6 @@ namespace Ch.Cyberduck.Core.Aquaticprime
             : base(file)
         {
             _file = file;
-            ;
         }
 
         public override bool verify()
@@ -51,24 +50,6 @@ namespace Ch.Cyberduck.Core.Aquaticprime
         public override string getValue(string property)
         {
             return LicenseVerifier.Instance.GetValue(_file.getAbsolute(), property);
-        }
-
-        public static void Register()
-        {
-            LicenseFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : LicenseFactory
-        {
-            protected override License open(ch.cyberduck.core.Local l)
-            {
-                return new LicenseImpl(l);
-            }
-
-            protected override object create()
-            {
-                throw new NotSupportedException();
-            }
         }
     }
 }

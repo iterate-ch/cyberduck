@@ -30,17 +30,6 @@ import org.apache.log4j.Logger;
 public final class LaunchServicesQuarantineService implements QuarantineService {
     private static final Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
 
-    public static void register() {
-        QuarantineServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends QuarantineServiceFactory {
-        @Override
-        protected QuarantineService create() {
-            return new LaunchServicesQuarantineService();
-        }
-    }
-
     static {
         Native.load("LaunchServicesQuarantineService");
     }

@@ -19,21 +19,15 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
-import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.HostKeyCallbackFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 
@@ -51,25 +45,6 @@ import net.schmizz.sshj.common.KeyType;
  */
 public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
-
-    public static void register() {
-        HostKeyCallbackFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends HostKeyCallbackFactory {
-        @Override
-        protected HostKeyCallback create() {
-            throw new FactoryException();
-        }
-
-        @Override
-        public HostKeyCallback create(final Controller c, final Protocol protocol) {
-            if(Scheme.sftp.equals(protocol.getScheme())) {
-                return new AlertHostKeyController((WindowController) c);
-            }
-            return new DisabledHostKeyCallback();
-        }
-    }
 
     private WindowController parent;
 

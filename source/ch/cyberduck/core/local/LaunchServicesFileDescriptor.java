@@ -29,17 +29,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
 
-    public static void register() {
-        FileDescriptorFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends FileDescriptorFactory {
-        @Override
-        protected FileDescriptor create() {
-            return new LaunchServicesFileDescriptor();
-        }
-    }
-
     static {
         Native.load("LaunchServicesFileDescriptor");
     }

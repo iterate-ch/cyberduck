@@ -13,7 +13,7 @@ public class NotificationCenterTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testNotify() throws Exception {
-        final Growl growl = new NotificationCenter();
-        growl.notify("title", "test");
+        final NotificationService n = new NotificationCenter();
+        n.notify("title", "test");
     }
 }

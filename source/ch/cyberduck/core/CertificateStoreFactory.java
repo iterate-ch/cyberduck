@@ -17,34 +17,20 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class CertificateStoreFactory extends Factory<CertificateStore> {
+public class CertificateStoreFactory extends Factory<CertificateStore> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, CertificateStoreFactory> factories
-            = new HashMap<Platform, CertificateStoreFactory>();
-
-    public static void addFactory(Platform platform, CertificateStoreFactory f) {
-        factories.put(platform, f);
+    protected CertificateStoreFactory() {
+        super("factory.certificatestore.class");
     }
 
     private static CertificateStore store;
 
-    public static CertificateStore get() {
+    public static synchronized CertificateStore get() {
         if(null == store) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                store = new DisabledCertificateStore();
-            }
-            else {
-                store = factories.get(NATIVE_PLATFORM).create();
-            }
+            store = new CertificateStoreFactory().create();
         }
         return store;
     }

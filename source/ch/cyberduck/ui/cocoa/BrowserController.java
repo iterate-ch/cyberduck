@@ -463,7 +463,7 @@ public class BrowserController extends WindowController
                 }, this, this, download, options,
                         new TransferPrompt() {
                             @Override
-                            public TransferAction prompt(final TransferItem file) {
+                            public TransferAction prompt(final TransferItem item) {
                                 return TransferAction.comparison;
                             }
 
@@ -4036,7 +4036,7 @@ public class BrowserController extends WindowController
             case TOOLBAR_TOOLS:
                 item.setLabel(LocaleFactory.localizedString("Action"));
                 item.setPaletteLabel(LocaleFactory.localizedString("Action"));
-                if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
+                if(inserted || !Factory.Platform.osversion.matches("10\\.5.*")) {
                     item.setView(actionPopupButton);
                     // Add a menu representation for text mode of toolbar
                     NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);

@@ -19,34 +19,20 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class PasswordStoreFactory extends Factory<HostPasswordStore> {
+public class PasswordStoreFactory extends Factory<HostPasswordStore> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, PasswordStoreFactory> factories
-            = new HashMap<Platform, PasswordStoreFactory>();
-
-    public static void addFactory(Platform platform, PasswordStoreFactory f) {
-        factories.put(platform, f);
+    protected PasswordStoreFactory() {
+        super("factory.passwordstore.class");
     }
 
     private static HostPasswordStore store;
 
-    public static HostPasswordStore get() {
+    public static synchronized HostPasswordStore get() {
         if(null == store) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                store = new DisabledPasswordStore();
-            }
-            else {
-                store = factories.get(NATIVE_PLATFORM).create();
-            }
+            store = new PasswordStoreFactory().create();
         }
         return store;
     }

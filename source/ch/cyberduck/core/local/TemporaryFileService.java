@@ -33,21 +33,6 @@ import java.util.UUID;
  */
 public class TemporaryFileService {
 
-    protected TemporaryFileService() {
-        //
-    }
-
-    public static void register() {
-        TemporaryFileServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends TemporaryFileServiceFactory {
-        @Override
-        protected TemporaryFileService create() {
-            return new TemporaryFileService();
-        }
-    }
-
     public Local create(final Path file) {
         return this.create(UUID.randomUUID().toString(), file);
     }

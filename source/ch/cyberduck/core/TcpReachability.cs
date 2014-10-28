@@ -47,18 +47,5 @@ namespace Ch.Cyberduck.Core
         {
             Process.Start("Rundll32.exe", "ndfapi,NdfRunDllDiagnoseIncident");
         }
-
-        public static void Register()
-        {
-            ReachabilityFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : ReachabilityFactory
-        {
-            protected override object create()
-            {
-                return new TcpReachability();
-            }
-        }
     }
 }

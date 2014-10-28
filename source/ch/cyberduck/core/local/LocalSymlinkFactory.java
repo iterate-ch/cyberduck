@@ -20,28 +20,16 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.features.Symlink;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class LocalSymlinkFactory extends Factory<Symlink> {
+public class LocalSymlinkFactory extends Factory<Symlink> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, LocalSymlinkFactory> factories
-            = new HashMap<Platform, LocalSymlinkFactory>();
-
-    public static void addFactory(Factory.Platform platform, LocalSymlinkFactory f) {
-        factories.put(platform, f);
+    public LocalSymlinkFactory() {
+        super("factory.symlink.class");
     }
 
     public static Symlink get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new NullLocalSymlinkFeature();
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new LocalSymlinkFactory().create();
     }
 }

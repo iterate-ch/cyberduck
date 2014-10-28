@@ -18,9 +18,42 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ApplescriptTerminalService;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.IOKitSleepPreventer;
+import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.PreferencesFactory;
+import ch.cyberduck.core.RendezvousResponder;
+import ch.cyberduck.core.SystemConfigurationProxy;
+import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
+import ch.cyberduck.core.aquaticprime.ReceiptFactory;
+import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
+import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
+import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
+import ch.cyberduck.core.local.LaunchServicesQuarantineService;
+import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
+import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
+import ch.cyberduck.core.local.WorkspaceIconService;
+import ch.cyberduck.core.local.WorkspaceRevealService;
+import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
+import ch.cyberduck.core.local.WorkspaceTrashFeature;
+import ch.cyberduck.core.serializer.impl.HostPlistReader;
+import ch.cyberduck.core.serializer.impl.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.PlistSerializer;
+import ch.cyberduck.core.serializer.impl.PlistWriter;
+import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
+import ch.cyberduck.core.serializer.impl.TransferPlistReader;
+import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -30,6 +63,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
+import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
+import ch.cyberduck.ui.growl.DisabledNotificationService;
+import ch.cyberduck.ui.growl.NotificationCenter;
+import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,17 +86,6 @@ import java.util.List;
  */
 public class UserDefaultsPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
-
-    public static void register() {
-        PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends PreferencesFactory {
-        @Override
-        protected Preferences create() {
-            return new UserDefaultsPreferences();
-        }
-    }
 
     private NSUserDefaults store;
 
@@ -163,6 +189,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     protected void setDefaults() {
+        this.setFactories();
         /**
          * The logging level (debug, info, warn, error)
          */
@@ -222,10 +249,75 @@ public class UserDefaultsPreferences extends Preferences {
         else {
             defaults.put("queue.download.folder", "~/Desktop");
         }
-        defaults.put("browser.filesize.decimal", String.valueOf(!Factory.VERSION_PLATFORM.matches("10\\.5.*")));
+        defaults.put("browser.filesize.decimal", String.valueOf(!Factory.Platform.osversion.matches("10\\.5.*")));
 
+        // SSL Keystore
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
         defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+    }
+
+    @Override
+    protected void setFactories() {
+        super.setFactories();
+
+        defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
+        defaults.put("factory.local.class", FinderLocal.class.getName());
+        defaults.put("factory.locale.class", BundleLocale.class.getName());
+        defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
+        defaults.put("factory.passwordstore.class", Keychain.class.getName());
+        defaults.put("factory.certificatestore.class", Keychain.class.getName());
+        defaults.put("factory.hostkeycallback.class", AlertHostKeyController.class.getName());
+        defaults.put("factory.logincallback.class", PromptLoginController.class.getName());
+        defaults.put("factory.transfererrorcallback.class", AlertTransferErrorCallback.class.getName());
+        defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
+        defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
+        defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
+        defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
+        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
+
+        defaults.put("factory.serializer.class", PlistSerializer.class.getName());
+        defaults.put("factory.deserializer.class", PlistDeserializer.class.getName());
+        defaults.put("factory.reader.profile.class", ProfilePlistReader.class.getName());
+        defaults.put("factory.writer.profile.class", PlistWriter.class.getName());
+        defaults.put("factory.reader.transfer.class", TransferPlistReader.class.getName());
+        defaults.put("factory.writer.transfer.class", PlistWriter.class.getName());
+        defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
+        defaults.put("factory.writer.host.class", PlistWriter.class.getName());
+
+        defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
+        defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
+        defaults.put("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
+        defaults.put("factory.reveal.class", WorkspaceRevealService.class.getName());
+        defaults.put("factory.trash.class", WorkspaceTrashFeature.class.getName());
+        defaults.put("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
+        defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
+        defaults.put("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
+        if(this.getBoolean("queue.dock.badge")) {
+            defaults.put("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
+        }
+        else {
+            defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
+        }
+        defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
+        if(null == Updater.getFeed()) {
+            defaults.put("factory.licensefactory.class", ReceiptFactory.class.getName());
+        }
+        else {
+            defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
+        }
+        if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
+            defaults.put("factory.notification.class", NotificationCenter.class.getName());
+        }
+        else {
+            defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
+        }
+        defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
+        defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
+        defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        defaults.put("factory.pathreference.class", NSObjectPathReference.class.getName());
+        defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
     }
 
     /**

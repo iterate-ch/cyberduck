@@ -18,45 +18,53 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class LocalFactory extends Factory<Local> {
+public final class LocalFactory extends Factory<Local> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, LocalFactory> factories = new HashMap<Factory.Platform, LocalFactory>();
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    public static void addFactory(Factory.Platform platform, LocalFactory f) {
-        factories.put(platform, f);
+    @Override
+    protected Local create() {
+        return this.create(preferences.getProperty("local.user.home"));
     }
 
-    protected static LocalFactory getFactory() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+    protected Local create(final String path) {
+        try {
+            final Class<Local> name = (Class<Local>) Class.forName(preferences.getProperty("factory.local.class"));
+            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
+            return constructor.newInstance(path);
         }
-        return factories.get(NATIVE_PLATFORM);
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
 
-    protected abstract Local create(Local parent, String name);
-
-    public static Local get(Local parent, String name) {
-        return getFactory().create(parent, name);
+    public static Local get(final Local parent, final String name) {
+        return get(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
     }
 
-    protected abstract Local create(String parent, String name);
-
-    public static Local get(String parent, String name) {
-        return getFactory().create(parent, name);
+    public static Local get(final String parent, final String name) {
+        return get(new LocalFactory().create(parent), name);
     }
 
-    protected abstract Local create(String path);
-
-    public static Local get(String path) {
-        return getFactory().create(path);
+    public static Local get(final String path) {
+        return new LocalFactory().create(path);
     }
 }

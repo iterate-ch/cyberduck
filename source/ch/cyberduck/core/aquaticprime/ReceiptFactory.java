@@ -34,10 +34,6 @@ import java.util.List;
 public class ReceiptFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(ReceiptFactory.class);
 
-    public static void register() {
-        LicenseFactory.addFactory(ReceiptFactory.NATIVE_PLATFORM, new ReceiptFactory());
-    }
-
     /**
      * Application has determined that its receipt is invalid. Exit with a status of 173
      */

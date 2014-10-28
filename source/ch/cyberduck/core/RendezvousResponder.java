@@ -41,19 +41,6 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
 
     private Map<String, DNSSDService> browsers;
 
-    public static void register() {
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            RendezvousFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-        }
-    }
-
-    private static class Factory extends RendezvousFactory {
-        @Override
-        protected Rendezvous create() {
-            return new RendezvousResponder();
-        }
-    }
-
     public RendezvousResponder() {
         this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }

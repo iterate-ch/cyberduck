@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.growl;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,19 +18,15 @@ package ch.cyberduck.ui.growl;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertSame;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class GrowlFactoryTest extends AbstractTestCase {
+public class DisabledTerminalService implements TerminalService {
 
-    @Test
-    public void testGet() throws Exception {
-        assertSame(GrowlFactory.get(), GrowlFactory.get());
+    @Override
+    public void open(final Host host, final Path workdir) throws AccessDeniedException {
+        throw new AccessDeniedException("Disabled");
     }
 }

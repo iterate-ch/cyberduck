@@ -22,7 +22,6 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
 import org.junit.Test;
 

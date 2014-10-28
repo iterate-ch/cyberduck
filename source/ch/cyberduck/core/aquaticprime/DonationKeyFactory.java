@@ -34,10 +34,6 @@ import java.util.List;
 public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
 
-    public static void register() {
-        LicenseFactory.addFactory(DonationKeyFactory.NATIVE_PLATFORM, new DonationKeyFactory());
-    }
-
     @Override
     protected License create() {
         return new DefaultLicenseFactory(this).create();

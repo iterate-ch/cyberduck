@@ -35,22 +35,6 @@ import java.util.Map;
  */
 public class NSObjectPathReference implements PathReference<NSObject> {
 
-    private static class Factory extends PathReferenceFactory {
-        @Override
-        protected PathReference create() {
-            throw new FactoryException();
-        }
-
-        @Override
-        protected <T> PathReference<T> create(Path param) {
-            return (PathReference<T>) new NSObjectPathReference(param);
-        }
-    }
-
-    public static void register() {
-        PathReferenceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
     private NSObject reference;
 
     private String attributes;
@@ -61,7 +45,7 @@ public class NSObjectPathReference implements PathReference<NSObject> {
             Preferences.instance().getInteger("browser.model.cache.size")
     ));
 
-    protected NSObjectPathReference(final Path file) {
+    public NSObjectPathReference(final Path file) {
         // Unique name
         final DefaultPathReference d = new DefaultPathReference(file);
         final String name = d.unique();

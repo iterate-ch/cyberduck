@@ -21,7 +21,7 @@ using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal class UploadPromptController : TransferPromptController
+    public class UploadPromptController : TransferPromptController
     {
         public UploadPromptController(WindowController parent, Transfer transfer, Session session)
             : base(parent, transfer, session)

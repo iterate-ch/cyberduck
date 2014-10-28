@@ -63,11 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             return d.ToString("F");
         }
 
-        public static void Register()
-        {
-            UserDateFormatterFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -86,14 +81,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS*TimeSpan.TicksPerMillisecond)).ToLocalTime();
             return dt.Ticks/TimeSpan.TicksPerMillisecond;
-        }
-
-        private class Factory : UserDateFormatterFactory
-        {
-            protected override object create()
-            {
-                return new UserDefaultsDateFormatter();
-            }
         }
     }
 }

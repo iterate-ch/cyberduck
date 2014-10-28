@@ -20,28 +20,16 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Serializer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class SerializerFactory extends Factory<Serializer> {
+public class SerializerFactory extends Factory<Serializer> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, SerializerFactory> factories
-            = new HashMap<Factory.Platform, SerializerFactory>();
-
-    public static void addFactory(Factory.Platform platform, SerializerFactory f) {
-        factories.put(platform, f);
+    public SerializerFactory() {
+        super("factory.serializer.class");
     }
 
     public static Serializer get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new SerializerFactory().create();
     }
 }

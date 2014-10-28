@@ -47,8 +47,8 @@ import ch.cyberduck.ui.TransferPromptControllerFactory;
 import ch.cyberduck.ui.action.AbstractTransferWorker;
 import ch.cyberduck.ui.action.ConcurrentTransferWorker;
 import ch.cyberduck.ui.action.SingleTransferWorker;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.growl.NotificationService;
+import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -87,7 +87,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
 
     private TransferPrompt prompt;
 
-    private Growl growl = GrowlFactory.get();
+    private NotificationService growl = NotificationServiceFactory.get();
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session session,

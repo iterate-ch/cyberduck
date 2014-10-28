@@ -75,7 +75,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.growl.NotificationServiceFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -565,7 +565,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             else if("cyberducklicense".equals(f.getExtension())) {
-                final License l = LicenseFactory.create(f);
+                final License l = LicenseFactory.get(f);
                 if(l instanceof Donation) {
                     if(l.verify()) {
                         try {
@@ -1003,7 +1003,7 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public Void run() throws BackgroundException {
                 // Make sure we register to Growl first
-                GrowlFactory.get().setup();
+                NotificationServiceFactory.get().setup();
                 return null;
             }
 
@@ -1019,7 +1019,7 @@ public class MainController extends BundleController implements NSApplication.De
                 invoke(new DefaultMainAction() {
                     @Override
                     public void run() {
-                        GrowlFactory.get().notifyWithImage("Bonjour",
+                        NotificationServiceFactory.get().notifyWithImage("Bonjour",
                                 bonjour.getDisplayedName(identifier), "rendezvous");
                     }
                 });

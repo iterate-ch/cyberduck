@@ -19,56 +19,12 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Factory;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class QuickLookFactory extends Factory<QuickLook> {
-
-    /**
-     * Registered factories
-     */
-    protected static final Map<Platform, QuickLookFactory> factories = new HashMap<Platform, QuickLookFactory>();
-
-    public static void addFactory(Platform platform, QuickLookFactory f) {
-        factories.put(platform, f);
-    }
+public final class QuickLookFactory {
 
     public static QuickLook get() {
-        if(factories.containsKey(VERSION_PLATFORM)) {
-            return factories.get(VERSION_PLATFORM).create();
-        }
-        else {
-            return new Disabled();
-        }
+        return new QuartzQuickLook();
     }
-
-    private static final class Disabled extends AbstractQuickLook {
-        @Override
-        public boolean isAvailable() {
-            return false;
-        }
-
-        @Override
-        public boolean isOpen() {
-            return false;
-        }
-
-        @Override
-        public void open() {
-            //
-        }
-
-        @Override
-        public void close() {
-            //
-        }
-    }
-
-    @Override
-    protected abstract QuickLook create();
 }

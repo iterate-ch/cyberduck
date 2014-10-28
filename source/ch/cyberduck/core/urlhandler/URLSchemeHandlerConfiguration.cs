@@ -23,7 +23,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Urlhandler
 {
-    internal class URLSchemeHandlerConfiguration
+    public class URLSchemeHandlerConfiguration
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
 

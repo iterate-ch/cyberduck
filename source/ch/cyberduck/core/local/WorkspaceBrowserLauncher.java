@@ -28,17 +28,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class WorkspaceBrowserLauncher implements BrowserLauncher {
 
-    public static void register() {
-        BrowserLauncherFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends BrowserLauncherFactory {
-        @Override
-        protected BrowserLauncher create() {
-            return new WorkspaceBrowserLauncher();
-        }
-    }
-
     @Override
     public boolean open(final String url) {
         synchronized(NSWorkspace.class) {

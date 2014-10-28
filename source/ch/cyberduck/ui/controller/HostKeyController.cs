@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly WindowController _parent;
 
-        private HostKeyController(WindowController c)
+        public HostKeyController(WindowController c)
         {
             _parent = c;
         }
@@ -105,28 +105,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 };
             _parent.Invoke(d, true);
             return true;
-        }
-
-        public static void Register()
-        {
-            HostKeyCallbackFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : HostKeyCallbackFactory
-        {
-            protected override object create()
-            {
-                return null;
-            }
-
-            public override HostKeyCallback create(ch.cyberduck.ui.Controller c, Protocol protocol)
-            {
-                if (Scheme.sftp.equals(protocol.getScheme()))
-                {
-                    return new HostKeyController(c as WindowController);
-                }
-                return new DisabledHostKeyCallback();
-            }
         }
     }
 }

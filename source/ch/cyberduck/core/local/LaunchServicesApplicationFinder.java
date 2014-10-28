@@ -41,17 +41,6 @@ import java.util.Map;
 public final class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
 
-    public static void register() {
-        ApplicationFinderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ApplicationFinderFactory {
-        @Override
-        protected ApplicationFinder create() {
-            return new LaunchServicesApplicationFinder();
-        }
-    }
-
     static {
         Native.load("LaunchServicesApplicationFinder");
     }

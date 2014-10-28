@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private Protocol _protocol;
         private ILoginView _view;
 
-        private PromptLoginController(WindowController c)
+        public PromptLoginController(WindowController c)
         {
             _browser = c;
         }
@@ -112,11 +112,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public Local select(Local identity)
         {
             return identity;
-        }
-
-        public static void Register()
-        {
-            LoginCallbackFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         private void View_ChangedPkCheckboxEvent()
@@ -234,19 +229,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _view.PkCheckboxState = false;
                 View.PkLabel = LocaleFactory.localizedString("No Private Key selected", "Credentials");
-            }
-        }
-
-        private class Factory : LoginCallbackFactory
-        {
-            protected override object create()
-            {
-                return new PromptLoginController(TransferController.Instance);
-            }
-
-            public override LoginCallback create(ch.cyberduck.ui.Controller c)
-            {
-                return new PromptLoginController((WindowController) c);
             }
         }
     }

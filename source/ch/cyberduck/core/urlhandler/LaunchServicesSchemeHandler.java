@@ -20,6 +20,7 @@ package ch.cyberduck.core.urlhandler;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import java.util.ArrayList;
@@ -32,19 +33,19 @@ import java.util.List;
  */
 public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
 
-    public static void register() {
-        SchemeHandlerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends SchemeHandlerFactory {
-        @Override
-        protected SchemeHandler create() {
-            return new LaunchServicesSchemeHandler();
-        }
-    }
-
     static {
         Native.load("LaunchServicesSchemeHandler");
+    }
+
+
+    private ApplicationFinder applicationFinder;
+
+    public LaunchServicesSchemeHandler() {
+        this(ApplicationFinderFactory.get());
+    }
+
+    public LaunchServicesSchemeHandler(final ApplicationFinder applicationFinder) {
+        this.applicationFinder = applicationFinder;
     }
 
     /**
@@ -69,7 +70,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      */
     @Override
     public Application getDefaultHandler(final Scheme scheme) {
-        return ApplicationFinderFactory.get().getDescription(this.getDefaultHandler(scheme.name()));
+        return applicationFinder.getDescription(this.getDefaultHandler(scheme.name()));
     }
 
     private native String getDefaultHandler(String scheme);
@@ -78,8 +79,8 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     public List<Application> getAllHandlers(final Scheme scheme) {
         List<Application> handlers = new ArrayList<Application>();
         for(String bundleIdentifier : this.getAllHandlers(scheme.name())) {
-            final Application application = ApplicationFinderFactory.get().getDescription(bundleIdentifier);
-            if(ApplicationFinderFactory.get().isInstalled(application)) {
+            final Application application = applicationFinder.getDescription(bundleIdentifier);
+            if(applicationFinder.isInstalled(application)) {
                 handlers.add(application);
             }
         }

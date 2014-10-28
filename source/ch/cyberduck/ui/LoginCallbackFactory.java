@@ -19,38 +19,61 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Preferences;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class LoginCallbackFactory extends Factory<LoginCallback> {
+public class LoginCallbackFactory extends Factory<LoginCallback> {
+    private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
 
-    public abstract LoginCallback create(Controller c);
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, LoginCallbackFactory> factories
-            = new HashMap<Platform, LoginCallbackFactory>();
+    @Override
+    protected LoginCallback create() {
+        throw new FactoryException();
+    }
+
+    public LoginCallback create(final Controller c) {
+        try {
+            final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(preferences.getProperty("factory.logincallback.class"));
+            final Constructor<LoginCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for %s", c.getClass()));
+                // Call default constructor for disabled implementations
+                return name.newInstance();
+            }
+            return constructor.newInstance(c);
+        }
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+    }
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static LoginCallback get(final Controller c) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DisabledLoginCallback();
-        }
-        return factories.get(NATIVE_PLATFORM).create(c);
-    }
-
-    public static void addFactory(Platform p, LoginCallbackFactory f) {
-        factories.put(p, f);
+        return new LoginCallbackFactory().create(c);
     }
 }

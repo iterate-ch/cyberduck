@@ -21,37 +21,65 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
+public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
+    private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
-    public abstract HostKeyCallback create(Controller c, Protocol protocol);
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, HostKeyCallbackFactory> factories
-            = new HashMap<Platform, HostKeyCallbackFactory>();
+    @Override
+    protected HostKeyCallback create() {
+        throw new FactoryException();
+    }
+
+    public HostKeyCallback create(final Controller c, final Protocol protocol) {
+        if(Scheme.sftp.equals(protocol.getScheme())) {
+            try {
+                final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(preferences.getProperty("factory.hostkeycallback.class"));
+                final Constructor<HostKeyCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+                if(null == constructor) {
+                    log.warn(String.format("No matching constructor for %s", c.getClass()));
+                    // Call default constructor for disabled implementations
+                    return name.newInstance();
+                }
+                return constructor.newInstance(c);
+            }
+            catch(InstantiationException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(IllegalAccessException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(ClassNotFoundException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(InvocationTargetException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+        }
+        return new DisabledHostKeyCallback();
+    }
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static HostKeyCallback get(final Controller c, final Protocol protocol) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DisabledHostKeyCallback();
-        }
-        return factories.get(NATIVE_PLATFORM).create(c, protocol);
-    }
-
-    public static void addFactory(Platform p, HostKeyCallbackFactory f) {
-        factories.put(p, f);
+        return new HostKeyCallbackFactory().create(c, protocol);
     }
 }

@@ -27,21 +27,13 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class TemporaryFileServiceFactory extends Factory<TemporaryFileService> {
+public class TemporaryFileServiceFactory extends Factory<TemporaryFileService> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, TemporaryFileServiceFactory> factories = new HashMap<Platform, TemporaryFileServiceFactory>();
-
-    public static void addFactory(Platform platform, TemporaryFileServiceFactory f) {
-        factories.put(platform, f);
+    public TemporaryFileServiceFactory() {
+        super("factory.temporaryfiles.class");
     }
 
     public static TemporaryFileService get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new TemporaryFileServiceFactory().create();
     }
 }

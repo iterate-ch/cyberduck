@@ -24,22 +24,9 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class HostPlistReader : PlistReader<Host>
     {
-        public static void Register()
-        {
-            HostReaderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         public override Host deserialize(XmlNode dictNode)
         {
             return new HostDictionary().deserialize(dictNode);
-        }
-
-        private class Factory : HostReaderFactory
-        {
-            protected override object create()
-            {
-                return new HostPlistReader();
-            }
         }
     }
 }

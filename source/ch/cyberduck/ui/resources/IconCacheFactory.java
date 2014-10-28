@@ -18,31 +18,21 @@ package ch.cyberduck.ui.resources;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
-public abstract class IconCacheFactory extends Factory<IconCache> {
+public class IconCacheFactory extends Factory<IconCache> {
 
-    private static final Map<Platform, IconCacheFactory> factories
-            = new HashMap<Platform, IconCacheFactory>();
-
-    public static void addFactory(Factory.Platform platform, IconCacheFactory f) {
-        factories.put(platform, f);
+    protected IconCacheFactory() {
+        super("factory.iconcache.class");
     }
 
     private static IconCache cache;
 
-    public static <I> IconCache<I> get() {
+    public static synchronized <I> IconCache<I> get() {
         if(null == cache) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            cache = factories.get(NATIVE_PLATFORM).create();
+            cache = new IconCacheFactory().create();
         }
         return cache;
     }

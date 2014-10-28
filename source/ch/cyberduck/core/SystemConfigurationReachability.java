@@ -27,17 +27,6 @@ import ch.cyberduck.core.library.Native;
  */
 public final class SystemConfigurationReachability implements Reachability {
 
-    public static void register() {
-        ReachabilityFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ReachabilityFactory {
-        @Override
-        protected Reachability create() {
-            return new SystemConfigurationReachability();
-        }
-    }
-
     static {
         Native.load("Diagnostics");
     }

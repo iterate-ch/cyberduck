@@ -23,51 +23,62 @@ package ch.cyberduck.core;
  */
 public abstract class Factory<T> {
 
+    private String clazz;
+
+    protected Factory() {
+        this.clazz = null;
+    }
+
+    /**
+     * @param clazz Implementation class name
+     */
+    protected Factory(final String clazz) {
+        this.clazz = Preferences.instance().getProperty(clazz);
+    }
+
     /**
      * @return A new instance of the type of objects this
-     *         factory creates
+     * factory creates
      */
-    protected abstract T create();
-
-    public static abstract class Platform {
-        public abstract String toString();
-
-        /**
-         * @param regex Identification string
-         * @return True if plattform identification matches regular expression
-         */
-        public boolean matches(String regex) {
-            return this.toString().matches(regex);
+    protected T create() {
+        if(null == clazz) {
+            throw new FactoryException();
         }
-
-        @Override
-        public boolean equals(Object other) {
-            if(null == other) {
-                return false;
-            }
-            if(other instanceof Platform) {
-                return other.toString().equals(this.toString());
-            }
-            return false;
+        try {
+            final Class<T> name = (Class<T>) Class.forName(clazz);
+            return name.newInstance();
         }
-
-        @Override
-        public int hashCode() {
-            return this.toString().hashCode();
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
         }
     }
 
-    public static final Platform NATIVE_PLATFORM = new Platform() {
-        @Override
-        public String toString() {
-            return System.getProperty("os.name");
-        }
-    };
+    public static enum Platform {
+        osname {
+            @Override
+            public String toString() {
+                return System.getProperty("os.name");
+            }
+        },
+        osversion {
+            @Override
+            public String toString() {
+                return System.getProperty("os.version");
+            }
+        };
 
-    public static final Platform VERSION_PLATFORM = new Platform() {
-        @Override
-        public String toString() {
-            return System.getProperty("os.version");
+        /**
+         * @param regex Identification string
+         * @return True if platform identification matches regular expression
+         */
+        public boolean matches(final String regex) {
+            return this.toString().matches(regex);
         }
-    };
+    }
 }

@@ -19,44 +19,21 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
-public abstract class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
+public class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
     private static final Logger log = Logger.getLogger(ApplicationBadgeLabelerFactory.class);
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, ApplicationBadgeLabelerFactory> factories
-            = new HashMap<Factory.Platform, ApplicationBadgeLabelerFactory>();
-
-    public static void addFactory(Factory.Platform platform, ApplicationBadgeLabelerFactory f) {
-        factories.put(platform, f);
+    public ApplicationBadgeLabelerFactory() {
+        super("factory.badgelabeler.class");
     }
 
     public static ApplicationBadgeLabeler get() {
-        if(!Preferences.instance().getBoolean("queue.dock.badge")) {
-            return new DisabledApplicationBadgeLabeler();
-        }
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-            return new DisabledApplicationBadgeLabeler();
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ApplicationBadgeLabelerFactory().create();
     }
 
-    private static final class DisabledApplicationBadgeLabeler implements ApplicationBadgeLabeler {
-        @Override
-        public void badge(String label) {
-            //
-        }
-    }
 }

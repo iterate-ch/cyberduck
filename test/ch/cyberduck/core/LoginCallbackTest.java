@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class AbstractLoginControllerTest extends AbstractTestCase {
+public class LoginCallbackTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testCheckFTP() throws Exception {

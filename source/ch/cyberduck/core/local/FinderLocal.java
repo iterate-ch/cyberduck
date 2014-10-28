@@ -54,34 +54,8 @@ import java.io.OutputStream;
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
 
-    public static void register() {
-        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
     static {
         Native.load("Local");
-    }
-
-    private static class Factory extends LocalFactory {
-        @Override
-        protected Local create() {
-            return new FinderLocal(System.getProperty("user.home"));
-        }
-
-        @Override
-        protected Local create(final Local parent, final String name) {
-            return new FinderLocal(parent, name);
-        }
-
-        @Override
-        protected Local create(final String parent, final String name) {
-            return new FinderLocal(parent, name);
-        }
-
-        @Override
-        protected Local create(final String path) {
-            return new FinderLocal(path);
-        }
     }
 
     /**
@@ -93,7 +67,7 @@ public class FinderLocal extends Local {
             = new FinderLocalAttributes(this);
 
     public FinderLocal(final Local parent, final String name) {
-        this(parent.getAbsolute(), name);
+        super(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
     }
 
     public FinderLocal(final String parent, final String name) {
@@ -101,19 +75,7 @@ public class FinderLocal extends Local {
     }
 
     public FinderLocal(final String path) {
-        super(path);
-    }
-
-    @Override
-    protected void setPath(final String name) {
-        final String expanded = resolveAlias(stringByExpandingTildeInPath(name));
-        if(log.isDebugEnabled()) {
-            if(!StringUtils.equals(expanded, name)) {
-                log.debug(String.format("Expanded %s to %s", name, expanded));
-            }
-        }
-        super.setPath(expanded);
-
+        super(resolveAlias(stringByExpandingTildeInPath(path)));
     }
 
     @Override
@@ -263,7 +225,7 @@ public class FinderLocal extends Local {
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;
             while(((next = i.nextObject()) != null)) {
-                children.add(new FinderLocal(this.getAbsolute(), next.toString()));
+                children.add(LocalFactory.get(this, next.toString()));
             }
             return children;
         }
@@ -297,7 +259,7 @@ public class FinderLocal extends Local {
             final NSError f = error.getValueAs(NSError.class);
             throw new NotfoundException(String.format("%s", f.localizedDescription()));
         }
-        return new FinderLocal(this.getParent().getAbsolute(), destination);
+        return LocalFactory.get(this.getParent(), destination);
     }
 
     private static String stringByAbbreviatingWithTildeInPath(final String path) {
@@ -307,11 +269,17 @@ public class FinderLocal extends Local {
         return path;
     }
 
-    private static String stringByExpandingTildeInPath(final String path) {
-        if(path.startsWith("~")) {
-            return Preferences.instance().getProperty("local.user.home") + StringUtils.substring(path, 1);
+    private static String stringByExpandingTildeInPath(final String name) {
+        if(name.startsWith("~")) {
+            final String expanded = Preferences.instance().getProperty("local.user.home") + StringUtils.substring(name, 1);
+            if(log.isDebugEnabled()) {
+                if(!StringUtils.equals(expanded, name)) {
+                    log.debug(String.format("Expanded %s to %s", name, expanded));
+                }
+            }
+            return expanded;
         }
-        return path;
+        return name;
     }
 
     @Override

@@ -25,17 +25,6 @@ import org.rococoa.internal.AutoreleaseBatcher;
  */
 public final class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
 
-    public static void register() {
-        ActionOperationBatcherFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ActionOperationBatcherFactory {
-        @Override
-        protected ActionOperationBatcher create() {
-            return new AutoreleaseActionOperationBatcher();
-        }
-    }
-
     /**
      * An autorelease pool is used to manage Foundation's autorelease
      * mechanism for Objective-C objects. If you start off a thread

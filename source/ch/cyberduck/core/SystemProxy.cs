@@ -38,18 +38,5 @@ namespace Ch.Cyberduck.Core
             Uri proxy = _system.GetProxy(new Uri(target));
             return new Proxy(Proxy.Type.valueOf(proxy.Scheme.ToUpper()), proxy.Host, proxy.Port);
         }
-
-        public static void Register()
-        {
-            ProxyFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : ProxyFactory
-        {
-            protected override object create()
-            {
-                return new SystemProxy();
-            }
-        }
     }
 }

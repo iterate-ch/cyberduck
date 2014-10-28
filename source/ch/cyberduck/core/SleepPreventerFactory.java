@@ -18,40 +18,19 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class SleepPreventerFactory extends Factory<SleepPreventer> {
+public class SleepPreventerFactory extends Factory<SleepPreventer> {
 
-    private static final Map<Platform, SleepPreventerFactory> factories
-            = new HashMap<Platform, SleepPreventerFactory>();
-
-    public static void addFactory(Factory.Platform platform, SleepPreventerFactory f) {
-        factories.put(platform, f);
+    protected SleepPreventerFactory() {
+        super("factory.sleeppreventer.class");
     }
 
     public static SleepPreventer get() {
         if(!Preferences.instance().getBoolean("queue.sleep.prevent")) {
             return new DisabledSleepPreventer();
         }
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DisabledSleepPreventer();
-        }
-        return factories.get(NATIVE_PLATFORM).create();
-    }
-
-    private static final class DisabledSleepPreventer implements SleepPreventer {
-        @Override
-        public String lock() {
-            return null;
-        }
-
-        @Override
-        public void release(final String id) {
-            //
-        }
+        return new SleepPreventerFactory().create();
     }
 }

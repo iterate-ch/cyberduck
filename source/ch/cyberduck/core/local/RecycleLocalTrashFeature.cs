@@ -33,18 +33,5 @@ namespace Ch.Cyberduck.Core.Local
                                 Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
             }
         }
-
-        public static void Register()
-        {
-            LocalTrashFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : LocalTrashFactory
-        {
-            protected override object create()
-            {
-                return new RecycleLocalTrashFeature();
-            }
-        }
     }
 }

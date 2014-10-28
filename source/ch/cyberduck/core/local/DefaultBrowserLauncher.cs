@@ -21,26 +21,13 @@ using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public class DefaultBrowserLauncher : BrowserLauncher
+    public sealed class DefaultBrowserLauncher : BrowserLauncher
     {
         public bool open(string url)
         {
             Process process = new Process();
             process.StartInfo.FileName = url;
             return Utils.StartProcess(process);
-        }
-
-        public static void Register()
-        {
-            BrowserLauncherFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : BrowserLauncherFactory
-        {
-            protected override object create()
-            {
-                return new DefaultBrowserLauncher();
-            }
         }
     }
 }

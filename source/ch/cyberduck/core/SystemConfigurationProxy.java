@@ -31,17 +31,6 @@ import java.net.URI;
 public final class SystemConfigurationProxy extends AbstractProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
-    public static void register() {
-        ProxyFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ProxyFactory {
-        @Override
-        protected ProxyFinder create() {
-            return new SystemConfigurationProxy();
-        }
-    }
-
     static {
         Native.load("Proxy");
     }

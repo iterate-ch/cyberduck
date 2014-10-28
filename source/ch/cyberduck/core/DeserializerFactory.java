@@ -20,30 +20,40 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Deserializer;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class DeserializerFactory<T> extends Factory {
+public class DeserializerFactory<T> extends Factory<Deserializer> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, DeserializerFactory> factories
-            = new HashMap<Factory.Platform, DeserializerFactory>();
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    public static void addFactory(Factory.Platform platform, DeserializerFactory f) {
-        factories.put(platform, f);
-    }
-
-    public static <T> Deserializer get(T dict) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+    protected Deserializer create(final T dict) {
+        try {
+            final Class<Deserializer> name = (Class<Deserializer>) Class.forName(preferences.getProperty("factory.deserializer.class"));
+            final Constructor<Deserializer> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, dict.getClass());
+            return constructor.newInstance(dict);
         }
-        return factories.get(NATIVE_PLATFORM).create(dict);
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
 
-    protected abstract Deserializer create(T dict);
+    public static <T> Deserializer get(final T dict) {
+        return new DeserializerFactory<T>().create(dict);
+    }
 }

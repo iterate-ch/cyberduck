@@ -21,7 +21,7 @@ using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal class DownloadPromptController : TransferPromptController
+    public class DownloadPromptController : TransferPromptController
     {
         public DownloadPromptController(WindowController parent, Transfer transfer, Session session)
             : base(parent, transfer, session)

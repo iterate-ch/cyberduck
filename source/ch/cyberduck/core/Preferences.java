@@ -19,6 +19,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.Column;
@@ -72,6 +75,7 @@ public abstract class Preferences {
             if(null == current) {
                 current = PreferencesFactory.get();
                 current.load();
+                current.setFactories();
                 current.setDefaults();
                 current.post();
             }
@@ -192,6 +196,7 @@ public abstract class Preferences {
         defaults.put("website.help", "http://help.cyberduck.io/" + this.locale());
         defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
+        defaults.put("website.qloudsonic", "https://qloudsonic.io/plans");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
@@ -351,7 +356,6 @@ public abstract class Preferences {
         defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
 
-        defaults.put("editor.odb.enable", String.valueOf(false));
         defaults.put("editor.upload.temporary", String.valueOf(true));
         defaults.put("editor.upload.permissions.change", String.valueOf(true));
         defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
@@ -595,8 +599,8 @@ public abstract class Preferences {
         /**
          * qloudsonic.io
          */
-        defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
-        defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
+        defaults.put("s3.download.udt.threshold", String.valueOf(100L * 1024L * 1024L));
+        defaults.put("s3.upload.udt.threshold", String.valueOf(100L * 1024L * 1024L));
 
         /**
          * A prefix to apply to log file names
@@ -1024,6 +1028,13 @@ public abstract class Preferences {
             return false;
         }
         return v.equalsIgnoreCase("yes");
+    }
+
+    protected void setFactories() {
+        defaults.put("factory.temporaryfiles.class", TemporaryFileService.class.getName());
+        defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
+        defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
+        defaults.put("factory.pathreference.class", DefaultPathReference.class.getName());
     }
 
     /**

@@ -21,40 +21,28 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class RendezvousFactory extends Factory<Rendezvous> {
+public class RendezvousFactory extends Factory<Rendezvous> {
     private static final Logger log = Logger.getLogger(RendezvousFactory.class);
 
-    /**
-     * Registered factories
-     */
-    protected static final Map<Factory.Platform, RendezvousFactory> factories
-            = new HashMap<Factory.Platform, RendezvousFactory>();
-
-    public static void addFactory(Factory.Platform platform, RendezvousFactory f) {
-        factories.put(platform, f);
+    protected RendezvousFactory() {
+        super("factory.rendezvous.class");
     }
 
     private static Rendezvous rendezvous;
 
-    public static Rendezvous instance() {
+    public static synchronized Rendezvous instance() {
         if(null == rendezvous) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-                rendezvous = new DisabledRendezvous();
+            if(Preferences.instance().getBoolean("rendezvous.enable")) {
+                rendezvous = new RendezvousFactory().create();
             }
             else {
-                rendezvous = factories.get(NATIVE_PLATFORM).create();
+                rendezvous = new DisabledRendezvous();
             }
         }
         return rendezvous;
     }
 
-    private static final class DisabledRendezvous extends AbstractRendezvous {
-    }
 }

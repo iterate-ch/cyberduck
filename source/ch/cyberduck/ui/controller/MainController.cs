@@ -50,7 +50,6 @@ using org.apache.log4j;
 using org.apache.log4j.xml;
 using sun.security.mscapi;
 using ArrayList = System.Collections.ArrayList;
-using Keychain = Ch.Cyberduck.Core.Keychain;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
 using SystemProxy = Ch.Cyberduck.Core.SystemProxy;
@@ -87,7 +86,8 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            RegisterImplementations();
+            PreferencesFactory.set(new UserPreferences());
+            ProtocolFactory.register();
 
             if (!Debugger.IsAttached)
             {
@@ -202,41 +202,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Environment.Exit(1);
         }
 
-        private static void RegisterImplementations()
-        {
-            UserPreferences.Register();
-            SystemLocal.Register();
-            LicenseImpl.Register();
-            SystemProxy.Register();
-            RecycleLocalTrashFeature.Register();
-            DictionaryLocale.Register();
-            Keychain.Register();
-            PlistWriter.Register();
-            PlistSerializer.Register();
-            PlistDeserializer.Register();
-            HostPlistReader.Register();
-            TransferPlistReader.Register();
-            ProfilePlistReader.Register();
-            TcpReachability.Register();
-            DefaultPathReferenceFactory.Register();
-            PromptLoginController.Register();
-            DialogTransferPromptControllerFactory.Register();
-            DialogTransferErrorCallback.Register();
-            HostKeyController.Register();
-            UserDefaultsDateFormatter.Register();
-            Rendezvous.Register();
-            ProtocolFactory.register();
-            WindowsTemporaryFileService.Register();
-            RegistryApplicationFinder.Register();
-            SystemWatchEditorFactory.Register();
-            WindowsApplicationLauncher.Register();
-            Win32FileDescriptor.Register();
-            ExplorerRevealService.Register();
-            TaskbarApplicationBadgeLabeler.Register();
-            DefaultBrowserLauncher.Register();
-            ToolstripNotificationService.Register();
-        }
-
         private static void ConfigureLogging()
         {
             // we do not save the log file in the roaming profile
@@ -280,7 +245,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if ("cyberducklicense".Equals(f.getExtension()))
                     {
-                        License license = LicenseFactory.create(f);
+                        License license = LicenseFactory.get(f);
                         if (license.verify())
                         {
                             f.copy(
@@ -391,7 +356,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _sessions.clear();
                     });
             }
-            GrowlFactory.get().setup();
+            NotificationServiceFactory.get().setup();
 
             // User bookmarks and thirdparty applications
             CountdownEvent bookmarksSemaphore = new CountdownEvent(1);
@@ -767,7 +732,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-            GrowlFactory.get().unregister();
+            NotificationServiceFactory.get().unregister();
             ApplicationShouldTerminateAfterDonationPrompt();
             System.Windows.Forms.Application.Exit();
         }

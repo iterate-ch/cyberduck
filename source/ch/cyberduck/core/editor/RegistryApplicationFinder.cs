@@ -31,7 +31,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    internal class RegistryApplicationFinder : ApplicationFinder
+    public class RegistryApplicationFinder : ApplicationFinder
     {
         private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
         private static readonly Logger Log = Logger.getLogger(typeof (RegistryApplicationFinder).Name);
@@ -242,11 +242,6 @@ namespace Ch.Cyberduck.Core.Editor
         private static extern int AssocCreate(Guid clsid, ref Guid riid,
                                               [MarshalAs(UnmanagedType.Interface)] out object ppv);
 
-        public static void Register()
-        {
-            ApplicationFinderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         /// <summary>
         /// Return with Explorer registered application by file's extension (for editing)
         /// </summary>
@@ -369,14 +364,6 @@ namespace Ch.Cyberduck.Core.Editor
             CONTENTTYPE,
             DEFAULTICON,
             SHELLEXTENSION
-        }
-
-        private class Factory : ApplicationFinderFactory
-        {
-            protected override object create()
-            {
-                return new RegistryApplicationFinder();
-            }
         }
 
         [Guid("c46ca590-3c3f-11d2-bee6-0000f805ca57"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

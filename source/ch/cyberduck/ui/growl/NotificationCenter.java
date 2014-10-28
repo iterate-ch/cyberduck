@@ -27,24 +27,11 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class NotificationCenter implements Growl {
+public class NotificationCenter implements NotificationService {
     private static final Logger log = Logger.getLogger(NotificationCenter.class);
-
-    public static void register() {
-        if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
-            GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-        }
-        else {
-            log.warn(String.format("Skip registering notifications on %s", Factory.NATIVE_PLATFORM));
-        }
-    }
 
     private NSUserNotificationCenter center
             = NSUserNotificationCenter.defaultUserNotificationCenter();
-
-    protected NotificationCenter() {
-        //
-    }
 
     @Override
     public void setup() {
@@ -70,9 +57,9 @@ public class NotificationCenter implements Growl {
         this.notify(title, description);
     }
 
-    private static class Factory extends GrowlFactory {
+    private static class Factory extends NotificationServiceFactory {
         @Override
-        protected Growl create() {
+        protected NotificationService create() {
             return new NotificationCenter();
         }
     }

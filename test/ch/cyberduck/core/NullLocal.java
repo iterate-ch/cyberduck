@@ -14,20 +14,15 @@ import java.io.OutputStream;
 public class NullLocal extends Local {
 
     public NullLocal(final String parent, final String name) {
-        super(parent.endsWith("/") ? parent + name : parent + "/" + name);
+        this(parent.endsWith("/") ? String.format("%s%s", parent, name) : String.format("%s/%s", parent, name));
     }
 
     public NullLocal(final Local parent, final String name) {
-        super(parent.getAbsolute() + "/" + name);
+        this(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
     }
 
     public NullLocal(final String name) {
-        super(name);
-    }
-
-    @Override
-    public boolean exists() {
-        return true;
+        super(PathNormalizer.normalize(name));
     }
 
     @Override
@@ -37,7 +32,7 @@ public class NullLocal extends Local {
 
     @Override
     public boolean isFile() {
-        if(!NullLocal.super.exists()) {
+        if(!super.exists()) {
             return true;
         }
         return super.isFile();

@@ -19,38 +19,58 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class TransferPromptControllerFactory extends Factory<TransferPrompt> {
+public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
+    private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
 
-    public abstract TransferPrompt create(Controller c, Transfer transfer, Session session);
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, TransferPromptControllerFactory> factories
-            = new HashMap<Platform, TransferPromptControllerFactory>();
+    public TransferPrompt create(Controller c, Transfer transfer, Session session) {
+        try {
+            final Class<TransferPrompt> name = (Class<TransferPrompt>) Class.forName(preferences.getProperty(
+                    String.format("factory.transferpromptcallback.%s.class", transfer.getType().name())));
+            final Constructor<TransferPrompt> constructor = ConstructorUtils
+                    .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), session.getClass());
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for %s", c.getClass()));
+                // Call default constructor for disabled implementations
+                return name.newInstance();
+            }
+            return constructor.newInstance(c, transfer, session);
+        }
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+    }
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static TransferPrompt get(final Controller c, final Transfer transfer, final Session session) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create(c, transfer, session);
-    }
-
-    public static void addFactory(Platform p, TransferPromptControllerFactory f) {
-        factories.put(p, f);
+        return new TransferPromptControllerFactory().create(c, transfer, session);
     }
 }

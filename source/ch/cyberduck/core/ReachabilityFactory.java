@@ -19,27 +19,16 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class ReachabilityFactory extends Factory<Reachability> {
+public class ReachabilityFactory extends Factory<Reachability> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, ReachabilityFactory> factories = new HashMap<Platform, ReachabilityFactory>();
-
-    public static void addFactory(Platform platform, ReachabilityFactory f) {
-        factories.put(platform, f);
+    protected ReachabilityFactory() {
+        super("factory.reachability.class");
     }
 
     public static Reachability get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ReachabilityFactory().create();
     }
 }

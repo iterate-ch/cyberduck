@@ -19,17 +19,18 @@ package ch.cyberduck.core.fs;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.FactoryException;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FilesystemFactoryTest extends AbstractTestCase {
 
-    @Test
+    @Test(expected = FactoryException.class)
     public void testGet() throws Exception {
         assertNotNull(FilesystemFactory.get());
     }

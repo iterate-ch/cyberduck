@@ -32,17 +32,6 @@ import java.util.List;
  */
 public class PlistSerializer implements Serializer {
 
-    public static void register() {
-        SerializerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends SerializerFactory {
-        @Override
-        protected Serializer create() {
-            return new PlistSerializer();
-        }
-    }
-
     final NSMutableDictionary dict;
 
     public PlistSerializer() {

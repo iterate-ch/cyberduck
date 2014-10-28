@@ -2,13 +2,12 @@ package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SchemeHandlerFactoryTest extends AbstractTestCase {
 

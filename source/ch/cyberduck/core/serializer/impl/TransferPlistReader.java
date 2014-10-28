@@ -29,17 +29,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
  */
 public class TransferPlistReader extends PlistReader<Transfer> {
 
-    public static void register() {
-        TransferReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends TransferReaderFactory {
-        @Override
-        public Reader<Transfer> create() {
-            return new TransferPlistReader();
-        }
-    }
-
     @Override
     public Transfer deserialize(final NSDictionary dict) {
         return new TransferDictionary().deserialize(dict);

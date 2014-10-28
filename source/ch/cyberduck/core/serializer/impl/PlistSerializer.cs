@@ -89,18 +89,5 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
         {
             return _rootNode;
         }
-
-        public static void Register()
-        {
-            SerializerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : SerializerFactory
-        {
-            protected override object create()
-            {
-                return new PlistSerializer();
-            }
-        }
     }
 }

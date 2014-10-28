@@ -24,7 +24,7 @@ using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Core
 {
-    internal class Rendezvous : AbstractRendezvous
+    public class Rendezvous : AbstractRendezvous
     {
         private readonly Dictionary<string, DNSSDService> _browsers
             = new Dictionary<string, DNSSDService>();
@@ -139,22 +139,6 @@ namespace Ch.Cyberduck.Core
         public void OperationFailed(DNSSDService service, DNSSDError error)
         {
             service.Stop();
-        }
-
-        public static void Register()
-        {
-            if (Preferences.instance().getBoolean("rendezvous.enable"))
-            {
-                RendezvousFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-            }
-        }
-
-        private class Factory : RendezvousFactory
-        {
-            protected override object create()
-            {
-                return new Rendezvous();
-            }
         }
     }
 }

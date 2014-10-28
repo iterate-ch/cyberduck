@@ -18,43 +18,45 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @version $Id$
  */
-public abstract class PathReferenceFactory extends Factory<PathReference> {
+public class PathReferenceFactory extends Factory<PathReference> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, PathReferenceFactory> factories
-            = new HashMap<Platform, PathReferenceFactory>();
+    private static final Preferences preferences
+            = Preferences.instance();
 
-    public static void addFactory(Platform platform, PathReferenceFactory f) {
-        factories.put(platform, f);
+    @Override
+    protected PathReference create() {
+        throw new FactoryException();
     }
 
     public static <T> PathReference<T> get(final Path param) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DefaultPathReferenceFactory().create(param);
-        }
-        return factories.get(NATIVE_PLATFORM).create(param);
+        return new PathReferenceFactory().create(param);
     }
 
-    protected abstract <T> PathReference<T> create(Path param);
-
-
-    private static final class DefaultPathReferenceFactory extends PathReferenceFactory {
-        @Override
-        protected <T> PathReference<T> create(Path param) {
-            return (PathReference<T>) new DefaultPathReference(param);
+    protected <T> PathReference<T> create(final Path path) {
+        try {
+            final Class<PathReference> name = (Class<PathReference>) Class.forName(preferences.getProperty("factory.pathreference.class"));
+            final Constructor<PathReference> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
+            return constructor.newInstance(path);
         }
-
-        @Override
-        protected PathReference create() {
-            throw new FactoryException();
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
         }
     }
 }

@@ -13,7 +13,6 @@ public class LicenseFactoryTest extends AbstractTestCase {
 
     @Test
     public void testFindReceipt() throws Exception {
-        DonationKeyFactory.register();
         assertEquals(new Receipt(null, "c42c030b8670"), LicenseFactory.find());
     }
 }

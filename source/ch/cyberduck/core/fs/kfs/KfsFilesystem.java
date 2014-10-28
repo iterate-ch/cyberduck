@@ -41,7 +41,6 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
-import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -67,17 +66,6 @@ import com.sun.jna.Pointer;
  */
 public final class KfsFilesystem extends ProxyController implements Filesystem {
     private static final Logger log = Logger.getLogger(KfsFilesystem.class);
-
-    public static void register() {
-        FilesystemFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends FilesystemFactory {
-        @Override
-        protected KfsFilesystem create() {
-            return new KfsFilesystem();
-        }
-    }
 
     private Session<?> session;
 

@@ -31,7 +31,7 @@ using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal abstract class TransferPromptController : WindowController<ITransferPromptView>, TransferPrompt,
+    protected abstract class TransferPromptController : WindowController<ITransferPromptView>, TransferPrompt,
                                                        ProgressListener, TranscriptListener
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));

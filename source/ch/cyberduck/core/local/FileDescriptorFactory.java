@@ -19,30 +19,17 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class FileDescriptorFactory extends Factory<FileDescriptor> {
+public class FileDescriptorFactory extends Factory<FileDescriptor> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, FileDescriptorFactory> factories
-            = new HashMap<Factory.Platform, FileDescriptorFactory>();
-
-    public static void addFactory(Factory.Platform platform, FileDescriptorFactory f) {
-        factories.put(platform, f);
+    protected FileDescriptorFactory() {
+        super("factory.filedescriptor.class");
     }
 
     public static FileDescriptor get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new FileDescriptorFactory().create();
     }
 }

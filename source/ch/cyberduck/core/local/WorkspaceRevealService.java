@@ -27,15 +27,6 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
  */
 public class WorkspaceRevealService implements RevealService {
 
-    public static void register() {
-        RevealServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new RevealServiceFactory() {
-            @Override
-            protected RevealService create() {
-                return new WorkspaceRevealService();
-            }
-        });
-    }
-
     @Override
     public boolean reveal(final Local file) {
         synchronized(NSWorkspace.class) {

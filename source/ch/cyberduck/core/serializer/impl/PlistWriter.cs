@@ -64,27 +64,5 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 
             return xmlDoc;
         }
-
-        public static void Register()
-        {
-            HostWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new HostFactory());
-            TransferWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new TransferFactory());
-        }
-
-        private class HostFactory : HostWriterFactory
-        {
-            protected override object create()
-            {
-                return new PlistWriter();
-            }
-        }
-
-        private class TransferFactory : TransferWriterFactory
-        {
-            protected override object create()
-            {
-                return new PlistWriter();
-            }
-        }
     }
 }

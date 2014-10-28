@@ -38,22 +38,6 @@ import java.util.List;
 public class PlistDeserializer implements Deserializer<NSDictionary> {
     private static final Logger log = Logger.getLogger(PlistDeserializer.class);
 
-    public static void register() {
-        DeserializerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends DeserializerFactory<NSDictionary> {
-        @Override
-        protected Deserializer<NSDictionary> create() {
-            return new PlistDeserializer(NSMutableDictionary.dictionary());
-        }
-
-        @Override
-        protected Deserializer<NSDictionary> create(NSDictionary dict) {
-            return new PlistDeserializer(dict);
-        }
-    }
-
     final NSDictionary dict;
 
     public PlistDeserializer(final NSDictionary dict) {

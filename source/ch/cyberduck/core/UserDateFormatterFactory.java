@@ -19,28 +19,16 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
+public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, UserDateFormatterFactory> factories
-            = new HashMap<Factory.Platform, UserDateFormatterFactory>();
-
-    public static void addFactory(Factory.Platform platform, UserDateFormatterFactory f) {
-        factories.put(platform, f);
+    protected UserDateFormatterFactory() {
+        super("factory.dateformatter.class");
     }
 
     public static AbstractUserDateFormatter get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new UserDateFormatterFactory().create();
     }
 }

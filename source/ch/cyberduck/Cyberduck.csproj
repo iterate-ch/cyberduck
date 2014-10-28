@@ -181,6 +181,7 @@
   <ItemGroup>
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
+    <Compile Include="core\aquaticprime\WindowsLicenseFactory.cs" />
     <Compile Include="core\AtomicBoolean.cs" />
     <Compile Include="core\CrashReporter.cs" />
     <Compile Include="core\editor\SystemWatchEditorFactory.cs" />
@@ -196,7 +197,6 @@
     <Compile Include="core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
-    <Compile Include="core\DefaultPathReferenceFactory.cs" />
     <Compile Include="core\SystemProxy.cs" />
     <Compile Include="core\serializer\impl\HostPlistReader.cs" />
     <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
@@ -268,7 +268,6 @@
       <DependentUpon>CreateSymlinkPromptForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\winforms\DialogLimitedListProgressListener.cs" />
-    <Compile Include="ui\winforms\DialogTransferPromptControllerFactory.cs" />
     <Compile Include="ui\winforms\GotoPromptForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -18,46 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ApplescriptTerminalService;
-import ch.cyberduck.core.IOKitSleepPreventer;
-import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.PreferencesFactory;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.RendezvousResponder;
-import ch.cyberduck.core.SystemConfigurationProxy;
-import ch.cyberduck.core.SystemConfigurationReachability;
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
-import ch.cyberduck.core.aquaticprime.ReceiptFactory;
-import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
-import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
-import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
-import ch.cyberduck.core.local.LaunchServicesQuarantineService;
-import ch.cyberduck.core.local.TemporaryFileService;
-import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
-import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
-import ch.cyberduck.core.local.WorkspaceIconService;
-import ch.cyberduck.core.local.WorkspaceRevealService;
-import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
-import ch.cyberduck.core.local.WorkspaceTrashFeature;
-import ch.cyberduck.core.serializer.impl.HostPlistReader;
-import ch.cyberduck.core.serializer.impl.PlistDeserializer;
-import ch.cyberduck.core.serializer.impl.PlistSerializer;
-import ch.cyberduck.core.serializer.impl.PlistWriter;
-import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
-import ch.cyberduck.core.serializer.impl.TransferPlistReader;
-import ch.cyberduck.core.sparkle.Sandbox;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
-import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
-import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
-import ch.cyberduck.ui.growl.NotificationCenter;
-import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.log4j.Logger;
 
@@ -90,60 +55,8 @@ public final class MainApplication {
             final NSApplication app = NSApplication.sharedApplication();
 
             // Register factory implementations.
-            {
-                AutoreleaseActionOperationBatcher.register();
-                FinderLocal.register();
-                UserDefaultsPreferences.register();
-                BundleLocale.register();
-                NSImageIconCache.register();
-                NotificationCenter.register();
-                if(null == Updater.getFeed()) {
-                    ReceiptFactory.register();
-                }
-                else {
-                    DonationKeyFactory.register();
-                }
-
-                PlistDeserializer.register();
-                PlistSerializer.register();
-
-                HostPlistReader.register();
-                TransferPlistReader.register();
-                ProfilePlistReader.register();
-                NSObjectPathReference.register();
-
-                PlistWriter.register();
-
-                Keychain.register();
-                SystemConfigurationProxy.register();
-                SystemConfigurationReachability.register();
-                UserDefaultsDateFormatter.register();
-                LaunchServicesApplicationFinder.register();
-                LaunchServicesFileDescriptor.register();
-                LaunchServicesQuarantineService.register();
-                LaunchServicesSchemeHandler.register();
-                WorkspaceIconService.register();
-                WorkspaceApplicationLauncher.register();
-                WorkspaceBrowserLauncher.register();
-                WorkspaceRevealService.register();
-                WorkspaceApplicationBadgeLabeler.register();
-                WorkspaceSymlinkFeature.register();
-                WorkspaceTrashFeature.register();
-                IOKitSleepPreventer.register();
-                TemporaryFileService.register();
-                FSEventWatchEditorFactory.register();
-                QuartzQuickLook.register();
-                PromptLoginController.register();
-                AlertHostKeyController.register();
-                AlertTransferPromptControllerFactory.register();
-                AlertTransferErrorCallback.register();
-                RendezvousResponder.register();
-                ProtocolFactory.register();
-                if(!Sandbox.get().isSandboxed()) {
-                    // Disabled in App Store
-                    ApplescriptTerminalService.register();
-                }
-            }
+            PreferencesFactory.set(new UserDefaultsPreferences());
+            ProtocolFactory.register();
 
             if(log.isInfoEnabled()) {
                 log.info("Encoding " + System.getProperty("file.encoding"));

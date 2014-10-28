@@ -33,18 +33,8 @@ import java.util.List;
  */
 public final class QuartzQuickLook implements QuickLook {
 
-    public static void register() {
-        QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends QuickLookFactory {
-        @Override
-        protected QuickLook create() {
-            return new QuartzQuickLook();
-        }
-    }
-
-    private List<QLPreviewItem> previews = new ArrayList<QLPreviewItem>();
+    private List<QLPreviewItem> previews
+            = new ArrayList<QLPreviewItem>();
 
     private final QLPreviewPanel panel;
 

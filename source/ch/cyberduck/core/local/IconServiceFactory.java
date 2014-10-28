@@ -19,52 +19,20 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
-public abstract class IconServiceFactory extends Factory<IconService> {
+public class IconServiceFactory extends Factory<IconService> {
     private static final Logger log = Logger.getLogger(IconServiceFactory.class);
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, IconServiceFactory> factories
-            = new HashMap<Platform, IconServiceFactory>();
-
-    public static void addFactory(Factory.Platform platform, IconServiceFactory f) {
-        factories.put(platform, f);
+    protected IconServiceFactory() {
+        super("factory.iconservice.class");
     }
 
     public static IconService get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-            return new DisabledIconService();
-        }
-        return factories.get(NATIVE_PLATFORM).create();
-    }
-
-    private static final class DisabledIconService implements IconService {
-        @Override
-        public boolean set(final Local file, final String image) {
-            return false;
-        }
-
-        @Override
-        public boolean set(final Local file, final TransferStatus progress) {
-            return false;
-        }
-
-        @Override
-        public boolean remove(final Local file) {
-            return false;
-        }
+        return new IconServiceFactory().create();
     }
 }

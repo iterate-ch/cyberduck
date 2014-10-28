@@ -18,7 +18,6 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;
@@ -31,18 +30,8 @@ import java.util.Map;
  */
 public class BundleLocale implements Locale {
 
-    public static void register() {
-        LocaleFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends LocaleFactory {
-        @Override
-        protected Locale create() {
-            return new BundleLocale();
-        }
-    }
-
-    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap(1000));
+    private static Map<String, String> cache
+            = Collections.<String, String>synchronizedMap(new LRUMap(1000));
 
     @Override
     public String localize(final String key, final String table) {

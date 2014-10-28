@@ -20,28 +20,16 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.features.Trash;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class LocalTrashFactory extends Factory<Trash> {
+public class LocalTrashFactory extends Factory<Trash> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, LocalTrashFactory> factories
-            = new HashMap<Platform, LocalTrashFactory>();
-
-    public static void addFactory(Factory.Platform platform, LocalTrashFactory f) {
-        factories.put(platform, f);
+    protected LocalTrashFactory() {
+        super("factory.trash.class");
     }
 
     public static Trash get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new DefaultLocalTrashFeature();
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new LocalTrashFactory().create();
     }
 }

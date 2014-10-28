@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -32,8 +31,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -61,28 +58,12 @@ import org.rococoa.Foundation;
 public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
-    public static void register() {
-        LoginCallbackFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends LoginCallbackFactory {
-        @Override
-        protected LoginCallback create() {
-            throw new FactoryException();
-        }
-
-        @Override
-        public LoginCallback create(Controller c) {
-            return new PromptLoginController((WindowController) c);
-        }
-    }
-
     private Preferences preferences
             = Preferences.instance();
 
     private WindowController parent;
 
-    private PromptLoginController(final WindowController parent) {
+    public PromptLoginController(final WindowController parent) {
         this.parent = parent;
     }
 

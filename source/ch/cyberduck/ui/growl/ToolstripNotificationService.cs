@@ -27,7 +27,7 @@ using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
 {
-    internal class ToolstripNotificationService : ch.cyberduck.ui.growl.Growl
+    public class ToolstripNotificationService : ch.cyberduck.ui.growl.NotificationService
     {
         private readonly NotifyIcon _icon = new NotifyIcon();
 
@@ -85,19 +85,6 @@ namespace Ch.Cyberduck.Ui.Growl
         public void notifyWithImage(string title, string description, string image)
         {
             notify(title, description);
-        }
-
-        public static void Register()
-        {
-            GrowlFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : GrowlFactory
-        {
-            protected override object create()
-            {
-                return new ToolstripNotificationService();
-            }
         }
     }
 }

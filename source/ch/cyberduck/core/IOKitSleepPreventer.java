@@ -25,17 +25,6 @@ import ch.cyberduck.core.library.Native;
  */
 public final class IOKitSleepPreventer implements SleepPreventer {
 
-    public static void register() {
-        SleepPreventerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends SleepPreventerFactory {
-        @Override
-        protected SleepPreventer create() {
-            return new IOKitSleepPreventer();
-        }
-    }
-
     static {
         Native.load("IOKitSleepPreventer");
     }

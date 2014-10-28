@@ -32,15 +32,6 @@ import org.apache.log4j.Logger;
 public class WorkspaceSymlinkFeature implements Symlink {
     private static final Logger log = Logger.getLogger(WorkspaceSymlinkFeature.class);
 
-    public static void register() {
-        LocalSymlinkFactory.addFactory(Factory.NATIVE_PLATFORM, new LocalSymlinkFactory() {
-            @Override
-            protected Symlink create() {
-                return new WorkspaceSymlinkFeature();
-            }
-        });
-    }
-
     @Override
     public void symlink(final Local file, final String target) throws AccessDeniedException {
         final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(

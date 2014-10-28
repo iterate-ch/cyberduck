@@ -29,17 +29,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
  */
 public class HostPlistReader extends PlistReader<Host> {
 
-    public static void register() {
-        HostReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends HostReaderFactory {
-        @Override
-        public Reader<Host> create() {
-            return new HostPlistReader();
-        }
-    }
-
     @Override
     public Host deserialize(final NSDictionary dict) {
         return new HostDictionary().deserialize(dict);

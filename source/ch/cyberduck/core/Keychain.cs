@@ -283,27 +283,5 @@ namespace Ch.Cyberduck.Core
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
-
-        public static void Register()
-        {
-            PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new WindowsPasswordStoreFactory());
-            CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new WindowsCertificateStoreFactory());
-        }
-
-        private class WindowsCertificateStoreFactory : CertificateStoreFactory
-        {
-            protected override object create()
-            {
-                return new Keychain();
-            }
-        }
-
-        private class WindowsPasswordStoreFactory : PasswordStoreFactory
-        {
-            protected override object create()
-            {
-                return new Keychain();
-            }
-        }
     }
 }

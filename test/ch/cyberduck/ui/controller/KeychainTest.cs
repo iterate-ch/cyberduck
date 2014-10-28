@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿// 
 // Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -34,15 +34,6 @@ namespace Ch.Cyberduck.Ui.Controller
     [TestFixture]
     public class KeychainTest
     {
-        [SetUp]
-        public void Init()
-        {
-            UserPreferences.Register();
-            DictionaryLocale.Register();
-            SystemLocal.Register();
-            Keychain.Register();
-        }
-
         private const string ExpiredSelfSigned =
             "-----BEGIN CERTIFICATE-----\n" + "MIICnzCCAggCCQD/H0dWJzmTsjANBgkqhkiG9w0BAQUFADCBkzELMAkGA1UEBhMC\n" +
             "Q0gxDTALBgNVBAgMBEJlcm4xDTALBgNVBAcMBEJlcm4xFTATBgNVBAoMDGl0ZXJh\n" +

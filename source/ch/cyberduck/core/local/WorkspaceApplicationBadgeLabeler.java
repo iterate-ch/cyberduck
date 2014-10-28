@@ -26,19 +26,8 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
  */
 public class WorkspaceApplicationBadgeLabeler implements ApplicationBadgeLabeler {
 
-    public static void register() {
-        ApplicationBadgeLabelerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ApplicationBadgeLabelerFactory {
-        @Override
-        protected ApplicationBadgeLabeler create() {
-            return new WorkspaceApplicationBadgeLabeler();
-        }
-    }
-
     @Override
-    public void badge(String label) {
+    public void badge(final String label) {
         synchronized(NSWorkspace.class) {
             NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
         }

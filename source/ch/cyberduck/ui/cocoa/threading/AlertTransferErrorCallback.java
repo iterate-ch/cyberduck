@@ -37,29 +37,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AlertTransferErrorCallback implements TransferErrorCallback {
 
-    public static void register() {
-        TransferErrorCallbackControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends TransferErrorCallbackControllerFactory {
-        @Override
-        public TransferErrorCallback create(final Controller c) {
-            return new AlertTransferErrorCallback((WindowController) c);
-        }
-
-        @Override
-        protected TransferErrorCallback create() {
-            throw new FactoryException();
-        }
-    }
-
     private final WindowController controller;
 
     private boolean suppressed;
 
     private boolean option;
 
-    private AlertTransferErrorCallback(final WindowController controller) {
+    public AlertTransferErrorCallback(final WindowController controller) {
         this.controller = controller;
     }
 

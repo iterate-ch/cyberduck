@@ -54,7 +54,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     /**
      * @param collection Default content
      */
-    public AttributedList(java.util.Collection<E> collection) {
+    public AttributedList(final java.util.Collection<E> collection) {
         this.addAll(collection);
     }
 
@@ -124,7 +124,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
-    private void doSort(Comparator<E> comparator) {
+    private void doSort(final Comparator<E> comparator) {
         if(null == comparator) {
             return;
         }

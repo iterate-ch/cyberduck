@@ -39,7 +39,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
-import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.ui.cocoa.ProxyController;
@@ -77,22 +76,6 @@ import com.sun.jna.Pointer;
  */
 public final class FuseFilesystem extends ProxyController implements Filesystem {
     private static final Logger log = Logger.getLogger(FuseFilesystem.class);
-
-    public static void register() {
-        if(null == GMUserFileSystem.CLASS) {
-            log.warn("Framework not available");
-        }
-        else {
-            FilesystemFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-        }
-    }
-
-    private static class Factory extends FilesystemFactory {
-        @Override
-        protected FuseFilesystem create() {
-            return new FuseFilesystem();
-        }
-    }
 
     private Session<?> session;
 

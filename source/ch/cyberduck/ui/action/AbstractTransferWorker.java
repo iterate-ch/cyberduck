@@ -42,8 +42,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.growl.NotificationService;
+import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -61,7 +61,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
 
     private SleepPreventer sleep = SleepPreventerFactory.get();
 
-    private Growl growl = GrowlFactory.get();
+    private NotificationService growl = NotificationServiceFactory.get();
 
     private Transfer transfer;
 

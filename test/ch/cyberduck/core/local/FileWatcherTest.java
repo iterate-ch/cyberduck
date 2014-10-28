@@ -86,7 +86,7 @@ public class FileWatcherTest extends AbstractTestCase {
             }
         };
         watcher.addListener(listener);
-        watcher.register(file).await();
+        watcher.register(file).await(1, TimeUnit.SECONDS);
         LocalTouchFactory.get().touch(file);
         create.await();
         file.delete();

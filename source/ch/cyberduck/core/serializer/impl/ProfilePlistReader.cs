@@ -24,22 +24,9 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public class ProfilePlistReader : PlistReader<Profile>
     {
-        public static void Register()
-        {
-            ProfileReaderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         public override Profile deserialize(XmlNode dictNode)
         {
             return new ProfileDictionary().deserialize(dictNode);
-        }
-
-        private class Factory : ProfileReaderFactory
-        {
-            protected override object create()
-            {
-                return new ProfilePlistReader();
-            }
         }
     }
 }

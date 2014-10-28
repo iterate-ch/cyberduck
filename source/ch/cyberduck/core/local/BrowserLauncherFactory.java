@@ -19,27 +19,17 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class BrowserLauncherFactory extends Factory<BrowserLauncher> {
+public class BrowserLauncherFactory extends Factory<BrowserLauncher> {
 
-    private static final Map<Factory.Platform, BrowserLauncherFactory> factories
-            = new HashMap<Factory.Platform, BrowserLauncherFactory>();
-
-    public static void addFactory(Factory.Platform platform, BrowserLauncherFactory f) {
-        factories.put(platform, f);
+    public BrowserLauncherFactory() {
+        super("factory.browserlauncher.class");
     }
 
     public static BrowserLauncher get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new BrowserLauncherFactory().create();
     }
 }

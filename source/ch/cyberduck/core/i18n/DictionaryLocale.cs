@@ -99,18 +99,5 @@ namespace Ch.Cyberduck.Core.I18n
                 Log.error(String.Format("Bundle {0} not found", bundle));
             }
         }
-
-        public static void Register()
-        {
-            LocaleFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : LocaleFactory
-        {
-            protected override object create()
-            {
-                return new DictionaryLocale();
-            }
-        }
     }
 }

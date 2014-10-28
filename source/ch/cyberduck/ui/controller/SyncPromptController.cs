@@ -22,7 +22,7 @@ using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal class SyncPromptController : TransferPromptController
+    public class SyncPromptController : TransferPromptController
     {
         public SyncPromptController(WindowController parent, Transfer transfer, Session session)
             : base(parent, transfer, session)

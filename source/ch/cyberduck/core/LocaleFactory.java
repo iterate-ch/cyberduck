@@ -22,37 +22,25 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class LocaleFactory extends Factory<Locale> {
+public class LocaleFactory extends Factory<Locale> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, LocaleFactory> factories
-            = new HashMap<Platform, LocaleFactory>();
-
-    public static void addFactory(Platform platform, LocaleFactory f) {
-        factories.put(platform, f);
+    public LocaleFactory() {
+        super("factory.locale.class");
     }
 
-    private static Locale l;
+    private static Locale locale;
 
     /**
      * @return Locale instance for the current platform.
      */
-    public static Locale get() {
-        if(null == l) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            l = factories.get(NATIVE_PLATFORM).create();
+    public static synchronized Locale get() {
+        if(null == locale) {
+            locale = new LocaleFactory().create();
         }
-        return l;
+        return locale;
     }
 
     /**

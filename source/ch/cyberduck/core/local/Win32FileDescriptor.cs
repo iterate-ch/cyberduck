@@ -27,11 +27,6 @@ namespace Ch.Cyberduck.Core.Local
 {
     public sealed class Win32FileDescriptor : AbstractFileDescriptor
     {
-        public static void Register()
-        {
-            FileDescriptorFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         public override string getKind(string filename)
         {
             String extension = FilenameUtils.getExtension(filename);
@@ -63,14 +58,6 @@ namespace Ch.Cyberduck.Core.Local
                 return Convert.ToString(shinfo.szTypeName.Trim());
             }
             return null;
-        }
-
-        private class Factory : FileDescriptorFactory
-        {
-            protected override object create()
-            {
-                return new Win32FileDescriptor();
-            }
         }
     }
 }

@@ -24,8 +24,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.growl.NotificationService;
+import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ public final class Queue {
     private ArrayBlockingQueue<Transfer> overflow
             = new ArrayBlockingQueue<Transfer>(1, true);
 
-    private Growl growl = GrowlFactory.get();
+    private NotificationService growl = NotificationServiceFactory.get();
 
     /**
      * All running transfers.

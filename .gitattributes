@@ -2658,7 +2658,6 @@ source/ch/cyberduck/core/CharsetProvider.java -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DefaultCharsetProvider.java -text
-source/ch/cyberduck/core/DefaultPathReferenceFactory.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/Keychain.cs -text
@@ -2679,10 +2678,12 @@ source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
+source/ch/cyberduck/core/aquaticprime/WindowsLicenseFactory.cs -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
 source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
+source/ch/cyberduck/core/editor/SystemEditorFactory.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditor.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditorFactory.cs -text
 source/ch/cyberduck/core/i18n/DictionaryLocale.cs -text
@@ -2807,7 +2808,7 @@ source/ch/cyberduck/ui/controller/threading/BrowserControllerBackgroundAction.cs
 source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
-source/ch/cyberduck/ui/growl/GrowlFactory.java -text
+source/ch/cyberduck/ui/growl/NotificationServiceFactory.java -text
 source/ch/cyberduck/ui/growl/ToolstripNotificationService.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.cs -text
@@ -2834,7 +2835,6 @@ source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.cs -text
 source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.resx -text
 source/ch/cyberduck/ui/winforms/DialogLimitedListProgressListener.cs -text
-source/ch/cyberduck/ui/winforms/DialogTransferPromptControllerFactory.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.resx -text

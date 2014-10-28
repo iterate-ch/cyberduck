@@ -20,27 +20,16 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Writer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class HostWriterFactory extends Factory<Writer<Host>> {
+public class HostWriterFactory extends Factory<Writer<Host>> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, HostWriterFactory> factories = new HashMap<Platform, HostWriterFactory>();
-
-    public static void addFactory(Factory.Platform platform, HostWriterFactory f) {
-        factories.put(platform, f);
+    protected HostWriterFactory() {
+        super("factory.writer.host.class");
     }
 
     public static Writer<Host> get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new HostWriterFactory().create();
     }
 }

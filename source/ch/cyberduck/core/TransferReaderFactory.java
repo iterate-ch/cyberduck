@@ -27,22 +27,13 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class TransferReaderFactory extends Factory<Reader<Transfer>> {
+public class TransferReaderFactory extends Factory<Reader<Transfer>> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, TransferReaderFactory> factories
-            = new HashMap<Platform, TransferReaderFactory>();
-
-    public static void addFactory(Factory.Platform platform, TransferReaderFactory f) {
-        factories.put(platform, f);
+    protected TransferReaderFactory() {
+        super("factory.reader.transfer.class");
     }
 
     public static Reader<Transfer> get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new TransferReaderFactory().create();
     }
 }

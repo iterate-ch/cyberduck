@@ -21,7 +21,7 @@ package ch.cyberduck.ui.growl;
 /**
  * @version $Id$
  */
-public interface Growl {
+public interface NotificationService {
 
     /**
      * Register application

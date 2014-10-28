@@ -20,32 +20,16 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Factory;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
+public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, ActionOperationBatcherFactory> factories
-            = new HashMap<Platform, ActionOperationBatcherFactory>();
-
-    public static void addFactory(Platform platform, ActionOperationBatcherFactory f) {
-        factories.put(platform, f);
+    public ActionOperationBatcherFactory() {
+        super("factory.autorelease.class");
     }
 
     public static ActionOperationBatcher get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            return new ActionOperationBatcher() {
-                public void operate() {
-                    //
-                }
-            };
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ActionOperationBatcherFactory().create();
     }
 }

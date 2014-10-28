@@ -45,11 +45,6 @@ namespace Ch.Cyberduck.Core.Editor
             _registeredEditors.Add(new TextPad());
         }
 
-        public static void Register()
-        {
-            addFactory(NATIVE_PLATFORM, new SystemWatchEditorFactory());
-        }
-
         protected override List getConfigured()
         {
             return Utils.ConvertToJavaList(_registeredEditors);

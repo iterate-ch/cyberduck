@@ -27,21 +27,13 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class ProfileWriterFactory extends Factory<Writer<Profile>> {
+public class ProfileWriterFactory extends Factory<Writer<Profile>> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, ProfileWriterFactory> factories = new HashMap<Platform, ProfileWriterFactory>();
-
-    public static void addFactory(Platform platform, ProfileWriterFactory f) {
-        factories.put(platform, f);
+    protected ProfileWriterFactory() {
+        super("factory.writer.profile.class");
     }
 
     public static Writer<Profile> get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ProfileWriterFactory().create();
     }
 }

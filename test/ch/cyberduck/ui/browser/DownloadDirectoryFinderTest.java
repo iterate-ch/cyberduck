@@ -20,11 +20,14 @@ package ch.cyberduck.ui.browser;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.FinderLocal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class DownloadDirectoryFinderTest extends AbstractTestCase {
 
@@ -33,11 +36,11 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         final Host host = new Host("localhost");
         assertNull(host.getDownloadFolder());
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
-        assertEquals("~/Downloads", finder.find(host).getAbbreviatedPath());
+        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), finder.find(host).getAbbreviatedPath());
         // Does not exist
-        host.setDownloadFolder(LocalFactory.get("/t"));
-        assertEquals("~/Downloads", finder.find(host).getAbbreviatedPath());
-        host.setDownloadFolder(LocalFactory.get("~/Documents"));
+        host.setDownloadFolder(new Local("/t"));
+        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), finder.find(host).getAbbreviatedPath());
+        host.setDownloadFolder(new FinderLocal("~/Documents"));
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
     }
 }

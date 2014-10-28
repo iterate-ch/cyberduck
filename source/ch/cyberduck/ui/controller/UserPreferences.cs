@@ -33,15 +33,10 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class UserPreferences : Preferences
+    public class UserPreferences : WindowsPreferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).FullName);
         private SettingsDictionary _settings;
-
-        private UserPreferences()
-        {
-            ;
-        }
 
         /// <summary>
         /// Roaming application data path
@@ -281,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
-            //disable reminder for procotol handler registration
+            //disable reminder for protocol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("application.receipt.path", RoamingApplicationDataPath);            
@@ -335,9 +330,62 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("local.symboliclink.resolve", true.ToString());
 
             defaults.put("local.user.home", HomeFolder);
+        }
 
-            defaults.put("connection.ssl.keystore.type", "Windows-MY");
-            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+        protected override void setFactories()
+        {
+            base.setFactories();
+
+            defaults.put("factory.local.class", typeof(Ch.Cyberduck.Core.Local.SystemLocal).AssemblyQualifiedName);
+            defaults.put("factory.locale.class", typeof(Ch.Cyberduck.Core.I18n.DictionaryLocale).AssemblyQualifiedName);
+            defaults.put("factory.dateformatter.class", typeof(Ch.Cyberduck.Ui.Winforms.UserDefaultsDateFormatter).AssemblyQualifiedName);
+            defaults.put("factory.passwordstore.class", typeof(Ch.Cyberduck.Core.Keychain).AssemblyQualifiedName);
+            defaults.put("factory.certificatestore.class", typeof(Ch.Cyberduck.Core.Keychain).AssemblyQualifiedName);
+            defaults.put("factory.hostkeycallback.class", typeof(Ch.Cyberduck.Ui.Controller.HostKeyController).AssemblyQualifiedName);
+            defaults.put("factory.logincallback.class", typeof(Ch.Cyberduck.Ui.Controller.PromptLoginController).AssemblyQualifiedName);
+            defaults.put("factory.transfererrorcallback.class", typeof(Ch.Cyberduck.Ui.Winforms.Threading.DialogTransferErrorCallback).AssemblyQualifiedName);
+            defaults.put("factory.transferpromptcallback.download.class", typeof(Ch.Cyberduck.Ui.Controller.DownloadPromptController).AssemblyQualifiedName);
+            defaults.put("factory.transferpromptcallback.upload.class", typeof(Ch.Cyberduck.Ui.Controller.UploadPromptController).AssemblyQualifiedName);
+            defaults.put("factory.transferpromptcallback.sync.class", typeof(Ch.Cyberduck.Ui.Controller.SyncPromptController).AssemblyQualifiedName);
+            defaults.put("factory.proxy.class", typeof(Ch.Cyberduck.Core.SystemProxy).AssemblyQualifiedName);
+            defaults.put("factory.sleeppreventer.class", typeof(ch.cyberduck.core.DisabledSleepPreventer).AssemblyQualifiedName);
+            defaults.put("factory.reachability.class", typeof(Ch.Cyberduck.Core.TcpReachability).AssemblyQualifiedName);
+            defaults.put("factory.rendezvous.class", typeof(Ch.Cyberduck.Core.Rendezvous).AssemblyQualifiedName);
+
+            defaults.put("factory.serializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistSerializer).AssemblyQualifiedName);
+            defaults.put("factory.deserializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistDeserializer).AssemblyQualifiedName);
+            defaults.put("factory.serializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistSerializer).AssemblyQualifiedName);
+            defaults.put("factory.reader.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.ProfilePlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
+            defaults.put("factory.reader.transfer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.TransferPlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.transfer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
+            defaults.put("factory.reader.host.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.HostPlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.host.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
+
+            defaults.put("factory.applicationfinder.class", typeof(Ch.Cyberduck.Core.Editor.RegistryApplicationFinder).AssemblyQualifiedName);
+            defaults.put("factory.applicationlauncher.class", typeof(Ch.Cyberduck.Core.Local.WindowsApplicationLauncher).AssemblyQualifiedName);
+            defaults.put("factory.temporaryfiles.class", typeof(Ch.Cyberduck.Core.Local.WindowsTemporaryFileService).AssemblyQualifiedName);
+            defaults.put("factory.browserlauncher.class", typeof(Ch.Cyberduck.Core.Local.DefaultBrowserLauncher).AssemblyQualifiedName);
+            defaults.put("factory.reveal.class", typeof(Ch.Cyberduck.Core.Local.ExplorerRevealService).AssemblyQualifiedName);
+            defaults.put("factory.trash.class", typeof(Ch.Cyberduck.Core.Local.RecycleLocalTrashFeature).AssemblyQualifiedName);
+            defaults.put("factory.quarantine.class", typeof(ch.cyberduck.core.local.DisabledQuarantineService).AssemblyQualifiedName);
+            defaults.put("factory.symlink.class", typeof(ch.cyberduck.core.local.NullLocalSymlinkFeature).AssemblyQualifiedName);
+            defaults.put("factory.terminalservice.class", typeof(Ch.Cyberduck.Core.SshTerminalService).AssemblyQualifiedName);
+            defaults.put("factory.editorfactory.class", typeof(Ch.Cyberduck.Core.Editor.SystemWatchEditorFactory).AssemblyQualifiedName);
+            defaults.put("factory.licensefactory.class", typeof(Ch.Cyberduck.Core.Aquaticprime.WindowsLicenseFactory).AssemblyQualifiedName);
+            defaults.put("factory.notification.class", typeof(Ch.Cyberduck.Ui.Growl.ToolstripNotificationService).AssemblyQualifiedName);
+            defaults.put("factory.iconservice.class", typeof(ch.cyberduck.core.local.DisabledIconService).AssemblyQualifiedName);
+            if (Utils.IsWin7OrLater)
+            {
+                defaults.put("factory.badgelabeler.class", typeof(Ch.Cyberduck.Core.Local.TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
+            }
+            else
+            {
+                defaults.put("factory.badgelabeler.class", typeof(ch.cyberduck.core.local.DisabledApplicationBadgeLabeler).AssemblyQualifiedName);
+            }
+            defaults.put("factory.filedescriptor.class", typeof(Ch.Cyberduck.Core.Local.Win32FileDescriptor).AssemblyQualifiedName);
+            defaults.put("factory.schemehandler.class", typeof(ch.cyberduck.core.urlhandler.DisabledSchemeHandler).AssemblyQualifiedName);
+            defaults.put("factory.pathreference.class", typeof(ch.cyberduck.core.DefaultPathReference).AssemblyQualifiedName);
         }
 
         public string GetDefaultLanguage()
@@ -381,19 +429,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             return null;
-        }
-
-        public static void Register()
-        {
-            PreferencesFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : PreferencesFactory
-        {
-            protected override object create()
-            {
-                return new UserPreferences();
-            }
         }
     }
 }

@@ -19,24 +19,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
-import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
-import ch.cyberduck.core.local.TemporaryFileService;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
-import ch.cyberduck.core.serializer.impl.HostPlistReader;
-import ch.cyberduck.core.serializer.impl.PlistDeserializer;
-import ch.cyberduck.core.serializer.impl.PlistSerializer;
-import ch.cyberduck.core.serializer.impl.PlistWriter;
-import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
-import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
-import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
-import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -91,28 +76,14 @@ public class AbstractTestCase {
     @BeforeClass
     public static void setup() {
         Locale.setDefault(Locale.ENGLISH);
-        AutoreleaseActionOperationBatcher.register();
-        FinderLocal.register();
-        BundleLocale.register();
-        NSImageIconCache.register();
-        PlistDeserializer.register();
-        PlistSerializer.register();
-        PlistWriter.register();
-        HostPlistReader.register();
-        TransferPlistReader.register();
-        ProfilePlistReader.register();
+        PreferencesFactory.set(new MemoryPreferences());
         ProtocolFactory.register();
-        LaunchServicesApplicationFinder.register();
-        UserDefaultsDateFormatter.register();
-        WorkspaceApplicationLauncher.register();
-        SystemConfigurationProxy.register();
-        TemporaryFileService.register();
-        LaunchServicesFileDescriptor.register();
     }
 
     @Before
     public void preferences() {
         Preferences.instance().setProperty("application.support.path", System.getProperty("java.io.tmpdir"));
+        Preferences.instance().setProperty("factory.local.class", NullLocal.class.getName());
         Logger.getRootLogger().setLevel(Level.INFO);
         Logger.getLogger("ch.cyberduck").setLevel(Level.DEBUG);
     }

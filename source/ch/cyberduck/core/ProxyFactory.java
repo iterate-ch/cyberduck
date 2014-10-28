@@ -19,28 +19,16 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class ProxyFactory extends Factory<ProxyFinder> {
+public class ProxyFactory extends Factory<ProxyFinder> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, ProxyFactory> factories = new HashMap<Platform, ProxyFactory>();
-
-    public static void addFactory(Platform platform, ProxyFactory f) {
-        factories.put(platform, f);
+    protected ProxyFactory() {
+        super("factory.proxy.class");
     }
 
     public static ProxyFinder get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ProxyFactory().create();
     }
-
 }

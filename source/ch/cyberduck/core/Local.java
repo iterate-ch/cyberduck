@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,10 +56,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @param name Absolute path
      */
     public Local(final String name) {
-        this.setPath(name);
-    }
-
-    protected void setPath(final String name) {
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(name);
         }
@@ -191,9 +188,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    public AttributedList<Local> list() throws AccessDeniedException {
+    public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
-        final File[] files = new File(path).listFiles();
+        final File[] files = new File(path).listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(final File dir, final String name) {
+                return filter.accept(name);
+            }
+        });
         if(null == files) {
             throw new AccessDeniedException(String.format("Error listing files in directory %s", path));
         }
@@ -201,6 +203,15 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             children.add(LocalFactory.get(file.getAbsolutePath()));
         }
         return children;
+    }
+
+    public AttributedList<Local> list() throws AccessDeniedException {
+        return this.list(new Filter<String>() {
+            @Override
+            public boolean accept(final String file) {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -232,7 +243,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         if(StringUtils.equals(abb, path)) {
             return path;
         }
-        return String.format("~%s", abb);
+        return String.format("%s%s", HOME, abb);
     }
 
     public Local getSymlinkTarget() throws NotfoundException {

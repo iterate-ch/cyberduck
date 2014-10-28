@@ -32,17 +32,6 @@ import org.apache.log4j.Logger;
 public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
 
-    public static void register() {
-        ApplicationLauncherFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends ApplicationLauncherFactory {
-        @Override
-        protected ApplicationLauncher create() {
-            return new WorkspaceApplicationLauncher();
-        }
-    }
-
     @Override
     public boolean open(final Local file) {
         synchronized(NSWorkspace.class) {

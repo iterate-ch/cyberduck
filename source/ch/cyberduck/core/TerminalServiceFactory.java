@@ -18,25 +18,24 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import ch.cyberduck.core.sparkle.Sandbox;
 
 /**
  * @version $Id$
  */
-public abstract class TerminalServiceFactory extends Factory<TerminalService> {
+public class TerminalServiceFactory extends Factory<TerminalService> {
 
-    private static final Map<Platform, TerminalServiceFactory> factories
-            = new HashMap<Platform, TerminalServiceFactory>();
+    private static final Sandbox sandbox
+            = Sandbox.get();
 
-    public static void addFactory(Factory.Platform platform, TerminalServiceFactory f) {
-        factories.put(platform, f);
+    public TerminalServiceFactory() {
+        super("factory.terminalservice.class");
     }
 
     public static TerminalService get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
+        if(sandbox.isSandboxed()) {
             return null;
         }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new TerminalServiceFactory().create();
     }
 }

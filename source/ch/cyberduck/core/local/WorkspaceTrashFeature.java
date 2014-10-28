@@ -28,26 +28,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceTrashFeature implements Trash {
     private static final Logger log = Logger.getLogger(WorkspaceTrashFeature.class);
-
-    public static void register() {
-        LocalTrashFactory.addFactory(Factory.NATIVE_PLATFORM, new LocalTrashFactory() {
-            @Override
-            protected Trash create() {
-                return new WorkspaceTrashFeature();
-            }
-        });
-    }
-
 
     /**
      * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
      */
     @Override
-    public void trash(Local file) throws AccessDeniedException {
+    public void trash(final Local file) throws AccessDeniedException {
         if(file.exists()) {
             synchronized(NSWorkspace.class) {
                 if(log.isDebugEnabled()) {

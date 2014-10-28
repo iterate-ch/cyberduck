@@ -32,8 +32,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.ui.growl.Growl;
-import ch.cyberduck.ui.growl.GrowlFactory;
+import ch.cyberduck.ui.growl.NotificationService;
+import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.log4j.Logger;
 
@@ -79,7 +79,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private Growl growl = GrowlFactory.get();
+    private NotificationService growl = NotificationServiceFactory.get();
 
     private Session<?> session;
 

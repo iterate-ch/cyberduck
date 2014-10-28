@@ -22,7 +22,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    internal sealed class WindowsApplicationLauncher : ApplicationLauncher
+    public sealed class WindowsApplicationLauncher : ApplicationLauncher
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WindowsApplicationLauncher).Name);
 
@@ -71,19 +71,6 @@ namespace Ch.Cyberduck.Core.Local
                 return command.Substring(0, command.LastIndexOf(".exe") + 4);
             }
             return command;
-        }
-
-        public static void Register()
-        {
-            ApplicationLauncherFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : ApplicationLauncherFactory
-        {
-            protected override object create()
-            {
-                return new WindowsApplicationLauncher();
-            }
         }
     }
 }

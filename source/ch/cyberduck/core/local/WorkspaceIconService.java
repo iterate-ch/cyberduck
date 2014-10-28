@@ -31,17 +31,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  */
 public final class WorkspaceIconService implements IconService {
 
-    public static void register() {
-        IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-    }
-
-    private static class Factory extends IconServiceFactory {
-        @Override
-        protected IconService create() {
-            return new WorkspaceIconService();
-        }
-    }
-
     @Override
     public boolean set(final Local file, final String image) {
         return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));

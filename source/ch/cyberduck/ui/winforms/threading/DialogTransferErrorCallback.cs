@@ -79,23 +79,5 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             // Abort
             return false;
         }
-
-        public static void Register()
-        {
-            TransferErrorCallbackControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : TransferErrorCallbackControllerFactory
-        {
-            public override TransferErrorCallback create(ch.cyberduck.ui.Controller c)
-            {
-                return new DialogTransferErrorCallback((WindowController) c);
-            }
-
-            protected override object create()
-            {
-                throw new FactoryException();
-            }
-        }
     }
 }

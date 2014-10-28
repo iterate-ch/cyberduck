@@ -25,14 +25,6 @@ namespace Ch.Cyberduck.Core.Local
     [TestFixture]
     public class SystemLocalTest
     {
-        [SetUp]
-        public void Init()
-        {
-            UserPreferences.Register();
-            DictionaryLocale.Register();
-            SystemLocal.Register();
-        }
-
         [Test]
         public void AbsolutePaths()
         {

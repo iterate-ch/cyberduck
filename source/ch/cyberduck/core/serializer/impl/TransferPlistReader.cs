@@ -28,22 +28,9 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPlistReader).FullName);
 
-        public static void Register()
-        {
-            TransferReaderFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
         public override Transfer deserialize(XmlNode dictNode)
         {
             return new TransferDictionary().deserialize(dictNode);
-        }
-
-        private class Factory : TransferReaderFactory
-        {
-            protected override object create()
-            {
-                return new TransferPlistReader();
-            }
         }
     }
 }

@@ -32,7 +32,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal abstract class TransferPromptModel
+    public abstract class TransferPromptModel
     {
         protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
         protected readonly Transfer Transfer;

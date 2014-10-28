@@ -32,15 +32,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
 public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = Logger.getLogger(LicenseFactory.class);
+
+    private static final Preferences preferences
+            = Preferences.instance();
 
     /**
      * Delegate returning the first key found.
@@ -66,16 +67,6 @@ public abstract class LicenseFactory extends Factory<License> {
             }
             return LicenseFactory.EMPTY_LICENSE;
         }
-    }
-
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, LicenseFactory> factories
-            = new HashMap<Platform, LicenseFactory>();
-
-    public static void addFactory(Factory.Platform platform, LicenseFactory f) {
-        factories.put(platform, f);
     }
 
     protected Local folder;
@@ -120,11 +111,21 @@ public abstract class LicenseFactory extends Factory<License> {
      * @param file File to parse
      * @return Read license from file
      */
-    public static License create(final Local file) {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+    public static License get(final Local file) {
+        try {
+            final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
+                    preferences.getProperty("factory.licensefactory.class"));
+            return name.newInstance().open(file);
         }
-        return factories.get(NATIVE_PLATFORM).open(file);
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -132,15 +133,25 @@ public abstract class LicenseFactory extends Factory<License> {
      * @see #EMPTY_LICENSE
      */
     public static License find() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
         try {
-            final List<License> list = factories.get(NATIVE_PLATFORM).open();
-            if(list.isEmpty()) {
-                return LicenseFactory.EMPTY_LICENSE;
+            try {
+                final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
+                        preferences.getProperty("factory.licensefactory.class"));
+                final List<License> list = name.newInstance().open();
+                if(list.isEmpty()) {
+                    return LicenseFactory.EMPTY_LICENSE;
+                }
+                return list.iterator().next();
             }
-            return list.iterator().next();
+            catch(InstantiationException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(IllegalAccessException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(ClassNotFoundException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure finding receipt %s", e.getMessage()));

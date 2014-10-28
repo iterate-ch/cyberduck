@@ -31,23 +31,15 @@ import ch.cyberduck.ui.Controller;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
-public abstract class EditorFactory extends Factory<Editor> {
+public abstract class EditorFactory extends Factory<EditorFactory> {
     private static final Logger log = Logger.getLogger(EditorFactory.class);
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Factory.Platform, EditorFactory> factories
-            = new HashMap<Factory.Platform, EditorFactory>();
-
-    private final Preferences preferences
+    private static final Preferences preferences
             = Preferences.instance();
 
     private ApplicationFinder applicationFinder;
@@ -60,18 +52,24 @@ public abstract class EditorFactory extends Factory<Editor> {
         this.applicationFinder = applicationFinder;
     }
 
-    public static void addFactory(Factory.Platform platform, EditorFactory f) {
-        factories.put(platform, f);
-    }
-
     private static EditorFactory factory;
 
-    public static EditorFactory instance() {
+    public static synchronized EditorFactory instance() {
         if(null == factory) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
+            try {
+                final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(
+                        preferences.getProperty("factory.editorfactory.class"));
+                factory = name.newInstance();
             }
-            factory = factories.get(NATIVE_PLATFORM);
+            catch(InstantiationException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(IllegalAccessException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
+            catch(ClassNotFoundException e) {
+                throw new FactoryException(e.getMessage(), e);
+            }
         }
         return factory;
     }

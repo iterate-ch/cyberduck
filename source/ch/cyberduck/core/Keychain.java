@@ -50,21 +50,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
     private static final Logger log = Logger.getLogger(Keychain.class);
 
-    public static void register() {
-        PasswordStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new PasswordStoreFactory() {
-            @Override
-            protected HostPasswordStore create() {
-                return new Keychain();
-            }
-        });
-        CertificateStoreFactory.addFactory(Factory.NATIVE_PLATFORM, new CertificateStoreFactory() {
-            @Override
-            protected CertificateStore create() {
-                return new Keychain();
-            }
-        });
-    }
-
     static {
         Native.load("Keychain");
         Security.addProvider(new KeychainStoreProvider());
@@ -81,7 +66,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
                     /*
                      * KeyStore
                      */
-                    put("KeyStore.KeychainStore", "ch.cyberduck.core.KeychainStore");
+                    put("KeyStore.KeychainStore", KeychainStore.class.getName());
                     return null;
                 }
             });

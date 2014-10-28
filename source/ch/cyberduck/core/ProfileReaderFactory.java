@@ -21,27 +21,16 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Reader;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */
-public abstract class ProfileReaderFactory extends Factory<Reader<Profile>> {
+public class ProfileReaderFactory extends Factory<Reader<Profile>> {
 
-    /**
-     * Registered factories
-     */
-    private static final Map<Platform, ProfileReaderFactory> factories = new HashMap<Platform, ProfileReaderFactory>();
-
-    public static void addFactory(Platform platform, ProfileReaderFactory f) {
-        factories.put(platform, f);
+    protected ProfileReaderFactory() {
+        super("factory.reader.profile.class");
     }
 
     public static Reader<Profile> get() {
-        if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-        }
-        return factories.get(NATIVE_PLATFORM).create();
+        return new ProfileReaderFactory().create();
     }
 }

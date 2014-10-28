@@ -30,26 +30,6 @@ import org.apache.log4j.Logger;
 public final class FoundationProgressIconService implements IconService {
     private static final Logger log = Logger.getLogger(FoundationProgressIconService.class);
 
-    public static void register() {
-        if(!Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
-            IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
-        }
-        else {
-            log.warn(String.format("Skip registering progress icon service on %s", Factory.VERSION_PLATFORM));
-        }
-    }
-
-    private static class Factory extends IconServiceFactory {
-        @Override
-        protected IconService create() {
-            return new FoundationProgressIconService();
-        }
-    }
-
-    private FoundationProgressIconService() {
-        //
-    }
-
     static {
         Native.load("FoundationProgressService");
     }

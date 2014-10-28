@@ -83,23 +83,5 @@ namespace Ch.Cyberduck.Core.Serializer.Impl
             }
             return foundNode.NextSibling;
         }
-
-        public static void Register()
-        {
-            DeserializerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        private class Factory : DeserializerFactory
-        {
-            protected override object create()
-            {
-                return new PlistDeserializer(new XmlDocument());
-            }
-
-            protected override Deserializer create(object obj)
-            {
-                return new PlistDeserializer((XmlNode) obj);
-            }
-        }
     }
 }

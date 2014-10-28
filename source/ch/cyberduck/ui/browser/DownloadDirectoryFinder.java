@@ -41,7 +41,6 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
             if(bookmark.getDownloadFolder().exists()) {
                 return bookmark.getDownloadFolder();
             }
-
         }
         final Local directory = LocalFactory.get(preferences.getProperty("queue.download.folder")).withBookmark(
                 preferences.getProperty("queue.download.folder.bookmark"));

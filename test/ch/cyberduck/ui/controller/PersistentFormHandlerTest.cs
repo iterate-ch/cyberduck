@@ -26,14 +26,6 @@ namespace Ch.Cyberduck.Ui.Controller
     [TestFixture]
     public class PersistentFormHandlerTest
     {
-        [SetUp]
-        public void Init()
-        {
-            UserPreferences.Register();
-            DictionaryLocale.Register();
-            SystemLocal.Register();
-        }
-
         [Test]
         public void SetGetTest()
         {
