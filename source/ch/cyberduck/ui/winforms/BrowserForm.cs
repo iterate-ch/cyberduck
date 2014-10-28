@@ -1661,7 +1661,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                          (sender, args) =>
-                         BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.bug")),
+                         BrowserLauncherFactory.get().open(String.Format(Preferences.instance().getProperty("website.bug"), Preferences.instance().getProperty("application.version"))),
                          () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                          (sender, args) => new AboutBox().ShowDialog(), () => true);
