@@ -66,7 +66,7 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
                 assertNotNull(p.attributes().getETag());
             }
             else if(p.isDirectory()) {
-//                assertTrue(p.isPlaceholder());
+                assertFalse(p.isPlaceholder());
             }
             else {
                 fail();
@@ -155,6 +155,11 @@ public class SwiftObjectListServiceTest extends AbstractTestCase {
         }
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            assertTrue(list.contains(child));
+            assertEquals(EnumSet.of(Path.Type.file), list.get(child.getReference()).getType());
+        }
+        {
+            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child.getReference()).getType());
         }

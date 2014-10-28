@@ -18,20 +18,11 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SwiftPathContainerService extends PathContainerService {
 
-    @Override
-    public String getKey(final Path file) {
-        final String key = super.getKey(file);
-        if(file.isPlaceholder()) {
-            return key.concat(String.valueOf(Path.DELIMITER));
-        }
-        return key;
-    }
 }
