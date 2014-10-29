@@ -103,10 +103,15 @@ public final class StreamCopier {
      */
     public void transfer(final InputStream in, final OutputStream out)
             throws IOException, ConnectionCanceledException {
-        this.transfer(new BufferedInputStream(in, buffer), new BufferedOutputStream(out, buffer));
+        if(buffer > 0) {
+            this._transfer(new BufferedInputStream(in, buffer), new BufferedOutputStream(out, buffer));
+        }
+        else {
+            this._transfer(in, out);
+        }
     }
 
-    private void transfer(final BufferedInputStream in, final BufferedOutputStream out)
+    private void _transfer(final InputStream in, final OutputStream out)
             throws IOException, ConnectionCanceledException {
         if(offset > 0) {
             skip(in, offset);
