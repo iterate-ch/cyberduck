@@ -22,7 +22,7 @@ public class NullLocal extends Local {
     }
 
     public NullLocal(final String name) {
-        super(name);
+        super(PathNormalizer.normalize(name, false));
     }
 
     @Override
