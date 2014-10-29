@@ -2,10 +2,8 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
@@ -26,7 +24,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
 
     @Test
     public void testVerifyServerHostKey() throws Exception {
-        final Local l = LocalFactory.get("./knownhosts.test");
+        final Local l = new Local("./knownhosts.test");
         try {
             final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(l) {
                 @Override
@@ -54,7 +52,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
     @Test
     public void testVerifyIndexError() throws Exception {
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
-                LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/known_hosts.invalidline")) {
+                new Local("test/ch/cyberduck/core/sftp", "openssh/known_hosts.invalidline")) {
             @Override
             protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
                 return false;
@@ -73,7 +71,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
         // |1|Gf2LppqPUrz9Tfl4QyS/bDqX0yw=|EWSG6Gl45mO6ZX1ENbmQUGCndF8= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLcNI58jw4+R7St2mDugzg46mEexty3p8AjWmc7OCy5vHoJRXzJwiKdUlbgE0YglnCz8MNvwQwKK0dnQDI3uJZ8=
 
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
-                LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/known_hosts.ecdsa")) {
+                new Local("test/ch/cyberduck/core/sftp", "openssh/known_hosts.ecdsa")) {
             @Override
             protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
                 return false;
@@ -90,7 +88,7 @@ public class OpenSSHHostKeyVerifierTest extends AbstractTestCase {
     @Test
     public void testReadFailure() throws Exception {
         final AtomicBoolean unknown = new AtomicBoolean();
-        final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(new FinderLocal("/t") {
+        final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(new Local("/t") {
             @Override
             public InputStream getInputStream() throws AccessDeniedException {
                 throw new AccessDeniedException("t");
