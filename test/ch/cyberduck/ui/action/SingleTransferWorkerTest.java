@@ -54,8 +54,18 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
-                l.add(new NullLocal(this.getAbsolute(), "c"));
+                l.add(new NullLocal(this.getAbsolute(), "c") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
                 return l;
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         };
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
@@ -98,8 +108,18 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
-                l.add(new NullLocal(this.getAbsolute(), "c"));
+                l.add(new NullLocal(this.getAbsolute(), "c") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                });
                 return l;
+            }
+
+            @Override
+            public boolean exists() {
+                return true;
             }
         };
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
@@ -144,7 +164,12 @@ public class SingleTransferWorkerTest extends AbstractTestCase {
         final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final Cache<TransferItem> cache = new Cache<TransferItem>(Integer.MAX_VALUE);
-        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l")) {
+        final Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        }) {
             @Override
             public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
                 if(file.equals(root)) {
