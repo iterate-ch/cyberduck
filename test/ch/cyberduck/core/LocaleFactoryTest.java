@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.i18n.BundleLocale;
-
 import org.junit.Test;
+
+import java.text.MessageFormat;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +29,7 @@ public class LocaleFactoryTest extends AbstractTestCase{
     @Test
     public void testFormat() throws Exception {
         assertEquals("La clé d'hôte fournie est 1.",
-                LocaleFactory.localizedString(new BundleLocale().localize("La clé d'hôte fournie est {0}.", "Localizable"), "1"));
+                MessageFormat.format(LocaleFactory.localizedString("La clé d'hôte fournie est {0}."), "1"));
     }
 
     @Test
