@@ -11,7 +11,7 @@ public class BinarySizeFormatterTest {
 
     @Test
     public void testFormat() throws Exception {
-        ch.cyberduck.core.formatter.BinarySizeFormatter f = new ch.cyberduck.core.formatter.BinarySizeFormatter();
+        BinarySizeFormatter f = new BinarySizeFormatter();
         assertEquals("1.0 KiB", f.format(1024));
         assertEquals("1.5 KiB", f.format(1500));
         assertEquals("1.4 KiB", f.format(1480));
