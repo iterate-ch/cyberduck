@@ -116,7 +116,12 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
         );
         final Credentials credentials = new Credentials();
         credentials.setUsername("u");
-        credentials.setIdentity(new NullLocal("t"));
+        credentials.setIdentity(new NullLocal("t") {
+            @Override
+            public boolean exists() {
+                return true;
+            }
+        });
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         l.validate(host, "m", new LoginOptions(host.getProtocol()).publickey(true));
         assertTrue(keychain.get());
