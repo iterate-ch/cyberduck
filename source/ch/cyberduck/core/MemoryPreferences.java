@@ -27,14 +27,12 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullApplicationFinder;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
-import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
 import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
-import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.growl.DisabledNotificationService;
@@ -140,9 +138,6 @@ public class MemoryPreferences extends Preferences {
 
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", Version.getSpecification());
-
-        defaults.put("connection.ssl.keystore.type", "KeychainStore");
-        defaults.put("connection.ssl.keystore.provider", "Apple");
     }
 
     @Override
