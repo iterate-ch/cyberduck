@@ -30,12 +30,12 @@ import java.util.Collections;
 /**
  * @version $Id$
  */
-public class S3UrlSigner {
-    private static final Logger log = Logger.getLogger(S3UrlSigner.class);
+public class S3SignedUrlProvider {
+    private static final Logger log = Logger.getLogger(S3SignedUrlProvider.class);
 
     private Host endpoint;
 
-    public S3UrlSigner(final Host endpoint) {
+    public S3SignedUrlProvider(final Host endpoint) {
         this.endpoint = endpoint;
     }
 
@@ -50,8 +50,8 @@ public class S3UrlSigner {
      *                                  <tt>jets3t.s3.amazonaws.com</tt>. Unless you have a specific reason to disable
      *                                  DNS bucket naming, leave this value false.
      * @param method                    the HTTP method to sign, such as GET or PUT (note that S3 does not support POST requests).
-     * @param bucketName                the name of the bucket to include in the URL, must be a valid bucket name.
-     * @param objectKey                 the name of the object to include in the URL, if null only the bucket name is used.
+     * @param bucket                    the name of the bucket to include in the URL, must be a valid bucket name.
+     * @param key                       the name of the object to include in the URL, if null only the bucket name is used.
      * @param secondsSinceEpoch         the time after which URL's signature will no longer be valid. This time cannot be null.
      *                                  <b>Note:</b> This time is specified in seconds since the epoch, not milliseconds.
      * @param isVirtualHost             if this parameter is true, the bucket name is treated as a virtual host name. To use
@@ -60,17 +60,17 @@ public class S3UrlSigner {
      *                                  use the HTTP protocol.
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
-    public String createSignedUrl(final ProviderCredentials credentials,
-                                  String method, String bucketName, String objectKey,
-                                  long secondsSinceEpoch,
-                                  boolean isVirtualHost, boolean isHttps) {
+    public String create(final ProviderCredentials credentials,
+                         final String method, final String bucket, final String key,
+                         final long secondsSinceEpoch,
+                         final boolean isVirtualHost, final boolean isHttps) {
         String s3Endpoint = endpoint.getHostname();
         String uriPath;
 
         String hostname = (isVirtualHost
-                ? bucketName
+                ? bucket
                 : ServiceUtils.generateS3HostnameForBucket(
-                bucketName, false, s3Endpoint));
+                bucket, false, s3Endpoint));
 
         // If we are using an alternative hostname, include the hostname/bucketname in the resource path.
         String virtualBucketPath = "";
@@ -84,10 +84,10 @@ public class S3UrlSigner {
                 // Hostname represents a virtual host, so the bucket's name is identical to hostname
                 virtualBucketPath = hostname + "/";
             }
-            uriPath = (objectKey != null ? RestUtils.encodeUrlPath(objectKey, "/") : "");
+            uriPath = (key != null ? RestUtils.encodeUrlPath(key, "/") : "");
         }
         else {
-            uriPath = bucketName + (objectKey != null ? "/" + RestUtils.encodeUrlPath(objectKey, "/") : "");
+            uriPath = bucket + (key != null ? "/" + RestUtils.encodeUrlPath(key, "/") : "");
         }
         uriPath += "?";
         uriPath += "AWSAccessKeyId=" + credentials.getAccessKey();

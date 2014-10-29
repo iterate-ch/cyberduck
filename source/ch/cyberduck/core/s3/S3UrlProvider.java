@@ -85,7 +85,7 @@ public class S3UrlProvider implements UrlProvider {
                 list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
             // Torrent
-            list.add(new DescriptiveUrl(URI.create(new S3UrlSigner(session.getHost()).createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+            list.add(new DescriptiveUrl(URI.create(new S3SignedUrlProvider(session.getHost()).createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
                     DescriptiveUrl.Type.torrent,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
@@ -139,7 +139,7 @@ public class S3UrlProvider implements UrlProvider {
             log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(new S3UrlSigner(session.getHost()).createSignedUrl(
+        return new DescriptiveUrl(URI.create(new S3SignedUrlProvider(session.getHost()).create(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
                 containerService.getContainer(file).getName(), containerService.getKey(file),
                 expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure())), DescriptiveUrl.Type.signed,
