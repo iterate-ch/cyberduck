@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.FinderLocal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,10 +35,10 @@ public class DownloadDirectoryFinderTest extends AbstractTestCase {
         final Host host = new Host("localhost");
         assertNull(host.getDownloadFolder());
         final DownloadDirectoryFinder finder = new DownloadDirectoryFinder();
-        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), finder.find(host).getAbbreviatedPath());
+        assertEquals(System.getProperty("java.io.tmpdir"), finder.find(host).getAbbreviatedPath());
         // Does not exist
         host.setDownloadFolder(new Local("/t"));
-        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), finder.find(host).getAbbreviatedPath());
+        assertEquals(System.getProperty("java.io.tmpdir"), finder.find(host).getAbbreviatedPath());
         host.setDownloadFolder(new FinderLocal("~/Documents"));
         assertEquals("~/Documents", finder.find(host).getAbbreviatedPath());
     }
