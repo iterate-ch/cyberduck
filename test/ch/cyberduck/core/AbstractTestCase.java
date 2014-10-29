@@ -82,8 +82,6 @@ public class AbstractTestCase {
 
     @Before
     public void preferences() {
-        Preferences.instance().setProperty("application.support.path", System.getProperty("java.io.tmpdir"));
-        Preferences.instance().setProperty("factory.local.class", NullLocal.class.getName());
         Logger.getRootLogger().setLevel(Level.INFO);
         Logger.getLogger("ch.cyberduck").setLevel(Level.DEBUG);
     }
