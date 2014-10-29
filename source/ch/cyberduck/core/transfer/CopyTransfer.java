@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.serializer.Serializer;
@@ -171,12 +172,13 @@ public class CopyTransfer extends Transfer {
     @Override
     public void transfer(final Session<?> session, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
-                         final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+                         final ConnectionCallback callback,
+                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
         final Path copy = files.get(source);
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
+        progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
         if(source.isFile()) {
             if(session.getHost().equals(destination.getHost())) {
@@ -186,16 +188,16 @@ public class CopyTransfer extends Transfer {
                     addTransferred(status.getLength());
                 }
                 else {
-                    this.copy(session, source, destination, copy, bandwidth, status);
+                    this.copy(session, source, destination, copy, bandwidth, streamListener, status);
                 }
             }
             else {
-                this.copy(session, source, destination, copy, bandwidth, status);
+                this.copy(session, source, destination, copy, bandwidth, streamListener, status);
             }
         }
         else {
             if(!status.isExists()) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+                progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         copy.getName()));
                 destination.getFeature(Directory.class).mkdir(copy);
             }
@@ -210,7 +212,8 @@ public class CopyTransfer extends Transfer {
      * @param throttle The bandwidth limit
      * @param status   Transfer status
      */
-    public void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy, final BandwidthThrottle throttle,
+    public void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy,
+                     final BandwidthThrottle throttle, final StreamListener streamListener,
                      final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
@@ -224,6 +227,7 @@ public class CopyTransfer extends Transfer {
                             @Override
                             public void sent(long bytes) {
                                 addTransferred(bytes);
+                                streamListener.sent(bytes);
                             }
                         }).transfer(in, out);
             }

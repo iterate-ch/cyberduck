@@ -29,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
@@ -141,16 +142,17 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+                         final TransferOptions options, final TransferStatus status, final ConnectionCallback callback,
+                         final ProgressListener progressListener, StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.transfer(session, file, local, options, status, callback, listener);
+            download.transfer(session, file, local, options, status, callback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.transfer(session, file, local, options, status, callback, listener);
+            upload.transfer(session, file, local, options, status, callback, progressListener, streamListener);
         }
     }
 

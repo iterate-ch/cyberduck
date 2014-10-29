@@ -29,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -118,10 +119,12 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.listener = listener;
         this.prompt = prompt;
         if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
-            this.worker = new SingleTransferWorker(session, transfer, options, meter, prompt, error, this, progress, login);
+            this.worker = new SingleTransferWorker(session, transfer, options,
+                    meter, prompt, error, this, progress, new DisabledStreamListener(), login);
         }
         else {
-            this.worker = new ConcurrentTransferWorker(connection, transfer, options, meter, prompt, error, this, login, progress);
+            this.worker = new ConcurrentTransferWorker(connection, transfer, options,
+                    meter, prompt, error, this, login, progress, new DisabledStreamListener());
         }
     }
 

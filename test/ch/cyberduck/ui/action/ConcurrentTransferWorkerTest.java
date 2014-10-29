@@ -20,6 +20,8 @@ package ch.cyberduck.ui.action;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -57,7 +59,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener());
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener());
         try {
             final Session<?> session = worker.borrow();
         }
@@ -77,7 +79,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener());
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener());
         worker.borrow();
     }
 
@@ -100,7 +102,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), 2);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), 2);
         assertNotSame(worker.borrow(), worker.borrow());
     }
 
@@ -123,7 +125,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         };
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), 1);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), 1);
         final Session<?> session = worker.borrow();
         worker.release(session);
         assertEquals(Session.State.closed, session.getState());
@@ -169,7 +171,10 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
         ) {
 
             @Override
-            public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, final Local local,
+                                 final TransferOptions options, final TransferStatus status,
+                                 final ConnectionCallback callback,
+                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertNotNull(session);
                 transferred.add(file);
                 lock.countDown();
@@ -228,7 +233,7 @@ public class ConcurrentTransferWorkerTest extends AbstractTestCase {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), connections);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), connections);
 
         assertTrue(worker.run());
         lock.await();

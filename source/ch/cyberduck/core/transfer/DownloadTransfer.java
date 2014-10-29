@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
@@ -215,7 +216,8 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback,
+                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -242,6 +244,7 @@ public class DownloadTransfer extends Transfer {
                 @Override
                 public void recv(long bytes) {
                     addTransferred(bytes);
+                    streamListener.recv(bytes);
                     super.recv(bytes);
                 }
             }, status, callback);

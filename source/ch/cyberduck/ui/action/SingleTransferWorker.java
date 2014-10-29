@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -44,25 +45,28 @@ public class SingleTransferWorker extends AbstractTransferWorker {
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback,
+                                final ProgressListener listener, final StreamListener streamListener,
                                 final LoginCallback login) {
-        super(transfer, options, prompt, meter, error, callback, listener, login);
+        super(transfer, options, prompt, meter, error, callback, listener, streamListener, login);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback,
+                                final ProgressListener listener, final StreamListener streamListener,
                                 final LoginCallback login, final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, meter, error, callback, listener, login, cache);
+        super(transfer, options, prompt, meter, error, callback, listener, streamListener, login, cache);
         this.session = session;
     }
 
     public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
+                                final TransferErrorCallback error, final TransferItemCallback callback,
+                                final ProgressListener listener, final StreamListener streamListener,
                                 final LoginCallback login, final Map<Path, TransferStatus> table) {
-        super(transfer, options, prompt, meter, login, error, callback, listener, table);
+        super(transfer, options, prompt, meter, login, error, callback, listener, streamListener, table);
         this.session = session;
     }
 

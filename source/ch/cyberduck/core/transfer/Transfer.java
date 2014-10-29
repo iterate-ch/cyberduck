@@ -30,6 +30,7 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -282,8 +283,7 @@ public abstract class Transfer implements Serializable {
 
     /**
      * The actual transfer implementation
-     *
-     * @param session  Session
+     *  @param session  Session
      * @param file     Remote
      * @param local    Local
      * @param options  Quarantine option
@@ -293,7 +293,9 @@ public abstract class Transfer implements Serializable {
      */
     public abstract void transfer(Session<?> session, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback callback, ProgressListener listener) throws BackgroundException;
+                                  ConnectionCallback callback,
+                                  ProgressListener progressListener,
+                                  StreamListener streamListener) throws BackgroundException;
 
     public void start() {
         state = State.running;

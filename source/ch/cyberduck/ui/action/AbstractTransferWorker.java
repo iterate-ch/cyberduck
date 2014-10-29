@@ -30,6 +30,7 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.Transfer;
@@ -101,24 +102,31 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     private FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private ProgressListener listener;
+    private ProgressListener progressListener;
+
+    private StreamListener streamListener;
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final TransferItemCallback callback, final ProgressListener listener, final LoginCallback login) {
+                                  final TransferItemCallback callback,
+                                  final ProgressListener progressListener, final StreamListener streamListener,
+                                  final LoginCallback login) {
         this.transfer = transfer;
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
         this.login = login;
         this.options = options;
-        this.listener = listener;
+        this.progressListener = progressListener;
+        this.streamListener = streamListener;
         this.callback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final TransferErrorCallback error,
-                                  final TransferItemCallback callback, final ProgressListener listener, final LoginCallback login, final Cache<TransferItem> cache) {
+                                  final TransferItemCallback callback,
+                                  final ProgressListener progressListener, final StreamListener streamListener,
+                                  final LoginCallback login, final Cache<TransferItem> cache) {
         this.transfer = transfer;
         this.options = options;
         this.prompt = prompt;
@@ -126,13 +134,15 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.error = error;
         this.login = login;
         this.cache = cache;
-        this.listener = listener;
+        this.progressListener = progressListener;
+        this.streamListener = streamListener;
         this.callback = callback;
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter, final LoginCallback login,
-                                  final TransferErrorCallback error, final TransferItemCallback callback, final ProgressListener listener,
+                                  final TransferErrorCallback error, final TransferItemCallback callback,
+                                  final ProgressListener progressListener, final StreamListener streamListener,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
         this.options = options;
@@ -141,7 +151,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.error = error;
         this.login = login;
         this.table = table;
-        this.listener = listener;
+        this.progressListener = progressListener;
+        this.streamListener = streamListener;
         this.callback = callback;
     }
 
@@ -188,7 +199,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     throw new ConnectionCanceledException();
                 }
                 // Determine transfer filter implementation from selected overwrite action
-                final TransferPathFilter filter = transfer.filter(session, action, listener);
+                final TransferPathFilter filter = transfer.filter(session, action, progressListener);
                 // Reset the cached size of the transfer and progress value
                 transfer.reset();
                 // Calculate information about the files in advance to give progress information
@@ -243,13 +254,13 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
                         final Session<?> session = borrow();
-                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
+                        progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
                         try {
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent);
                             table.put(file, status);
                             // Apply filter
-                            filter.apply(file, local, status, listener);
+                            filter.apply(file, local, status, progressListener);
                             // Add transfer length to total bytes
                             transfer.addSize(status.getLength());
                             // Add skipped bytes
@@ -258,7 +269,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(file.isDirectory()) {
                                 // Call recursively for all children
                                 final List<TransferItem> children
-                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, listener));
+                                        = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progressListener));
                                 // Put into cache for later reference when transferring
                                 cache.put(file.getReference(), new AttributedList<TransferItem>(children));
                                 // Call recursively
@@ -336,7 +347,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             transfer.transfer(session,
                                     status.getRename().remote != null ? status.getRename().remote : item.remote,
                                     status.getRename().local != null ? status.getRename().local : item.local,
-                                    options, status, login, listener);
+                                    options, status, login, progressListener, streamListener);
                             callback.complete(item);
                         }
                         catch(ConnectionCanceledException e) {
@@ -367,7 +378,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         if(!status.isFailure()) {
                             // Post process of file.
                             try {
-                                filter.complete(item.remote, item.local, options, status, listener);
+                                filter.complete(item.remote, item.local, options, status, progressListener);
                             }
                             catch(BackgroundException e) {
                                 log.warn(String.format("Ignore failure in completion filter for %s", item));

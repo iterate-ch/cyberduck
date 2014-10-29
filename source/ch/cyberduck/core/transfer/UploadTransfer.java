@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -204,7 +205,8 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+                         final TransferStatus status, final ConnectionCallback callback,
+                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -232,6 +234,8 @@ public class UploadTransfer extends Transfer {
                 @Override
                 public void sent(long bytes) {
                     addTransferred(bytes);
+                    streamListener.sent(bytes);
+                    super.sent(bytes);
                 }
             }, status, callback);
         }

@@ -8,6 +8,8 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
@@ -155,7 +157,10 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local,
+                                 final TransferOptions options, final TransferStatus status,
+                                 final ConnectionCallback callback,
+                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(true, options.resumeRequested);
             }
         };
@@ -167,7 +172,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
         assertEquals(1, c.get());
     }
 
@@ -214,7 +220,10 @@ public class UploadTransferTest extends AbstractTestCase {
         };
         Transfer t = new UploadTransfer(new Host("t"), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local,
+                                 final TransferOptions options, final TransferStatus status,
+                                 final ConnectionCallback callback,
+                                 final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
             }
         };
@@ -223,7 +232,8 @@ public class UploadTransferTest extends AbstractTestCase {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.rename;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
     }
 
     @Test
@@ -249,7 +259,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -289,7 +300,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 new ResumeFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
@@ -381,7 +393,9 @@ public class UploadTransferTest extends AbstractTestCase {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local, final TransferOptions options, final TransferStatus status, final ConnectionCallback callback, final ProgressListener listener) throws BackgroundException {
+            public void transfer(final Session<?> session, final Path file, Local local,
+                                 final TransferOptions options, final TransferStatus status,
+                                 final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);
@@ -397,7 +411,8 @@ public class UploadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), filter);
         assertNotNull(table.get(test));
         assertNotNull(table.get(test).getRename());

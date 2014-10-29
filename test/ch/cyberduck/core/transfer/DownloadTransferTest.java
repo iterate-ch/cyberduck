@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
@@ -61,7 +62,8 @@ public class DownloadTransferTest extends AbstractTestCase {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback()).run();
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run();
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
@@ -164,7 +166,8 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
                 new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))
@@ -204,7 +207,8 @@ public class DownloadTransferTest extends AbstractTestCase {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(), new DisabledProgressListener(), new DisabledLoginCallback(), table);
+        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
         worker.prepare(test, local, new TransferStatus().exists(true),
                 new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
                         new NullSession(new Host("h")))
