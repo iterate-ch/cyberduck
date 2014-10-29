@@ -238,8 +238,8 @@ public class UploadTransferTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         final Local local = new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer");
         LocalTouchFactory.get().touch(local);
-        LocalTouchFactory.get().touch(new FinderLocal(new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"), name));
-        final Transfer transfer = new UploadTransfer(host, test, new NullLocal(System.getProperty("java.io.tmpdir"), "transfer"));
+        LocalTouchFactory.get().touch(new FinderLocal(local, name));
+        final Transfer transfer = new UploadTransfer(host, test, local);
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
