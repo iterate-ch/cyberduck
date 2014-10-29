@@ -124,7 +124,9 @@ public class StreamGobbler extends InputStream {
                     synchronizer.wait();
                 }
                 catch(InterruptedException e) {
-                    throw new InterruptedIOException();
+                    final InterruptedIOException f = new InterruptedIOException();
+                    f.initCause(e);
+                    throw f;
                 }
             }
             return buffer[read_pos++] & 0xff;
@@ -169,7 +171,9 @@ public class StreamGobbler extends InputStream {
                     synchronizer.wait();
                 }
                 catch(InterruptedException e) {
-                    throw new InterruptedIOException();
+                    final InterruptedIOException f = new InterruptedIOException();
+                    f.initCause(e);
+                    throw f;
                 }
             }
 
