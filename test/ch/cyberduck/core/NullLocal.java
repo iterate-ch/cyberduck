@@ -14,15 +14,15 @@ import java.io.OutputStream;
 public class NullLocal extends Local {
 
     public NullLocal(final String parent, final String name) {
-        this(parent.endsWith("/") ? String.format("%s%s", parent, name) : String.format("%s/%s", parent, name));
+        super(parent, name);
     }
 
     public NullLocal(final Local parent, final String name) {
-        this(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
+        super(parent, name);
     }
 
     public NullLocal(final String name) {
-        super(PathNormalizer.normalize(name));
+        super(name);
     }
 
     @Override

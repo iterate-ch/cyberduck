@@ -26,6 +26,7 @@ import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -51,6 +52,18 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     protected String path;
 
     private LocalAttributes attributes;
+
+    public Local(final String parent, final String name) {
+        this(parent.endsWith(Preferences.instance().getProperty("local.delimiter")) ?
+                String.format("%s%s", parent, name) :
+                String.format("%s%c%s", parent, CharUtils.toChar(Preferences.instance().getProperty("local.delimiter")), name));
+    }
+
+    public Local(final Local parent, final String name) {
+        this(parent.isRoot() ?
+                String.format("%s%s", parent.getAbsolute(), name) :
+                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(Preferences.instance().getProperty("local.delimiter")), name));
+    }
 
     /**
      * @param name Absolute path
@@ -142,7 +155,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public char getDelimiter() {
-        return '/';
+        return CharUtils.toChar(Preferences.instance().getProperty("local.delimiter"));
     }
 
     public void mkdir() throws AccessDeniedException {

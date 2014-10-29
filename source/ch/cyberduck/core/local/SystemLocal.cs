@@ -34,13 +34,11 @@ namespace Ch.Cyberduck.Core.Local
 
         private LocalAttributes _info;
 
-        public SystemLocal(string parent, string name) : base(MakeValidPath(parent) + '\\' + MakeValidFilename(name))
-        {
-        }
+        public SystemLocal(string parent, string name)
+            : base(parent, name) {}
 
-        public SystemLocal(ch.cyberduck.core.Local parent, string name) : base(parent.getAbsolute() + '\\' + name)
-        {
-        }
+        public SystemLocal(ch.cyberduck.core.Local parent, string name)
+            : base(parent, name) {}
 
         public SystemLocal(string path)
             : base(

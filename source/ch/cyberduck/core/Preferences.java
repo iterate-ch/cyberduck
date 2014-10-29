@@ -215,6 +215,7 @@ public abstract class Preferences {
         defaults.put("local.symboliclink.resolve", String.valueOf(false));
         defaults.put("local.normalize.unicode", String.valueOf(true));
         defaults.put("local.list.native", String.valueOf(true));
+        defaults.put("local.delimiter", String.valueOf('/'));
         /**
          * Prompt to resolve bookmark of file outside of sandbox with choose panel
          */

@@ -67,11 +67,11 @@ public class FinderLocal extends Local {
             = new FinderLocalAttributes(this);
 
     public FinderLocal(final Local parent, final String name) {
-        super(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
+        super(parent, name);
     }
 
     public FinderLocal(final String parent, final String name) {
-        super(parent.endsWith("/") ? String.format("%s%s", parent, name) : String.format("%s/%s", parent, name));
+        super(parent, name);
     }
 
     public FinderLocal(final String path) {

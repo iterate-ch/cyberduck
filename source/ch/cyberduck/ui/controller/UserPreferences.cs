@@ -330,6 +330,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("local.symboliclink.resolve", true.ToString());
 
             defaults.put("local.user.home", HomeFolder);
+            defaults.put("local.delimiter", "\\");
         }
 
         protected override void setFactories()
