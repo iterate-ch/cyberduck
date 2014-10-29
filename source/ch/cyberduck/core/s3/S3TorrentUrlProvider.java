@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -28,7 +27,6 @@ import org.jets3t.service.utils.ServiceUtils;
  * @version $Id$
  */
 public class S3TorrentUrlProvider {
-    private static final Logger log = Logger.getLogger(S3TorrentUrlProvider.class);
 
     private Host endpoint;
 
