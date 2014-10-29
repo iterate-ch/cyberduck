@@ -2,7 +2,6 @@ package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostReaderFactory;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Serializable;
@@ -19,7 +18,7 @@ public class HostPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testDeserializeDeprecatedProtocol() throws Exception {
-        assertNull(HostReaderFactory.get().read(LocalFactory.get("test")));
+        assertNull(new HostPlistReader().read(LocalFactory.get("test")));
         assertNull(new HostPlistReader().read(
                 LocalFactory.get("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")));
     }

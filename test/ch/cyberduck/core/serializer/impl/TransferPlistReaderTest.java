@@ -20,7 +20,6 @@ package ch.cyberduck.core.serializer.impl;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.TransferReaderFactory;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -28,7 +27,8 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -37,7 +37,7 @@ public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testDeserializeUpload() throws Exception {
-        final Transfer t = TransferReaderFactory.get().read(
+        final Transfer t = new TransferPlistReader().read(
                 new FinderLocal("test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
@@ -49,7 +49,7 @@ public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testDeserializeDownload() throws Exception {
-        final Transfer t = TransferReaderFactory.get().read(
+        final Transfer t = new TransferPlistReader().read(
                 new FinderLocal("test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);

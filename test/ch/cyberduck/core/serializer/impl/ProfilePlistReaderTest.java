@@ -26,7 +26,7 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testAll() throws Exception {
-        for(Local l : LocalFactory.get("profiles").list().filter(new Filter<Local>() {
+        for(Local l : new Local("profiles").list().filter(new Filter<Local>() {
             @Override
             public boolean accept(final Local file) {
                 return file.getName().endsWith(".cyberduckprofile");
