@@ -1,6 +1,7 @@
 package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
@@ -23,7 +24,7 @@ public class FetchBookmarkCollectionTest extends AbstractTestCase {
     public void testGetFile() throws Exception {
         FetchBookmarkCollection c = new FetchBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist"));
+        c.parse(new Local("test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist"));
         assertEquals(2, c.size());
     }
 }

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
@@ -23,7 +24,7 @@ public class FlowBookmarkCollectionTest extends AbstractTestCase {
     public void testParse() throws AccessDeniedException {
         FlowBookmarkCollection c = new FlowBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist"));
+        c.parse(new Local("test/ch/cyberduck/core/importer/com.fivedetails.Bookmarks.plist"));
         assertEquals(3, c.size());
     }
 }

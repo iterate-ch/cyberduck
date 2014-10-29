@@ -24,7 +24,7 @@ public class FireFtpBookmarkCollectionTest extends AbstractTestCase {
     public void testParse() throws Exception {
         FireFtpBookmarkCollection c = new FireFtpBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/org.mozdev.fireftp"));
+        c.parse(new Local("test/ch/cyberduck/core/importer/org.mozdev.fireftp"));
         assertEquals(1, c.size());
     }
 
@@ -33,7 +33,7 @@ public class FireFtpBookmarkCollectionTest extends AbstractTestCase {
         FireFtpBookmarkCollection c = new FireFtpBookmarkCollection() {
             @Override
             public Local getFile() {
-                return LocalFactory.get("test/ch/cyberduck/core/importer/org.mozdev.fireftp");
+                return new Local("test/ch/cyberduck/core/importer/org.mozdev.fireftp");
             }
         };
         assertEquals(0, c.size());

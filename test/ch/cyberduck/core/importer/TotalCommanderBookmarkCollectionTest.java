@@ -19,6 +19,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.FinderLocal;
@@ -31,14 +32,14 @@ public class TotalCommanderBookmarkCollectionTest extends AbstractTestCase{
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new FlashFxp4UserBookmarkCollection().parse(new FinderLocal(System.getProperty("java.io.tmpdir"), "f"));
+        new TotalCommanderBookmarkCollection().parse(new FinderLocal(System.getProperty("java.io.tmpdir"), "f"));
     }
 
     @Test
     public void testParse() throws Exception {
         TotalCommanderBookmarkCollection c = new TotalCommanderBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.get("test/ch/cyberduck/core/importer/wcx_ftp.ini"));
+        c.parse(new Local("test/ch/cyberduck/core/importer/wcx_ftp.ini"));
         assertEquals(2, c.size());
         assertEquals("sudo.ch", c.get(0).getHostname());
         assertEquals("fo|cyberduck.io session bookmark", c.get(1).getNickname());
