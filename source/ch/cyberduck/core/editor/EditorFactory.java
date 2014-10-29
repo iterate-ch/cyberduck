@@ -133,9 +133,8 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         if(preferences.getBoolean("editor.alwaysUseDefault")) {
             return this.getDefaultEditor();
         }
-        final ApplicationFinder finder = applicationFinder;
         // The default application set by launch services to open files of the given type
-        final Application editor = finder.find(filename);
+        final Application editor = applicationFinder.find(filename);
         if(null == editor) {
             // Use default editor if not applicable application found which handles this file type
             return this.getDefaultEditor();
