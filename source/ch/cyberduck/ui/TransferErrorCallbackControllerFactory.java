@@ -37,11 +37,6 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
     private static final Preferences preferences
             = Preferences.instance();
 
-    @Override
-    protected TransferErrorCallback create() {
-        throw new FactoryException();
-    }
-
     public TransferErrorCallback create(final Controller c) {
         try {
             final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(

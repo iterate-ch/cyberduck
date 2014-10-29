@@ -57,8 +57,12 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     public static synchronized EditorFactory instance() {
         if(null == factory) {
             try {
+                final String clazz = preferences.getProperty("factory.editorfactory.class");
+                if(null == clazz) {
+                    throw new FactoryException();
+                }
                 final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(
-                        preferences.getProperty("factory.editorfactory.class"));
+                        clazz);
                 factory = name.newInstance();
             }
             catch(InstantiationException e) {
@@ -113,7 +117,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * Determine the default editor set
      *
      * @return The bundle identifier of the default editor configured in
-     *         Preferences or com.apple.TextEdit if not installed.
+     * Preferences or com.apple.TextEdit if not installed.
      */
     public Application getDefaultEditor() {
         return applicationFinder.getDescription(
@@ -123,7 +127,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     /**
      * @param filename File type
      * @return The bundle identifier of the application for this file or null if no
-     *         suitable and installed editor is found.
+     * suitable and installed editor is found.
      */
     public Application getEditor(final String filename) {
         if(preferences.getBoolean("editor.alwaysUseDefault")) {
@@ -143,7 +147,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     /**
      * @param filename File type
      * @return Installed applications suitable to edit the given file type. Does always include
-     *         the default editor set in the Preferences
+     * the default editor set in the Preferences
      */
     public List<Application> getEditors(final String filename) {
         if(log.isDebugEnabled()) {

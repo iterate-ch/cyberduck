@@ -31,11 +31,6 @@ public class PathReferenceFactory extends Factory<PathReference> {
     private static final Preferences preferences
             = Preferences.instance();
 
-    @Override
-    protected PathReference create() {
-        throw new FactoryException();
-    }
-
     public static <T> PathReference<T> get(final Path param) {
         return new PathReferenceFactory().create(param);
     }

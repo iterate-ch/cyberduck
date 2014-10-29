@@ -39,11 +39,6 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Preferences preferences
             = Preferences.instance();
 
-    @Override
-    protected LoginCallback create() {
-        throw new FactoryException();
-    }
-
     public LoginCallback create(final Controller c) {
         try {
             final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(preferences.getProperty("factory.logincallback.class"));

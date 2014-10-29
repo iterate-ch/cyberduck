@@ -42,11 +42,6 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Preferences preferences
             = Preferences.instance();
 
-    @Override
-    protected HostKeyCallback create() {
-        throw new FactoryException();
-    }
-
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
             try {

@@ -53,11 +53,4 @@ public class NotificationCenter implements NotificationService {
         // No support for custom image. Always use application icon
         this.notify(title, description);
     }
-
-    private static class Factory extends NotificationServiceFactory {
-        @Override
-        protected NotificationService create() {
-            return new NotificationCenter();
-        }
-    }
 }
