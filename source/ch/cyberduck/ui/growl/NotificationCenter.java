@@ -22,13 +22,10 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class NotificationCenter implements NotificationService {
-    private static final Logger log = Logger.getLogger(NotificationCenter.class);
 
     private NSUserNotificationCenter center
             = NSUserNotificationCenter.defaultUserNotificationCenter();

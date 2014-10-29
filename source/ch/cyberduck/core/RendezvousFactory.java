@@ -19,13 +19,10 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class RendezvousFactory extends Factory<Rendezvous> {
-    private static final Logger log = Logger.getLogger(RendezvousFactory.class);
 
     protected RendezvousFactory() {
         super("factory.rendezvous.class");

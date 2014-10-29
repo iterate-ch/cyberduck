@@ -20,13 +20,10 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class QuarantineServiceFactory extends Factory<QuarantineService> {
-    private static final Logger log = Logger.getLogger(QuarantineServiceFactory.class);
 
     public QuarantineServiceFactory() {
         super("factory.quarantine.class");

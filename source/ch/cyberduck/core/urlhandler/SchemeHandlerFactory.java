@@ -19,14 +19,11 @@ package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * @version $Id$
  */
 public class SchemeHandlerFactory extends Factory<SchemeHandler> {
-    private static final Logger log = Logger.getLogger(SchemeHandlerFactory.class);
 
     protected SchemeHandlerFactory() {
         super("factory.schemehandler.class");

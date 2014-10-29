@@ -22,13 +22,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public final class FoundationProgressIconService implements IconService {
-    private static final Logger log = Logger.getLogger(FoundationProgressIconService.class);
 
     static {
         Native.load("FoundationProgressService");

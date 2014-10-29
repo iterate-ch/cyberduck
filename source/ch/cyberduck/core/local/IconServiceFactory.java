@@ -20,13 +20,10 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class IconServiceFactory extends Factory<IconService> {
-    private static final Logger log = Logger.getLogger(IconServiceFactory.class);
 
     protected IconServiceFactory() {
         super("factory.iconservice.class");

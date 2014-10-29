@@ -20,13 +20,10 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
-    private static final Logger log = Logger.getLogger(ApplicationBadgeLabelerFactory.class);
 
     public ApplicationBadgeLabelerFactory() {
         super("factory.badgelabeler.class");
