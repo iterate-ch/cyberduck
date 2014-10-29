@@ -32,12 +32,10 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
-import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
@@ -64,7 +62,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
-import ch.cyberduck.ui.growl.DisabledNotificationService;
 import ch.cyberduck.ui.growl.NotificationCenter;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
@@ -294,12 +291,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
         defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
         defaults.put("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
-        if(this.getBoolean("queue.dock.badge")) {
-            defaults.put("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
-        }
-        else {
-            defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
-        }
+        defaults.put("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
         defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         if(null == Updater.getFeed()) {
             defaults.put("factory.licensefactory.class", ReceiptFactory.class.getName());
@@ -309,9 +301,6 @@ public class UserDefaultsPreferences extends Preferences {
         }
         if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
             defaults.put("factory.notification.class", NotificationCenter.class.getName());
-        }
-        else {
-            defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
         }
         defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
         defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());

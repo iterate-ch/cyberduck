@@ -349,13 +349,11 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("factory.transferpromptcallback.upload.class", typeof(Ch.Cyberduck.Ui.Controller.UploadPromptController).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.sync.class", typeof(Ch.Cyberduck.Ui.Controller.SyncPromptController).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof(Ch.Cyberduck.Core.SystemProxy).AssemblyQualifiedName);
-            defaults.put("factory.sleeppreventer.class", typeof(ch.cyberduck.core.DisabledSleepPreventer).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof(Ch.Cyberduck.Core.TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.rendezvous.class", typeof(Ch.Cyberduck.Core.Rendezvous).AssemblyQualifiedName);
 
             defaults.put("factory.serializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistSerializer).AssemblyQualifiedName);
             defaults.put("factory.deserializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistDeserializer).AssemblyQualifiedName);
-            defaults.put("factory.serializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistSerializer).AssemblyQualifiedName);
             defaults.put("factory.reader.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.ProfilePlistReader).AssemblyQualifiedName);
             defaults.put("factory.writer.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
             defaults.put("factory.reader.transfer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.TransferPlistReader).AssemblyQualifiedName);
@@ -369,23 +367,16 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("factory.browserlauncher.class", typeof(Ch.Cyberduck.Core.Local.DefaultBrowserLauncher).AssemblyQualifiedName);
             defaults.put("factory.reveal.class", typeof(Ch.Cyberduck.Core.Local.ExplorerRevealService).AssemblyQualifiedName);
             defaults.put("factory.trash.class", typeof(Ch.Cyberduck.Core.Local.RecycleLocalTrashFeature).AssemblyQualifiedName);
-            defaults.put("factory.quarantine.class", typeof(ch.cyberduck.core.local.DisabledQuarantineService).AssemblyQualifiedName);
             defaults.put("factory.symlink.class", typeof(ch.cyberduck.core.local.NullLocalSymlinkFeature).AssemblyQualifiedName);
             defaults.put("factory.terminalservice.class", typeof(Ch.Cyberduck.Core.SshTerminalService).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof(Ch.Cyberduck.Core.Editor.SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.licensefactory.class", typeof(Ch.Cyberduck.Core.Aquaticprime.WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.notification.class", typeof(Ch.Cyberduck.Ui.Growl.ToolstripNotificationService).AssemblyQualifiedName);
-            defaults.put("factory.iconservice.class", typeof(ch.cyberduck.core.local.DisabledIconService).AssemblyQualifiedName);
             if (Utils.IsWin7OrLater)
             {
                 defaults.put("factory.badgelabeler.class", typeof(Ch.Cyberduck.Core.Local.TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             }
-            else
-            {
-                defaults.put("factory.badgelabeler.class", typeof(ch.cyberduck.core.local.DisabledApplicationBadgeLabeler).AssemblyQualifiedName);
-            }
             defaults.put("factory.filedescriptor.class", typeof(Ch.Cyberduck.Core.Local.Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.schemehandler.class", typeof(ch.cyberduck.core.urlhandler.DisabledSchemeHandler).AssemblyQualifiedName);
             defaults.put("factory.pathreference.class", typeof(ch.cyberduck.core.DefaultPathReference).AssemblyQualifiedName);
         }
 

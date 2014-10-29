@@ -20,11 +20,15 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.DisabledIconService;
+import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.growl.DisabledNotificationService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -1036,15 +1040,20 @@ public abstract class Preferences {
         defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
         defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
         defaults.put("factory.pathreference.class", DefaultPathReference.class.getName());
+        defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
+        defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
+        defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
+        defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
+        defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
     }
 
     /**
-     * Store preferences; ensure perisistency
+     * Store preferences
      */
     public abstract void save();
 
     /**
-     * Overriding the default values with prefs from the last session.
+     * Overriding the default values with preferences from the last session.
      */
     protected abstract void load();
 

@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
@@ -30,7 +31,9 @@ public class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabe
     }
 
     public static ApplicationBadgeLabeler get() {
-        return new ApplicationBadgeLabelerFactory().create();
+        if(Preferences.instance().getBoolean("queue.dock.badge")) {
+            return new ApplicationBadgeLabelerFactory().create();
+        }
+        return new DisabledApplicationBadgeLabeler();
     }
-
 }
