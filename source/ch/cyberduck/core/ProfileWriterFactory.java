@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Writer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @version $Id$
  */

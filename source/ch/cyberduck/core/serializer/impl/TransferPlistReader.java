@@ -18,8 +18,6 @@ package ch.cyberduck.core.serializer.impl;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.TransferReaderFactory;
-import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;

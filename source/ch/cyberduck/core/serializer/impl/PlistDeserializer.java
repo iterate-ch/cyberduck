@@ -18,12 +18,10 @@ package ch.cyberduck.core.serializer.impl;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;

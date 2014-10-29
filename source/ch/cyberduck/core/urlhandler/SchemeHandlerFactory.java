@@ -18,15 +18,8 @@ package ch.cyberduck.core.urlhandler;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.local.Application;
 
 import org.apache.log4j.Logger;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**

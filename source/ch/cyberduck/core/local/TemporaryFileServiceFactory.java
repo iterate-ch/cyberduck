@@ -19,10 +19,6 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @version $Id$
