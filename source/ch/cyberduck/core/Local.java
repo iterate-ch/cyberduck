@@ -125,28 +125,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * Checks whether a given file is a symbolic link.
-     * <p/>
-     * <p>It doesn't really test for symbolic links but whether the
-     * canonical and absolute paths of the file are identical - this
-     * may lead to false positives on some platforms.</p>
-     *
      * @return true if the file is a symbolic link.
      */
     public boolean isSymbolicLink() {
-        final File f = new File(path);
-        if(!f.exists()) {
-            return false;
-        }
-        // For a link that actually points to something (either a file or a directory),
-        // the absolute path is the path through the link, whereas the canonical path
-        // is the path the link references.
-        try {
-            return !f.getAbsolutePath().equals(f.getCanonicalPath());
-        }
-        catch(IOException e) {
-            return false;
-        }
+        return false;
     }
 
     public LocalAttributes attributes() {

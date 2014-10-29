@@ -26,11 +26,6 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public boolean isSymbolicLink() {
-        return false;
-    }
-
-    @Override
     public boolean isFile() {
         if(!super.exists()) {
             return true;
