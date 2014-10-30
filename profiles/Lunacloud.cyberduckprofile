@@ -5,7 +5,7 @@
 	<key>Protocol</key>
 	<string>s3</string>
 	<key>Vendor</key>
-	<string>Lunacloud</string>
+	<string>lunacloud</string>
 	<key>Description</key>
 	<string>Lunacloud Storage (S3 Compatible)</string>
 	<key>Default Hostname</key>

@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>Oktawave</string>
+        <string>oktawave</string>
         <key>Description</key>
         <string>Oktawave Cloud Storage</string>
         <key>Default Hostname</key>
