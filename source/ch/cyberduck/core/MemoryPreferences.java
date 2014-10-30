@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.local.DefaultLocalTrashFeature;
 import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
 import ch.cyberduck.core.local.DisabledApplicationLauncher;
@@ -103,6 +104,7 @@ public class MemoryPreferences extends Preferences {
         defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
         defaults.put("factory.writer.host.class", PlistWriter.class.getName());
 
+        defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
         defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
         defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
         defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
