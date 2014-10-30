@@ -34,8 +34,12 @@ public class DeserializerFactory<T> extends Factory<Deserializer> {
             = Preferences.instance();
 
     protected Deserializer create(final T dict) {
+        final String clazz = preferences.getProperty("factory.deserializer.class");
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
-            final Class<Deserializer> name = (Class<Deserializer>) Class.forName(preferences.getProperty("factory.deserializer.class"));
+            final Class<Deserializer> name = (Class<Deserializer>) Class.forName(clazz);
             final Constructor<Deserializer> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, dict.getClass());
             return constructor.newInstance(dict);
         }

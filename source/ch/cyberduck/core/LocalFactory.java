@@ -37,8 +37,12 @@ public final class LocalFactory extends Factory<Local> {
     }
 
     protected Local create(final String path) {
+        final String clazz = preferences.getProperty("factory.local.class");
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
-            final Class<Local> name = (Class<Local>) Class.forName(preferences.getProperty("factory.local.class"));
+            final Class<Local> name = (Class<Local>) Class.forName(clazz);
             final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
             return constructor.newInstance(path);
         }

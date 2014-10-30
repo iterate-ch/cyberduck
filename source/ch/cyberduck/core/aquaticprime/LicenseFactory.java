@@ -112,9 +112,13 @@ public abstract class LicenseFactory extends Factory<License> {
      * @return Read license from file
      */
     public static License get(final Local file) {
+        final String clazz = preferences.getProperty("factory.licensefactory.class");
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
             final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
-                    preferences.getProperty("factory.licensefactory.class"));
+                    preferences.getProperty(clazz));
             return name.newInstance().open(file);
         }
         catch(InstantiationException e) {
@@ -134,9 +138,13 @@ public abstract class LicenseFactory extends Factory<License> {
      */
     public static License find() {
         try {
+            final String clazz = preferences.getProperty("factory.licensefactory.class");
+            if(null == clazz) {
+                throw new FactoryException();
+            }
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
-                        preferences.getProperty("factory.licensefactory.class"));
+                        preferences.getProperty(clazz));
                 final List<License> list = name.newInstance().open();
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;

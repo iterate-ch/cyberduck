@@ -61,8 +61,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
                 if(null == clazz) {
                     throw new FactoryException();
                 }
-                final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(
-                        clazz);
+                final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(clazz);
                 factory = name.newInstance();
             }
             catch(InstantiationException e) {

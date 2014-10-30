@@ -36,8 +36,9 @@ public class PathReferenceFactory extends Factory<PathReference> {
     }
 
     protected <T> PathReference<T> create(final Path path) {
+        final String clazz = preferences.getProperty("factory.pathreference.class");
         try {
-            final Class<PathReference> name = (Class<PathReference>) Class.forName(preferences.getProperty("factory.pathreference.class"));
+            final Class<PathReference> name = (Class<PathReference>) Class.forName(clazz);
             final Constructor<PathReference> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, path.getClass());
             return constructor.newInstance(path);
         }
