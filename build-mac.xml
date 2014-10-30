@@ -73,7 +73,7 @@
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
-    <property name="build.sdk.version" value="macosx10.9"/>
+    <property name="build.sdk.version" value="macosx10.10"/>
     <property name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.6"/>
 
     <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
