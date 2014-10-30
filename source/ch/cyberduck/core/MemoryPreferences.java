@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.local.DefaultLocalTrashFeature;
 import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
 import ch.cyberduck.core.local.DisabledApplicationLauncher;
@@ -34,7 +33,6 @@ import ch.cyberduck.core.serializer.impl.PlistWriter;
 import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
-import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.growl.DisabledNotificationService;
 import ch.cyberduck.ui.resources.DisabledIconCache;
 
@@ -105,7 +103,6 @@ public class MemoryPreferences extends Preferences {
         defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
         defaults.put("factory.writer.host.class", PlistWriter.class.getName());
 
-        defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
         defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
         defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
@@ -119,8 +116,6 @@ public class MemoryPreferences extends Preferences {
         defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
         defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
         defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
-
-        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
     }
 
     @Override
