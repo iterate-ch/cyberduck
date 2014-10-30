@@ -195,7 +195,7 @@
         <manifest file="${build}/MANIFEST.MF">
             <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Specification-Title" value="${app.name}"/>
-            <attribute name="Specification-Version" value="${svn.revision}"/>
+            <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <attribute name="Specification-Vendor" value="David Kocher"/>
             <attribute name="Implementation-Version" value="${svn.revision}"/>
         </manifest>
