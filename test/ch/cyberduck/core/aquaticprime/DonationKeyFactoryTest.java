@@ -18,29 +18,14 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.local.FinderLocal;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ReceiptFactoryTest {
+public class DonationKeyFactoryTest {
 
     @Test
-    @Ignore
     public void testCreate() throws Exception {
-        assertEquals(new Receipt(null, "c42c030b8670"), new ReceiptFactory().create());
-    }
-
-    @Test
-    @Ignore
-    public void testOpen() throws Exception {
-        assertEquals(LicenseFactory.EMPTY_LICENSE, new ReceiptFactory().open());
-    }
-
-    @Test
-    public void testOpenDirectory() throws Exception {
-        assertEquals(1, new ReceiptFactory(new FinderLocal("/Applications/Cyberduck.app/Contents/_MASReceipt")).open().size());
+        assertEquals(new Receipt(null, "c42c030b8670"), new DonationKeyFactory().create());
     }
 }
