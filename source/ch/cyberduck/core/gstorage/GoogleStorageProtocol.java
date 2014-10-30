@@ -18,10 +18,8 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3LocationFeature;
 
@@ -111,8 +109,4 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
         return this.icon();
     }
 
-    @Override
-    public Session createSession(final Host host) {
-        return new GoogleStorageSession(host);
-    }
 }

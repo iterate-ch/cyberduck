@@ -286,11 +286,6 @@ public final class Profile implements Protocol, Serializable {
         return parent.isUTCTimezone();
     }
 
-    @Override
-    public Session createSession(final Host host) {
-        return parent.createSession(host);
-    }
-
     private String value(final String key) {
         final String value = dict.stringForKey(key);
         if(StringUtils.isBlank(value)) {

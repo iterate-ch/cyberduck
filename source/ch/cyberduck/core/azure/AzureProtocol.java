@@ -19,20 +19,13 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.Session;
 
 /**
  * @version $Id$
  */
 public class AzureProtocol extends AbstractProtocol {
-
-    @Override
-    public Session createSession(Host host) {
-        return new AzureSession(host);
-    }
 
     /**
      * URL format: Blobs are addressable using the following URL format:

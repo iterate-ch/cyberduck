@@ -30,8 +30,6 @@ import java.util.Set;
  */
 public interface Protocol {
 
-    Session createSession(Host host);
-
     boolean validate(Credentials credentials, LoginOptions options);
 
     public enum Type {

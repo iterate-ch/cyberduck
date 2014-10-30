@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
@@ -56,8 +55,4 @@ public final class DAVProtocol extends AbstractProtocol {
         return String.format("%s.tiff", "ftp");
     }
 
-    @Override
-    public DAVSession createSession(final Host host) {
-        return new DAVSession(host);
-    }
 }

@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
@@ -72,8 +71,4 @@ public class SwiftProtocol extends AbstractProtocol {
         return "Secret Key";
     }
 
-    @Override
-    public SwiftSession createSession(final Host host) {
-        return new SwiftSession(host);
-    }
 }

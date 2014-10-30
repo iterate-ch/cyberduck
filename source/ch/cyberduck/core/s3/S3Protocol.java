@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
@@ -102,8 +101,4 @@ public final class S3Protocol extends AbstractProtocol {
         return this.icon();
     }
 
-    @Override
-    public S3Session createSession(final Host host) {
-        return new S3Session(host);
-    }
 }

@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
@@ -53,8 +52,4 @@ public final class FTPProtocol extends AbstractProtocol {
         return true;
     }
 
-    @Override
-    public FTPSession createSession(final Host host) {
-        return new FTPSession(host);
-    }
 }

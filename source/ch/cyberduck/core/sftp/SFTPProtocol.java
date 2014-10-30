@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
@@ -57,8 +56,4 @@ public final class SFTPProtocol extends AbstractProtocol {
         return String.format("%s.tiff", "ftp");
     }
 
-    @Override
-    public SFTPSession createSession(final Host host) {
-        return new SFTPSession(host);
-    }
 }
