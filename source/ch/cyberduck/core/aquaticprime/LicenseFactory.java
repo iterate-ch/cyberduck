@@ -117,8 +117,7 @@ public abstract class LicenseFactory extends Factory<License> {
             throw new FactoryException();
         }
         try {
-            final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
-                    preferences.getProperty(clazz));
+            final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
             return name.newInstance().open(file);
         }
         catch(InstantiationException e) {
@@ -143,8 +142,7 @@ public abstract class LicenseFactory extends Factory<License> {
                 throw new FactoryException();
             }
             try {
-                final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(
-                        preferences.getProperty(clazz));
+                final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
                 final List<License> list = name.newInstance().open();
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;

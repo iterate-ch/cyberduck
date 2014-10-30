@@ -38,9 +38,12 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
             = Preferences.instance();
 
     public TransferErrorCallback create(final Controller c) {
+        final String clazz = preferences.getProperty("factory.transfererrorcallback.class");
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
-            final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(
-                    preferences.getProperty("factory.transfererrorcallback.class"));
+            final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(clazz);
             final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for %s", c.getClass()));
