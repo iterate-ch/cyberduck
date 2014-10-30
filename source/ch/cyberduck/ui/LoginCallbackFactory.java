@@ -40,8 +40,12 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
             = Preferences.instance();
 
     public LoginCallback create(final Controller c) {
+        final String clazz = preferences.getProperty("factory.logincallback.class");
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
-            final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(preferences.getProperty("factory.logincallback.class"));
+            final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(clazz);
             final Constructor<LoginCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for %s", c.getClass()));

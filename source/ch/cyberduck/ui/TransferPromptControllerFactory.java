@@ -40,9 +40,13 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
             = Preferences.instance();
 
     public TransferPrompt create(Controller c, Transfer transfer, Session session) {
+        final String clazz = preferences.getProperty(
+                String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
+        if(null == clazz) {
+            throw new FactoryException();
+        }
         try {
-            final Class<TransferPrompt> name = (Class<TransferPrompt>) Class.forName(preferences.getProperty(
-                    String.format("factory.transferpromptcallback.%s.class", transfer.getType().name())));
+            final Class<TransferPrompt> name = (Class<TransferPrompt>) Class.forName(clazz);
             final Constructor<TransferPrompt> constructor = ConstructorUtils
                     .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), session.getClass());
             if(null == constructor) {

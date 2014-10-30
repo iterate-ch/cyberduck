@@ -44,8 +44,12 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
 
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
+            final String clazz = preferences.getProperty("factory.hostkeycallback.class");
+            if(null == clazz) {
+                throw new FactoryException();
+            }
             try {
-                final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(preferences.getProperty("factory.hostkeycallback.class"));
+                final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(clazz);
                 final Constructor<HostKeyCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
                 if(null == constructor) {
                     log.warn(String.format("No matching constructor for %s", c.getClass()));
