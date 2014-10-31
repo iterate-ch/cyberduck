@@ -118,6 +118,9 @@
             <fileset dir="${build}">
                 <include name="*.jar"/>
             </fileset>
+            <fileset dir="${build.deploy}">
+                <include name="*.dylib"/>
+            </fileset>
             <fileset dir="${lib}">
                 <include name="*.dylib"/>
                 <include name="*.jar"/>
