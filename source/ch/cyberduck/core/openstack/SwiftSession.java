@@ -127,9 +127,10 @@ public class SwiftSession extends HttpSession<Client> {
                     break;
                 }
                 catch(GenericException failure) {
-                    if(new SwiftExceptionMappingService().map(failure) instanceof LoginFailureException
-                            || new SwiftExceptionMappingService().map(failure) instanceof AccessDeniedException
-                            || new SwiftExceptionMappingService().map(failure) instanceof InteroperabilityException) {
+                    final BackgroundException reason = new SwiftExceptionMappingService().map(failure);
+                    if(reason instanceof LoginFailureException
+                            || reason instanceof AccessDeniedException
+                            || reason instanceof InteroperabilityException) {
                         if(!iter.hasNext()) {
                             throw failure;
                         }
