@@ -75,7 +75,7 @@ public class FinderLocal extends Local {
     }
 
     public FinderLocal(final String path) {
-        super(resolveAlias(stringByExpandingTildeInPath(path)));
+        super(resolveAlias(new TildeExpander().expand(path)));
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getAbbreviatedPath() {
-        return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+        return new TildeExpander().abbreviate(this.getAbsolute());
     }
 
     @Override
@@ -260,26 +260,6 @@ public class FinderLocal extends Local {
             throw new NotfoundException(String.format("%s", f.localizedDescription()));
         }
         return LocalFactory.get(this.getParent(), destination);
-    }
-
-    private static String stringByAbbreviatingWithTildeInPath(final String path) {
-        if(StringUtils.startsWith(path, Preferences.instance().getProperty("local.user.home"))) {
-            return "~" + StringUtils.removeStart(path, Preferences.instance().getProperty("local.user.home"));
-        }
-        return path;
-    }
-
-    private static String stringByExpandingTildeInPath(final String name) {
-        if(name.startsWith("~")) {
-            final String expanded = Preferences.instance().getProperty("local.user.home") + StringUtils.substring(name, 1);
-            if(log.isDebugEnabled()) {
-                if(!StringUtils.equals(expanded, name)) {
-                    log.debug(String.format("Expanded %s to %s", name, expanded));
-                }
-            }
-            return expanded;
-        }
-        return name;
     }
 
     @Override
