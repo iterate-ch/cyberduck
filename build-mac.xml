@@ -108,6 +108,10 @@
             <fileset dir="${home}">
                 <include name="Info.plist"/>
             </fileset>
+            <!-- Include libjnidispatch.dylib -->
+            <fileset dir="${lib}">
+                <include name="*.dylib"/>
+            </fileset>
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="Info.plist"/>
