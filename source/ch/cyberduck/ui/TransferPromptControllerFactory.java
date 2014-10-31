@@ -39,7 +39,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Preferences preferences
             = Preferences.instance();
 
-    public TransferPrompt create(Controller c, Transfer transfer, Session session) {
+    public TransferPrompt create(final Controller c, final Transfer transfer, final Session session) {
         final String clazz = preferences.getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
         if(null == clazz) {
