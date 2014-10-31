@@ -97,6 +97,13 @@
     </target>
 
     <target name="build" depends="archive" description="Compile, jar and copy to application bundle">
+        <jar jarfile="${build}/cocoa.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}/">
+                <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
+            </fileset>
+        </jar>
         <copy todir="${build.deploy}">
             <fileset dir="${home}">
                 <include name="Info.plist"/>
