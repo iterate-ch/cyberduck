@@ -104,6 +104,8 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("application.receipt.path", settings.getAbsolute());
         defaults.put("application.bookmarks.path", settings.getAbsolute());
 
+        defaults.put("local.normalize.prefix", String.valueOf(true));
+
         defaults.put("queue.download.folder", home.getAbsolute());
 
         defaults.put("s3.download.udt.threshold", String.valueOf(10L * 1024L * 1024L));
