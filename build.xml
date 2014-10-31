@@ -48,6 +48,7 @@
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
+    <property name="copyright" value="Copyright (c) 2001-2015 David Kocher"/>
 
     <property name="sonar.host" value="sonar.cyberduck.io"/>
 
@@ -182,7 +183,7 @@
                  use="true"
                  windowtitle="${app.name} API"
                  doctitle="${app.name}"
-                 bottom="Copyright (c) 2005-2013 David Kocher. Enjoy ${app.name}!">
+                 bottom="${copyright}">
             <classpath refid="build.classpath"/>
         </javadoc>
     </target>
@@ -191,12 +192,11 @@
         <delete dir="${build}"/>
     </target>
 
-    <target name="manifest" depends="revision" description="Create a manifest used in the jar files">
+    <target name="manifest" depends="revision" description="Create a manifest used in the JAR files">
         <manifest file="${build}/MANIFEST.MF">
-            <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Specification-Title" value="${app.name}"/>
             <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <attribute name="Specification-Vendor" value="David Kocher"/>
+            <attribute name="Specification-Vendor" value="${copyright}"/>
             <attribute name="Implementation-Version" value="${svn.revision}"/>
         </manifest>
     </target>
