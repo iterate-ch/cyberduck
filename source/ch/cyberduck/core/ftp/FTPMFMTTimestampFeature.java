@@ -47,7 +47,7 @@ public class FTPMFMTTimestampFeature implements Timestamp {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));
             }
-            throw new FTPExceptionMappingService().map("Cannot change timestamp", failure, file);
+            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", failure, file);
         }
         try {
             final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
@@ -58,7 +58,7 @@ public class FTPMFMTTimestampFeature implements Timestamp {
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot change timestamp", e, file);
+            throw new FTPExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
     }
 }

@@ -46,7 +46,7 @@ public class SFTPTimestampFeature implements Timestamp {
             session.sftp().setAttributes(file.getAbsolute(), attrs);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot change timestamp", e, file);
+            throw new SFTPExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
 
     }

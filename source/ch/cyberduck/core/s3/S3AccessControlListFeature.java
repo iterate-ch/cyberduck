@@ -120,7 +120,7 @@ public class S3AccessControlListFeature implements AclPermission {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot change permissions", e, file);
+            throw new ServiceExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }
 

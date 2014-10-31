@@ -116,7 +116,7 @@ public class AzureAclPermissionFeature implements AclPermission {
             throw new NotfoundException(e.getMessage(), e);
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot change permissions", e, file);
+            throw new AzureExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }
 }

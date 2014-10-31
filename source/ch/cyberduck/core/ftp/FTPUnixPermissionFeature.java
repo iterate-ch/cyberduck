@@ -83,7 +83,7 @@ public class FTPUnixPermissionFeature implements UnixPermission {
             }
         }
         catch(IOException e) {
-            throw failure = new FTPExceptionMappingService().map("Cannot change permissions", e, file);
+            throw failure = new FTPExceptionMappingService().map("Cannot change permissions of {0}", e, file);
         }
     }
 }
