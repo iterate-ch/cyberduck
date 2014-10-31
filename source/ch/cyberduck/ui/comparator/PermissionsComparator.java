@@ -20,6 +20,7 @@ package ch.cyberduck.ui.comparator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 
 /**
  * @version $Id$
@@ -33,6 +34,15 @@ public class PermissionsComparator extends BrowserComparator {
 
     @Override
     protected int compareFirst(final Path p1, final Path p2) {
+        if(Permission.EMPTY.equals(p1.attributes().getPermission()) && Permission.EMPTY.equals(p2.attributes().getPermission())) {
+            return 0;
+        }
+        if(Permission.EMPTY.equals(p1.attributes().getPermission())) {
+            return -1;
+        }
+        if(Permission.EMPTY.equals(p2.attributes().getPermission())) {
+            return 1;
+        }
         Integer perm1 = Integer.valueOf(p1.attributes().getPermission().getMode());
         Integer perm2 = Integer.valueOf(p2.attributes().getPermission().getMode());
         if(perm1 > perm2) {

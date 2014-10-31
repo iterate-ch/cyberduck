@@ -35,6 +35,6 @@ public class PermissionsComparatorTest extends AbstractTestCase {
     @Test
     public void testCompareFirst() throws Exception {
         assertEquals(0,
-                new SizeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
+                new PermissionsComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
     }
 }
