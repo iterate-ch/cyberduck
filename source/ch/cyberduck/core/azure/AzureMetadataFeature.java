@@ -126,7 +126,7 @@ public class AzureMetadataFeature implements Headers {
             throw new NotfoundException(e.getMessage(), e);
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }

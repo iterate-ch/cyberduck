@@ -64,7 +64,7 @@ public class GoogleStorageLoggingFeature extends S3LoggingFeature implements Dis
             session.getClient().setBucketLoggingStatusImpl(container.getName(), status);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
+            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 }

@@ -73,7 +73,7 @@ public class S3MetadataFeature implements Headers {
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write file attributes", e, file);
+                throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e, file);
             }
         }
     }

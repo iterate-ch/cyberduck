@@ -71,7 +71,7 @@ public class DAVHeadersFeature implements Headers {
                     metadata, Collections.<java.lang.String>emptyList());
         }
         catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);

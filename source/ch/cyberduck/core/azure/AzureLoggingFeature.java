@@ -67,7 +67,7 @@ public class AzureLoggingFeature implements Logging {
             session.getClient().uploadServiceProperties(properties);
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot write file attributes", e, container);
+            throw new AzureExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 }

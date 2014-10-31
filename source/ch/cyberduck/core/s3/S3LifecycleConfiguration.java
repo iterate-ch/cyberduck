@@ -63,7 +63,7 @@ public class S3LifecycleConfiguration implements Lifecycle {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot write file attributes", e);
+            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 

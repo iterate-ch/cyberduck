@@ -46,7 +46,7 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
             session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 
@@ -59,7 +59,7 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
             session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 
@@ -72,7 +72,7 @@ public class SFTPUnixPermissionFeature implements UnixPermission {
             session.sftp().setAttributes(file.getAbsolute(), attr);
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map("Cannot write file attributes", e, file);
+            throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }
