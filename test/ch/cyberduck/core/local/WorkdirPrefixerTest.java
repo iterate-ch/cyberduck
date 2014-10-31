@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,20 +18,17 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
-public abstract class WindowsPreferences extends Preferences {
+import ch.cyberduck.core.AbstractTestCase;
 
-    @Override
-    protected void setDefaults() {
-        super.setDefaults();
+import org.junit.Test;
 
-        // SSL Keystore
-        defaults.put("connection.ssl.keystore.type", "Windows-MY");
-        defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+import static org.junit.Assert.assertEquals;
 
-        defaults.put("local.normalize.tilde", String.valueOf(false));
-        defaults.put("local.normalize.prefix", String.valueOf(false));
+public class WorkdirPrefixerTest extends AbstractTestCase {
+
+    @Test
+    public void testNormalize() throws Exception {
+        assertEquals(System.getProperty("user.dir") + "/n", new WorkdirPrefixer().normalize("n"));
+        assertEquals("/tmp/n", new WorkdirPrefixer("/tmp").normalize("n"));
     }
 }

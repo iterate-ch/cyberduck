@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,20 +18,27 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Preferences;
+
 /**
  * @version $Id$
  */
-public abstract class WindowsPreferences extends Preferences {
+public class WorkdirPrefixer {
 
-    @Override
-    protected void setDefaults() {
-        super.setDefaults();
+    private String workdir;
 
-        // SSL Keystore
-        defaults.put("connection.ssl.keystore.type", "Windows-MY");
-        defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+    public WorkdirPrefixer() {
+        this(System.getProperty("user.dir"));
+    }
 
-        defaults.put("local.normalize.tilde", String.valueOf(false));
-        defaults.put("local.normalize.prefix", String.valueOf(false));
+    public WorkdirPrefixer(final String workdir) {
+        this.workdir = workdir;
+    }
+
+    public String normalize(final String name) {
+        if(!name.startsWith(Preferences.instance().getProperty("local.delimiter"))) {
+            return String.format("%s%s%s", workdir, Preferences.instance().getProperty("local.delimiter"), name);
+        }
+        return name;
     }
 }

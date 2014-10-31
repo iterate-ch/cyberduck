@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.local.TildeExpander;
+import ch.cyberduck.core.local.WorkdirPrefixer;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 
@@ -77,6 +78,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         if(Preferences.instance().getBoolean("local.normalize.tilde")) {
             path = new TildeExpander().expand(path);
+        }
+        if(Preferences.instance().getBoolean("local.normalize.prefix")) {
+            path = new WorkdirPrefixer().normalize(path);
         }
     }
 
