@@ -24,6 +24,8 @@ import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
@@ -1047,6 +1049,9 @@ public abstract class Preferences {
         defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
         defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
         defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
+        for(Transfer.Type t : Transfer.Type.values()) {
+            defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
+        }
     }
 
     /**
