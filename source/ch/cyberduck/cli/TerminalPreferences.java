@@ -104,7 +104,12 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("application.receipt.path", settings.getAbsolute());
         defaults.put("application.bookmarks.path", settings.getAbsolute());
 
-        defaults.put("local.normalize.prefix", String.valueOf(true));
+        if(Factory.Platform.osname.matches(".*Linux.*")) {
+            defaults.put("local.normalize.prefix", String.valueOf(true));
+        }
+        if(Factory.Platform.osname.matches(".*Mac.*")) {
+            defaults.put("local.normalize.prefix", String.valueOf(true));
+        }
 
         defaults.put("queue.download.folder", home.getAbsolute());
 
