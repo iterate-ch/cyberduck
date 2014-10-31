@@ -92,7 +92,6 @@ public class Terminal {
      */
     public static void main(final String... args) throws IOException {
         final Options options = TerminalOptionsBuilder.options();
-        final PrintStream console = System.out;
         try {
             final CommandLineParser parser = new PosixParser();
             final CommandLine input = parser.parse(options, args);
