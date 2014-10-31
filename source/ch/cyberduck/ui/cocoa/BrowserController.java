@@ -343,7 +343,7 @@ public class BrowserController extends WindowController
      */
     protected void reload() {
         if(this.isMounted()) {
-            this.reload(Collections.singleton(workdir), Collections.<Path>emptyList(), false);
+            this.reload(Collections.singleton(workdir), this.getSelectedPaths(), false);
         }
         else {
             final NSTableView browser = this.getSelectedBrowserView();
@@ -1089,7 +1089,7 @@ public class BrowserController extends WindowController
         }
 
         @Override
-        public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+        public void tableColumnClicked(final NSTableView view, final NSTableColumn tableColumn) {
             if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
                 this.setSortedAscending(!this.isSortedAscending());
             }
