@@ -134,6 +134,9 @@ public class S3SessionTest extends AbstractTestCase {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                if(p.get()) {
+                    throw new LoginCanceledException();
+                }
                 p.set(true);
                 credentials.setPassword(properties.getProperty("s3.secret"));
             }
