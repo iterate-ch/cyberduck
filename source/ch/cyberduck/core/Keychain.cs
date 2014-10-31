@@ -140,15 +140,22 @@ namespace Ch.Cyberduck.Core
             {
                 store.Open(OpenFlags.ReadOnly);
                 X509Certificate2Collection found = new X509Certificate2Collection();
-                foreach (Principal issuer in issuers)
+				foreach (Principal issuer in issuers)
                 {
-                    string rfc1779 =
-                        new X500Principal(issuer.getName()).getName(X500Principal.RFC1779)
-                                                           .Replace("ST=", "S=")
-                                                           .Replace("SP=", "S=");
+					// JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emmits it as an OID, which makes it not match
+					// this is not the best way to fix the issue, but I can't find anyway to get an X500Principal to not emit EMAILADDRESS as an OID
+					string rfc1779 = issuer.toString()
+					   .Replace("EMAILADDRESS=", "E=")
+					   .Replace("ST=", "S=")
+					   .Replace("SP=", "S=");					
+					Log.debug("Query certificate store for issuer name " + rfc1779);
+					
                     X509Certificate2Collection certificates =
                         store.Certificates.Find(X509FindType.FindByIssuerDistinguishedName, rfc1779, true);
                     found.AddRange(certificates);
+					foreach(X509Certificate2 certificate in certificates) {
+						Log.debug("Found certificate with DN " + certificate.IssuerName.Name);
+					}
                 }
                 X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
                                                                                               LocaleFactory
