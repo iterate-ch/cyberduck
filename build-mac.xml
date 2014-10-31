@@ -97,15 +97,6 @@
 
     <target name="build" depends="archive" description="Compile, jar and copy to application bundle">
         <copy todir="${build.deploy}">
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-            </fileset>
-            <fileset dir="${lib}">
-                <include name="*.dylib"/>
-                <include name="*.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${build.deploy}">
             <fileset dir="${home}">
                 <include name="Info.plist"/>
             </fileset>
@@ -124,7 +115,10 @@
             <arg line="-sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
         <copy todir="${app.frameworks}">
-            <fileset dir="${build.deploy}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib}">
                 <include name="*.dylib"/>
                 <include name="*.jar"/>
             </fileset>
