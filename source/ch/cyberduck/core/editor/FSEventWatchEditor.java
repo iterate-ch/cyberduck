@@ -25,8 +25,12 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.cocoa.ProxyController;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 import java.io.IOException;
 
@@ -52,6 +56,23 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
         super(controller, session, application, file);
     }
 
+    private ProxyController terminate = new ProxyController() {
+        public void terminated(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received notification %s from workspace", notification.userInfo()));
+            }
+            if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
+                log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
+            }
+            // Do cleanup if application matches current editor
+            if(FSEventWatchEditor.this.getApplication()
+                    .equals(new Application(notification.userInfo().objectForKey("NSApplicationBundleIdentifier").toString()))) {
+                FSEventWatchEditor.this.delete();
+                NSWorkspace.sharedWorkspace().notificationCenter().removeObserver(terminate.id());
+            }
+        }
+    };
+
     /**
      * Edit and watch the file for changes
      */
@@ -59,6 +80,10 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
     public void edit() throws IOException {
         final Application application = this.getApplication();
         if(ApplicationLauncherFactory.get().open(local, application)) {
+            NSWorkspace.sharedWorkspace().notificationCenter().addObserver(terminate.id(),
+                    Foundation.selector("terminated:"),
+                    NSWorkspace.WorkspaceDidTerminateApplicationNotification,
+                    null);
             this.watch();
         }
         else {
