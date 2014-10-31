@@ -79,7 +79,7 @@ public class DAVFindFeature implements Find {
                 return found;
             }
             catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot read file attributes", e, file);
+                throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e, file);

@@ -76,7 +76,7 @@ public class S3FindFeature implements Find {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

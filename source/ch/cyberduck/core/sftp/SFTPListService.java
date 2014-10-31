@@ -126,7 +126,7 @@ public class SFTPListService implements ListService {
                 file.setSymlinkTarget(target);
             }
             catch(IOException e) {
-                throw new SFTPExceptionMappingService().map("Cannot read file attributes", e, file);
+                throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
         }
     }

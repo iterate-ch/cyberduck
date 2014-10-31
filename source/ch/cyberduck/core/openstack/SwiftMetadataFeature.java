@@ -66,10 +66,10 @@ public class SwiftMetadataFeature implements Headers {
             }
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

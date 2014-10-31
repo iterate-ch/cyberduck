@@ -79,7 +79,7 @@ public class AzureAttributesFeature implements Attributes {
             }
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot read file attributes", e, file);
+            throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

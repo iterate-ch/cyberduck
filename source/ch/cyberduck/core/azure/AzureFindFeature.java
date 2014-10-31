@@ -91,7 +91,7 @@ public class AzureFindFeature implements Find {
                 return found;
             }
             catch(StorageException e) {
-                throw new AzureExceptionMappingService().map("Cannot read file attributes", e, file);
+                throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(URISyntaxException e) {
                 return false;
