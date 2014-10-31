@@ -44,6 +44,20 @@
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
+        <checksum
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
+                algorithm="md5"/>
+        <antcall target="confirm"/>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm.md5"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
     </target>
 
     <target name="release" depends="build">
@@ -57,6 +71,20 @@
              passphrase="">
         </scp>
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
+        <checksum
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
+                algorithm="md5"/>
+        <antcall target="confirm"/>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm.md5"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
