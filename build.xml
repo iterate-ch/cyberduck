@@ -351,7 +351,7 @@
             <classpath path="${lib.ext}/sonar-ant-task-2.1.jar"/>
         </taskdef>
         <property name="sonar.projectName" value="${app.name}"/>
-        <property name="sonar.projectKey" value="ch.cyberduck:cyberduck"/>
+        <property name="sonar.projectKey" value="ch.cyberduck:cyberduck-${platform}"/>
         <property name="sonar.projectVersion" value="${svn.revision}"/>
         <property name="sonar.sources" value="${source}"/>
         <property name="sonar.tests" value="${unittests}"/>
