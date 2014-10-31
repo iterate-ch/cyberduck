@@ -1878,6 +1878,7 @@ lib/azure-storage-1.2.0.jar -text
 lib/bcpkix-jdk15on-150.jar -text
 lib/bcprov-jdk15on-150.jar -text
 lib/cglib-2.2.2.jar -text
+lib/commons-cli-1.2.jar -text
 lib/commons-codec-1.8.jar -text svneol=unset#application/zip
 lib/commons-collections-3.2.1.jar -text
 lib/commons-io-2.4.jar -text svneol=unset#application/zip

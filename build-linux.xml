@@ -21,97 +21,106 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck for Linux" basedir=".">
+<project name="Cyberduck for Linux" basedir="."
+         xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
-    <import file="build-windows.xml"/>
+    <import file="build.xml"/>
 
-    <property name="ikvm.home" value="${home}/ikvm-7.2.4630.5"/>
+    <property name="build.bundles" value="${build}/${configuration}/bundles"/>
 
-    <target name="build">
-        <echo message="Version=${version}"/>
-        <echo message="ShortVersion=${shortversion}"/>
-        <echo message="Configuration=${configuration}"/>
-        <echo message="Platform=${architecture}"/>
+    <target name="build" depends="archive, revision">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant">
+            <classpath path="${java.home}/../lib/ant-javafx.jar"/>
+        </taskdef>
 
-        <exec executable="xbuild" dir="${home}">
-            <arg value="/target:build"/>
-            <!--<arg value="/verbosity:minimal"/>-->
-            <arg value="/property:Version=${version}"/>
-            <arg value="/property:ShortVersion=${shortversion}"/>
-            <arg value="/property:Configuration=${configuration}"/>
-            <arg value="/property:Platform=${architecture}"/>
-            <arg value="source/ch/cyberduck/Cyberduck.csproj"/>
-        </exec>
+        <fx:jar destfile="${build}/terminal.jar">
+            <fx:application name="${application.name}"
+                            mainClass="ch.cyberduck.cli.Terminal"/>
+
+            <fx:resources>
+                <fx:fileset dir="${build}" includes="*.jar"/>
+                <fx:fileset dir="${lib}" includes="*.jar"/>
+            </fx:resources>
+
+            <fileset dir="${build.classes}">
+                <include name="ch/cyberduck/cli/*.class"/>
+            </fileset>
+
+            <!-- Customize jar manifest (optional) -->
+            <manifest>
+                <attribute name="Specification-Title" value="${app.name}"/>
+                <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+                <attribute name="Specification-Vendor" value="${copyright}"/>
+                <attribute name="Implementation-Version" value="${svn.revision}"/>
+            </manifest>
+        </fx:jar>
+
+        <mkdir dir="${build}/${configuration}"/>
+        <fx:deploy nativeBundles="all"
+                   outdir="${build}/${configuration}"
+                   outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
+                   offlineAllowed="true"
+                   verbose="true">
+            <fx:platform basedir="${java.home}" j2se="8.0"/>
+            <fx:application
+                    name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
+                    mainClass="ch.cyberduck.cli.Terminal"/>
+            <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
+                     description="Cyberduck"
+                     vendor="cyberduck.io">
+                <fx:icon href="cyberduck-application.png"/>
+            </fx:info>
+            <fx:resources>
+                <fx:fileset dir="${build}" type="jar">
+                    <include name="*.jar"/>
+                    <exclude name="cocoa.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="jar">
+                    <include name="*.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="data">
+                    <include name="*.dylib"/>
+                </fx:fileset>
+                <fx:fileset dir="." type="icon">
+                    <include name="*.ico"/>
+                </fx:fileset>
+                <fx:fileset type="license" file="LICENSE.txt"/>
+            </fx:resources>
+            <fx:preferences install="false"/>
+        </fx:deploy>
     </target>
 
-    <target name="dll" depends="version, archive">
-        <fileset id="jars" dir=".">
-            <include name="build/core.jar"/>
-            <include name="build/ui.jar"/>
-            <include name="lib/*.jar"/>
-            <exclude name="lib/jna-*.jar"/>
-            <exclude name="lib/asm-*.jar"/>
-            <exclude name="lib/cglib-*.jar"/>
-            <exclude name="lib/dns_sd.jar"/>
-            <exclude name="lib/rococoa-*.jar"/>
-        </fileset>
-        <pathconvert property="jars" refid="jars" pathsep=" ">
-            <mapper type="regexp" from="^(.*)$" to="{ \1 }"/>
-        </pathconvert>
-        <echo message="Building ${build}/core.dll"/>
-        <exec executable="${ikvm.home}/bin/ikvmc.exe" dir="${home}">
-            <arg value="-out:${build}/core.dll"/>
-            <arg value="-assembly:${core}"/>
-            <arg value="-version:${version}"/>
-            <arg value="-platform:x86"/>
-            <arg value="-target:library"/>
-            <arg value="-sharedclassloader"/>
-            <arg line="${jars}"/>
-        </exec>
+    <target name="nightly" depends="build">
+        <checksum
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+                algorithm="md5"/>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
     </target>
 
-    <target name="release" depends="clean, package-release">
+    <target name="release" depends="build">
+        <checksum
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+                algorithm="md5"/>
         <antcall target="confirm"/>
-        <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux"
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
+             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
+             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
-
-    <target name="nightly" depends="clean, package-nightly">
-        <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="beta" depends="clean, package-beta">
-        <scp file="${setup.file}"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/beta"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="package-release" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
-        <antcall target="package"/>
-    </target>
-
-    <target name="package-beta" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
-        <antcall target="package"/>
-    </target>
-
-    <target name="package-nightly" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
-        <antcall target="package"/>
-    </target>
-
-    <target name="package" depends="dll, build"/>
 </project>
