@@ -21,7 +21,8 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck" default="build" basedir=".">
+<project name="Cyberduck" default="build" basedir="."
+         xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
     <property file="build.properties"/>
     <property file="tools.properties"/>
@@ -29,12 +30,14 @@
     <property environment="env"/>
 
     <property name="app.name" value="${ant.project.name}"/>
+
     <property name="debug" value="on"/>
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
     <property name="build.compile.target" value="1.7"/>
     <property name="configuration" value="Release"/>
+    <property name="build.bundles" value="${build}/${configuration}/bundles"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/test-classes"/>
     <property name="build.unittests.reports" value="${build}/report"/>
@@ -278,6 +281,69 @@
             <report format="frames" todir="${build.unittests.reports}/html"/>
         </junitreport>
         <!--<fail message="Test failure detected" if="test.failed"/>-->
+    </target>
+
+    <target name="cli" depends="archive, revision">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant">
+            <classpath path="${java.home}/../lib/ant-javafx.jar"/>
+        </taskdef>
+
+        <fx:jar destfile="${build}/terminal.jar">
+            <fx:application name="${application.name}"
+                            mainClass="ch.cyberduck.cli.Terminal"/>
+
+            <fx:resources>
+                <fx:fileset dir="${build}" includes="*.jar"/>
+                <fx:fileset dir="${lib}" includes="*.jar"/>
+            </fx:resources>
+
+            <fileset dir="${build.classes}">
+                <include name="ch/cyberduck/cli/*.class"/>
+            </fileset>
+
+            <!-- Customize jar manifest (optional) -->
+            <manifest>
+                <attribute name="Specification-Title" value="${app.name}"/>
+                <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+                <attribute name="Specification-Vendor" value="${copyright}"/>
+                <attribute name="Implementation-Version" value="${svn.revision}"/>
+            </manifest>
+        </fx:jar>
+
+        <mkdir dir="${build}/${configuration}"/>
+        <fx:deploy nativeBundles="all"
+                   outdir="${build}/${configuration}"
+                   outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
+                   offlineAllowed="true"
+                   verbose="true">
+            <fx:platform basedir="${java.home}" j2se="8.0"/>
+            <fx:application
+                    name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
+                    mainClass="ch.cyberduck.cli.Terminal"/>
+            <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
+                     description="Cyberduck"
+                     vendor="cyberduck.io">
+                <fx:icon href="${app.icon}"/>
+            </fx:info>
+            <fx:resources>
+                <fx:fileset dir="${build}" type="jar">
+                    <include name="*.jar"/>
+                    <exclude name="cocoa.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="jar">
+                    <include name="*.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="data">
+                    <include name="*.dylib"/>
+                </fx:fileset>
+                <fx:fileset dir="." type="icon">
+                    <include name="*.ico"/>
+                </fx:fileset>
+                <fx:fileset type="license" file="LICENSE.txt"/>
+            </fx:resources>
+            <fx:preferences install="false"/>
+        </fx:deploy>
     </target>
 
     <target name="sonar" depends="test">
