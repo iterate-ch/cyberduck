@@ -30,5 +30,7 @@ public abstract class WindowsPreferences extends Preferences {
         // SSL Keystore
         defaults.put("connection.ssl.keystore.type", "Windows-MY");
         defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+
+        defaults.put("local.normalize.tilde", String.valueOf(false));
     }
 }

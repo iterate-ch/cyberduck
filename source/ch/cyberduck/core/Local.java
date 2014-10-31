@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
+import ch.cyberduck.core.local.TildeExpander;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 
@@ -69,13 +70,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @param name Absolute path
      */
     public Local(final String name) {
+        path = name;
+        attributes = new LocalAttributes(path);
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
-            path = new NFCNormalizer().normalize(name);
+            path = new NFCNormalizer().normalize(path);
         }
-        else {
-            path = name;
+        if(Preferences.instance().getBoolean("local.normalize.tilde")) {
+            path = new TildeExpander().expand(path);
         }
-        this.attributes = new LocalAttributes(path);
     }
 
     @Override
@@ -234,11 +236,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @return A shortened path representation.
      */
     public String getAbbreviatedPath() {
-        final String abb = StringUtils.removeStart(path, Preferences.instance().getProperty("local.user.home"));
-        if(StringUtils.equals(abb, path)) {
-            return path;
-        }
-        return String.format("%s%s", HOME, abb);
+        return new TildeExpander().abbreviate(path);
     }
 
     public Local getSymlinkTarget() throws NotfoundException {
