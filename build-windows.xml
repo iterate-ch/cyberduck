@@ -41,6 +41,8 @@
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
 
+    <property name="jvm.runtime.bundle.home" value="${java.home}"/>
+
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
         <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
     </taskdef>
