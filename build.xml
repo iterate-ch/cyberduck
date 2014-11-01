@@ -311,6 +311,10 @@
                    offlineAllowed="true"
                    verbose="true">
             <fx:platform basedir="${java.home}">
+                <fx:jvmarg value="-Djna.nounpack=true"/>
+                <fx:jvmarg value="-Djava.awt.headless=true"/>
+                <fx:jvmarg value="-Dsun.jnu.encoding=utf-8"/>
+                <fx:jvmarg value="-Dfile.encoding=utf-8"/>
             </fx:platform>
             <fx:application
                     name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
