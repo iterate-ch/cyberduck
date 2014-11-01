@@ -310,7 +310,8 @@
                    outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
                    offlineAllowed="true"
                    verbose="true">
-            <fx:platform basedir="${java.home}" j2se="8.0"/>
+            <fx:platform basedir="${java.home}">
+            </fx:platform>
             <fx:application
                     name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
                     mainClass="ch.cyberduck.cli.Terminal"/>
@@ -327,6 +328,9 @@
                     <include name="*.jar"/>
                 </fx:fileset>
                 <fx:fileset dir="${lib}" type="data">
+                    <include name="*.dylib"/>
+                </fx:fileset>
+                <fx:fileset dir="${build}/${configuration}" type="data">
                     <include name="*.dylib"/>
                 </fx:fileset>
                 <fx:fileset dir="." type="icon">
