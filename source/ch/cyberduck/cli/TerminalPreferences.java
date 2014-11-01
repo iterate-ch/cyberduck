@@ -96,6 +96,8 @@ public class TerminalPreferences extends MemoryPreferences {
 
         defaults.put("logging", "fatal");
 
+        System.setProperty("jna.library.path", System.getProperty("java.library.path"));
+
         final Local home = LocalFactory.get(this.getProperty("local.user.home"));
         final Local settings = LocalFactory.get(home, ".duck");
 
