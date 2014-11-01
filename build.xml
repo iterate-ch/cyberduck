@@ -276,33 +276,39 @@
         <!--<fail message="Test failure detected" if="test.failed"/>-->
     </target>
 
-    <target name="cli" depends="archive, revision">
+    <target name="cli" depends="build">
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath path="${java.home}/../lib/ant-javafx.jar"/>
         </taskdef>
 
-        <fx:jar destfile="${build}/terminal.jar">
-            <fx:application name="${application.name}"
-                            mainClass="ch.cyberduck.cli.Terminal"/>
+        <manifestclasspath property="manifest.lib.classpath"
+                           jarfile="${lib}/cli.jar">
+            <!-- Convert paths relative to target jarfile -->
+            <classpath refid="build.classpath"/>
+        </manifestclasspath>
+        <manifestclasspath property="manifest.build.classpath"
+                           jarfile="${build}/cli.jar">
+            <!-- Convert paths relative to target jarfile -->
+            <classpath>
+                <fileset dir="${build}" includes="*.jar"/>
+            </classpath>
+        </manifestclasspath>
 
-            <fx:resources>
-                <fx:fileset dir="${build}" includes="*.jar"/>
-                <fx:fileset dir="${lib}" includes="*.jar"/>
-            </fx:resources>
-
+        <jar jarfile="${build}/cli.jar"
+             update="yes">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/cli/*.class"/>
             </fileset>
-
-            <!-- Customize jar manifest (optional) -->
             <manifest>
                 <attribute name="Specification-Title" value="${app.name}"/>
                 <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
                 <attribute name="Specification-Vendor" value="${copyright}"/>
                 <attribute name="Implementation-Version" value="${svn.revision}"/>
+                <attribute name="Main-Class" value="ch.cyberduck.cli.Terminal"/>
+                <attribute name="Class-Path" value="${manifest.lib.classpath} ${manifest.build.classpath}"/>
             </manifest>
-        </fx:jar>
+        </jar>
 
         <mkdir dir="${build}/${configuration}"/>
         <fx:deploy nativeBundles="all"
