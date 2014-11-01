@@ -30,7 +30,7 @@
 
     <target name="build"/>
 
-    <target name="nightly" depends="build">
+    <target name="nightly" depends="cli">
         <checksum
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
                 algorithm="md5"/>
@@ -60,7 +60,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="build">
+    <target name="release" depends="cli">
         <checksum
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
                 algorithm="md5"/>
