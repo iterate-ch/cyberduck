@@ -103,6 +103,8 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
+    <target name="build" depends="_build"/>
+
     <target name="confirm">
         <input message="Press key to continue..." validargs="y,n" addproperty="build.push"/>
         <condition property="build.abort">

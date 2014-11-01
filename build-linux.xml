@@ -28,7 +28,7 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
 
-    <target name="build"/>
+    <target name="_build"/>
 
     <target name="nightly" depends="cli">
         <checksum

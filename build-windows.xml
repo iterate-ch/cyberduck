@@ -74,7 +74,7 @@
                   value="${svn.revision.stripped} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
     </target>
 
-    <target name="build" depends="dll">
+    <target name="_build" depends="dll">
         <copy todir="${build.deploy}">
             <fileset dir=".">
                 <include name="cyberduck-document.ico"/>
