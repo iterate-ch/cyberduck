@@ -124,11 +124,13 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         final TransferStatus.Checksum checksum = status.getChecksum();
         if(null != checksum) {
-            if("MD5".equals(checksum.algorithm)) {
-                object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
-            }
-            if("SHA-256".equals(checksum.algorithm)) {
-                object.addMetadata("x-amz-content-sha256", checksum.hash);
+            switch(checksum.algorithm) {
+                case md5:
+                    object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
+                    break;
+                case sha256:
+                    object.addMetadata("x-amz-content-sha256", checksum.hash);
+                    break;
             }
         }
         if(StringUtils.isNotBlank(storage)) {

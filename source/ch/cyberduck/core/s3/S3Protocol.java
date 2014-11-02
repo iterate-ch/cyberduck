@@ -19,8 +19,10 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,7 +31,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public final class S3Protocol extends AbstractProtocol {
+public class S3Protocol extends AbstractProtocol {
     @Override
     public String getName() {
         return "S3";
@@ -70,6 +72,11 @@ public final class S3Protocol extends AbstractProtocol {
         return "s3.amazonaws.com";
     }
 
+    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
+        return AuthenticationHeaderSignatureVersion.valueOf(
+                Preferences.instance().getProperty("s3.signature.version"));
+    }
+
     @Override
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
@@ -101,4 +108,25 @@ public final class S3Protocol extends AbstractProtocol {
         return this.icon();
     }
 
+    public enum AuthenticationHeaderSignatureVersion {
+        AWS2 {
+            @Override
+            public HashAlgorithm getHashAlgorithm() {
+                return HashAlgorithm.sha1;
+            }
+        },
+        AWS4HMACSHA256 {
+            @Override
+            public HashAlgorithm getHashAlgorithm() {
+                return HashAlgorithm.sha256;
+            }
+
+            @Override
+            public String toString() {
+                return "AWS4-HMAC-SHA256";
+            }
+        };
+
+        public abstract HashAlgorithm getHashAlgorithm();
+    }
 }

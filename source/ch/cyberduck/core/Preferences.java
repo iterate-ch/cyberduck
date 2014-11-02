@@ -561,8 +561,11 @@ public abstract class Preferences {
         defaults.put("ftp.timezone.auto", String.valueOf(false));
         defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
 
+        /**
+         * Authentication header version
+         */
         defaults.put("s3.signature.version", "AWS2");
-//        defaults.put("s3.signature.version", "AWS4-HMAC-SHA256");
+//        defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /**
          * Default bucket location
          */

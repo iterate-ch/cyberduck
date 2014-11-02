@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
@@ -63,7 +64,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
                                 final StreamListener listener, final TransferStatus status,
                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
-            status.setChecksum(new TransferStatus.Checksum("SHA-256",
+            status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
                             new SHA256ChecksumCompute().compute(local.getInputStream()))
             );
         }

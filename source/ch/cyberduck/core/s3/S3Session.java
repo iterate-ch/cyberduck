@@ -350,10 +350,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
-        if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-            if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
-                configuration.setProperty("storage-service.request-signature-version", "AWS4-HMAC-SHA256");
-            }
+        if(host.getProtocol() instanceof S3Protocol) {
+            final S3Protocol protocol = (S3Protocol) host.getProtocol();
+            configuration.setProperty("storage-service.request-signature-version",
+                    protocol.getSignatureVersion().toString());
         }
         return configuration;
     }
