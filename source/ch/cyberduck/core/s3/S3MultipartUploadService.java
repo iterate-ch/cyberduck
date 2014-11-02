@@ -232,11 +232,15 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     throw new DefaultIOExceptionMappingService().map(e);
 
                 }
+                final TransferStatus status = new TransferStatus();
+                if("AWS4-HMAC-SHA256".equals(
+                        session.getClient().getJetS3tProperties().getStringProperty("storage-service.request-signature-version", null))) {
+                    status.setChecksum("SHA-256", new SHA256ChecksumCompute().compute(in));
+                }
                 final StorageObject part = S3MultipartUploadService.super.upload(
-                        file, local, throttle, listener, new TransferStatus()
+                        file, local, throttle, listener, status
                                 .length(length)
                                 .current(offset)
-                                .checksum("SHA-256", new SHA256ChecksumCompute().compute(in))
                                 .parameters(requestParameters),
                         overall, overall);
                 if(log.isInfoEnabled()) {
