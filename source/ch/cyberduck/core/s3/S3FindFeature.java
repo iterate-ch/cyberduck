@@ -22,9 +22,12 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.S3Object;
 
 /**
  * @version $Id$
@@ -76,6 +79,21 @@ public class S3FindFeature implements Find {
             }
         }
         catch(ServiceException e) {
+            if(new ServiceExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                // Fallback to GET if HEAD fails with 400 response
+                try {
+                    final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
+                            containerService.getKey(file), null, null, null, null, 0L, 0L);
+                    list.add(file);
+                    return true;
+                }
+                catch(ServiceException f) {
+                    if(new ServiceExceptionMappingService().map(f) instanceof NotfoundException) {
+                        list.attributes().addHidden(file);
+                        return false;
+                    }
+                }
+            }
             throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
