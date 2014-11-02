@@ -36,6 +36,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -226,14 +227,12 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
-
-                final InputStream in = local.getInputStream();
+                final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
                 try {
                     StreamCopier.skip(in, offset);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
-
                 }
                 final TransferStatus status = new TransferStatus();
                 if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
