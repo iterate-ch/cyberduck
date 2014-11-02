@@ -84,6 +84,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private AtomicBoolean failure
             = new AtomicBoolean();
 
+    private Checksum checksum;
     /**
      * MIME type
      */
@@ -270,6 +271,23 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.mime = mime;
     }
 
+    public Checksum getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(final String algorithm, final String hash) {
+        this.checksum = new Checksum(algorithm, hash);
+    }
+
+    public TransferStatus checksum(final String algorithm, final String hash) {
+        this.checksum = new Checksum(algorithm, hash);
+        return this;
+    }
+
+    public void setChecksum(final Checksum checksum) {
+        this.checksum = checksum;
+    }
+
     public PathAttributes getRemote() {
         return remote;
     }
@@ -351,6 +369,16 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", renamed=").append(rename);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static final class Checksum {
+        public String algorithm;
+        public String hash;
+
+        public Checksum(final String algorithm, final String hash) {
+            this.algorithm = algorithm;
+            this.hash = hash;
+        }
     }
 
     public static final class Rename {
