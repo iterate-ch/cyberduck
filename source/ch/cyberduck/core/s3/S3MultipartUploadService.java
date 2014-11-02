@@ -227,15 +227,15 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
-                final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
-                try {
-                    StreamCopier.skip(in, offset);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
                 final TransferStatus status = new TransferStatus();
                 if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
+                    final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
+                    try {
+                        StreamCopier.skip(in, offset);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
+                    }
                     status.setChecksum("SHA-256", new SHA256ChecksumCompute().compute(in));
                 }
                 final StorageObject part = S3MultipartUploadService.super.upload(
