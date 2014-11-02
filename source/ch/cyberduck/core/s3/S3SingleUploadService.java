@@ -17,10 +17,18 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
@@ -45,6 +53,16 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     public S3SingleUploadService(final AbstractHttpWriteFeature<StorageObject> writer) {
         super(writer);
+    }
+
+    @Override
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                final StreamListener listener, final TransferStatus status,
+                                final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+        status.setChecksum(new TransferStatus.Checksum("SHA-256",
+                        new SHA256ChecksumCompute().compute(local.getInputStream()))
+        );
+        return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
 
     @Override

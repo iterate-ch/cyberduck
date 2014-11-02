@@ -91,7 +91,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object object = this.getDetails(containerService.getKey(file), status.getMime(), null);
+        final S3Object object = this.getDetails(containerService.getKey(file), status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -116,13 +116,20 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final String key, final String mime, final String checksum) {
+    protected S3Object getDetails(final String key, final TransferStatus status) {
         final S3Object object = new S3Object(key);
+        final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
         }
-        if(StringUtils.isNotBlank(checksum)) {
-            object.setMd5Hash(ServiceUtils.fromHex(checksum));
+        final TransferStatus.Checksum checksum = status.getChecksum();
+        if(null != checksum) {
+            if("MD5".equals(checksum.algorithm)) {
+                object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));
+            }
+            if("SHA-256".equals(checksum.algorithm)) {
+                object.addMetadata("x-amz-content-sha256", checksum.hash);
+            }
         }
         if(StringUtils.isNotBlank(storage)) {
             if(!S3Object.STORAGE_CLASS_STANDARD.equals(storage)) {

@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -28,6 +29,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -109,7 +112,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session).getDetails(containerService.getKey(file), status.getMime(), null);
+                final S3Object object = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(
                         containerService.getContainer(file).getName(), object);
@@ -221,8 +224,20 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
+                final InputStream in = local.getInputStream();
+                try {
+                    StreamCopier.skip(in, offset);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+
+                }
                 final StorageObject part = S3MultipartUploadService.super.upload(
-                        file, local, throttle, listener, new TransferStatus().length(length).current(offset).parameters(requestParameters),
+                        file, local, throttle, listener, new TransferStatus()
+                                .length(length)
+                                .current(offset)
+                                .checksum("SHA-256", new SHA256ChecksumCompute().compute(in))
+                                .parameters(requestParameters),
                         overall, overall);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part number %d", part, partNumber));
