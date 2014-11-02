@@ -24,7 +24,11 @@ import org.apache.commons.cli.Options;
 /**
  * @version $Id$
  */
-public class TerminalOptionsBuilder {
+public final class TerminalOptionsBuilder {
+
+    private TerminalOptionsBuilder() {
+        //
+    }
 
     public static Options options() {
         final Options options = new Options();

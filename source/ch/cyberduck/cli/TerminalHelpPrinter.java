@@ -34,7 +34,11 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class TerminalHelpPrinter {
+public final class TerminalHelpPrinter {
+
+    private TerminalHelpPrinter() {
+        //
+    }
 
     public static void help(final Options options) {
         final HelpFormatter formatter = new HelpFormatter();
