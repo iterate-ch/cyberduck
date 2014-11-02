@@ -64,4 +64,20 @@ public class S3LocationFeatureTest extends AbstractTestCase {
         assertNull(new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
+
+    @Test
+    public void testGetLocationAWS4SignatureFrankfurt() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.getClient().getJetS3tProperties().setProperty("storage-service.request-signature-version", "AWS4-HMAC-SHA256");
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
+                new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.directory))
+        ));
+        session.close();
+    }
 }
