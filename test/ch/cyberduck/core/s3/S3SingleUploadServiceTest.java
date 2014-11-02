@@ -86,6 +86,45 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testUploadWithSHA256Checksum() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol() {
+                    @Override
+                    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                        return AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+                    }
+                }, new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
+        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID().toString() + ".txt";
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        final String random = RandomStringUtils.random(1000);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(random, out);
+        IOUtils.closeQuietly(out);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.getBytes().length);
+        status.setMime("text/plain");
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        assertEquals(random.getBytes().length, attributes.getSize());
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
     public void testUploadGoogle() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 properties.getProperty("google.projectid"), null

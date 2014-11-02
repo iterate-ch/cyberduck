@@ -204,13 +204,17 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testGetLocationAWS4SignatureFrankfurt() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Host(new S3Protocol() {
+                    @Override
+                    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                        return AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+                    }
+                }, new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.getClient().getJetS3tProperties().setProperty("storage-service.request-signature-version", "AWS4-HMAC-SHA256");
         final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();

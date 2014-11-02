@@ -120,6 +120,40 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testMultiplePartsWithSHA256Checksum() throws Exception {
+        // 5L * 1024L * 1024L
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol() {
+                    @Override
+                    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                        return AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+                    }
+                }, new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3MultipartUploadService m = new S3MultipartUploadService(session, 5242880L, 5);
+        final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] random = new byte[5242881];
+        new Random().nextBytes(random);
+        IOUtils.write(random, local.getOutputStream(false));
+        final TransferStatus status = new TransferStatus();
+        status.setLength(random.length);
+        m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
+        assertEquals((long) random.length, status.getCurrent(), 0L);
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session).find(test));
+        assertEquals(random.length, session.list(container,
+                new DisabledListProgressListener()).get(test.getReference()).attributes().getSize());
+        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
+        session.close();
+    }
+
+    @Test
     public void testAppendSecondPart() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
