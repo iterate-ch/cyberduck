@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Versioning;
 
@@ -89,15 +90,26 @@ public class S3AttributesFeature implements Attributes {
             }
         }
         catch(ServiceException e) {
-            try {
-                throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(AccessDeniedException l) {
+            if(new ServiceExceptionMappingService().map(e) instanceof AccessDeniedException) {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
                 return object;
             }
+            if(new ServiceExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
+                        "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
+                        "in the authentication header.");
+                // Fallback to GET if HEAD fails with 400 response
+                try {
+                    return session.getClient().getObject(containerService.getContainer(file).getName(),
+                            containerService.getKey(file), null, null, null, null, 0L, 0L);
+                }
+                catch(ServiceException f) {
+                    throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                }
+            }
+            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

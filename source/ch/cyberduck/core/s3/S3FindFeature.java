@@ -26,6 +26,8 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
@@ -33,6 +35,7 @@ import org.jets3t.service.model.S3Object;
  * @version $Id$
  */
 public class S3FindFeature implements Find {
+    private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 
     private S3Session session;
 
@@ -80,6 +83,9 @@ public class S3FindFeature implements Find {
         }
         catch(ServiceException e) {
             if(new ServiceExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
+                        "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
+                        "in the authentication header.");
                 // Fallback to GET if HEAD fails with 400 response
                 try {
                     final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
@@ -91,6 +97,10 @@ public class S3FindFeature implements Find {
                     if(new ServiceExceptionMappingService().map(f) instanceof NotfoundException) {
                         list.attributes().addHidden(file);
                         return false;
+                    }
+                    if(f.getResponseCode() == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE) {
+                        // A 0 byte content length file does exist but will return 416
+                        return true;
                     }
                 }
             }
