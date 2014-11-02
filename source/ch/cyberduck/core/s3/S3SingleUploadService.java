@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -46,19 +47,22 @@ import java.text.MessageFormat;
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
-    private S3Session session;
+    private Preferences preferences
+            = Preferences.instance();
 
     public S3SingleUploadService(final S3Session session) {
         super(new S3WriteFeature(session));
-        this.session = session;
+    }
+
+    public S3SingleUploadService(final S3WriteFeature writer) {
+        super(writer);
     }
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                 final StreamListener listener, final TransferStatus status,
                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        if("AWS4-HMAC-SHA256".equals(
-                session.getClient().getJetS3tProperties().getStringProperty("storage-service.request-signature-version", null))) {
+        if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
             status.setChecksum(new TransferStatus.Checksum("SHA-256",
                             new SHA256ChecksumCompute().compute(local.getInputStream()))
             );

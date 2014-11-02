@@ -77,6 +77,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private S3MultipartService multipartService;
 
+    private Preferences preferences
+            = Preferences.instance();
+
     /**
      * At any point, at most <tt>nThreads</tt> threads will be active processing tasks.
      */
@@ -233,8 +236,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
                 }
                 final TransferStatus status = new TransferStatus();
-                if("AWS4-HMAC-SHA256".equals(
-                        session.getClient().getJetS3tProperties().getStringProperty("storage-service.request-signature-version", null))) {
+                if("AWS4-HMAC-SHA256".equals(preferences.getProperty("s3.signature.version"))) {
                     status.setChecksum("SHA-256", new SHA256ChecksumCompute().compute(in));
                 }
                 final StorageObject part = S3MultipartUploadService.super.upload(
