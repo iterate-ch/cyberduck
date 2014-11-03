@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Location;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 
 import java.util.Set;
 
@@ -42,8 +43,16 @@ public class S3LocationFeature implements Location {
     private PathContainerService containerService
             = new S3PathContainerService();
 
+    private RegionEndpointCache cache
+            = new RegionEndpointCache();
+
     public S3LocationFeature(final S3Session session) {
         this.session = session;
+    }
+
+    public S3LocationFeature(final S3Session session, final RegionEndpointCache cache) {
+        this.session = session;
+        this.cache = cache;
     }
 
     @Override
@@ -54,10 +63,15 @@ public class S3LocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(cache.containsKey(container.getName())) {
+            return new S3Region(cache.get(container.getName()));
+        }
         try {
-            String location = session.getClient().getBucketLocation(container.getName());
+            final String location = session.getClient().getBucketLocation(container.getName());
             if(StringUtils.isBlank(location)) {
-                location = "US"; //Default location US is null
+                log.warn(String.format("No region known for bucket %s", container.getName()));
+                // Default location US is null
+                return new S3Region("us-east-1");
             }
             return new S3Region(location);
         }
