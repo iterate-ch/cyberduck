@@ -135,8 +135,6 @@ public class MemoryPreferences extends Preferences {
 
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", Version.getSpecification());
-
-        defaults.put("s3.signature.version", "AWS4HMACSHA256");
     }
 
     @Override
