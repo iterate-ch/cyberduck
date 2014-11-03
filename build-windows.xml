@@ -234,7 +234,7 @@
         <copy file="${wyupdate.home}/bin4/Release/wyUpdate.exe" tofile="${www.update}/Updater.exe"/>
         <!-- sign wyUpdate.exe with our code signing certificate -->
         <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /sm /r "StartCom" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${www.update}/Updater.exe"'/>
+            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${www.update}/Updater.exe"'/>
         </exec>
 
         <copy file="${www.update}/updater.xml" todir="${build}" overwrite="true"/>
