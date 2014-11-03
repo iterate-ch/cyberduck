@@ -39,7 +39,7 @@ public class TerminalStreamListener implements StreamListener {
     /**
      * Progress bar fixed width in characters
      */
-    private int width = 60;
+    private int width = 30;
 
     public TerminalStreamListener(final TransferSpeedometer meter) {
         this.meter = meter;
