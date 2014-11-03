@@ -96,7 +96,7 @@
         </chmod>
     </target>
 
-    <target name="_build" depends="archive" description="Compile, jar and copy to application bundle">
+    <target name="_build">
         <jar jarfile="${build}/cocoa.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">

@@ -103,7 +103,9 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
-    <target name="build" depends="_build"/>
+    <target name="build" depends="archive">
+        <antcall target="_build"/>
+    </target>
 
     <target name="confirm">
         <input message="Press key to continue..." validargs="y,n" addproperty="build.push"/>
