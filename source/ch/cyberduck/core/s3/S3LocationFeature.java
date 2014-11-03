@@ -73,6 +73,12 @@ public class S3LocationFeature implements Location {
                 // Default location US is null
                 return new S3Region("us-east-1");
             }
+            if("US".equals(location)) {
+                return new S3Region("us-east-1");
+            }
+            if("EU".equals(location)) {
+                return new S3Region("eu-west-1");
+            }
             return new S3Region(location);
         }
         catch(ServiceException e) {

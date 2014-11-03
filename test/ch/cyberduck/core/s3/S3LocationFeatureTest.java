@@ -48,7 +48,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals(new S3LocationFeature.S3Region("EU"), new S3LocationFeature(session).getLocation(
+        assertEquals(new S3LocationFeature.S3Region("eu-west-1"), new S3LocationFeature(session).getLocation(
                 new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
         ));
         session.close();
