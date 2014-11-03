@@ -55,7 +55,14 @@ public class S3BucketCreateService {
             acl = AccessControlList.REST_CANNED_PRIVATE;
         }
         try {
-            session.getClient().createBucket(containerService.getContainer(bucket).getName(), location, acl);
+            final String region;
+            if("us-east-1".equals(location)) {
+                region = "US";
+            }
+            else {
+                region = location;
+            }
+            session.getClient().createBucket(containerService.getContainer(bucket).getName(), region, acl);
         }
         catch(ServiceException e) {
             throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
