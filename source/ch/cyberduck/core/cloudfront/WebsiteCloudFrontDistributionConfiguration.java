@@ -35,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.Constants;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3WebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
@@ -186,10 +185,13 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
         final String location = bucket.attributes().getRegion();
         // US Standard
         final String endpoint;
-        if(null == location || "US".equals(location)) {
+        if(null == location) {
             endpoint = "s3-website-us-east-1.amazonaws.com";
         }
-        else if(S3Bucket.LOCATION_EUROPE.equals(location)) {
+        else if("US".equals(location)) {
+            endpoint = "s3-website-us-east-1.amazonaws.com";
+        }
+        else if("EU".equals(location)) {
             endpoint = "s3-website-eu-west-1.amazonaws.com";
         }
         else {
