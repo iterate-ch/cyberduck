@@ -60,7 +60,6 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
         final S3SingleUploadService service = new S3SingleUploadService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
@@ -99,7 +98,6 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3WriteFeature write = new S3WriteFeature(session).withStorage("REDUCED_REDUNDANCY");
         final S3SingleUploadService service = new S3SingleUploadService(session);
         final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
