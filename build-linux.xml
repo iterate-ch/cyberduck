@@ -28,66 +28,48 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
 
-    <target name="_build"/>
-
-    <target name="nightly" depends="cli">
+    <target name="_build">
         <checksum
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
                 algorithm="md5"/>
+        <checksum
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
+                algorithm="md5"/>
+    </target>
+
+    <target name="upload">
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             todir="${uri}"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             todir="${uri}"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
-                algorithm="md5"/>
         <antcall target="confirm"/>
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             todir="${uri}"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"
+             todir="${uri}"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
     </target>
 
+    <target name="nightly" depends="cli">
+        <antcall target="upload">
+            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"/>
+        </antcall>
+    </target>
+
     <target name="release" depends="cli">
-        <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
-                algorithm="md5"/>
-        <antcall target="confirm"/>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
-                algorithm="md5"/>
-        <antcall target="confirm"/>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
+        <antcall target="upload">
+            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"/>
+        </antcall>
     </target>
 </project>
