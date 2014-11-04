@@ -28,16 +28,15 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
 
-    <target name="_build">
+    <target name="_build"/>
+
+    <target name="upload">
         <checksum
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
                 algorithm="md5"/>
         <checksum
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.rpm"
                 algorithm="md5"/>
-    </target>
-
-    <target name="upload">
         <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
              todir="${uri}"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
