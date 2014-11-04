@@ -152,7 +152,8 @@ public class SwiftContainerListService implements RootListService {
             return containers;
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e);
+            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e,
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
