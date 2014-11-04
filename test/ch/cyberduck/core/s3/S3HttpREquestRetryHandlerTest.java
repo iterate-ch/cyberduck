@@ -28,6 +28,11 @@ public class S3HttpREquestRetryHandlerTest extends AbstractTestCase {
             public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context) throws ServiceException {
                 //
             }
+
+            @Override
+            public void authorizeHttpRequest(final HttpUriRequest httpUriRequest, final HttpContext httpContext, final String s) throws ServiceException {
+                //
+            }
         }, 1);
         final HttpClientContext context = new HttpClientContext();
         context.setAttribute(HttpCoreContext.HTTP_REQUEST, new HttpHead());
