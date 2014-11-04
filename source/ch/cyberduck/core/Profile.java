@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.openstack.SwiftLocationFeature;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -31,6 +33,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -252,7 +257,21 @@ public final class Profile implements Protocol, Serializable {
 
     @Override
     public Set<Location.Name> getRegions() {
-        return parent.getRegions();
+        final List<String> regions = this.list("Regions");
+        if(regions.isEmpty()) {
+            return parent.getRegions();
+        }
+        final Set<Location.Name> set = new HashSet<Location.Name>();
+        for(String region : regions) {
+            switch(parent.getType()) {
+                case s3:
+                    set.add(new S3LocationFeature.S3Region(region));
+                    break;
+                case swift:
+                    set.add(new SwiftLocationFeature.SwiftRegion(region));
+            }
+        }
+        return set;
     }
 
     @Override
@@ -292,6 +311,14 @@ public final class Profile implements Protocol, Serializable {
             log.debug("No value for key:" + key);
         }
         return value;
+    }
+
+    private List list(final String key) {
+        final List list = dict.listForKey(key);
+        if(null == list) {
+            return Collections.emptyList();
+        }
+        return list;
     }
 
     private boolean bool(final String key) {
