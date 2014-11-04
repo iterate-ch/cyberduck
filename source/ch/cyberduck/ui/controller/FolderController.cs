@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool HasLocation()
         {
-            return new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath).isRoot() && _regions.Count > 0;
+            return _regions.Count > 0 && new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath).isRoot();
         }
 
         public override void Callback(DialogResult result)
