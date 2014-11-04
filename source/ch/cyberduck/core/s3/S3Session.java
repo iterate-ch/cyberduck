@@ -444,13 +444,10 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
         if(type == Location.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-                if(this.isConnected()) {
-                    return (T) new S3LocationFeature(this, client.getRegionEndpointCache());
-                }
-                return (T) new S3LocationFeature(this);
+            if(this.isConnected()) {
+                return (T) new S3LocationFeature(this, client.getRegionEndpointCache());
             }
-            return null;
+            return (T) new S3LocationFeature(this);
         }
         if(type == AnalyticsProvider.class) {
             // Only for AWS

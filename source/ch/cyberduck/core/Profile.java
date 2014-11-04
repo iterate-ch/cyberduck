@@ -258,9 +258,6 @@ public final class Profile implements Protocol, Serializable {
     @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
-        if(regions.isEmpty()) {
-            return parent.getRegions();
-        }
         final Set<Location.Name> set = new HashSet<Location.Name>();
         for(String region : regions) {
             switch(parent.getType()) {
