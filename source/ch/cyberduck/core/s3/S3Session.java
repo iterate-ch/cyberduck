@@ -224,12 +224,16 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         }
 
         @Override
-        public void authorizeHttpRequest(HttpUriRequest httpMethod, HttpContext context)
-                throws ServiceException {
+        public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context,
+                                         final String forceRequestSignatureVersion) throws ServiceException {
+            if(forceRequestSignatureVersion != null
+                    && !StringUtils.equals(getSignatureVersion().toString(), forceRequestSignatureVersion)) {
+                log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
+            }
             if(authorize(httpMethod, getProviderCredentials())) {
                 return;
             }
-            super.authorizeHttpRequest(httpMethod, context);
+            super.authorizeHttpRequest(httpMethod, context, forceRequestSignatureVersion);
         }
 
         @Override
@@ -299,7 +303,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
         if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
             return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
-                    Preferences.instance().getProperty("s3.signature.version"));
+                    preferences.getProperty("s3.signature.version"));
         }
         return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
     }
