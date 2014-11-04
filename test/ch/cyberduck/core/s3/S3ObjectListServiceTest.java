@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -205,15 +204,16 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testListAWS4SignatureFrankfurt() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol() {
-                    @Override
-                    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
-                        return AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
-                    }
-                }, new S3Protocol().getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-                        )));
+                        ))) {
+            @Override
+            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+            }
+
+        };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));
@@ -221,18 +221,18 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
-    public void testListAWS2SignatureFrankfurt() throws Exception {
+    @Test
+    public void testListAWS2AutoSwitchAWS4SignatureFrankfurt() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol() {
-                    @Override
-                    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
-                        return AuthenticationHeaderSignatureVersion.AWS2;
-                    }
-                }, new S3Protocol().getDefaultHostname(),
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
-                        )));
+                        ))) {
+            @Override
+            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            }
+        };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.volume));

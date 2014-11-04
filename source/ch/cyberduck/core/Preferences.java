@@ -564,8 +564,8 @@ public abstract class Preferences {
         /**
          * Authentication header version
          */
-//        defaults.put("s3.signature.version", "AWS2");
-        defaults.put("s3.signature.version", "AWS4HMACSHA256");
+        defaults.put("s3.signature.version", "AWS2");
+//        defaults.put("s3.signature.version", "AWS4HMACSHA256");
         /**
          * Default bucket location
          */

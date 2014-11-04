@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -31,7 +30,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class S3Protocol extends AbstractProtocol {
+public final class S3Protocol extends AbstractProtocol {
     @Override
     public String getName() {
         return "S3";
@@ -70,11 +69,6 @@ public class S3Protocol extends AbstractProtocol {
     @Override
     public String getDefaultHostname() {
         return "s3.amazonaws.com";
-    }
-
-    public AuthenticationHeaderSignatureVersion getSignatureVersion() {
-        return AuthenticationHeaderSignatureVersion.valueOf(
-                Preferences.instance().getProperty("s3.signature.version"));
     }
 
     @Override

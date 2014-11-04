@@ -58,15 +58,12 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                 final StreamListener listener, final TransferStatus status,
                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        if(session.getHost().getProtocol() instanceof S3Protocol) {
-            final S3Protocol protocol = (S3Protocol) session.getHost().getProtocol();
-            switch(protocol.getSignatureVersion()) {
-                case AWS4HMACSHA256:
-                    status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
-                                    new SHA256ChecksumCompute().compute(local.getInputStream()))
-                    );
-                    break;
-            }
+        switch(session.getSignatureVersion()) {
+            case AWS4HMACSHA256:
+                status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
+                                new SHA256ChecksumCompute().compute(local.getInputStream()))
+                );
+                break;
         }
         return super.upload(file, local, throttle, listener, status, cancel, progress);
     }

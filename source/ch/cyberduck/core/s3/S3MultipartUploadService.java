@@ -226,20 +226,17 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus();
-                if(session.getHost().getProtocol() instanceof S3Protocol) {
-                    final S3Protocol protocol = (S3Protocol) session.getHost().getProtocol();
-                    switch(protocol.getSignatureVersion()) {
-                        case AWS4HMACSHA256:
-                            final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
-                            try {
-                                StreamCopier.skip(in, offset);
-                            }
-                            catch(IOException e) {
-                                throw new DefaultIOExceptionMappingService().map(e);
-                            }
-                            status.setChecksum(HashAlgorithm.sha256, new SHA256ChecksumCompute().compute(in));
-                            break;
-                    }
+                switch(session.getSignatureVersion()) {
+                    case AWS4HMACSHA256:
+                        final InputStream in = new BoundedInputStream(local.getInputStream(), offset + length);
+                        try {
+                            StreamCopier.skip(in, offset);
+                        }
+                        catch(IOException e) {
+                            throw new DefaultIOExceptionMappingService().map(e);
+                        }
+                        status.setChecksum(HashAlgorithm.sha256, new SHA256ChecksumCompute().compute(in));
+                        break;
                 }
                 final StorageObject part = S3MultipartUploadService.super.upload(
                         file, local, throttle, listener, status

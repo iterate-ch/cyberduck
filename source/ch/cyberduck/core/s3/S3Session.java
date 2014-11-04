@@ -296,6 +296,14 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         return "AWS";
     }
 
+    public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
+        if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
+            return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
+                    Preferences.instance().getProperty("s3.signature.version"));
+        }
+        return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+    }
+
     /**
      * @return header prefix for general Google Storage headers: x-goog-.
      */
@@ -350,14 +358,8 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         configuration.setProperty("httpclient.retry-max", String.valueOf(0));
         configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
-        if(host.getHostname().endsWith(Constants.S3_DEFAULT_HOSTNAME)) {
-            // Only for AWS
-            if(host.getProtocol() instanceof S3Protocol) {
-                final S3Protocol protocol = (S3Protocol) host.getProtocol();
-                configuration.setProperty("storage-service.request-signature-version",
-                        protocol.getSignatureVersion().toString());
-            }
-        }
+        configuration.setProperty("storage-service.request-signature-version",
+                this.getSignatureVersion().toString());
         return configuration;
     }
 
