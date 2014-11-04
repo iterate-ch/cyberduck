@@ -6,10 +6,11 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.s3.S3LocationFeature;
 
 import org.junit.Test;
 
-import java.util.Iterator;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -45,9 +46,9 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
                 LocalFactory.get("test/ch/cyberduck/core/serializer/impl/Custom Regions S3.cyberduckprofile")
         );
         assertNotNull(profile);
-        assertEquals(2, profile.getRegions().size());
-        final Iterator<Location.Name> iter = profile.getRegions().iterator();
-        assertEquals("custom", iter.next().getIdentifier());
-        assertEquals("custom2", iter.next().getIdentifier());
+        final Set<Location.Name> regions = profile.getRegions();
+        assertEquals(2, regions.size());
+        assertTrue("custom", regions.contains(new S3LocationFeature.S3Region("custom")));
+        assertTrue("custom2", regions.contains(new S3LocationFeature.S3Region("custom2")));
     }
 }
