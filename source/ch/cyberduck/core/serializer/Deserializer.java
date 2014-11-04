@@ -41,7 +41,7 @@ public interface Deserializer<T> {
      * @param key Key name
      * @return List values for key
      */
-    List<T> listForKey(String key);
+    <L> List<L> listForKey(String key);
 
     /**
      * @param key Key name

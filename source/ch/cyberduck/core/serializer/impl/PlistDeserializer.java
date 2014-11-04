@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -77,19 +78,22 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     @Override
-    public List<NSDictionary> listForKey(final String key) {
+    public <T> List<T> listForKey(final String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
             return null;
         }
-        final List<NSDictionary> list = new ArrayList<NSDictionary>();
         if(value.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
             final NSArray array = Rococoa.cast(value, NSArray.class);
             final NSEnumerator enumerator = array.objectEnumerator();
             NSObject next;
+            final List<T> list = new ArrayList<T>();
             while((next = enumerator.nextObject()) != null) {
                 if(next.isKindOfClass(Rococoa.createClass("NSDictionary", NSDictionary._Class.class))) {
-                    list.add(Rococoa.cast(next, NSDictionary.class));
+                    list.add((T) Rococoa.cast(next, NSDictionary.class));
+                }
+                if(next.isKindOfClass(Rococoa.createClass("NSString", NSString._Class.class))) {
+                    list.add((T) Rococoa.cast(next, NSString.class).toString());
                 }
             }
             return list;
