@@ -132,24 +132,24 @@
 
     <target name="release" depends="clean, package-release">
         <antcall target="confirm"/>
-        <target name="upload">
+        <antcall target="upload">
             <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows"/>
             <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/"/>
-        </target>
+        </antcall>
     </target>
 
     <target name="nightly" depends="clean, package-nightly">
-        <target name="upload">
+        <antcall target="upload">
             <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/nightly"/>
             <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly"/>
-        </target>
+        </antcall>
     </target>
 
     <target name="beta" depends="clean, package-beta">
-        <target name="upload">
+        <antcall target="upload">
             <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/beta"/>
             <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/beta"/>
-        </target>
+        </antcall>
     </target>
 
     <target name="package-release" depends="version">
