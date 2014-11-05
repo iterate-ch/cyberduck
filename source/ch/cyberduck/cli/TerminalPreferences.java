@@ -62,6 +62,7 @@ public class TerminalPreferences extends MemoryPreferences {
             defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
         }
         if(Factory.Platform.osname.matches(".*Windows.*")) {
+            defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
         }
         if(Factory.Platform.osname.matches(".*Mac.*")) {
             defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
