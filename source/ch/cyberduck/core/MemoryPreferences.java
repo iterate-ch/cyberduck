@@ -80,14 +80,6 @@ public class MemoryPreferences extends Preferences {
     }
 
     @Override
-    protected void setLogging() {
-        defaults.put("logging.config", "log4j.xml");
-        defaults.put("logging", "error");
-
-        super.setLogging();
-    }
-
-    @Override
     protected void setFactories() {
         super.setFactories();
 

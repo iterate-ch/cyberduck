@@ -1920,6 +1920,7 @@ lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text
 lib/libjnidispatch.dylib -text
 lib/log4j-1.2.17.jar -text
+lib/log4j-cli.xml -text
 lib/log4j-cocoa.xml -text
 lib/log4j-windows.xml -text
 lib/mail-1.4.7.jar -text svneol=unset#application/zip

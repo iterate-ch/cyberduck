@@ -51,7 +51,6 @@ public class TerminalPreferences extends MemoryPreferences {
         super.setFactories();
 
         defaults.put("factory.certificatestore.class", DefaultCertificateStore.class.getName());
-
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
         defaults.put("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
@@ -59,25 +58,19 @@ public class TerminalPreferences extends MemoryPreferences {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
         defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
-
         if(Factory.Platform.osname.matches(".*Linux.*")) {
             defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
         }
         if(Factory.Platform.osname.matches(".*Windows.*")) {
-            defaults.put("connection.ssl.keystore.type", "Windows-MY");
-            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
         }
         if(Factory.Platform.osname.matches(".*Mac.*")) {
-            defaults.put("connection.ssl.keystore.type", "KeychainStore");
-            defaults.put("connection.ssl.keystore.provider", "Apple");
-
             defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
             defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
             defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
             defaults.put("factory.local.class", FinderLocal.class.getName());
             defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
             defaults.put("factory.passwordstore.class", Keychain.class.getName());
-            defaults.put("factory.certificatestore.class", Keychain.class.getName());
+//            defaults.put("factory.certificatestore.class", Keychain.class.getName());
             defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
             defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
             defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
@@ -93,6 +86,7 @@ public class TerminalPreferences extends MemoryPreferences {
 
     @Override
     protected void setLogging() {
+        defaults.put("logging.config", "log4j-cli.xml");
         defaults.put("logging", "fatal");
 
         super.setLogging();
@@ -115,8 +109,14 @@ public class TerminalPreferences extends MemoryPreferences {
         if(Factory.Platform.osname.matches(".*Linux.*")) {
             defaults.put("local.normalize.prefix", String.valueOf(true));
         }
+        if(Factory.Platform.osname.matches(".*Windows.*")) {
+            defaults.put("connection.ssl.keystore.type", "Windows-MY");
+            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+        }
         if(Factory.Platform.osname.matches(".*Mac.*")) {
             defaults.put("local.normalize.prefix", String.valueOf(true));
+            defaults.put("connection.ssl.keystore.type", "KeychainStore");
+            defaults.put("connection.ssl.keystore.provider", "Apple");
         }
 
         defaults.put("queue.download.folder", home.getAbsolute());

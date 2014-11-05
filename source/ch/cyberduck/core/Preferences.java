@@ -943,7 +943,14 @@ public abstract class Preferences {
         // call only once during initialization time of your application
         SLF4JBridgeHandler.install();
 
-        final URL configuration = Preferences.class.getClassLoader().getResource(defaults.get("logging.config"));
+        final URL configuration;
+        final String file = defaults.get("logging.config");
+        if(null == file) {
+            configuration = Preferences.class.getClassLoader().getResource("log4j-cli.xml");
+        }
+        else {
+            configuration = Preferences.class.getClassLoader().getResource(file);
+        }
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
         }
