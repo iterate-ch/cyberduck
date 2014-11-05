@@ -38,11 +38,11 @@ namespace Ch.Cyberduck.Core.Editor
         {
         }
 
-        protected override void watch(Local local)
+        protected override void watch(ch.cyberduck.core.Local local)
         {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = local().getParent().getAbsolute();
-            _watcher.Filter = local().getName();
+            _watcher.Path = local.getParent().getAbsolute();
+            _watcher.Filter = local.getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;
             RegisterHandlers();
