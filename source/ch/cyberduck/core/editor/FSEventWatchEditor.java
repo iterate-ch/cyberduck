@@ -52,6 +52,12 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
     }
 
     public void watch(final Local local) throws IOException {
+        try {
+            monitor.register(local).await();
+        }
+        catch(InterruptedException e) {
+            throw new IOException(String.format("Failure monitoring file %s", local), e);
+        }
         monitor.addListener(new DefaultEditorListener(this));
     }
 
