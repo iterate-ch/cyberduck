@@ -131,4 +131,13 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("s3.download.udt.threshold", String.valueOf(10L * 1024L * 1024L));
         defaults.put("s3.upload.udt.threshold", String.valueOf(10L * 1024L * 1024L));
     }
+
+    @Override
+    public String getProperty(final String property) {
+        final String system = System.getProperty(property);
+        if(null == system) {
+            return super.getProperty(property);
+        }
+        return system;
+    }
 }
