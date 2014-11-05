@@ -28,6 +28,7 @@ import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
+import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
@@ -60,7 +61,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
 
         if(Factory.Platform.osname.matches(".*Linux.*")) {
-
+            defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
         }
         if(Factory.Platform.osname.matches(".*Windows.*")) {
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
