@@ -1919,6 +1919,7 @@ lib/jzlib-1.1.3.jar -text svneol=unset#application/zip
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text
 lib/libjnidispatch.dylib -text
+lib/libjnidispatch.so -text svneol=unset#application/x-sharedlib
 lib/log4j-1.2.17.jar -text
 lib/log4j-cli.xml -text
 lib/log4j-cocoa.xml -text
