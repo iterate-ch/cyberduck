@@ -23,6 +23,8 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -53,14 +55,7 @@ public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
 
     static {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(final Thread t, final Throwable e) {
-                // Swallow the exception
-                log.error(String.format("Thread %s has thrown uncaught exception: %s",
-                        t.getName(), e.getMessage()), e);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
     }
 
     static {
@@ -180,6 +175,13 @@ public class Terminal {
 //                new CertificateStoreX509TrustManager(),
 //                new CertificateStoreX509KeyManager());
         final TerminalProgressListener listener = new TerminalProgressListener();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                listener.message(String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
+                System.exit(1);
+            }
+        });
         try {
             final ConnectionService connect = new LoginConnectionService(
                     new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
@@ -189,15 +191,16 @@ public class Terminal {
             }
             if(this.input.hasOption("edit")) {
                 final TerminalController controller = new TerminalController();
-                final Editor editor = EditorFactory.instance().create(controller, session, remote);
-                editor.open();
+                final EditorFactory factory = EditorFactory.instance();
+                final Editor editor = factory.create(controller, session, remote);
                 final CountDownLatch lock = new CountDownLatch(1);
-                Runtime.getRuntime().addShutdownHook(new Thread() {
-                    public void run() {
+                editor.open(new ApplicationQuitCallback() {
+                    @Override
+                    public void callback() {
                         lock.countDown();
-                        editor.delete();
                     }
                 });
+                controller.message("Close the editor application to exit…");
                 try {
                     lock.await();
                 }
