@@ -74,6 +74,9 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
                 StandardWatchEventKinds.ENTRY_MODIFY);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Registered for events for %s", key));
+        }
         pool.execute(new Callable<Boolean>() {
             @Override
             public Boolean call() throws IOException {
