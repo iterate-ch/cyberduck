@@ -59,6 +59,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
         this.add(new Application("org.smultron.Smultron", "Smultron"));
         this.add(new Application("org.fraise.Fraise", "Fraise"));
         this.add(new Application("com.aynimac.CotEditor", "CotEditor"));
+        this.add(new Application("com.coteditor.CotEditor", "CotEditor"));
         this.add(new Application("com.macrabbit.cssedit", "CSSEdit"));
         this.add(new Application("com.talacia.Tag", "Tag"));
         this.add(new Application("org.skti.skEdit", "skEdit"));
