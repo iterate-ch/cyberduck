@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Core.Editor
         {
         }
 
-        protected override void edit()
+        protected override void edit(ApplicationQuitCallback quit)
         {
             ch.cyberduck.core.Local local = getLocal();
             Application application = getApplication();
@@ -46,7 +46,7 @@ namespace Ch.Cyberduck.Core.Editor
             {
                 application = ch.cyberduck.core.editor.EditorFactory.instance().getDefaultEditor();
             }
-            if (ApplicationLauncherFactory.get().open(local, application))
+            if (ApplicationLauncherFactory.get().open(local, application, quit))
             {
                 Watch();
             }

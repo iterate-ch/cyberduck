@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Core.Local
             return Utils.StartProcess(process);
         }
 
-        public bool open(ch.cyberduck.core.Local local, Application application)
+        public bool open(ch.cyberduck.core.Local local, Application application, ApplicationQuitCallback callback)
         {
             Process process = new Process();
             if (null == application)

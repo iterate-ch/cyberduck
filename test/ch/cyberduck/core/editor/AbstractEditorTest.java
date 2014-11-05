@@ -24,6 +24,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.action.Worker;
@@ -57,7 +58,7 @@ public class AbstractEditorTest extends AbstractTestCase {
         }
 
         @Override
-        protected void edit() throws IOException {
+        protected void edit(final ApplicationQuitCallback quit) throws IOException {
             //
         }
     }

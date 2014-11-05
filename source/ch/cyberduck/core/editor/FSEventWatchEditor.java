@@ -21,16 +21,14 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 
 import java.io.IOException;
 
@@ -41,6 +39,9 @@ import java.io.IOException;
  */
 public class FSEventWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
+
+    private final ApplicationLauncher launcher
+            = ApplicationLauncherFactory.get();
 
     private FileWatcher monitor = new FileWatcher();
 
@@ -56,34 +57,15 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
         super(controller, session, application, file);
     }
 
-    private ProxyController terminate = new ProxyController() {
-        public void terminated(final NSNotification notification) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received notification %s from workspace", notification.userInfo()));
-            }
-            if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
-                log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
-            }
-            // Do cleanup if application matches current editor
-            if(FSEventWatchEditor.this.getApplication()
-                    .equals(new Application(notification.userInfo().objectForKey("NSApplicationBundleIdentifier").toString()))) {
-                FSEventWatchEditor.this.delete();
-                NSWorkspace.sharedWorkspace().notificationCenter().removeObserver(terminate.id());
-            }
-        }
-    };
-
     /**
      * Edit and watch the file for changes
+     *
+     * @param quit Callback
      */
     @Override
-    public void edit() throws IOException {
+    public void edit(final ApplicationQuitCallback quit) throws IOException {
         final Application application = this.getApplication();
-        if(ApplicationLauncherFactory.get().open(local, application)) {
-            NSWorkspace.sharedWorkspace().notificationCenter().addObserver(terminate.id(),
-                    Foundation.selector("terminated:"),
-                    NSWorkspace.WorkspaceDidTerminateApplicationNotification,
-                    null);
+        if(launcher.open(local, application, quit)) {
             this.watch();
         }
         else {

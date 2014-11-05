@@ -31,7 +31,7 @@ public class DisabledApplicationLauncher implements ApplicationLauncher {
     }
 
     @Override
-    public boolean open(final Local file, final Application application) {
+    public boolean open(final Local file, final Application application, final ApplicationQuitCallback callback) {
         return false;
     }
 

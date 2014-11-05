@@ -18,6 +18,8 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.local.ApplicationQuitCallback;
+
 /**
  * @version $Id$
  */
@@ -31,7 +33,7 @@ public interface Editor {
     /**
      * Download file and open in editor
      */
-    void open();
+    void open(ApplicationQuitCallback callback);
 
     /**
      * Upload saved changes

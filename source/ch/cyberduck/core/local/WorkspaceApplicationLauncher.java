@@ -19,12 +19,17 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -32,10 +37,59 @@ import org.apache.log4j.Logger;
 public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
 
+    private final NSWorkspace workspace
+            = NSWorkspace.sharedWorkspace();
+
+    private Map<Application, ApplicationQuitCallback> registered
+            = new HashMap<Application, ApplicationQuitCallback>();
+
+    public void register(final Application application, final ApplicationQuitCallback callback) {
+        workspace.notificationCenter().addObserver(terminate.id(),
+                Foundation.selector("terminated:"),
+                NSWorkspace.WorkspaceDidTerminateApplicationNotification,
+                null);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register application %s for callback %s", application, callback));
+        }
+        registered.put(application, callback);
+    }
+
+    private final ProxyController terminate = new ProxyController() {
+        public void terminated(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received notification %s from workspace", notification.userInfo()));
+            }
+            if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
+                log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
+                return;
+            }
+            final Application application = new Application(notification.userInfo().objectForKey(
+                    "NSApplicationBundleIdentifier").toString());
+            if(registered.containsKey(application)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Run quit callback for application %s", application));
+                }
+                // Do cleanup if application matches
+                registered.get(application).callback();
+            }
+        }
+    };
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            log.warn(String.format("Callback for %s is finalized", terminate));
+            workspace.notificationCenter().removeObserver(terminate.id());
+        }
+        finally {
+            super.finalize();
+        }
+    }
+
     @Override
     public boolean open(final Local file) {
         synchronized(NSWorkspace.class) {
-            if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
+            if(!workspace.openFile(file.getAbsolute())) {
                 log.warn(String.format("Error opening file %s", file));
                 return false;
             }
@@ -44,11 +98,13 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     }
 
     @Override
-    public boolean open(final Local file, final Application application) {
+    public boolean open(final Local file, final Application application, final ApplicationQuitCallback callback) {
         synchronized(NSWorkspace.class) {
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier());
+            final NSWorkspace workspace = this.workspace;
+            final String path = workspace.absolutePathForAppBundleWithIdentifier(application.getIdentifier());
             if(StringUtils.isNotBlank(path)) {
-                if(NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(), path)) {
+                if(workspace.openFile(file.getAbsolute(), path)) {
+                    this.register(application, callback);
                     return true;
                 }
             }

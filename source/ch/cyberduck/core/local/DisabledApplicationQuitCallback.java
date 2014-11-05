@@ -1,8 +1,8 @@
 package ch.cyberduck.core.local;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,15 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
-
-import ch.cyberduck.core.Local;
 
 /**
  * @version $Id$
  */
-public interface ApplicationLauncher {
-
-    boolean open(Local file);
-
-    boolean open(Local file, Application application, ApplicationQuitCallback callback);
-
-    boolean open(Application application, String args);
-
-    void bounce(Local file);
+public class DisabledApplicationQuitCallback implements ApplicationQuitCallback {
+    @Override
+    public void callback() {
+        //
+    }
 }

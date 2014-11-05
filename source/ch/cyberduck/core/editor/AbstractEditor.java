@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -141,8 +142,15 @@ public abstract class AbstractEditor implements Editor {
      * Open the file in the parent directory
      */
     @Override
-    public void open() {
-        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback, listener) {
+    public void open(final ApplicationQuitCallback quit) {
+        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback,
+                new ApplicationQuitCallback() {
+                    @Override
+                    public void callback() {
+                        quit.callback();
+                        delete();
+                    }
+                }, listener) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -163,8 +171,10 @@ public abstract class AbstractEditor implements Editor {
 
     /**
      * Watch for changes in external editor
+     *
+     * @param quit Callback
      */
-    protected abstract void edit() throws IOException;
+    protected abstract void edit(final ApplicationQuitCallback quit) throws IOException;
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.

@@ -9,6 +9,8 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -87,11 +89,11 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
             }
         }, session, new Application("com.editor"), file) {
             @Override
-            protected void edit() throws IOException {
+            protected void edit(final ApplicationQuitCallback quit) throws IOException {
                 e.set(true);
             }
         };
-        editor.open();
+        editor.open(new DisabledApplicationQuitCallback());
         assertTrue(t.get());
         assertNotNull(editor.getLocal());
         assertTrue(e.get());
