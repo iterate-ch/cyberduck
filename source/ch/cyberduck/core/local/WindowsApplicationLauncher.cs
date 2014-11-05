@@ -50,6 +50,11 @@ namespace Ch.Cyberduck.Core.Local
                 process.StartInfo.FileName = GetExecutableCommand(application.getIdentifier());
                 process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
             }
+            if (callback != null)
+            {
+                process.EnableRaisingEvents = true;
+                process.Exited += delegate { callback.callback(); };
+            }
             return Utils.StartProcess(process);
         }
 
