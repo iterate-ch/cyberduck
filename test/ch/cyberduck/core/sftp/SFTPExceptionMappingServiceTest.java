@@ -22,7 +22,6 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.ftp.FTPExceptionMappingService;
 
 import org.junit.Test;
 
@@ -55,11 +54,11 @@ public class SFTPExceptionMappingServiceTest extends AbstractTestCase {
 
     @Test
     public void testSocketTimeout() throws Exception {
-        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+        assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
                 .map(new SocketTimeoutException()).getClass());
-        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+        assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
                 .map("message", new SocketTimeoutException()).getClass());
-        assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
+        assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
                 .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
     }
 }

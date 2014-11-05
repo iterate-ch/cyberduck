@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -32,10 +33,13 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.common.DisconnectReason;
 import net.schmizz.sshj.common.SSHException;
+import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPException;
+import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
 /**
@@ -71,6 +75,15 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         }
         if(e instanceof UserAuthException) {
             return new LoginFailureException(buffer.toString(), e);
+        }
+        if(e instanceof ConnectionException) {
+            return new ConnectionRefusedException(buffer.toString(), e);
+        }
+        if(e instanceof TransportException) {
+            return new ConnectionRefusedException(buffer.toString(), e);
+        }
+        if(e instanceof Buffer.BufferException) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         if(e instanceof SSHException) {
             final SSHException failure = (SSHException) e;
