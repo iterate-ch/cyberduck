@@ -18,7 +18,17 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -69,7 +79,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(0, a.retry());
+        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 
     @Test
@@ -107,7 +117,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
-        assertEquals(0, a.retry());
+        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 
     @Test
@@ -145,7 +155,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(0, a.retry());
+        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
     }
 
     @Test
