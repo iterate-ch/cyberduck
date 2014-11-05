@@ -139,7 +139,7 @@ public abstract class LicenseFactory extends Factory<License> {
         try {
             final String clazz = preferences.getProperty("factory.licensefactory.class");
             if(null == clazz) {
-                throw new FactoryException();
+                return LicenseFactory.EMPTY_LICENSE;
             }
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
