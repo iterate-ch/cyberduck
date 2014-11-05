@@ -66,6 +66,8 @@ public class Terminal {
     private final DefaultPathKindDetector detector
             = new DefaultPathKindDetector();
 
+    private final Preferences preferences = Preferences.instance();
+
     private enum Exit {
         success,
         failure
@@ -116,9 +118,9 @@ public class Terminal {
         if(input.hasOption("version")) {
             final PrintStream console = System.out;
             console.printf("%s %s (%s)%n",
-                    Preferences.instance().getProperty("application.name"),
-                    Preferences.instance().getProperty("application.version"),
-                    Preferences.instance().getProperty("application.revision"));
+                    preferences.getProperty("application.name"),
+                    preferences.getProperty("application.version"),
+                    preferences.getProperty("application.revision"));
             return Exit.success;
         }
         final List arguments = input.getArgList();
