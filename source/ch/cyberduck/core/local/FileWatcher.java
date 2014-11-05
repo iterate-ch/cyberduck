@@ -155,7 +155,7 @@ public final class FileWatcher implements FileWatcherCallback {
         }
     }
 
-    public void close(final Local local) {
+    public void close() {
         try {
             monitor.close();
             pool.shutdown();

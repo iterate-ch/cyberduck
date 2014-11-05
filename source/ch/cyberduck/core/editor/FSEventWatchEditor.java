@@ -18,14 +18,11 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationLauncher;
-import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
-import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -39,9 +36,6 @@ import java.io.IOException;
  */
 public class FSEventWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
-
-    private final ApplicationLauncher launcher
-            = ApplicationLauncherFactory.get();
 
     private FileWatcher monitor = new FileWatcher();
 
@@ -57,45 +51,16 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
         super(controller, session, application, file);
     }
 
-    /**
-     * Edit and watch the file for changes
-     *
-     * @param quit Callback
-     */
-    @Override
-    public void edit(final ApplicationQuitCallback quit) throws IOException {
-        final Application application = this.getApplication();
-        if(launcher.open(local, application, quit)) {
-            this.watch();
-        }
-        else {
-            throw new IOException(String.format("Failed to open application %s", application.getName()));
-        }
-    }
-
-    /**
-     * Watch the file for changes
-     */
-    public void watch() throws IOException {
-        this.watch(new DefaultEditorListener(this));
-    }
-
-    public void watch(final FileWatcherListener listener) throws IOException {
-        try {
-            monitor.register(local).await();
-        }
-        catch(InterruptedException e) {
-            throw new IOException(String.format("Failure monitoring file %s", local), e);
-        }
-        monitor.addListener(listener);
+    public void watch(final Local local) throws IOException {
+        monitor.addListener(new DefaultEditorListener(this));
     }
 
     @Override
     public void delete() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Close monitor %s for %s", monitor, local));
+            log.debug(String.format("Close monitor %s", monitor));
         }
-        monitor.close(local);
+        monitor.close();
         super.delete();
     }
 }

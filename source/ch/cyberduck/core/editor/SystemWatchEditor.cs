@@ -38,29 +38,11 @@ namespace Ch.Cyberduck.Core.Editor
         {
         }
 
-        protected override void edit(ApplicationQuitCallback quit)
-        {
-            ch.cyberduck.core.Local local = getLocal();
-            Application application = getApplication();
-            if (application == null || Utils.IsBlank(application.getIdentifier()))
-            {
-                application = ch.cyberduck.core.editor.EditorFactory.instance().getDefaultEditor();
-            }
-            if (ApplicationLauncherFactory.get().open(local, application, quit))
-            {
-                Watch();
-            }
-            else
-            {
-                throw new IOException(String.Format("Failed to open application {0}", application.getName()));
-            }
-        }
-
-        private void Watch()
+        protected override void watch(Local local)
         {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = getLocal().getParent().getAbsolute();
-            _watcher.Filter = getLocal().getName();
+            _watcher.Path = local().getParent().getAbsolute();
+            _watcher.Filter = local().getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;
             RegisterHandlers();

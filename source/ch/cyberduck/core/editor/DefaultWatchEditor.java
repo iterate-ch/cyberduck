@@ -18,12 +18,11 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncher;
-import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.ui.Controller;
 
@@ -46,9 +45,6 @@ import java.util.concurrent.Callable;
 public class DefaultWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
-    private final ApplicationLauncher applicationLauncher
-            = ApplicationLauncherFactory.get();
-
     private WatchService monitor;
 
     private ThreadPool pool
@@ -61,21 +57,16 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
         super(controller, session, application, path);
     }
 
-    @Override
-    protected void edit(final ApplicationQuitCallback quit) throws IOException {
-        final Application application = this.getApplication();
-        if(applicationLauncher.open(local, application, quit)) {
-            this.watch();
-        }
-        else {
-            throw new IOException(String.format("Failed to open application %s", application.getName()));
-        }
+    public DefaultWatchEditor(final Controller controller,
+                              final Session session,
+                              final ApplicationLauncher launcher,
+                              final Application application,
+                              final Path path) {
+        super(controller, session, launcher, application, path);
     }
 
-    /**
-     * Watch the file for changes
-     */
-    public void watch() throws IOException {
+    @Override
+    protected void watch(final Local local) throws IOException {
         final FileSystem fs = FileSystems.getDefault();
         monitor = fs.newWatchService();
         final java.nio.file.Path watchable = fs.getPath(local.getParent().getAbsolute());
@@ -144,13 +135,13 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
     @Override
     public void delete() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Close monitor %s for %s", monitor, local));
+            log.debug(String.format("Close monitor %s", monitor));
         }
         try {
             monitor.close();
         }
         catch(IOException e) {
-            log.warn(String.format("Failure closing monitor for edited file %s %s", local, e.getMessage()));
+            log.warn(String.format("Failure closing monitor %s", e.getMessage()));
         }
         super.delete();
     }

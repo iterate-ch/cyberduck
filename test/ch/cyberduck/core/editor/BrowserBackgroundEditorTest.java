@@ -3,6 +3,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
@@ -91,6 +92,11 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
             @Override
             protected void edit(final ApplicationQuitCallback quit) throws IOException {
                 e.set(true);
+            }
+
+            @Override
+            protected void watch(final Local local) throws IOException {
+                //
             }
         };
         editor.open(new DisabledApplicationQuitCallback());

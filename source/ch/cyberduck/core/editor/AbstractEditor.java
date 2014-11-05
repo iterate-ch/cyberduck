@@ -28,6 +28,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationLauncher;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
@@ -55,9 +57,9 @@ public abstract class AbstractEditor implements Editor {
     /**
      * The edited path
      */
-    protected Path remote;
+    private Path remote;
 
-    protected Local local;
+    private Local local;
 
     /**
      * The editor application
@@ -79,9 +81,19 @@ public abstract class AbstractEditor implements Editor {
 
     private ProgressListener listener;
 
+    private ApplicationLauncher applicationLauncher;
+
     public AbstractEditor(final Application application, final Session session, final Path file,
                           final TransferErrorCallback callback,
                           final ProgressListener listener) {
+        this(ApplicationLauncherFactory.get(), application, session, file, callback, listener);
+    }
+
+    public AbstractEditor(final ApplicationLauncher launcher,
+                          final Application application, final Session session, final Path file,
+                          final TransferErrorCallback callback,
+                          final ProgressListener listener) {
+        this.applicationLauncher = launcher;
         this.application = application;
         if(file.isSymbolicLink() && Preferences.instance().getBoolean("editor.upload.symboliclink.resolve")) {
             this.remote = file.getSymlinkTarget();
@@ -174,7 +186,25 @@ public abstract class AbstractEditor implements Editor {
      *
      * @param quit Callback
      */
-    protected abstract void edit(final ApplicationQuitCallback quit) throws IOException;
+    protected void edit(final ApplicationQuitCallback quit) throws IOException {
+        if(null == application || null == application.getIdentifier()) {
+            log.warn(String.format("No editor application configured for %s", local));
+            if(applicationLauncher.open(local)) {
+                this.watch(local);
+            }
+            else {
+                throw new IOException(String.format("Failed to open default application for %s", local));
+            }
+        }
+        else if(applicationLauncher.open(local, application, quit)) {
+            this.watch(local);
+        }
+        else {
+            throw new IOException(String.format("Failed to open application %s for %s", application.getName(), local));
+        }
+    }
+
+    protected abstract void watch(Local local) throws IOException;
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.

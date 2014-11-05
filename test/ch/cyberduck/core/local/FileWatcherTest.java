@@ -92,6 +92,6 @@ public class FileWatcherTest extends AbstractTestCase {
         file.delete();
         delete.await();
         watcher.removeListener(listener);
-        watcher.close(file);
+        watcher.close();
     }
 }

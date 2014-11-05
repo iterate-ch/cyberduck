@@ -39,7 +39,7 @@ import java.util.List;
 public abstract class EditorFactory extends Factory<EditorFactory> {
     private static final Logger log = Logger.getLogger(EditorFactory.class);
 
-    private static final Preferences preferences
+    private Preferences preferences
             = Preferences.instance();
 
     private ApplicationFinder applicationFinder;
@@ -57,7 +57,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     public static synchronized EditorFactory instance() {
         if(null == factory) {
             try {
-                final String clazz = preferences.getProperty("factory.editorfactory.class");
+                final String clazz = Preferences.instance().getProperty("factory.editorfactory.class");
                 if(null == clazz) {
                     throw new FactoryException();
                 }
@@ -129,14 +129,21 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * suitable and installed editor is found.
      */
     public Application getEditor(final String filename) {
+        final Application application = this.getDefaultEditor();
+        if(application == null) {
+            log.warn("Default editor is not installed");
+        }
         if(preferences.getBoolean("editor.alwaysUseDefault")) {
-            return this.getDefaultEditor();
+            return application;
         }
         // The default application set by launch services to open files of the given type
         final Application editor = applicationFinder.find(filename);
         if(null == editor) {
+            if(application == null) {
+                log.warn(String.format("No editor found for %s", filename));
+            }
             // Use default editor if not applicable application found which handles this file type
-            return this.getDefaultEditor();
+            return application;
         }
         // Use application determined by launch services using file system notifications
         return editor;

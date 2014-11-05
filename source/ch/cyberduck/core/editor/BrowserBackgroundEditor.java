@@ -21,23 +21,28 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationLauncher;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public abstract class BrowserBackgroundEditor extends AbstractEditor {
-    private static final Logger log = Logger.getLogger(BrowserBackgroundEditor.class);
 
     private Controller controller;
 
     private Session session;
+
+    public BrowserBackgroundEditor(final Controller controller, final Session session,
+                                   final Application application, final Path path) {
+
+        this(controller, session, ApplicationLauncherFactory.get(), application, path);
+    }
 
     /**
      * @param controller  Browser
@@ -45,8 +50,9 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param path        Remote file
      */
     public BrowserBackgroundEditor(final Controller controller, final Session session,
+                                   final ApplicationLauncher launcher,
                                    final Application application, final Path path) {
-        super(application, session, path, new DisabledTransferErrorCallback(), controller);
+        super(launcher, application, session, path, new DisabledTransferErrorCallback(), controller);
         this.controller = controller;
         this.session = session;
     }
@@ -56,9 +62,6 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      */
     @Override
     public void open(final Worker<Transfer> download) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Open %s in %s", local, this.getApplication()));
-        }
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session, download));
     }
 
@@ -67,9 +70,6 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      */
     @Override
     public void save(final Worker<Transfer> upload) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save changes from %s for %s", this.getApplication().getIdentifier(), local));
-        }
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session, upload));
     }
 }
