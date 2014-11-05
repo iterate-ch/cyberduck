@@ -22,6 +22,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
+
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateException;
@@ -35,6 +38,9 @@ import java.util.List;
  * @version $Id$
  */
 public class DefaultCertificateStore implements CertificateStore {
+
+    private final BrowserCompatHostnameVerifier verifier
+            = new BrowserCompatHostnameVerifier();
 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
@@ -64,6 +70,9 @@ public class DefaultCertificateStore implements CertificateStore {
 
     @Override
     public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
+        if(certificates.isEmpty()) {
+            return false;
+        }
         for(X509Certificate c : certificates) {
             // Checks that the certificate is currently valid.
             try {
@@ -75,6 +84,12 @@ public class DefaultCertificateStore implements CertificateStore {
             catch(CertificateNotYetValidException e) {
                 return false;
             }
+        }
+        try {
+            verifier.verify(hostname, certificates.get(0));
+        }
+        catch(SSLException e) {
+            return false;
         }
         return true;
     }
