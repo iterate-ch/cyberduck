@@ -19,10 +19,12 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -31,6 +33,9 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(ExecApplicationLauncher.class);
 
     private final Runtime runtime = Runtime.getRuntime();
+
+    private ThreadPool pool
+            = new ThreadPool(1, "process");
 
     @Override
     public boolean open(final Local file) {
@@ -47,7 +52,21 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
     @Override
     public boolean open(final Local file, final Application application, final ApplicationQuitCallback callback) {
         try {
-            runtime.exec(String.format("%s %s", application.getIdentifier(), file.getAbsolute()));
+            final Process process = runtime.exec(String.format("%s %s", application.getIdentifier(), file.getAbsolute()));
+            pool.execute(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws IOException {
+                    try {
+                        process.waitFor();
+                        callback.callback();
+                        return true;
+                    }
+                    catch(InterruptedException e) {
+                        log.warn(String.format("Failure waiting for application %s to exit", process));
+                        return false;
+                    }
+                }
+            });
             return true;
         }
         catch(IOException e) {
