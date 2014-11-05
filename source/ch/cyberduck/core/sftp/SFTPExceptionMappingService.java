@@ -79,9 +79,6 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         if(e instanceof ConnectionException) {
             return new ConnectionRefusedException(buffer.toString(), e);
         }
-        if(e instanceof TransportException) {
-            return new ConnectionRefusedException(buffer.toString(), e);
-        }
         if(e instanceof Buffer.BufferException) {
             return new InteroperabilityException(buffer.toString(), e);
         }
@@ -112,6 +109,9 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         }
         if(DisconnectReason.PROTOCOL_VERSION_NOT_SUPPORTED.equals(reason)) {
             return new InteroperabilityException(failure, e);
+        }
+        if(e instanceof TransportException) {
+            return new ConnectionRefusedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
