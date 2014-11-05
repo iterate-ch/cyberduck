@@ -343,6 +343,7 @@
                 </fx:fileset>
                 <fx:fileset dir="${lib}" type="data">
                     <include name="*.dylib"/>
+                    <include name="*.so"/>
                 </fx:fileset>
                 <fx:fileset dir="${build}/${configuration}" type="data">
                     <include name="*.dylib"/>
