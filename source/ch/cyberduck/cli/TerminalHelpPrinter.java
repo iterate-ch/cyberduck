@@ -29,6 +29,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.PrintWriter;
 import java.text.MessageFormat;
 
 /**
@@ -40,8 +41,13 @@ public final class TerminalHelpPrinter {
         //
     }
 
+    public static void main(String... argument) {
+        ProtocolFactory.register();
+        help(TerminalOptionsBuilder.options());
+    }
+
     public static void help(final Options options) {
-        final HelpFormatter formatter = new HelpFormatter();
+        final HelpFormatter formatter = new TerminalHelpFormatter();
         formatter.setSyntaxPrefix("Usage: ");
         formatter.setWidth(200);
         final StringBuilder protocols = new StringBuilder(" Supported protocols").append(StringUtils.LF);
@@ -52,10 +58,10 @@ public final class TerminalHelpPrinter {
                 case googlestorage:
                 case swift:
                 case azure:
-                    protocols.append(" Example URL: ").append(String.format("%s://<container>/<key>", p.getProvider()));
+                    protocols.append("\tExample URL: ").append(String.format("%s://<container>/<key>", p.getProvider()));
                     break;
                 default:
-                    protocols.append(" Example URL: ").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
+                    protocols.append("\tExample URL: ").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
             }
             protocols.append(StringUtils.LF);
         }
@@ -74,5 +80,66 @@ public final class TerminalHelpPrinter {
             footer.append(l.toString());
         }
         formatter.printHelp("duck [options...] <url> [<file>]", header, options, footer.toString());
+    }
+
+    private static final class TerminalHelpFormatter extends HelpFormatter {
+        @Override
+        public void printHelp(PrintWriter pw, int width, String cmdLineSyntax,
+                              String header, Options options, int leftPad,
+                              int descPad, String footer, boolean autoUsage) {
+            if(autoUsage) {
+                printUsage(pw, width, cmdLineSyntax, options);
+            }
+            else {
+                printUsage(pw, width, cmdLineSyntax);
+            }
+
+            if((header != null) && (header.length() > 0)) {
+                printWrapped(pw, width, header);
+            }
+
+            printOptions(pw, width, options, leftPad, descPad);
+
+            if((footer != null) && (footer.length() > 0)) {
+                printWrapped(pw, width, footer);
+            }
+        }
+
+        protected StringBuffer renderWrappedText(StringBuffer sb, int width,
+                                                 int nextLineTabStop, String text) {
+            int pos = findWrapPos(text, width, 0);
+
+            if(pos == -1) {
+                sb.append(rtrim(text));
+
+                return sb;
+            }
+            sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
+
+            if(nextLineTabStop >= width) {
+                // stops infinite loop happening
+                nextLineTabStop = 1;
+            }
+
+            // all following lines must be padded with nextLineTabStop space characters
+            final String padding = createPadding(nextLineTabStop);
+
+            while(true) {
+                text = padding + text.substring(pos);
+                pos = findWrapPos(text, width, 0);
+
+                if(pos == -1) {
+                    sb.append(text);
+
+                    return sb;
+                }
+
+                if((text.length() > width) && (pos == nextLineTabStop - 1)) {
+                    pos = width;
+                }
+
+                sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
+            }
+        }
     }
 }
