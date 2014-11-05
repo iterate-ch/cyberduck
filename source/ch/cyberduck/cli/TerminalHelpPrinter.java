@@ -41,11 +41,6 @@ public final class TerminalHelpPrinter {
         //
     }
 
-    public static void main(String... argument) {
-        ProtocolFactory.register();
-        help(TerminalOptionsBuilder.options());
-    }
-
     public static void help(final Options options) {
         final HelpFormatter formatter = new TerminalHelpFormatter();
         formatter.setSyntaxPrefix("Usage: ");
