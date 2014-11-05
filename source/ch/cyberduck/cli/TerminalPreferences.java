@@ -71,7 +71,7 @@ public class TerminalPreferences extends MemoryPreferences {
             defaults.put("factory.local.class", FinderLocal.class.getName());
             defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
             defaults.put("factory.passwordstore.class", Keychain.class.getName());
-//            defaults.put("factory.certificatestore.class", Keychain.class.getName());
+            defaults.put("factory.certificatestore.class", Keychain.class.getName());
             defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
             defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
             defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());

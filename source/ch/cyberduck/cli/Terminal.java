@@ -172,8 +172,6 @@ public class Terminal {
         }
         host.setDefaultPath(remote.getParent().getAbsolute());
         final Session session = SessionFactory.create(host);
-//                new CertificateStoreX509TrustManager(),
-//                new CertificateStoreX509KeyManager());
         final TerminalProgressListener listener = new TerminalProgressListener();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
