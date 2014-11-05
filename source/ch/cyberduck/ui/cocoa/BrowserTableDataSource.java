@@ -35,6 +35,7 @@ import ch.cyberduck.core.editor.FSEventWatchEditor;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -72,7 +73,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -568,13 +568,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 for(Path p : pasteboard) {
                     // Drag to application icon in dock.
                     FSEventWatchEditor editor = new FSEventWatchEditor(controller, controller.getSession(), null, p);
-                    try {
-                        // download
-                        editor.watch();
-                    }
-                    catch(IOException e) {
-                        log.error(e.getMessage());
-                    }
+                    editor.open(new DisabledApplicationQuitCallback());
                 }
             }
             else {
