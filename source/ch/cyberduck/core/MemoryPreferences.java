@@ -134,6 +134,7 @@ public class MemoryPreferences extends Preferences {
 
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", Version.getSpecification());
+        defaults.put("application.revision", Version.getImplementation());
     }
 
     @Override
