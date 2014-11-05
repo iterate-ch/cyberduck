@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Find;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
 
 /**
  * @version $Id$
@@ -90,7 +89,7 @@ public class S3FindFeature implements Find {
                                 "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
-                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
+                            session.getClient().getObject(containerService.getContainer(file).getName(),
                                     containerService.getKey(file), null, null, null, null, 0L, 0L);
                             list.add(file);
                             return true;
