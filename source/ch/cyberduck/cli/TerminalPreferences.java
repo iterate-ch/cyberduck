@@ -92,10 +92,15 @@ public class TerminalPreferences extends MemoryPreferences {
     }
 
     @Override
+    protected void setLogging() {
+        defaults.put("logging", "fatal");
+
+        super.setLogging();
+    }
+
+    @Override
     protected void setDefaults() {
         super.setDefaults();
-
-        defaults.put("logging", "fatal");
 
         System.setProperty("jna.library.path", System.getProperty("java.library.path"));
 

@@ -80,6 +80,14 @@ public class MemoryPreferences extends Preferences {
     }
 
     @Override
+    protected void setLogging() {
+        defaults.put("logging.config", "log4j.xml");
+        defaults.put("logging", "error");
+
+        super.setLogging();
+    }
+
+    @Override
     protected void setFactories() {
         super.setFactories();
 
@@ -122,7 +130,6 @@ public class MemoryPreferences extends Preferences {
 
     @Override
     protected void setDefaults() {
-        defaults.put("logging.config", "log4j.xml");
         super.setDefaults();
 
         final String workdir = defaults.get("tmp.dir");

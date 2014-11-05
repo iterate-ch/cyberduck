@@ -82,7 +82,7 @@ import java.util.List;
  * @see ch.cyberduck.ui.cocoa.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends Preferences {
-    private static final Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
 
     private NSUserDefaults store;
 
@@ -185,14 +185,20 @@ public class UserDefaultsPreferences extends Preferences {
     }
 
     @Override
-    protected void setDefaults() {
-        this.setFactories();
+    protected void setLogging() {
         /**
          * The logging level (debug, info, warn, error)
          */
         defaults.put("logging.config", "log4j-cocoa.xml");
+
+        super.setLogging();
+    }
+
+    @Override
+    protected void setDefaults() {
         // Parent defaults
         super.setDefaults();
+
         defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
         final NSBundle bundle = NSBundle.mainBundle();
         if(null != bundle) {

@@ -57,6 +57,7 @@ import java.util.logging.LogManager;
  * @version $Id$
  */
 public abstract class Preferences {
+    private static final Logger log = Logger.getLogger(Preferences.class);
 
     private static Preferences current = null;
 
@@ -81,6 +82,7 @@ public abstract class Preferences {
             if(null == current) {
                 current = PreferencesFactory.get();
                 current.load();
+                current.setLogging();
                 current.setFactories();
                 current.setDefaults();
                 current.post();
@@ -177,9 +179,6 @@ public abstract class Preferences {
      */
     protected void setDefaults() {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
-        defaults.put("logging", "error");
-
-        this.setLogging();
 
         /**
          * How many times the application was launched
@@ -961,7 +960,7 @@ public abstract class Preferences {
     public String getDefault(String property) {
         String value = defaults.get(property);
         if(null == value) {
-            Logger.getLogger(Preferences.class).warn(String.format("No property with key '%s'", property));
+            log.warn(String.format("No property with key '%s'", property));
         }
         return value;
     }

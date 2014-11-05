@@ -225,6 +225,13 @@ namespace Ch.Cyberduck.Ui.Controller
             _settings = Settings.Default.CdSettings ?? new SettingsDictionary();
         }
 
+        protected override void setLogging()
+        {
+            defaults.put("logging.config", "log4j-windows.xml");
+
+            base.setLogging();
+        }
+
         protected override void setDefaults()
         {
             defaults.put("application.name", Application.ProductName);
