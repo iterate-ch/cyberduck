@@ -232,7 +232,7 @@ public class S3SessionTest extends AbstractTestCase {
         assertNull(o.getFeature(Versioning.class));
         assertNull(o.getFeature(AnalyticsProvider.class));
         assertNull(o.getFeature(Lifecycle.class));
-        assertNull(o.getFeature(Location.class));
+        assertNotNull(o.getFeature(Location.class));
         assertNull(o.getFeature(Encryption.class));
         assertNull(o.getFeature(Redundancy.class));
         assertNull(o.getFeature(Logging.class));
