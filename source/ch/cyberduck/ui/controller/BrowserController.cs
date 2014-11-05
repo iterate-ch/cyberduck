@@ -2087,7 +2087,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     editor = EditorFactory.instance().create(this, _session, new Application(exe, null), selected);
                 }
-                editor.open();
+                editor.open(new DisabledApplicationQuitCallback());
             }
         }
 

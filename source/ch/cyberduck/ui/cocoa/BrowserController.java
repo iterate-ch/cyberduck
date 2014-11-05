@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
@@ -216,6 +217,9 @@ public class BrowserController extends WindowController
      */
     private Cache<Path> cache
             = new Cache<Path>();
+
+    private List<Editor> editors
+            = new ArrayList<Editor>();
 
     public BrowserController() {
         this.loadBundle();
@@ -2634,7 +2638,13 @@ public class BrowserController extends WindowController
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = factory.create(this, session,
                     new Application(sender.representedObject()), selected);
-            editor.open();
+            editors.add(editor);
+            editor.open(new ApplicationQuitCallback() {
+                @Override
+                public void callback() {
+                    editors.remove(editor);
+                }
+            });
         }
     }
 
@@ -2643,7 +2653,13 @@ public class BrowserController extends WindowController
         final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = factory.create(this, session, selected);
-            editor.open();
+            editors.add(editor);
+            editor.open(new ApplicationQuitCallback() {
+                @Override
+                public void callback() {
+                    editors.remove(editor);
+                }
+            });
         }
     }
 
@@ -3468,10 +3484,15 @@ public class BrowserController extends WindowController
      * @param disconnected Action to run after disconnected
      */
     private void unmountImpl(final Runnable disconnected) {
+        final List<Editor> list = editors;
         this.disconnect(new Runnable() {
             @Override
             public void run() {
                 session = null;
+                for(Editor e : list) {
+                    e.delete();
+                }
+                list.clear();
                 cache.clear();
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
@@ -3742,12 +3763,13 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
+                final EditorFactory factory = EditorFactory.instance();
                 for(Path s : this.getSelectedPaths()) {
                     if(!this.isEditable(s)) {
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.instance().getEditor(s.getName())) {
+                    if(null == factory.getEditor(s.getName())) {
                         return false;
                     }
                 }
@@ -3937,7 +3959,8 @@ public class BrowserController extends WindowController
                 if(null != selected) {
                     if(this.isEditable(selected)) {
                         // Choose editor for selected file
-                        editor = EditorFactory.instance().getEditor(selected.getName());
+                        final EditorFactory factory = EditorFactory.instance();
+                        editor = factory.getEditor(selected.getName());
                     }
                 }
                 if(null == editor) {

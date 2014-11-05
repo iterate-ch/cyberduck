@@ -24,6 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
 using UploadTargetFinder = ch.cyberduck.ui.browser.UploadTargetFinder;
+using DisabledApplicationQuitCallback = ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -76,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _file.attributes().setSize(0L);
                     Editor editor = EditorFactory.instance().create(BrowserController, BrowserController.Session, _file);
-                    editor.open();
+                    editor.open(new DisabledApplicationQuitCallback());
                 }
                 return true;
             }
