@@ -59,6 +59,7 @@ public abstract class Factory<T> {
         }
     }
 
+
     public static enum Platform {
         osname {
             @Override
@@ -79,6 +80,26 @@ public abstract class Factory<T> {
          */
         public boolean matches(final String regex) {
             return this.toString().matches(regex);
+        }
+
+        public static enum Name {
+            mac,
+            windows,
+            linux,
+            unknown
+        }
+
+        public static Platform.Name getDefault() {
+            if(Factory.Platform.osname.matches(".*Linux.*")) {
+                return Name.linux;
+            }
+            if(Factory.Platform.osname.matches(".*Windows.*")) {
+                return Name.windows;
+            }
+            if(Factory.Platform.osname.matches(".*Mac.*")) {
+                return Name.mac;
+            }
+            return Name.unknown;
         }
     }
 }

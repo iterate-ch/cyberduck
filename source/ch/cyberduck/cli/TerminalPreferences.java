@@ -59,31 +59,33 @@ public class TerminalPreferences extends MemoryPreferences {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
         defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
-        if(Factory.Platform.osname.matches(".*Linux.*")) {
-            defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-            defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
-        }
-        if(Factory.Platform.osname.matches(".*Windows.*")) {
-            defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
-        }
-        if(Factory.Platform.osname.matches(".*Mac.*")) {
-            defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
-            defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
-            defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
-            defaults.put("factory.local.class", FinderLocal.class.getName());
-            defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
-            defaults.put("factory.passwordstore.class", Keychain.class.getName());
-            defaults.put("factory.certificatestore.class", Keychain.class.getName());
-            defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
-            defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
-            defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
-            defaults.put("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
-            if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
-                defaults.put("factory.notification.class", NotificationCenter.class.getName());
-            }
-            defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
-            defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
-            defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
+        switch(Factory.Platform.getDefault()) {
+            case mac:
+                defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
+                defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
+                defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
+                defaults.put("factory.local.class", FinderLocal.class.getName());
+                defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
+                defaults.put("factory.passwordstore.class", Keychain.class.getName());
+                defaults.put("factory.certificatestore.class", Keychain.class.getName());
+                defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
+                defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
+                defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
+                defaults.put("factory.quarantine.class", LaunchServicesQuarantineService.class.getName());
+                if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
+                    defaults.put("factory.notification.class", NotificationCenter.class.getName());
+                }
+                defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
+                defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
+                defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
+                break;
+            case windows:
+                defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+                break;
+            case linux:
+                defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+                defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
+                break;
         }
     }
 
@@ -109,17 +111,19 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("application.receipt.path", settings.getAbsolute());
         defaults.put("application.bookmarks.path", settings.getAbsolute());
 
-        if(Factory.Platform.osname.matches(".*Linux.*")) {
-            defaults.put("local.normalize.prefix", String.valueOf(true));
-        }
-        if(Factory.Platform.osname.matches(".*Windows.*")) {
-            defaults.put("connection.ssl.keystore.type", "Windows-MY");
-            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
-        }
-        if(Factory.Platform.osname.matches(".*Mac.*")) {
-            defaults.put("local.normalize.prefix", String.valueOf(true));
-            defaults.put("connection.ssl.keystore.type", "KeychainStore");
-            defaults.put("connection.ssl.keystore.provider", "Apple");
+        switch(Factory.Platform.getDefault()) {
+            case mac:
+                defaults.put("local.normalize.prefix", String.valueOf(true));
+                defaults.put("connection.ssl.keystore.type", "KeychainStore");
+                defaults.put("connection.ssl.keystore.provider", "Apple");
+                break;
+            case windows:
+                defaults.put("connection.ssl.keystore.type", "Windows-MY");
+                defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+                break;
+            case linux:
+                defaults.put("local.normalize.prefix", String.valueOf(true));
+                break;
         }
 
         defaults.put("queue.download.folder", home.getAbsolute());
