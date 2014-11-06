@@ -143,7 +143,7 @@ public class SyncTransfer extends Transfer {
     @Override
     public void transfer(final Session<?> session, final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status, final ConnectionCallback callback,
-                         final ProgressListener progressListener, StreamListener streamListener) throws BackgroundException {
+                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
