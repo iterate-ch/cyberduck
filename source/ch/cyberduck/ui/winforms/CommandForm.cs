@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override string[] BundleNames
         {
-            get { return new[] {"Command"}; }
+            get { return new[] {"Command", "Localizable"}; }
         }
 
         public string Command
