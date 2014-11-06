@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ namespace Ch.Cyberduck.Core
                     x.For<IDonationView>().Use<DonationForm>();
                     x.For<ITransferView>().Use<TransferForm>();
                     x.For<IProgressView>().Use<TransferControl>();
+                    x.For<ICommandView>().Use<CommandForm>();
 
                     // Singletons
                     x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();

@@ -2623,6 +2623,7 @@ source/ch/cyberduck/ui/controller/BaseController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkModel.cs -text
 source/ch/cyberduck/ui/controller/BrowserController.cs -text
+source/ch/cyberduck/ui/controller/CommandController.cs -text
 source/ch/cyberduck/ui/controller/ConnectionController.cs -text
 source/ch/cyberduck/ui/controller/Controller.cs -text
 source/ch/cyberduck/ui/controller/CreateFileController.cs -text
@@ -2643,6 +2644,7 @@ source/ch/cyberduck/ui/controller/IActivityView.cs -text
 source/ch/cyberduck/ui/controller/IBookmarkManagerView.cs -text
 source/ch/cyberduck/ui/controller/IBookmarkView.cs -text
 source/ch/cyberduck/ui/controller/IBrowserView.cs -text
+source/ch/cyberduck/ui/controller/ICommandView.cs -text
 source/ch/cyberduck/ui/controller/IConnectionView.cs -text
 source/ch/cyberduck/ui/controller/ICreateFilePromptView.cs -text
 source/ch/cyberduck/ui/controller/ICreateSymlinkPromptView.cs -text
@@ -2702,6 +2704,9 @@ source/ch/cyberduck/ui/winforms/BookmarkForm.resx -text
 source/ch/cyberduck/ui/winforms/BrowserForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/BrowserForm.cs -text
 source/ch/cyberduck/ui/winforms/BrowserForm.resx -text
+source/ch/cyberduck/ui/winforms/CommandForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/CommandForm.cs -text
+source/ch/cyberduck/ui/winforms/CommandForm.resx -text
 source/ch/cyberduck/ui/winforms/ConnectionForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/ConnectionForm.cs -text
 source/ch/cyberduck/ui/winforms/ConnectionForm.resx -text

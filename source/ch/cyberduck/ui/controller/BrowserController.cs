@@ -877,9 +877,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                                       String.Empty);
                                                                              }
 
-                                                                             Local file =
-                                                                                 LocalFactory.get(_dropFolder,
-                                                                                                          filename);
+                                                                             Local file = LocalFactory.get(_dropFolder,
+                                                                                                           filename);
                                                                              HostWriterFactory.get().write(host, file);
                                                                          }
                                                                      });
@@ -1314,9 +1313,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateSendCustomCommand()
         {
-            return false;
             return IsMounted() && _session.getFeature(typeof (Command)) != null;
-            //todo implement Send custom command
         }
 
         private bool View_ValidateFolderInside()
@@ -1394,11 +1391,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-
         private void View_SendCustomCommand()
         {
-            //todo implement
-            throw new NotImplementedException();
+            new CommandController(this, _session).View.ShowDialog();
         }
 
         private void View_Search()
@@ -1679,8 +1674,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     new UploadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
-                transfer(new SyncTransfer(_session.getHost(),
-                                          new TransferItem(selected, LocalFactory.get(folder))));
+                transfer(new SyncTransfer(_session.getHost(), new TransferItem(selected, LocalFactory.get(folder))));
             }
         }
 
@@ -1720,9 +1714,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IList<TransferItem> downloads = new List<TransferItem>();
                 foreach (Path file in SelectedPaths)
                 {
-                    downloads.Add(new TransferItem(file,
-                                                   LocalFactory.get(LocalFactory.get(folder),
-                                                                            file.getName())));
+                    downloads.Add(new TransferItem(file, LocalFactory.get(LocalFactory.get(folder), file.getName())));
                 }
                 transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
             }
@@ -1740,8 +1732,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != filename)
             {
                 Path selected = SelectedPath;
-                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.get(filename)),
-                         new List<Path>());
+                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.get(filename)), new List<Path>());
             }
         }
 
@@ -1886,8 +1877,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                      delegate
                                                                          {
                                                                              Download(SelectedPaths,
-                                                                                      LocalFactory.get(
-                                                                                          _dropFolder));
+                                                                                      LocalFactory.get(_dropFolder));
                                                                          });
                                                              })
                                                  });
