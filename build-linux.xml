@@ -69,6 +69,12 @@
         </antcall>
     </target>
 
+    <target name="beta" depends="cli">
+        <antcall target="upload">
+            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/beta/"/>
+        </antcall>
+    </target>
+
     <target name="release" depends="cli">
         <antcall target="upload">
             <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"/>
