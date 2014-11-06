@@ -63,8 +63,8 @@ public class S3LocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
-        if(cache.containsKey(container.getName())) {
-            return new S3Region(cache.get(container.getName()));
+        if(cache.containsRegionForBucketName(container.getName())) {
+            return new S3Region(cache.getRegionForBucketName(container.getName()));
         }
         try {
             final String location = session.getClient().getBucketLocation(container.getName());
