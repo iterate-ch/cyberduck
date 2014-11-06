@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -246,6 +246,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler CleanEvent = delegate { };
         public event VoidHandler OpenEvent = delegate { };
         public event VoidHandler ShowEvent = delegate { };
+        public event VoidHandler TrashEvent = delegate { };
         public event VoidHandler ToggleTranscriptEvent = delegate { };
         public event VoidHandler SelectionChangedEvent = delegate { };
         public event VoidHandler BandwidthChangedEvent = delegate { };
@@ -334,6 +335,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureToolbarMenu(removeToolStripMenuItem, removeToolStripButton, "transfer.toolbar.remove");
             ConfigureToolbarMenu(cleanUpToolStripMenuItem, cleanUptoolStripButton, "transfer.toolbar.cleanup");
             ConfigureToolbarMenu(logToolStripMenuItem, logToolStripButton, "transfer.toolbar.log");
+            ConfigureToolbarMenu(trashToolStripMenuItem, trashToolStripButton, "transfer.toolbar.trash");
             ConfigureToolbarMenu(openToolStripMenuItem, openToolStripButton, "transfer.toolbar.open");
             ConfigureToolbarMenu(showToolStripMenuItem, showToolStripButton, "transfer.toolbar.show");
 
@@ -349,6 +351,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                          () => ValidateCleanEvent());
             Commands.Add(new ToolStripItem[] {logToolStripButton}, null, (sender, args) => ToggleTranscriptEvent(),
                          () => true);
+            Commands.Add(new ToolStripItem[] {trashToolStripButton}, null, (sender, args) => TrashEvent(),
+                         () => ValidateShowEvent());
             Commands.Add(new ToolStripItem[] {openToolStripButton}, null, (sender, args) => OpenEvent(),
                          () => ValidateOpenEvent());
             Commands.Add(new ToolStripItem[] {showToolStripButton}, null, (sender, args) => ShowEvent(),

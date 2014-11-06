@@ -38,6 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,6 +67,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.showToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.logToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.trashToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolbarMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -88,11 +90,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.removeToolStripMenuItem,
             this.cleanUpToolStripMenuItem,
             this.logToolStripMenuItem,
+            this.trashToolStripMenuItem,
             this.toolStripSeparator1,
             this.openToolStripMenuItem,
             this.showToolStripMenuItem});
             this.toolbarMenuStrip.Name = "toolbarMenuStrip";
-            this.toolbarMenuStrip.Size = new System.Drawing.Size(123, 186);
+            this.toolbarMenuStrip.Size = new System.Drawing.Size(123, 208);
             this.toolbarMenuStrip.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.toolbarMenuStrip_Closing);
             this.toolbarMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolbarMenuStrip_ItemClicked);
             // 
@@ -131,6 +134,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
             this.logToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.logToolStripMenuItem.Text = "Log";
+            // 
+            // trashToolStripMenuItem
+            // 
+            this.trashToolStripMenuItem.Name = "trashToolStripMenuItem";
+            this.trashToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.trashToolStripMenuItem.Text = "Trash";
             // 
             // toolStripSeparator1
             // 
@@ -182,7 +191,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Size = new System.Drawing.Size(541, 478);
-            this.splitContainer.SplitterDistance = 327;
+            this.splitContainer.SplitterDistance = 324;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 6;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
@@ -194,7 +203,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(541, 327);
+            this.panel2.Size = new System.Drawing.Size(541, 324);
             this.panel2.TabIndex = 7;
             // 
             // transferListView
@@ -213,15 +222,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transferListView.Location = new System.Drawing.Point(0, 0);
             this.transferListView.Name = "transferListView";
             this.transferListView.RowHeight = 85;
-            this.transferListView.Size = new System.Drawing.Size(541, 283);
+            this.transferListView.Size = new System.Drawing.Size(541, 280);
             this.transferListView.TabIndex = 6;
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
             this.transferListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transferListView_KeyDown);
             this.transferListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.transferListView_KeyPress);
             // 
+            // dummyColumn
+            // 
+            this.dummyColumn.CellPadding = null;
+            // 
             // transferColumn
             // 
+            this.transferColumn.CellPadding = null;
             this.transferColumn.Width = 400;
             // 
             // tableLayoutPanel1
@@ -240,7 +254,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.urlLabel, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 283);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 280);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 5, 5, 0);
             this.tableLayoutPanel1.RowCount = 2;
@@ -341,7 +355,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(541, 146);
+            this.transcriptBox.Size = new System.Drawing.Size(541, 149);
             this.transcriptBox.TabIndex = 1;
             this.transcriptBox.Text = "";
             // 
@@ -358,7 +372,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cleanUptoolStripButton,
             this.showToolStripButton,
             this.openToolStripButton,
-            this.logToolStripButton});
+            this.logToolStripButton,
+            this.trashToolStripButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(541, 54);
@@ -447,6 +462,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.logToolStripButton.Text = "Log";
             this.logToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
+            // trashToolStripButton
+            // 
+            this.trashToolStripButton.AutoToolTip = false;
+            this.trashToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.trash;
+            this.trashToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.trashToolStripButton.Name = "trashToolStripButton";
+            this.trashToolStripButton.Size = new System.Drawing.Size(40, 51);
+            this.trashToolStripButton.Text = "Trash";
+            this.trashToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
             // TransferForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -483,7 +508,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripButton removeToolStripButton;
         private System.Windows.Forms.ToolStripButton showToolStripButton;
         private System.Windows.Forms.ToolStripButton openToolStripButton;
-        private System.Windows.Forms.ToolStripButton logToolStripButton;
+        private System.Windows.Forms.ToolStripButton trashToolStripButton;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -512,5 +537,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private ClickThroughToolStrip toolStrip;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.ToolStripButton logToolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem trashToolStripMenuItem;
     }
 }

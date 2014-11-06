@@ -189,6 +189,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.CleanEvent += View_CleanEvent;
             View.OpenEvent += View_OpenEvent;
             View.ShowEvent += View_ShowEvent;
+            View.TrashEvent += View_TrashEvent;
             View.SelectionChangedEvent += View_SelectionChangedEvent;
             View.BandwidthChangedEvent += View_BandwidthChangedEvent;
             View.QueueSizeChangedEvent += View_QueueSizeChangedEvent;
@@ -200,6 +201,29 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateCleanEvent += View_ValidateCleanEvent;
             View.ValidateOpenEvent += View_ValidateOpenEvent;
             View.ValidateShowEvent += View_ValidateShowEvent;
+        }
+
+        private void View_TrashEvent()
+        {
+            foreach (IProgressView progressView in View.SelectedTransfers)
+            {
+                Transfer transfer = GetTransferFromView(progressView);
+                if (!transfer.isRunning())
+                {
+                    for (int i = 0; i < transfer.getRoots().size(); i++)
+                    {
+                        TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                        try
+                        {
+                            LocalTrashFactory.get().trash(item.local);
+                        }
+                        catch (Exception exception)
+                        {
+                            Log.warn(String.Format("Failure trashing file {0} {1}", item.local, exception.Message));
+                        }
+                    }
+                }
+            }
         }
 
         private void View_TranscriptHeightChangedEvent()
