@@ -1674,7 +1674,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     new UploadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
-                transfer(new SyncTransfer(_session.getHost(), new TransferItem(selected, LocalFactory.get(folder))));
+                Local target = LocalFactory.get(folder);
+                new UploadDirectoryFinder().save(Session.getHost(), target.getParent());
+                transfer(new SyncTransfer(Session.getHost(), new TransferItem(selected, target)));
             }
         }
 
@@ -1692,9 +1694,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == paths) return;
 
             Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
-            List downloads = Utils.ConvertToJavaList(paths, delegate(string path)
+            List uploads = Utils.ConvertToJavaList(paths, delegate(string path)
                 {
                     Local local = LocalFactory.get(path);
+                    new UploadDirectoryFinder().save(Session.getHost(), local.getParent());
                     return
                         new TransferItem(
                             new Path(destination, local.getName(),
@@ -1702,7 +1705,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                          ? EnumSet.of(AbstractPath.Type.directory)
                                          : EnumSet.of(AbstractPath.Type.file)), local);
                 });
-            transfer(new UploadTransfer(Session.getHost(), downloads));
+            transfer(new UploadTransfer(Session.getHost(), uploads));
         }
 
         private void View_DownloadTo()
@@ -1711,10 +1714,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   new DownloadDirectoryFinder().find(Session.getHost()), null);
             if (null != folder)
             {
+                Local target = LocalFactory.get(folder);
+                new DownloadDirectoryFinder().save(Session.getHost(), target);
                 IList<TransferItem> downloads = new List<TransferItem>();
                 foreach (Path file in SelectedPaths)
                 {
-                    downloads.Add(new TransferItem(file, LocalFactory.get(LocalFactory.get(folder), file.getName())));
+                    downloads.Add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
                 transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
             }
@@ -1731,8 +1736,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     SelectedPath.getName());
             if (null != filename)
             {
+                Local target = LocalFactory.get(filename);
                 Path selected = SelectedPath;
-                transfer(new DownloadTransfer(Session.getHost(), selected, LocalFactory.get(filename)), new List<Path>());
+                new DownloadDirectoryFinder().save(Session.getHost(), target.getParent());
+                IList<TransferItem> downloads = new List<TransferItem>();
+                downloads.Add(new TransferItem(selected, target));
+                transfer(new DownloadTransfer(Session.getHost(), Utils.ConvertToJavaList(downloads)), new List<Path>());
             }
         }
 
