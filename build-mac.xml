@@ -47,9 +47,6 @@
     <property name="app.spotlight.executable"
               value="${app.spotlight}/Cyberduck Spotlight Importer.mdimporter/Contents/MacOS/Cyberduck Spotlight Importer"/>
 
-    <property name="apple.appstub"
-              location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
-
     <property name="jvm.runtime.home" value="${lib}/1.7.0-u40-b30.jre"/>
     <property name="jvm.runtime.bundle.home" value="${jvm.runtime.home}/Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="${jvm.runtime.home}/Contents/Home/lib"/>
@@ -140,8 +137,6 @@
         </copy>
         <!-- Copy runtime -->
         <antcall target="copy-runtime"/>
-        <!-- Copy stub for system runtime -->
-        <antcall target="copy-stub"/>
         <!-- Remove architectures -->
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
             <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
@@ -418,24 +413,6 @@
         </condition>
     </target>
 
-    <target name="copy-stub" depends="bundle-runtime-eval" unless="app.runtime.bundle">
-        <echo message="Using stub: ${apple.appstub}"/>
-        <!-- Remove custom runtime -->
-        <delete dir="${app.runtime}"/>
-        <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
-        <!-- fix stub permissions -->
-        <chmod perm="755" type="file">
-            <fileset dir="${app.macos}">
-                <include name="${ant.project.name}"/>
-            </fileset>
-        </chmod>
-        <antcall target="shared-library-install-name">
-            <param name="newname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
-            <param name="oldname" value="${app.runtime.lib}"/>
-        </antcall>
-    </target>
-
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
         <exec dir="${build.deploy}" executable="ditto" spawn="false" failonerror="true">
@@ -534,34 +511,6 @@
             <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/"/>
             <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/"/>
         </antcall>
-    </target>
-
-    <target name="universal" depends="clean, revision">
-        <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
-            <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.compile.target" value="1.6"/>
-        </antcall>
-        <antcall target="codesign">
-            <param name="codesign.options" value="--force"/>
-            <param name="codesign.arg"
-                   value="--requirements ${codesign.requirement}"/>
-            <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
-        </antcall>
-        <antcall target="zip">
-            <param name="zip.filename" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"/>
-        </antcall>
-        <antcall target="confirm"/>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}u.zip.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
     </target>
 
     <target name="mas" depends="clean, revision">
