@@ -20,65 +20,49 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.io.watchservice.ClosedWatchServiceException;
-import ch.cyberduck.core.io.watchservice.FSEventWatchService;
-import ch.cyberduck.core.io.watchservice.WatchEvent;
-import ch.cyberduck.core.io.watchservice.WatchKey;
-import ch.cyberduck.core.io.watchservice.WatchService;
-import ch.cyberduck.core.io.watchservice.WatchableFile;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.watchservice.RegisterWatchService;
 import ch.cyberduck.core.threading.ThreadPool;
-import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
-import static ch.cyberduck.core.io.watchservice.StandardWatchEventKind.*;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * @version $Id$
  */
-public final class FileWatcher implements FileWatcherCallback {
+public final class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
-    private NFCNormalizer normalizer = new NFCNormalizer();
-
-    private WatchService monitor;
+    private RegisterWatchService monitor;
 
     private ThreadPool pool;
 
-    private Set<FileWatcherListener> listeners
-            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
-
-    public FileWatcher() {
-        monitor = new FSEventWatchService();
-        pool = new ThreadPool(1, "watcher");
+    public FileWatcher(final RegisterWatchService monitor) {
+        this.monitor = monitor;
+        this.pool = new ThreadPool(1, "watcher");
     }
 
-    public void addListener(final FileWatcherListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(final FileWatcherListener listener) {
-        listeners.remove(listener);
-    }
-
-    public CountDownLatch register(final Local file) {
-        final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
+    public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
+        // Make sure to canonicalize the watched folder
+        final Path folder = Paths.get(file.getParent().getAbsolute()).toRealPath();
         try {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Register file %s", watchable.getFile()));
+                log.debug(String.format("Register file %s", folder));
             }
-            watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         }
         catch(IOException e) {
-            log.error(String.format("Failure registering file watcher monitor for %s", watchable.getFile()), e);
+            log.error(String.format("Failure registering file watcher monitor for %s", folder), e);
         }
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
@@ -104,17 +88,15 @@ public final class FileWatcher implements FileWatcherCallback {
                             log.info(String.format("Detected file system event %s", kind.name()));
                         }
                         if(kind == OVERFLOW) {
-                            log.error(String.format("Overflow event for %s", watchable.getFile()));
+                            log.error(String.format("Overflow event for %s", folder));
                             break;
                         }
-                        // The filename is the context of the event.
-                        final WatchEvent<File> ev = (WatchEvent<File>) event;
-                        if(normalizer.normalize(event.context().toString())
-                                .equals(new File(file.getAbsolute()).getCanonicalFile().getAbsolutePath())) {
-                            callback(ev);
+                        // The filename is the context of the event. May be absolute or relative path name.
+                        if(matches(LocalFactory.get(event.context().toString()), LocalFactory.get(folder.toString(), file.getName()))) {
+                            callback(event, listener);
                         }
                         else {
-                            log.debug(String.format("Ignored file system event for unknown file %s", event.context()));
+                            log.warn(String.format("Ignored file system event for unknown file %s", event.context()));
                         }
                     }
                     // Reset the key -- this step is critical to receive further watch events.
@@ -129,26 +111,42 @@ public final class FileWatcher implements FileWatcherCallback {
         return lock;
     }
 
-    @Override
-    public void callback(final WatchEvent<File> event) {
+    protected boolean matches(final Local context, final Local file) {
+        if(!Paths.get(context.getAbsolute()).isAbsolute()) {
+            return context.getName().equals(file.getName());
+        }
+        if(context.isSymbolicLink()) {
+            try {
+                return this.matches(context.getSymlinkTarget(), file);
+            }
+            catch(NotfoundException e) {
+                log.warn(String.format("Symbolic link target for %s not found", context));
+            }
+        }
+        if(file.isSymbolicLink()) {
+            try {
+                return this.matches(context, file.getSymlinkTarget());
+            }
+            catch(NotfoundException e) {
+                log.warn(String.format("Symbolic link target for %s not found", file));
+            }
+        }
+        return context.equals(file);
+    }
+
+    private void callback(final WatchEvent<?> event, final FileWatcherListener l) {
         final WatchEvent.Kind<?> kind = event.kind();
         if(log.isInfoEnabled()) {
             log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
         }
         if(ENTRY_MODIFY == kind) {
-            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileWritten(LocalFactory.get(event.context().getAbsolutePath()));
-            }
+            l.fileWritten(LocalFactory.get(event.context().toString()));
         }
         else if(ENTRY_DELETE == kind) {
-            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileDeleted(LocalFactory.get(event.context().getAbsolutePath()));
-            }
+            l.fileDeleted(LocalFactory.get(event.context().toString()));
         }
         else if(ENTRY_CREATE == kind) {
-            for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
-                l.fileCreated(LocalFactory.get(event.context().getAbsolutePath()));
-            }
+            l.fileCreated(LocalFactory.get(event.context().toString()));
         }
         else {
             log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
@@ -159,7 +157,6 @@ public final class FileWatcher implements FileWatcherCallback {
         try {
             monitor.close();
             pool.shutdown();
-            listeners.clear();
         }
         catch(IOException e) {
             log.error(String.format("Failure closing file watcher monitor"), e);

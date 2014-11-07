@@ -1,8 +1,8 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core.io.watchservice;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,21 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
-import java.io.File;
-import java.nio.file.WatchEvent;
+import ch.cyberduck.core.Factory;
 
 /**
  * @version $Id$
  */
-public interface FileWatcherCallback {
+public class WatchServiceFactory extends Factory<RegisterWatchService> {
 
-    void callback(WatchEvent<File> event);
+    protected WatchServiceFactory() {
+        super("factory.watchservice.class");
+    }
+
+    public static RegisterWatchService get() {
+        return new WatchServiceFactory().create();
+    }
 }

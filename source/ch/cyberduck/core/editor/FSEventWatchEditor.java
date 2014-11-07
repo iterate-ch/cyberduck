@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.ui.Controller;
@@ -37,7 +38,8 @@ import java.io.IOException;
 public class FSEventWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
-    private FileWatcher monitor = new FileWatcher();
+    private FileWatcher monitor
+            = new FileWatcher(new FSEventWatchService());
 
     /**
      * With custom editor for file type.
@@ -53,12 +55,11 @@ public class FSEventWatchEditor extends BrowserBackgroundEditor {
 
     public void watch(final Local local) throws IOException {
         try {
-            monitor.register(local).await();
+            monitor.register(local, new DefaultEditorListener(this)).await();
         }
         catch(InterruptedException e) {
             throw new IOException(String.format("Failure monitoring file %s", local), e);
         }
-        monitor.addListener(new DefaultEditorListener(this));
     }
 
     @Override

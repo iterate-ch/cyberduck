@@ -21,23 +21,15 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncher;
-import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.concurrent.Callable;
 
 /**
  * @version $Id$
@@ -45,10 +37,8 @@ import java.util.concurrent.Callable;
 public class DefaultWatchEditor extends BrowserBackgroundEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
-    private WatchService monitor;
-
-    private ThreadPool pool
-            = new ThreadPool(1, "watcher");
+    private FileWatcher monitor
+            = new FileWatcher(new NIOEventWatchService());
 
     public DefaultWatchEditor(final Controller controller,
                               final Session session,
@@ -65,74 +55,13 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
         super(controller, session, launcher, application, path);
     }
 
-    @Override
-    protected void watch(final Local local) throws IOException {
-        final FileSystem fs = FileSystems.getDefault();
-        monitor = fs.newWatchService();
-        final java.nio.file.Path watchable = fs.getPath(local.getParent().getAbsolute());
-        final WatchKey key = watchable.register(monitor,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Registered for events for %s", key));
+    public void watch(final Local local) throws IOException {
+        try {
+            monitor.register(local, new DefaultEditorListener(this)).await();
         }
-        pool.execute(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws IOException {
-                while(true) {
-                    // wait for key to be signaled
-                    WatchKey key;
-                    try {
-                        key = monitor.take();
-                    }
-                    catch(ClosedWatchServiceException e) {
-                        // If this watch service is closed
-                        return true;
-                    }
-                    catch(InterruptedException e) {
-                        return false;
-                    }
-                    for(WatchEvent<?> event : key.pollEvents()) {
-                        final WatchEvent.Kind<?> kind = event.kind();
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Detected file system event %s", kind.name()));
-                        }
-                        if(kind == StandardWatchEventKinds.OVERFLOW) {
-                            log.error(String.format("Overflow event for %s", watchable));
-                            break;
-                        }
-                        // The filename is the context of the event.
-                        if(event.context().equals((watchable.relativize(Paths.get(local.getAbsolute()))))) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
-                            }
-                            if(StandardWatchEventKinds.ENTRY_MODIFY == kind) {
-                                save();
-                            }
-                            else if(StandardWatchEventKinds.ENTRY_DELETE == kind) {
-                                delete();
-                            }
-                            else if(StandardWatchEventKinds.ENTRY_CREATE == kind) {
-                                save();
-                            }
-                            else {
-                                log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));
-                            }
-                        }
-                        else {
-                            log.debug(String.format("Ignored file system event for unknown file %s", event.context()));
-                        }
-                    }
-                    // Reset the key -- this step is critical to receive further watch events.
-                    boolean valid = key.reset();
-                    if(!valid) {
-                        // The key is no longer valid and the loop can exit.
-                        return true;
-                    }
-                }
-            }
-        });
+        catch(InterruptedException e) {
+            throw new IOException(String.format("Failure monitoring file %s", local), e);
+        }
     }
 
     @Override
@@ -140,12 +69,7 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close monitor %s", monitor));
         }
-        try {
-            monitor.close();
-        }
-        catch(IOException e) {
-            log.warn(String.format("Failure closing monitor %s", e.getMessage()));
-        }
+        monitor.close();
         super.delete();
     }
 }

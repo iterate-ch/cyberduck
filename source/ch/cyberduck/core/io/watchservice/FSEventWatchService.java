@@ -1,5 +1,23 @@
 package ch.cyberduck.core.io.watchservice;
 
+/*
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
+ */
+
 import ch.cyberduck.core.io.watchservice.jna.CFIndex;
 import ch.cyberduck.core.io.watchservice.jna.CFRunLoopRef;
 import ch.cyberduck.core.io.watchservice.jna.CFStringRef;
@@ -11,6 +29,10 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.Watchable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,26 +80,27 @@ public class FSEventWatchService extends AbstractWatchService {
     private static final int kFSEventStreamCreateFlagFileEvents = 0x00000010;
 
     @Override
-    public WatchKey register(final WatchableFile file,
-                             final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers)
+    public WatchKey register(final Watchable file,
+                             final WatchEvent.Kind<?>[] events,
+                             final WatchEvent.Modifier... modifiers)
             throws IOException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Register file %s for events %s", file, Arrays.toString(events)));
         }
         final Pointer[] values = {
-                CFStringRef.toCFString(file.getFile().getCanonicalPath()).getPointer()};
+                CFStringRef.toCFString(file.toString()).getPointer()};
 
-        final MacOSXWatchKey key = new MacOSXWatchKey(this, events);
+        final MacOSXWatchKey key = new MacOSXWatchKey(file, this, events);
 
         final double latency = 1.0; // Latency in seconds
 
-        final Map<File, Long> timestamps = createLastModifiedMap(file.getFile());
+        final Map<File, Long> timestamps = createLastModifiedMap(new File(file.toString()));
         final FSEvents.FSEventStreamCallback callback = new Callback(key, timestamps);
         final FSEventStreamRef stream = library.FSEventStreamCreate(
                 Pointer.NULL, callback, Pointer.NULL,
                 library.CFArrayCreate(null, values, CFIndex.valueOf(1), null),
                 -1, latency,
-                kFSEventStreamCreateFlagNoDefer | kFSEventStreamCreateFlagIgnoreSelf);
+                kFSEventStreamCreateFlagNoDefer);
         final CFRunLoop thread = new CFRunLoop(stream);
         loops.put(key, thread);
         callbacks.put(key, callback);
@@ -150,7 +173,7 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
     @Override
-    protected void release() throws IOException {
+    public void release() throws IOException {
         for(CFRunLoop l : loops.values()) {
             // Tells the daemon to stop sending events
             library.FSEventStreamStop(l.getStreamRef());
@@ -167,25 +190,28 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
     private final class MacOSXWatchKey extends AbstractWatchKey {
+        private final Watchable file;
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
         private final boolean reportCreateEvents;
         private final boolean reportModifyEvents;
         private final boolean reportDeleteEvents;
 
-        public MacOSXWatchKey(final FSEventWatchService service, final WatchEvent.Kind<?>[] events) {
+        public MacOSXWatchKey(final Watchable file, final FSEventWatchService service, final WatchEvent.Kind<?>[] events) {
             super(service);
+            this.file = file;
+
             boolean reportCreateEvents = false;
             boolean reportModifyEvents = false;
             boolean reportDeleteEvents = false;
 
             for(WatchEvent.Kind<?> event : events) {
-                if(event == StandardWatchEventKind.ENTRY_CREATE) {
+                if(event == StandardWatchEventKinds.ENTRY_CREATE) {
                     reportCreateEvents = true;
                 }
-                else if(event == StandardWatchEventKind.ENTRY_MODIFY) {
+                else if(event == StandardWatchEventKinds.ENTRY_MODIFY) {
                     reportModifyEvents = true;
                 }
-                else if(event == StandardWatchEventKind.ENTRY_DELETE) {
+                else if(event == StandardWatchEventKinds.ENTRY_DELETE) {
                     reportDeleteEvents = true;
                 }
             }
@@ -206,6 +232,11 @@ public class FSEventWatchService extends AbstractWatchService {
         @Override
         public void cancel() {
             cancelled.set(true);
+        }
+
+        @Override
+        public Watchable watchable() {
+            return file;
         }
 
         public boolean isReportCreateEvents() {
@@ -237,21 +268,21 @@ public class FSEventWatchService extends AbstractWatchService {
                 final Set<File> filesOnDisk = recursiveListFiles(new File(folder));
                 for(File file : findCreatedFiles(filesOnDisk)) {
                     if(key.isReportCreateEvents()) {
-                        key.signalEvent(StandardWatchEventKind.ENTRY_CREATE, file);
+                        key.signalEvent(StandardWatchEventKinds.ENTRY_CREATE, file);
                     }
                     timestamps.put(file, file.lastModified());
                 }
 
                 for(File file : findModifiedFiles(filesOnDisk)) {
                     if(key.isReportModifyEvents()) {
-                        key.signalEvent(StandardWatchEventKind.ENTRY_MODIFY, file);
+                        key.signalEvent(StandardWatchEventKinds.ENTRY_MODIFY, file);
                     }
                     timestamps.put(file, file.lastModified());
                 }
 
                 for(File file : findDeletedFiles(folder, filesOnDisk)) {
                     if(key.isReportDeleteEvents()) {
-                        key.signalEvent(StandardWatchEventKind.ENTRY_DELETE, file);
+                        key.signalEvent(StandardWatchEventKinds.ENTRY_DELETE, file);
                     }
                     timestamps.remove(file);
                 }

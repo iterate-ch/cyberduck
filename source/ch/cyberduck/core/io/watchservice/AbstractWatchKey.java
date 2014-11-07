@@ -1,30 +1,26 @@
-/*
- * Copyright 2008-2009 Sun Microsystems, Inc.  All Rights Reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
- */
-
 package ch.cyberduck.core.io.watchservice;
 
+/*
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
+ */
+
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +51,7 @@ abstract class AbstractWatchKey implements WatchKey {
     // pending events
     private List<WatchEvent<?>> events;
 
-    protected AbstractWatchKey(AbstractWatchService watcher) {
+    protected AbstractWatchKey(final AbstractWatchService watcher) {
         this.watcher = watcher;
         this.state = State.READY;
         this.events = new ArrayList<WatchEvent<?>>();
@@ -90,7 +86,7 @@ abstract class AbstractWatchKey implements WatchKey {
             if(size > 1) {
                 // don't let list get too big
                 if(size >= MAX_EVENT_LIST_SIZE) {
-                    kind = StandardWatchEventKind.OVERFLOW;
+                    kind = StandardWatchEventKinds.OVERFLOW;
                     context = null;
                 }
 
@@ -145,7 +141,7 @@ abstract class AbstractWatchKey implements WatchKey {
     /**
      * WatchEvent implementation
      */
-    private static class Event<T> extends WatchEvent<T> {
+    private static class Event<T> implements WatchEvent<T> {
         private final WatchEvent.Kind<T> kind;
         private final T context;
 

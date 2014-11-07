@@ -1,31 +1,27 @@
-/*
- * Copyright 2008-2009 Sun Microsystems, Inc.  All Rights Reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Sun designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Sun in the LICENSE file that accompanied this code.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
- * CA 95054 USA or visit www.sun.com if you need additional information or
- * have any questions.
- */
-
 package ch.cyberduck.core.io.watchservice;
 
+/*
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
+ */
+
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.WatchKey;
+import java.nio.file.Watchable;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Base implementation class for watch services.
  */
 
-abstract class AbstractWatchService implements WatchService {
+public abstract class AbstractWatchService implements RegisterWatchService {
 
     // signaled keys waiting to be dequeued
     private final LinkedBlockingDeque<WatchKey> pendingKeys =
@@ -48,6 +44,11 @@ abstract class AbstractWatchService implements WatchService {
 
         @Override
         public void cancel() {
+        }
+
+        @Override
+        public Watchable watchable() {
+            return null;
         }
     };
 
@@ -88,7 +89,7 @@ abstract class AbstractWatchService implements WatchService {
     @Override
     public final WatchKey poll() {
         checkOpen();
-        WatchKey key = (WatchKey) pendingKeys.poll();
+        WatchKey key = pendingKeys.poll();
         checkKey(key);
         return key;
     }
@@ -96,7 +97,7 @@ abstract class AbstractWatchService implements WatchService {
     @Override
     public final WatchKey poll(long timeout, TimeUnit unit) throws InterruptedException {
         checkOpen();
-        WatchKey key = (WatchKey) pendingKeys.poll(timeout, unit);
+        WatchKey key = pendingKeys.poll(timeout, unit);
         checkKey(key);
         return key;
     }
@@ -104,7 +105,7 @@ abstract class AbstractWatchService implements WatchService {
     @Override
     public final WatchKey take() throws InterruptedException {
         checkOpen();
-        WatchKey key = (WatchKey) pendingKeys.take();
+        WatchKey key = pendingKeys.take();
         checkKey(key);
         return key;
     }
@@ -122,12 +123,6 @@ abstract class AbstractWatchService implements WatchService {
     final Object closeLock() {
         return closeLock;
     }
-
-    /**
-     * Closes this watch service. This method is invoked by the close
-     * method to perform the actual work of closing the watch service.
-     */
-    abstract void release() throws IOException;
 
     @Override
     public final void close() throws IOException {

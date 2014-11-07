@@ -2,7 +2,7 @@ package ch.cyberduck.core.io.watchservice;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@ package ch.cyberduck.core.io.watchservice;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.AbstractTestCase;
@@ -28,38 +29,20 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.Watchable;
 import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-public class FSEventWatchServiceTest extends AbstractTestCase {
-
-    @Test
-    public void testRegister() throws Exception {
-        final FSEventWatchService fs = new FSEventWatchService();
-        final Watchable file = Paths.get(
-                File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
-        final WatchKey key = fs.register(file, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
-        while(!key.isValid()) {
-            Thread.sleep(1000);
-        }
-        assertTrue(key.isValid());
-        fs.close();
-        assertFalse(key.isValid());
-    }
+public class NIOEventWatchServiceTest extends AbstractTestCase {
 
     @Test
-    public void testListenerFSEventWatchService() throws Exception {
-        final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
+    public void testListenerEventWatchService() throws Exception {
+        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
 //        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
         final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/fé", UUID.randomUUID().toString());
         final CyclicBarrier create = new CyclicBarrier(2);
