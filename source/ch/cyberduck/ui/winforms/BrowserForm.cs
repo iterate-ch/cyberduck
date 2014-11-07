@@ -1462,6 +1462,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             m.Tag = transfersToolbarMenuItem;
             customizeToolbarMainMenuItem.MenuItems.Add(m);
 
+            logToolStripMenuItem1.CheckOnClick = true;
+            h = delegate
+                {
+                    logToolbarMenuItem.Checked = !logToolbarMenuItem.Checked;
+                    logToolStripButton.Visible = !logToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty("browser.toolbar.log", logToolStripButton.Visible);
+                };
+            logToolStripMenuItem1.Click += h;
+            logToolbarMenuItem.Click += h;
+            m = new MenuItem(logToolbarMenuItem.Text, h);
+            m.Tag = logToolbarMenuItem;
+            customizeToolbarMainMenuItem.MenuItems.Add(m);
+
             bool b1 =
                 openConnectionToolStripButton.Visible =
                 Preferences.instance().getBoolean("browser.toolbar.openconnection");
@@ -1484,6 +1498,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bool b11 = downloadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.download");
             bool b12 = uploadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.upload");
             bool b13 = transfersToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.transfers");
+            bool b14 = logToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.log");
 
             // update menu entries
             openConnectionToolStripMenuItem1.Checked = b1;
@@ -1499,6 +1514,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             downloadToolStripMenuItem1.Checked = b11;
             uploadToolStripMenuItem1.Checked = b12;
             transfersToolStripMenuItem1.Checked = b13;
+            logToolStripMenuItem1.Checked = b14;
 
             openConnectionToolbarMenuItem.Checked = b1;
             quickConnectToolbarMenuItem.Checked = b2;
@@ -1513,6 +1529,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             downloadToolbarMenuItem.Checked = b11;
             uploadToolbarMenuItem.Checked = b12;
             transfersToolbarMenuItem.Checked = b13;
+            logToolbarMenuItem.Checked = b14;
 
             UpdateSeparators();
         }
@@ -1565,7 +1582,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn,
                                            OLVColumn activeColumn)
-        {            
+        {
             l.ShowGroups = false;
             l.UseOverlays = false;
             l.OwnerDraw = true;
@@ -1575,7 +1592,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             l.HideSelection = false;
             l.AllowDrop = true;
             l.DropSink = new HostDropSink(this);
-            l.DragSource = new HostDragSource(this);            
+            l.DragSource = new HostDragSource(this);
 
             int size = Preferences.instance().getInteger("bookmark.icon.size");
             AbstractBookmarkRenderer previous = (AbstractBookmarkRenderer) descColumn.Renderer;
@@ -1607,7 +1624,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     imageColumn.Width = 90;
                     f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
                     break;
-            }            
+            }
             r.NicknameFont = new Font(f, FontStyle.Bold);
             r.HostnameFont = f;
             r.UrlFont = f;
@@ -1617,7 +1634,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             descColumn.Renderer = r;
             descColumn.FillsFreeSpace = true;
 
-            
+
             imageColumn.TextAlign = HorizontalAlignment.Center;
             imageColumn.CellVerticalAlignment = StringAlignment.Center;
             imageColumn.Renderer = new FixedImageRenderer();
@@ -1649,8 +1666,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //direct commands
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
                          (sender, args) =>
-                         ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")),
-                         () => true);
+                         ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                          (sender, args) =>
                          BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help")),
@@ -1661,13 +1677,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                          (sender, args) =>
-                         BrowserLauncherFactory.get().open(String.Format(Preferences.instance().getProperty("website.bug"), Preferences.instance().getProperty("application.version"))),
+                         BrowserLauncherFactory.get()
+                                               .open(String.Format(Preferences.instance().getProperty("website.bug"),
+                                                                   Preferences.instance()
+                                                                              .getProperty("application.version"))),
                          () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                          (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
-                         (sender, args) =>
-                         ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
+                         (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")),
+                         () => true);
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
                          (sender, args) => UpdateController.Instance.ForceCheckForUpdates(false), () => true);
         }
@@ -1714,8 +1733,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => ShowHiddenFiles(), () => true);
             Commands.Add(new ToolStripItem[] {textEncodingToolStripMenuItem}, new[] {textEncodingMainMenuItem}, null,
                          () => ValidateTextEncoding());
-            Commands.Add(new ToolStripItem[] {toggleLogDrawerToolStripMenuItem}, new[] {toggleLogDrawerMainMenuItem},
-                         (sender, args) => ToggleLogDrawer(), () => true);
+            Commands.Add(new ToolStripItem[] {toggleLogDrawerToolStripMenuItem, logToolStripButton},
+                         new[] {toggleLogDrawerMainMenuItem}, (sender, args) => ToggleLogDrawer(), () => true);
         }
 
         private void ConfigureWindowCommands()
