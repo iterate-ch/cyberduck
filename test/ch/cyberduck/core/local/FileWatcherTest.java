@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -25,6 +26,16 @@ public class FileWatcherTest extends AbstractTestCase {
         assertTrue(
                 new FileWatcher(new DisabledWatchService()).matches(
                         new Local("/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"),
+                        new Local("/private/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"))
+        );
+        assertFalse(
+                new FileWatcher(new DisabledWatchService()).matches(
+                        new Local("/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"),
+                        new Local("/private/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/d/edit.html"))
+        );
+        assertFalse(
+                new FileWatcher(new DisabledWatchService()).matches(
+                        new Local("/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/d/edit.html"),
                         new Local("/private/var/folders/cl/622z57616532npsw3xs1ndyc0000gp/T/1022b1a9-c21c-4a79-9162-59990c75aaa8/usr/home/dkocher/sandbox/edit.html"))
         );
         assertTrue(
