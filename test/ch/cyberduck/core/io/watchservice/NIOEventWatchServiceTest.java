@@ -20,6 +20,7 @@ package ch.cyberduck.core.io.watchservice;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.FinderLocal;
@@ -35,15 +36,22 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class NIOEventWatchServiceTest extends AbstractTestCase {
+
+    @Test(expected = IOException.class)
+    public void testNotfound() throws Exception {
+        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
+        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
+        assertFalse(file.exists());
+        watcher.register(file, new DisabledFileWatcherListener());
+    }
 
     @Test
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
-//        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
+//        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
         final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/fé", UUID.randomUUID().toString());
         final CyclicBarrier create = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
@@ -102,8 +110,8 @@ public class NIOEventWatchServiceTest extends AbstractTestCase {
                 }
             }
         };
-        watcher.register(file, listener).await(1, TimeUnit.SECONDS);
         LocalTouchFactory.get().touch(file);
+        watcher.register(file, listener).await(1, TimeUnit.SECONDS);
         create.await();
         file.delete();
         delete.await();

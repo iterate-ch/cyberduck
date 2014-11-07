@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -30,9 +31,22 @@ import ch.cyberduck.ui.AbstractController;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
+import java.util.UUID;
 
 public class DefaultWatchEditorTest {
+
+    @Test(expected = NoSuchFileException.class)
+    public void testNotfound() throws Exception {
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                //
+            }
+        }, new NullSession(new Host("h")), new WorkspaceApplicationLauncher(), null, new Path("/remote", EnumSet.of(Path.Type.file)));
+        editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()));
+    }
 
     @Test(expected = IOException.class)
     public void testEditNullApplicationNoFile() throws Exception {
