@@ -20,7 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.watchservice.RegisterWatchService;
 import ch.cyberduck.core.threading.ThreadPool;
 
@@ -111,27 +110,20 @@ public final class FileWatcher {
         return lock;
     }
 
+    protected Local normalize(final Local file) {
+        try {
+            return LocalFactory.get(Paths.get(file.getAbsolute()).toRealPath().toString());
+        }
+        catch(IOException e) {
+            return file;
+        }
+    }
+
     protected boolean matches(final Local context, final Local file) {
         if(!Paths.get(context.getAbsolute()).isAbsolute()) {
             return context.getName().equals(file.getName());
         }
-        if(context.isSymbolicLink()) {
-            try {
-                return this.matches(context.getSymlinkTarget(), file);
-            }
-            catch(NotfoundException e) {
-                log.warn(String.format("Symbolic link target for %s not found", context));
-            }
-        }
-        if(file.isSymbolicLink()) {
-            try {
-                return this.matches(context, file.getSymlinkTarget());
-            }
-            catch(NotfoundException e) {
-                log.warn(String.format("Symbolic link target for %s not found", file));
-            }
-        }
-        return context.equals(file);
+        return this.normalize(context).equals(this.normalize(file));
     }
 
     private void callback(final WatchEvent<?> event, final FileWatcherListener l) {
