@@ -114,13 +114,14 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status,
+                      final ProgressListener listener) {
         //
     }
 
     @Override
     public void complete(final Path source, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                         final TransferStatus status, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }

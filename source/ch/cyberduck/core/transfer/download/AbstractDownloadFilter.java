@@ -155,7 +155,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status,
+                      final ProgressListener listener) throws BackgroundException {
         if(file.isFile()) {
             // No icon update if disabled
             if(options.icon) {

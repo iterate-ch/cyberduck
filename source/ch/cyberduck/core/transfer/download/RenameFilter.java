@@ -69,7 +69,7 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
         if(local.exists()) {
             // Set renamed target
             status.rename(status.getRename().local);

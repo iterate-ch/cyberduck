@@ -60,7 +60,8 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+    public void apply(final Path file, final Local local, final TransferStatus status,
+                      final ProgressListener listener) throws BackgroundException {
         if(!options.temporary || local.isDirectory()) {
             // Rename existing file before putting new file in place
             if(status.isExists()) {
