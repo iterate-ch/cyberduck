@@ -60,4 +60,9 @@ public class LocalTest extends AbstractTestCase {
         assertFalse(new Local("/private/tmp").isSymbolicLink());
         assertFalse(new Local("/t").isSymbolicLink());
     }
+
+    @Test
+    public void testGetSymlinkTarget() throws Exception {
+        assertEquals(new Local("/private/tmp"), new Local("/tmp").getSymlinkTarget());
+    }
 }

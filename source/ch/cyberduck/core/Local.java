@@ -133,25 +133,27 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * Checks whether a given file is a symbolic link.
-     * <p/>
-     * <p>It doesn't really test for symbolic links but whether the
-     * canonical and absolute paths of the file are identical - this
-     * may lead to false positives on some platforms.</p>
      *
      * @return true if the file is a symbolic link.
      */
     public boolean isSymbolicLink() {
-        if(!this.exists()) {
+        try {
+            return !this.equals(this.getSymlinkTarget());
+        }
+        catch(NotfoundException e) {
             return false;
         }
-        // For a link that actually points to something (either a file or a directory),
-        // the absolute path is the path through the link, whereas the canonical path
-        // is the path the link references.
+    }
+
+    public Local getSymlinkTarget() throws NotfoundException {
         try {
-            return !this.getAbsolute().equals(Paths.get(this.getAbsolute()).toRealPath().toString());
+            // For a link that actually points to something (either a file or a directory),
+            // the absolute path is the path through the link, whereas the canonical path
+            // is the path the link references.
+            return LocalFactory.get(Paths.get(this.getAbsolute()).toRealPath().toString());
         }
         catch(IOException e) {
-            return false;
+            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
         }
     }
 
@@ -259,15 +261,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      */
     public String getAbbreviatedPath() {
         return new TildeExpander().abbreviate(path);
-    }
-
-    public Local getSymlinkTarget() throws NotfoundException {
-        try {
-            return LocalFactory.get(this, new File(path).getCanonicalPath());
-        }
-        catch(IOException e) {
-            throw new NotfoundException(String.format("Resolving symlink target for %s failed", path), e);
-        }
     }
 
     /**
