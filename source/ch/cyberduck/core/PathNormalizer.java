@@ -17,12 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-
-import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -138,10 +138,7 @@ public final class PathNormalizer {
             }
         }
         if(Preferences.instance().getBoolean("path.normalize.unicode")) {
-            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
-                // Canonical decomposition followed by canonical composition (default)
-                normalized = Normalizer.normalize(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2);
-            }
+            return new NFCNormalizer().normalize(normalized);
         }
         // Return the normalized path that we have completed
         return normalized;
