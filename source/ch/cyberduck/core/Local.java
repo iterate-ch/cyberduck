@@ -40,6 +40,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 
 /**
@@ -131,10 +132,27 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
+     * Checks whether a given file is a symbolic link.
+     * <p/>
+     * <p>It doesn't really test for symbolic links but whether the
+     * canonical and absolute paths of the file are identical - this
+     * may lead to false positives on some platforms.</p>
+     *
      * @return true if the file is a symbolic link.
      */
     public boolean isSymbolicLink() {
-        return false;
+        if(!this.exists()) {
+            return false;
+        }
+        // For a link that actually points to something (either a file or a directory),
+        // the absolute path is the path through the link, whereas the canonical path
+        // is the path the link references.
+        try {
+            return !this.getAbsolute().equals(Paths.get(this.getAbsolute()).toRealPath().toString());
+        }
+        catch(IOException e) {
+            return false;
+        }
     }
 
     public LocalAttributes attributes() {

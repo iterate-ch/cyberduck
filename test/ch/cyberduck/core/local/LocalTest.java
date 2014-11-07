@@ -53,4 +53,11 @@ public class LocalTest extends AbstractTestCase {
         assertNotNull(l.attributes());
         assertSame(l.attributes(), l.attributes());
     }
+
+    @Test
+    public void testSymbolicLink() throws Exception {
+        assertTrue(new Local("/tmp").isSymbolicLink());
+        assertFalse(new Local("/private/tmp").isSymbolicLink());
+        assertFalse(new Local("/t").isSymbolicLink());
+    }
 }
