@@ -50,7 +50,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
                         properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))), container);
     }
 
-    protected void delete(final Host host, final Path container) throws ch.cyberduck.core.exception.BackgroundException {
+    protected void delete(final Host host, final Path container) throws Exception {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -61,6 +61,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test1));
         assertTrue(new SwiftFindFeature(session).find(test2));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new DisabledProgressListener());
+        Thread.sleep(1000);
         assertFalse(new SwiftFindFeature(session).find(test1));
         assertFalse(new SwiftFindFeature(session).find(test2));
         session.close();
