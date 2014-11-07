@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -49,6 +50,7 @@ public class NIOEventWatchServiceTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
 //        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
