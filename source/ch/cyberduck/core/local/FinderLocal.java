@@ -20,7 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -225,7 +224,7 @@ public class FinderLocal extends Local {
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;
             while(((next = i.nextObject()) != null)) {
-                children.add(LocalFactory.get(this, next.toString()));
+                children.add(new FinderLocal(this, next.toString()));
             }
             return children;
         }
@@ -259,7 +258,7 @@ public class FinderLocal extends Local {
             final NSError f = error.getValueAs(NSError.class);
             throw new NotfoundException(String.format("%s", f.localizedDescription()));
         }
-        return LocalFactory.get(this.getParent(), destination);
+        return new FinderLocal(this.getParent(), destination);
     }
 
     @Override
