@@ -115,6 +115,7 @@ public final class FileWatcher {
             return LocalFactory.get(Paths.get(file.getAbsolute()).toRealPath().toString());
         }
         catch(IOException e) {
+            log.warn(String.format("Failure getting real path for file %s", file));
             return file;
         }
     }
