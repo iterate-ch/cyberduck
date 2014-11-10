@@ -25,10 +25,11 @@ import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.concurrent.Callable;
@@ -53,16 +54,14 @@ public final class FileWatcher {
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
         // Make sure to canonicalize the watched folder
-        final Path folder = Paths.get(file.getParent().getAbsolute()).toRealPath();
-        try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Register file %s", folder));
-            }
-            monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        if(!file.exists()) {
+            throw new FileNotFoundException();
         }
-        catch(IOException e) {
-            log.error(String.format("Failure registering file watcher monitor for %s", folder), e);
+        final Path folder = new File(file.getParent().getAbsolute()).getCanonicalFile().toPath();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Register file %s", folder));
         }
+        monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
             @Override
@@ -112,7 +111,7 @@ public final class FileWatcher {
 
     protected Local normalize(final Local file) {
         try {
-            return LocalFactory.get(Paths.get(file.getAbsolute()).toRealPath().toString());
+            return LocalFactory.get(new File(file.getAbsolute()).getCanonicalPath());
         }
         catch(IOException e) {
             log.warn(String.format("Failure getting real path for file %s", file));
@@ -121,7 +120,7 @@ public final class FileWatcher {
     }
 
     protected boolean matches(final Local context, final Local file) {
-        if(!Paths.get(context.getAbsolute()).isAbsolute()) {
+        if(!new File(context.getAbsolute()).isAbsolute()) {
             return context.getName().equals(file.getName());
         }
         return this.normalize(context).equals(this.normalize(file));
