@@ -61,7 +61,10 @@ public final class FileWatcher {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register folder %s watching for file %s", folder, file));
         }
-        monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        final WatchKey key = monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        if(!key.isValid()) {
+            throw new IOException(String.format("Failure registering for events in %s", file));
+        }
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
             @Override
