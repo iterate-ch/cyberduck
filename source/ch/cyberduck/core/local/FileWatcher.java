@@ -71,6 +71,9 @@ public final class FileWatcher {
                     WatchKey key;
                     try {
                         lock.countDown();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Wait for key from watch service %s", monitor));
+                        }
                         key = monitor.take();
                     }
                     catch(ClosedWatchServiceException e) {
@@ -79,6 +82,9 @@ public final class FileWatcher {
                     }
                     catch(InterruptedException e) {
                         return false;
+                    }
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Retrieved key %s from watch service %s", key, monitor));
                     }
                     for(WatchEvent<?> event : key.pollEvents()) {
                         final WatchEvent.Kind<?> kind = event.kind();
