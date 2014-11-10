@@ -8,11 +8,16 @@ Changelog. Last modified: $Date$
 - [Feature] Customizable bookmark icon size (Windows) (#6444)
 - [Feature] Add support for buckets in region eu-central-1 (Frankfurt) (S3) (#8302)
 - [Feature] Support authentication signature version AWS4-HMAC-SHA256 (S3) (#8302)
-- [Bugfix] Interoperability with SSH Tectia Server (#8166)
+- [Feature] Improved error reporting on connection failures
+- [Feature] Verify MD5 checksum for multipart uploads (S3)
+- [Bugfix] Connecting using authentication with SSH agent (SFTP)
+- [Bugfix] Interoperability with SSH Tectia Server (SFTP) (#8166)
 - [Bugfix] Interoperability with Eucalyptus Object Storage (S3) (#8216)
 - [Bugfix] Reconnect on disconnect (#8205)
 - [Bugfix] Remember last selected directory per bookmark in upload and save panel (#8242)
 - [Bugfix] Edited file with unicode character in parent path does not upload on save (#8244) (Mac)
+- [Bugfix] Repeat failed networking tasks by default (#8237)
+- [Bugfix] Allow connecting to accounts with a multitude of containers (OpenStack Swift) (#8198)
 
 4.5.2 [https://trac.cyberduck.io/milestone/4.5.2]
 - [Feature] Network diagnose option in connection failure alert (Windows)
