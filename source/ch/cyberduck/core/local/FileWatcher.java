@@ -59,7 +59,7 @@ public final class FileWatcher {
         }
         final Path folder = new File(file.getParent().getAbsolute()).getCanonicalFile().toPath();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Register file %s", folder));
+            log.debug(String.format("Register folder %s watching for file %s", folder, file));
         }
         monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         final CountDownLatch lock = new CountDownLatch(1);
@@ -68,7 +68,7 @@ public final class FileWatcher {
             public Boolean call() throws IOException {
                 while(true) {
                     // wait for key to be signaled
-                    WatchKey key;
+                    final WatchKey key;
                     try {
                         lock.countDown();
                         if(log.isDebugEnabled()) {
