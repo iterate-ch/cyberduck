@@ -30,14 +30,14 @@ import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
 import java.util.UUID;
 
 public class DefaultWatchEditorTest {
 
-    @Test(expected = NoSuchFileException.class)
+    @Test(expected = FileNotFoundException.class)
     public void testNotfound() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
             @Override
