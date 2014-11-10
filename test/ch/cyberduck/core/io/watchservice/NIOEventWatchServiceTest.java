@@ -53,15 +53,27 @@ public class NIOEventWatchServiceTest extends AbstractTestCase {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
 //        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
         final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/fé", UUID.randomUUID().toString());
-        final CyclicBarrier create = new CyclicBarrier(2);
+        final CyclicBarrier update = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
-        final FileWatcherListener listener = new FileWatcherListener() {
+        final FileWatcherListener listener = new DisabledFileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
                 try {
                     assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
                 }
                 catch(IOException e) {
+                    fail();
+                }
+                try {
+                    update.await(1L, TimeUnit.SECONDS);
+                }
+                catch(InterruptedException e) {
+                    fail();
+                }
+                catch(BrokenBarrierException e) {
+                    fail();
+                }
+                catch(TimeoutException e) {
                     fail();
                 }
             }
@@ -87,34 +99,13 @@ public class NIOEventWatchServiceTest extends AbstractTestCase {
                     fail();
                 }
             }
-
-            @Override
-            public void fileCreated(final Local file) {
-                try {
-                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
-                }
-                catch(IOException e) {
-                    fail();
-                }
-                try {
-                    create.await(1L, TimeUnit.SECONDS);
-                }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                catch(BrokenBarrierException e) {
-                    fail();
-                }
-                catch(TimeoutException e) {
-                    fail();
-                }
-            }
         };
         LocalTouchFactory.get().touch(file);
         watcher.register(file, listener).await(1, TimeUnit.SECONDS);
-        create.await();
+        file.getOutputStream(false).write("Test".getBytes());
+        update.await(1L, TimeUnit.SECONDS);
         file.delete();
-        delete.await();
+        delete.await(1L, TimeUnit.SECONDS);
         watcher.close();
     }
 }
