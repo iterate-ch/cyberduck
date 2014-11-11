@@ -38,7 +38,7 @@
             <param name="bundle.type" value="-1.i686.rpm"/>
         </antcall>
         <antcall target="_upload">
-            <param name="bundle.type" value="-1.x86_64.rpm	"/>
+            <param name="bundle.type" value="-1.x86_64.rpm"/>
         </antcall>
     </target>
 
