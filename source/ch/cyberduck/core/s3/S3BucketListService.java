@@ -48,8 +48,18 @@ public class S3BucketListService implements RootListService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
+    private S3LocationFeature locationFeature;
+
+    private S3LocationFeature.S3Region region;
+
     public S3BucketListService(final S3Session session) {
+        this(session, new S3LocationFeature.S3Region(null));
+    }
+
+    public S3BucketListService(final S3Session session, final S3LocationFeature.S3Region region) {
         this.session = session;
+        this.region = region;
+        this.locationFeature = new S3LocationFeature(session);
     }
 
     @Override
@@ -96,6 +106,20 @@ public class S3BucketListService implements RootListService {
                         bucket.attributes().setCreationDate(b.getCreationDate().getTime());
                         if(b.isLocationKnown()) {
                             bucket.attributes().setRegion(b.getLocation());
+                        }
+                        if(region.getIdentifier() != null) {
+                            final String location;
+                            if(!b.isLocationKnown()) {
+                                location = locationFeature.getLocation(bucket).getIdentifier();
+                            }
+                            else {
+                                location = b.getLocation();
+                            }
+                            if(!StringUtils.equals(location, region.getIdentifier())) {
+                                log.warn(String.format("Skip bucket %s in region %s", bucket, location));
+                                continue;
+                            }
+                            bucket.attributes().setRegion(location);
                         }
                         buckets.add(bucket);
                         listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),

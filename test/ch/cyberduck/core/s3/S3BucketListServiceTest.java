@@ -39,4 +39,21 @@ public class S3BucketListServiceTest extends AbstractTestCase {
         assertTrue(list.contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
+
+    @Test
+    public void testListRestrictRegion() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final List<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1"))
+                .list(new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        for(Path bucket : list) {
+            assertEquals("eu-central-1", bucket.attributes().getRegion());
+        }
+        session.close();
+    }
 }
