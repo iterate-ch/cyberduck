@@ -58,19 +58,15 @@ public class FSEventWatchServiceTest extends AbstractTestCase {
         final Watchable file = Paths.get(
                 File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         final WatchKey key = fs.register(file, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
-        while(!key.isValid()) {
-            Thread.sleep(1000);
-        }
         assertTrue(key.isValid());
         fs.close();
         assertFalse(key.isValid());
     }
 
     @Test
-    public void testListenerFSEventWatchService() throws Exception {
+    public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
-//        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/f", UUID.randomUUID().toString());
-        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/fé", UUID.randomUUID().toString());
+        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
         final CyclicBarrier update = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
@@ -120,7 +116,8 @@ public class FSEventWatchServiceTest extends AbstractTestCase {
         };
         LocalTouchFactory.get().touch(file);
         watcher.register(file, listener).await(1, TimeUnit.SECONDS);
-        file.getOutputStream(false).write("Test".getBytes());
+        final Process exec = Runtime.getRuntime().exec(String.format("echo 'Test' >> %s", file.getAbsolute()));
+        assertEquals(0, exec.waitFor());
         update.await(1L, TimeUnit.SECONDS);
         file.delete();
         delete.await(1L, TimeUnit.SECONDS);
