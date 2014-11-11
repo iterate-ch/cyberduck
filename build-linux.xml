@@ -31,31 +31,34 @@
     <target name="_build"/>
 
     <target name="upload">
+        <antcall target="_upload">
+            <param name="bundle.type" value=".deb"/>
+        </antcall>
+        <antcall target="_upload">
+            <param name="bundle.type" value="-1.i686.rpm"/>
+        </antcall>
+        <antcall target="_upload">
+            <param name="bundle.type" value="-1.x86_64.rpm	"/>
+        </antcall>
+    </target>
+
+    <target name="findbundle">
+        <available
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
+                property="bundle.exists"/>
+    </target>
+
+    <target name="_upload" depends="findbundle" if="bundle.exists">
         <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
                 algorithm="md5"/>
-        <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}-1.i686.rpm"
-                algorithm="md5"/>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb"
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}.md5"
              todir="${uri}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.deb.md5"
-             todir="${uri}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}-1.i686.rpm"
-             todir="${uri}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}-1.i686.rpm.md5"
+        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
              todir="${uri}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
