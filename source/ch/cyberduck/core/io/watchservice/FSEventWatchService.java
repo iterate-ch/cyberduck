@@ -109,7 +109,7 @@ public class FSEventWatchService extends AbstractWatchService {
             lock.await();
         }
         catch(InterruptedException e) {
-            throw new IOException(String.format("Failure registering for events in %s", file));
+            throw new IOException(String.format("Failure registering for events in %s", file), e);
         }
         loops.put(key, loop);
         callbacks.put(key, callback);
