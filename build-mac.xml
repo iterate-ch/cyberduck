@@ -63,7 +63,7 @@
 
     <property name="keychain.password" value=""/>
 
-    <property name="installer.certificate" value="Developer ID Installer: David Kocher (G69SCX94XU)"/>
+    <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
     <property name="sparkle.feed" value="/dev/null"/>
