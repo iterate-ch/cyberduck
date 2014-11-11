@@ -57,7 +57,7 @@ public class TransferControllerFactory {
             return NSApplication.NSTerminateNow;
         }
         //Saving state of transfer window
-        Preferences.instance().setProperty("queue.window.open.default", shared.window().isVisible());
+        Preferences.instance().setProperty("queue.window.open.default", shared.isVisible());
         if(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0) {
             final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Transfer in progress"), //title
                     LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"), // message
