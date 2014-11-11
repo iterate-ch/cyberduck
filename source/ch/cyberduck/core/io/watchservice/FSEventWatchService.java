@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -101,23 +102,29 @@ public class FSEventWatchService extends AbstractWatchService {
                 library.CFArrayCreate(null, values, CFIndex.valueOf(1), null),
                 -1, latency,
                 kFSEventStreamCreateFlagNoDefer);
-        final CFRunLoop thread = new CFRunLoop(stream);
-        loops.put(key, thread);
+        final CountDownLatch lock = new CountDownLatch(1);
+        final CFRunLoop loop = new CFRunLoop(lock, stream);
+        threadFactory.newThread(loop).start();
+        try {
+            lock.await();
+        }
+        catch(InterruptedException e) {
+            throw new IOException(String.format("Failure registering for events in %s", file));
+        }
+        loops.put(key, loop);
         callbacks.put(key, callback);
-        threadFactory.newThread(thread).start();
         return key;
     }
 
     private final class CFRunLoop implements Runnable {
 
+        private final CountDownLatch lock;
         private final FSEventStreamRef streamRef;
-
         private CFRunLoopRef runLoop;
 
-        private boolean started;
-
-        public CFRunLoop(final FSEventStreamRef streamRef) {
+        public CFRunLoop(final CountDownLatch lock, final FSEventStreamRef streamRef) {
             this.streamRef = streamRef;
+            this.lock = lock;
         }
 
         @Override
@@ -128,7 +135,7 @@ public class FSEventWatchService extends AbstractWatchService {
                     CFStringRef.toCFString("kCFRunLoopDefaultMode"));
             // Start receiving events on the stream
             library.FSEventStreamStart(streamRef);
-            started = true;
+            lock.countDown();
             library.CFRunLoopRun();
         }
 
@@ -141,7 +148,7 @@ public class FSEventWatchService extends AbstractWatchService {
         }
 
         public boolean isStarted() {
-            return started;
+            return lock.getCount() == 0;
         }
     }
 
@@ -225,8 +232,7 @@ public class FSEventWatchService extends AbstractWatchService {
             return !cancelled.get()
                     && callbacks.containsKey(this)
                     && loops.containsKey(this)
-                    && loops.get(this).isStarted()
-                    && watcher().isOpen();
+                    && loops.get(this).isStarted();
         }
 
         @Override

@@ -57,10 +57,6 @@ abstract class AbstractWatchKey implements WatchKey {
         this.events = new ArrayList<WatchEvent<?>>();
     }
 
-    final AbstractWatchService watcher() {
-        return watcher;
-    }
-
     /**
      * Enqueues this key to the watch service
      */
