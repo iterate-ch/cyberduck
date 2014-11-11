@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -100,12 +99,12 @@ public class AbstractTestCase {
             completion.submit(new Callable<T>() {
                 @Override
                 public T call() throws Exception {
-                    final NSAutoreleasePool p = NSAutoreleasePool.push();
+                    final ActionOperationBatcher p = ActionOperationBatcherFactory.get();
                     try {
                         return c.call();
                     }
                     finally {
-                        p.drain();
+                        p.operate();
                     }
                 }
             });
@@ -114,5 +113,4 @@ public class AbstractTestCase {
             queue.take().get();
         }
     }
-
 }
