@@ -26,16 +26,22 @@ import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.Watchable;
 import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
 public class NIOEventWatchServiceTest extends AbstractTestCase {
@@ -49,6 +55,18 @@ public class NIOEventWatchServiceTest extends AbstractTestCase {
     }
 
     @Test
+    public void testRegister() throws Exception {
+        final RegisterWatchService fs = new NIOEventWatchService();
+        final Watchable folder = Paths.get(
+                File.createTempFile(UUID.randomUUID().toString(), "t").getParent());
+        final WatchKey key = fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        assertTrue(key.isValid());
+        fs.close();
+        assertFalse(key.isValid());
+    }
+
+    @Test
+    @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
