@@ -37,12 +37,12 @@ public class NIOEventWatchService implements RegisterWatchService {
     private WatchService monitor;
 
     @Override
-    public WatchKey register(final Watchable file, final WatchEvent.Kind<?>[] events,
+    public WatchKey register(final Watchable folder, final WatchEvent.Kind<?>[] events,
                              final WatchEvent.Modifier... modifiers) throws IOException {
         if(null == monitor) {
             monitor = FileSystems.getDefault().newWatchService();
         }
-        final WatchKey key = file.register(monitor, events, modifiers);
+        final WatchKey key = folder.register(monitor, events, modifiers);
         if(log.isInfoEnabled()) {
             log.info(String.format("Registered for events for %s", key));
         }

@@ -81,21 +81,21 @@ public class FSEventWatchService extends AbstractWatchService {
     private static final int kFSEventStreamCreateFlagFileEvents = 0x00000010;
 
     @Override
-    public WatchKey register(final Watchable file,
+    public WatchKey register(final Watchable folder,
                              final WatchEvent.Kind<?>[] events,
                              final WatchEvent.Modifier... modifiers)
             throws IOException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Register file %s for events %s", file, Arrays.toString(events)));
+            log.info(String.format("Register file %s for events %s", folder, Arrays.toString(events)));
         }
         final Pointer[] values = {
-                CFStringRef.toCFString(file.toString()).getPointer()};
+                CFStringRef.toCFString(folder.toString()).getPointer()};
 
-        final MacOSXWatchKey key = new MacOSXWatchKey(file, this, events);
+        final MacOSXWatchKey key = new MacOSXWatchKey(folder, this, events);
 
         final double latency = 1.0; // Latency in seconds
 
-        final Map<File, Long> timestamps = createLastModifiedMap(new File(file.toString()));
+        final Map<File, Long> timestamps = createLastModifiedMap(new File(folder.toString()));
         final FSEvents.FSEventStreamCallback callback = new Callback(key, timestamps);
         final FSEventStreamRef stream = library.FSEventStreamCreate(
                 Pointer.NULL, callback, Pointer.NULL,
@@ -109,7 +109,7 @@ public class FSEventWatchService extends AbstractWatchService {
             lock.await();
         }
         catch(InterruptedException e) {
-            throw new IOException(String.format("Failure registering for events in %s", file), e);
+            throw new IOException(String.format("Failure registering for events in %s", folder), e);
         }
         loops.put(key, loop);
         callbacks.put(key, callback);

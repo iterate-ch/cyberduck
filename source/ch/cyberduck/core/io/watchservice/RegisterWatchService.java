@@ -28,7 +28,7 @@ import java.nio.file.Watchable;
  * @version $Id$
  */
 public interface RegisterWatchService extends WatchService {
-    WatchKey register(Watchable file,
+    WatchKey register(Watchable folder,
                       WatchEvent.Kind<?>[] events,
                       WatchEvent.Modifier... modifiers) throws IOException;
 

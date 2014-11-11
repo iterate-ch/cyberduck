@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class DisabledWatchService implements RegisterWatchService {
 
     @Override
-    public WatchKey register(final Watchable file, final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) throws IOException {
+    public WatchKey register(final Watchable folder, final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) throws IOException {
         return null;
     }
 
