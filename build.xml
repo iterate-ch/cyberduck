@@ -152,14 +152,6 @@
     </target>
 
     <target name="archive" depends="compile, manifest" description="Create .jar files of the compiled classes">
-        <jar jarfile="${build}/ui.jar"
-             update="yes"
-             manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/**/*.class"/>
-                <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
-            </fileset>
-        </jar>
         <jar jarfile="${build}/core.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
@@ -169,6 +161,21 @@
             <fileset dir="${lib}">
                 <include name="mime.types"/>
                 <include name="log4j-*.xml"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${build}/ui.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}/">
+                <include name="ch/cyberduck/ui/**/*.class"/>
+                <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${build}/cocoa.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}/">
+                <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
             </fileset>
         </jar>
     </target>
