@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
+import org.jets3t.service.Jets3tProperties;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -75,6 +76,33 @@ public class S3LocationFeatureTest extends AbstractTestCase {
             @Override
             public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+            }
+        };
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
+                new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.directory))
+        ));
+        session.close();
+    }
+
+    @Test
+    public void testAccessPathStyleBucketEuCentral() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                properties.getProperty("s3.key"), properties.getProperty("s3.secret")
+                        ))) {
+            @Override
+            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
+            }
+
+            @Override
+            protected Jets3tProperties configure() {
+                final Jets3tProperties properties = super.configure();
+                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+                return properties;
             }
         };
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
