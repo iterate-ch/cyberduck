@@ -63,11 +63,15 @@ public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAct
             final Host bookmark = session.getHost();
 
             final HistoryCollection history = HistoryCollection.defaultCollection();
-            history.add(new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get())));
-
+            if(history.isLoaded()) {
+                history.add(new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get())));
+            }
             // Notify changed bookmark
-            if(BookmarkCollection.defaultCollection().contains(bookmark)) {
-                BookmarkCollection.defaultCollection().collectionItemChanged(bookmark);
+            final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+            if(bookmarks.isLoaded()) {
+                if(bookmarks.contains(bookmark)) {
+                    bookmarks.collectionItemChanged(bookmark);
+                }
             }
         }
         return opened;
