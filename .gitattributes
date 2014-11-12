@@ -1895,7 +1895,7 @@ lib/ext/jacocoant.jar -text svneol=unset#application/zip
 lib/ext/jsch-0.1.51.jar -text svneol=unset#application/zip
 lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
-lib/ext/sonar-ant-task-2.1.jar -text svneol=unset#application/jar
+lib/ext/sonar-ant-task-2.2.jar -text
 lib/gson-2.2.4.jar -text svneol=unset#application/zip
 lib/httpclient-4.3.5.jar -text
 lib/httpcore-4.3.2.jar -text svneol=unset#application/zip
