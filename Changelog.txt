@@ -3,7 +3,7 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
-4.5.3 [https://trac.cyberduck.io/milestone/4.5.3]
+4.6 [https://trac.cyberduck.io/milestone/4.6]
 - [Feature] Support PAC files for proxy configuration (Mac) (#2607)
 - [Feature] Customizable bookmark icon size (Windows) (#6444)
 - [Feature] Add support for buckets in region eu-central-1 (Frankfurt) (S3) (#8302)

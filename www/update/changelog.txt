@@ -1,4 +1,4 @@
-4.5.3 [https://trac.cyberduck.io/milestone/4.5.3]
+4.6 [https://trac.cyberduck.io/milestone/4.6]
 - [Feature] Customizable bookmark icon size (Windows) (#6444)
 - [Feature] Add support for buckets in region eu-central-1 (Frankfurt) (S3) (#8302)
 - [Feature] Support authentication signature version AWS4-HMAC-SHA256 (S3) (#8302)
