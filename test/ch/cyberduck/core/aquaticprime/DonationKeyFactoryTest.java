@@ -18,6 +18,7 @@ package ch.cyberduck.core.aquaticprime;
  * feedback@cyberduck.io
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class DonationKeyFactoryTest {
 
     @Test
+    @Ignore
     public void testCreate() throws Exception {
         assertEquals(new Receipt(null, "c42c030b8670"), new DonationKeyFactory().create());
     }
