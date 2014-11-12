@@ -33,7 +33,7 @@ public final class TerminalOptionsBuilder {
     public static Options options() {
         final Options options = new Options();
         options.addOption(OptionBuilder.withArgName("username")
-                .withDescription("Username. Can also be prefixed ")
+                .withDescription("Username")
                 .withLongOpt("username")
                 .hasArg(true)
                 .isRequired(false)
@@ -55,7 +55,7 @@ public final class TerminalOptionsBuilder {
                 .withLongOpt("upload")
                 .hasArg(false)
                 .isRequired(false)
-                .create("u"));
+                .create());
         options.addOption(OptionBuilder
                 .withDescription("Edit file in external editor")
                 .withLongOpt("edit")
