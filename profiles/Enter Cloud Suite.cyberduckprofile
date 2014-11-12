@@ -11,7 +11,7 @@
 	<key>Default Hostname</key>
 	<string>api.entercloudsuite.com</string>
 	<key>Default Port</key>
-	<string>5000</string>
+	<string>443</string>
     <key>Context</key>
     <string>/v2.0/tokens</string>
 	<key>Username Placeholder</key>
