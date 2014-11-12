@@ -227,6 +227,10 @@ public class UserDefaultsPreferences extends Preferences {
                 defaults.put("application.support.path", LocalFactory.get(directory, applicationName).getAbbreviatedPath());
             }
             defaults.put("application.name", applicationName);
+            final NSObject bundleIdentifier = bundle.objectForInfoDictionaryKey("CFBundleIdentifier");
+            if(null != bundleIdentifier) {
+                defaults.put("application.identifier", bundleIdentifier.toString());
+            }
             defaults.put("application.version",
                     bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
             defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
