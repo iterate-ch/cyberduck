@@ -27,6 +27,7 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
@@ -42,11 +43,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Id$
@@ -111,12 +112,12 @@ public class Terminal {
     }
 
     protected Exit execute() {
+        final Console console = new Console();
         if(input.hasOption("help")) {
             TerminalHelpPrinter.help(options);
             return Exit.success;
         }
         if(input.hasOption("version")) {
-            final PrintStream console = System.out;
             console.printf("%s %s (%s)%n",
                     preferences.getProperty("application.name"),
                     preferences.getProperty("application.version"),
@@ -195,12 +196,23 @@ public class Terminal {
                 final EditorFactory factory = EditorFactory.instance();
                 final Editor editor = factory.create(controller, session, remote);
                 final CountDownLatch lock = new CountDownLatch(1);
+                final AtomicBoolean failed = new AtomicBoolean();
+                final TransferErrorCallback error = new TransferErrorCallback() {
+                    @Override
+                    public boolean prompt(final BackgroundException failure) throws BackgroundException {
+                        failed.set(true);
+                        return false;
+                    }
+                };
                 editor.open(new ApplicationQuitCallback() {
                     @Override
                     public void callback() {
                         lock.countDown();
                     }
-                });
+                }, error);
+                if(failed.get()) {
+                    return Exit.failure;
+                }
                 controller.message("Close the editor application to exit…");
                 try {
                     lock.await();

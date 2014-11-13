@@ -22,11 +22,9 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -75,8 +73,7 @@ public class CreateFileController extends FileController {
                 feature.touch(file);
                 if(edit) {
                     file.attributes().setSize(0L);
-                    Editor editor = EditorFactory.instance().create(c, session, file);
-                    editor.open(new DisabledApplicationQuitCallback());
+                    c.edit(file);
                 }
                 return file;
             }

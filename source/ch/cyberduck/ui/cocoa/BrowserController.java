@@ -2638,13 +2638,7 @@ public class BrowserController extends WindowController
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = factory.create(this, session,
                     new Application(sender.representedObject()), selected);
-            editors.add(editor);
-            editor.open(new ApplicationQuitCallback() {
-                @Override
-                public void callback() {
-                    editors.remove(editor);
-                }
-            });
+            this.edit(editor);
         }
     }
 
@@ -2652,15 +2646,22 @@ public class BrowserController extends WindowController
     public void editButtonClicked(final ID sender) {
         final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = factory.create(this, session, selected);
-            editors.add(editor);
-            editor.open(new ApplicationQuitCallback() {
-                @Override
-                public void callback() {
-                    editors.remove(editor);
-                }
-            });
+            this.edit(selected);
         }
+    }
+
+    protected void edit(final Path file) {
+        this.edit(EditorFactory.instance().create(this, session, file));
+    }
+
+    protected void edit(final Editor editor) {
+        editors.add(editor);
+        editor.open(new ApplicationQuitCallback() {
+            @Override
+            public void callback() {
+                editors.remove(editor);
+            }
+        }, new DisabledTransferErrorCallback());
     }
 
     @Action

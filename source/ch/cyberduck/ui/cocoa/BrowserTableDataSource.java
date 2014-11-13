@@ -31,11 +31,9 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.editor.FSEventWatchEditor;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
@@ -567,8 +565,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(dock) {
                 for(Path p : pasteboard) {
                     // Drag to application icon in dock.
-                    FSEventWatchEditor editor = new FSEventWatchEditor(controller, controller.getSession(), null, p);
-                    editor.open(new DisabledApplicationQuitCallback());
+                    controller.edit(p);
                 }
             }
             else {

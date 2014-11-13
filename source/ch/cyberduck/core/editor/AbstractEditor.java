@@ -77,21 +77,21 @@ public abstract class AbstractEditor implements Editor {
      */
     private Session<?> session;
 
-    private TransferErrorCallback callback;
-
     private ProgressListener listener;
 
     private ApplicationLauncher applicationLauncher;
 
-    public AbstractEditor(final Application application, final Session session, final Path file,
-                          final TransferErrorCallback callback,
+    public AbstractEditor(final Application application,
+                          final Session session,
+                          final Path file,
                           final ProgressListener listener) {
-        this(ApplicationLauncherFactory.get(), application, session, file, callback, listener);
+        this(ApplicationLauncherFactory.get(), application, session, file, listener);
     }
 
     public AbstractEditor(final ApplicationLauncher launcher,
-                          final Application application, final Session session, final Path file,
-                          final TransferErrorCallback callback,
+                          final Application application,
+                          final Session session,
+                          final Path file,
                           final ProgressListener listener) {
         this.applicationLauncher = launcher;
         this.application = application;
@@ -103,7 +103,6 @@ public abstract class AbstractEditor implements Editor {
         }
         this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
         this.session = session;
-        this.callback = callback;
         this.listener = listener;
     }
 
@@ -154,8 +153,8 @@ public abstract class AbstractEditor implements Editor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final ApplicationQuitCallback quit) {
-        final Worker<Transfer> worker = new EditBackgroundAction(this, session, callback,
+    public void open(final ApplicationQuitCallback quit, final TransferErrorCallback error) {
+        final Worker<Transfer> worker = new EditBackgroundAction(this, session, error,
                 new ApplicationQuitCallback() {
                     @Override
                     public void callback() {
@@ -210,7 +209,7 @@ public abstract class AbstractEditor implements Editor {
      * Upload changes to server if checksum of local file has changed since last edit.
      */
     @Override
-    public void save() {
+    public void save(final TransferErrorCallback error) {
         // If checksum still the same no need for save
         final String current;
         try {
@@ -233,7 +232,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, callback, listener);
+            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, error, listener);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

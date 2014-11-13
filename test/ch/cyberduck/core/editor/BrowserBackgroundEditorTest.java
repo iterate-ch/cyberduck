@@ -14,6 +14,7 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.AbstractController;
 
@@ -99,7 +100,7 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
                 //
             }
         };
-        editor.open(new DisabledApplicationQuitCallback());
+        editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback());
         assertTrue(t.get());
         assertNotNull(editor.getLocal());
         assertTrue(e.get());

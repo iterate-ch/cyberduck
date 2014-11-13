@@ -2086,7 +2086,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     editor = EditorFactory.instance().create(this, _session, new Application(exe, null), selected);
                 }
-                editor.open(new DisabledApplicationQuitCallback());
+                editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback());
             }
         }
 

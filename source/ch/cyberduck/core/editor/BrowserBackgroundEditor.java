@@ -23,7 +23,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.action.Worker;
@@ -38,8 +37,15 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
 
     private Session session;
 
-    public BrowserBackgroundEditor(final Controller controller, final Session session,
-                                   final Application application, final Path path) {
+    /**
+     * @param controller  Browser
+     * @param application Editor
+     * @param path        Remote file
+     */
+    public BrowserBackgroundEditor(final Controller controller,
+                                   final Session session,
+                                   final Application application,
+                                   final Path path) {
 
         this(controller, session, ApplicationLauncherFactory.get(), application, path);
     }
@@ -49,10 +55,12 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param application Editor
      * @param path        Remote file
      */
-    public BrowserBackgroundEditor(final Controller controller, final Session session,
+    public BrowserBackgroundEditor(final Controller controller,
+                                   final Session session,
                                    final ApplicationLauncher launcher,
-                                   final Application application, final Path path) {
-        super(launcher, application, session, path, new DisabledTransferErrorCallback(), controller);
+                                   final Application application,
+                                   final Path path) {
+        super(launcher, application, session, path, controller);
         this.controller = controller;
         this.session = session;
     }

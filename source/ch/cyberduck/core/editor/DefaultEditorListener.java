@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 
 import org.apache.log4j.Logger;
 
@@ -39,7 +40,7 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s written", file));
         }
-        editor.save();
+        editor.save(new DisabledTransferErrorCallback());
     }
 
     @Override
@@ -55,7 +56,7 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s created", file));
         }
-        editor.save();
+        editor.save(new DisabledTransferErrorCallback());
     }
 
 }

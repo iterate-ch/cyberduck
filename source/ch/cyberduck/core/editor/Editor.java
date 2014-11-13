@@ -19,6 +19,7 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.transfer.TransferErrorCallback;
 
 /**
  * @version $Id$
@@ -33,10 +34,10 @@ public interface Editor {
     /**
      * Download file and open in editor
      */
-    void open(ApplicationQuitCallback callback);
+    void open(ApplicationQuitCallback callback, TransferErrorCallback error);
 
     /**
      * Upload saved changes
      */
-    void save();
+    void save(TransferErrorCallback error);
 }
