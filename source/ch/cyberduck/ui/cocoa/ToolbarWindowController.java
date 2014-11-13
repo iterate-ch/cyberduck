@@ -150,7 +150,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     private String windowTitle;
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         windowTitle = window.title();
         window.setShowsToolbarButton(false);
         super.setWindow(window);
@@ -252,18 +252,18 @@ public abstract class ToolbarWindowController extends WindowController implement
                 true, window.isVisible());
     }
 
-    public NSSize windowWillResize_toSize(NSWindow window, NSSize newSize) {
+    public NSSize windowWillResize_toSize(final NSWindow window, final NSSize newSize) {
         // Only allow horizontal sizing
         return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
     }
 
-    private double toolbarHeightForWindow(NSWindow window) {
+    private double toolbarHeightForWindow(final NSWindow window) {
         NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(window.frame(), window.styleMask());
         return windowFrame.size.height.doubleValue() - window.contentView().frame().size.height.doubleValue();
     }
 
     @Override
-    public void tabView_didSelectTabViewItem(NSTabView view, NSTabViewItem item) {
+    public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
         this.setTitle(this.getTitle(item));
         this.resize();
         Preferences.instance().setProperty(String.format("%s.selected",

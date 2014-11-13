@@ -23,7 +23,17 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
+import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
+import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -119,34 +129,34 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    public void windowDidBecomeKey(NSNotification notification) {
+    public void windowDidBecomeKey(final NSNotification notification) {
         //
     }
 
     @Override
-    public void windowDidResignKey(NSNotification notification) {
+    public void windowDidResignKey(final NSNotification notification) {
         //
     }
 
     @Override
-    public void windowDidBecomeMain(NSNotification notification) {
+    public void windowDidBecomeMain(final NSNotification notification) {
         //
     }
 
     @Override
-    public void windowDidResignMain(NSNotification notification) {
+    public void windowDidResignMain(final NSNotification notification) {
         //
     }
 
-    public void windowWillEnterFullScreen(NSNotification notification) {
+    public void windowWillEnterFullScreen(final NSNotification notification) {
         //
     }
 
-    public void windowWillExitFullScreen(NSNotification notification) {
+    public void windowWillExitFullScreen(final NSNotification notification) {
         //
     }
 
-    public void windowDidFailToEnterFullScreen(NSWindow window) {
+    public void windowDidFailToEnterFullScreen(final NSWindow window) {
         log.error("Error entering full screen");
     }
 

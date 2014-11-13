@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class InfoControllerFactory {
 
@@ -30,7 +30,7 @@ public final class InfoControllerFactory {
         }
         final InfoController c = new InfoController(controller, files) {
             @Override
-            public void windowWillClose(NSNotification notification) {
+            public void windowWillClose(final NSNotification notification) {
                 InfoControllerFactory.open.remove(controller);
                 super.windowWillClose(notification);
             }

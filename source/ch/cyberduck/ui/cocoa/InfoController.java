@@ -1333,14 +1333,14 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         window.setShowsResizeIndicator(true);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
     }
 
     @Override
-    public void windowWillClose(NSNotification notification) {
+    public void windowWillClose(final NSNotification notification) {
         this.window().endEditingFor(null);
         super.windowWillClose(notification);
     }
@@ -1453,7 +1453,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected boolean validateTabWithIdentifier(String identifier) {
+    protected boolean validateTabWithIdentifier(final String identifier) {
         final Session session = controller.getSession();
         final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
         switch(InfoToolbarItem.valueOf(identifier)) {
