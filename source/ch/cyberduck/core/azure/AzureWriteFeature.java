@@ -113,7 +113,7 @@ public class AzureWriteFeature implements Write {
             return blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, null);
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Upload {0} failed", e);
+            throw new AzureExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

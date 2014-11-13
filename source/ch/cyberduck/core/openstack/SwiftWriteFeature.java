@@ -126,10 +126,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     return stored;
                 }
                 catch(GenericException e) {
-                    throw new SwiftExceptionMappingService().map("Upload {0} failed", e);
+                    throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
                 }
                 catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e);
+                    throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
 
