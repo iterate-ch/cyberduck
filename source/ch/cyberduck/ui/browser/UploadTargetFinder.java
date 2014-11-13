@@ -35,9 +35,6 @@ public class UploadTargetFinder {
         if(null == selected) {
             return workdir;
         }
-        else if(!selected.isDirectory()) {
-            return selected.getParent();
-        }
-        return selected;
+        return selected.getParent();
     }
 }

@@ -42,7 +42,7 @@ public class UploadTargetFinderTest extends AbstractTestCase {
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/f", EnumSet.of(Path.Type.file))));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/d/f", EnumSet.of(Path.Type.file))));
-        assertEquals(new Path("/d/f", EnumSet.of(Path.Type.directory)),
+        assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory))).find(new Path("/d/f", EnumSet.of(Path.Type.directory))));
     }
 }
