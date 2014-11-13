@@ -25,6 +25,7 @@ using ch.cyberduck.core.local;
 using org.apache.log4j;
 using IOException = java.io.IOException;
 using Path = ch.cyberduck.core.Path;
+using DisabledTransferErrorCallback = ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 
 namespace Ch.Cyberduck.Core.Editor
 {
@@ -53,13 +54,13 @@ namespace Ch.Cyberduck.Core.Editor
         private void HasRenamed(object sender, RenamedEventArgs e)
         {
             Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
-            save();
+            save(new DisabledTransferErrorCallback());
         }
 
         private void HasChanged(object sender, FileSystemEventArgs e)
         {
             Log.debug("HasChanged:" + e.FullPath);
-            save();
+            save(new DisabledTransferErrorCallback());
         }
 
         public override void delete()
