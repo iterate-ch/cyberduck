@@ -114,7 +114,7 @@
         <mkdir dir="${app.profiles}"/>
         <mkdir dir="${app.bookmarks}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose -sdk ${build.sdk.version} xcodebuild -verbose -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
+            <arg line="--verbose -sdk ${build.sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
         <copy todir="${app.frameworks}">
             <fileset dir="${build}">
