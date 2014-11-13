@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Preferences;
@@ -277,12 +278,12 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     @Override
-    protected void post(final MessageDigest digest, final StorageObject part) throws BackgroundException {
+    protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
         if(null != digest) {
             // Obtain locally-calculated MD5 hash.
             final String expected = Hex.encodeHexString(digest.digest());
             if(!expected.equals(part.getETag())) {
-                throw new ChecksumException("Upload {0} failed",
+                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                         MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                 expected, part.getETag()));
             }

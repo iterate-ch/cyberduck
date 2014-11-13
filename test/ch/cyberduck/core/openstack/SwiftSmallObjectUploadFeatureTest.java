@@ -19,12 +19,18 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ChecksumException;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import java.security.MessageDigest;
+import java.util.EnumSet;
+
+import ch.iterate.openstack.swift.model.StorageObject;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -40,5 +46,21 @@ public class SwiftSmallObjectUploadFeatureTest extends AbstractTestCase {
     @Test
     public void testDigest() throws Exception {
         assertNotNull(new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).digest());
+    }
+
+    @Test(expected = ChecksumException.class)
+    public void testPost() throws Exception {
+        final StorageObject o = new StorageObject("f");
+        o.setMd5sum("fsum");
+        try {
+            new SwiftSmallObjectUploadFeature(new SwiftSession(new Host("h"))).post(
+                    new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
+            );
+        }
+        catch(ChecksumException e) {
+            assertEquals("Upload f failed", e.getMessage());
+            assertEquals("Mismatch between MD5 hash d41d8cd98f00b204e9800998ecf8427e of uploaded data and ETag fsum returned by the server.", e.getDetail());
+            throw e;
+        }
     }
 }
