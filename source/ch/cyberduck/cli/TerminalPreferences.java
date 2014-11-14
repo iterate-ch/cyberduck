@@ -80,9 +80,11 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
                 break;
             case windows:
+                defaults.put("factory.notification.class", TerminalNotification.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 break;
             case linux:
+                defaults.put("factory.notification.class", TerminalNotification.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 break;
@@ -101,7 +103,7 @@ public class TerminalPreferences extends MemoryPreferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        System.setProperty("jna.library.path", System.getProperty("java.library.path"));
+        System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
         final Local home = LocalFactory.get(this.getProperty("local.user.home"));
         final Local settings = LocalFactory.get(home, ".duck");
@@ -126,7 +128,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 break;
         }
 
-        defaults.put("queue.download.folder", home.getAbsolute());
+        final Local workdir = LocalFactory.get(this.getProperty("user.dir"));
+        defaults.put("queue.download.folder", workdir.getAbsolute());
 
         defaults.put("s3.download.udt.threshold", String.valueOf(10L * 1024L * 1024L));
         defaults.put("s3.upload.udt.threshold", String.valueOf(10L * 1024L * 1024L));
