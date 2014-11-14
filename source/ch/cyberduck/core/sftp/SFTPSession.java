@@ -120,41 +120,45 @@ public class SFTPSession extends Session<SSHClient> {
                         new NoneCompression.Factory()));
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
-            final SSHClient connection = new SSHClient(configuration);
-            final int timeout = this.timeout();
-            connection.setTimeout(timeout);
-            connection.setConnectTimeout(timeout);
-            connection.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return host.getHostname();
-                }
-            }));
-            connection.addHostKeyVerifier(new HostKeyVerifier() {
-                @Override
-                public boolean verify(String hostname, int port, PublicKey publicKey) {
-                    try {
-                        return key.verify(hostname, port, publicKey);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        return false;
-                    }
-                    catch(ChecksumException e) {
-                        return false;
-                    }
-                }
-            });
-            disconnectListener = new StateDisconnectListener();
-            final Transport transport = connection.getTransport();
-            transport.setDisconnectListener(disconnectListener);
-            transport.setHeartbeatInterval(
-                    preferences.getInteger("ssh.heartbeat.seconds"));
-            connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
-            return connection;
+            return this.connect(key, configuration);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
+    }
+
+    protected SSHClient connect(final HostKeyCallback key, final DefaultConfig configuration) throws IOException {
+        final SSHClient connection = new SSHClient(configuration);
+        final int timeout = this.timeout();
+        connection.setTimeout(timeout);
+        connection.setConnectTimeout(timeout);
+        connection.setSocketFactory(new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
+            @Override
+            public String getTarget() {
+                return host.getHostname();
+            }
+        }));
+        connection.addHostKeyVerifier(new HostKeyVerifier() {
+            @Override
+            public boolean verify(String hostname, int port, PublicKey publicKey) {
+                try {
+                    return key.verify(hostname, port, publicKey);
+                }
+                catch(ConnectionCanceledException e) {
+                    return false;
+                }
+                catch(ChecksumException e) {
+                    return false;
+                }
+            }
+        });
+        disconnectListener = new StateDisconnectListener();
+        final Transport transport = connection.getTransport();
+        transport.setDisconnectListener(disconnectListener);
+        transport.setHeartbeatInterval(
+                preferences.getInteger("ssh.heartbeat.seconds"));
+        connection.connect(HostnameConfiguratorFactory.get(host.getProtocol()).getHostname(host.getHostname()), host.getPort());
+        return connection;
     }
 
     @Override

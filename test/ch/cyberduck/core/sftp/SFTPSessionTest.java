@@ -15,7 +15,14 @@ import ch.cyberduck.core.features.UnixPermission;
 import org.junit.Test;
 
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import net.schmizz.sshj.DefaultConfig;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.transport.cipher.Cipher;
+import net.schmizz.sshj.transport.kex.KeyExchange;
+import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
 
@@ -42,6 +49,48 @@ public class SFTPSessionTest extends AbstractTestCase {
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testAllHMAC() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        for(net.schmizz.sshj.common.Factory.Named<MAC> mac : new DefaultConfig().getMACFactories()) {
+            final DefaultConfig configuration = new DefaultConfig();
+            configuration.setMACFactories(Arrays.asList(mac));
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+            assertTrue(client.isConnected());
+            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
+            client.close();
+        }
+    }
+
+    @Test
+    public void testAllCiphers() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        for(net.schmizz.sshj.common.Factory.Named<Cipher> cipher : new DefaultConfig().getCipherFactories()) {
+            final DefaultConfig configuration = new DefaultConfig();
+            configuration.setCipherFactories(Arrays.asList(cipher));
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+            assertTrue(client.isConnected());
+            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
+            client.close();
+        }
+    }
+
+    @Test
+    public void testAllKeyExchange() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
+        final SFTPSession session = new SFTPSession(host);
+        for(net.schmizz.sshj.common.Factory.Named<KeyExchange> exchange : new DefaultConfig().getKeyExchangeFactories()) {
+            final DefaultConfig configuration = new DefaultConfig();
+            configuration.setKeyExchangeFactories(Arrays.asList(exchange));
+            final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
+            assertTrue(client.isConnected());
+            client.authPassword(properties.getProperty("sftp.user"), properties.getProperty("sftp.password"));
+            client.close();
+        }
     }
 
     @Test(expected = LoginCanceledException.class)
