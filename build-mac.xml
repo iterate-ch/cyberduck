@@ -509,7 +509,7 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.7.3"/>
-            <param name="build.xcodeoptions" value="SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=10.7"/>
+            <param name="build.xcodeoptions" value="SDKROOT=macosx10.9 MACOSX_DEPLOYMENT_TARGET=10.7"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
         <antcall target="distribution-mas"/>
