@@ -51,8 +51,8 @@ public class LimitedListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
-        if(parent.isVolume()) {
+    public void chunk(final Path folder, final AttributedList<Path> list) throws ListCanceledException {
+        if(folder.isRoot()) {
             if(list.size() >= container) {
                 // Allow another chunk until limit is reached again
                 container += preferences.getInteger("browser.list.limit.container");
