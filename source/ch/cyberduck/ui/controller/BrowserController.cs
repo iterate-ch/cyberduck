@@ -75,6 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
         private readonly Cache _cache = new Cache();
+        private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
         private Comparator _comparator = new NullComparator();
@@ -82,20 +83,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private PathPasteboard _pasteboard;
-
-        /**
-         * Caching files listings of previously listed directories
-        */
-
-        /*
-         * No file filter.
-         */
         private Session _session;
         private bool _showHiddenFiles;
-
-        /**
-         * Navigation history
-        */
 
         public BrowserController(IBrowserView view)
         {
@@ -103,7 +92,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 
-            _browserModel = new TreeBrowserModel(this, _cache);
+            _limitListener = new DialogLimitedListProgressListener(this);
+            _browserModel = new TreeBrowserModel(this, _cache, _limitListener);
             _bookmarkModel = new BookmarkModel(this, _bookmarkCollection);
             View.ViewClosedEvent += delegate { _bookmarkModel.Source = null; };
 
@@ -2504,7 +2494,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // The browser has no session, we are allowed to proceed
                     // Initialize the browser with the new session attaching all listeners
                     Session session = Init(host);
-                    background(new MountAction(this, session, host));
+                    background(new MountAction(this, session, host, _limitListener));
                 };
             Unmount(callbackDelegate);
         }
@@ -3123,8 +3113,8 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly Host _host;
 
-            public MountAction(BrowserController controller, Session session, Host host)
-                : base(controller, controller.Session, new InnerMountWorker(controller, session))
+            public MountAction(BrowserController controller, Session session, Host host, ListProgressListener listener)
+                : base(controller, controller.Session, new InnerMountWorker(controller, session, listener))
             {
                 _controller = controller;
                 _host = host;
@@ -3142,8 +3132,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly Session _session;
 
-                public InnerMountWorker(BrowserController controller, Session session)
-                    : base(session, controller._cache, new DialogLimitedListProgressListener(controller))
+                public InnerMountWorker(BrowserController controller, Session session, ListProgressListener listener)
+                    : base(session, controller._cache, listener)
                 {
                     _controller = controller;
                     _session = session;

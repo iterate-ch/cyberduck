@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using StringBuilder = System.Text.StringBuilder;
+using System.Text;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
@@ -26,8 +26,7 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.threading;
-using Iterator = java.util.Iterator;
-using Map = java.util.Map;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -36,12 +35,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Cache _cache;
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
+        private readonly ListProgressListener _listener;
         private readonly string _unknown = LocaleFactory.localizedString("Unknown");
 
-        public TreeBrowserModel(BrowserController controller, Cache cache)
+        public TreeBrowserModel(BrowserController controller, Cache cache, ListProgressListener listener)
         {
             _controller = controller;
             _cache = cache;
+            _listener = listener;
         }
 
         public bool CanExpand(object path)
@@ -59,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Delay until path is cached in the background
                 // switch to blocking children fetching
                 //path.childs();
-                _controller.background(new ListAction(_controller, directory, _cache));
+                _controller.background(new ListAction(_controller, directory, _cache, _listener));
             }
             list = _cache.get(directory.getReference())
                          .filter(_controller.FilenameComparator, _controller.FilenameFilter);
@@ -136,14 +137,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetPermission(Path path)
         {
             Acl acl = path.attributes().getAcl();
-            if(!Acl.EMPTY.equals(acl)) {
+            if (!Acl.EMPTY.equals(acl))
+            {
                 StringBuilder s = new StringBuilder();
                 Iterator iterator = acl.entrySet().iterator();
                 while (iterator.hasNext())
                 {
                     Map.Entry entry = (Map.Entry) iterator.next();
                     s.Append(String.Format("{0}{1}:{2}", s.Length == 0 ? "" : ", ",
-                            ((Acl.User)entry.getKey()).getDisplayName(), entry.getValue()));
+                                           ((Acl.User) entry.getKey()).getDisplayName(), entry.getValue()));
                 }
                 return s.ToString();
             }
@@ -186,8 +188,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class ListAction : WorkerBackgroundAction
         {
-            public ListAction(BrowserController controller, Path directory, Cache cache)
-                : base(controller, controller.Session, new InnerListWorker(controller, directory, cache))
+            public ListAction(BrowserController controller, Path directory, Cache cache, ListProgressListener listener)
+                : base(controller, controller.Session, new InnerListWorker(controller, directory, cache, listener))
             {
             }
 
@@ -196,8 +198,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly BrowserController _controller;
                 private readonly Path _directory;
 
-                public InnerListWorker(BrowserController controller, Path directory, Cache cache)
-                    : base(controller.Session, cache, directory, new DialogLimitedListProgressListener(controller))
+                public InnerListWorker(BrowserController controller, Path directory, Cache cache,
+                                       ListProgressListener listener)
+                    : base(controller.Session, cache, directory, listener)
                 {
                     _controller = controller;
                     _directory = directory;
