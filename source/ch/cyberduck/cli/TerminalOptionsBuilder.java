@@ -59,7 +59,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Edit file in external editor")
                 .withLongOpt("edit")
-                .hasArg(false)
+                .hasArg(true)
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder

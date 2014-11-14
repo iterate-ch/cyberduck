@@ -23,6 +23,9 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -129,10 +132,10 @@ public class Terminal {
             TerminalHelpPrinter.help(options);
             return Exit.failure;
         }
-        final String input = arguments.get(0).toString();
-        final Host host = HostParser.parse(input);
-        if(input.indexOf("://", 0) != -1) {
-            final Protocol protocol = ProtocolFactory.forName(input.substring(0, input.indexOf("://", 0)));
+        final String uri = arguments.get(0).toString();
+        final Host host = HostParser.parse(uri);
+        if(uri.indexOf("://", 0) != -1) {
+            final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
                 TerminalHelpPrinter.help(options);
                 return Exit.failure;
@@ -148,11 +151,11 @@ public class Terminal {
             TerminalHelpPrinter.help(options);
             return Exit.success;
         }
-        if(this.input.hasOption("username")) {
-            host.getCredentials().setUsername(this.input.getOptionValue("username"));
+        if(input.hasOption("username")) {
+            host.getCredentials().setUsername(input.getOptionValue("username"));
         }
-        if(this.input.hasOption("password")) {
-            host.getCredentials().setPassword(this.input.getOptionValue("password"));
+        if(input.hasOption("password")) {
+            host.getCredentials().setPassword(input.getOptionValue("password"));
         }
         final Path remote;
         switch(host.getProtocol().getType()) {
@@ -187,19 +190,37 @@ public class Terminal {
         try {
             final ConnectionService connect = new LoginConnectionService(
                     new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                    listener, this.input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
+                    listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
             if(!connect.check(session, Cache.<Path>empty())) {
                 throw new ConnectionCanceledException();
             }
-            if(this.input.hasOption("edit")) {
+            if(input.hasOption("edit")) {
                 final TerminalController controller = new TerminalController();
                 final EditorFactory factory = EditorFactory.instance();
-                final Editor editor = factory.create(controller, session, remote);
+                final Editor editor;
+                if(StringUtils.isNotBlank(input.getOptionValue("edit"))) {
+                    final ApplicationFinder finder = ApplicationFinderFactory.get();
+                    final Application application = finder.getDescription(input.getOptionValue("edit"));
+                    if(!finder.isInstalled(application)) {
+                        final StringAppender appender = new StringAppender();
+                        appender.append(String.format("Failed to find application %s", application.getIdentifier()));
+                        System.err.println(appender.toString());
+                        return Exit.failure;
+                    }
+                    editor = factory.create(controller, session, application, remote);
+                }
+                else {
+                    editor = factory.create(controller, session, remote);
+                }
                 final CountDownLatch lock = new CountDownLatch(1);
                 final AtomicBoolean failed = new AtomicBoolean();
                 final TransferErrorCallback error = new TransferErrorCallback() {
                     @Override
                     public boolean prompt(final BackgroundException failure) throws BackgroundException {
+                        final StringAppender appender = new StringAppender();
+                        appender.append(failure.getMessage());
+                        appender.append(failure.getDetail());
+                        System.err.println(appender.toString());
                         failed.set(true);
                         return false;
                     }
@@ -224,10 +245,10 @@ public class Terminal {
             }
             else {
                 final Transfer.Type type;
-                if(this.input.hasOption("download")) {
+                if(input.hasOption("download")) {
                     type = Transfer.Type.download;
                 }
-                else if(this.input.hasOption("upload")) {
+                else if(input.hasOption("upload")) {
                     type = Transfer.Type.upload;
                 }
                 else {
