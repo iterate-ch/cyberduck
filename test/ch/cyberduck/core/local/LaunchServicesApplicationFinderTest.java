@@ -41,8 +41,30 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     }
 
     @Test
-    public void testFind() throws Exception {
+    public void testFindByFilename() throws Exception {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertEquals(new Application("com.apple.Preview", "Preview"), f.find("file.png"));
+    }
+
+    @Test
+    public void testFindByBundleIdentifier() throws Exception {
+        ApplicationFinder f = new LaunchServicesApplicationFinder();
+        assertEquals(new Application("com.apple.Preview", "Preview"), f.getDescription("com.apple.Preview"));
+        assertEquals(new Application("com.apple.Preview_", "Preview_"), f.getDescription("com.apple.Preview_"));
+    }
+
+    @Test
+    public void testFindByName() throws Exception {
+        ApplicationFinder f = new LaunchServicesApplicationFinder();
+        assertEquals(new Application("com.apple.Preview", "Preview"), f.getDescription("Preview"));
+        assertEquals(new Application("Preview_", "Preview_"), f.getDescription("Preview_"));
+    }
+
+    @Test
+    public void testInstalled() throws Exception {
+        ApplicationFinder f = new LaunchServicesApplicationFinder();
+        assertTrue(f.isInstalled(new Application("com.apple.Preview", "Preview")));
+        assertFalse(f.isInstalled(new Application("com.apple.Preview_", "Preview")));
+        assertFalse(f.isInstalled(null));
     }
 }

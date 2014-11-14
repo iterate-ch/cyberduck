@@ -115,7 +115,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      *
      * @param filename Filename
      * @return The bundle identifier of the default application to open the
-     *         file of this type or null if unknown
+     * file of this type or null if unknown
      */
     @Override
     public Application find(final String filename) {
@@ -145,58 +145,81 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     /**
      * Determine the human readable application name for a given bundle identifier.
      *
-     * @param bundleIdentifier Bundle identifier
+     * @param search Bundle identifier
      * @return Application human readable name
      */
     @Override
-    public Application getDescription(final String bundleIdentifier) {
-        if(!applicationNameCache.containsKey(bundleIdentifier)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Find application for %s", bundleIdentifier));
+    public Application getDescription(final String search) {
+        if(applicationNameCache.containsKey(search)) {
+            return applicationNameCache.get(search);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find application for %s", search));
+        }
+        final String identifier;
+        final String name;
+        synchronized(NSWorkspace.class) {
+            final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+            final String path;
+            if(null != workspace.absolutePathForAppBundleWithIdentifier(search)) {
+                path = workspace.absolutePathForAppBundleWithIdentifier(search);
             }
-            synchronized(NSWorkspace.class) {
-                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-                String name = null;
-                if(StringUtils.isNotBlank(path)) {
-                    final NSBundle app = NSBundle.bundleWithPath(path);
-                    if(null == app) {
-                        log.error(String.format("Loading bundle %s failed", path));
-                    }
-                    else {
-                        NSDictionary dict = app.infoDictionary();
-                        if(null == dict) {
-                            log.error(String.format("Loading application dictionary for bundle %s failed", path));
-                            applicationNameCache.put(bundleIdentifier, null);
-                            return null;
-                        }
-                        else {
-                            final NSObject bundlename = dict.objectForKey("CFBundleName");
-                            if(null == bundlename) {
-                                log.warn(String.format("No CFBundleName in bundle %s", path));
-                            }
-                            else {
-                                name = bundlename.toString();
-                            }
-                        }
-                    }
-                    if(null == name) {
-                        log.warn(String.format("Failed to determine bundle name for %s", path));
-                        name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
-                    }
+            else {
+                log.warn(String.format("Cannot determine installation path for bundle identifier %s. Try with name.", search));
+                path = workspace.fullPathForApplication(search);
+            }
+            if(StringUtils.isNotBlank(path)) {
+                final NSBundle app = NSBundle.bundleWithPath(path);
+                if(null == app) {
+                    log.error(String.format("Loading bundle %s failed", path));
+                    identifier = search;
+                    name = null;
                 }
                 else {
-                    log.warn(String.format("Cannot determine installation path for %s", bundleIdentifier));
-                    name = bundleIdentifier;
+                    NSDictionary dict = app.infoDictionary();
+                    if(null == dict) {
+                        log.error(String.format("Loading application dictionary for bundle %s failed", path));
+                        applicationNameCache.put(search, null);
+                        return null;
+                    }
+                    else {
+                        final NSObject bundlename = dict.objectForKey("CFBundleName");
+                        if(null == bundlename) {
+                            log.warn(String.format("No CFBundleName in bundle %s", path));
+                            name = FilenameUtils.removeExtension(LocalFactory.get(path).getDisplayName());
+                        }
+                        else {
+                            name = bundlename.toString();
+                        }
+                        final NSObject bundleIdentifier = dict.objectForKey("CFBundleIdentifier");
+                        if(null == bundleIdentifier) {
+                            log.warn(String.format("No CFBundleName in bundle %s", path));
+                            identifier = search;
+                        }
+                        else {
+                            identifier = bundleIdentifier.toString();
+                        }
+
+                    }
                 }
-                applicationNameCache.put(bundleIdentifier, new Application(bundleIdentifier, name));
+            }
+            else {
+                log.warn(String.format("Cannot determine installation path for %s", search));
+                identifier = search;
+                name = null;
             }
         }
-        return applicationNameCache.get(bundleIdentifier);
+        final Application application = new Application(identifier, name);
+        applicationNameCache.put(identifier, application);
+        return application;
     }
 
     @Override
     public boolean isInstalled(final Application application) {
         synchronized(NSWorkspace.class) {
+            if(null == application) {
+                return false;
+            }
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     application.getIdentifier()) != null;
         }
