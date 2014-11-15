@@ -43,6 +43,6 @@ public class NullApplicationFinder implements ApplicationFinder {
 
     @Override
     public Application getDescription(final String application) {
-        return null;
+        return new Application(application);
     }
 }
