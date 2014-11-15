@@ -22,12 +22,12 @@ import ch.cyberduck.core.AbstractTestCase;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 public class DefaultEditorFactoryTest extends AbstractTestCase {
 
     @Test
     public void testGetDefaultEditor() throws Exception {
-        assertNull(new DefaultEditorFactory().getDefaultEditor());
+        assertNotNull(new DefaultEditorFactory().getDefaultEditor());
     }
 }
