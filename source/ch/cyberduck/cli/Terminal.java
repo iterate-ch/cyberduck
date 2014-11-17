@@ -23,7 +23,6 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
@@ -71,6 +70,8 @@ public class Terminal {
             = new DefaultPathKindDetector();
 
     private final Preferences preferences = Preferences.instance();
+
+    private final ApplicationFinder finder = ApplicationFinderFactory.get();
 
     private enum Exit {
         success,
@@ -127,183 +128,167 @@ public class Terminal {
                     preferences.getProperty("application.revision"));
             return Exit.success;
         }
-        final List arguments = input.getArgList();
-        if(arguments.size() == 0 || arguments.size() > 2) {
+        if(TerminalOptionsInputValidator.validate(input)) {
+            final List arguments = input.getArgList();
+            final String uri = arguments.get(0).toString();
+            final Host host = HostParser.parse(uri);
+            if(uri.indexOf("://", 0) != -1) {
+                final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
+                host.setProtocol(protocol);
+                host.setPort(protocol.getDefaultPort());
+            }
+            if(input.hasOption("username")) {
+                host.getCredentials().setUsername(input.getOptionValue("username"));
+            }
+            if(input.hasOption("password")) {
+                host.getCredentials().setPassword(input.getOptionValue("password"));
+            }
+            final Path remote;
+            switch(host.getProtocol().getType()) {
+                case s3:
+                case googlestorage:
+                case swift:
+                case azure:
+                    if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+                        remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+                    }
+                    else {
+                        final String container = host.getHostname();
+                        final String key = host.getDefaultPath();
+                        remote = new Path(new Path(container, EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                                key, EnumSet.of(detector.detect(host.getDefaultPath())));
+                        host.setHostname(host.getProtocol().getDefaultHostname());
+                    }
+                    break;
+                default:
+                    remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+            }
+            host.setDefaultPath(remote.getParent().getAbsolute());
+            final Session session = SessionFactory.create(host);
+            final TerminalProgressListener listener = new TerminalProgressListener();
+            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(final Thread t, final Throwable e) {
+                    listener.message(String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
+                    System.exit(1);
+                }
+            });
+            try {
+                final ConnectionService connect = new LoginConnectionService(
+                        new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
+                        listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
+                if(!connect.check(session, Cache.<Path>empty())) {
+                    throw new ConnectionCanceledException();
+                }
+                if(input.hasOption("edit")) {
+                    return this.edit(remote, session);
+                }
+                else {
+                    final Transfer.Type type = TerminalOptionsTransferTypeFinder.get(input);
+                    final Local local;
+                    switch(type) {
+                        case download:
+                            if(arguments.size() == 1) {
+                                local = LocalFactory.get(System.getProperty("user.dir"), remote.getName());
+                            }
+                            else {
+                                if(LocalFactory.get(arguments.get(1).toString()).isDirectory()) {
+                                    local = LocalFactory.get(arguments.get(1).toString(), remote.getName());
+                                }
+                                else {
+                                    local = LocalFactory.get(arguments.get(1).toString());
+                                }
+                            }
+                            break;
+                        case upload:
+                            local = LocalFactory.get(arguments.get(1).toString());
+                            break;
+                        default:
+                            return Exit.failure;
+                    }
+                    return this.transfer(type, host, remote, local, session, listener);
+                }
+            }
+            catch(ConnectionCanceledException e) {
+                return Exit.success;
+            }
+            catch(BackgroundException e) {
+                final StringAppender b = new StringAppender();
+                b.append(e.getMessage());
+                b.append(e.getDetail());
+                listener.message(b.toString());
+            }
+            return Exit.failure;
+        }
+        else {
             TerminalHelpPrinter.help(options);
             return Exit.failure;
         }
-        final String uri = arguments.get(0).toString();
-        final Host host = HostParser.parse(uri);
-        if(uri.indexOf("://", 0) != -1) {
-            final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
-            if(null == protocol) {
-                TerminalHelpPrinter.help(options);
-                return Exit.failure;
-            }
-            host.setProtocol(protocol);
-            host.setPort(protocol.getDefaultPort());
-        }
-        if(StringUtils.isBlank(host.getHostname())) {
-            TerminalHelpPrinter.help(options);
-            return Exit.success;
-        }
-        if(StringUtils.isBlank(host.getDefaultPath())) {
-            TerminalHelpPrinter.help(options);
-            return Exit.success;
-        }
-        if(input.hasOption("username")) {
-            host.getCredentials().setUsername(input.getOptionValue("username"));
-        }
-        if(input.hasOption("password")) {
-            host.getCredentials().setPassword(input.getOptionValue("password"));
-        }
-        final Path remote;
-        switch(host.getProtocol().getType()) {
-            case s3:
-            case googlestorage:
-            case swift:
-            case azure:
-                if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                    remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
-                }
-                else {
-                    final String container = host.getHostname();
-                    final String key = host.getDefaultPath();
-                    remote = new Path(new Path(container, EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            key, EnumSet.of(detector.detect(host.getDefaultPath())));
-                    host.setHostname(host.getProtocol().getDefaultHostname());
-                }
-                break;
-            default:
-                remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
-        }
-        host.setDefaultPath(remote.getParent().getAbsolute());
-        final Session session = SessionFactory.create(host);
-        final TerminalProgressListener listener = new TerminalProgressListener();
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(final Thread t, final Throwable e) {
-                listener.message(String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
-                System.exit(1);
-            }
-        });
-        try {
-            final ConnectionService connect = new LoginConnectionService(
-                    new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                    listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
-            if(!connect.check(session, Cache.<Path>empty())) {
-                throw new ConnectionCanceledException();
-            }
-            if(input.hasOption("edit")) {
-                final TerminalController controller = new TerminalController();
-                final EditorFactory factory = EditorFactory.instance();
-                final Editor editor;
-                if(StringUtils.isNotBlank(input.getOptionValue("edit"))) {
-                    final ApplicationFinder finder = ApplicationFinderFactory.get();
-                    final Application application = finder.getDescription(input.getOptionValue("edit"));
-                    if(!finder.isInstalled(application)) {
-                        final StringAppender appender = new StringAppender();
-                        appender.append(String.format("Failed to find application %s", application.getIdentifier()));
-                        System.err.println(appender.toString());
-                        return Exit.failure;
-                    }
-                    editor = factory.create(controller, session, application, remote);
-                }
-                else {
-                    editor = factory.create(controller, session, remote);
-                }
-                final CountDownLatch lock = new CountDownLatch(1);
-                final AtomicBoolean failed = new AtomicBoolean();
-                final TransferErrorCallback error = new TransferErrorCallback() {
-                    @Override
-                    public boolean prompt(final BackgroundException failure) throws BackgroundException {
-                        final StringAppender appender = new StringAppender();
-                        appender.append(failure.getMessage());
-                        appender.append(failure.getDetail());
-                        System.err.println(appender.toString());
-                        failed.set(true);
-                        return false;
-                    }
-                };
-                editor.open(new ApplicationQuitCallback() {
-                    @Override
-                    public void callback() {
-                        lock.countDown();
-                    }
-                }, error);
-                if(failed.get()) {
-                    return Exit.failure;
-                }
-                controller.message("Close the editor application to exit…");
-                try {
-                    lock.await();
-                }
-                catch(InterruptedException e) {
-                    return Exit.failure;
-                }
-                return Exit.success;
-            }
-            else {
-                final Transfer.Type type;
-                if(input.hasOption("download")) {
-                    type = Transfer.Type.download;
-                }
-                else if(input.hasOption("upload")) {
-                    type = Transfer.Type.upload;
-                }
-                else {
-                    if(arguments.size() == 2) {
-                        type = Transfer.Type.upload;
-                    }
-                    else {
-                        type = Transfer.Type.download;
-                    }
-                }
-                final Transfer transfer;
-                final Local local;
-                switch(type) {
-                    case download:
-                        if(arguments.size() == 1) {
-                            local = LocalFactory.get(System.getProperty("user.dir"), remote.getName());
-                        }
-                        else if(arguments.size() == 2) {
-                            if(LocalFactory.get(arguments.get(1).toString()).isDirectory()) {
-                                local = LocalFactory.get(arguments.get(1).toString(), remote.getName());
-                            }
-                            else {
-                                local = LocalFactory.get(arguments.get(1).toString());
-                            }
-                        }
-                        else {
-                            return Exit.failure;
-                        }
-                        transfer = new DownloadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
-                        break;
+    }
 
-                    case upload:
-                        local = LocalFactory.get(arguments.get(1).toString());
-                        transfer = new UploadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
-                        break;
-                    default:
-                        return Exit.failure;
-                }
-                final TransferSpeedometer meter = new TransferSpeedometer(transfer);
-                final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
-                        new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
-                        listener, new TerminalStreamListener(meter), new TerminalLoginCallback());
-                worker.run();
-                return Exit.success;
+    protected Exit transfer(final Transfer.Type type,
+                            final Host host,
+                            final Path remote, final Local local,
+                            final Session session,
+                            final TerminalProgressListener listener) throws BackgroundException {
+        final Transfer transfer;
+        switch(type) {
+            case download:
+                transfer = new DownloadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
+                break;
+            case upload:
+                transfer = new UploadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
+            default:
+                return Exit.failure;
+        }
+        final TransferSpeedometer meter = new TransferSpeedometer(transfer);
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
+                new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
+                listener, new TerminalStreamListener(meter), new TerminalLoginCallback());
+        worker.run();
+        return Exit.success;
+    }
+
+    protected Exit edit(final Path remote, final Session session) {
+        final TerminalController controller = new TerminalController();
+        final EditorFactory factory = EditorFactory.instance();
+        final Editor editor;
+        if(StringUtils.isNotBlank(input.getOptionValue("edit"))) {
+            editor = factory.create(controller, session,
+                    finder.getDescription(input.getOptionValue("edit")), remote);
+        }
+        else {
+            editor = factory.create(controller, session, remote);
+        }
+        final CountDownLatch lock = new CountDownLatch(1);
+        final AtomicBoolean failed = new AtomicBoolean();
+        final TransferErrorCallback error = new TransferErrorCallback() {
+            @Override
+            public boolean prompt(final BackgroundException failure) throws BackgroundException {
+                final StringAppender appender = new StringAppender();
+                appender.append(failure.getMessage());
+                appender.append(failure.getDetail());
+                System.err.println(appender.toString());
+                failed.set(true);
+                return false;
             }
+        };
+        editor.open(new ApplicationQuitCallback() {
+            @Override
+            public void callback() {
+                lock.countDown();
+            }
+        }, error);
+        if(failed.get()) {
+            return Exit.failure;
         }
-        catch(ConnectionCanceledException e) {
-            return Exit.success;
+        controller.message("Close the editor application to exit…");
+        try {
+            lock.await();
         }
-        catch(BackgroundException e) {
-            final StringAppender b = new StringAppender();
-            b.append(e.getMessage());
-            b.append(e.getDetail());
-            listener.message(b.toString());
+        catch(InterruptedException e) {
+            return Exit.failure;
         }
-        return Exit.failure;
+        return Exit.success;
     }
 }
