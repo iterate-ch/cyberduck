@@ -290,6 +290,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
                                 throw e;
                             }
+                            if(table.size() == 1) {
+                                throw e;
+                            }
                             // Prompt to continue or abort for application errors
                             if(error.prompt(e)) {
                                 // Continue
@@ -356,6 +359,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         catch(BackgroundException e) {
                             status.setFailure();
                             if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
+                                throw e;
+                            }
+                            if(table.size() == 1) {
                                 throw e;
                             }
                             // Prompt to continue or abort for application errors
