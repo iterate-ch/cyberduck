@@ -76,6 +76,8 @@
     <property name="build.lipo.binaries" value="**/Contents/MacOS/*,**/*.framework/Versions/Current/*,**/*.dylib"/>
     <property name="build.lipo.arch.remove" value=""/>
 
+    <property name="cli.bundles" value="image"/>
+
     <target name="spotlight">
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>

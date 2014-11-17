@@ -103,9 +103,7 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
-    <target name="build" depends="archive">
-        <antcall target="_build"/>
-    </target>
+    <target name="build" depends="archive, _build"/>
 
     <target name="confirm">
         <input message="Press key to continue..." validargs="y,n" addproperty="build.push"/>
@@ -322,7 +320,7 @@
         </jar>
 
         <mkdir dir="${build}/${configuration}"/>
-        <fx:deploy nativeBundles="all"
+        <fx:deploy nativeBundles="${cli.bundles}"
                    outdir="${build}/${configuration}"
                    outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
                    offlineAllowed="true"

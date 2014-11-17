@@ -25,6 +25,7 @@
 
     <import file="build.xml"/>
 
+    <property name="cli.bundles" value="all"/>
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
 
