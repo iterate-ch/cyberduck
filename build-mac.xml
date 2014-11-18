@@ -279,6 +279,7 @@
                 <exclude name="Contents/Home/lib/server/*.diz"/>
             </fileset>
         </copy>
+        <symlink link="${app.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib" />
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
