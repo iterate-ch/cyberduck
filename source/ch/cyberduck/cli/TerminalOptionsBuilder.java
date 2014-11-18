@@ -46,19 +46,19 @@ public final class TerminalOptionsBuilder {
                 .create('p'));
         options.addOption(OptionBuilder
                 .withDescription("Download file")
-                .withLongOpt("download")
+                .withLongOpt(TerminalAction.download.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create('d'));
         options.addOption(OptionBuilder
                 .withDescription("Upload file")
-                .withLongOpt("upload")
+                .withLongOpt(TerminalAction.upload.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
                 .withDescription("Edit file in external editor")
-                .withLongOpt("edit")
+                .withLongOpt(TerminalAction.edit.name())
                 .hasArg(true)
                 .isRequired(false)
                 .create());
@@ -70,13 +70,13 @@ public final class TerminalOptionsBuilder {
                 .create('v'));
         options.addOption(OptionBuilder
                 .withDescription("Show version number and quit")
-                .withLongOpt("version")
+                .withLongOpt(TerminalAction.version.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create('V'));
         options.addOption(OptionBuilder
                 .withDescription("Print this help")
-                .withLongOpt("help")
+                .withLongOpt(TerminalAction.help.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create("h"));

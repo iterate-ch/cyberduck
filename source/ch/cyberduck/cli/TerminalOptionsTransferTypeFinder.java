@@ -32,10 +32,10 @@ public class TerminalOptionsTransferTypeFinder {
     protected static Transfer.Type get(final CommandLine input) {
         final List arguments = input.getArgList();
         final Transfer.Type type;
-        if(input.hasOption("download")) {
+        if(input.hasOption(TerminalAction.download.name())) {
             type = Transfer.Type.download;
         }
-        else if(input.hasOption("upload")) {
+        else if(input.hasOption(TerminalAction.upload.name())) {
             type = Transfer.Type.upload;
         }
         else {

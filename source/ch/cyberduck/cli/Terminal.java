@@ -117,11 +117,11 @@ public class Terminal {
 
     protected Exit execute() {
         final Console console = new Console();
-        if(input.hasOption("help")) {
+        if(input.hasOption(TerminalAction.help.name())) {
             TerminalHelpPrinter.help(options);
             return Exit.success;
         }
-        if(input.hasOption("version")) {
+        if(input.hasOption(TerminalAction.version.name())) {
             console.printf("%s %s (%s)%n",
                     preferences.getProperty("application.name"),
                     preferences.getProperty("application.version"),
@@ -180,7 +180,7 @@ public class Terminal {
                 if(!connect.check(session, Cache.<Path>empty())) {
                     throw new ConnectionCanceledException();
                 }
-                if(input.hasOption("edit")) {
+                if(input.hasOption(TerminalAction.edit.name())) {
                     return this.edit(remote, session);
                 }
                 else {
@@ -238,6 +238,7 @@ public class Terminal {
                 break;
             case upload:
                 transfer = new UploadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
+                break;
             default:
                 return Exit.failure;
         }
@@ -253,9 +254,9 @@ public class Terminal {
         final TerminalController controller = new TerminalController();
         final EditorFactory factory = EditorFactory.instance();
         final Editor editor;
-        if(StringUtils.isNotBlank(input.getOptionValue("edit"))) {
+        if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
             editor = factory.create(controller, session,
-                    finder.getDescription(input.getOptionValue("edit")), remote);
+                    finder.getDescription(input.getOptionValue(TerminalAction.edit.name())), remote);
         }
         else {
             editor = factory.create(controller, session, remote);
