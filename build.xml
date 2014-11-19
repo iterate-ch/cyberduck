@@ -75,6 +75,9 @@
         <fileset dir="${lib.ext}">
             <include name="*.jar"/>
         </fileset>
+        <fileset dir="${lib}">
+            <include name="mime.types"/>
+        </fileset>
     </path>
 
     <path id="build.classpath">
