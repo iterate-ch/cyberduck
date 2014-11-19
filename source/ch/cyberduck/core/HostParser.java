@@ -47,6 +47,9 @@ public final class HostParser {
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = ProtocolFactory.forScheme(input.substring(begin, cut));
+            if(null == protocol) {
+                protocol = ProtocolFactory.forName(input.substring(begin, cut));
+            }
             if(null != protocol) {
                 begin += cut - begin + 3;
             }
