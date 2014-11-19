@@ -26,6 +26,8 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -43,10 +45,9 @@ public class TerminalTransferPrompt implements TransferPrompt {
     @Override
     public TransferAction prompt(final TransferItem file) {
         final StringBuilder actions = new StringBuilder().append(StringUtils.LF);
-        for(TransferAction a : TransferAction.forTransfer(transfer)) {
-            actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
-        }
-        for(TransferAction a : Arrays.asList(TransferAction.cancel)) {
+        final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer));
+        options.add(TransferAction.cancel);
+        for(TransferAction a : options) {
             actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
         }
         final String input;
@@ -63,7 +64,7 @@ public class TerminalTransferPrompt implements TransferPrompt {
                 break;
             case sync:
                 input = console.readLine("Choose what action to take:\n%s\nAction %s: ",
-                        actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
+                        actions, Arrays.toString(options.toArray()));
                 break;
             default:
                 return TransferAction.cancel;
