@@ -164,6 +164,9 @@ public class Terminal {
                         case upload:
                         case sync:
                             local = LocalFactory.get(arguments.get(1).toString());
+                            if(!local.exists()) {
+                                throw new NotfoundException(local.getAbsolute());
+                            }
                             break;
                         case move:
                         case copy:
@@ -178,9 +181,6 @@ public class Terminal {
                         case download:
                         case upload:
                         case sync:
-                            if(!local.exists()) {
-                                throw new NotfoundException(local.getAbsolute());
-                            }
                             transfer = TerminalTransferFactory.create(type,
                                     new UriParser(input).parse(arguments.get(0).toString()),
                                     new TransferItem(remote, local));
