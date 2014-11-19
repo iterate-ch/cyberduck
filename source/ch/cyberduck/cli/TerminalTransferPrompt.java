@@ -46,6 +46,9 @@ public class TerminalTransferPrompt implements TransferPrompt {
         for(TransferAction a : TransferAction.forTransfer(transfer)) {
             actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
         }
+        for(TransferAction a : Arrays.asList(TransferAction.cancel)) {
+            actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
+        }
         final String input;
         switch(transfer.getType()) {
             case download:
@@ -60,7 +63,7 @@ public class TerminalTransferPrompt implements TransferPrompt {
                 break;
             case sync:
                 input = console.readLine("Choose what action to take:\n%s\nAction %s: ",
-                        file.remote.getName(), actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
+                        actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
                 break;
             default:
                 return TransferAction.cancel;
