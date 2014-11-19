@@ -62,15 +62,11 @@ public class TerminalStreamListener implements StreamListener {
 
     @Override
     public void recv(final long bytes) {
-        if(bytes > 0) {
-            increment();
-        }
+        this.increment();
     }
 
     @Override
     public void sent(final long bytes) {
-        if(bytes > 0) {
-            increment();
-        }
+        this.increment();
     }
 }
