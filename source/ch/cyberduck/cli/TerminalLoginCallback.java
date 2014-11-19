@@ -59,11 +59,16 @@ public class TerminalLoginCallback implements LoginCallback {
         credentials.setSaved(false);
         console.printf("%s\n", reason);
         if(StringUtils.isBlank(credentials.getUsername())) {
-            credentials.setUsername(console.readLine("%s: ", protocol.getUsernamePlaceholder()));
+            final String user = console.readLine("%s: ", protocol.getUsernamePlaceholder());
+            credentials.setUsername(user);
         }
         else {
-            console.printf("Login as %s\n", credentials.getUsername());
+            final String user = console.readLine("%s (%s): ", protocol.getUsernamePlaceholder(), credentials.getUsername());
+            if(StringUtils.isNotBlank(user)) {
+                credentials.setUsername(user);
+            }
         }
+        console.printf("Login as %s\n", credentials.getUsername());
         final char[] password = console.readPassword("%s: ", protocol.getPasswordPlaceholder());
         credentials.setPassword(String.valueOf(password));
         Arrays.fill(password, ' ');

@@ -45,14 +45,26 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('p'));
         options.addOption(OptionBuilder
-                .withDescription("Download file")
+                .withDescription("Download file or folder")
                 .withLongOpt(TerminalAction.download.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create('d'));
         options.addOption(OptionBuilder
-                .withDescription("Upload file")
+                .withDescription("Upload file or folder")
                 .withLongOpt(TerminalAction.upload.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
+                .withDescription("Copy between servers")
+                .withLongOpt(TerminalAction.copy.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
+                .withDescription("Synchronize folders")
+                .withLongOpt(TerminalAction.synchronize.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create());

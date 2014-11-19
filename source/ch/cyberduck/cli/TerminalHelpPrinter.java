@@ -74,7 +74,7 @@ public final class TerminalHelpPrinter {
         if(l.verify()) {
             footer.append(l.toString());
         }
-        formatter.printHelp("duck [options...] <url> [<file>]", header, options, footer.toString());
+        formatter.printHelp("duck [options...] <url> [<file or url>]", header, options, footer.toString());
     }
 
     private static final class TerminalHelpFormatter extends HelpFormatter {

@@ -26,5 +26,7 @@ public enum TerminalAction {
     version,
     edit,
     download,
-    upload
+    upload,
+    copy,
+    synchronize
 }

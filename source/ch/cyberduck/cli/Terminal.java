@@ -23,17 +23,17 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
-import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.cli.CommandLine;
@@ -45,8 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,9 +64,6 @@ public class Terminal {
         PreferencesFactory.set(new TerminalPreferences());
         ProtocolFactory.register();
     }
-
-    private final DefaultPathKindDetector detector
-            = new DefaultPathKindDetector();
 
     private final Preferences preferences = Preferences.instance();
 
@@ -134,41 +130,7 @@ public class Terminal {
         }
         if(TerminalOptionsInputValidator.validate(input)) {
             final List arguments = input.getArgList();
-            final String uri = arguments.get(0).toString();
-            final Host host = HostParser.parse(uri);
-            if(uri.indexOf("://", 0) != -1) {
-                final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
-                host.setProtocol(protocol);
-                host.setPort(protocol.getDefaultPort());
-            }
-            if(input.hasOption("username")) {
-                host.getCredentials().setUsername(input.getOptionValue("username"));
-            }
-            if(input.hasOption("password")) {
-                host.getCredentials().setPassword(input.getOptionValue("password"));
-            }
-            final Path remote;
-            switch(host.getProtocol().getType()) {
-                case s3:
-                case googlestorage:
-                case swift:
-                case azure:
-                    if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                        remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
-                    }
-                    else {
-                        final String container = host.getHostname();
-                        final String key = host.getDefaultPath();
-                        remote = new Path(new Path(container, EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                                key, EnumSet.of(detector.detect(host.getDefaultPath())));
-                        host.setHostname(host.getProtocol().getDefaultHostname());
-                    }
-                    break;
-                default:
-                    remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
-            }
-            host.setDefaultPath(remote.getParent().getAbsolute());
-            final Session session = SessionFactory.create(host);
+            final Session session = SessionFactory.create(new UriParser(input).parse(arguments.get(0).toString()));
             final TerminalProgressListener listener = new TerminalProgressListener();
             Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
@@ -178,18 +140,13 @@ public class Terminal {
                 }
             });
             try {
-                final ConnectionService connect = new LoginConnectionService(
-                        new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                        listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
-                if(!connect.check(session, Cache.<Path>empty())) {
-                    throw new ConnectionCanceledException();
-                }
+                final Path remote = new PathParser(input).parse(arguments.get(0).toString());
                 if(input.hasOption(TerminalAction.edit.name())) {
-                    return this.edit(remote, session);
+                    return this.edit(session, remote, listener);
                 }
                 else {
-                    final Transfer.Type type = TerminalOptionsTransferTypeFinder.get(input);
                     final Local local;
+                    final Transfer.Type type = TerminalOptionsTransferTypeFinder.get(input);
                     switch(type) {
                         case download:
                             if(arguments.size() == 1) {
@@ -205,12 +162,45 @@ public class Terminal {
                             }
                             break;
                         case upload:
+                        case sync:
                             local = LocalFactory.get(arguments.get(1).toString());
                             break;
+                        case move:
+                        case copy:
+                            local = null;
+                            break;
                         default:
-                            return Exit.failure;
+                            throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                                    String.format("Unknown transfer type %s", type.name()));
                     }
-                    return this.transfer(type, host, remote, local, session, listener);
+                    final Transfer transfer;
+                    switch(type) {
+                        case download:
+                        case upload:
+                        case sync:
+                            if(!local.exists()) {
+                                throw new NotfoundException(local.getAbsolute());
+                            }
+                            transfer = TerminalTransferFactory.create(type,
+                                    new UriParser(input).parse(arguments.get(0).toString()),
+                                    new TransferItem(remote, local));
+                            break;
+                        case copy:
+                            transfer = new CopyTransfer(
+                                    new UriParser(input).parse(arguments.get(0).toString()),
+                                    new UriParser(input).parse(arguments.get(1).toString()),
+                                    Collections.singletonMap(
+                                            new PathParser(input).parse(arguments.get(0).toString()),
+                                            new PathParser(input).parse(arguments.get(1).toString()))
+                            );
+                            // Connect
+                            this.connect(((CopyTransfer) transfer).getDestination(), listener);
+                            break;
+                        default:
+                            throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                                    String.format("Unknown transfer type %s", type.name()));
+                    }
+                    return this.transfer(transfer, session, listener);
                 }
             }
             catch(ConnectionCanceledException e) {
@@ -230,22 +220,10 @@ public class Terminal {
         }
     }
 
-    protected Exit transfer(final Transfer.Type type,
-                            final Host host,
-                            final Path remote, final Local local,
-                            final Session session,
-                            final TerminalProgressListener listener) throws BackgroundException {
-        final Transfer transfer;
-        switch(type) {
-            case download:
-                transfer = new DownloadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
-                break;
-            case upload:
-                transfer = new UploadTransfer(host, Arrays.asList(new TransferItem(remote, local)));
-                break;
-            default:
-                return Exit.failure;
-        }
+    protected Exit transfer(final Transfer transfer, final Session session, final TerminalProgressListener listener) throws BackgroundException {
+        // Connect
+        this.connect(session, listener);
+        // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
                 new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
@@ -254,7 +232,10 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit edit(final Path remote, final Session session) {
+    protected Exit edit(final Session session, final Path remote, final TerminalProgressListener listener) throws BackgroundException {
+        // Connect
+        this.connect(session, listener);
+        // Edit
         final TerminalController controller = new TerminalController();
         final EditorFactory factory = EditorFactory.instance();
         final Editor editor;
@@ -295,5 +276,14 @@ public class Terminal {
             return Exit.failure;
         }
         return Exit.success;
+    }
+
+    protected void connect(final Session session, final TerminalProgressListener listener) throws BackgroundException {
+        final ConnectionService connect = new LoginConnectionService(
+                new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
+                listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
+        if(!connect.check(session, Cache.<Path>empty())) {
+            throw new ConnectionCanceledException();
+        }
     }
 }

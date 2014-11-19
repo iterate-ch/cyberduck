@@ -43,18 +43,7 @@ public class TerminalOptionsInputValidator {
         if(arguments.size() == 0 || arguments.size() > 2) {
             return false;
         }
-        final String uri = arguments.get(0).toString();
-        if(uri.indexOf("://", 0) != -1) {
-            final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
-            if(null == protocol) {
-                return false;
-            }
-        }
-        final Host host = HostParser.parse(uri);
-        if(StringUtils.isBlank(host.getHostname())) {
-            return false;
-        }
-        if(StringUtils.isBlank(host.getDefaultPath())) {
+        if(!validate(arguments.get(0).toString())) {
             return false;
         }
         if(input.hasOption(TerminalAction.edit.name())) {
@@ -78,11 +67,35 @@ public class TerminalOptionsInputValidator {
                 }
                 break;
             case upload:
+            case copy:
+            case sync:
                 if(arguments.size() != 2) {
                     return false;
                 }
-            default:
+                break;
+        }
+        switch(type) {
+            case copy:
+                if(!validate(arguments.get(1).toString())) {
+                    return false;
+                }
+        }
+        return true;
+    }
+
+    private static boolean validate(final String uri) {
+        if(uri.indexOf("://", 0) != -1) {
+            final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
+            if(null == protocol) {
                 return false;
+            }
+        }
+        final Host host = HostParser.parse(uri);
+        if(StringUtils.isBlank(host.getHostname())) {
+            return false;
+        }
+        if(StringUtils.isBlank(host.getDefaultPath())) {
+            return false;
         }
         return true;
     }

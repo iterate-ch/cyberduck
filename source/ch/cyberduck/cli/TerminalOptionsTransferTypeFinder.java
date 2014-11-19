@@ -38,6 +38,12 @@ public class TerminalOptionsTransferTypeFinder {
         else if(input.hasOption(TerminalAction.upload.name())) {
             type = Transfer.Type.upload;
         }
+        else if(input.hasOption(TerminalAction.copy.name())) {
+            type = Transfer.Type.copy;
+        }
+        else if(input.hasOption(TerminalAction.synchronize.name())) {
+            type = Transfer.Type.sync;
+        }
         else {
             if(arguments.size() == 2) {
                 type = Transfer.Type.upload;
