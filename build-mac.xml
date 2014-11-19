@@ -118,14 +118,18 @@
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
         </exec>
         <copy todir="${app.frameworks}">
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-            </fileset>
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="*.dylib"/>
+            </fileset>
+        </copy>
+        <copy todir="${app.resources}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib}">
                 <include name="*.jar"/>
             </fileset>
         </copy>
