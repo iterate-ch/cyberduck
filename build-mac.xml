@@ -155,10 +155,14 @@
         <antcall target="verify-signature"/>
         <antcall target="verify-spctl"/>
         <antcall target="tar">
-            <param name="tar.filename" value="${app.name}-${svn.revision}.tar.gz"/>
+            <param name="directory" value="${build.deploy}"/>
+            <param name="target" value="${app.name}-${svn.revision}.tar.gz"/>
+            <param name="source" value="${app.name}.app"/>
         </antcall>
         <antcall target="zip">
-            <param name="zip.filename" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
+            <param name="directory" value="${build.deploy}"/>
+            <param name="target" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
+            <param name="source" value="${app.name}.app"/>
         </antcall>
         <antcall target="sparkle-feed"/>
     </target>
@@ -391,11 +395,11 @@
 
     <target name="tar">
         <echo message="Creating tar.gz archive..."/>
-        <exec dir="${build.deploy}" executable="tar" spawn="false" failonerror="true">
-            <arg line="-czf ../${tar.filename} ${app.name}.app"/>
+        <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
+            <arg line="-czf ${target} ${source}"/>
         </exec>
         <echo message="Calculating MD5 sum..."/>
-        <checksum file="${build}/${tar.filename}" algorithm="md5"/>
+        <checksum file="${target}" algorithm="md5"/>
     </target>
 
     <target name="bundle-runtime-eval">
@@ -409,10 +413,10 @@
 
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
-        <exec dir="${build.deploy}" executable="ditto" spawn="false" failonerror="true">
-            <arg line="-c -k --sequesterRsrc --keepParent ${app.name}.app ../${zip.filename}"/>
+        <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
+            <arg line="-c -k --sequesterRsrc --keepParent ${source} ../${target}"/>
         </exec>
-        <checksum file="${build}/${zip.filename}" algorithm="md5"/>
+        <checksum file="${target}" algorithm="md5"/>
     </target>
 
     <target name="upload">
