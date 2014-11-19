@@ -57,10 +57,10 @@ public class TerminalOptionsInputValidator {
         if(StringUtils.isBlank(host.getDefaultPath())) {
             return false;
         }
-        if(input.hasOption("edit")) {
-            if(StringUtils.isNotBlank(input.getOptionValue("edit"))) {
+        if(input.hasOption(TerminalAction.edit.name())) {
+            if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
-                final Application application = finder.getDescription(input.getOptionValue("edit"));
+                final Application application = finder.getDescription(input.getOptionValue(TerminalAction.edit.name()));
                 if(!finder.isInstalled(application)) {
                     final StringAppender appender = new StringAppender();
                     appender.append(String.format("Failed to find application %s", application.getIdentifier()));
