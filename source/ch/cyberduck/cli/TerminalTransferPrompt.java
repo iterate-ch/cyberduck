@@ -53,7 +53,13 @@ public class TerminalTransferPrompt implements TransferPrompt {
                         file.local.getName(), actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
                 break;
             case upload:
+            case move:
+            case copy:
                 input = console.readLine("The remote file %s already exists. Choose what action to take:\n%s\nAction %s: ",
+                        file.remote.getName(), actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
+                break;
+            case sync:
+                input = console.readLine("Choose what action to take:\n%s\nAction %s: ",
                         file.remote.getName(), actions, Arrays.toString(TransferAction.forTransfer(transfer).toArray()));
                 break;
             default:
