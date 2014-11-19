@@ -24,7 +24,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 /**
  * @version $Id$
  */
-class TerminalTransferItemCallback extends DisabledTransferItemCallback {
+public class TerminalTransferItemCallback extends DisabledTransferItemCallback {
 
     private final Console console = new Console();
 
