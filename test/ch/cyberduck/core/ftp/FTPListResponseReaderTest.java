@@ -142,11 +142,35 @@ public class FTPListResponseReaderTest extends AbstractTestCase {
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser("NETWARE  Type : L8");
         final AttributedList<Path> list = new FTPListResponseReader(parser).read(
                 new Path("/", EnumSet.of(Path.Type.directory)), Arrays.asList("lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"), new DisabledListProgressListener() {
-            @Override
-            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
-                throw new ListCanceledException(AttributedList.<Path>emptyList());
-            }
-        }
+                    @Override
+                    public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
+                        throw new ListCanceledException(AttributedList.<Path>emptyList());
+                    }
+                }
         );
+    }
+
+    @Test(expected = FTPInvalidListException.class)
+    public void testListNoRead() throws Exception {
+        final Path directory = new Path("/sandbox/noread", EnumSet.of(Path.Type.directory));
+        final String[] lines = new String[]{
+                "213-Status follows:",
+                "d-w--w----    2 1003     1003         4096 Nov 06  2013 noread",
+                "213 End of status"};
+        final CompositeFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
+        final AttributedList<Path> list = new FTPListResponseReader(parser).read(directory, Arrays.asList(lines), new DisabledListProgressListener());
+        assertEquals(0, list.size());
+    }
+
+    @Test(expected = FTPInvalidListException.class)
+    public void testListSymbolicLink() throws Exception {
+        final Path directory = new Path("/home/barchouston/www", EnumSet.of(Path.Type.directory));
+        final String[] lines = new String[]{
+                "213-status of /home/barchouston/www:",
+                "lrwxrwxrwx   1 barchous barchous       16 Apr  2  2002 /home/barchouston/www -> /www/barchouston",
+                "213 End of Status"};
+        final CompositeFileEntryParser parser = new FTPParserSelector().getParser("UNIX");
+        final AttributedList<Path> list = new FTPListResponseReader(parser).read(directory, Arrays.asList(lines), new DisabledListProgressListener());
+        assertEquals(0, list.size());
     }
 }

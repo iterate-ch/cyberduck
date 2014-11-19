@@ -64,7 +64,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
             if(!success) {
                 // Workaround for #2410. STAT only returns ls of directory itself
                 // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
-                if(directory.getAbsolute().equals(name)) {
+                if(directory.getName().equals(name)) {
                     log.warn(String.format("Skip %s", f.getName()));
                     continue;
                 }
