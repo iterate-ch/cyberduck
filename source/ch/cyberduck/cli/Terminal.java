@@ -90,7 +90,7 @@ public class Terminal {
     /**
      * duck <source> <target>
      *
-     * @param arguments Command line arguments
+     * @param args Command line arguments
      */
     public static void main(final String... args) throws IOException {
         final Options options = TerminalOptionsBuilder.options();
@@ -111,6 +111,10 @@ public class Terminal {
         catch(ParseException e) {
             System.err.println(e.getMessage());
             TerminalHelpPrinter.help(options);
+            System.exit(1);
+        }
+        catch(Throwable error) {
+            System.err.println(StringUtils.isNotBlank(error.getMessage()) ? error.getMessage() : error.getClass().getName());
             System.exit(1);
         }
     }
