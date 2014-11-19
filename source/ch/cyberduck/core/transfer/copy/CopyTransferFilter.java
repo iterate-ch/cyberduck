@@ -72,7 +72,7 @@ public class CopyTransferFilter implements TransferPathFilter {
         this.destination = destination;
         this.files = files;
         this.options = options;
-        this.find = destination.getFeature(Find.class);
+        this.find = destination.getFeature(Find.class).withCache(cache);
         this.attribute = source.getFeature(Attributes.class).withCache(cache);
         this.acl = source.getFeature(AclPermission.class);
     }
