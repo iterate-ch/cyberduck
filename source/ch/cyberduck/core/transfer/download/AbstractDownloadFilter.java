@@ -79,6 +79,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.attribute = session.getFeature(Attributes.class);
     }
 
+    @Override
     public AbstractDownloadFilter withCache(final Cache<Path> cache) {
         attribute.withCache(cache);
         return this;

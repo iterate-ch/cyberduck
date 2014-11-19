@@ -105,6 +105,11 @@ public class DownloadTransfer extends Transfer {
         this.symlinkResolver = new DownloadSymlinkResolver(roots);
     }
 
+    public DownloadTransfer withCache(final Cache cache) {
+        this.cache = cache;
+        return this;
+    }
+
     @Override
     public Type getType() {
         return Type.download;
@@ -124,7 +129,14 @@ public class DownloadTransfer extends Transfer {
             return Collections.emptyList();
         }
         else {
-            final AttributedList<Path> list = session.list(directory, listener);
+            final AttributedList<Path> list;
+            if(cache.containsKey(directory.getReference())) {
+                list = cache.get(directory.getReference());
+            }
+            else {
+                list = session.list(directory, listener);
+                cache.put(directory.getReference(), list);
+            }
             final List<TransferItem> children = new ArrayList<TransferItem>();
             // Return copy with filtered result only
             for(Path f : new AttributedList<Path>(list.filter(comparator, filter))) {

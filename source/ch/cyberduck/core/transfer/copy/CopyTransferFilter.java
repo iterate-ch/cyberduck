@@ -78,6 +78,12 @@ public class CopyTransferFilter implements TransferPathFilter {
     }
 
     @Override
+    public TransferPathFilter withCache(final Cache<Path> cache) {
+        attribute.withCache(cache);
+        return this;
+    }
+
+    @Override
     public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         return true;
     }

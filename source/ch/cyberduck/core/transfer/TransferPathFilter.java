@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -27,6 +28,9 @@ import ch.cyberduck.core.exception.BackgroundException;
  * @version $Id$
  */
 public interface TransferPathFilter {
+
+    TransferPathFilter withCache(final Cache<Path> cache);
+
 
     /**
      * @param file   File

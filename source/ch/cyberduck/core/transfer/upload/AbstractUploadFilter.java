@@ -85,6 +85,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.attribute = session.getFeature(Attributes.class);
     }
 
+    @Override
     public AbstractUploadFilter withCache(final Cache cache) {
         find.withCache(cache);
         attribute.withCache(cache);

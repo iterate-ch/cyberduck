@@ -95,7 +95,6 @@ public class DownloadTransferTest extends AbstractTestCase {
     @Test
     public void testListSorted() throws Exception {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
         final NullSession session = new NullSession(new Host("t")) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -106,6 +105,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             }
         };
         {
+            Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
             Preferences.instance().setProperty("queue.download.priority.regex", ".*\\.html");
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override
@@ -117,6 +117,7 @@ public class DownloadTransferTest extends AbstractTestCase {
             assertEquals(new Path("/t/c", EnumSet.of(Path.Type.file)), list.get(1).remote);
         }
         {
+            Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
             Preferences.instance().deleteProperty("queue.download.priority.regex");
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override

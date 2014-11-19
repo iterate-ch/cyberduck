@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -63,6 +64,9 @@ public class SyncTransfer extends Transfer {
 
     private TransferItem item;
 
+    private Cache<Path> cache
+            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
+
     public SyncTransfer(final Host host, final TransferItem item) {
         super(host, Collections.singletonList(item),
                 new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
@@ -72,7 +76,7 @@ public class SyncTransfer extends Transfer {
 
     private void init() {
         upload = new UploadTransfer(host, roots);
-        download = new DownloadTransfer(host, roots);
+        download = new DownloadTransfer(host, roots).withCache(cache);
     }
 
     @Override
@@ -106,12 +110,12 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener)
+                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(cache)
                 ),
                 download.filter(session, TransferAction.overwrite, listener),
                 upload.filter(session, TransferAction.overwrite, listener),
                 action
-        );
+        ).withCache(cache);
     }
 
     @Override
@@ -121,7 +125,8 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        if(session.getFeature(Find.class).find(directory)) {
+        final Find finder = session.getFeature(Find.class).withCache(cache);
+        if(finder.find(directory)) {
             children.addAll(download.list(session, directory, local, listener));
         }
         if(local.exists()) {

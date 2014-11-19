@@ -137,7 +137,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                         }
                     };
                 }
-                return null;
+                return super.getFeature(type);
             }
         }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true), Cache.<Path>empty());
         final NullSession session = new NullSession(new Host("h"));
