@@ -71,15 +71,14 @@
         <path refid="build.classpath"/>
         <pathelement location="${build.unittests}"/>
         <pathelement location="${build}/${configuration}"/>
-        <fileset dir="${build}">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${build.classes}"/>
         <fileset dir="${lib.ext}">
             <include name="*.jar"/>
         </fileset>
     </path>
 
     <path id="build.classpath">
+        <!-- Include all libraries -->
         <fileset dir="${lib}">
             <include name="*.jar"/>
         </fileset>
