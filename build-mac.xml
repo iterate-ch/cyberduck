@@ -214,8 +214,6 @@
         </exec>
         <echo message="_DSASIGNATURE_=${signature.dsa}"/>
         <echo message="_MD5SUM_=${md5sum}"/>
-        <echo message="_ARCHIVE_=${url.archive}"/>
-        <echo message="_CHANGELOG_=${url.changelog}"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
@@ -391,7 +389,7 @@
         <checksum file="${directory}/${target}" algorithm="md5"/>
     </target>
 
-    <target name="upload">
+    <target name="upload" depends="revision">
         <scp file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
              todir="${url.package}"
              trust="true"
