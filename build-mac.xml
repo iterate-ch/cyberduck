@@ -250,7 +250,7 @@
         </exec>
     </target>
 
-    <target name="copy-runtime" depends="bundle-runtime-eval" if="app.runtime.bundle">
+    <target name="copy-runtime">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}">
@@ -414,15 +414,6 @@
         <checksum file="${directory}/${target}" algorithm="md5"/>
     </target>
 
-    <target name="bundle-runtime-eval">
-        <echo message="Runtime property is set to ${app.runtime.properties.key}"/>
-        <condition property="app.runtime.bundle" value="true">
-            <and>
-                <equals arg1="${app.runtime.properties.key}" arg2="Runtime"/>
-            </and>
-        </condition>
-    </target>
-
     <target name="upload">
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="${url.package}"
@@ -454,7 +445,6 @@
     <target name="nightly" depends="clean, revision">
         <echo message="_REVISION_=${svn.revision}"/>
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
@@ -472,7 +462,6 @@
     <target name="beta" depends="clean, revision">
         <echo message="_REVISION_=${svn.revision}"/>
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
@@ -489,7 +478,6 @@
 
     <target name="release" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
@@ -517,7 +505,6 @@
 
     <target name="mas" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.7.3"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx10.9 MACOSX_DEPLOYMENT_TARGET=10.7"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
