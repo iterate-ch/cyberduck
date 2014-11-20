@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
@@ -111,12 +112,16 @@ public class SFTPListService implements ListService {
                 catch(SFTPException e) {
                     final BackgroundException reason = new SFTPExceptionMappingService().map(e);
                     if(reason instanceof NotfoundException) {
-                        log.warn(String.format("Cannot find symbolic link target of %s", file));
+                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
                     }
                     else if(reason instanceof AccessDeniedException) {
-                        log.warn(String.format("Cannot read symbolic link target of %s", file));
+                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
+                    }
+                    else if(reason instanceof InteroperabilityException) {
+                        log.warn(String.format("Cannot find symbolic link target of %s. %s", file, reason.toString()));
                     }
                     else {
+                        log.warn(String.format("Unknown failure reading symbolic link target of %s. %s", file, reason.toString()));
                         throw reason;
                     }
                     type = Path.Type.file;

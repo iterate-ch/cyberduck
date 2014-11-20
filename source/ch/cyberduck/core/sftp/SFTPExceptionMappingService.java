@@ -63,14 +63,19 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
         if(e instanceof SFTPException) {
             final SFTPException failure = (SFTPException) e;
             final Response.StatusCode code = failure.getStatusCode();
-            if(code == Response.StatusCode.OP_UNSUPPORTED) {
-                return new InteroperabilityException(buffer.toString(), e);
-            }
-            if(code == Response.StatusCode.NO_SUCH_FILE) {
-                return new NotfoundException(buffer.toString(), e);
-            }
-            if(code == Response.StatusCode.PERMISSION_DENIED) {
-                return new AccessDeniedException(buffer.toString(), e);
+            switch(code) {
+                case UNKNOWN:
+                case BAD_MESSAGE:
+                case FAILURE:
+                case OP_UNSUPPORTED:
+                    return new InteroperabilityException(buffer.toString(), e);
+                case NO_SUCH_FILE:
+                    return new NotfoundException(buffer.toString(), e);
+                case PERMISSION_DENIED:
+                    return new AccessDeniedException(buffer.toString(), e);
+                case NO_CONNECTION:
+                case CONNECITON_LOST:
+                    return new ConnectionRefusedException(buffer.toString(), e);
             }
         }
         if(e instanceof UserAuthException) {
