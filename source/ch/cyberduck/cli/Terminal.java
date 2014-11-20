@@ -34,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.ui.action.DisconnectWorker;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.cli.CommandLine;
@@ -150,7 +151,7 @@ public class Terminal {
                     switch(type) {
                         case download:
                             if(arguments.size() == 1) {
-                                local = LocalFactory.get(System.getProperty("user.dir"), remote.getName());
+                                local = LocalFactory.get(remote.getName());
                             }
                             else {
                                 if(LocalFactory.get(arguments.get(1).toString()).isDirectory()) {
@@ -211,6 +212,9 @@ public class Terminal {
                 b.append(e.getMessage());
                 b.append(e.getDetail());
                 listener.message(b.toString());
+            }
+            finally {
+                this.disconnect(session);
             }
             return Exit.failure;
         }
@@ -285,5 +289,10 @@ public class Terminal {
         if(!connect.check(session, Cache.<Path>empty())) {
             throw new ConnectionCanceledException();
         }
+    }
+
+    protected void disconnect(final Session session) {
+        final DisconnectWorker close = new DisconnectWorker(session, Cache.empty());
+        close.run();
     }
 }
