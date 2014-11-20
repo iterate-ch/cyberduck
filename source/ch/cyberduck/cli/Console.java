@@ -21,6 +21,8 @@ package ch.cyberduck.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 /**
@@ -53,15 +55,19 @@ public class Console {
 
     public void printf(final String format, String... args) {
         if(console != null) {
+            final PrintWriter writer = console.writer();
             if(Arrays.asList(args).isEmpty()) {
-                console.writer().print(format);
+                writer.print(format);
             }
             else {
-                console.writer().printf(format, args);
+                writer.printf(format, args);
             }
+            writer.flush();
         }
         else {
-            System.out.printf(format, args);
+            final PrintStream writer = System.out;
+            writer.printf(format, args);
+            writer.flush();
         }
     }
 }
