@@ -46,7 +46,7 @@ public class SFTPAttributesFeature implements Attributes {
             return this.convert(session.sftp().stat(file.getAbsolute()));
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
+            throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

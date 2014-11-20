@@ -67,7 +67,7 @@ public class FTPAttributesFeature implements Attributes {
             throw new NotfoundException(file.getAbsolute());
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map(e);
+            throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
