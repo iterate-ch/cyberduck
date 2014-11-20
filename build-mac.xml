@@ -403,7 +403,15 @@
             <arg line="-czf ${target} ${source}"/>
         </exec>
         <echo message="Calculating MD5 sum..."/>
-        <checksum file="${target}" algorithm="md5"/>
+        <checksum file="${directory}/${target}" algorithm="md5"/>
+    </target>
+
+    <target name="zip">
+        <echo message="Creating ZIP archive..."/>
+        <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
+            <arg line="-c -k --sequesterRsrc --keepParent ${source} ../${target}"/>
+        </exec>
+        <checksum file="${directory}/${target}" algorithm="md5"/>
     </target>
 
     <target name="bundle-runtime-eval">
@@ -413,14 +421,6 @@
                 <equals arg1="${app.runtime.properties.key}" arg2="Runtime"/>
             </and>
         </condition>
-    </target>
-
-    <target name="zip">
-        <echo message="Creating ZIP archive..."/>
-        <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
-            <arg line="-c -k --sequesterRsrc --keepParent ${source} ../${target}"/>
-        </exec>
-        <checksum file="${target}" algorithm="md5"/>
     </target>
 
     <target name="upload">
