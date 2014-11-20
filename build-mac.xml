@@ -134,123 +134,6 @@
             </fileset>
         </copy>
         <!-- Copy runtime -->
-        <antcall target="copy-runtime"/>
-        <!-- Remove architectures -->
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-        </taskdef>
-        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
-
-        <antcall target="spotlight"/>
-
-        <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        <echo message="_REVISION_=${svn.revision}"/>
-        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
-    </target>
-
-    <target name="distribution-sparkle">
-        <antcall target="codesign">
-            <param name="codesign.options" value="--force"/>
-            <!-- No sandboxing enabled -->
-            <param name="codesign.arg"
-                   value="--requirements ${codesign.requirement}"/>
-            <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
-        </antcall>
-        <antcall target="verify-signature"/>
-        <antcall target="verify-spctl"/>
-        <antcall target="tar">
-            <param name="directory" value="${build.deploy}"/>
-            <param name="target" value="${app.name}-${svn.revision}.tar.gz"/>
-            <param name="source" value="${app.name}.app"/>
-        </antcall>
-        <antcall target="zip">
-            <param name="directory" value="${build.deploy}"/>
-            <param name="target" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
-            <param name="source" value="${app.name}.app"/>
-        </antcall>
-        <antcall target="sparkle-feed"/>
-    </target>
-
-    <target name="sparkle-feed" depends="timestamp">
-        <copy todir="${build}" overwrite="true">
-            <fileset dir="${www.update}">
-                <include name="changelog.rss"/>
-            </fileset>
-        </copy>
-
-        <echo message="_ARCHIVE_=${url.archive}"/>
-        <echo message="_CHANGELOG_=${url.changelog}"/>
-
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5" property="md5sum"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
-
-        <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
-            <arg value="-o"/>
-            <arg value="pipefail"/>
-            <arg value="-c"/>
-            <arg value="openssl dgst -sha1 -binary '${build}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
-        </exec>
-        <property name="signature.dsa" value="${signature.dsa}"/>
-        <echo message="_DSASIGNATURE_=${signature.dsa}"/>
-
-        <replace dir="${build}" summary="true" encoding="UTF-8">
-            <include name="changelog.rss"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_ARCHIVE_" value="${url.archive}"/>
-            <replacefilter token="_CHANGELOG_" value="${url.changelog}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
-        </replace>
-    </target>
-
-    <target name="distribution-mas">
-        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
-            <include name="Info.plist"/>
-            <!-- Disable Sparkle Keys -->
-            <replacefilter token="SU" value="None"/>
-        </replace>
-        <delete dir="${app.frameworks}/Sparkle.framework"/>
-        <antcall target="codesign">
-            <param name="codesign.options" value="--force"/>
-            <param name="codesign.arg"
-                   value="--entitlements ${codesign.entitlements}"/>
-            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
-        </antcall>
-        <antcall target="verify-signature"/>
-        <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
-        <property name="build.absolute" location="${build}"/>
-        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
-            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.absolute}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
-        </exec>
-        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
-                  algorithm="md5"/>
-    </target>
-
-    <target name="lipo">
-        <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
-        <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
-               parallel="false" spawn="false" force="true">
-            <!--Remove from executables-->
-            <!--Remove from frameworks-->
-            <!--Remove from shared libraries-->
-            <fileset dir="${app.bundle}" includes="${build.lipo.binaries}"/>
-            <arg line="-remove ${arch} -output"/>
-            <srcfile/>
-            <targetfile/>
-            <identitymapper/>
-        </apply>
-    </target>
-
-    <target name="install" depends="mas">
-        <exec executable="/usr/bin/sudo" spawn="false" failonerror="true">
-            <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
-        </exec>
-    </target>
-
-    <target name="copy-runtime">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}">
@@ -291,6 +174,100 @@
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
         </antcall>
+        <!-- Remove architectures -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+        </taskdef>
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
+
+        <antcall target="spotlight"/>
+    </target>
+
+    <target name="deploy-sparkle" depends="timestamp, revision">
+        <antcall target="codesign">
+            <param name="codesign.options" value="--force"/>
+            <!-- No sandboxing enabled -->
+            <param name="codesign.arg"
+                   value="--requirements ${codesign.requirement}"/>
+            <param name="codesign.certificate" value="Developer ID Application: David Kocher"/>
+        </antcall>
+        <antcall target="verify-signature"/>
+        <antcall target="verify-spctl"/>
+        <antcall target="tar">
+            <param name="directory" value="${build.deploy}"/>
+            <param name="target" value="${app.name}-${svn.revision}.tar.gz"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
+        <antcall target="zip">
+            <param name="directory" value="${build.deploy}"/>
+            <param name="target" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
+        <checksum file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
+                  algorithm="md5" property="md5sum"/>
+        <echo message="Calculating DSA signature..."/>
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+            <arg value="-o"/>
+            <arg value="pipefail"/>
+            <arg value="-c"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+        </exec>
+        <echo message="_DSASIGNATURE_=${signature.dsa}"/>
+        <echo message="_MD5SUM_=${md5sum}"/>
+        <echo message="_ARCHIVE_=${url.archive}"/>
+        <echo message="_CHANGELOG_=${url.changelog}"/>
+        <copy todir="${build.deploy}" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="changelog.rss"/>
+            </fileset>
+        </copy>
+        <replace dir="${build}" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
+            <replacefilter token="_ARCHIVE_" value="${url.archive}"/>
+            <replacefilter token="_CHANGELOG_" value="${url.changelog}"/>
+            <replacefilter token="_REVISION_" value="${svn.revision}"/>
+            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+            <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
+        </replace>
+    </target>
+
+    <target name="deploy-mas">
+        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
+            <!-- Disable Sparkle Keys -->
+            <replacefilter token="SU" value="None"/>
+        </replace>
+        <delete dir="${app.frameworks}/Sparkle.framework"/>
+        <antcall target="codesign">
+            <param name="codesign.options" value="--force"/>
+            <param name="codesign.arg"
+                   value="--entitlements ${codesign.entitlements}"/>
+            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
+        </antcall>
+        <antcall target="verify-signature"/>
+        <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        <property name="build.absolute" location="${build}"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
+            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.absolute}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        </exec>
+        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+                  algorithm="md5"/>
+    </target>
+
+    <target name="lipo">
+        <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
+        <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
+               parallel="false" spawn="false" force="true">
+            <!--Remove from executables-->
+            <!--Remove from frameworks-->
+            <!--Remove from shared libraries-->
+            <fileset dir="${app.bundle}" includes="${build.lipo.binaries}"/>
+            <arg line="-remove ${arch} -output"/>
+            <srcfile/>
+            <targetfile/>
+            <identitymapper/>
+        </apply>
     </target>
 
     <target name="shared-library-install-name">
@@ -398,7 +375,7 @@
     </target>
 
     <target name="tar">
-        <echo message="Creating tar.gz archive..."/>
+        <echo message="Creating tar.gz archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
             <arg line="-czf ${target} ${source}"/>
         </exec>
@@ -407,28 +384,28 @@
     </target>
 
     <target name="zip">
-        <echo message="Creating ZIP archive..."/>
+        <echo message="Creating ZIP archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
-            <arg line="-c -k --sequesterRsrc --keepParent ${source} ../${target}"/>
+            <arg line="-c -k --sequesterRsrc --keepParent ${source} ${target}"/>
         </exec>
         <checksum file="${directory}/${target}" algorithm="md5"/>
     </target>
 
     <target name="upload">
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+        <scp file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
              todir="${url.package}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+        <scp file="${build.deploy}/${app.name}-${svn.revision}.tar.gz.md5"
              todir="${url.package}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <!-- Changelog -->
-        <scp file="${build}/changelog.rss"
+        <scp file="${build.deploy}/changelog.rss"
              todir="${url.changelog}"
              trust="true"
              keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
@@ -442,14 +419,13 @@
         </scp>
     </target>
 
-    <target name="nightly" depends="clean, revision">
-        <echo message="_REVISION_=${svn.revision}"/>
+    <target name="nightly" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
         </antcall>
-        <antcall target="distribution-sparkle">
+        <antcall target="deploy-sparkle">
             <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
         </antcall>
@@ -459,14 +435,13 @@
         </antcall>
     </target>
 
-    <target name="beta" depends="clean, revision">
-        <echo message="_REVISION_=${svn.revision}"/>
+    <target name="beta" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
         </antcall>
-        <antcall target="distribution-sparkle">
+        <antcall target="deploy-sparkle">
             <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
         </antcall>
@@ -476,13 +451,13 @@
         </antcall>
     </target>
 
-    <target name="release" depends="clean, revision">
+    <target name="release" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
         </antcall>
-        <antcall target="distribution-sparkle">
+        <antcall target="deploy-sparkle">
             <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
         </antcall>
@@ -503,13 +478,13 @@
         </antcall>
     </target>
 
-    <target name="mas" depends="clean, revision">
+    <target name="mas" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.7.3"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx10.9 MACOSX_DEPLOYMENT_TARGET=10.7"/>
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
-        <antcall target="distribution-mas"/>
+        <antcall target="deploy-mas"/>
         <antcall target="confirm"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
