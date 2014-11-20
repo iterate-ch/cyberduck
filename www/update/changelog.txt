@@ -5,6 +5,7 @@
 - [Feature] Improved error reporting on connection failures
 - [Feature] Verify MD5 checksum for multipart uploads (S3)
 - [Feature] Disabled SSLv3 (HTTP)
+- [Feature] Improved performance downloading and mirroring files
 - [Bugfix] Connecting using authentication with SSH agent (SFTP)
 - [Bugfix] Interoperability with SSH Tectia Server (SFTP) (#8166)
 - [Bugfix] Interoperability with Eucalyptus Object Storage (S3) (#8216)
