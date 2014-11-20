@@ -219,7 +219,7 @@
                 <include name="changelog.rss"/>
             </fileset>
         </copy>
-        <replace dir="${build}" summary="true" encoding="UTF-8">
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
             <replacefilter token="_ARCHIVE_" value="${url.archive}"/>
