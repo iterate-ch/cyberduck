@@ -166,24 +166,6 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test(expected = NotfoundException.class)
-    public void testSpaceInBucketNameInteroperabilityEvault() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
-                properties.getProperty("evault.s3.key"), properties.getProperty("evault.s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(session.isConnected());
-        Cache<Path> cache = new Cache<Path>();
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).getReference()));
-        // Test for Illegal character in path at index 40: https://s3.lts2.evault.com:443/cyberduck space/?max-keys=1000&prefix&delimiter=%2F
-        final AttributedList<Path> list
-                = new S3ObjectListService(session).list(new Path("/cyberduck space", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertTrue(list.isEmpty());
-        session.close();
-    }
-
     @Test
     public void testListPlaceholder() throws Exception {
         final S3Session session = new S3Session(
