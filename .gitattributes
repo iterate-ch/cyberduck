@@ -2526,9 +2526,13 @@ sl.lproj/Status.strings -text svneol=unset#text/utf-16
 sl.lproj/Support.strings -text svneol=unset#text/utf-16
 sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/App.config -text
+source/ch/cyberduck/Bundle.wxs -text
+source/ch/cyberduck/CLI-WiX-Bootstrapper.wixproj -text
+source/ch/cyberduck/CLI-WiX.wixproj -text
 source/ch/cyberduck/CLI.csproj -text
 source/ch/cyberduck/Cyberduck.csproj svneol=native#text/xml
 source/ch/cyberduck/Cyberduck.sln -text
+source/ch/cyberduck/Product.wxs -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/cli/WindowsTerminal.cs -text

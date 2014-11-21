@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Cyberduck CLI" Language="1033" Version="1.0.0.0" Manufacturer="iterate GmbH"
+           UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Cyberduck CLI">
+          <Component Id="setEnviroment"
+                     Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
+            <CreateFolder />
+            <Environment Id="PathVar"
+                         Action="set"
+                         Part="last"
+                         Name="PATH"
+                         Permanent="no"
+                         System="yes"
+                         Value="[INSTALLFOLDER]" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
+        <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
+        <File Source="$(var.CLI.TargetDir)/core.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="IKVM" Guid="1D130759-2B25-414F-A594-C1B987D8407F">
+        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Core.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Beans.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Jdbc.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Security.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Text.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Util.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.API.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="setEnviroment" />
+    </Feature>
+  </Product>
+</Wix>

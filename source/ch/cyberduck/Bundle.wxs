@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+  <Bundle Name="Cyberduck CLI" Version="1.0.0.0" Manufacturer="iterate GmbH"
+          UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="..\..\..\cyberduck-application.ico">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
+      <bal:WixStandardBootstrapperApplication
+        LicenseUrl=""
+        LogoFile="..\..\..\cyberduck-application.png" LogoSideFile="..\..\..\setup\welcome.bmp" />
+    </BootstrapperApplicationRef>
+    <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck CLI" />
+    <Chain>
+      <PackageGroupRef Id="NetFx40ClientWeb" />
+      <RollbackBoundary />
+      <MsiPackage
+        Id="Setup"
+        Compressed="yes"
+        SourceFile="$(var.CLI-WiX.TargetPath)"
+        Vital="yes">
+        <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]" />
+      </MsiPackage>
+    </Chain>
+  </Bundle>
+</Wix>
