@@ -134,7 +134,6 @@
     </target>
 
     <target name="release" depends="clean, package-release">
-        <antcall target="confirm"/>
         <antcall target="upload">
             <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows"/>
             <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/"/>
@@ -242,7 +241,6 @@
             <arg value="-add=${absbuild}/updater.xml"/>
         </exec>
 
-        <antcall target="confirm"/>
         <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/update"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
