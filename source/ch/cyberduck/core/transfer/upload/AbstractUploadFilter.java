@@ -142,7 +142,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             status.setMime(mapping.getMime(file.getName()));
         }
-        if(this.options.permissions) {
+        if(options.permissions) {
             final Permission permission;
             if(status.isExists()) {
                 permission = status.getRemote().getPermission();
@@ -166,7 +166,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             // Setting target UNIX permissions in transfer status
             status.setPermission(permission);
         }
-        if(this.options.acl) {
+        if(options.acl) {
             Acl acl = Acl.EMPTY;
             if(status.isExists()) {
                 final AclPermission feature = session.getFeature(AclPermission.class);
