@@ -31,7 +31,6 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
-            PreferencesFactory.set(new WindowsTerminalPreferences());
             main(args);
         }
     }
