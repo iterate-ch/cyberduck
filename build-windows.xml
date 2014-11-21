@@ -98,6 +98,7 @@
         <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}"
                version="${version}" debug="false" verbose="true">
             <fileset file="${build}/core.jar"/>
+			<fileset file="${build}/cli.jar"/>
             <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>

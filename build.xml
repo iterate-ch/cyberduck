@@ -16,7 +16,7 @@
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ *	GNU General Public License for more details.F
  *
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
@@ -178,6 +178,33 @@
                 <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
             </fileset>
         </jar>
+
+        <manifestclasspath property="manifest.lib.classpath"
+                           jarfile="${lib}/cli.jar">
+            <!-- Convert paths relative to target jarfile -->
+            <classpath refid="build.classpath"/>
+        </manifestclasspath>
+        <manifestclasspath property="manifest.build.classpath"
+                           jarfile="${build}/cli.jar">
+            <!-- Convert paths relative to target jarfile -->
+            <classpath>
+                <fileset dir="${build}" includes="*.jar"/>
+            </classpath>
+        </manifestclasspath>
+        <jar jarfile="${build}/cli.jar"
+             update="yes">
+            <fileset dir="${build.classes}">
+                <include name="ch/cyberduck/cli/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Specification-Title" value="${app.name}"/>
+                <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+                <attribute name="Specification-Vendor" value="${copyright}"/>
+                <attribute name="Implementation-Version" value="${svn.revision}"/>
+                <attribute name="Main-Class" value="ch.cyberduck.cli.Terminal"/>
+                <attribute name="Class-Path" value="${manifest.lib.classpath} ${manifest.build.classpath}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="doc" depends="init" description="Generate Javadoc">
@@ -292,34 +319,6 @@
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath path="${java.home}/../lib/ant-javafx.jar"/>
         </taskdef>
-
-        <manifestclasspath property="manifest.lib.classpath"
-                           jarfile="${lib}/cli.jar">
-            <!-- Convert paths relative to target jarfile -->
-            <classpath refid="build.classpath"/>
-        </manifestclasspath>
-        <manifestclasspath property="manifest.build.classpath"
-                           jarfile="${build}/cli.jar">
-            <!-- Convert paths relative to target jarfile -->
-            <classpath>
-                <fileset dir="${build}" includes="*.jar"/>
-            </classpath>
-        </manifestclasspath>
-
-        <jar jarfile="${build}/cli.jar"
-             update="yes">
-            <fileset dir="${build.classes}">
-                <include name="ch/cyberduck/cli/*.class"/>
-            </fileset>
-            <manifest>
-                <attribute name="Specification-Title" value="${app.name}"/>
-                <attribute name="Specification-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-                <attribute name="Specification-Vendor" value="${copyright}"/>
-                <attribute name="Implementation-Version" value="${svn.revision}"/>
-                <attribute name="Main-Class" value="ch.cyberduck.cli.Terminal"/>
-                <attribute name="Class-Path" value="${manifest.lib.classpath} ${manifest.build.classpath}"/>
-            </manifest>
-        </jar>
 
         <mkdir dir="${build}/${configuration}"/>
         <fx:deploy nativeBundles="${cli.bundles}"
