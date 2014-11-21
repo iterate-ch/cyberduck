@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyberduck", "Cyberduck.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\..\..\test\ch\cyberduck\Test.csproj", "{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "CLI.csproj", "{4B14000D-F435-4ECA-A119-7AEF03792DEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,12 @@ Global
 		{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}.Release|x86.ActiveCfg = Release|x86
 		{18C4C52D-F639-4A5E-A8B6-FC2950C8DC91}.Release|x86.Build.0 = Release|x86
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B14000D-F435-4ECA-A119-7AEF03792DEE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
