@@ -179,11 +179,13 @@
             </fileset>
         </jar>
 
+        <var name="manifest.lib.classpath" unset="true"/>
         <manifestclasspath property="manifest.lib.classpath"
                            jarfile="${lib}/cli.jar">
             <!-- Convert paths relative to target jarfile -->
             <classpath refid="build.classpath"/>
         </manifestclasspath>
+        <var name="manifest.build.classpath" unset="true"/>
         <manifestclasspath property="manifest.build.classpath"
                            jarfile="${build}/cli.jar">
             <!-- Convert paths relative to target jarfile -->
