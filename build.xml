@@ -179,6 +179,9 @@
             </fileset>
         </jar>
 
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+        </taskdef>
         <var name="manifest.lib.classpath" unset="true"/>
         <manifestclasspath property="manifest.lib.classpath"
                            jarfile="${lib}/cli.jar">
