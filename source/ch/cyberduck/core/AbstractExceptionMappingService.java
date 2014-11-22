@@ -33,6 +33,7 @@ import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @version $Id$
@@ -90,6 +91,10 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof InterruptedIOException) {
                 // Handling socket timeouts
+                return new ConnectionTimeoutException(buffer.toString(), failure);
+            }
+            if(cause instanceof TimeoutException) {
+                //
                 return new ConnectionTimeoutException(buffer.toString(), failure);
             }
             if(cause instanceof SocketException) {
