@@ -182,8 +182,14 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
+        }
         LoginFailureException lastFailure = null;
         for(SFTPAuthentication auth : methods) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt authentication with auth method %s", auth));
+            }
             try {
                 if(!auth.authenticate(host, prompt, cancel)) {
                     if(log.isDebugEnabled()) {
@@ -194,6 +200,7 @@ public class SFTPSession extends Session<SSHClient> {
                 }
             }
             catch(IllegalStateException e) {
+                log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
                 throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
                         disconnectListener.getFailure());
             }
