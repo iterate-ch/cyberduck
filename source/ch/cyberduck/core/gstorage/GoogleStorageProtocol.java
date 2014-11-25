@@ -95,7 +95,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
 
     @Override
     public String getUsernamePlaceholder() {
-        return LocaleFactory.localizedString("x-goog-project-id", "Credentials");
+        return LocaleFactory.localizedString("Project ID or Number", "Credentials");
     }
 
     @Override
