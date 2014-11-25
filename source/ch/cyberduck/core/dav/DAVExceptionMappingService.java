@@ -38,43 +38,36 @@ public class DAVExceptionMappingService extends AbstractExceptionMappingService<
     @Override
     public BackgroundException map(final SardineException e) {
         final StringBuilder buffer = new StringBuilder();
-        if(e.getStatusCode() == HttpStatus.SC_OK
-                || e.getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
+        final int statusCode = e.getStatusCode();
+        if(statusCode == HttpStatus.SC_OK
+                || statusCode == HttpStatus.SC_MULTI_STATUS) {
             this.append(buffer, e.getMessage());
             // Failure unmarshalling XML response
             return new InteroperabilityException(buffer.toString(), e);
         }
         // HTTP method status
         this.append(buffer, e.getResponsePhrase());
-        if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            return new LoginFailureException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-            return new AccessDeniedException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-            return new NotfoundException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE) {
-            return new QuotaException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_INSUFFICIENT_STORAGE) {
-            return new QuotaException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_PAYMENT_REQUIRED) {
-            return new QuotaException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
-            return new InteroperabilityException(buffer.toString(), e);
-        }
-        if(e.getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-            return new InteroperabilityException(buffer.toString(), e);
+        switch(statusCode) {
+            case HttpStatus.SC_UNAUTHORIZED:
+                return new LoginFailureException(buffer.toString(), e);
+            case HttpStatus.SC_FORBIDDEN:
+                return new AccessDeniedException(buffer.toString(), e);
+            case HttpStatus.SC_NOT_FOUND:
+                return new NotfoundException(buffer.toString(), e);
+            case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
+                return new QuotaException(buffer.toString(), e);
+            case HttpStatus.SC_INSUFFICIENT_STORAGE:
+                return new QuotaException(buffer.toString(), e);
+            case HttpStatus.SC_PAYMENT_REQUIRED:
+                return new QuotaException(buffer.toString(), e);
+            case HttpStatus.SC_BAD_REQUEST:
+                return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_NOT_IMPLEMENTED:
+                return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
