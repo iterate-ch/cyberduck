@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -105,9 +106,14 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         final Application application = editors.get(index.intValue());
         item.setRepresentedObject(application.getIdentifier());
         final String editor = editors.get(index.intValue()).getName();
-        item.setTitle(editor);
+        if(StringUtils.isBlank(editor)) {
+            item.setTitle(LocaleFactory.localizedString("Unknown"));
+        }
+        else {
+            item.setTitle(editor);
+        }
         if(null != selected && application.getIdentifier().equalsIgnoreCase(EditorFactory.instance().getEditor(selected.getName()).getIdentifier())) {
-            setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
+            this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
             this.clearShortcut(item);
