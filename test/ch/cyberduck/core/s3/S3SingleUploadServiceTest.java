@@ -91,10 +91,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
                         new Credentials(
                                 properties.getProperty("s3.key"), properties.getProperty("s3.secret")
                         ))) {
-            @Override
-            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
-                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
-            }
+
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());

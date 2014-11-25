@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -62,14 +63,25 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                 final StreamListener listener, final TransferStatus status,
                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        switch(session.getSignatureVersion()) {
+        final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
+        switch(signatureVersion) {
             case AWS4HMACSHA256:
                 status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
                                 checksum.compute(local.getInputStream()))
                 );
                 break;
         }
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+        try {
+            return super.upload(file, local, throttle, listener, status, cancel, progress);
+        }
+        catch(InteroperabilityException e) {
+            if(!session.getSignatureVersion().equals(signatureVersion)) {
+                // Retry if upload fails with Header "x-amz-content-sha256" set to the hex-encoded SHA256 hash of the
+                // request payload is required for AWS Version 4 request signing
+                return this.upload(file, local, throttle, listener, status, cancel, progress);
+            }
+            throw e;
+        }
     }
 
     @Override
