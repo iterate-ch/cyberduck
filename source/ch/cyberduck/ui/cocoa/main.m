@@ -25,7 +25,6 @@
 
 #define JVM_PROPERTIES_KEY "Runtime"
 #define JVM_LIB_KEY "Library"
-#define JVM_DEFAULT_LIB "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib/jli/libjli.dylib"
 #define JVM_MAIN_CLASS_NAME_KEY "MainClass"
 #define JVM_WORKING_DIRECTORY_KEY "WorkingDirectory"
 #define JVM_STARTONMAINTHREAD_KEY "StartOnMainThread"
@@ -146,7 +145,9 @@ int launch(char *commandName) {
     // Locate the JLI_Launch() function
     NSString *libjliPath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
     if (libjliPath == nil) {
-        libjliPath = @JVM_DEFAULT_LIB;
+        [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+            reason:NSLocalizedString(@"Runtime path required in Info.plist", @UNSPECIFIED_ERROR)
+            userInfo:nil] raise];
     }
     void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
 
