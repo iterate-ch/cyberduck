@@ -70,7 +70,6 @@
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.unittests}"/>
-        <pathelement location="${build}/${configuration}"/>
         <fileset dir="${build}">
             <include name="*.jar"/>
         </fileset>
