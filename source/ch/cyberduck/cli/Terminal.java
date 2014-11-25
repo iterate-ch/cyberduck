@@ -23,7 +23,6 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
@@ -35,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.action.DisconnectWorker;
+import ch.cyberduck.ui.action.SessionListWorker;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 
 import org.apache.commons.cli.CommandLine;
@@ -47,7 +47,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,6 +68,8 @@ public class Terminal {
     private final Preferences preferences = Preferences.instance();
 
     private final ApplicationFinder finder = ApplicationFinderFactory.get();
+
+    private Cache<Path> cache = new Cache<Path>();
 
     private enum Exit {
         success,
@@ -111,7 +112,7 @@ public class Terminal {
             System.exit(1);
         }
         catch(Throwable error) {
-            System.err.println(StringUtils.isNotBlank(error.getMessage()) ? error.getMessage() : error.getClass().getName());
+            error.printStackTrace(System.err);
             System.exit(1);
         }
     }
@@ -130,79 +131,73 @@ public class Terminal {
             return Exit.success;
         }
         if(TerminalOptionsInputValidator.validate(input)) {
-            final List arguments = input.getArgList();
-            final Session session = SessionFactory.create(new UriParser(input).parse(arguments.get(0).toString()));
-            final TerminalProgressListener listener = new TerminalProgressListener();
+            this.configure(input);
+
             Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(final Thread t, final Throwable e) {
-                    listener.message(String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
+                    new TerminalProgressListener().message(
+                            String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
                     System.exit(1);
                 }
             });
+            Session session = null;
             try {
-                final Path remote = new PathParser(input).parse(arguments.get(0).toString());
-                if(input.hasOption(TerminalAction.edit.name())) {
-                    return this.edit(session, remote, listener);
+                final TerminalAction action = TerminalActionFinder.get(input);
+                if(null == action) {
+                    return Exit.failure;
                 }
-                else {
-                    final Local local;
-                    final Transfer.Type type = TerminalOptionsTransferTypeFinder.get(input);
-                    switch(type) {
-                        case download:
-                            if(arguments.size() == 1) {
-                                local = LocalFactory.get(remote.getName());
+                final String uri = input.getOptionValue(action.name());
+                final Host host = new UriParser(input).parse(uri);
+                if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
+                    host.getCredentials().setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
+                }
+                if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
+                    host.getCredentials().setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
+                }
+                session = SessionFactory.create(host);
+                final Path remote = new PathParser(input).parse(uri);
+                switch(action) {
+                    case edit:
+                        return this.edit(session, remote);
+                    case list:
+                        return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+                }
+                final Transfer transfer;
+                switch(action) {
+                    case download:
+                    case upload:
+                    case synchronize:
+                        final Local local;
+                        if(input.getOptionValues(action.name()).length == 2) {
+                            if(LocalFactory.get(input.getOptionValues(action.name())[1]).isDirectory()) {
+                                local = LocalFactory.get(input.getOptionValues(action.name())[1], remote.getName());
                             }
                             else {
-                                if(LocalFactory.get(arguments.get(1).toString()).isDirectory()) {
-                                    local = LocalFactory.get(arguments.get(1).toString(), remote.getName());
-                                }
-                                else {
-                                    local = LocalFactory.get(arguments.get(1).toString());
-                                }
+                                local = LocalFactory.get(input.getOptionValues(action.name())[1]);
                             }
-                            break;
-                        case upload:
-                        case sync:
-                            local = LocalFactory.get(arguments.get(1).toString());
-                            if(!local.exists()) {
-                                throw new NotfoundException(local.getAbsolute());
-                            }
-                            break;
-                        case move:
-                        case copy:
-                            local = null;
-                            break;
-                        default:
-                            throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                                    String.format("Unknown transfer type %s", type.name()));
-                    }
-                    final Transfer transfer;
-                    switch(type) {
-                        case download:
-                        case upload:
-                        case sync:
-                            transfer = TerminalTransferFactory.create(type,
-                                    new UriParser(input).parse(arguments.get(0).toString()),
-                                    new TransferItem(remote, local));
-                            break;
-                        case copy:
-                            transfer = new CopyTransfer(
-                                    new UriParser(input).parse(arguments.get(0).toString()),
-                                    new UriParser(input).parse(arguments.get(1).toString()),
-                                    Collections.singletonMap(
-                                            new PathParser(input).parse(arguments.get(0).toString()),
-                                            new PathParser(input).parse(arguments.get(1).toString()))
-                            );
-                            // Connect
-                            this.connect(((CopyTransfer) transfer).getDestination(), listener);
-                            break;
-                        default:
-                            throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                                    String.format("Unknown transfer type %s", type.name()));
-                    }
-                    return this.transfer(transfer, session, listener);
+                        }
+                        else {
+                            local = LocalFactory.get(remote.getName());
+                        }
+                        transfer = TerminalTransferFactory.create(action, host, new TransferItem(remote, local));
+                        break;
+                    case copy:
+                        transfer = new CopyTransfer(
+                                host,
+                                new UriParser(input).parse(input.getOptionValues(action.name())[1]),
+                                Collections.singletonMap(
+                                        new PathParser(input).parse(uri),
+                                        new PathParser(input).parse(input.getOptionValues(action.name())[1]))
+                        );
+                        // Connect
+                        this.connect(((CopyTransfer) transfer).getDestination());
+                        break;
+                    default:
+                        throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                                String.format("Unknown transfer type %s", action.name()));
                 }
+                return this.transfer(transfer, session);
             }
             catch(ConnectionCanceledException e) {
                 return Exit.success;
@@ -211,7 +206,7 @@ public class Terminal {
                 final StringAppender b = new StringAppender();
                 b.append(e.getMessage());
                 b.append(e.getDetail());
-                listener.message(b.toString());
+                new TerminalProgressListener().message(b.toString());
             }
             finally {
                 this.disconnect(session);
@@ -224,21 +219,39 @@ public class Terminal {
         }
     }
 
-    protected Exit transfer(final Transfer transfer, final Session session, final TerminalProgressListener listener) throws BackgroundException {
+    protected void configure(final CommandLine input) {
+        final boolean preserve = input.hasOption(TerminalOptionsBuilder.Params.preserve.name());
+        preferences.setProperty("queue.upload.permissions.change", preserve);
+        preferences.setProperty("queue.upload.timestamp.change", preserve);
+        preferences.setProperty("queue.download.permissions.change", preserve);
+        preferences.setProperty("queue.download.timestamp.change", preserve);
+    }
+
+    protected Exit transfer(final Transfer transfer, final Session session) throws BackgroundException {
         // Connect
-        this.connect(session, listener);
+        this.connect(session);
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
                 new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
-                listener, new TerminalStreamListener(meter), new TerminalLoginCallback());
+                new TerminalProgressListener(), new TerminalStreamListener(meter), new TerminalLoginCallback());
         worker.run();
         return Exit.success;
     }
 
-    protected Exit edit(final Session session, final Path remote, final TerminalProgressListener listener) throws BackgroundException {
+    protected Exit list(final Session session, final Path remote, final boolean verbose) throws BackgroundException {
         // Connect
-        this.connect(session, listener);
+        this.connect(session);
+        // List
+        final SessionListWorker worker = new SessionListWorker(session, Cache.<Path>empty(), remote,
+                new TerminalListProgressListener(verbose));
+        worker.run();
+        return Exit.success;
+    }
+
+    protected Exit edit(final Session session, final Path remote) throws BackgroundException {
+        // Connect
+        this.connect(session);
         // Edit
         final TerminalController controller = new TerminalController();
         final EditorFactory factory = EditorFactory.instance();
@@ -282,17 +295,21 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected void connect(final Session session, final TerminalProgressListener listener) throws BackgroundException {
+    protected void connect(final Session session) throws BackgroundException {
+        final TranscriptListener transcript = input.hasOption(TerminalOptionsBuilder.Params.verbose.name())
+                ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         final ConnectionService connect = new LoginConnectionService(
                 new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                listener, input.hasOption("verbose") ? new TerminalTranscriptListener() : new DisabledTranscriptListener());
-        if(!connect.check(session, Cache.<Path>empty())) {
+                new TerminalProgressListener(), transcript);
+        if(!connect.check(session, cache)) {
             throw new ConnectionCanceledException();
         }
     }
 
     protected void disconnect(final Session session) {
-        final DisconnectWorker close = new DisconnectWorker(session, Cache.empty());
-        close.run();
+        if(session != null) {
+            final DisconnectWorker close = new DisconnectWorker(session, cache);
+            close.run();
+        }
     }
 }

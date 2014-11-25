@@ -22,6 +22,7 @@ import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,6 @@ public class PathParser {
     }
 
     public Path parse(final String uri) {
-        final Path remote;
         final Host host = HostParser.parse(uri);
         switch(host.getProtocol().getType()) {
             case s3:
@@ -51,18 +51,18 @@ public class PathParser {
             case swift:
             case azure:
                 if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
-                    remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+                    return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
                 }
                 else {
-                    final String container = host.getHostname();
+                    final Path container = new Path(host.getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
                     final String key = host.getDefaultPath();
-                    remote = new Path(new Path(container, EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            key, EnumSet.of(detector.detect(key)));
+                    if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
+                        return container;
+                    }
+                    return new Path(container, key, EnumSet.of(detector.detect(key)));
                 }
-                break;
             default:
-                remote = new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+                return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
         }
-        return remote;
     }
 }

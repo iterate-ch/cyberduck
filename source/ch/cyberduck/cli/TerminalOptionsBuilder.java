@@ -34,49 +34,67 @@ public final class TerminalOptionsBuilder {
         final Options options = new Options();
         options.addOption(OptionBuilder.withArgName("username")
                 .withDescription("Username")
-                .withLongOpt("username")
+                .withLongOpt(Params.username.name())
                 .hasArg(true)
                 .isRequired(false)
                 .create('u'));
         options.addOption(OptionBuilder.withArgName("password")
                 .withDescription("Password")
-                .withLongOpt("password")
+                .withLongOpt(Params.password.name())
                 .hasArg(true)
                 .isRequired(false)
                 .create('p'));
         options.addOption(OptionBuilder
-                .withDescription("Download file or folder")
+                .withDescription("Download file or folder. Denote a folder with a trailing '/'. If the local filename is not specified it is downloaded to the current working directory with the same name the file has on the remote server.")
                 .withLongOpt(TerminalAction.download.name())
-                .hasArg(false)
+                .hasArgs(1).hasOptionalArgs(1).withArgName("url> <[file]").withValueSeparator(' ')
                 .isRequired(false)
                 .create('d'));
         options.addOption(OptionBuilder
-                .withDescription("Upload file or folder")
+                .withDescription("Upload file or folder recursively.")
                 .withLongOpt(TerminalAction.upload.name())
-                .hasArg(false)
+                .hasArgs(2).withArgName("url> <file").withValueSeparator(' ')
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
                 .withDescription("Copy between servers")
                 .withLongOpt(TerminalAction.copy.name())
-                .hasArg(false)
+                .hasArgs(2).withArgName("url> <url").withValueSeparator(' ')
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
                 .withDescription("Synchronize folders")
                 .withLongOpt(TerminalAction.synchronize.name())
-                .hasArg(false)
+                .hasArgs(2).withArgName("url> <directory").withValueSeparator(' ')
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
                 .withDescription("Edit file in external editor")
                 .withLongOpt(TerminalAction.edit.name())
-                .hasArg(true)
+                .hasArgs(1).withArgName("url")
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
+                .withDescription("List files in remote folder.")
+                .withLongOpt(TerminalAction.list.name())
+                .hasArg(true).withArgName("url")
+                .isRequired(false)
+                .create("l"));
+        options.addOption(OptionBuilder
+                .withDescription("Long list format with modification date and permission mask.")
+                .withLongOpt(Params.longlist.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create('L'));
+        options.addOption(OptionBuilder
+                .withDescription("Preserve permissions and modification date for transferred files")
+                .withLongOpt(Params.preserve.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create('P'));
+        options.addOption(OptionBuilder
                 .withDescription("Print transcript")
-                .withLongOpt("verbose")
+                .withLongOpt(Params.verbose.name())
                 .hasArg(false)
                 .isRequired(false)
                 .create('v'));
@@ -93,5 +111,13 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create("h"));
         return options;
+    }
+
+    public enum Params {
+        longlist,
+        preserve,
+        verbose,
+        username,
+        password
     }
 }

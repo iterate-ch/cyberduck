@@ -45,7 +45,7 @@ public final class TerminalHelpPrinter {
         final HelpFormatter formatter = new TerminalHelpFormatter();
         formatter.setSyntaxPrefix("Usage: ");
         formatter.setWidth(200);
-        final StringBuilder protocols = new StringBuilder(" Supported protocols").append(StringUtils.LF);
+        final StringBuilder protocols = new StringBuilder("\nSupported protocols").append(StringUtils.LF);
         for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
             protocols.append(p.getProvider()).append("\t").append(p.getDescription()).append(StringUtils.LF);
             switch(p.getType()) {
@@ -60,9 +60,8 @@ public final class TerminalHelpPrinter {
             }
             protocols.append(StringUtils.LF);
         }
-        final String header = "The <url> must be a fully qualified URL of " +
-                "remote file or folder such as 'ftps://example.net/resource'. " +
-                "Can include username and password prefixed to the host name.\n" + protocols.toString();
+        final String header = "\n\tURLs must be a fully qualified with a " +
+                "remote file or folder such as ftps://user@example.net/resource.\n" + protocols.toString();
         final StringAppender footer = new StringAppender();
         footer.append("Cyberduck is libre software licenced under the GPL");
         footer.append(String.format("For general help about using Cyberduck, please refer to %s",
@@ -74,7 +73,7 @@ public final class TerminalHelpPrinter {
         if(l.verify()) {
             footer.append(l.toString());
         }
-        formatter.printHelp("duck [options...] <url> [<file or url>]", header, options, footer.toString());
+        formatter.printHelp("duck [options...]", header, options, footer.toString());
     }
 
     private static final class TerminalHelpFormatter extends HelpFormatter {

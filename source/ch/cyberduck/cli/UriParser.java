@@ -46,12 +46,6 @@ public class UriParser {
                     host.setHostname(host.getProtocol().getDefaultHostname());
                 }
         }
-        if(input.hasOption("username")) {
-            host.getCredentials().setUsername(input.getOptionValue("username"));
-        }
-        if(input.hasOption("password")) {
-            host.getCredentials().setPassword(input.getOptionValue("password"));
-        }
         host.setDefaultPath(new PathParser(input).parse(uri).getParent().getAbsolute());
         return host;
     }

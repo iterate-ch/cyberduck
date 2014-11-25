@@ -27,13 +27,18 @@ public class TerminalTranscriptListener implements TranscriptListener {
 
     private final Console console = new Console();
 
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
     @Override
     public void log(final boolean request, final String message) {
         if(request) {
-            console.printf("> %s\n", message);
+            console.printf("%s> %s%s\n", ANSI_GREEN, message, ANSI_RESET);
         }
         else {
-            console.printf("< %s\n", message);
+            console.printf("%s< %s%s\n", ANSI_RED, message, ANSI_RESET);
         }
     }
 }

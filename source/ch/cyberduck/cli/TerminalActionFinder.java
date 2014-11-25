@@ -18,40 +18,31 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.transfer.Transfer;
-
 import org.apache.commons.cli.CommandLine;
-
-import java.util.List;
 
 /**
  * @version $Id$
  */
-public class TerminalOptionsTransferTypeFinder {
-
-    protected static Transfer.Type get(final CommandLine input) {
-        final List arguments = input.getArgList();
-        final Transfer.Type type;
-        if(input.hasOption(TerminalAction.download.name())) {
-            type = Transfer.Type.download;
+public class TerminalActionFinder {
+    public static TerminalAction get(final CommandLine input) {
+        if(input.hasOption(TerminalAction.edit.name())) {
+            return TerminalAction.edit;
+        }
+        else if(input.hasOption(TerminalAction.list.name())) {
+            return TerminalAction.list;
+        }
+        else if(input.hasOption(TerminalAction.download.name())) {
+            return TerminalAction.download;
         }
         else if(input.hasOption(TerminalAction.upload.name())) {
-            type = Transfer.Type.upload;
-        }
-        else if(input.hasOption(TerminalAction.copy.name())) {
-            type = Transfer.Type.copy;
+            return TerminalAction.upload;
         }
         else if(input.hasOption(TerminalAction.synchronize.name())) {
-            type = Transfer.Type.sync;
+            return TerminalAction.synchronize;
         }
-        else {
-            if(arguments.size() == 2) {
-                type = Transfer.Type.upload;
-            }
-            else {
-                type = Transfer.Type.download;
-            }
+        else if(input.hasOption(TerminalAction.copy.name())) {
+            return TerminalAction.copy;
         }
-        return type;
+        return null;
     }
 }

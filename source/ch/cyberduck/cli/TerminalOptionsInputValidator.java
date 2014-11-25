@@ -26,12 +26,9 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.transfer.Transfer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
 
 /**
  * @version $Id$
@@ -39,13 +36,6 @@ import java.util.List;
 public class TerminalOptionsInputValidator {
 
     protected static boolean validate(final CommandLine input) {
-        final List arguments = input.getArgList();
-        if(arguments.size() == 0 || arguments.size() > 2) {
-            return false;
-        }
-        if(!validate(arguments.get(0).toString())) {
-            return false;
-        }
         if(input.hasOption(TerminalAction.edit.name())) {
             if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
@@ -59,30 +49,38 @@ public class TerminalOptionsInputValidator {
             }
             return true;
         }
-        final Transfer.Type type = TerminalOptionsTransferTypeFinder.get(input);
-        switch(type) {
+        final TerminalAction action = TerminalActionFinder.get(input);
+        if(null == action) {
+            return false;
+        }
+        // Validate arguments
+        switch(action) {
+            case list:
             case download:
-                if(arguments.size() != 1 && arguments.size() != 2) {
+                if(StringUtils.isBlank(input.getOptionValue(action.name()))) {
+                    return false;
+                }
+                if(!validate(input.getOptionValue(action.name()))) {
                     return false;
                 }
                 break;
             case upload:
             case copy:
-            case sync:
-                if(arguments.size() != 2) {
+            case synchronize:
+                if(StringUtils.isBlank(input.getOptionValue(action.name()))) {
+                    return false;
+                }
+                if(!validate(input.getOptionValue(action.name()))) {
                     return false;
                 }
                 break;
         }
-        switch(type) {
-            case copy:
-                if(!validate(arguments.get(1).toString())) {
-                    return false;
-                }
-        }
         return true;
     }
 
+    /**
+     * Validate URI
+     */
     private static boolean validate(final String uri) {
         if(uri.indexOf("://", 0) != -1) {
             final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));

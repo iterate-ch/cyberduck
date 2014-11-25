@@ -34,7 +34,7 @@ import java.util.Arrays;
  */
 public class TerminalTransferFactory {
 
-    public static Transfer create(final Transfer.Type type, final Host host, final TransferItem item) throws BackgroundException {
+    public static Transfer create(final TerminalAction type, final Host host, final TransferItem item) throws BackgroundException {
         final Transfer transfer;
         switch(type) {
             case download:
@@ -43,7 +43,7 @@ public class TerminalTransferFactory {
             case upload:
                 transfer = new UploadTransfer(host, Arrays.asList(item));
                 break;
-            case sync:
+            case synchronize:
                 transfer = new SyncTransfer(host, item);
                 break;
             default:
