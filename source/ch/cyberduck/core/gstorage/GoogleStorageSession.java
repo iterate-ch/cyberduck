@@ -42,6 +42,7 @@ import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -52,7 +53,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
@@ -132,65 +133,63 @@ public class GoogleStorageSession extends S3Session {
     @Override
     public void login(final PasswordStore keychain, final LoginCallback controller,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        if(NumberUtils.isNumber(host.getCredentials().getUsername())) {
-            // Project ID needs OAuth2 authentication
-            final OAuth2Credentials oauth = new OAuth2Credentials(
-                    new OAuthUtils(client.getHttpClient(),
-                            OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
-                            preferences.getProperty("google.storage.oauth.clientid"),
-                            preferences.getProperty("google.storage.oauth.secret")),
-                    preferences.getProperty("application.name"));
-            final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
-                    host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-            final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
-                    host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
-            if(StringUtils.isEmpty(accesstoken) || StringUtils.isEmpty(refreshtoken)) {
-                // Query access token from URL to visit in browser
-                final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
-                        OAuthConstants.GSOAuth2_10.Scopes.FullControl
-                );
-                final LoginOptions options = new LoginOptions();
-                options.keychain = false;
-                controller.prompt(host.getProtocol(), host.getCredentials(),
-                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
+        // Project ID needs OAuth2 authentication
+        final OAuth2Credentials oauth = new OAuth2Credentials(
+                new OAuthUtils(client.getHttpClient(),
+                        OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
+                        preferences.getProperty("google.storage.oauth.clientid"),
+                        preferences.getProperty("google.storage.oauth.secret")),
+                preferences.getProperty("application.name"));
+        final String accesstoken = keychain.getPassword(host.getProtocol().getScheme(),
+                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
+        final String refreshtoken = keychain.getPassword(host.getProtocol().getScheme(),
+                host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
+        if(StringUtils.isEmpty(accesstoken) || StringUtils.isEmpty(refreshtoken)) {
+            // Query access token from URL to visit in browser
+            final String url = oauth.generateBrowserUrlToAuthorizeNativeApplication(
+                    OAuthConstants.GSOAuth2_10.Scopes.FullControl
+            );
+            final LoginOptions options = new LoginOptions();
+            options.keychain = false;
+            controller.prompt(host.getProtocol(), host.getCredentials(),
+                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url, options);
 
-                try {
-                    // Swap the given authorization token for access/refresh tokens
-                    oauth.retrieveOAuth2TokensFromAuthorization(host.getCredentials().getPassword());
-                    final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
-                    // Save for future use
-                    keychain.addPassword(host.getProtocol().getScheme(),
-                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                            "Google OAuth2 Access Token", tokens.getAccessToken());
-                    keychain.addPassword(host.getProtocol().getScheme(),
-                            host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
-                            "Google OAuth2 Refresh Token", tokens.getRefreshToken());
-
-                    // Save expiry
-                    preferences.setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-            }
-            else {
-                // Re-use authentication tokens from last use
-                oauth.setOAuth2Tokens(new OAuth2Tokens(accesstoken, refreshtoken,
-                        new Date(preferences.getLong("google.storage.oauth.expiry"))));
-            }
-            client.setProviderCredentials(oauth);
-            // List all buckets and cache
             try {
-                // List all buckets and cache
-                final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
-                cache.put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+                // Swap the given authorization token for access/refresh tokens
+                oauth.retrieveOAuth2TokensFromAuthorization(host.getCredentials().getPassword());
+                final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
+                // Save for future use
+                keychain.addPassword(host.getProtocol().getScheme(),
+                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
+                        "Google OAuth2 Access Token", tokens.getAccessToken());
+                keychain.addPassword(host.getProtocol().getScheme(),
+                        host.getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(),
+                        "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+
+                // Save expiry
+                preferences.setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
             }
-            catch(BackgroundException e) {
-                throw new LoginFailureException(e.getMessage(), e.getDetail(), e);
+            catch(HttpResponseException e) {
+                throw new HttpResponseExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
         else {
-            super.login(keychain, controller, cancel, cache);
+            // Re-use authentication tokens from last use
+            oauth.setOAuth2Tokens(new OAuth2Tokens(accesstoken, refreshtoken,
+                    new Date(preferences.getLong("google.storage.oauth.expiry"))));
+        }
+        client.setProviderCredentials(oauth);
+        // List all buckets and cache
+        try {
+            // List all buckets and cache
+            final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            cache.put(root.getReference(), this.list(root, new DisabledListProgressListener()));
+        }
+        catch(BackgroundException e) {
+            throw new LoginFailureException(e.getMessage(), e.getDetail(), e);
         }
     }
 

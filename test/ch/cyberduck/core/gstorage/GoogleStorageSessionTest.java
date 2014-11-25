@@ -14,6 +14,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -153,8 +154,8 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         }, null);
     }
 
-    @Test(expected = LoginFailureException.class)
-    public void testLoginFailure() throws Exception {
+    @Test(expected = LoginCanceledException.class)
+    public void testCallbackOauth() throws Exception {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 "a", "s"
         ));
@@ -162,13 +163,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            fail();
-        }
-        catch(LoginFailureException e) {
-            throw e;
-        }
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test
@@ -180,5 +175,56 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
         assertNotNull(new GoogleStorageSession(new Host("t")).getFeature(Headers.class));
         assertNull(new GoogleStorageSession(new Host("t")).getFeature(Lifecycle.class));
         assertNull(new GoogleStorageSession(new Host("t")).getFeature(Versioning.class));
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testInvalidProjectId() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                "duck-1432", ""
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test(expected = InteroperabilityException.class)
+    public void testProjectIdNoAuthorization() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                "stellar-perigee-775", ""
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Protocol protocol, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                // OAuth2
+                credentials.setUsername("");
+                credentials.setPassword("");
+            }
+        }, new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test
+    public void testProjectIdNewFormat() throws Exception {
+        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
+                "stellar-perigee-775", ""
+        ));
+        final GoogleStorageSession session = new GoogleStorageSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore() {
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                if(user.equals("Google OAuth2 Access Token")) {
+                    return properties.getProperty("google.accesstoken");
+                }
+                if(user.equals("Google OAuth2 Refresh Token")) {
+                    return properties.getProperty("google.refreshtoken");
+                }
+                return null;
+            }
+        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
     }
 }
