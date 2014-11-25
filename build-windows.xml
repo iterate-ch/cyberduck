@@ -97,6 +97,7 @@
     <target name="dll" depends="version, archive">
         <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}"
                version="${version}" debug="false" verbose="true">
+            <fileset file="${build}/config.jar"/>
             <fileset file="${build}/core.jar"/>
 			<fileset file="${build}/cli.jar"/>
             <fileset file="${build}/ui.jar"/>
