@@ -71,12 +71,11 @@
         <path refid="build.classpath"/>
         <pathelement location="${build.unittests}"/>
         <pathelement location="${build}/${configuration}"/>
-        <pathelement location="${build.classes}"/>
-        <fileset dir="${lib.ext}">
+        <fileset dir="${build.deploy}">
             <include name="*.jar"/>
         </fileset>
-        <fileset dir="${lib}">
-            <include name="mime.types"/>
+        <fileset dir="${lib.ext}">
+            <include name="*.jar"/>
         </fileset>
     </path>
 
@@ -152,15 +151,19 @@
     </target>
 
     <target name="archive" depends="compile, manifest" description="Create .jar files of the compiled classes">
+        <jar jarfile="${build}/config.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${lib}">
+                <include name="mime.types"/>
+                <include name="log4j-*.xml"/>
+            </fileset>
+        </jar>
         <jar jarfile="${build}/core.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}">
                 <include name="ch/cyberduck/core/**/*.class"/>
-            </fileset>
-            <fileset dir="${lib}">
-                <include name="mime.types"/>
-                <include name="log4j-*.xml"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/ui.jar"
