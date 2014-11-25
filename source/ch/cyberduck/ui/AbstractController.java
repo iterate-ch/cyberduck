@@ -37,7 +37,7 @@ import java.util.concurrent.RejectedExecutionException;
  * @version $Id$
  */
 public abstract class AbstractController implements Controller {
-    private static Logger log = Logger.getLogger(AbstractController.class);
+    private static final Logger log = Logger.getLogger(AbstractController.class);
 
     private ThreadPool singleExecutor;
 
@@ -145,6 +145,10 @@ public abstract class AbstractController implements Controller {
     private final class BackgroundCallable<T> implements Callable<T> {
         private final BackgroundAction<T> action;
 
+        /**
+         * Keep client stacktrace
+         */
+        private final Exception client = new Exception();
 
         public BackgroundCallable(final BackgroundAction<T> action) {
             this.action = action;
@@ -173,11 +177,8 @@ public abstract class AbstractController implements Controller {
             catch(ConnectionCanceledException e) {
                 log.warn(String.format("Connection canceled for background task %s", action));
             }
-            catch(BackgroundException e) {
-                log.error(String.format("Unhandled exception running background task %s", e.getMessage()), e);
-            }
             catch(Exception e) {
-                log.fatal(String.format("Unhandled exception running background task %s", e.getMessage()), e);
+                failure(client, e);
             }
             finally {
                 try {
@@ -218,6 +219,11 @@ public abstract class AbstractController implements Controller {
             // Canceled action yields no result
             return null;
         }
+    }
+
+    protected void failure(final Exception trace, final Exception failure) {
+        trace.initCause(failure);
+        log.error(String.format("Unhandled exception running background task %s", failure.getMessage()), trace);
     }
 
     @Override
