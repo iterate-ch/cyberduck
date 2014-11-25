@@ -50,6 +50,9 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     private S3Session session;
 
+    private SHA256ChecksumCompute checksum
+            = new SHA256ChecksumCompute();
+
     public S3SingleUploadService(final S3Session session) {
         super(new S3WriteFeature(session));
         this.session = session;
@@ -62,7 +65,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         switch(session.getSignatureVersion()) {
             case AWS4HMACSHA256:
                 status.setChecksum(new TransferStatus.Checksum(HashAlgorithm.sha256,
-                                new SHA256ChecksumCompute().compute(local.getInputStream()))
+                                checksum.compute(local.getInputStream()))
                 );
                 break;
         }
@@ -82,7 +85,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected MessageDigest digest() throws IOException {
-        // Content-MD5 not set. Need to verify ourselves instad of S3
+        // Content-MD5 not set. Need to verify ourselves instead of S3
         try {
             return MessageDigest.getInstance("MD5");
         }
