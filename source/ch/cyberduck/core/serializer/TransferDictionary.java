@@ -119,6 +119,22 @@ public class TransferDictionary {
         }
         switch(type) {
             case download:
+            case upload:
+            case sync:
+                // Verify we have valid items
+                for(TransferItem item : roots) {
+                    if(null == item.remote) {
+                        log.warn(String.format("Missing remote in transfer item %s", item));
+                        return null;
+                    }
+                    if(null == item.local) {
+                        log.warn(String.format("Missing local in transfer item %s", item));
+                        return null;
+                    }
+                }
+        }
+        switch(type) {
+            case download:
                 transfer = new DownloadTransfer(host, roots);
                 break;
             case upload:
@@ -158,22 +174,6 @@ public class TransferDictionary {
             default:
                 log.warn(String.format("Unknown transfer type %s", kindObj));
                 return null;
-        }
-        switch(type) {
-            case download:
-            case upload:
-            case sync:
-                // Verify we have valid items
-                for(TransferItem item : roots) {
-                    if(null == item.remote) {
-                        log.warn(String.format("Missing remote in transfer item %s", item));
-                        return null;
-                    }
-                    if(null == item.local) {
-                        log.warn(String.format("Missing local in transfer item %s", item));
-                        return null;
-                    }
-                }
         }
         Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
