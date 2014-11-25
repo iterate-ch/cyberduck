@@ -75,4 +75,12 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
         Collections.addAll(identities, proxy.getIdentities());
         return identities;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OpenSSHAgentAuthenticator{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -374,4 +374,12 @@ public class OpenSshConfig {
             return batchMode != null && batchMode;
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OpenSshConfig{");
+        sb.append("configuration=").append(configuration);
+        sb.append('}');
+        return sb.toString();
+    }
 }

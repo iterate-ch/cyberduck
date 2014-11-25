@@ -193,4 +193,12 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             throw new IOException(e);
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OpenSSHHostKeyVerifier{");
+        sb.append("database=").append(database);
+        sb.append('}');
+        return sb.toString();
+    }
 }

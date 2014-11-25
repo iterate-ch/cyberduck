@@ -67,4 +67,12 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
         }
         return configuration.lookup(alias).getPort();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OpenSSHHostnameConfigurator{");
+        sb.append("configuration=").append(configuration);
+        sb.append('}');
+        return sb.toString();
+    }
 }

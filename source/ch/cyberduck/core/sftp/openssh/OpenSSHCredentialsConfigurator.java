@@ -75,4 +75,12 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
         }
         return credentials;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OpenSSHCredentialsConfigurator{");
+        sb.append("configuration=").append(configuration);
+        sb.append('}');
+        return sb.toString();
+    }
 }
