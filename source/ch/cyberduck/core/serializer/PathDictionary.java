@@ -39,9 +39,6 @@ public class PathDictionary {
                 type.add(AbstractPath.Type.valueOf(t));
             }
         }
-        if(type.isEmpty()) {
-            return null;
-        }
         final Path path;
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
