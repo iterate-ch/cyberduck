@@ -21,7 +21,8 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
+import org.apache.http.conn.ssl.StrictHostnameVerifier;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateExpiredException;
@@ -38,8 +39,8 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
 
     private final Console console = new Console();
 
-    private final BrowserCompatHostnameVerifier verifier
-            = new BrowserCompatHostnameVerifier();
+    private final X509HostnameVerifier verifier
+            = new StrictHostnameVerifier();
 
     @Override
     public boolean display(final List<X509Certificate> certificates) {
@@ -81,8 +82,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     }
 
     private boolean callback(final String hostname, final String message) {
-        final String input = console.readLine("%s. %s? (y/n): ", message,
-                LocaleFactory.localizedString("Continue", "Credentials"));
+        final String input = console.readLine("%s. (y/n): ", message);
         switch(input) {
             case "y":
                 return true;
