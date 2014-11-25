@@ -39,6 +39,9 @@ public class PathDictionary {
                 type.add(AbstractPath.Type.valueOf(t));
             }
         }
+        if(type.isEmpty()) {
+            return null;
+        }
         final Path path;
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
@@ -62,13 +65,21 @@ public class PathDictionary {
             if(type.isEmpty()) {
                 return null;
             }
-            path = new Path(dict.stringForKey("Remote"), type, attributes);
+            final String absolute = dict.stringForKey("Remote");
+            if(null == absolute) {
+                return null;
+            }
+            path = new Path(absolute, type, attributes);
         }
         else {
             if(type.isEmpty()) {
                 return null;
             }
-            path = new Path(dict.stringForKey("Remote"), type);
+            final String absolute = dict.stringForKey("Remote");
+            if(null == absolute) {
+                return null;
+            }
+            path = new Path(absolute, type);
         }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {

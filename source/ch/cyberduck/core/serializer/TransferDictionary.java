@@ -157,7 +157,11 @@ public class TransferDictionary {
                 if(roots.size() == destinations.size()) {
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(int i = 0; i < roots.size(); i++) {
-                        files.put(roots.get(i).remote, new PathDictionary().deserialize(destinations.get(i)));
+                        final Path target = new PathDictionary().deserialize(destinations.get(i));
+                        if(null == target) {
+                            continue;
+                        }
+                        files.put(roots.get(i).remote, target);
                     }
                     final Host target = new HostDictionary().deserialize(destinationObj);
                     if(null == target) {
