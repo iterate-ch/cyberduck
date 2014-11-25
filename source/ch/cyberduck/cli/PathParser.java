@@ -57,7 +57,7 @@ public class PathParser {
                     final String container = host.getHostname();
                     final String key = host.getDefaultPath();
                     remote = new Path(new Path(container, EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            key, EnumSet.of(detector.detect(host.getDefaultPath())));
+                            key, EnumSet.of(detector.detect(key)));
                 }
                 break;
             default:
