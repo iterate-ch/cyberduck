@@ -21,7 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.http.conn.ssl.StrictHostnameVerifier;
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 
 import javax.net.ssl.SSLException;
@@ -40,7 +40,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private final Console console = new Console();
 
     private final X509HostnameVerifier verifier
-            = new StrictHostnameVerifier();
+            = new BrowserCompatHostnameVerifier();
 
     @Override
     public boolean display(final List<X509Certificate> certificates) {
