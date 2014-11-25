@@ -27,7 +27,6 @@ import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.security.Principal;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
@@ -64,12 +63,12 @@ public class DefaultCertificateStore implements CertificateStore {
     }
 
     @Override
-    public boolean display(List<X509Certificate> certificates) throws CertificateException {
+    public boolean display(List<X509Certificate> certificates) {
         return false;
     }
 
     @Override
-    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
+    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;
         }
