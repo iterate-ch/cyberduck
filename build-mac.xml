@@ -170,6 +170,7 @@
                 <exclude name="Contents/Home/lib/server/*.diz"/>
             </fileset>
         </copy>
+        <symlink link="${app.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib" />
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
@@ -491,5 +492,28 @@
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
+    </target>
+
+    <target name="deploy-cli" depends="timestamp">
+        <antcall target="tar">
+            <param name="directory" value="${build.bundles}"/>
+            <param name="source" value="duck.app"/>
+            <param name="target" value="${build.deploy}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"
+                  algorithm="md5" property="md5sum"/>
+        <echo message="_MD5SUM_=${md5sum}"/>
+        <copy todir="${build}" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="duck.rb"/>
+            </fileset>
+        </copy>
+        <replace dir="${build}" summary="true" encoding="UTF-8">
+            <include name="duck.rb"/>
+            <replacefilter token="_MD5SUM_" value="${md5sum}"/>
+            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
+            <replacefilter token="_REVISION_" value="${svn.revision}"/>
+            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+        </replace>
     </target>
 </project>
