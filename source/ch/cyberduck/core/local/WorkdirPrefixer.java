@@ -29,7 +29,7 @@ public class WorkdirPrefixer {
     private Local workdir;
 
     public WorkdirPrefixer() {
-        this(WorkingDirectoryFinderFactory.get().find());
+        this.workdir = null;
     }
 
     public WorkdirPrefixer(final Local workdir) {
@@ -38,6 +38,9 @@ public class WorkdirPrefixer {
 
     public String normalize(final String name) {
         if(!name.startsWith(Preferences.instance().getProperty("local.delimiter"))) {
+            if(null == workdir) {
+                return String.format("%s%s%s", WorkingDirectoryFinderFactory.get().find().getAbsolute(), Preferences.instance().getProperty("local.delimiter"), name);
+            }
             return String.format("%s%s%s", workdir.getAbsolute(), Preferences.instance().getProperty("local.delimiter"), name);
         }
         return name;
