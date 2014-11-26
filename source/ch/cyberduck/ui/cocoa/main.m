@@ -143,21 +143,17 @@ int launch(char *commandName) {
     }
 
     // Locate the JLI_Launch() function
-    NSString *libjliPath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
-    if (libjliPath == nil) {
+    NSString *runtimePath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
+    CFBundleRef runtimeBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL URLWithString:runtimePath]);
+    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, NULL)) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-            reason:NSLocalizedString(@"Runtime path required in Info.plist", @UNSPECIFIED_ERROR)
-            userInfo:nil] raise];
+                                 reason:NSLocalizedString(@"Error loading runtime.", @UNSPECIFIED_ERROR)
+                               userInfo:nil] raise];
     }
-    void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
-
-    JLI_Launch_t jli_LaunchFxnPtr = NULL;
-    if(libJLI != NULL) {
-        jli_LaunchFxnPtr = dlsym(libJLI, "JLI_Launch");
-    }
+    JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
     if(jli_LaunchFxnPtr == NULL) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                 reason:NSLocalizedString(@"Error loading Runtime.", @UNSPECIFIED_ERROR)
+                                 reason:NSLocalizedString(@"Error getting launcher function.", @UNSPECIFIED_ERROR)
                                userInfo:nil] raise];
     }
     // Invoke JLI_Launch()
