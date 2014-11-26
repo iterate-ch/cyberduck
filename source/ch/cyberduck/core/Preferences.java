@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.TemporaryFileService;
@@ -1063,6 +1064,7 @@ public abstract class Preferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
+        defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
     }
 
     /**

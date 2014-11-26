@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
@@ -31,10 +30,12 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
+import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
+import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -51,7 +52,7 @@ public class TerminalPreferences extends MemoryPreferences {
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.certificatestore.class", DefaultCertificateStore.class.getName());
+        defaults.put("factory.certificatestore.class", TerminalCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
         defaults.put("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
@@ -67,7 +68,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.local.class", FinderLocal.class.getName());
                 defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
                 defaults.put("factory.passwordstore.class", Keychain.class.getName());
-                defaults.put("factory.certificatestore.class", Keychain.class.getName());
                 defaults.put("factory.proxy.class", SystemConfigurationProxy.class.getName());
                 defaults.put("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
                 defaults.put("factory.reachability.class", SystemConfigurationReachability.class.getName());
@@ -78,10 +78,10 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.iconservice.class", WorkspaceIconService.class.getName());
                 defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
                 defaults.put("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
+                defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
                 break;
             case windows:
                 defaults.put("factory.notification.class", TerminalNotification.class.getName());
-                defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 break;
             case linux:
                 defaults.put("factory.notification.class", TerminalNotification.class.getName());
@@ -128,7 +128,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 break;
         }
 
-        final Local workdir = LocalFactory.get(this.getProperty("user.dir"));
+        final Local workdir = WorkingDirectoryFinderFactory.get().find();
         defaults.put("queue.download.folder", workdir.getAbsolute());
 
         defaults.put("s3.download.udt.threshold", String.valueOf(10L * 1024L * 1024L));

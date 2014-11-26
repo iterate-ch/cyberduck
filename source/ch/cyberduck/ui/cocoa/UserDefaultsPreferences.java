@@ -32,6 +32,7 @@ import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
@@ -317,6 +318,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
         defaults.put("factory.pathreference.class", NSObjectPathReference.class.getName());
         defaults.put("factory.iconcache.class", NSImageIconCache.class.getName());
+        defaults.put("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
     }
 
     /**

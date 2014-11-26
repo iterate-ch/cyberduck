@@ -18,18 +18,15 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
-public class WorkdirPrefixerTest extends AbstractTestCase {
-
-    @Test
-    public void testNormalize() throws Exception {
-        assertEquals(System.getProperty("user.dir") + "/n", new WorkdirPrefixer().normalize("n"));
-        assertEquals("/tmp/n", new WorkdirPrefixer(new Local("/tmp")).normalize("n"));
+/**
+ * @version $Id$
+ */
+public class DefaultWorkingDirectoryFinder implements WorkingDirectoryFinder {
+    @Override
+    public Local find() {
+        return LocalFactory.get(System.getProperty("user.dir"));
     }
 }

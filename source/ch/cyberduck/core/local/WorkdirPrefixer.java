@@ -18,6 +18,7 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 
 /**
@@ -25,19 +26,19 @@ import ch.cyberduck.core.Preferences;
  */
 public class WorkdirPrefixer {
 
-    private String workdir;
+    private Local workdir;
 
     public WorkdirPrefixer() {
-        this(System.getProperty("user.dir"));
+        this(WorkingDirectoryFinderFactory.get().find());
     }
 
-    public WorkdirPrefixer(final String workdir) {
+    public WorkdirPrefixer(final Local workdir) {
         this.workdir = workdir;
     }
 
     public String normalize(final String name) {
         if(!name.startsWith(Preferences.instance().getProperty("local.delimiter"))) {
-            return String.format("%s%s%s", workdir, Preferences.instance().getProperty("local.delimiter"), name);
+            return String.format("%s%s%s", workdir.getAbsolute(), Preferences.instance().getProperty("local.delimiter"), name);
         }
         return name;
     }
