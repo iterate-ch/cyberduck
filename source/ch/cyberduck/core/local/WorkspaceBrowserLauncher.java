@@ -22,11 +22,13 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class WorkspaceBrowserLauncher implements BrowserLauncher {
+    private static final Logger log = Logger.getLogger(WorkspaceBrowserLauncher.class);
 
     @Override
     public boolean open(final String url) {
@@ -35,6 +37,7 @@ public class WorkspaceBrowserLauncher implements BrowserLauncher {
                 if(NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
                     return true;
                 }
+                log.warn(String.format("Failure opening URL %s with browser", url));
             }
             return false;
         }
