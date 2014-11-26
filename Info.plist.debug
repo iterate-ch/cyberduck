@@ -215,8 +215,6 @@
             <string>$APP_PACKAGE/Contents/MacOS/Runtime.jre</string>
             <key>MainClass</key>
             <string>ch.cyberduck.ui.cocoa.MainApplication</string>
-            <key>JVMVersion</key>
-            <string>1.5+</string>
             <key>StartOnMainThread</key>
             <true/>
             <key>WorkingDirectory</key>
