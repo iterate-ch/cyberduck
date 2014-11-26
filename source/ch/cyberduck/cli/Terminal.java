@@ -107,8 +107,7 @@ public class Terminal {
             }
         }
         catch(ParseException e) {
-            System.err.println(e.getMessage());
-            TerminalHelpPrinter.help(options);
+            new TerminalProgressListener().message(e.getMessage());
             System.exit(1);
         }
         catch(Throwable error) {
