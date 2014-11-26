@@ -107,7 +107,8 @@ public class Terminal {
             }
         }
         catch(ParseException e) {
-            new TerminalProgressListener().message(e.getMessage());
+            final Console console = new Console();
+            console.printf(e.getMessage());
             System.exit(1);
         }
         catch(Throwable error) {
@@ -205,7 +206,7 @@ public class Terminal {
                 final StringAppender b = new StringAppender();
                 b.append(e.getMessage());
                 b.append(e.getDetail());
-                new TerminalProgressListener().message(b.toString());
+                console.printf(b.toString());
             }
             finally {
                 this.disconnect(session);
