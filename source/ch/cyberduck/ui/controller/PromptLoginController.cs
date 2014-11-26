@@ -88,8 +88,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.Title = LocaleFactory.localizedString(title, "Credentials");
             _view.Message = LocaleFactory.localizedString(reason, "Credentials");
             _view.Username = credentials.getUsername();
-            _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
-            _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
             _view.SavePasswordState = Preferences.instance().getBoolean("connection.login.useKeychain") &&
                                       Preferences.instance().getBoolean("connection.login.addKeychain");
             _view.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
@@ -202,6 +200,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _view.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             _view.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
+            _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
+            _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
             {
                 bool enable = _options.isKeychain() && !_credentials.isAnonymousLogin();
                 _view.SavePasswordEnabled = enable;

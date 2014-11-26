@@ -113,7 +113,7 @@ public final class PromptLoginController implements LoginCallback {
             @Override
             public void awakeFromNib() {
                 this.update();
-                this.window().makeFirstResponder(this.usernameField);
+                this.window().makeFirstResponder(usernameField);
                 super.awakeFromNib();
             }
 
@@ -146,10 +146,6 @@ public final class PromptLoginController implements LoginCallback {
 
             public void setPasswordLabel(NSTextField passwordLabel) {
                 this.passwordLabel = passwordLabel;
-                this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
-                                credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             @Outlet
@@ -166,7 +162,6 @@ public final class PromptLoginController implements LoginCallback {
             public void setUsernameField(NSTextField usernameField) {
                 this.usernameField = usernameField;
                 this.updateField(this.usernameField, credentials.getUsername());
-                this.usernameField.cell().setPlaceholderString(credentials.getUsernamePlaceholder());
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("userFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
@@ -209,7 +204,6 @@ public final class PromptLoginController implements LoginCallback {
             public void setPasswordField(NSSecureTextField passwordField) {
                 this.passwordField = passwordField;
                 this.updateField(this.passwordField, credentials.getPassword());
-                this.passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("passFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
@@ -305,7 +299,15 @@ public final class PromptLoginController implements LoginCallback {
 
             private void update() {
                 this.usernameField.setEnabled(options.user && !credentials.isAnonymousLogin());
+                this.usernameField.cell().setPlaceholderString(credentials.getUsernamePlaceholder());
+
                 this.passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
+                this.passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+
+                this.passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
+                                credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
                 {
                     boolean enable = options.keychain && !credentials.isAnonymousLogin();
                     this.keychainCheckbox.setEnabled(enable);
