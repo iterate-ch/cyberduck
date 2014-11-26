@@ -200,8 +200,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _view.UsernameEnabled = _options.user() && !_credentials.isAnonymousLogin();
             _view.PasswordEnabled = _options.password() && !_credentials.isAnonymousLogin();
-            _view.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
-            _view.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
+            _view.UsernameLabel = _protocol.getUsernamePlaceholder() + ":";
+            _view.PasswordLabel = _protocol.getPasswordPlaceholder() + ":";
             {
                 bool enable = _options.isKeychain() && !_credentials.isAnonymousLogin();
                 _view.SavePasswordEnabled = enable;
