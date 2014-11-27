@@ -177,8 +177,6 @@
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
         </antcall>
-        <!-- Remove architectures -->
-        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
         <antcall target="tar">
             <param name="directory" value="${build.deploy}"/>
             <param name="source" value="duck.bundle"/>
