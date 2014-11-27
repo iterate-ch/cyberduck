@@ -139,7 +139,9 @@
             <param name="directory" value="${app.frameworks}"/>
         </antcall>
         <!-- Remove architectures -->
-        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
+            <param name="directory" value="${app.bundle}"/>
+        </foreach>
         <antcall target="spotlight"/>
     </target>
 
@@ -179,6 +181,10 @@
             <param name="newname" value="${app.runtime.lib}"/>
             <param name="directory" value="${cli.frameworks}"/>
         </antcall>
+        <!-- Remove architectures -->
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
+            <param name="directory" value="${cli.bundle}"/>
+        </foreach>
         <antcall target="tar">
             <param name="directory" value="${build.deploy}"/>
             <param name="source" value="duck.bundle"/>
@@ -272,12 +278,12 @@
 
     <target name="lipo">
         <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
-        <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
+        <apply executable="/usr/bin/lipo" failonerror="false" dest="${directory}"
                parallel="false" spawn="false" force="true">
             <!--Remove from executables-->
             <!--Remove from frameworks-->
             <!--Remove from shared libraries-->
-            <fileset dir="${app.bundle}" includes="${build.lipo.binaries}"/>
+            <fileset dir="${directory}" includes="${build.lipo.binaries}"/>
             <arg line="-remove ${arch} -output"/>
             <srcfile/>
             <targetfile/>
@@ -437,7 +443,6 @@
     <target name="nightly" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
@@ -453,7 +458,6 @@
     <target name="beta" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
@@ -469,7 +473,6 @@
     <target name="release" depends="clean">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
-            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
@@ -496,7 +499,6 @@
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.7.3"/>
             <param name="build.xcodeoptions" value="SDKROOT=macosx10.9 MACOSX_DEPLOYMENT_TARGET=10.7"/>
-            <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
         <antcall target="deploy-mas"/>
         <scp file="${build.deploy}/${app.name}-${version}.pkg"
