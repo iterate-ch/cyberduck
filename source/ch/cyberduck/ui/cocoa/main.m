@@ -29,7 +29,6 @@
 #define JVM_WORKING_DIRECTORY_KEY "WorkingDirectory"
 #define JVM_STARTONMAINTHREAD_KEY "StartOnMainThread"
 #define JVM_OPTIONS_KEY "VMOptions"
-#define JVM_ARGUMENTS_KEY "VMArguments"
 
 #define UNSPECIFIED_ERROR "An unknown error occurred."
 
@@ -47,13 +46,21 @@ typedef int (JNICALL *JLI_Launch_t)(int argc, char ** argv, /* main argc, argc *
                                     jboolean javaw, /* windows-only javaw */
                                     jint ergo); /* ergonomics class policy */
 
-int launch(char *);
+int launch(int argc, char *argv[]);
+
+static int launches;
+static char **progargv = NULL;;
+static int progargc = 0;
 
 int main(int argc, char *argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
-        launch(argv[0]);
-        return 0;
+        if(0 == launches) {
+            // main() is invoked twice including the java options the second time
+            progargc = argc;
+            progargv = argv;
+        }
+        return launch(progargc, progargv);
     } @catch (NSException *exception) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setAlertStyle:NSCriticalAlertStyle];
@@ -67,11 +74,9 @@ int main(int argc, char *argv[]) {
     }
 }
 
-int launch(char *commandName) {
+int launch() {
     // Get the main bundle
     NSBundle *mainBundle = [NSBundle mainBundle];
-
-    // Get the main bundle dictionary
     NSDictionary *infoDictionary = [mainBundle infoDictionary];
     NSDictionary *javaDict = [infoDictionary objectForKey:@JVM_PROPERTIES_KEY];
     // Get the main class name
@@ -96,7 +101,6 @@ int launch(char *commandName) {
             [classPath appendFormat:@":%@/%@", javaPath, file];
         }
     }
-
     NSArray *options;
     // Get the VM options
     if ([javaDict objectForKey:@JVM_OPTIONS_KEY] == nil) {
@@ -115,49 +119,56 @@ int launch(char *commandName) {
             options = [options arrayByAddingObject:@"-XstartOnFirstThread"];
         }
     }
-
+    if (0 == progargc) {
+        return 1;
+    }
     // Get the application arguments
-    NSArray *arguments = [javaDict objectForKey:@JVM_ARGUMENTS_KEY];
-    if (arguments == nil) {
-        arguments = [NSArray array];
-    }
-
-    // Initialize the arguments to JLI_Launch()
-    int argc = 2 + [options count] + 1 + [arguments count];
-    char *argv[argc];
-
-    int i = 0;
-    argv[i++] = commandName;
-    argv[i++] = strdup([classPath UTF8String]);
-
+    NSMutableArray *arguments = [NSMutableArray arrayWithCapacity:progargc];
+    // Program name
+    [arguments addObject:[NSString stringWithUTF8String:(progargv[0])]];
+    [arguments addObject:classPath];
+    // VM Options
     for (NSString *option in options) {
-        option = [option stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
-        argv[i++] = strdup([option UTF8String]);
+        [arguments addObject: [option stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]]];
+    }
+    // Main class name
+    [arguments addObject:mainClassName];
+    // Main method arguments
+    for (int i = 1; i < progargc; i++) {
+        [arguments addObject:[NSString stringWithUTF8String:(progargv[i])]];
     }
 
-    argv[i++] = strdup([mainClassName UTF8String]);
-
-    for (NSString *argument in arguments) {
-        argument = [argument stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
-        argv[i++] = strdup([argument UTF8String]);
-    }
-
-    // Locate the JLI_Launch() function
+    // Find the runtime bundle
     NSString *runtimePath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
     CFBundleRef runtimeBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL URLWithString:runtimePath]);
-    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, NULL)) {
+    if (!runtimeBundle) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                 reason:NSLocalizedString(@"Error loading runtime.", @UNSPECIFIED_ERROR)
+                                 reason:NSLocalizedString(@"Error loading runtime bundle.", @UNSPECIFIED_ERROR)
                                userInfo:nil] raise];
     }
+    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, NULL)) {
+        [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+                                 reason:NSLocalizedString(@"Error loading runtime executable.", @UNSPECIFIED_ERROR)
+                               userInfo:nil] raise];
+    }
+    // Locate the JLI_Launch() function
     JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
-    if(jli_LaunchFxnPtr == NULL) {
+    if (jli_LaunchFxnPtr == NULL) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
                                  reason:NSLocalizedString(@"Error getting launcher function.", @UNSPECIFIED_ERROR)
                                userInfo:nil] raise];
     }
+
+    int jliArgumentsCount = (int)[arguments count];
+    // Initialize the arguments to JLI_Launch()
+    char *jliArguments[jliArgumentsCount];
+    for (int i = 0; i < jliArgumentsCount; i++) {
+        jliArguments[i] = strdup([[arguments objectAtIndex:i] UTF8String]);
+    }
+    // Increment the launch count
+    ++launches;
     // Invoke JLI_Launch()
-    return jli_LaunchFxnPtr(argc, argv,
+    return jli_LaunchFxnPtr(jliArgumentsCount, jliArguments,
                             0, NULL, 0, NULL, "", "",
                             [[infoDictionary objectForKey:@"CFBundleName"] UTF8String], "Launcher",
                             FALSE, FALSE, FALSE, 0);
