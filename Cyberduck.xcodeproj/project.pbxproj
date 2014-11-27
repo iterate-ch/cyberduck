@@ -197,8 +197,6 @@
 		4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		4796E533195C692E000864F4 /* HP Cloud Object Storage.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4780ACC617634CD6007D9DD5 /* HP Cloud Object Storage.cyberduckprofile */; };
-		4796E534195C692E000864F4 /* Rackspace UK.cyberduckprofile in Resources */ = {isa = PBXBuildFile; fileRef = 4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */; };
 		4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47990FD2195C63AE009EBB7C /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
@@ -239,6 +237,51 @@
 		47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF71799309F0031DB9F /* transfer-copy.tiff */; };
 		47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF81799309F0031DB9F /* transfer-move.tiff */; };
 		47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CE3BF91799309F0031DB9F /* transfer-sync.tiff */; };
+		47D939C81A268D620006D4AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
+		47D939CA1A268D7F0006D4AE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D939C91A268D7F0006D4AE /* Foundation.framework */; };
+		47D939CB1A268DB10006D4AE /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
+		47D939EA1A2693430006D4AE /* libKeychain.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EF730856981400405FD3 /* libKeychain.dylib */; };
+		47D939EB1A2693430006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; };
+		47D939EC1A2693430006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; };
+		47D939ED1A2693440006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; };
+		47D939EE1A2693440006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; };
+		47D939EF1A2693440006D4AE /* libQuickLook.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478ECD180DAD5743008A5B1F /* libQuickLook.dylib */; };
+		47D939F01A2693440006D4AE /* libPrime.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478CFE820F9932B3000560EF /* libPrime.dylib */; };
+		47D939F11A2693440006D4AE /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; };
+		47D939F21A2693440006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; };
+		47D939F31A2693440006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; };
+		47D939F41A2693440006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; };
+		47D939F51A2693440006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; };
+		47D939F61A2693440006D4AE /* libFoundationProgressService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */; };
+		47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFB00856990900405FD3 /* libProxy.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFC10856991300405FD3 /* libLocal.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FD1A275DFE0006D4AE /* libPrime.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 478CFE820F9932B3000560EF /* libPrime.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		47D93A031A27602E0006D4AE /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 474163AF06C4F64100AC0BD2 /* License.txt */; };
+		47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */; };
+		47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
+		47D93A071A2762A40006D4AE /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
+		47D93A081A2762A40006D4AE /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
+		47D93A091A2762A40006D4AE /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
+		47D93A0A1A2762A40006D4AE /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
+		47D93A0B1A2762A40006D4AE /* Archive.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168130EED9EA7005E2CCF /* Archive.strings */; };
+		47D93A0C1A2762A40006D4AE /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
+		47D93A0D1A2762A40006D4AE /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
+		47D93A0E1A2762A40006D4AE /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
+		47D93A0F1A2762A40006D4AE /* Sftp.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AF48FB199B913300A580EC /* Sftp.strings */; };
+		47D93A101A2762A40006D4AE /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
+		47D93A111A2762A40006D4AE /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
+		47D93A121A2762A40006D4AE /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
+		47D93A131A2762A40006D4AE /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
+		47D93A141A2762A40006D4AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
+		47D93A151A2762A40006D4AE /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
+		47D93A161A2762A40006D4AE /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
+		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
 		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
@@ -338,6 +381,69 @@
 			remoteGlobalIDString = 47BEDAF60B92960400141EB4;
 			remoteInfo = libURLSchemeHandlerConfiguration;
 		};
+		47D939CC1A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4739EFA30856990900405FD3;
+			remoteInfo = libProxy;
+		};
+		47D939CE1A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4739EFB10856991200405FD3;
+			remoteInfo = libLocal;
+		};
+		47D939D01A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47BEDAF60B92960400141EB4;
+			remoteInfo = libLaunchServicesSchemeHandler;
+		};
+		47D939D21A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4797D26E1628276C00340E1C;
+			remoteInfo = libLaunchServicesApplicationFinder;
+		};
+		47D939D41A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47F102AD1628D57500923FDE;
+			remoteInfo = libLaunchServicesQuarantineService;
+		};
+		47D939D61A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47C57EAE162F471700A272BC;
+			remoteInfo = libLaunchServicesFileDescriptor;
+		};
+		47D939D81A268E430006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47FB9C5E1725A5CC00FE33C1;
+			remoteInfo = libIOKitSleepPreventer;
+		};
+		47D93D211A27825C0006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4762DAB809FC42EC0034C662;
+			remoteInfo = libDiagnostics;
+		};
+		47D93D231A27825C0006D4AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 478CFE760F9932B3000560EF;
+			remoteInfo = libPrime;
+		};
 		47F102D91628D61A00923FDE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -373,7 +479,48 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				47D939EA1A2693430006D4AE /* libKeychain.dylib in CopyFiles */,
+				47D939EB1A2693430006D4AE /* libProxy.dylib in CopyFiles */,
+				47D939EC1A2693430006D4AE /* libLocal.dylib in CopyFiles */,
+				47D939ED1A2693440006D4AE /* libDiagnostics.dylib in CopyFiles */,
+				47D939EE1A2693440006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */,
+				47D939EF1A2693440006D4AE /* libQuickLook.dylib in CopyFiles */,
+				47D939F01A2693440006D4AE /* libPrime.dylib in CopyFiles */,
+				47D939F11A2693440006D4AE /* librococoa.dylib in CopyFiles */,
+				47D939F21A2693440006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */,
+				47D939F31A2693440006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */,
+				47D939F41A2693440006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */,
+				47D939F51A2693440006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */,
+				47D939F61A2693440006D4AE /* libFoundationProgressService.dylib in CopyFiles */,
 				4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47D939F81A275DD20006D4AE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */,
+				47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */,
+				47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */,
+				47D939FC1A275DFE0006D4AE /* libLaunchServicesSchemeHandler.dylib in CopyFiles */,
+				47D939FD1A275DFE0006D4AE /* libPrime.dylib in CopyFiles */,
+				47D939FE1A275DFE0006D4AE /* libLaunchServicesApplicationFinder.dylib in CopyFiles */,
+				47D939FF1A275DFE0006D4AE /* libLaunchServicesQuarantineService.dylib in CopyFiles */,
+				47D93A001A275DFE0006D4AE /* libLaunchServicesFileDescriptor.dylib in CopyFiles */,
+				47D93A011A275DFE0006D4AE /* libIOKitSleepPreventer.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47D93A041A27607A0006D4AE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Profiles;
+			dstSubfolderSpec = 7;
+			files = (
+				47D93A051A2760810006D4AE /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1306,6 +1453,7 @@
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesSchemeHandler.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		47C2AD801A268C880047B67A /* cli.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = cli.bundle; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1513,6 +1661,604 @@
 		47CF43D31508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Status.strings; sourceTree = "<group>"; };
 		47CF43D41508FCC000647729 /* ar */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		47D939C91A268D7F0006D4AE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		47D93A1E1A2764910006D4AE /* ASSEMBLY_EXCEPTION */ = {isa = PBXFileReference; lastKnownFileType = text; path = ASSEMBLY_EXCEPTION; sourceTree = "<group>"; };
+		47D93A201A2764910006D4AE /* java */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = java; sourceTree = "<group>"; };
+		47D93A211A2764910006D4AE /* keytool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = keytool; sourceTree = "<group>"; };
+		47D93A221A2764910006D4AE /* orbd */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = orbd; sourceTree = "<group>"; };
+		47D93A231A2764910006D4AE /* pack200 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = pack200; sourceTree = "<group>"; };
+		47D93A241A2764910006D4AE /* policytool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = policytool; sourceTree = "<group>"; };
+		47D93A251A2764910006D4AE /* rmid */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rmid; sourceTree = "<group>"; };
+		47D93A261A2764910006D4AE /* rmiregistry */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rmiregistry; sourceTree = "<group>"; };
+		47D93A271A2764910006D4AE /* servertool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = servertool; sourceTree = "<group>"; };
+		47D93A281A2764910006D4AE /* tnameserv */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = tnameserv; sourceTree = "<group>"; };
+		47D93A291A2764910006D4AE /* unpack200 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = unpack200; sourceTree = "<group>"; };
+		47D93A2C1A2764910006D4AE /* calendars.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = calendars.properties; sourceTree = "<group>"; };
+		47D93A2D1A2764910006D4AE /* charsets.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = charsets.jar; sourceTree = "<group>"; };
+		47D93A2E1A2764910006D4AE /* classlist */ = {isa = PBXFileReference; lastKnownFileType = text; path = classlist; sourceTree = "<group>"; };
+		47D93A301A2764910006D4AE /* CIEXYZ.pf */ = {isa = PBXFileReference; lastKnownFileType = file; path = CIEXYZ.pf; sourceTree = "<group>"; };
+		47D93A311A2764910006D4AE /* GRAY.pf */ = {isa = PBXFileReference; lastKnownFileType = file; path = GRAY.pf; sourceTree = "<group>"; };
+		47D93A321A2764910006D4AE /* LINEAR_RGB.pf */ = {isa = PBXFileReference; lastKnownFileType = file; path = LINEAR_RGB.pf; sourceTree = "<group>"; };
+		47D93A331A2764910006D4AE /* PYCC.pf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PYCC.pf; sourceTree = "<group>"; };
+		47D93A341A2764910006D4AE /* sRGB.pf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sRGB.pf; sourceTree = "<group>"; };
+		47D93A351A2764910006D4AE /* content-types.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = "content-types.properties"; sourceTree = "<group>"; };
+		47D93A361A2764910006D4AE /* currency.data */ = {isa = PBXFileReference; lastKnownFileType = file; path = currency.data; sourceTree = "<group>"; };
+		47D93A381A2764910006D4AE /* dnsns.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = dnsns.jar; sourceTree = "<group>"; };
+		47D93A391A2764910006D4AE /* localedata.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = localedata.jar; sourceTree = "<group>"; };
+		47D93A3A1A2764910006D4AE /* meta-index */ = {isa = PBXFileReference; lastKnownFileType = text; path = "meta-index"; sourceTree = "<group>"; };
+		47D93A3B1A2764910006D4AE /* sunec.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = sunec.jar; sourceTree = "<group>"; };
+		47D93A3C1A2764910006D4AE /* sunjce_provider.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = sunjce_provider.jar; sourceTree = "<group>"; };
+		47D93A3D1A2764910006D4AE /* sunpkcs11.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = sunpkcs11.jar; sourceTree = "<group>"; };
+		47D93A3E1A2764910006D4AE /* zipfs.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = zipfs.jar; sourceTree = "<group>"; };
+		47D93A3F1A2764910006D4AE /* flavormap.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = flavormap.properties; sourceTree = "<group>"; };
+		47D93A401A2764910006D4AE /* fontconfig.bfc */ = {isa = PBXFileReference; lastKnownFileType = file; path = fontconfig.bfc; sourceTree = "<group>"; };
+		47D93A411A2764910006D4AE /* fontconfig.properties.src */ = {isa = PBXFileReference; lastKnownFileType = text; path = fontconfig.properties.src; sourceTree = "<group>"; };
+		47D93A431A2764910006D4AE /* libmawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmawt.dylib; sourceTree = "<group>"; };
+		47D93A461A2764910006D4AE /* cursors.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = cursors.properties; sourceTree = "<group>"; };
+		47D93A471A2764910006D4AE /* invalid32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = invalid32x32.gif; sourceTree = "<group>"; };
+		47D93A481A2764910006D4AE /* motif_CopyDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_CopyDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A491A2764910006D4AE /* motif_CopyNoDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_CopyNoDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A4A1A2764910006D4AE /* motif_LinkDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_LinkDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A4B1A2764910006D4AE /* motif_LinkNoDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_LinkNoDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A4C1A2764910006D4AE /* motif_MoveDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_MoveDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A4D1A2764910006D4AE /* motif_MoveNoDrop32x32.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = motif_MoveNoDrop32x32.gif; sourceTree = "<group>"; };
+		47D93A4E1A2764910006D4AE /* jce.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = jce.jar; sourceTree = "<group>"; };
+		47D93A501A2764910006D4AE /* libjli.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjli.dylib; sourceTree = "<group>"; };
+		47D93A511A2764910006D4AE /* JObjC.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = JObjC.jar; sourceTree = "<group>"; };
+		47D93A521A2764910006D4AE /* jsse.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = jsse.jar; sourceTree = "<group>"; };
+		47D93A531A2764910006D4AE /* jvm.cfg */ = {isa = PBXFileReference; lastKnownFileType = text; path = jvm.cfg; sourceTree = "<group>"; };
+		47D93A541A2764910006D4AE /* jvm.hprof.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = jvm.hprof.txt; sourceTree = "<group>"; };
+		47D93A551A2764910006D4AE /* libAppleScriptEngine.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libAppleScriptEngine.dylib; sourceTree = "<group>"; };
+		47D93A561A2764910006D4AE /* libattach.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libattach.dylib; sourceTree = "<group>"; };
+		47D93A571A2764910006D4AE /* libawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libawt.dylib; sourceTree = "<group>"; };
+		47D93A581A2764910006D4AE /* libdt_socket.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libdt_socket.dylib; sourceTree = "<group>"; };
+		47D93A591A2764910006D4AE /* libfontmanager.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfontmanager.dylib; sourceTree = "<group>"; };
+		47D93A5A1A2764910006D4AE /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfreetype.dylib; sourceTree = "<group>"; };
+		47D93A5B1A2764910006D4AE /* libhprof.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libhprof.dylib; sourceTree = "<group>"; };
+		47D93A5C1A2764910006D4AE /* libinstrument.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libinstrument.dylib; sourceTree = "<group>"; };
+		47D93A5D1A2764910006D4AE /* libj2gss.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libj2gss.dylib; sourceTree = "<group>"; };
+		47D93A5E1A2764910006D4AE /* libj2pcsc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libj2pcsc.dylib; sourceTree = "<group>"; };
+		47D93A5F1A2764910006D4AE /* libj2pkcs11.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libj2pkcs11.dylib; sourceTree = "<group>"; };
+		47D93A601A2764910006D4AE /* libjaas_unix.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjaas_unix.dylib; sourceTree = "<group>"; };
+		47D93A611A2764910006D4AE /* libjava.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjava.dylib; sourceTree = "<group>"; };
+		47D93A621A2764910006D4AE /* libjava_crw_demo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjava_crw_demo.dylib; sourceTree = "<group>"; };
+		47D93A631A2764910006D4AE /* libjawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjawt.dylib; sourceTree = "<group>"; };
+		47D93A641A2764910006D4AE /* libjdwp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjdwp.dylib; sourceTree = "<group>"; };
+		47D93A651A2764910006D4AE /* libJObjC.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libJObjC.dylib; sourceTree = "<group>"; };
+		47D93A661A2764910006D4AE /* libjpeg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjpeg.dylib; sourceTree = "<group>"; };
+		47D93A671A2764910006D4AE /* libjsdt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjsdt.dylib; sourceTree = "<group>"; };
+		47D93A681A2764910006D4AE /* libjsig.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjsig.dylib; sourceTree = "<group>"; };
+		47D93A691A2764910006D4AE /* libjsound.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjsound.dylib; sourceTree = "<group>"; };
+		47D93A6A1A2764910006D4AE /* liblcms.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = liblcms.dylib; sourceTree = "<group>"; };
+		47D93A6B1A2764910006D4AE /* libmanagement.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmanagement.dylib; sourceTree = "<group>"; };
+		47D93A6C1A2764910006D4AE /* libmlib_image.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmlib_image.dylib; sourceTree = "<group>"; };
+		47D93A6D1A2764910006D4AE /* libnet.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnet.dylib; sourceTree = "<group>"; };
+		47D93A6E1A2764910006D4AE /* libnio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnio.dylib; sourceTree = "<group>"; };
+		47D93A6F1A2764910006D4AE /* libnpt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnpt.dylib; sourceTree = "<group>"; };
+		47D93A701A2764910006D4AE /* libosx.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosx.dylib; sourceTree = "<group>"; };
+		47D93A711A2764910006D4AE /* libosxapp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosxapp.dylib; sourceTree = "<group>"; };
+		47D93A721A2764910006D4AE /* libosxkrb5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosxkrb5.dylib; sourceTree = "<group>"; };
+		47D93A731A2764910006D4AE /* libosxui.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libosxui.dylib; sourceTree = "<group>"; };
+		47D93A741A2764910006D4AE /* libsaproc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsaproc.dylib; sourceTree = "<group>"; };
+		47D93A751A2764910006D4AE /* libsplashscreen.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsplashscreen.dylib; sourceTree = "<group>"; };
+		47D93A761A2764910006D4AE /* libsunec.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libsunec.dylib; sourceTree = "<group>"; };
+		47D93A771A2764910006D4AE /* libunpack.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libunpack.dylib; sourceTree = "<group>"; };
+		47D93A781A2764910006D4AE /* libverify.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libverify.dylib; sourceTree = "<group>"; };
+		47D93A791A2764910006D4AE /* libzip.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libzip.dylib; sourceTree = "<group>"; };
+		47D93A7A1A2764910006D4AE /* logging.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = logging.properties; sourceTree = "<group>"; };
+		47D93A7C1A2764910006D4AE /* liblwawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = liblwawt.dylib; sourceTree = "<group>"; };
+		47D93A7E1A2764910006D4AE /* jmxremote.access */ = {isa = PBXFileReference; lastKnownFileType = text; path = jmxremote.access; sourceTree = "<group>"; };
+		47D93A7F1A2764910006D4AE /* jmxremote.password.template */ = {isa = PBXFileReference; lastKnownFileType = text; path = jmxremote.password.template; sourceTree = "<group>"; };
+		47D93A801A2764910006D4AE /* management.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = management.properties; sourceTree = "<group>"; };
+		47D93A811A2764910006D4AE /* snmp.acl.template */ = {isa = PBXFileReference; lastKnownFileType = text; path = snmp.acl.template; sourceTree = "<group>"; };
+		47D93A821A2764910006D4AE /* management-agent.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = "management-agent.jar"; sourceTree = "<group>"; };
+		47D93A831A2764910006D4AE /* meta-index */ = {isa = PBXFileReference; lastKnownFileType = text; path = "meta-index"; sourceTree = "<group>"; };
+		47D93A841A2764910006D4AE /* net.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = net.properties; sourceTree = "<group>"; };
+		47D93A851A2764910006D4AE /* psfont.properties.ja */ = {isa = PBXFileReference; lastKnownFileType = text; path = psfont.properties.ja; sourceTree = "<group>"; };
+		47D93A861A2764910006D4AE /* psfontj2d.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = psfontj2d.properties; sourceTree = "<group>"; };
+		47D93A871A2764910006D4AE /* resources.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = resources.jar; sourceTree = "<group>"; };
+		47D93A881A2764910006D4AE /* rt.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = rt.jar; sourceTree = "<group>"; };
+		47D93A8A1A2764910006D4AE /* cacerts */ = {isa = PBXFileReference; lastKnownFileType = file; path = cacerts; sourceTree = "<group>"; };
+		47D93A8B1A2764910006D4AE /* java.policy */ = {isa = PBXFileReference; lastKnownFileType = text; path = java.policy; sourceTree = "<group>"; };
+		47D93A8C1A2764910006D4AE /* java.security */ = {isa = PBXFileReference; lastKnownFileType = text; path = java.security; sourceTree = "<group>"; };
+		47D93A8D1A2764910006D4AE /* local_policy.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = local_policy.jar; sourceTree = "<group>"; };
+		47D93A8E1A2764910006D4AE /* US_export_policy.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; path = US_export_policy.jar; sourceTree = "<group>"; };
+		47D93A901A2764910006D4AE /* libjsig.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjsig.dylib; sourceTree = "<group>"; };
+		47D93A911A2764910006D4AE /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjvm.dylib; sourceTree = "<group>"; };
+		47D93A921A2764910006D4AE /* Xusage.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Xusage.txt; sourceTree = "<group>"; };
+		47D93A931A2764910006D4AE /* sound.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = sound.properties; sourceTree = "<group>"; };
+		47D93A951A2764910006D4AE /* libmawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmawt.dylib; sourceTree = "<group>"; };
+		47D93A981A2764910006D4AE /* Abidjan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Abidjan; sourceTree = "<group>"; };
+		47D93A991A2764910006D4AE /* Accra */ = {isa = PBXFileReference; lastKnownFileType = file; path = Accra; sourceTree = "<group>"; };
+		47D93A9A1A2764910006D4AE /* Addis_Ababa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Addis_Ababa; sourceTree = "<group>"; };
+		47D93A9B1A2764910006D4AE /* Algiers */ = {isa = PBXFileReference; lastKnownFileType = file; path = Algiers; sourceTree = "<group>"; };
+		47D93A9C1A2764910006D4AE /* Asmara */ = {isa = PBXFileReference; lastKnownFileType = file; path = Asmara; sourceTree = "<group>"; };
+		47D93A9D1A2764910006D4AE /* Bamako */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bamako; sourceTree = "<group>"; };
+		47D93A9E1A2764910006D4AE /* Bangui */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bangui; sourceTree = "<group>"; };
+		47D93A9F1A2764910006D4AE /* Banjul */ = {isa = PBXFileReference; lastKnownFileType = file; path = Banjul; sourceTree = "<group>"; };
+		47D93AA01A2764910006D4AE /* Bissau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bissau; sourceTree = "<group>"; };
+		47D93AA11A2764910006D4AE /* Blantyre */ = {isa = PBXFileReference; lastKnownFileType = file; path = Blantyre; sourceTree = "<group>"; };
+		47D93AA21A2764910006D4AE /* Brazzaville */ = {isa = PBXFileReference; lastKnownFileType = file; path = Brazzaville; sourceTree = "<group>"; };
+		47D93AA31A2764910006D4AE /* Bujumbura */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bujumbura; sourceTree = "<group>"; };
+		47D93AA41A2764910006D4AE /* Cairo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cairo; sourceTree = "<group>"; };
+		47D93AA51A2764910006D4AE /* Casablanca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Casablanca; sourceTree = "<group>"; };
+		47D93AA61A2764910006D4AE /* Ceuta */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ceuta; sourceTree = "<group>"; };
+		47D93AA71A2764910006D4AE /* Conakry */ = {isa = PBXFileReference; lastKnownFileType = file; path = Conakry; sourceTree = "<group>"; };
+		47D93AA81A2764910006D4AE /* Dakar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dakar; sourceTree = "<group>"; };
+		47D93AA91A2764910006D4AE /* Dar_es_Salaam */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dar_es_Salaam; sourceTree = "<group>"; };
+		47D93AAA1A2764910006D4AE /* Djibouti */ = {isa = PBXFileReference; lastKnownFileType = file; path = Djibouti; sourceTree = "<group>"; };
+		47D93AAB1A2764910006D4AE /* Douala */ = {isa = PBXFileReference; lastKnownFileType = file; path = Douala; sourceTree = "<group>"; };
+		47D93AAC1A2764910006D4AE /* El_Aaiun */ = {isa = PBXFileReference; lastKnownFileType = file; path = El_Aaiun; sourceTree = "<group>"; };
+		47D93AAD1A2764910006D4AE /* Freetown */ = {isa = PBXFileReference; lastKnownFileType = file; path = Freetown; sourceTree = "<group>"; };
+		47D93AAE1A2764910006D4AE /* Gaborone */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gaborone; sourceTree = "<group>"; };
+		47D93AAF1A2764910006D4AE /* Harare */ = {isa = PBXFileReference; lastKnownFileType = file; path = Harare; sourceTree = "<group>"; };
+		47D93AB01A2764910006D4AE /* Johannesburg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Johannesburg; sourceTree = "<group>"; };
+		47D93AB11A2764910006D4AE /* Juba */ = {isa = PBXFileReference; lastKnownFileType = file; path = Juba; sourceTree = "<group>"; };
+		47D93AB21A2764910006D4AE /* Kampala */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kampala; sourceTree = "<group>"; };
+		47D93AB31A2764910006D4AE /* Khartoum */ = {isa = PBXFileReference; lastKnownFileType = file; path = Khartoum; sourceTree = "<group>"; };
+		47D93AB41A2764910006D4AE /* Kigali */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kigali; sourceTree = "<group>"; };
+		47D93AB51A2764910006D4AE /* Kinshasa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kinshasa; sourceTree = "<group>"; };
+		47D93AB61A2764910006D4AE /* Lagos */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lagos; sourceTree = "<group>"; };
+		47D93AB71A2764910006D4AE /* Libreville */ = {isa = PBXFileReference; lastKnownFileType = file; path = Libreville; sourceTree = "<group>"; };
+		47D93AB81A2764910006D4AE /* Lome */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lome; sourceTree = "<group>"; };
+		47D93AB91A2764910006D4AE /* Luanda */ = {isa = PBXFileReference; lastKnownFileType = file; path = Luanda; sourceTree = "<group>"; };
+		47D93ABA1A2764910006D4AE /* Lubumbashi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lubumbashi; sourceTree = "<group>"; };
+		47D93ABB1A2764910006D4AE /* Lusaka */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lusaka; sourceTree = "<group>"; };
+		47D93ABC1A2764910006D4AE /* Malabo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Malabo; sourceTree = "<group>"; };
+		47D93ABD1A2764910006D4AE /* Maputo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Maputo; sourceTree = "<group>"; };
+		47D93ABE1A2764910006D4AE /* Maseru */ = {isa = PBXFileReference; lastKnownFileType = file; path = Maseru; sourceTree = "<group>"; };
+		47D93ABF1A2764910006D4AE /* Mbabane */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mbabane; sourceTree = "<group>"; };
+		47D93AC01A2764910006D4AE /* Mogadishu */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mogadishu; sourceTree = "<group>"; };
+		47D93AC11A2764910006D4AE /* Monrovia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Monrovia; sourceTree = "<group>"; };
+		47D93AC21A2764910006D4AE /* Nairobi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nairobi; sourceTree = "<group>"; };
+		47D93AC31A2764910006D4AE /* Ndjamena */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ndjamena; sourceTree = "<group>"; };
+		47D93AC41A2764910006D4AE /* Niamey */ = {isa = PBXFileReference; lastKnownFileType = file; path = Niamey; sourceTree = "<group>"; };
+		47D93AC51A2764910006D4AE /* Nouakchott */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nouakchott; sourceTree = "<group>"; };
+		47D93AC61A2764910006D4AE /* Ouagadougou */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ouagadougou; sourceTree = "<group>"; };
+		47D93AC71A2764910006D4AE /* Porto-Novo */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Porto-Novo"; sourceTree = "<group>"; };
+		47D93AC81A2764910006D4AE /* Sao_Tome */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sao_Tome; sourceTree = "<group>"; };
+		47D93AC91A2764910006D4AE /* Tripoli */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tripoli; sourceTree = "<group>"; };
+		47D93ACA1A2764910006D4AE /* Tunis */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tunis; sourceTree = "<group>"; };
+		47D93ACB1A2764910006D4AE /* Windhoek */ = {isa = PBXFileReference; lastKnownFileType = file; path = Windhoek; sourceTree = "<group>"; };
+		47D93ACD1A2764910006D4AE /* Adak */ = {isa = PBXFileReference; lastKnownFileType = file; path = Adak; sourceTree = "<group>"; };
+		47D93ACE1A2764910006D4AE /* Anchorage */ = {isa = PBXFileReference; lastKnownFileType = file; path = Anchorage; sourceTree = "<group>"; };
+		47D93ACF1A2764910006D4AE /* Anguilla */ = {isa = PBXFileReference; lastKnownFileType = file; path = Anguilla; sourceTree = "<group>"; };
+		47D93AD01A2764910006D4AE /* Antigua */ = {isa = PBXFileReference; lastKnownFileType = file; path = Antigua; sourceTree = "<group>"; };
+		47D93AD11A2764910006D4AE /* Araguaina */ = {isa = PBXFileReference; lastKnownFileType = file; path = Araguaina; sourceTree = "<group>"; };
+		47D93AD31A2764910006D4AE /* Buenos_Aires */ = {isa = PBXFileReference; lastKnownFileType = file; path = Buenos_Aires; sourceTree = "<group>"; };
+		47D93AD41A2764910006D4AE /* Catamarca */ = {isa = PBXFileReference; lastKnownFileType = file; path = Catamarca; sourceTree = "<group>"; };
+		47D93AD51A2764910006D4AE /* Cordoba */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cordoba; sourceTree = "<group>"; };
+		47D93AD61A2764910006D4AE /* Jujuy */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jujuy; sourceTree = "<group>"; };
+		47D93AD71A2764910006D4AE /* La_Rioja */ = {isa = PBXFileReference; lastKnownFileType = file; path = La_Rioja; sourceTree = "<group>"; };
+		47D93AD81A2764910006D4AE /* Mendoza */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mendoza; sourceTree = "<group>"; };
+		47D93AD91A2764910006D4AE /* Rio_Gallegos */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rio_Gallegos; sourceTree = "<group>"; };
+		47D93ADA1A2764910006D4AE /* Salta */ = {isa = PBXFileReference; lastKnownFileType = file; path = Salta; sourceTree = "<group>"; };
+		47D93ADB1A2764910006D4AE /* San_Juan */ = {isa = PBXFileReference; lastKnownFileType = file; path = San_Juan; sourceTree = "<group>"; };
+		47D93ADC1A2764910006D4AE /* San_Luis */ = {isa = PBXFileReference; lastKnownFileType = file; path = San_Luis; sourceTree = "<group>"; };
+		47D93ADD1A2764910006D4AE /* Tucuman */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tucuman; sourceTree = "<group>"; };
+		47D93ADE1A2764910006D4AE /* Ushuaia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ushuaia; sourceTree = "<group>"; };
+		47D93ADF1A2764910006D4AE /* Aruba */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aruba; sourceTree = "<group>"; };
+		47D93AE01A2764910006D4AE /* Asuncion */ = {isa = PBXFileReference; lastKnownFileType = file; path = Asuncion; sourceTree = "<group>"; };
+		47D93AE11A2764910006D4AE /* Atikokan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Atikokan; sourceTree = "<group>"; };
+		47D93AE21A2764910006D4AE /* Bahia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bahia; sourceTree = "<group>"; };
+		47D93AE31A2764910006D4AE /* Bahia_Banderas */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bahia_Banderas; sourceTree = "<group>"; };
+		47D93AE41A2764910006D4AE /* Barbados */ = {isa = PBXFileReference; lastKnownFileType = file; path = Barbados; sourceTree = "<group>"; };
+		47D93AE51A2764910006D4AE /* Belem */ = {isa = PBXFileReference; lastKnownFileType = file; path = Belem; sourceTree = "<group>"; };
+		47D93AE61A2764910006D4AE /* Belize */ = {isa = PBXFileReference; lastKnownFileType = file; path = Belize; sourceTree = "<group>"; };
+		47D93AE71A2764910006D4AE /* Blanc-Sablon */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Blanc-Sablon"; sourceTree = "<group>"; };
+		47D93AE81A2764910006D4AE /* Boa_Vista */ = {isa = PBXFileReference; lastKnownFileType = file; path = Boa_Vista; sourceTree = "<group>"; };
+		47D93AE91A2764910006D4AE /* Bogota */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bogota; sourceTree = "<group>"; };
+		47D93AEA1A2764910006D4AE /* Boise */ = {isa = PBXFileReference; lastKnownFileType = file; path = Boise; sourceTree = "<group>"; };
+		47D93AEB1A2764910006D4AE /* Cambridge_Bay */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cambridge_Bay; sourceTree = "<group>"; };
+		47D93AEC1A2764910006D4AE /* Campo_Grande */ = {isa = PBXFileReference; lastKnownFileType = file; path = Campo_Grande; sourceTree = "<group>"; };
+		47D93AED1A2764910006D4AE /* Cancun */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cancun; sourceTree = "<group>"; };
+		47D93AEE1A2764910006D4AE /* Caracas */ = {isa = PBXFileReference; lastKnownFileType = file; path = Caracas; sourceTree = "<group>"; };
+		47D93AEF1A2764910006D4AE /* Cayenne */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cayenne; sourceTree = "<group>"; };
+		47D93AF01A2764910006D4AE /* Cayman */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cayman; sourceTree = "<group>"; };
+		47D93AF11A2764910006D4AE /* Chicago */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chicago; sourceTree = "<group>"; };
+		47D93AF21A2764910006D4AE /* Chihuahua */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chihuahua; sourceTree = "<group>"; };
+		47D93AF31A2764910006D4AE /* Costa_Rica */ = {isa = PBXFileReference; lastKnownFileType = file; path = Costa_Rica; sourceTree = "<group>"; };
+		47D93AF41A2764910006D4AE /* Creston */ = {isa = PBXFileReference; lastKnownFileType = file; path = Creston; sourceTree = "<group>"; };
+		47D93AF51A2764910006D4AE /* Cuiaba */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cuiaba; sourceTree = "<group>"; };
+		47D93AF61A2764910006D4AE /* Curacao */ = {isa = PBXFileReference; lastKnownFileType = file; path = Curacao; sourceTree = "<group>"; };
+		47D93AF71A2764910006D4AE /* Danmarkshavn */ = {isa = PBXFileReference; lastKnownFileType = file; path = Danmarkshavn; sourceTree = "<group>"; };
+		47D93AF81A2764910006D4AE /* Dawson */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dawson; sourceTree = "<group>"; };
+		47D93AF91A2764910006D4AE /* Dawson_Creek */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dawson_Creek; sourceTree = "<group>"; };
+		47D93AFA1A2764910006D4AE /* Denver */ = {isa = PBXFileReference; lastKnownFileType = file; path = Denver; sourceTree = "<group>"; };
+		47D93AFB1A2764910006D4AE /* Detroit */ = {isa = PBXFileReference; lastKnownFileType = file; path = Detroit; sourceTree = "<group>"; };
+		47D93AFC1A2764910006D4AE /* Dominica */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dominica; sourceTree = "<group>"; };
+		47D93AFD1A2764910006D4AE /* Edmonton */ = {isa = PBXFileReference; lastKnownFileType = file; path = Edmonton; sourceTree = "<group>"; };
+		47D93AFE1A2764910006D4AE /* Eirunepe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Eirunepe; sourceTree = "<group>"; };
+		47D93AFF1A2764910006D4AE /* El_Salvador */ = {isa = PBXFileReference; lastKnownFileType = file; path = El_Salvador; sourceTree = "<group>"; };
+		47D93B001A2764910006D4AE /* Fortaleza */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fortaleza; sourceTree = "<group>"; };
+		47D93B011A2764910006D4AE /* Glace_Bay */ = {isa = PBXFileReference; lastKnownFileType = file; path = Glace_Bay; sourceTree = "<group>"; };
+		47D93B021A2764910006D4AE /* Godthab */ = {isa = PBXFileReference; lastKnownFileType = file; path = Godthab; sourceTree = "<group>"; };
+		47D93B031A2764910006D4AE /* Goose_Bay */ = {isa = PBXFileReference; lastKnownFileType = file; path = Goose_Bay; sourceTree = "<group>"; };
+		47D93B041A2764910006D4AE /* Grand_Turk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Grand_Turk; sourceTree = "<group>"; };
+		47D93B051A2764910006D4AE /* Grenada */ = {isa = PBXFileReference; lastKnownFileType = file; path = Grenada; sourceTree = "<group>"; };
+		47D93B061A2764910006D4AE /* Guadeloupe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guadeloupe; sourceTree = "<group>"; };
+		47D93B071A2764910006D4AE /* Guatemala */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guatemala; sourceTree = "<group>"; };
+		47D93B081A2764910006D4AE /* Guayaquil */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guayaquil; sourceTree = "<group>"; };
+		47D93B091A2764910006D4AE /* Guyana */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guyana; sourceTree = "<group>"; };
+		47D93B0A1A2764910006D4AE /* Halifax */ = {isa = PBXFileReference; lastKnownFileType = file; path = Halifax; sourceTree = "<group>"; };
+		47D93B0B1A2764910006D4AE /* Havana */ = {isa = PBXFileReference; lastKnownFileType = file; path = Havana; sourceTree = "<group>"; };
+		47D93B0C1A2764910006D4AE /* Hermosillo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hermosillo; sourceTree = "<group>"; };
+		47D93B0E1A2764910006D4AE /* Indianapolis */ = {isa = PBXFileReference; lastKnownFileType = file; path = Indianapolis; sourceTree = "<group>"; };
+		47D93B0F1A2764910006D4AE /* Knox */ = {isa = PBXFileReference; lastKnownFileType = file; path = Knox; sourceTree = "<group>"; };
+		47D93B101A2764910006D4AE /* Marengo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Marengo; sourceTree = "<group>"; };
+		47D93B111A2764910006D4AE /* Petersburg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Petersburg; sourceTree = "<group>"; };
+		47D93B121A2764910006D4AE /* Tell_City */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tell_City; sourceTree = "<group>"; };
+		47D93B131A2764910006D4AE /* Vevay */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vevay; sourceTree = "<group>"; };
+		47D93B141A2764910006D4AE /* Vincennes */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vincennes; sourceTree = "<group>"; };
+		47D93B151A2764910006D4AE /* Winamac */ = {isa = PBXFileReference; lastKnownFileType = file; path = Winamac; sourceTree = "<group>"; };
+		47D93B161A2764910006D4AE /* Inuvik */ = {isa = PBXFileReference; lastKnownFileType = file; path = Inuvik; sourceTree = "<group>"; };
+		47D93B171A2764910006D4AE /* Iqaluit */ = {isa = PBXFileReference; lastKnownFileType = file; path = Iqaluit; sourceTree = "<group>"; };
+		47D93B181A2764910006D4AE /* Jamaica */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jamaica; sourceTree = "<group>"; };
+		47D93B191A2764910006D4AE /* Juneau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Juneau; sourceTree = "<group>"; };
+		47D93B1B1A2764910006D4AE /* Louisville */ = {isa = PBXFileReference; lastKnownFileType = file; path = Louisville; sourceTree = "<group>"; };
+		47D93B1C1A2764910006D4AE /* Monticello */ = {isa = PBXFileReference; lastKnownFileType = file; path = Monticello; sourceTree = "<group>"; };
+		47D93B1D1A2764910006D4AE /* La_Paz */ = {isa = PBXFileReference; lastKnownFileType = file; path = La_Paz; sourceTree = "<group>"; };
+		47D93B1E1A2764910006D4AE /* Lima */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lima; sourceTree = "<group>"; };
+		47D93B1F1A2764910006D4AE /* Los_Angeles */ = {isa = PBXFileReference; lastKnownFileType = file; path = Los_Angeles; sourceTree = "<group>"; };
+		47D93B201A2764910006D4AE /* Maceio */ = {isa = PBXFileReference; lastKnownFileType = file; path = Maceio; sourceTree = "<group>"; };
+		47D93B211A2764910006D4AE /* Managua */ = {isa = PBXFileReference; lastKnownFileType = file; path = Managua; sourceTree = "<group>"; };
+		47D93B221A2764910006D4AE /* Manaus */ = {isa = PBXFileReference; lastKnownFileType = file; path = Manaus; sourceTree = "<group>"; };
+		47D93B231A2764910006D4AE /* Martinique */ = {isa = PBXFileReference; lastKnownFileType = file; path = Martinique; sourceTree = "<group>"; };
+		47D93B241A2764920006D4AE /* Matamoros */ = {isa = PBXFileReference; lastKnownFileType = file; path = Matamoros; sourceTree = "<group>"; };
+		47D93B251A2764920006D4AE /* Mazatlan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mazatlan; sourceTree = "<group>"; };
+		47D93B261A2764920006D4AE /* Menominee */ = {isa = PBXFileReference; lastKnownFileType = file; path = Menominee; sourceTree = "<group>"; };
+		47D93B271A2764920006D4AE /* Merida */ = {isa = PBXFileReference; lastKnownFileType = file; path = Merida; sourceTree = "<group>"; };
+		47D93B281A2764920006D4AE /* Metlakatla */ = {isa = PBXFileReference; lastKnownFileType = file; path = Metlakatla; sourceTree = "<group>"; };
+		47D93B291A2764920006D4AE /* Mexico_City */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mexico_City; sourceTree = "<group>"; };
+		47D93B2A1A2764920006D4AE /* Miquelon */ = {isa = PBXFileReference; lastKnownFileType = file; path = Miquelon; sourceTree = "<group>"; };
+		47D93B2B1A2764920006D4AE /* Moncton */ = {isa = PBXFileReference; lastKnownFileType = file; path = Moncton; sourceTree = "<group>"; };
+		47D93B2C1A2764920006D4AE /* Monterrey */ = {isa = PBXFileReference; lastKnownFileType = file; path = Monterrey; sourceTree = "<group>"; };
+		47D93B2D1A2764920006D4AE /* Montevideo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montevideo; sourceTree = "<group>"; };
+		47D93B2E1A2764920006D4AE /* Montreal */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montreal; sourceTree = "<group>"; };
+		47D93B2F1A2764920006D4AE /* Montserrat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Montserrat; sourceTree = "<group>"; };
+		47D93B301A2764920006D4AE /* Nassau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nassau; sourceTree = "<group>"; };
+		47D93B311A2764920006D4AE /* New_York */ = {isa = PBXFileReference; lastKnownFileType = file; path = New_York; sourceTree = "<group>"; };
+		47D93B321A2764920006D4AE /* Nipigon */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nipigon; sourceTree = "<group>"; };
+		47D93B331A2764920006D4AE /* Nome */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nome; sourceTree = "<group>"; };
+		47D93B341A2764920006D4AE /* Noronha */ = {isa = PBXFileReference; lastKnownFileType = file; path = Noronha; sourceTree = "<group>"; };
+		47D93B361A2764920006D4AE /* Beulah */ = {isa = PBXFileReference; lastKnownFileType = file; path = Beulah; sourceTree = "<group>"; };
+		47D93B371A2764920006D4AE /* Center */ = {isa = PBXFileReference; lastKnownFileType = file; path = Center; sourceTree = "<group>"; };
+		47D93B381A2764920006D4AE /* New_Salem */ = {isa = PBXFileReference; lastKnownFileType = file; path = New_Salem; sourceTree = "<group>"; };
+		47D93B391A2764920006D4AE /* Ojinaga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ojinaga; sourceTree = "<group>"; };
+		47D93B3A1A2764920006D4AE /* Panama */ = {isa = PBXFileReference; lastKnownFileType = file; path = Panama; sourceTree = "<group>"; };
+		47D93B3B1A2764920006D4AE /* Pangnirtung */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pangnirtung; sourceTree = "<group>"; };
+		47D93B3C1A2764920006D4AE /* Paramaribo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Paramaribo; sourceTree = "<group>"; };
+		47D93B3D1A2764920006D4AE /* Phoenix */ = {isa = PBXFileReference; lastKnownFileType = file; path = Phoenix; sourceTree = "<group>"; };
+		47D93B3E1A2764920006D4AE /* Port-au-Prince */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Port-au-Prince"; sourceTree = "<group>"; };
+		47D93B3F1A2764920006D4AE /* Port_of_Spain */ = {isa = PBXFileReference; lastKnownFileType = file; path = Port_of_Spain; sourceTree = "<group>"; };
+		47D93B401A2764920006D4AE /* Porto_Velho */ = {isa = PBXFileReference; lastKnownFileType = file; path = Porto_Velho; sourceTree = "<group>"; };
+		47D93B411A2764920006D4AE /* Puerto_Rico */ = {isa = PBXFileReference; lastKnownFileType = file; path = Puerto_Rico; sourceTree = "<group>"; };
+		47D93B421A2764920006D4AE /* Rainy_River */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rainy_River; sourceTree = "<group>"; };
+		47D93B431A2764920006D4AE /* Rankin_Inlet */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rankin_Inlet; sourceTree = "<group>"; };
+		47D93B441A2764920006D4AE /* Recife */ = {isa = PBXFileReference; lastKnownFileType = file; path = Recife; sourceTree = "<group>"; };
+		47D93B451A2764920006D4AE /* Regina */ = {isa = PBXFileReference; lastKnownFileType = file; path = Regina; sourceTree = "<group>"; };
+		47D93B461A2764920006D4AE /* Resolute */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resolute; sourceTree = "<group>"; };
+		47D93B471A2764920006D4AE /* Rio_Branco */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rio_Branco; sourceTree = "<group>"; };
+		47D93B481A2764920006D4AE /* Santa_Isabel */ = {isa = PBXFileReference; lastKnownFileType = file; path = Santa_Isabel; sourceTree = "<group>"; };
+		47D93B491A2764920006D4AE /* Santarem */ = {isa = PBXFileReference; lastKnownFileType = file; path = Santarem; sourceTree = "<group>"; };
+		47D93B4A1A2764920006D4AE /* Santiago */ = {isa = PBXFileReference; lastKnownFileType = file; path = Santiago; sourceTree = "<group>"; };
+		47D93B4B1A2764920006D4AE /* Santo_Domingo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Santo_Domingo; sourceTree = "<group>"; };
+		47D93B4C1A2764920006D4AE /* Sao_Paulo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sao_Paulo; sourceTree = "<group>"; };
+		47D93B4D1A2764920006D4AE /* Scoresbysund */ = {isa = PBXFileReference; lastKnownFileType = file; path = Scoresbysund; sourceTree = "<group>"; };
+		47D93B4E1A2764920006D4AE /* Sitka */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sitka; sourceTree = "<group>"; };
+		47D93B4F1A2764920006D4AE /* St_Johns */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Johns; sourceTree = "<group>"; };
+		47D93B501A2764920006D4AE /* St_Kitts */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Kitts; sourceTree = "<group>"; };
+		47D93B511A2764920006D4AE /* St_Lucia */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Lucia; sourceTree = "<group>"; };
+		47D93B521A2764920006D4AE /* St_Thomas */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Thomas; sourceTree = "<group>"; };
+		47D93B531A2764920006D4AE /* St_Vincent */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Vincent; sourceTree = "<group>"; };
+		47D93B541A2764920006D4AE /* Swift_Current */ = {isa = PBXFileReference; lastKnownFileType = file; path = Swift_Current; sourceTree = "<group>"; };
+		47D93B551A2764920006D4AE /* Tegucigalpa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tegucigalpa; sourceTree = "<group>"; };
+		47D93B561A2764920006D4AE /* Thule */ = {isa = PBXFileReference; lastKnownFileType = file; path = Thule; sourceTree = "<group>"; };
+		47D93B571A2764920006D4AE /* Thunder_Bay */ = {isa = PBXFileReference; lastKnownFileType = file; path = Thunder_Bay; sourceTree = "<group>"; };
+		47D93B581A2764920006D4AE /* Tijuana */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tijuana; sourceTree = "<group>"; };
+		47D93B591A2764920006D4AE /* Toronto */ = {isa = PBXFileReference; lastKnownFileType = file; path = Toronto; sourceTree = "<group>"; };
+		47D93B5A1A2764920006D4AE /* Tortola */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tortola; sourceTree = "<group>"; };
+		47D93B5B1A2764920006D4AE /* Vancouver */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vancouver; sourceTree = "<group>"; };
+		47D93B5C1A2764920006D4AE /* Whitehorse */ = {isa = PBXFileReference; lastKnownFileType = file; path = Whitehorse; sourceTree = "<group>"; };
+		47D93B5D1A2764920006D4AE /* Winnipeg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Winnipeg; sourceTree = "<group>"; };
+		47D93B5E1A2764920006D4AE /* Yakutat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Yakutat; sourceTree = "<group>"; };
+		47D93B5F1A2764920006D4AE /* Yellowknife */ = {isa = PBXFileReference; lastKnownFileType = file; path = Yellowknife; sourceTree = "<group>"; };
+		47D93B611A2764920006D4AE /* Casey */ = {isa = PBXFileReference; lastKnownFileType = file; path = Casey; sourceTree = "<group>"; };
+		47D93B621A2764920006D4AE /* Davis */ = {isa = PBXFileReference; lastKnownFileType = file; path = Davis; sourceTree = "<group>"; };
+		47D93B631A2764920006D4AE /* DumontDUrville */ = {isa = PBXFileReference; lastKnownFileType = file; path = DumontDUrville; sourceTree = "<group>"; };
+		47D93B641A2764920006D4AE /* Macquarie */ = {isa = PBXFileReference; lastKnownFileType = file; path = Macquarie; sourceTree = "<group>"; };
+		47D93B651A2764920006D4AE /* Mawson */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mawson; sourceTree = "<group>"; };
+		47D93B661A2764920006D4AE /* McMurdo */ = {isa = PBXFileReference; lastKnownFileType = file; path = McMurdo; sourceTree = "<group>"; };
+		47D93B671A2764920006D4AE /* Palmer */ = {isa = PBXFileReference; lastKnownFileType = file; path = Palmer; sourceTree = "<group>"; };
+		47D93B681A2764920006D4AE /* Rothera */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rothera; sourceTree = "<group>"; };
+		47D93B691A2764920006D4AE /* Syowa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Syowa; sourceTree = "<group>"; };
+		47D93B6A1A2764920006D4AE /* Vostok */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vostok; sourceTree = "<group>"; };
+		47D93B6C1A2764920006D4AE /* Aden */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aden; sourceTree = "<group>"; };
+		47D93B6D1A2764920006D4AE /* Almaty */ = {isa = PBXFileReference; lastKnownFileType = file; path = Almaty; sourceTree = "<group>"; };
+		47D93B6E1A2764920006D4AE /* Amman */ = {isa = PBXFileReference; lastKnownFileType = file; path = Amman; sourceTree = "<group>"; };
+		47D93B6F1A2764920006D4AE /* Anadyr */ = {isa = PBXFileReference; lastKnownFileType = file; path = Anadyr; sourceTree = "<group>"; };
+		47D93B701A2764920006D4AE /* Aqtau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aqtau; sourceTree = "<group>"; };
+		47D93B711A2764920006D4AE /* Aqtobe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Aqtobe; sourceTree = "<group>"; };
+		47D93B721A2764920006D4AE /* Ashgabat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ashgabat; sourceTree = "<group>"; };
+		47D93B731A2764920006D4AE /* Baghdad */ = {isa = PBXFileReference; lastKnownFileType = file; path = Baghdad; sourceTree = "<group>"; };
+		47D93B741A2764920006D4AE /* Bahrain */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bahrain; sourceTree = "<group>"; };
+		47D93B751A2764920006D4AE /* Baku */ = {isa = PBXFileReference; lastKnownFileType = file; path = Baku; sourceTree = "<group>"; };
+		47D93B761A2764920006D4AE /* Bangkok */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bangkok; sourceTree = "<group>"; };
+		47D93B771A2764920006D4AE /* Beirut */ = {isa = PBXFileReference; lastKnownFileType = file; path = Beirut; sourceTree = "<group>"; };
+		47D93B781A2764920006D4AE /* Bishkek */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bishkek; sourceTree = "<group>"; };
+		47D93B791A2764920006D4AE /* Brunei */ = {isa = PBXFileReference; lastKnownFileType = file; path = Brunei; sourceTree = "<group>"; };
+		47D93B7A1A2764920006D4AE /* Choibalsan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Choibalsan; sourceTree = "<group>"; };
+		47D93B7B1A2764920006D4AE /* Chongqing */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chongqing; sourceTree = "<group>"; };
+		47D93B7C1A2764920006D4AE /* Colombo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Colombo; sourceTree = "<group>"; };
+		47D93B7D1A2764920006D4AE /* Damascus */ = {isa = PBXFileReference; lastKnownFileType = file; path = Damascus; sourceTree = "<group>"; };
+		47D93B7E1A2764920006D4AE /* Dhaka */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dhaka; sourceTree = "<group>"; };
+		47D93B7F1A2764920006D4AE /* Dili */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dili; sourceTree = "<group>"; };
+		47D93B801A2764920006D4AE /* Dubai */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dubai; sourceTree = "<group>"; };
+		47D93B811A2764920006D4AE /* Dushanbe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dushanbe; sourceTree = "<group>"; };
+		47D93B821A2764920006D4AE /* Gaza */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gaza; sourceTree = "<group>"; };
+		47D93B831A2764920006D4AE /* Harbin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Harbin; sourceTree = "<group>"; };
+		47D93B841A2764920006D4AE /* Hebron */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hebron; sourceTree = "<group>"; };
+		47D93B851A2764920006D4AE /* Ho_Chi_Minh */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ho_Chi_Minh; sourceTree = "<group>"; };
+		47D93B861A2764920006D4AE /* Hong_Kong */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hong_Kong; sourceTree = "<group>"; };
+		47D93B871A2764920006D4AE /* Hovd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hovd; sourceTree = "<group>"; };
+		47D93B881A2764920006D4AE /* Irkutsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Irkutsk; sourceTree = "<group>"; };
+		47D93B891A2764920006D4AE /* Jakarta */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jakarta; sourceTree = "<group>"; };
+		47D93B8A1A2764920006D4AE /* Jayapura */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jayapura; sourceTree = "<group>"; };
+		47D93B8B1A2764920006D4AE /* Jerusalem */ = {isa = PBXFileReference; lastKnownFileType = file; path = Jerusalem; sourceTree = "<group>"; };
+		47D93B8C1A2764920006D4AE /* Kabul */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kabul; sourceTree = "<group>"; };
+		47D93B8D1A2764920006D4AE /* Kamchatka */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kamchatka; sourceTree = "<group>"; };
+		47D93B8E1A2764920006D4AE /* Karachi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Karachi; sourceTree = "<group>"; };
+		47D93B8F1A2764920006D4AE /* Kashgar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kashgar; sourceTree = "<group>"; };
+		47D93B901A2764920006D4AE /* Kathmandu */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kathmandu; sourceTree = "<group>"; };
+		47D93B911A2764920006D4AE /* Khandyga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Khandyga; sourceTree = "<group>"; };
+		47D93B921A2764920006D4AE /* Kolkata */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kolkata; sourceTree = "<group>"; };
+		47D93B931A2764920006D4AE /* Krasnoyarsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Krasnoyarsk; sourceTree = "<group>"; };
+		47D93B941A2764920006D4AE /* Kuala_Lumpur */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kuala_Lumpur; sourceTree = "<group>"; };
+		47D93B951A2764920006D4AE /* Kuching */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kuching; sourceTree = "<group>"; };
+		47D93B961A2764920006D4AE /* Kuwait */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kuwait; sourceTree = "<group>"; };
+		47D93B971A2764920006D4AE /* Macau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Macau; sourceTree = "<group>"; };
+		47D93B981A2764920006D4AE /* Magadan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Magadan; sourceTree = "<group>"; };
+		47D93B991A2764920006D4AE /* Makassar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Makassar; sourceTree = "<group>"; };
+		47D93B9A1A2764920006D4AE /* Manila */ = {isa = PBXFileReference; lastKnownFileType = file; path = Manila; sourceTree = "<group>"; };
+		47D93B9B1A2764920006D4AE /* Muscat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Muscat; sourceTree = "<group>"; };
+		47D93B9C1A2764920006D4AE /* Nicosia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nicosia; sourceTree = "<group>"; };
+		47D93B9D1A2764920006D4AE /* Novokuznetsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Novokuznetsk; sourceTree = "<group>"; };
+		47D93B9E1A2764920006D4AE /* Novosibirsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Novosibirsk; sourceTree = "<group>"; };
+		47D93B9F1A2764920006D4AE /* Omsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Omsk; sourceTree = "<group>"; };
+		47D93BA01A2764920006D4AE /* Oral */ = {isa = PBXFileReference; lastKnownFileType = file; path = Oral; sourceTree = "<group>"; };
+		47D93BA11A2764920006D4AE /* Phnom_Penh */ = {isa = PBXFileReference; lastKnownFileType = file; path = Phnom_Penh; sourceTree = "<group>"; };
+		47D93BA21A2764920006D4AE /* Pontianak */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pontianak; sourceTree = "<group>"; };
+		47D93BA31A2764920006D4AE /* Pyongyang */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pyongyang; sourceTree = "<group>"; };
+		47D93BA41A2764920006D4AE /* Qatar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Qatar; sourceTree = "<group>"; };
+		47D93BA51A2764920006D4AE /* Qyzylorda */ = {isa = PBXFileReference; lastKnownFileType = file; path = Qyzylorda; sourceTree = "<group>"; };
+		47D93BA61A2764920006D4AE /* Rangoon */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rangoon; sourceTree = "<group>"; };
+		47D93BA71A2764920006D4AE /* Riyadh */ = {isa = PBXFileReference; lastKnownFileType = file; path = Riyadh; sourceTree = "<group>"; };
+		47D93BA81A2764920006D4AE /* Riyadh87 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Riyadh87; sourceTree = "<group>"; };
+		47D93BA91A2764920006D4AE /* Riyadh88 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Riyadh88; sourceTree = "<group>"; };
+		47D93BAA1A2764920006D4AE /* Riyadh89 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Riyadh89; sourceTree = "<group>"; };
+		47D93BAB1A2764920006D4AE /* Sakhalin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sakhalin; sourceTree = "<group>"; };
+		47D93BAC1A2764920006D4AE /* Samarkand */ = {isa = PBXFileReference; lastKnownFileType = file; path = Samarkand; sourceTree = "<group>"; };
+		47D93BAD1A2764920006D4AE /* Seoul */ = {isa = PBXFileReference; lastKnownFileType = file; path = Seoul; sourceTree = "<group>"; };
+		47D93BAE1A2764920006D4AE /* Shanghai */ = {isa = PBXFileReference; lastKnownFileType = file; path = Shanghai; sourceTree = "<group>"; };
+		47D93BAF1A2764920006D4AE /* Singapore */ = {isa = PBXFileReference; lastKnownFileType = file; path = Singapore; sourceTree = "<group>"; };
+		47D93BB01A2764920006D4AE /* Taipei */ = {isa = PBXFileReference; lastKnownFileType = file; path = Taipei; sourceTree = "<group>"; };
+		47D93BB11A2764920006D4AE /* Tashkent */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tashkent; sourceTree = "<group>"; };
+		47D93BB21A2764920006D4AE /* Tbilisi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tbilisi; sourceTree = "<group>"; };
+		47D93BB31A2764920006D4AE /* Tehran */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tehran; sourceTree = "<group>"; };
+		47D93BB41A2764920006D4AE /* Thimphu */ = {isa = PBXFileReference; lastKnownFileType = file; path = Thimphu; sourceTree = "<group>"; };
+		47D93BB51A2764920006D4AE /* Tokyo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tokyo; sourceTree = "<group>"; };
+		47D93BB61A2764920006D4AE /* Ulaanbaatar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ulaanbaatar; sourceTree = "<group>"; };
+		47D93BB71A2764920006D4AE /* Urumqi */ = {isa = PBXFileReference; lastKnownFileType = file; path = Urumqi; sourceTree = "<group>"; };
+		47D93BB81A2764920006D4AE /* Ust-Nera */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Ust-Nera"; sourceTree = "<group>"; };
+		47D93BB91A2764920006D4AE /* Vientiane */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vientiane; sourceTree = "<group>"; };
+		47D93BBA1A2764920006D4AE /* Vladivostok */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vladivostok; sourceTree = "<group>"; };
+		47D93BBB1A2764920006D4AE /* Yakutsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Yakutsk; sourceTree = "<group>"; };
+		47D93BBC1A2764920006D4AE /* Yekaterinburg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Yekaterinburg; sourceTree = "<group>"; };
+		47D93BBD1A2764920006D4AE /* Yerevan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Yerevan; sourceTree = "<group>"; };
+		47D93BBF1A2764920006D4AE /* Azores */ = {isa = PBXFileReference; lastKnownFileType = file; path = Azores; sourceTree = "<group>"; };
+		47D93BC01A2764920006D4AE /* Bermuda */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bermuda; sourceTree = "<group>"; };
+		47D93BC11A2764920006D4AE /* Canary */ = {isa = PBXFileReference; lastKnownFileType = file; path = Canary; sourceTree = "<group>"; };
+		47D93BC21A2764920006D4AE /* Cape_Verde */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cape_Verde; sourceTree = "<group>"; };
+		47D93BC31A2764920006D4AE /* Faroe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Faroe; sourceTree = "<group>"; };
+		47D93BC41A2764920006D4AE /* Madeira */ = {isa = PBXFileReference; lastKnownFileType = file; path = Madeira; sourceTree = "<group>"; };
+		47D93BC51A2764920006D4AE /* Reykjavik */ = {isa = PBXFileReference; lastKnownFileType = file; path = Reykjavik; sourceTree = "<group>"; };
+		47D93BC61A2764920006D4AE /* South_Georgia */ = {isa = PBXFileReference; lastKnownFileType = file; path = South_Georgia; sourceTree = "<group>"; };
+		47D93BC71A2764920006D4AE /* St_Helena */ = {isa = PBXFileReference; lastKnownFileType = file; path = St_Helena; sourceTree = "<group>"; };
+		47D93BC81A2764920006D4AE /* Stanley */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stanley; sourceTree = "<group>"; };
+		47D93BCA1A2764920006D4AE /* Adelaide */ = {isa = PBXFileReference; lastKnownFileType = file; path = Adelaide; sourceTree = "<group>"; };
+		47D93BCB1A2764920006D4AE /* Brisbane */ = {isa = PBXFileReference; lastKnownFileType = file; path = Brisbane; sourceTree = "<group>"; };
+		47D93BCC1A2764920006D4AE /* Broken_Hill */ = {isa = PBXFileReference; lastKnownFileType = file; path = Broken_Hill; sourceTree = "<group>"; };
+		47D93BCD1A2764920006D4AE /* Currie */ = {isa = PBXFileReference; lastKnownFileType = file; path = Currie; sourceTree = "<group>"; };
+		47D93BCE1A2764920006D4AE /* Darwin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Darwin; sourceTree = "<group>"; };
+		47D93BCF1A2764920006D4AE /* Eucla */ = {isa = PBXFileReference; lastKnownFileType = file; path = Eucla; sourceTree = "<group>"; };
+		47D93BD01A2764920006D4AE /* Hobart */ = {isa = PBXFileReference; lastKnownFileType = file; path = Hobart; sourceTree = "<group>"; };
+		47D93BD11A2764920006D4AE /* Lindeman */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lindeman; sourceTree = "<group>"; };
+		47D93BD21A2764920006D4AE /* Lord_Howe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lord_Howe; sourceTree = "<group>"; };
+		47D93BD31A2764920006D4AE /* Melbourne */ = {isa = PBXFileReference; lastKnownFileType = file; path = Melbourne; sourceTree = "<group>"; };
+		47D93BD41A2764920006D4AE /* Perth */ = {isa = PBXFileReference; lastKnownFileType = file; path = Perth; sourceTree = "<group>"; };
+		47D93BD51A2764920006D4AE /* Sydney */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sydney; sourceTree = "<group>"; };
+		47D93BD61A2764920006D4AE /* CET */ = {isa = PBXFileReference; lastKnownFileType = file; path = CET; sourceTree = "<group>"; };
+		47D93BD71A2764920006D4AE /* CST6CDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = CST6CDT; sourceTree = "<group>"; };
+		47D93BD81A2764920006D4AE /* EET */ = {isa = PBXFileReference; lastKnownFileType = file; path = EET; sourceTree = "<group>"; };
+		47D93BD91A2764920006D4AE /* EST */ = {isa = PBXFileReference; lastKnownFileType = file; path = EST; sourceTree = "<group>"; };
+		47D93BDA1A2764920006D4AE /* EST5EDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = EST5EDT; sourceTree = "<group>"; };
+		47D93BDC1A2764920006D4AE /* GMT */ = {isa = PBXFileReference; lastKnownFileType = file; path = GMT; sourceTree = "<group>"; };
+		47D93BDD1A2764920006D4AE /* GMT+1 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+1"; sourceTree = "<group>"; };
+		47D93BDE1A2764920006D4AE /* GMT+10 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+10"; sourceTree = "<group>"; };
+		47D93BDF1A2764920006D4AE /* GMT+11 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+11"; sourceTree = "<group>"; };
+		47D93BE01A2764920006D4AE /* GMT+12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+12"; sourceTree = "<group>"; };
+		47D93BE11A2764920006D4AE /* GMT+2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+2"; sourceTree = "<group>"; };
+		47D93BE21A2764920006D4AE /* GMT+3 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+3"; sourceTree = "<group>"; };
+		47D93BE31A2764920006D4AE /* GMT+4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+4"; sourceTree = "<group>"; };
+		47D93BE41A2764920006D4AE /* GMT+5 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+5"; sourceTree = "<group>"; };
+		47D93BE51A2764920006D4AE /* GMT+6 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+6"; sourceTree = "<group>"; };
+		47D93BE61A2764920006D4AE /* GMT+7 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+7"; sourceTree = "<group>"; };
+		47D93BE71A2764920006D4AE /* GMT+8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+8"; sourceTree = "<group>"; };
+		47D93BE81A2764920006D4AE /* GMT+9 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT+9"; sourceTree = "<group>"; };
+		47D93BE91A2764920006D4AE /* GMT-1 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-1"; sourceTree = "<group>"; };
+		47D93BEA1A2764920006D4AE /* GMT-10 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-10"; sourceTree = "<group>"; };
+		47D93BEB1A2764920006D4AE /* GMT-11 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-11"; sourceTree = "<group>"; };
+		47D93BEC1A2764920006D4AE /* GMT-12 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-12"; sourceTree = "<group>"; };
+		47D93BED1A2764920006D4AE /* GMT-13 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-13"; sourceTree = "<group>"; };
+		47D93BEE1A2764920006D4AE /* GMT-14 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-14"; sourceTree = "<group>"; };
+		47D93BEF1A2764920006D4AE /* GMT-2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-2"; sourceTree = "<group>"; };
+		47D93BF01A2764920006D4AE /* GMT-3 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-3"; sourceTree = "<group>"; };
+		47D93BF11A2764920006D4AE /* GMT-4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-4"; sourceTree = "<group>"; };
+		47D93BF21A2764920006D4AE /* GMT-5 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-5"; sourceTree = "<group>"; };
+		47D93BF31A2764920006D4AE /* GMT-6 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-6"; sourceTree = "<group>"; };
+		47D93BF41A2764920006D4AE /* GMT-7 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-7"; sourceTree = "<group>"; };
+		47D93BF51A2764920006D4AE /* GMT-8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-8"; sourceTree = "<group>"; };
+		47D93BF61A2764920006D4AE /* GMT-9 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GMT-9"; sourceTree = "<group>"; };
+		47D93BF71A2764920006D4AE /* UCT */ = {isa = PBXFileReference; lastKnownFileType = file; path = UCT; sourceTree = "<group>"; };
+		47D93BF81A2764920006D4AE /* UTC */ = {isa = PBXFileReference; lastKnownFileType = file; path = UTC; sourceTree = "<group>"; };
+		47D93BFA1A2764920006D4AE /* Amsterdam */ = {isa = PBXFileReference; lastKnownFileType = file; path = Amsterdam; sourceTree = "<group>"; };
+		47D93BFB1A2764920006D4AE /* Andorra */ = {isa = PBXFileReference; lastKnownFileType = file; path = Andorra; sourceTree = "<group>"; };
+		47D93BFC1A2764920006D4AE /* Athens */ = {isa = PBXFileReference; lastKnownFileType = file; path = Athens; sourceTree = "<group>"; };
+		47D93BFD1A2764920006D4AE /* Belgrade */ = {isa = PBXFileReference; lastKnownFileType = file; path = Belgrade; sourceTree = "<group>"; };
+		47D93BFE1A2764920006D4AE /* Berlin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Berlin; sourceTree = "<group>"; };
+		47D93BFF1A2764920006D4AE /* Brussels */ = {isa = PBXFileReference; lastKnownFileType = file; path = Brussels; sourceTree = "<group>"; };
+		47D93C001A2764920006D4AE /* Bucharest */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bucharest; sourceTree = "<group>"; };
+		47D93C011A2764920006D4AE /* Budapest */ = {isa = PBXFileReference; lastKnownFileType = file; path = Budapest; sourceTree = "<group>"; };
+		47D93C021A2764920006D4AE /* Chisinau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chisinau; sourceTree = "<group>"; };
+		47D93C031A2764920006D4AE /* Copenhagen */ = {isa = PBXFileReference; lastKnownFileType = file; path = Copenhagen; sourceTree = "<group>"; };
+		47D93C041A2764920006D4AE /* Dublin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Dublin; sourceTree = "<group>"; };
+		47D93C051A2764920006D4AE /* Gibraltar */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gibraltar; sourceTree = "<group>"; };
+		47D93C061A2764920006D4AE /* Helsinki */ = {isa = PBXFileReference; lastKnownFileType = file; path = Helsinki; sourceTree = "<group>"; };
+		47D93C071A2764920006D4AE /* Istanbul */ = {isa = PBXFileReference; lastKnownFileType = file; path = Istanbul; sourceTree = "<group>"; };
+		47D93C081A2764920006D4AE /* Kaliningrad */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kaliningrad; sourceTree = "<group>"; };
+		47D93C091A2764920006D4AE /* Kiev */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kiev; sourceTree = "<group>"; };
+		47D93C0A1A2764920006D4AE /* Lisbon */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lisbon; sourceTree = "<group>"; };
+		47D93C0B1A2764920006D4AE /* London */ = {isa = PBXFileReference; lastKnownFileType = file; path = London; sourceTree = "<group>"; };
+		47D93C0C1A2764920006D4AE /* Luxembourg */ = {isa = PBXFileReference; lastKnownFileType = file; path = Luxembourg; sourceTree = "<group>"; };
+		47D93C0D1A2764920006D4AE /* Madrid */ = {isa = PBXFileReference; lastKnownFileType = file; path = Madrid; sourceTree = "<group>"; };
+		47D93C0E1A2764920006D4AE /* Malta */ = {isa = PBXFileReference; lastKnownFileType = file; path = Malta; sourceTree = "<group>"; };
+		47D93C0F1A2764920006D4AE /* Minsk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Minsk; sourceTree = "<group>"; };
+		47D93C101A2764920006D4AE /* Monaco */ = {isa = PBXFileReference; lastKnownFileType = file; path = Monaco; sourceTree = "<group>"; };
+		47D93C111A2764920006D4AE /* Moscow */ = {isa = PBXFileReference; lastKnownFileType = file; path = Moscow; sourceTree = "<group>"; };
+		47D93C121A2764920006D4AE /* Oslo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Oslo; sourceTree = "<group>"; };
+		47D93C131A2764920006D4AE /* Paris */ = {isa = PBXFileReference; lastKnownFileType = file; path = Paris; sourceTree = "<group>"; };
+		47D93C141A2764920006D4AE /* Prague */ = {isa = PBXFileReference; lastKnownFileType = file; path = Prague; sourceTree = "<group>"; };
+		47D93C151A2764920006D4AE /* Riga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Riga; sourceTree = "<group>"; };
+		47D93C161A2764920006D4AE /* Rome */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rome; sourceTree = "<group>"; };
+		47D93C171A2764920006D4AE /* Samara */ = {isa = PBXFileReference; lastKnownFileType = file; path = Samara; sourceTree = "<group>"; };
+		47D93C181A2764920006D4AE /* Simferopol */ = {isa = PBXFileReference; lastKnownFileType = file; path = Simferopol; sourceTree = "<group>"; };
+		47D93C191A2764920006D4AE /* Sofia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sofia; sourceTree = "<group>"; };
+		47D93C1A1A2764920006D4AE /* Stockholm */ = {isa = PBXFileReference; lastKnownFileType = file; path = Stockholm; sourceTree = "<group>"; };
+		47D93C1B1A2764920006D4AE /* Tallinn */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tallinn; sourceTree = "<group>"; };
+		47D93C1C1A2764920006D4AE /* Tirane */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tirane; sourceTree = "<group>"; };
+		47D93C1D1A2764920006D4AE /* Uzhgorod */ = {isa = PBXFileReference; lastKnownFileType = file; path = Uzhgorod; sourceTree = "<group>"; };
+		47D93C1E1A2764920006D4AE /* Vaduz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vaduz; sourceTree = "<group>"; };
+		47D93C1F1A2764920006D4AE /* Vienna */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vienna; sourceTree = "<group>"; };
+		47D93C201A2764920006D4AE /* Vilnius */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vilnius; sourceTree = "<group>"; };
+		47D93C211A2764920006D4AE /* Volgograd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Volgograd; sourceTree = "<group>"; };
+		47D93C221A2764920006D4AE /* Warsaw */ = {isa = PBXFileReference; lastKnownFileType = file; path = Warsaw; sourceTree = "<group>"; };
+		47D93C231A2764920006D4AE /* Zaporozhye */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zaporozhye; sourceTree = "<group>"; };
+		47D93C241A2764920006D4AE /* Zurich */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zurich; sourceTree = "<group>"; };
+		47D93C251A2764920006D4AE /* GMT */ = {isa = PBXFileReference; lastKnownFileType = file; path = GMT; sourceTree = "<group>"; };
+		47D93C261A2764920006D4AE /* HST */ = {isa = PBXFileReference; lastKnownFileType = file; path = HST; sourceTree = "<group>"; };
+		47D93C281A2764920006D4AE /* Antananarivo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Antananarivo; sourceTree = "<group>"; };
+		47D93C291A2764920006D4AE /* Chagos */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chagos; sourceTree = "<group>"; };
+		47D93C2A1A2764920006D4AE /* Christmas */ = {isa = PBXFileReference; lastKnownFileType = file; path = Christmas; sourceTree = "<group>"; };
+		47D93C2B1A2764920006D4AE /* Cocos */ = {isa = PBXFileReference; lastKnownFileType = file; path = Cocos; sourceTree = "<group>"; };
+		47D93C2C1A2764920006D4AE /* Comoro */ = {isa = PBXFileReference; lastKnownFileType = file; path = Comoro; sourceTree = "<group>"; };
+		47D93C2D1A2764920006D4AE /* Kerguelen */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kerguelen; sourceTree = "<group>"; };
+		47D93C2E1A2764920006D4AE /* Mahe */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mahe; sourceTree = "<group>"; };
+		47D93C2F1A2764920006D4AE /* Maldives */ = {isa = PBXFileReference; lastKnownFileType = file; path = Maldives; sourceTree = "<group>"; };
+		47D93C301A2764920006D4AE /* Mauritius */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mauritius; sourceTree = "<group>"; };
+		47D93C311A2764920006D4AE /* Mayotte */ = {isa = PBXFileReference; lastKnownFileType = file; path = Mayotte; sourceTree = "<group>"; };
+		47D93C321A2764920006D4AE /* Reunion */ = {isa = PBXFileReference; lastKnownFileType = file; path = Reunion; sourceTree = "<group>"; };
+		47D93C331A2764920006D4AE /* MET */ = {isa = PBXFileReference; lastKnownFileType = file; path = MET; sourceTree = "<group>"; };
+		47D93C341A2764920006D4AE /* MST */ = {isa = PBXFileReference; lastKnownFileType = file; path = MST; sourceTree = "<group>"; };
+		47D93C351A2764920006D4AE /* MST7MDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = MST7MDT; sourceTree = "<group>"; };
+		47D93C371A2764920006D4AE /* Apia */ = {isa = PBXFileReference; lastKnownFileType = file; path = Apia; sourceTree = "<group>"; };
+		47D93C381A2764920006D4AE /* Auckland */ = {isa = PBXFileReference; lastKnownFileType = file; path = Auckland; sourceTree = "<group>"; };
+		47D93C391A2764920006D4AE /* Chatham */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chatham; sourceTree = "<group>"; };
+		47D93C3A1A2764920006D4AE /* Chuuk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Chuuk; sourceTree = "<group>"; };
+		47D93C3B1A2764920006D4AE /* Easter */ = {isa = PBXFileReference; lastKnownFileType = file; path = Easter; sourceTree = "<group>"; };
+		47D93C3C1A2764920006D4AE /* Efate */ = {isa = PBXFileReference; lastKnownFileType = file; path = Efate; sourceTree = "<group>"; };
+		47D93C3D1A2764920006D4AE /* Enderbury */ = {isa = PBXFileReference; lastKnownFileType = file; path = Enderbury; sourceTree = "<group>"; };
+		47D93C3E1A2764920006D4AE /* Fakaofo */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fakaofo; sourceTree = "<group>"; };
+		47D93C3F1A2764920006D4AE /* Fiji */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fiji; sourceTree = "<group>"; };
+		47D93C401A2764920006D4AE /* Funafuti */ = {isa = PBXFileReference; lastKnownFileType = file; path = Funafuti; sourceTree = "<group>"; };
+		47D93C411A2764920006D4AE /* Galapagos */ = {isa = PBXFileReference; lastKnownFileType = file; path = Galapagos; sourceTree = "<group>"; };
+		47D93C421A2764920006D4AE /* Gambier */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gambier; sourceTree = "<group>"; };
+		47D93C431A2764920006D4AE /* Guadalcanal */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guadalcanal; sourceTree = "<group>"; };
+		47D93C441A2764920006D4AE /* Guam */ = {isa = PBXFileReference; lastKnownFileType = file; path = Guam; sourceTree = "<group>"; };
+		47D93C451A2764920006D4AE /* Honolulu */ = {isa = PBXFileReference; lastKnownFileType = file; path = Honolulu; sourceTree = "<group>"; };
+		47D93C461A2764920006D4AE /* Johnston */ = {isa = PBXFileReference; lastKnownFileType = file; path = Johnston; sourceTree = "<group>"; };
+		47D93C471A2764920006D4AE /* Kiritimati */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kiritimati; sourceTree = "<group>"; };
+		47D93C481A2764920006D4AE /* Kosrae */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kosrae; sourceTree = "<group>"; };
+		47D93C491A2764920006D4AE /* Kwajalein */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kwajalein; sourceTree = "<group>"; };
+		47D93C4A1A2764920006D4AE /* Majuro */ = {isa = PBXFileReference; lastKnownFileType = file; path = Majuro; sourceTree = "<group>"; };
+		47D93C4B1A2764930006D4AE /* Marquesas */ = {isa = PBXFileReference; lastKnownFileType = file; path = Marquesas; sourceTree = "<group>"; };
+		47D93C4C1A2764930006D4AE /* Midway */ = {isa = PBXFileReference; lastKnownFileType = file; path = Midway; sourceTree = "<group>"; };
+		47D93C4D1A2764930006D4AE /* Nauru */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nauru; sourceTree = "<group>"; };
+		47D93C4E1A2764930006D4AE /* Niue */ = {isa = PBXFileReference; lastKnownFileType = file; path = Niue; sourceTree = "<group>"; };
+		47D93C4F1A2764930006D4AE /* Norfolk */ = {isa = PBXFileReference; lastKnownFileType = file; path = Norfolk; sourceTree = "<group>"; };
+		47D93C501A2764930006D4AE /* Noumea */ = {isa = PBXFileReference; lastKnownFileType = file; path = Noumea; sourceTree = "<group>"; };
+		47D93C511A2764930006D4AE /* Pago_Pago */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pago_Pago; sourceTree = "<group>"; };
+		47D93C521A2764930006D4AE /* Palau */ = {isa = PBXFileReference; lastKnownFileType = file; path = Palau; sourceTree = "<group>"; };
+		47D93C531A2764930006D4AE /* Pitcairn */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pitcairn; sourceTree = "<group>"; };
+		47D93C541A2764930006D4AE /* Pohnpei */ = {isa = PBXFileReference; lastKnownFileType = file; path = Pohnpei; sourceTree = "<group>"; };
+		47D93C551A2764930006D4AE /* Port_Moresby */ = {isa = PBXFileReference; lastKnownFileType = file; path = Port_Moresby; sourceTree = "<group>"; };
+		47D93C561A2764930006D4AE /* Rarotonga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Rarotonga; sourceTree = "<group>"; };
+		47D93C571A2764930006D4AE /* Saipan */ = {isa = PBXFileReference; lastKnownFileType = file; path = Saipan; sourceTree = "<group>"; };
+		47D93C581A2764930006D4AE /* Tahiti */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tahiti; sourceTree = "<group>"; };
+		47D93C591A2764930006D4AE /* Tarawa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tarawa; sourceTree = "<group>"; };
+		47D93C5A1A2764930006D4AE /* Tongatapu */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tongatapu; sourceTree = "<group>"; };
+		47D93C5B1A2764930006D4AE /* Wake */ = {isa = PBXFileReference; lastKnownFileType = file; path = Wake; sourceTree = "<group>"; };
+		47D93C5C1A2764930006D4AE /* Wallis */ = {isa = PBXFileReference; lastKnownFileType = file; path = Wallis; sourceTree = "<group>"; };
+		47D93C5D1A2764930006D4AE /* PST8PDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = PST8PDT; sourceTree = "<group>"; };
+		47D93C5F1A2764930006D4AE /* AST4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AST4; sourceTree = "<group>"; };
+		47D93C601A2764930006D4AE /* AST4ADT */ = {isa = PBXFileReference; lastKnownFileType = file; path = AST4ADT; sourceTree = "<group>"; };
+		47D93C611A2764930006D4AE /* CST6 */ = {isa = PBXFileReference; lastKnownFileType = file; path = CST6; sourceTree = "<group>"; };
+		47D93C621A2764930006D4AE /* CST6CDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = CST6CDT; sourceTree = "<group>"; };
+		47D93C631A2764930006D4AE /* EST5 */ = {isa = PBXFileReference; lastKnownFileType = file; path = EST5; sourceTree = "<group>"; };
+		47D93C641A2764930006D4AE /* EST5EDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = EST5EDT; sourceTree = "<group>"; };
+		47D93C651A2764930006D4AE /* HST10 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HST10; sourceTree = "<group>"; };
+		47D93C661A2764930006D4AE /* MST7 */ = {isa = PBXFileReference; lastKnownFileType = file; path = MST7; sourceTree = "<group>"; };
+		47D93C671A2764930006D4AE /* MST7MDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = MST7MDT; sourceTree = "<group>"; };
+		47D93C681A2764930006D4AE /* PST8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = PST8; sourceTree = "<group>"; };
+		47D93C691A2764930006D4AE /* PST8PDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = PST8PDT; sourceTree = "<group>"; };
+		47D93C6A1A2764930006D4AE /* YST9 */ = {isa = PBXFileReference; lastKnownFileType = file; path = YST9; sourceTree = "<group>"; };
+		47D93C6B1A2764930006D4AE /* YST9YDT */ = {isa = PBXFileReference; lastKnownFileType = file; path = YST9YDT; sourceTree = "<group>"; };
+		47D93C6C1A2764930006D4AE /* WET */ = {isa = PBXFileReference; lastKnownFileType = file; path = WET; sourceTree = "<group>"; };
+		47D93C6D1A2764930006D4AE /* ZoneInfoMappings */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZoneInfoMappings; sourceTree = "<group>"; };
+		47D93C6E1A2764930006D4AE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		47D93C721A2764930006D4AE /* java.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = java.1; sourceTree = "<group>"; };
+		47D93C731A2764930006D4AE /* keytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = keytool.1; sourceTree = "<group>"; };
+		47D93C741A2764930006D4AE /* orbd.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = orbd.1; sourceTree = "<group>"; };
+		47D93C751A2764930006D4AE /* pack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = pack200.1; sourceTree = "<group>"; };
+		47D93C761A2764930006D4AE /* policytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = policytool.1; sourceTree = "<group>"; };
+		47D93C771A2764930006D4AE /* rmid.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmid.1; sourceTree = "<group>"; };
+		47D93C781A2764930006D4AE /* rmiregistry.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmiregistry.1; sourceTree = "<group>"; };
+		47D93C791A2764930006D4AE /* servertool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = servertool.1; sourceTree = "<group>"; };
+		47D93C7A1A2764930006D4AE /* tnameserv.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tnameserv.1; sourceTree = "<group>"; };
+		47D93C7B1A2764930006D4AE /* unpack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = unpack200.1; sourceTree = "<group>"; };
+		47D93C7E1A2764930006D4AE /* java.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = java.1; sourceTree = "<group>"; };
+		47D93C7F1A2764930006D4AE /* keytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = keytool.1; sourceTree = "<group>"; };
+		47D93C801A2764930006D4AE /* orbd.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = orbd.1; sourceTree = "<group>"; };
+		47D93C811A2764930006D4AE /* pack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = pack200.1; sourceTree = "<group>"; };
+		47D93C821A2764930006D4AE /* policytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = policytool.1; sourceTree = "<group>"; };
+		47D93C831A2764930006D4AE /* rmid.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmid.1; sourceTree = "<group>"; };
+		47D93C841A2764930006D4AE /* rmiregistry.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmiregistry.1; sourceTree = "<group>"; };
+		47D93C851A2764930006D4AE /* servertool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = servertool.1; sourceTree = "<group>"; };
+		47D93C861A2764930006D4AE /* tnameserv.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tnameserv.1; sourceTree = "<group>"; };
+		47D93C871A2764930006D4AE /* unpack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = unpack200.1; sourceTree = "<group>"; };
+		47D93C891A2764930006D4AE /* java.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = java.1; sourceTree = "<group>"; };
+		47D93C8A1A2764930006D4AE /* keytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = keytool.1; sourceTree = "<group>"; };
+		47D93C8B1A2764930006D4AE /* orbd.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = orbd.1; sourceTree = "<group>"; };
+		47D93C8C1A2764930006D4AE /* pack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = pack200.1; sourceTree = "<group>"; };
+		47D93C8D1A2764930006D4AE /* policytool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = policytool.1; sourceTree = "<group>"; };
+		47D93C8E1A2764930006D4AE /* rmid.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmid.1; sourceTree = "<group>"; };
+		47D93C8F1A2764930006D4AE /* rmiregistry.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = rmiregistry.1; sourceTree = "<group>"; };
+		47D93C901A2764930006D4AE /* servertool.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = servertool.1; sourceTree = "<group>"; };
+		47D93C911A2764930006D4AE /* tnameserv.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tnameserv.1; sourceTree = "<group>"; };
+		47D93C921A2764930006D4AE /* unpack200.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = unpack200.1; sourceTree = "<group>"; };
+		47D93C931A2764930006D4AE /* release */ = {isa = PBXFileReference; lastKnownFileType = text; path = release; sourceTree = "<group>"; };
+		47D93C941A2764930006D4AE /* THIRD_PARTY_README */ = {isa = PBXFileReference; lastKnownFileType = text; path = THIRD_PARTY_README; sourceTree = "<group>"; };
+		47D93C951A2764930006D4AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		47D93C971A2764930006D4AE /* libjli.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libjli.dylib; sourceTree = "<group>"; };
 		47E2848513191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		47E2848613191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Browser.nib; sourceTree = "<group>"; };
 		47E2848713191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1745,6 +2491,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47C2AD7D1A268C880047B67A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D939CA1A268D7F0006D4AE /* Foundation.framework in Frameworks */,
+				47D939CB1A268DB10006D4AE /* JavaNativeFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		47C57EB3162F471700A272BC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1795,6 +2550,7 @@
 				47C57EBA162F471700A272BC /* libLaunchServicesFileDescriptor.dylib */,
 				47FB9C6B1725A5CC00FE33C1 /* libIOKitSleepPreventer.dylib */,
 				471F77B3180439B500A4C196 /* libFoundationProgressService.dylib */,
+				47C2AD801A268C880047B67A /* cli.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1802,6 +2558,7 @@
 		29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				47D93A1A1A2764910006D4AE /* lib */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1813,6 +2570,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47D939C91A268D7F0006D4AE /* Foundation.framework */,
 				47CB03A5177F798200A6E3B5 /* libcrypto.dylib */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
 				4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */,
@@ -2244,6 +3002,931 @@
 			name = importer;
 			sourceTree = "<group>";
 		};
+		47D93A1A1A2764910006D4AE /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A1B1A2764910006D4AE /* Runtime.jre */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		47D93A1B1A2764910006D4AE /* Runtime.jre */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A1C1A2764910006D4AE /* Contents */,
+			);
+			name = Runtime.jre;
+			path = "1.7.0-u40-b30.jre";
+			sourceTree = "<group>";
+		};
+		47D93A1C1A2764910006D4AE /* Contents */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A1D1A2764910006D4AE /* Home */,
+				47D93C951A2764930006D4AE /* Info.plist */,
+				47D93C961A2764930006D4AE /* MacOS */,
+			);
+			path = Contents;
+			sourceTree = "<group>";
+		};
+		47D93A1D1A2764910006D4AE /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A1E1A2764910006D4AE /* ASSEMBLY_EXCEPTION */,
+				47D93A1F1A2764910006D4AE /* bin */,
+				47D93A2A1A2764910006D4AE /* lib */,
+				47D93C6E1A2764930006D4AE /* LICENSE */,
+				47D93C6F1A2764930006D4AE /* man */,
+				47D93C931A2764930006D4AE /* release */,
+				47D93C941A2764930006D4AE /* THIRD_PARTY_README */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		47D93A1F1A2764910006D4AE /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A201A2764910006D4AE /* java */,
+				47D93A211A2764910006D4AE /* keytool */,
+				47D93A221A2764910006D4AE /* orbd */,
+				47D93A231A2764910006D4AE /* pack200 */,
+				47D93A241A2764910006D4AE /* policytool */,
+				47D93A251A2764910006D4AE /* rmid */,
+				47D93A261A2764910006D4AE /* rmiregistry */,
+				47D93A271A2764910006D4AE /* servertool */,
+				47D93A281A2764910006D4AE /* tnameserv */,
+				47D93A291A2764910006D4AE /* unpack200 */,
+			);
+			path = bin;
+			sourceTree = "<group>";
+		};
+		47D93A2A1A2764910006D4AE /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A2B1A2764910006D4AE /* applet */,
+				47D93A2C1A2764910006D4AE /* calendars.properties */,
+				47D93A2D1A2764910006D4AE /* charsets.jar */,
+				47D93A2E1A2764910006D4AE /* classlist */,
+				47D93A2F1A2764910006D4AE /* cmm */,
+				47D93A351A2764910006D4AE /* content-types.properties */,
+				47D93A361A2764910006D4AE /* currency.data */,
+				47D93A371A2764910006D4AE /* ext */,
+				47D93A3F1A2764910006D4AE /* flavormap.properties */,
+				47D93A401A2764910006D4AE /* fontconfig.bfc */,
+				47D93A411A2764910006D4AE /* fontconfig.properties.src */,
+				47D93A421A2764910006D4AE /* headless */,
+				47D93A441A2764910006D4AE /* images */,
+				47D93A4E1A2764910006D4AE /* jce.jar */,
+				47D93A4F1A2764910006D4AE /* jli */,
+				47D93A511A2764910006D4AE /* JObjC.jar */,
+				47D93A521A2764910006D4AE /* jsse.jar */,
+				47D93A531A2764910006D4AE /* jvm.cfg */,
+				47D93A541A2764910006D4AE /* jvm.hprof.txt */,
+				47D93A551A2764910006D4AE /* libAppleScriptEngine.dylib */,
+				47D93A561A2764910006D4AE /* libattach.dylib */,
+				47D93A571A2764910006D4AE /* libawt.dylib */,
+				47D93A581A2764910006D4AE /* libdt_socket.dylib */,
+				47D93A591A2764910006D4AE /* libfontmanager.dylib */,
+				47D93A5A1A2764910006D4AE /* libfreetype.dylib */,
+				47D93A5B1A2764910006D4AE /* libhprof.dylib */,
+				47D93A5C1A2764910006D4AE /* libinstrument.dylib */,
+				47D93A5D1A2764910006D4AE /* libj2gss.dylib */,
+				47D93A5E1A2764910006D4AE /* libj2pcsc.dylib */,
+				47D93A5F1A2764910006D4AE /* libj2pkcs11.dylib */,
+				47D93A601A2764910006D4AE /* libjaas_unix.dylib */,
+				47D93A611A2764910006D4AE /* libjava.dylib */,
+				47D93A621A2764910006D4AE /* libjava_crw_demo.dylib */,
+				47D93A631A2764910006D4AE /* libjawt.dylib */,
+				47D93A641A2764910006D4AE /* libjdwp.dylib */,
+				47D93A651A2764910006D4AE /* libJObjC.dylib */,
+				47D93A661A2764910006D4AE /* libjpeg.dylib */,
+				47D93A671A2764910006D4AE /* libjsdt.dylib */,
+				47D93A681A2764910006D4AE /* libjsig.dylib */,
+				47D93A691A2764910006D4AE /* libjsound.dylib */,
+				47D93A6A1A2764910006D4AE /* liblcms.dylib */,
+				47D93A6B1A2764910006D4AE /* libmanagement.dylib */,
+				47D93A6C1A2764910006D4AE /* libmlib_image.dylib */,
+				47D93A6D1A2764910006D4AE /* libnet.dylib */,
+				47D93A6E1A2764910006D4AE /* libnio.dylib */,
+				47D93A6F1A2764910006D4AE /* libnpt.dylib */,
+				47D93A701A2764910006D4AE /* libosx.dylib */,
+				47D93A711A2764910006D4AE /* libosxapp.dylib */,
+				47D93A721A2764910006D4AE /* libosxkrb5.dylib */,
+				47D93A731A2764910006D4AE /* libosxui.dylib */,
+				47D93A741A2764910006D4AE /* libsaproc.dylib */,
+				47D93A751A2764910006D4AE /* libsplashscreen.dylib */,
+				47D93A761A2764910006D4AE /* libsunec.dylib */,
+				47D93A771A2764910006D4AE /* libunpack.dylib */,
+				47D93A781A2764910006D4AE /* libverify.dylib */,
+				47D93A791A2764910006D4AE /* libzip.dylib */,
+				47D93A7A1A2764910006D4AE /* logging.properties */,
+				47D93A7B1A2764910006D4AE /* lwawt */,
+				47D93A7D1A2764910006D4AE /* management */,
+				47D93A821A2764910006D4AE /* management-agent.jar */,
+				47D93A831A2764910006D4AE /* meta-index */,
+				47D93A841A2764910006D4AE /* net.properties */,
+				47D93A851A2764910006D4AE /* psfont.properties.ja */,
+				47D93A861A2764910006D4AE /* psfontj2d.properties */,
+				47D93A871A2764910006D4AE /* resources.jar */,
+				47D93A881A2764910006D4AE /* rt.jar */,
+				47D93A891A2764910006D4AE /* security */,
+				47D93A8F1A2764910006D4AE /* server */,
+				47D93A931A2764910006D4AE /* sound.properties */,
+				47D93A941A2764910006D4AE /* xawt */,
+				47D93A961A2764910006D4AE /* zi */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		47D93A2B1A2764910006D4AE /* applet */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = applet;
+			sourceTree = "<group>";
+		};
+		47D93A2F1A2764910006D4AE /* cmm */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A301A2764910006D4AE /* CIEXYZ.pf */,
+				47D93A311A2764910006D4AE /* GRAY.pf */,
+				47D93A321A2764910006D4AE /* LINEAR_RGB.pf */,
+				47D93A331A2764910006D4AE /* PYCC.pf */,
+				47D93A341A2764910006D4AE /* sRGB.pf */,
+			);
+			path = cmm;
+			sourceTree = "<group>";
+		};
+		47D93A371A2764910006D4AE /* ext */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A381A2764910006D4AE /* dnsns.jar */,
+				47D93A391A2764910006D4AE /* localedata.jar */,
+				47D93A3A1A2764910006D4AE /* meta-index */,
+				47D93A3B1A2764910006D4AE /* sunec.jar */,
+				47D93A3C1A2764910006D4AE /* sunjce_provider.jar */,
+				47D93A3D1A2764910006D4AE /* sunpkcs11.jar */,
+				47D93A3E1A2764910006D4AE /* zipfs.jar */,
+			);
+			path = ext;
+			sourceTree = "<group>";
+		};
+		47D93A421A2764910006D4AE /* headless */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A431A2764910006D4AE /* libmawt.dylib */,
+			);
+			path = headless;
+			sourceTree = "<group>";
+		};
+		47D93A441A2764910006D4AE /* images */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A451A2764910006D4AE /* cursors */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
+		47D93A451A2764910006D4AE /* cursors */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A461A2764910006D4AE /* cursors.properties */,
+				47D93A471A2764910006D4AE /* invalid32x32.gif */,
+				47D93A481A2764910006D4AE /* motif_CopyDrop32x32.gif */,
+				47D93A491A2764910006D4AE /* motif_CopyNoDrop32x32.gif */,
+				47D93A4A1A2764910006D4AE /* motif_LinkDrop32x32.gif */,
+				47D93A4B1A2764910006D4AE /* motif_LinkNoDrop32x32.gif */,
+				47D93A4C1A2764910006D4AE /* motif_MoveDrop32x32.gif */,
+				47D93A4D1A2764910006D4AE /* motif_MoveNoDrop32x32.gif */,
+			);
+			path = cursors;
+			sourceTree = "<group>";
+		};
+		47D93A4F1A2764910006D4AE /* jli */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A501A2764910006D4AE /* libjli.dylib */,
+			);
+			path = jli;
+			sourceTree = "<group>";
+		};
+		47D93A7B1A2764910006D4AE /* lwawt */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A7C1A2764910006D4AE /* liblwawt.dylib */,
+			);
+			path = lwawt;
+			sourceTree = "<group>";
+		};
+		47D93A7D1A2764910006D4AE /* management */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A7E1A2764910006D4AE /* jmxremote.access */,
+				47D93A7F1A2764910006D4AE /* jmxremote.password.template */,
+				47D93A801A2764910006D4AE /* management.properties */,
+				47D93A811A2764910006D4AE /* snmp.acl.template */,
+			);
+			path = management;
+			sourceTree = "<group>";
+		};
+		47D93A891A2764910006D4AE /* security */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A8A1A2764910006D4AE /* cacerts */,
+				47D93A8B1A2764910006D4AE /* java.policy */,
+				47D93A8C1A2764910006D4AE /* java.security */,
+				47D93A8D1A2764910006D4AE /* local_policy.jar */,
+				47D93A8E1A2764910006D4AE /* US_export_policy.jar */,
+			);
+			path = security;
+			sourceTree = "<group>";
+		};
+		47D93A8F1A2764910006D4AE /* server */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A901A2764910006D4AE /* libjsig.dylib */,
+				47D93A911A2764910006D4AE /* libjvm.dylib */,
+				47D93A921A2764910006D4AE /* Xusage.txt */,
+			);
+			path = server;
+			sourceTree = "<group>";
+		};
+		47D93A941A2764910006D4AE /* xawt */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A951A2764910006D4AE /* libmawt.dylib */,
+			);
+			path = xawt;
+			sourceTree = "<group>";
+		};
+		47D93A961A2764910006D4AE /* zi */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A971A2764910006D4AE /* Africa */,
+				47D93ACC1A2764910006D4AE /* America */,
+				47D93B601A2764920006D4AE /* Antarctica */,
+				47D93B6B1A2764920006D4AE /* Asia */,
+				47D93BBE1A2764920006D4AE /* Atlantic */,
+				47D93BC91A2764920006D4AE /* Australia */,
+				47D93BD61A2764920006D4AE /* CET */,
+				47D93BD71A2764920006D4AE /* CST6CDT */,
+				47D93BD81A2764920006D4AE /* EET */,
+				47D93BD91A2764920006D4AE /* EST */,
+				47D93BDA1A2764920006D4AE /* EST5EDT */,
+				47D93BDB1A2764920006D4AE /* Etc */,
+				47D93BF91A2764920006D4AE /* Europe */,
+				47D93C251A2764920006D4AE /* GMT */,
+				47D93C261A2764920006D4AE /* HST */,
+				47D93C271A2764920006D4AE /* Indian */,
+				47D93C331A2764920006D4AE /* MET */,
+				47D93C341A2764920006D4AE /* MST */,
+				47D93C351A2764920006D4AE /* MST7MDT */,
+				47D93C361A2764920006D4AE /* Pacific */,
+				47D93C5D1A2764930006D4AE /* PST8PDT */,
+				47D93C5E1A2764930006D4AE /* SystemV */,
+				47D93C6C1A2764930006D4AE /* WET */,
+				47D93C6D1A2764930006D4AE /* ZoneInfoMappings */,
+			);
+			path = zi;
+			sourceTree = "<group>";
+		};
+		47D93A971A2764910006D4AE /* Africa */ = {
+			isa = PBXGroup;
+			children = (
+				47D93A981A2764910006D4AE /* Abidjan */,
+				47D93A991A2764910006D4AE /* Accra */,
+				47D93A9A1A2764910006D4AE /* Addis_Ababa */,
+				47D93A9B1A2764910006D4AE /* Algiers */,
+				47D93A9C1A2764910006D4AE /* Asmara */,
+				47D93A9D1A2764910006D4AE /* Bamako */,
+				47D93A9E1A2764910006D4AE /* Bangui */,
+				47D93A9F1A2764910006D4AE /* Banjul */,
+				47D93AA01A2764910006D4AE /* Bissau */,
+				47D93AA11A2764910006D4AE /* Blantyre */,
+				47D93AA21A2764910006D4AE /* Brazzaville */,
+				47D93AA31A2764910006D4AE /* Bujumbura */,
+				47D93AA41A2764910006D4AE /* Cairo */,
+				47D93AA51A2764910006D4AE /* Casablanca */,
+				47D93AA61A2764910006D4AE /* Ceuta */,
+				47D93AA71A2764910006D4AE /* Conakry */,
+				47D93AA81A2764910006D4AE /* Dakar */,
+				47D93AA91A2764910006D4AE /* Dar_es_Salaam */,
+				47D93AAA1A2764910006D4AE /* Djibouti */,
+				47D93AAB1A2764910006D4AE /* Douala */,
+				47D93AAC1A2764910006D4AE /* El_Aaiun */,
+				47D93AAD1A2764910006D4AE /* Freetown */,
+				47D93AAE1A2764910006D4AE /* Gaborone */,
+				47D93AAF1A2764910006D4AE /* Harare */,
+				47D93AB01A2764910006D4AE /* Johannesburg */,
+				47D93AB11A2764910006D4AE /* Juba */,
+				47D93AB21A2764910006D4AE /* Kampala */,
+				47D93AB31A2764910006D4AE /* Khartoum */,
+				47D93AB41A2764910006D4AE /* Kigali */,
+				47D93AB51A2764910006D4AE /* Kinshasa */,
+				47D93AB61A2764910006D4AE /* Lagos */,
+				47D93AB71A2764910006D4AE /* Libreville */,
+				47D93AB81A2764910006D4AE /* Lome */,
+				47D93AB91A2764910006D4AE /* Luanda */,
+				47D93ABA1A2764910006D4AE /* Lubumbashi */,
+				47D93ABB1A2764910006D4AE /* Lusaka */,
+				47D93ABC1A2764910006D4AE /* Malabo */,
+				47D93ABD1A2764910006D4AE /* Maputo */,
+				47D93ABE1A2764910006D4AE /* Maseru */,
+				47D93ABF1A2764910006D4AE /* Mbabane */,
+				47D93AC01A2764910006D4AE /* Mogadishu */,
+				47D93AC11A2764910006D4AE /* Monrovia */,
+				47D93AC21A2764910006D4AE /* Nairobi */,
+				47D93AC31A2764910006D4AE /* Ndjamena */,
+				47D93AC41A2764910006D4AE /* Niamey */,
+				47D93AC51A2764910006D4AE /* Nouakchott */,
+				47D93AC61A2764910006D4AE /* Ouagadougou */,
+				47D93AC71A2764910006D4AE /* Porto-Novo */,
+				47D93AC81A2764910006D4AE /* Sao_Tome */,
+				47D93AC91A2764910006D4AE /* Tripoli */,
+				47D93ACA1A2764910006D4AE /* Tunis */,
+				47D93ACB1A2764910006D4AE /* Windhoek */,
+			);
+			path = Africa;
+			sourceTree = "<group>";
+		};
+		47D93ACC1A2764910006D4AE /* America */ = {
+			isa = PBXGroup;
+			children = (
+				47D93ACD1A2764910006D4AE /* Adak */,
+				47D93ACE1A2764910006D4AE /* Anchorage */,
+				47D93ACF1A2764910006D4AE /* Anguilla */,
+				47D93AD01A2764910006D4AE /* Antigua */,
+				47D93AD11A2764910006D4AE /* Araguaina */,
+				47D93AD21A2764910006D4AE /* Argentina */,
+				47D93ADF1A2764910006D4AE /* Aruba */,
+				47D93AE01A2764910006D4AE /* Asuncion */,
+				47D93AE11A2764910006D4AE /* Atikokan */,
+				47D93AE21A2764910006D4AE /* Bahia */,
+				47D93AE31A2764910006D4AE /* Bahia_Banderas */,
+				47D93AE41A2764910006D4AE /* Barbados */,
+				47D93AE51A2764910006D4AE /* Belem */,
+				47D93AE61A2764910006D4AE /* Belize */,
+				47D93AE71A2764910006D4AE /* Blanc-Sablon */,
+				47D93AE81A2764910006D4AE /* Boa_Vista */,
+				47D93AE91A2764910006D4AE /* Bogota */,
+				47D93AEA1A2764910006D4AE /* Boise */,
+				47D93AEB1A2764910006D4AE /* Cambridge_Bay */,
+				47D93AEC1A2764910006D4AE /* Campo_Grande */,
+				47D93AED1A2764910006D4AE /* Cancun */,
+				47D93AEE1A2764910006D4AE /* Caracas */,
+				47D93AEF1A2764910006D4AE /* Cayenne */,
+				47D93AF01A2764910006D4AE /* Cayman */,
+				47D93AF11A2764910006D4AE /* Chicago */,
+				47D93AF21A2764910006D4AE /* Chihuahua */,
+				47D93AF31A2764910006D4AE /* Costa_Rica */,
+				47D93AF41A2764910006D4AE /* Creston */,
+				47D93AF51A2764910006D4AE /* Cuiaba */,
+				47D93AF61A2764910006D4AE /* Curacao */,
+				47D93AF71A2764910006D4AE /* Danmarkshavn */,
+				47D93AF81A2764910006D4AE /* Dawson */,
+				47D93AF91A2764910006D4AE /* Dawson_Creek */,
+				47D93AFA1A2764910006D4AE /* Denver */,
+				47D93AFB1A2764910006D4AE /* Detroit */,
+				47D93AFC1A2764910006D4AE /* Dominica */,
+				47D93AFD1A2764910006D4AE /* Edmonton */,
+				47D93AFE1A2764910006D4AE /* Eirunepe */,
+				47D93AFF1A2764910006D4AE /* El_Salvador */,
+				47D93B001A2764910006D4AE /* Fortaleza */,
+				47D93B011A2764910006D4AE /* Glace_Bay */,
+				47D93B021A2764910006D4AE /* Godthab */,
+				47D93B031A2764910006D4AE /* Goose_Bay */,
+				47D93B041A2764910006D4AE /* Grand_Turk */,
+				47D93B051A2764910006D4AE /* Grenada */,
+				47D93B061A2764910006D4AE /* Guadeloupe */,
+				47D93B071A2764910006D4AE /* Guatemala */,
+				47D93B081A2764910006D4AE /* Guayaquil */,
+				47D93B091A2764910006D4AE /* Guyana */,
+				47D93B0A1A2764910006D4AE /* Halifax */,
+				47D93B0B1A2764910006D4AE /* Havana */,
+				47D93B0C1A2764910006D4AE /* Hermosillo */,
+				47D93B0D1A2764910006D4AE /* Indiana */,
+				47D93B161A2764910006D4AE /* Inuvik */,
+				47D93B171A2764910006D4AE /* Iqaluit */,
+				47D93B181A2764910006D4AE /* Jamaica */,
+				47D93B191A2764910006D4AE /* Juneau */,
+				47D93B1A1A2764910006D4AE /* Kentucky */,
+				47D93B1D1A2764910006D4AE /* La_Paz */,
+				47D93B1E1A2764910006D4AE /* Lima */,
+				47D93B1F1A2764910006D4AE /* Los_Angeles */,
+				47D93B201A2764910006D4AE /* Maceio */,
+				47D93B211A2764910006D4AE /* Managua */,
+				47D93B221A2764910006D4AE /* Manaus */,
+				47D93B231A2764910006D4AE /* Martinique */,
+				47D93B241A2764920006D4AE /* Matamoros */,
+				47D93B251A2764920006D4AE /* Mazatlan */,
+				47D93B261A2764920006D4AE /* Menominee */,
+				47D93B271A2764920006D4AE /* Merida */,
+				47D93B281A2764920006D4AE /* Metlakatla */,
+				47D93B291A2764920006D4AE /* Mexico_City */,
+				47D93B2A1A2764920006D4AE /* Miquelon */,
+				47D93B2B1A2764920006D4AE /* Moncton */,
+				47D93B2C1A2764920006D4AE /* Monterrey */,
+				47D93B2D1A2764920006D4AE /* Montevideo */,
+				47D93B2E1A2764920006D4AE /* Montreal */,
+				47D93B2F1A2764920006D4AE /* Montserrat */,
+				47D93B301A2764920006D4AE /* Nassau */,
+				47D93B311A2764920006D4AE /* New_York */,
+				47D93B321A2764920006D4AE /* Nipigon */,
+				47D93B331A2764920006D4AE /* Nome */,
+				47D93B341A2764920006D4AE /* Noronha */,
+				47D93B351A2764920006D4AE /* North_Dakota */,
+				47D93B391A2764920006D4AE /* Ojinaga */,
+				47D93B3A1A2764920006D4AE /* Panama */,
+				47D93B3B1A2764920006D4AE /* Pangnirtung */,
+				47D93B3C1A2764920006D4AE /* Paramaribo */,
+				47D93B3D1A2764920006D4AE /* Phoenix */,
+				47D93B3E1A2764920006D4AE /* Port-au-Prince */,
+				47D93B3F1A2764920006D4AE /* Port_of_Spain */,
+				47D93B401A2764920006D4AE /* Porto_Velho */,
+				47D93B411A2764920006D4AE /* Puerto_Rico */,
+				47D93B421A2764920006D4AE /* Rainy_River */,
+				47D93B431A2764920006D4AE /* Rankin_Inlet */,
+				47D93B441A2764920006D4AE /* Recife */,
+				47D93B451A2764920006D4AE /* Regina */,
+				47D93B461A2764920006D4AE /* Resolute */,
+				47D93B471A2764920006D4AE /* Rio_Branco */,
+				47D93B481A2764920006D4AE /* Santa_Isabel */,
+				47D93B491A2764920006D4AE /* Santarem */,
+				47D93B4A1A2764920006D4AE /* Santiago */,
+				47D93B4B1A2764920006D4AE /* Santo_Domingo */,
+				47D93B4C1A2764920006D4AE /* Sao_Paulo */,
+				47D93B4D1A2764920006D4AE /* Scoresbysund */,
+				47D93B4E1A2764920006D4AE /* Sitka */,
+				47D93B4F1A2764920006D4AE /* St_Johns */,
+				47D93B501A2764920006D4AE /* St_Kitts */,
+				47D93B511A2764920006D4AE /* St_Lucia */,
+				47D93B521A2764920006D4AE /* St_Thomas */,
+				47D93B531A2764920006D4AE /* St_Vincent */,
+				47D93B541A2764920006D4AE /* Swift_Current */,
+				47D93B551A2764920006D4AE /* Tegucigalpa */,
+				47D93B561A2764920006D4AE /* Thule */,
+				47D93B571A2764920006D4AE /* Thunder_Bay */,
+				47D93B581A2764920006D4AE /* Tijuana */,
+				47D93B591A2764920006D4AE /* Toronto */,
+				47D93B5A1A2764920006D4AE /* Tortola */,
+				47D93B5B1A2764920006D4AE /* Vancouver */,
+				47D93B5C1A2764920006D4AE /* Whitehorse */,
+				47D93B5D1A2764920006D4AE /* Winnipeg */,
+				47D93B5E1A2764920006D4AE /* Yakutat */,
+				47D93B5F1A2764920006D4AE /* Yellowknife */,
+			);
+			path = America;
+			sourceTree = "<group>";
+		};
+		47D93AD21A2764910006D4AE /* Argentina */ = {
+			isa = PBXGroup;
+			children = (
+				47D93AD31A2764910006D4AE /* Buenos_Aires */,
+				47D93AD41A2764910006D4AE /* Catamarca */,
+				47D93AD51A2764910006D4AE /* Cordoba */,
+				47D93AD61A2764910006D4AE /* Jujuy */,
+				47D93AD71A2764910006D4AE /* La_Rioja */,
+				47D93AD81A2764910006D4AE /* Mendoza */,
+				47D93AD91A2764910006D4AE /* Rio_Gallegos */,
+				47D93ADA1A2764910006D4AE /* Salta */,
+				47D93ADB1A2764910006D4AE /* San_Juan */,
+				47D93ADC1A2764910006D4AE /* San_Luis */,
+				47D93ADD1A2764910006D4AE /* Tucuman */,
+				47D93ADE1A2764910006D4AE /* Ushuaia */,
+			);
+			path = Argentina;
+			sourceTree = "<group>";
+		};
+		47D93B0D1A2764910006D4AE /* Indiana */ = {
+			isa = PBXGroup;
+			children = (
+				47D93B0E1A2764910006D4AE /* Indianapolis */,
+				47D93B0F1A2764910006D4AE /* Knox */,
+				47D93B101A2764910006D4AE /* Marengo */,
+				47D93B111A2764910006D4AE /* Petersburg */,
+				47D93B121A2764910006D4AE /* Tell_City */,
+				47D93B131A2764910006D4AE /* Vevay */,
+				47D93B141A2764910006D4AE /* Vincennes */,
+				47D93B151A2764910006D4AE /* Winamac */,
+			);
+			path = Indiana;
+			sourceTree = "<group>";
+		};
+		47D93B1A1A2764910006D4AE /* Kentucky */ = {
+			isa = PBXGroup;
+			children = (
+				47D93B1B1A2764910006D4AE /* Louisville */,
+				47D93B1C1A2764910006D4AE /* Monticello */,
+			);
+			path = Kentucky;
+			sourceTree = "<group>";
+		};
+		47D93B351A2764920006D4AE /* North_Dakota */ = {
+			isa = PBXGroup;
+			children = (
+				47D93B361A2764920006D4AE /* Beulah */,
+				47D93B371A2764920006D4AE /* Center */,
+				47D93B381A2764920006D4AE /* New_Salem */,
+			);
+			path = North_Dakota;
+			sourceTree = "<group>";
+		};
+		47D93B601A2764920006D4AE /* Antarctica */ = {
+			isa = PBXGroup;
+			children = (
+				47D93B611A2764920006D4AE /* Casey */,
+				47D93B621A2764920006D4AE /* Davis */,
+				47D93B631A2764920006D4AE /* DumontDUrville */,
+				47D93B641A2764920006D4AE /* Macquarie */,
+				47D93B651A2764920006D4AE /* Mawson */,
+				47D93B661A2764920006D4AE /* McMurdo */,
+				47D93B671A2764920006D4AE /* Palmer */,
+				47D93B681A2764920006D4AE /* Rothera */,
+				47D93B691A2764920006D4AE /* Syowa */,
+				47D93B6A1A2764920006D4AE /* Vostok */,
+			);
+			path = Antarctica;
+			sourceTree = "<group>";
+		};
+		47D93B6B1A2764920006D4AE /* Asia */ = {
+			isa = PBXGroup;
+			children = (
+				47D93B6C1A2764920006D4AE /* Aden */,
+				47D93B6D1A2764920006D4AE /* Almaty */,
+				47D93B6E1A2764920006D4AE /* Amman */,
+				47D93B6F1A2764920006D4AE /* Anadyr */,
+				47D93B701A2764920006D4AE /* Aqtau */,
+				47D93B711A2764920006D4AE /* Aqtobe */,
+				47D93B721A2764920006D4AE /* Ashgabat */,
+				47D93B731A2764920006D4AE /* Baghdad */,
+				47D93B741A2764920006D4AE /* Bahrain */,
+				47D93B751A2764920006D4AE /* Baku */,
+				47D93B761A2764920006D4AE /* Bangkok */,
+				47D93B771A2764920006D4AE /* Beirut */,
+				47D93B781A2764920006D4AE /* Bishkek */,
+				47D93B791A2764920006D4AE /* Brunei */,
+				47D93B7A1A2764920006D4AE /* Choibalsan */,
+				47D93B7B1A2764920006D4AE /* Chongqing */,
+				47D93B7C1A2764920006D4AE /* Colombo */,
+				47D93B7D1A2764920006D4AE /* Damascus */,
+				47D93B7E1A2764920006D4AE /* Dhaka */,
+				47D93B7F1A2764920006D4AE /* Dili */,
+				47D93B801A2764920006D4AE /* Dubai */,
+				47D93B811A2764920006D4AE /* Dushanbe */,
+				47D93B821A2764920006D4AE /* Gaza */,
+				47D93B831A2764920006D4AE /* Harbin */,
+				47D93B841A2764920006D4AE /* Hebron */,
+				47D93B851A2764920006D4AE /* Ho_Chi_Minh */,
+				47D93B861A2764920006D4AE /* Hong_Kong */,
+				47D93B871A2764920006D4AE /* Hovd */,
+				47D93B881A2764920006D4AE /* Irkutsk */,
+				47D93B891A2764920006D4AE /* Jakarta */,
+				47D93B8A1A2764920006D4AE /* Jayapura */,
+				47D93B8B1A2764920006D4AE /* Jerusalem */,
+				47D93B8C1A2764920006D4AE /* Kabul */,
+				47D93B8D1A2764920006D4AE /* Kamchatka */,
+				47D93B8E1A2764920006D4AE /* Karachi */,
+				47D93B8F1A2764920006D4AE /* Kashgar */,
+				47D93B901A2764920006D4AE /* Kathmandu */,
+				47D93B911A2764920006D4AE /* Khandyga */,
+				47D93B921A2764920006D4AE /* Kolkata */,
+				47D93B931A2764920006D4AE /* Krasnoyarsk */,
+				47D93B941A2764920006D4AE /* Kuala_Lumpur */,
+				47D93B951A2764920006D4AE /* Kuching */,
+				47D93B961A2764920006D4AE /* Kuwait */,
+				47D93B971A2764920006D4AE /* Macau */,
+				47D93B981A2764920006D4AE /* Magadan */,
+				47D93B991A2764920006D4AE /* Makassar */,
+				47D93B9A1A2764920006D4AE /* Manila */,
+				47D93B9B1A2764920006D4AE /* Muscat */,
+				47D93B9C1A2764920006D4AE /* Nicosia */,
+				47D93B9D1A2764920006D4AE /* Novokuznetsk */,
+				47D93B9E1A2764920006D4AE /* Novosibirsk */,
+				47D93B9F1A2764920006D4AE /* Omsk */,
+				47D93BA01A2764920006D4AE /* Oral */,
+				47D93BA11A2764920006D4AE /* Phnom_Penh */,
+				47D93BA21A2764920006D4AE /* Pontianak */,
+				47D93BA31A2764920006D4AE /* Pyongyang */,
+				47D93BA41A2764920006D4AE /* Qatar */,
+				47D93BA51A2764920006D4AE /* Qyzylorda */,
+				47D93BA61A2764920006D4AE /* Rangoon */,
+				47D93BA71A2764920006D4AE /* Riyadh */,
+				47D93BA81A2764920006D4AE /* Riyadh87 */,
+				47D93BA91A2764920006D4AE /* Riyadh88 */,
+				47D93BAA1A2764920006D4AE /* Riyadh89 */,
+				47D93BAB1A2764920006D4AE /* Sakhalin */,
+				47D93BAC1A2764920006D4AE /* Samarkand */,
+				47D93BAD1A2764920006D4AE /* Seoul */,
+				47D93BAE1A2764920006D4AE /* Shanghai */,
+				47D93BAF1A2764920006D4AE /* Singapore */,
+				47D93BB01A2764920006D4AE /* Taipei */,
+				47D93BB11A2764920006D4AE /* Tashkent */,
+				47D93BB21A2764920006D4AE /* Tbilisi */,
+				47D93BB31A2764920006D4AE /* Tehran */,
+				47D93BB41A2764920006D4AE /* Thimphu */,
+				47D93BB51A2764920006D4AE /* Tokyo */,
+				47D93BB61A2764920006D4AE /* Ulaanbaatar */,
+				47D93BB71A2764920006D4AE /* Urumqi */,
+				47D93BB81A2764920006D4AE /* Ust-Nera */,
+				47D93BB91A2764920006D4AE /* Vientiane */,
+				47D93BBA1A2764920006D4AE /* Vladivostok */,
+				47D93BBB1A2764920006D4AE /* Yakutsk */,
+				47D93BBC1A2764920006D4AE /* Yekaterinburg */,
+				47D93BBD1A2764920006D4AE /* Yerevan */,
+			);
+			path = Asia;
+			sourceTree = "<group>";
+		};
+		47D93BBE1A2764920006D4AE /* Atlantic */ = {
+			isa = PBXGroup;
+			children = (
+				47D93BBF1A2764920006D4AE /* Azores */,
+				47D93BC01A2764920006D4AE /* Bermuda */,
+				47D93BC11A2764920006D4AE /* Canary */,
+				47D93BC21A2764920006D4AE /* Cape_Verde */,
+				47D93BC31A2764920006D4AE /* Faroe */,
+				47D93BC41A2764920006D4AE /* Madeira */,
+				47D93BC51A2764920006D4AE /* Reykjavik */,
+				47D93BC61A2764920006D4AE /* South_Georgia */,
+				47D93BC71A2764920006D4AE /* St_Helena */,
+				47D93BC81A2764920006D4AE /* Stanley */,
+			);
+			path = Atlantic;
+			sourceTree = "<group>";
+		};
+		47D93BC91A2764920006D4AE /* Australia */ = {
+			isa = PBXGroup;
+			children = (
+				47D93BCA1A2764920006D4AE /* Adelaide */,
+				47D93BCB1A2764920006D4AE /* Brisbane */,
+				47D93BCC1A2764920006D4AE /* Broken_Hill */,
+				47D93BCD1A2764920006D4AE /* Currie */,
+				47D93BCE1A2764920006D4AE /* Darwin */,
+				47D93BCF1A2764920006D4AE /* Eucla */,
+				47D93BD01A2764920006D4AE /* Hobart */,
+				47D93BD11A2764920006D4AE /* Lindeman */,
+				47D93BD21A2764920006D4AE /* Lord_Howe */,
+				47D93BD31A2764920006D4AE /* Melbourne */,
+				47D93BD41A2764920006D4AE /* Perth */,
+				47D93BD51A2764920006D4AE /* Sydney */,
+			);
+			path = Australia;
+			sourceTree = "<group>";
+		};
+		47D93BDB1A2764920006D4AE /* Etc */ = {
+			isa = PBXGroup;
+			children = (
+				47D93BDC1A2764920006D4AE /* GMT */,
+				47D93BDD1A2764920006D4AE /* GMT+1 */,
+				47D93BDE1A2764920006D4AE /* GMT+10 */,
+				47D93BDF1A2764920006D4AE /* GMT+11 */,
+				47D93BE01A2764920006D4AE /* GMT+12 */,
+				47D93BE11A2764920006D4AE /* GMT+2 */,
+				47D93BE21A2764920006D4AE /* GMT+3 */,
+				47D93BE31A2764920006D4AE /* GMT+4 */,
+				47D93BE41A2764920006D4AE /* GMT+5 */,
+				47D93BE51A2764920006D4AE /* GMT+6 */,
+				47D93BE61A2764920006D4AE /* GMT+7 */,
+				47D93BE71A2764920006D4AE /* GMT+8 */,
+				47D93BE81A2764920006D4AE /* GMT+9 */,
+				47D93BE91A2764920006D4AE /* GMT-1 */,
+				47D93BEA1A2764920006D4AE /* GMT-10 */,
+				47D93BEB1A2764920006D4AE /* GMT-11 */,
+				47D93BEC1A2764920006D4AE /* GMT-12 */,
+				47D93BED1A2764920006D4AE /* GMT-13 */,
+				47D93BEE1A2764920006D4AE /* GMT-14 */,
+				47D93BEF1A2764920006D4AE /* GMT-2 */,
+				47D93BF01A2764920006D4AE /* GMT-3 */,
+				47D93BF11A2764920006D4AE /* GMT-4 */,
+				47D93BF21A2764920006D4AE /* GMT-5 */,
+				47D93BF31A2764920006D4AE /* GMT-6 */,
+				47D93BF41A2764920006D4AE /* GMT-7 */,
+				47D93BF51A2764920006D4AE /* GMT-8 */,
+				47D93BF61A2764920006D4AE /* GMT-9 */,
+				47D93BF71A2764920006D4AE /* UCT */,
+				47D93BF81A2764920006D4AE /* UTC */,
+			);
+			path = Etc;
+			sourceTree = "<group>";
+		};
+		47D93BF91A2764920006D4AE /* Europe */ = {
+			isa = PBXGroup;
+			children = (
+				47D93BFA1A2764920006D4AE /* Amsterdam */,
+				47D93BFB1A2764920006D4AE /* Andorra */,
+				47D93BFC1A2764920006D4AE /* Athens */,
+				47D93BFD1A2764920006D4AE /* Belgrade */,
+				47D93BFE1A2764920006D4AE /* Berlin */,
+				47D93BFF1A2764920006D4AE /* Brussels */,
+				47D93C001A2764920006D4AE /* Bucharest */,
+				47D93C011A2764920006D4AE /* Budapest */,
+				47D93C021A2764920006D4AE /* Chisinau */,
+				47D93C031A2764920006D4AE /* Copenhagen */,
+				47D93C041A2764920006D4AE /* Dublin */,
+				47D93C051A2764920006D4AE /* Gibraltar */,
+				47D93C061A2764920006D4AE /* Helsinki */,
+				47D93C071A2764920006D4AE /* Istanbul */,
+				47D93C081A2764920006D4AE /* Kaliningrad */,
+				47D93C091A2764920006D4AE /* Kiev */,
+				47D93C0A1A2764920006D4AE /* Lisbon */,
+				47D93C0B1A2764920006D4AE /* London */,
+				47D93C0C1A2764920006D4AE /* Luxembourg */,
+				47D93C0D1A2764920006D4AE /* Madrid */,
+				47D93C0E1A2764920006D4AE /* Malta */,
+				47D93C0F1A2764920006D4AE /* Minsk */,
+				47D93C101A2764920006D4AE /* Monaco */,
+				47D93C111A2764920006D4AE /* Moscow */,
+				47D93C121A2764920006D4AE /* Oslo */,
+				47D93C131A2764920006D4AE /* Paris */,
+				47D93C141A2764920006D4AE /* Prague */,
+				47D93C151A2764920006D4AE /* Riga */,
+				47D93C161A2764920006D4AE /* Rome */,
+				47D93C171A2764920006D4AE /* Samara */,
+				47D93C181A2764920006D4AE /* Simferopol */,
+				47D93C191A2764920006D4AE /* Sofia */,
+				47D93C1A1A2764920006D4AE /* Stockholm */,
+				47D93C1B1A2764920006D4AE /* Tallinn */,
+				47D93C1C1A2764920006D4AE /* Tirane */,
+				47D93C1D1A2764920006D4AE /* Uzhgorod */,
+				47D93C1E1A2764920006D4AE /* Vaduz */,
+				47D93C1F1A2764920006D4AE /* Vienna */,
+				47D93C201A2764920006D4AE /* Vilnius */,
+				47D93C211A2764920006D4AE /* Volgograd */,
+				47D93C221A2764920006D4AE /* Warsaw */,
+				47D93C231A2764920006D4AE /* Zaporozhye */,
+				47D93C241A2764920006D4AE /* Zurich */,
+			);
+			path = Europe;
+			sourceTree = "<group>";
+		};
+		47D93C271A2764920006D4AE /* Indian */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C281A2764920006D4AE /* Antananarivo */,
+				47D93C291A2764920006D4AE /* Chagos */,
+				47D93C2A1A2764920006D4AE /* Christmas */,
+				47D93C2B1A2764920006D4AE /* Cocos */,
+				47D93C2C1A2764920006D4AE /* Comoro */,
+				47D93C2D1A2764920006D4AE /* Kerguelen */,
+				47D93C2E1A2764920006D4AE /* Mahe */,
+				47D93C2F1A2764920006D4AE /* Maldives */,
+				47D93C301A2764920006D4AE /* Mauritius */,
+				47D93C311A2764920006D4AE /* Mayotte */,
+				47D93C321A2764920006D4AE /* Reunion */,
+			);
+			path = Indian;
+			sourceTree = "<group>";
+		};
+		47D93C361A2764920006D4AE /* Pacific */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C371A2764920006D4AE /* Apia */,
+				47D93C381A2764920006D4AE /* Auckland */,
+				47D93C391A2764920006D4AE /* Chatham */,
+				47D93C3A1A2764920006D4AE /* Chuuk */,
+				47D93C3B1A2764920006D4AE /* Easter */,
+				47D93C3C1A2764920006D4AE /* Efate */,
+				47D93C3D1A2764920006D4AE /* Enderbury */,
+				47D93C3E1A2764920006D4AE /* Fakaofo */,
+				47D93C3F1A2764920006D4AE /* Fiji */,
+				47D93C401A2764920006D4AE /* Funafuti */,
+				47D93C411A2764920006D4AE /* Galapagos */,
+				47D93C421A2764920006D4AE /* Gambier */,
+				47D93C431A2764920006D4AE /* Guadalcanal */,
+				47D93C441A2764920006D4AE /* Guam */,
+				47D93C451A2764920006D4AE /* Honolulu */,
+				47D93C461A2764920006D4AE /* Johnston */,
+				47D93C471A2764920006D4AE /* Kiritimati */,
+				47D93C481A2764920006D4AE /* Kosrae */,
+				47D93C491A2764920006D4AE /* Kwajalein */,
+				47D93C4A1A2764920006D4AE /* Majuro */,
+				47D93C4B1A2764930006D4AE /* Marquesas */,
+				47D93C4C1A2764930006D4AE /* Midway */,
+				47D93C4D1A2764930006D4AE /* Nauru */,
+				47D93C4E1A2764930006D4AE /* Niue */,
+				47D93C4F1A2764930006D4AE /* Norfolk */,
+				47D93C501A2764930006D4AE /* Noumea */,
+				47D93C511A2764930006D4AE /* Pago_Pago */,
+				47D93C521A2764930006D4AE /* Palau */,
+				47D93C531A2764930006D4AE /* Pitcairn */,
+				47D93C541A2764930006D4AE /* Pohnpei */,
+				47D93C551A2764930006D4AE /* Port_Moresby */,
+				47D93C561A2764930006D4AE /* Rarotonga */,
+				47D93C571A2764930006D4AE /* Saipan */,
+				47D93C581A2764930006D4AE /* Tahiti */,
+				47D93C591A2764930006D4AE /* Tarawa */,
+				47D93C5A1A2764930006D4AE /* Tongatapu */,
+				47D93C5B1A2764930006D4AE /* Wake */,
+				47D93C5C1A2764930006D4AE /* Wallis */,
+			);
+			path = Pacific;
+			sourceTree = "<group>";
+		};
+		47D93C5E1A2764930006D4AE /* SystemV */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C5F1A2764930006D4AE /* AST4 */,
+				47D93C601A2764930006D4AE /* AST4ADT */,
+				47D93C611A2764930006D4AE /* CST6 */,
+				47D93C621A2764930006D4AE /* CST6CDT */,
+				47D93C631A2764930006D4AE /* EST5 */,
+				47D93C641A2764930006D4AE /* EST5EDT */,
+				47D93C651A2764930006D4AE /* HST10 */,
+				47D93C661A2764930006D4AE /* MST7 */,
+				47D93C671A2764930006D4AE /* MST7MDT */,
+				47D93C681A2764930006D4AE /* PST8 */,
+				47D93C691A2764930006D4AE /* PST8PDT */,
+				47D93C6A1A2764930006D4AE /* YST9 */,
+				47D93C6B1A2764930006D4AE /* YST9YDT */,
+			);
+			path = SystemV;
+			sourceTree = "<group>";
+		};
+		47D93C6F1A2764930006D4AE /* man */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C701A2764930006D4AE /* ja */,
+				47D93C7C1A2764930006D4AE /* ja_JP.UTF-8 */,
+				47D93C881A2764930006D4AE /* man1 */,
+			);
+			path = man;
+			sourceTree = "<group>";
+		};
+		47D93C701A2764930006D4AE /* ja */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C711A2764930006D4AE /* man1 */,
+			);
+			path = ja;
+			sourceTree = "<group>";
+		};
+		47D93C711A2764930006D4AE /* man1 */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C721A2764930006D4AE /* java.1 */,
+				47D93C731A2764930006D4AE /* keytool.1 */,
+				47D93C741A2764930006D4AE /* orbd.1 */,
+				47D93C751A2764930006D4AE /* pack200.1 */,
+				47D93C761A2764930006D4AE /* policytool.1 */,
+				47D93C771A2764930006D4AE /* rmid.1 */,
+				47D93C781A2764930006D4AE /* rmiregistry.1 */,
+				47D93C791A2764930006D4AE /* servertool.1 */,
+				47D93C7A1A2764930006D4AE /* tnameserv.1 */,
+				47D93C7B1A2764930006D4AE /* unpack200.1 */,
+			);
+			path = man1;
+			sourceTree = "<group>";
+		};
+		47D93C7C1A2764930006D4AE /* ja_JP.UTF-8 */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C7D1A2764930006D4AE /* man1 */,
+			);
+			path = "ja_JP.UTF-8";
+			sourceTree = "<group>";
+		};
+		47D93C7D1A2764930006D4AE /* man1 */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C7E1A2764930006D4AE /* java.1 */,
+				47D93C7F1A2764930006D4AE /* keytool.1 */,
+				47D93C801A2764930006D4AE /* orbd.1 */,
+				47D93C811A2764930006D4AE /* pack200.1 */,
+				47D93C821A2764930006D4AE /* policytool.1 */,
+				47D93C831A2764930006D4AE /* rmid.1 */,
+				47D93C841A2764930006D4AE /* rmiregistry.1 */,
+				47D93C851A2764930006D4AE /* servertool.1 */,
+				47D93C861A2764930006D4AE /* tnameserv.1 */,
+				47D93C871A2764930006D4AE /* unpack200.1 */,
+			);
+			path = man1;
+			sourceTree = "<group>";
+		};
+		47D93C881A2764930006D4AE /* man1 */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C891A2764930006D4AE /* java.1 */,
+				47D93C8A1A2764930006D4AE /* keytool.1 */,
+				47D93C8B1A2764930006D4AE /* orbd.1 */,
+				47D93C8C1A2764930006D4AE /* pack200.1 */,
+				47D93C8D1A2764930006D4AE /* policytool.1 */,
+				47D93C8E1A2764930006D4AE /* rmid.1 */,
+				47D93C8F1A2764930006D4AE /* rmiregistry.1 */,
+				47D93C901A2764930006D4AE /* servertool.1 */,
+				47D93C911A2764930006D4AE /* tnameserv.1 */,
+				47D93C921A2764930006D4AE /* unpack200.1 */,
+			);
+			path = man1;
+			sourceTree = "<group>";
+		};
+		47D93C961A2764930006D4AE /* MacOS */ = {
+			isa = PBXGroup;
+			children = (
+				47D93C971A2764930006D4AE /* libjli.dylib */,
+			);
+			path = MacOS;
+			sourceTree = "<group>";
+		};
 		47EA2444162B5C44002E23E2 /* urlhandler */ = {
 			isa = PBXGroup;
 			children = (
@@ -2623,6 +4306,34 @@
 			productReference = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		47C2AD7F1A268C880047B67A /* cli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47C2AD861A268C880047B67A /* Build configuration list for PBXNativeTarget "cli" */;
+			buildPhases = (
+				47C2AD7C1A268C880047B67A /* Sources */,
+				47C2AD7D1A268C880047B67A /* Frameworks */,
+				47C2AD7E1A268C880047B67A /* Resources */,
+				47D939F81A275DD20006D4AE /* CopyFiles */,
+				47D93A041A27607A0006D4AE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				47D93D221A27825C0006D4AE /* PBXTargetDependency */,
+				47D93D241A27825C0006D4AE /* PBXTargetDependency */,
+				47D939CD1A268E430006D4AE /* PBXTargetDependency */,
+				47D939CF1A268E430006D4AE /* PBXTargetDependency */,
+				47D939D11A268E430006D4AE /* PBXTargetDependency */,
+				47D939D31A268E430006D4AE /* PBXTargetDependency */,
+				47D939D51A268E430006D4AE /* PBXTargetDependency */,
+				47D939D71A268E430006D4AE /* PBXTargetDependency */,
+				47D939D91A268E430006D4AE /* PBXTargetDependency */,
+			);
+			name = cli;
+			productName = cli;
+			productReference = 47C2AD801A268C880047B67A /* cli.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 47C57EB7162F471700A272BC /* Build configuration list for PBXNativeTarget "libLaunchServicesFileDescriptor" */;
@@ -2686,6 +4397,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Cyberduck;
+				TargetAttributes = {
+					47C2AD7F1A268C880047B67A = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
 			};
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2750,6 +4466,7 @@
 				47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */,
 				47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */,
 				471F77A7180439B500A4C196 /* libFoundationProgressService */,
+				47C2AD7F1A268C880047B67A /* cli */,
 			);
 		};
 /* End PBXProject section */
@@ -2838,7 +4555,6 @@
 				476730D616108E1300B28D35 /* download.tiff in Resources */,
 				476730D816108E1300B28D35 /* dropfolderbadge.tiff in Resources */,
 				476730D916108E1300B28D35 /* edit.tiff in Resources */,
-				4796E533195C692E000864F4 /* HP Cloud Object Storage.cyberduckprofile in Resources */,
 				476730DA16108E1300B28D35 /* editPressed.tiff in Resources */,
 				476730DB16108E1300B28D35 /* eject.tiff in Resources */,
 				476730DC16108E1300B28D35 /* executable.tiff in Resources */,
@@ -2877,7 +4593,6 @@
 				4767310116108E1300B28D35 /* transparent.tiff in Resources */,
 				4767310216108E1300B28D35 /* trash.tiff in Resources */,
 				4767310316108E1300B28D35 /* turtle.tiff in Resources */,
-				4796E534195C692E000864F4 /* Rackspace UK.cyberduckprofile in Resources */,
 				4767310416108E1300B28D35 /* unlocked.tiff in Resources */,
 				4767310516108E1300B28D35 /* update.tiff in Resources */,
 				4767310616108E1300B28D35 /* upload.tiff in Resources */,
@@ -2892,6 +4607,32 @@
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
 				47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */,
 				47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47C2AD7E1A268C880047B67A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D93A061A2762A40006D4AE /* Acknowledgments.rtf in Resources */,
+				47D93A071A2762A40006D4AE /* Alert.strings in Resources */,
+				47D93A081A2762A40006D4AE /* Azure.strings in Resources */,
+				47D93A091A2762A40006D4AE /* Transfer.strings in Resources */,
+				47D93A0A1A2762A40006D4AE /* License.strings in Resources */,
+				47D93A0B1A2762A40006D4AE /* Archive.strings in Resources */,
+				47D93A0C1A2762A40006D4AE /* Mosso.strings in Resources */,
+				47D93A0D1A2762A40006D4AE /* Keychain.strings in Resources */,
+				47D93A0E1A2762A40006D4AE /* S3.strings in Resources */,
+				47D93A0F1A2762A40006D4AE /* Sftp.strings in Resources */,
+				47D93A101A2762A40006D4AE /* Crash.strings in Resources */,
+				47D93A111A2762A40006D4AE /* Credits.rtf in Resources */,
+				47D93A121A2762A40006D4AE /* Configuration.strings in Resources */,
+				47D93A131A2762A40006D4AE /* Error.strings in Resources */,
+				47D93A141A2762A40006D4AE /* Localizable.strings in Resources */,
+				47D93A151A2762A40006D4AE /* Credentials.strings in Resources */,
+				47D93A161A2762A40006D4AE /* Status.strings in Resources */,
+				47D93A171A2762A40006D4AE /* Support.strings in Resources */,
+				47D93A031A27602E0006D4AE /* License.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3021,6 +4762,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47C2AD7C1A268C880047B67A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47D939C81A268D620006D4AE /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		47C57EB1162F471700A272BC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3107,6 +4856,51 @@
 			isa = PBXTargetDependency;
 			target = 47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */;
 			targetProxy = 47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */;
+		};
+		47D939CD1A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4739EFA30856990900405FD3 /* libProxy */;
+			targetProxy = 47D939CC1A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939CF1A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4739EFB10856991200405FD3 /* libLocal */;
+			targetProxy = 47D939CE1A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939D11A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */;
+			targetProxy = 47D939D01A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939D31A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */;
+			targetProxy = 47D939D21A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939D51A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */;
+			targetProxy = 47D939D41A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939D71A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47C57EAE162F471700A272BC /* libLaunchServicesFileDescriptor */;
+			targetProxy = 47D939D61A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D939D91A268E430006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47FB9C5E1725A5CC00FE33C1 /* libIOKitSleepPreventer */;
+			targetProxy = 47D939D81A268E430006D4AE /* PBXContainerItemProxy */;
+		};
+		47D93D221A27825C0006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4762DAB809FC42EC0034C662 /* libDiagnostics */;
+			targetProxy = 47D93D211A27825C0006D4AE /* PBXContainerItemProxy */;
+		};
+		47D93D241A27825C0006D4AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 478CFE760F9932B3000560EF /* libPrime */;
+			targetProxy = 47D93D231A27825C0006D4AE /* PBXContainerItemProxy */;
 		};
 		47F102DA1628D61A00923FDE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4581,7 +6375,6 @@
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = NO;
@@ -4598,15 +6391,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				INFOPLIST_FILE = $CONFIGURATION_BUILD_DIR/Info.plist;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"-lz",
-					"-sectcreate",
-					__TEXT,
-					__info_plist,
-					$CONFIGURATION_BUILD_DIR/Info.plist,
-				);
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
 				WRAPPER_EXTENSION = app;
@@ -4751,6 +6538,98 @@
 			};
 			name = Release;
 		};
+		47C2AD841A268C880047B67A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = cli/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_MODULE_NAME = duck;
+				PRODUCT_NAME = duck;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		47C2AD851A268C880047B67A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = cli/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_MODULE_NAME = duck;
+				PRODUCT_NAME = duck;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
 		47C57EB8162F471700A272BC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4785,13 +6664,8 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = $CONFIGURATION_BUILD_DIR/Info.plist;
-				OTHER_LDFLAGS = (
-					"-sectcreate",
-					__TEXT,
-					__info_plist,
-					$CONFIGURATION_BUILD_DIR/Info.plist,
-				);
+				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
+				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
 			};
@@ -4812,7 +6686,6 @@
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				INFOPLIST_EXPAND_BUILD_SETTINGS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
@@ -4972,6 +6845,15 @@
 			buildConfigurations = (
 				47BEDB020B92960400141EB4 /* Release */,
 				47A8AD6B100A6A9E00DC800C /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47C2AD861A268C880047B67A /* Build configuration list for PBXNativeTarget "cli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47C2AD841A268C880047B67A /* Release */,
+				47C2AD851A268C880047B67A /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

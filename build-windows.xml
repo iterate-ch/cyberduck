@@ -54,7 +54,6 @@
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
         <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
     </taskdef>
-
     <target name="version" depends="revision">
         <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
         <propertyregex property="svn.revision.stripped"
@@ -83,6 +82,18 @@
             </fileset>
         </copy>
 
+        <msbuild buildfile="source/ch/cyberduck/Cyberduck.csproj">
+            <target name="Clean"/>
+            <target name="Build"/>
+
+            <property name="Version" value="${version}"/>
+            <property name="ShortVersion" value="${shortversion}"/>
+            <property name="Configuration" value="${configuration}"/>
+            <property name="Platform" value="${architecture}"/>
+        </msbuild>
+    </target>
+
+    <target name="_cli">
         <msbuild buildfile="source/ch/cyberduck/CLI-WiX-Bootstrapper.wixproj">
             <target name="Clean"/>
             <target name="Build"/>

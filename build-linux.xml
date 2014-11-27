@@ -21,7 +21,8 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck for Linux" basedir=".">
+<project name="Cyberduck for Linux" basedir="."
+         xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
     <import file="build.xml"/>
 
@@ -47,6 +48,56 @@
         <available
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
                 property="bundle.exists"/>
+    </target>
+
+    <target name="_cli">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant">
+            <classpath path="${java.home}/../lib/ant-javafx.jar"/>
+        </taskdef>
+
+        <mkdir dir="${build}/${configuration}"/>
+        <fx:deploy nativeBundles="${cli.bundles}"
+                   outdir="${build}/${configuration}"
+                   outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
+                   offlineAllowed="true"
+                   verbose="true">
+            <fx:platform basedir="${java.home}">
+                <fx:jvmarg value="-Djna.nounpack=true"/>
+                <fx:jvmarg value="-Djna.noclasspath=true"/>
+                <fx:jvmarg value="-Djava.awt.headless=true"/>
+                <fx:jvmarg value="-Dsun.jnu.encoding=utf-8"/>
+                <fx:jvmarg value="-Dfile.encoding=utf-8"/>
+            </fx:platform>
+            <fx:application
+                    name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
+                    mainClass="ch.cyberduck.cli.Terminal"/>
+            <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
+                     description="Cyberduck"
+                     vendor="cyberduck.io">
+                <fx:icon href="${app.icon}"/>
+            </fx:info>
+            <fx:resources>
+                <fx:fileset dir="${build}" type="jar">
+                    <include name="*.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="jar">
+                    <include name="*.jar"/>
+                </fx:fileset>
+                <fx:fileset dir="${lib}" type="data">
+                    <include name="*.dylib"/>
+                    <include name="*.so"/>
+                </fx:fileset>
+                <fx:fileset dir="${build}/${configuration}" type="data">
+                    <include name="*.dylib"/>
+                </fx:fileset>
+                <fx:fileset dir="." type="icon">
+                    <include name="*.ico"/>
+                </fx:fileset>
+                <fx:fileset type="license" file="LICENSE.txt"/>
+            </fx:resources>
+            <fx:preferences install="false"/>
+        </fx:deploy>
     </target>
 
     <target name="_upload" depends="findbundle" if="bundle.exists">

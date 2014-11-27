@@ -3,9 +3,9 @@ require "formula"
 class Duck < Formula
   homepage "https://cyberduck.io/"
   # Reference to the CLI version of Cyberduck
-  url "https://update.cyberduck.io/cli/duck-_VERSION_.tar.gz"
-  version "_VERSION_"
-  md5 "_MD5SUM_"
+  url "https://update.cyberduck.io/cli/duck-${VERSION}.tar.gz"
+  version "${VERSION}"
+  sha1 "${SHA1}"
 
   def install
     # Because compiling would need a JDK and xcodebuild we just use the pre-compiled binary.

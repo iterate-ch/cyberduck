@@ -7,17 +7,17 @@
         <link>https://cyberduck.io/changelog</link>
         <description>Cyberduck Changelog.</description>
         <language>en-us</language>
-        <copyright>Copyright 2001-2014 David V. Kocher</copyright>
+        <copyright>${COPYRIGHT}</copyright>
         <item>
-            <title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
-            <pubDate>_TIMESTAMP_</pubDate>
-            <enclosure sparkle:version="_REVISION_"
-                       sparkle:shortVersionString="_VERSION_"
-                       sparkle:dsaSignature="_DSASIGNATURE_"
-                       url="_ARCHIVE_"
+            <title>Cyberduck ${VERSION} (Revision ${REVISION})</title>
+            <pubDate>${TIMESTAMP}</pubDate>
+            <enclosure sparkle:version="${REVISION}"
+                       sparkle:shortVersionString="${VERSION}"
+                       sparkle:dsaSignature="${DSASIGNATURE}"
+                       url="${ARCHIVE}"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
-            <sparkle:minimumSystemVersion>10.6.0</sparkle:minimumSystemVersion>
+            <sparkle:minimumSystemVersion>${MINIMUM_SYSTEM}</sparkle:minimumSystemVersion>
         </item>
     </channel>
 </rss>

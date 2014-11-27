@@ -42,6 +42,15 @@
     <property name="app.runtime.system.min" value="10.6.8"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
 
+    <property name="cli.bundle" value="${build.deploy}/duck.bundle"/>
+    <property name="cli.contents" value="${cli.bundle}/Contents"/>
+    <property name="cli.macos" location="${cli.contents}/MacOS"/>
+    <property name="cli.frameworks" value="${cli.contents}/Frameworks"/>
+    <property name="cli.resources" value="${cli.contents}/Resources"/>
+    <property name="cli.profiles" value="${cli.resources}/Profiles"/>
+    <property name="cli.bookmarks" value="${cli.resources}/Bookmarks"/>
+    <property name="cli.runtime" value="${cli.macos}/Runtime.jre"/>
+
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="app.spotlight.executable"
               value="${app.spotlight}/Cyberduck Spotlight Importer.mdimporter/Contents/MacOS/Cyberduck Spotlight Importer"/>
@@ -94,32 +103,18 @@
     </target>
 
     <target name="_build">
-        <copy todir="${build.deploy}">
-            <fileset dir="${home}">
-                <include name="Info.plist"/>
-            </fileset>
-            <!-- Include libjnidispatch.dylib -->
-            <fileset dir="${lib}">
-                <include name="*.dylib"/>
-            </fileset>
-        </copy>
-        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
-            <include name="Info.plist"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
-            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-        </replace>
-        <mkdir dir="${app.profiles}"/>
-        <mkdir dir="${app.bookmarks}"/>
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} MINIMUM_SYSTEM=${app.runtime.system.min} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.xcodeoptions}"/>
+            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.settings}"/>
         </exec>
         <copy todir="${app.frameworks}">
+            <!-- Dynamic libraries built with xcodebuild -->
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
             </fileset>
             <fileset dir="${lib}">
+                <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
             </fileset>
         </copy>
@@ -134,52 +129,74 @@
         <!-- Copy runtime -->
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime.home}">
-                <exclude name="Contents/Home/bin/**"/>
-                <exclude name="Contents/Home/man/**"/>
-                <exclude name="Contents/Home/lib/applet/**"/>
-                <exclude name="Contents/Home/lib/servicetag/**"/>
-                <exclude name="Contents/Home/lib/management/**"/>
-                <exclude name="Contents/Home/lib/management-agent.jar"/>
-                <exclude name="Contents/Home/lib/images/**"/>
-                <exclude name="Contents/Home/lib/xawt/**"/>
-                <exclude name="Contents/Home/lib/lwawt/**"/>
-                <exclude name="Contents/Home/lib/client/**"/>
-                <exclude name="Contents/Home/lib/headless/**"/>
-                <exclude name="Contents/Home/lib/JObjC.jar"/>
-                <exclude name="Contents/Home/lib/libJObjC.dylib"/>
-                <exclude name="Contents/Home/lib/libsplashscreen.dylib"/>
-                <exclude name="Contents/Home/lib/cmm/**"/>
-                <exclude name="Contents/Home/lib/liblcms.dylib"/>
-                <exclude name="Contents/Home/lib/libjava_crw_demo.dylib"/>
-                <exclude name="Contents/Home/lib/libmlib_image.dylib"/>
-                <exclude name="Contents/Home/lib/libfreetype.dylib"/>
-                <exclude name="Contents/Home/lib/libmanagement.dylib"/>
-                <exclude name="Contents/Home/lib/libfontmanager.dylib"/>
-                <exclude name="Contents/Home/lib/libAppleScriptEngine.dylib"/>
-                <exclude name="Contents/Home/lib/fontconfig.*"/>
-                <exclude name="Contents/Home/lib/libawt.dylib"/>
-                <exclude name="Contents/Home/lib/libawt_lwawt.dylib"/>
-                <exclude name="Contents/Home/lib/libjawt.dylib"/>
-                <exclude name="Contents/Home/lib/libhprof.dylib"/>
-                <exclude name="Contents/Home/lib/libinstrument.dylib"/>
-                <exclude name="Contents/Home/lib/libjsound.dylib"/>
-                <exclude name="Contents/Home/lib/rhino.jar"/>
-                <exclude name="Contents/Home/lib/server/*.diz"/>
-            </fileset>
+            <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="runtime-excludes.properties"/>
         </copy>
-        <symlink link="${app.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib" overwrite="true"/>
+        <symlink link="${app.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib"
+                 overwrite="true"/>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
         </antcall>
         <!-- Remove architectures -->
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-        </taskdef>
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
-
         <antcall target="spotlight"/>
+    </target>
+
+    <target name="_cli">
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} MINIMUM_SYSTEM=${app.runtime.system.min} COPYRIGHT='${copyright}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target cli ${build.settings}"/>
+        </exec>
+        <copy todir="${cli.frameworks}">
+            <!-- Dynamic libraries built with xcodebuild -->
+            <fileset dir="${build.deploy}">
+                <include name="*.dylib"/>
+            </fileset>
+            <fileset dir="${lib}">
+                <!-- Include libjnidispatch.dylib -->
+                <include name="*.dylib"/>
+            </fileset>
+        </copy>
+        <copy todir="${cli.resources}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        <!-- Copy runtime -->
+        <echo message="Copy runtime from ${jvm.runtime.home}..."/>
+        <copy todir="${cli.runtime}" preservelastmodified="true">
+            <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="runtime-excludes.properties"/>
+        </copy>
+        <symlink link="${cli.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib"
+                 overwrite="true"/>
+        <antcall target="shared-library-install-name">
+            <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
+            <param name="newname" value="${app.runtime.lib}"/>
+        </antcall>
+        <!-- Remove architectures -->
+        <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
+        <antcall target="tar">
+            <param name="directory" value="${build.deploy}"/>
+            <param name="source" value="duck.bundle"/>
+            <param name="target" value="duck-${version}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-${version}.tar.gz"
+                  algorithm="sha1" property="sha1"/>
+        <copy todir="${build}" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="duck.rb"/>
+            </fileset>
+        </copy>
+        <replace dir="${build}" summary="true" encoding="UTF-8">
+            <include name="duck.rb"/>
+            <replacefilter token="${SHA1}" value="${sha1}"/>
+            <replacefilter token="${REVISION}" value="${svn.revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+        </replace>
     </target>
 
     <target name="deploy-sparkle" depends="timestamp, revision">
@@ -199,7 +216,7 @@
         </antcall>
         <antcall target="zip">
             <param name="directory" value="${build.deploy}"/>
-            <param name="target" value="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"/>
+            <param name="target" value="${app.name}-${version}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <checksum file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
@@ -211,8 +228,8 @@
             <arg value="-c"/>
             <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
-        <echo message="_DSASIGNATURE_=${signature.dsa}"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
+        <echo message="DSASIGNATURE=${signature.dsa}"/>
+        <echo message="MD5SUM=${md5sum}"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
@@ -220,12 +237,14 @@
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_ARCHIVE_" value="${url.archive}"/>
-            <replacefilter token="_CHANGELOG_" value="${url.changelog}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}" value="${url.archive}"/>
+            <replacefilter token="${CHANGELOG}" value="${url.changelog}"/>
+            <replacefilter token="${REVISION}" value="${svn.revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
+            <replacefilter token="${COPYRIGHT}" value="'${copyright}"/>
+            <replacefilter token="${MINIMUM_SYSTEM}" value="${app.runtime.system.min}"/>
         </replace>
     </target>
 
@@ -243,11 +262,11 @@
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
         </antcall>
         <antcall target="verify-signature"/>
-        <echo message="Building ${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        <echo message="Building ${build.deploy}/${app.name}-${version}.pkg"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
-            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+            <arg line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${version}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+        <checksum file="${build.deploy}/${app.name}-${version}.pkg"
                   algorithm="md5"/>
     </target>
 
@@ -457,12 +476,12 @@
             <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
         </antcall>
-        <scp file="${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
+        <scp file="${build.deploy}/${app.name}-${version}.zip"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <scp file="${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
+        <scp file="${build.deploy}/${app.name}-${version}.zip.md5"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
@@ -480,38 +499,15 @@
             <param name="build.lipo.arch.remove" value="ppc,ppc7400,i386"/>
         </antcall>
         <antcall target="deploy-mas"/>
-        <scp file="${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+        <scp file="${build.deploy}/${app.name}-${version}.pkg"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <scp file="${build.deploy}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg.md5"
+        <scp file="${build.deploy}/${app.name}-${version}.pkg.md5"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-    </target>
-
-    <target name="deploy-cli" depends="timestamp">
-        <antcall target="tar">
-            <param name="directory" value="${build.bundles}"/>
-            <param name="source" value="duck.app"/>
-            <param name="target" value="${build.deploy}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"/>
-        </antcall>
-        <checksum file="${build.deploy}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.tar.gz"
-                  algorithm="md5" property="md5sum"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
-        <copy todir="${build}" overwrite="true">
-            <fileset dir="${www.update}">
-                <include name="duck.rb"/>
-            </fileset>
-        </copy>
-        <replace dir="${build}" summary="true" encoding="UTF-8">
-            <include name="duck.rb"/>
-            <replacefilter token="_MD5SUM_" value="${md5sum}"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        </replace>
     </target>
 </project>

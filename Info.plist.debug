@@ -197,9 +197,9 @@
             </dict>
         </array>
         <key>CFBundleVersion</key>
-        <string>_REVISION_</string>
+        <string>${REVISION}</string>
         <key>CFBundleShortVersionString</key>
-        <string>_VERSION_</string>
+    	<string>${VERSION}</string>
         <key>LSArchitecturePriority</key>
         <array>
             <string>x86_64</string>
@@ -225,7 +225,7 @@
         <key>NSAppleScriptEnabled</key>
         <false/>
         <key>SUFeedURL</key>
-        <string>_SPARKLEFEED_</string>
+        <string>${SPARKLEFEED}</string>
         <key>SUCheckAtStartup</key>
         <false/>
         <key>SUEnableSystemProfiling</key>
@@ -361,8 +361,10 @@
             </dict>
         </array>
         <key>LSMinimumSystemVersion</key>
-        <string>_MINIMUM_SYSTEM_</string>
+        <string>${MINIMUM_SYSTEM}</string>
         <key>NSHighResolutionCapable</key>
         <true/>
+        <key>NSHumanReadableCopyright</key>
+       	<string>${COPYRIGHT}</string>
     </dict>
 </plist>
