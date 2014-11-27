@@ -46,7 +46,7 @@ typedef int (JNICALL *JLI_Launch_t)(int argc, char ** argv, /* main argc, argc *
                                     jboolean javaw, /* windows-only javaw */
                                     jint ergo); /* ergonomics class policy */
 
-int launch(int argc, char *argv[]);
+int launch();
 
 static int launches;
 static char **progargv = NULL;;
