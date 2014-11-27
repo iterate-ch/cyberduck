@@ -136,6 +136,7 @@
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
+            <param name="directory" value="${app.frameworks}"/>
         </antcall>
         <!-- Remove architectures -->
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}"/>
@@ -176,6 +177,7 @@
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
+            <param name="directory" value="${cli.frameworks}"/>
         </antcall>
         <antcall target="tar">
             <param name="directory" value="${build.deploy}"/>
@@ -289,7 +291,7 @@
                type="file"
                parallel="false" spawn="false" force="true">
             <arg line="-change ${oldname} ${newname}"/>
-            <fileset dir="${app.frameworks}">
+            <fileset dir="${directory}">
                 <include name="*.dylib"/>
             </fileset>
             <srcfile/>
