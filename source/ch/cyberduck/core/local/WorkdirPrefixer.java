@@ -20,6 +20,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * @version $Id$
@@ -36,8 +37,12 @@ public class WorkdirPrefixer {
         this.workdir = workdir;
     }
 
+    private boolean isAbsolute(final String path) {
+        return FilenameUtils.getPrefixLength(path) != 0;
+    }
+
     public String normalize(final String name) {
-        if(!name.startsWith(Preferences.instance().getProperty("local.delimiter"))) {
+        if(!this.isAbsolute(name)) {
             if(null == workdir) {
                 return String.format("%s%s%s", WorkingDirectoryFinderFactory.get().find().getAbsolute(), Preferences.instance().getProperty("local.delimiter"), name);
             }

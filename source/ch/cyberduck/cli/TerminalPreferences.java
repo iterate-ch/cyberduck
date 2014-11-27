@@ -112,10 +112,10 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("application.profiles.path", settings.getAbsolute());
         defaults.put("application.receipt.path", settings.getAbsolute());
         defaults.put("application.bookmarks.path", settings.getAbsolute());
+        defaults.put("local.normalize.prefix", String.valueOf(true));
 
         switch(Factory.Platform.getDefault()) {
             case mac:
-                defaults.put("local.normalize.prefix", String.valueOf(true));
                 defaults.put("connection.ssl.keystore.type", "KeychainStore");
                 defaults.put("connection.ssl.keystore.provider", "Apple");
                 break;
@@ -124,7 +124,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
                 break;
             case linux:
-                defaults.put("local.normalize.prefix", String.valueOf(true));
                 break;
         }
 
