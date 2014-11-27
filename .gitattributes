@@ -5,6 +5,7 @@
 /Cyberduck[!!-~]Website.webloc -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
 /Donate.webloc -text
+/Info-CLI.plist -text
 /Info.plist.debug -text
 /LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
