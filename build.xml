@@ -266,7 +266,12 @@
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
             <classpath path="${lib.ext}/jacocoant.jar"/>
         </taskdef>
-        <echo message="${build}/${configuration}"/>
+        <copy todir="${build}/${configuration}">
+            <fileset dir="${lib}">
+                <!-- Include libjnidispatch.dylib -->
+                <include name="*.dylib"/>
+            </fileset>
+        </copy>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit jvm="${jvm.runtime.bundle.home}/bin/java" fork="yes" forkmode="once"
                    printsummary="on" filtertrace="on"
