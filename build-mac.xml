@@ -192,12 +192,12 @@
         </antcall>
         <checksum file="${build.deploy}/duck-${svn.revision}.tar.gz"
                   algorithm="sha1" property="sha1"/>
-        <copy todir="${build}" overwrite="true">
+        <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="duck.rb"/>
             </fileset>
         </copy>
-        <replace dir="${build}" summary="true" encoding="UTF-8">
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="duck.rb"/>
             <replacefilter token="${SHA1}" value="${sha1}"/>
             <replacefilter token="${REVISION}" value="${svn.revision}"/>
