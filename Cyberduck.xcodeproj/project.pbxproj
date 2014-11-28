@@ -285,7 +285,6 @@
 		47D93A151A2762A40006D4AE /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		47D93A161A2762A40006D4AE /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
-		47D93D251A278D500006D4AE /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
 		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
@@ -295,6 +294,7 @@
 		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
 		47F7AD97194ADCB2000314F1 /* KeystoreImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F7AD95194ADCB2000314F1 /* KeystoreImpl.h */; };
 		47F7AD98194ADCB2000314F1 /* KeystoreImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F7AD96194ADCB2000314F1 /* KeystoreImpl.m */; };
+		47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 477A104D0FD08DBA00BAD4AD /* librococoa.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		47FB9C641725A5CC00FE33C1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47FB9C661725A5CC00FE33C1 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4704C3A81664F94F00B17020 /* JavaNativeFoundation.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
@@ -448,19 +448,26 @@
 			remoteGlobalIDString = 478CFE760F9932B3000560EF;
 			remoteInfo = libPrime;
 		};
-		47D93D261A278D590006D4AE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 477A10400FD08DBA00BAD4AD;
-			remoteInfo = libRococoa;
-		};
 		47F102D91628D61A00923FDE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 47F102AD1628D57500923FDE;
 			remoteInfo = libLaunchServicesQuarantineService;
+		};
+		47FA2CEE1A28A10B0058614E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4739EF670856981300405FD3;
+			remoteInfo = libKeychain;
+		};
+		47FA2CF01A28A17E0058614E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 477A10400FD08DBA00BAD4AD;
+			remoteInfo = libRococoa;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -513,7 +520,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				47D93D251A278D500006D4AE /* librococoa.dylib in CopyFiles */,
+				47FA2CF21A28A1B70058614E /* librococoa.dylib in CopyFiles */,
 				47D939F91A275DFE0006D4AE /* libProxy.dylib in CopyFiles */,
 				47D939FA1A275DFE0006D4AE /* libLocal.dylib in CopyFiles */,
 				47D939FB1A275DFE0006D4AE /* libDiagnostics.dylib in CopyFiles */,
@@ -4346,7 +4353,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				47D93D271A278D590006D4AE /* PBXTargetDependency */,
+				47FA2CF11A28A17E0058614E /* PBXTargetDependency */,
+				47FA2CEF1A28A10B0058614E /* PBXTargetDependency */,
 				47D93D221A27825C0006D4AE /* PBXTargetDependency */,
 				47D93D241A27825C0006D4AE /* PBXTargetDependency */,
 				47D939CD1A268E430006D4AE /* PBXTargetDependency */,
@@ -4932,15 +4940,20 @@
 			target = 478CFE760F9932B3000560EF /* libPrime */;
 			targetProxy = 47D93D231A27825C0006D4AE /* PBXContainerItemProxy */;
 		};
-		47D93D271A278D590006D4AE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 477A10400FD08DBA00BAD4AD /* libRococoa */;
-			targetProxy = 47D93D261A278D590006D4AE /* PBXContainerItemProxy */;
-		};
 		47F102DA1628D61A00923FDE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */;
 			targetProxy = 47F102D91628D61A00923FDE /* PBXContainerItemProxy */;
+		};
+		47FA2CEF1A28A10B0058614E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4739EF670856981300405FD3 /* libKeychain */;
+			targetProxy = 47FA2CEE1A28A10B0058614E /* PBXContainerItemProxy */;
+		};
+		47FA2CF11A28A17E0058614E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 477A10400FD08DBA00BAD4AD /* libRococoa */;
+			targetProxy = 47FA2CF01A28A17E0058614E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
