@@ -4,7 +4,7 @@ class Duck < Formula
   homepage "https://cyberduck.io/"
   # Reference to the CLI version of Cyberduck
   url "https://update.cyberduck.io/cli/duck-${REVISION}.tar.gz"
-  version "${REVISION}"
+  version "${VERSION}.${REVISION}"
   sha1 "${SHA1}"
 
   def install
