@@ -77,6 +77,23 @@ int main(int argc, char *argv[]) {
 int launch() {
     // Get the main bundle
     NSBundle *mainBundle = [NSBundle mainBundle];
+    if (mainBundle == nil) {
+        [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+            reason:NSLocalizedString(@"Main bundle not found", @UNSPECIFIED_ERROR)
+            userInfo:nil] raise];
+    }
+    // Canonicalized absolute pathname
+    NSURL *resolved = [[mainBundle executableURL] URLByResolvingSymlinksInPath];
+    if(![resolved isEqual:[mainBundle executableURL]]) {
+        // Run from a symbolic link
+        do {
+            // Get parent directory of executable path
+            resolved = [resolved URLByDeletingLastPathComponent];
+            mainBundle = [NSBundle bundleWithURL:resolved];
+        }
+        // Repeat until bundle is found that has Contents/MacOS/duck
+        while(nil == [mainBundle executablePath]);
+    }
     NSDictionary *infoDictionary = [mainBundle infoDictionary];
     NSDictionary *javaDict = [infoDictionary objectForKey:@JVM_PROPERTIES_KEY];
     // Get the main class name
