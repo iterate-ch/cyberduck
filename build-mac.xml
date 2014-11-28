@@ -188,9 +188,9 @@
         <antcall target="tar">
             <param name="directory" value="${build.deploy}"/>
             <param name="source" value="duck.bundle"/>
-            <param name="target" value="duck-${version}.tar.gz"/>
+            <param name="target" value="duck-${svn.revision}.tar.gz"/>
         </antcall>
-        <checksum file="${build.deploy}/duck-${version}.tar.gz"
+        <checksum file="${build.deploy}/duck-${svn.revision}.tar.gz"
                   algorithm="sha1" property="sha1"/>
         <copy todir="${build}" overwrite="true">
             <fileset dir="${www.update}">
