@@ -216,8 +216,8 @@ Section "MainSection" SEC01
   File "${BASEDIR}\License.txt"
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
-  File "${BASEDIR}\..\..\update\Updater.exe"
-  File "${BASEDIR}\..\..\update\*.wyc"
+  File "${BASEDIR}\..\..\..\update\Updater.exe"
+  File "${BASEDIR}\..\..\..\update\*.wyc"
 
   ${If} $BonjourCheckbox_State == ${BST_CHECKED}
         ;Bonjour

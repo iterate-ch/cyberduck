@@ -34,7 +34,7 @@
     </condition>
 
     <property name="architecture" value="x86"/>
-    <property name="build.deploy" value="${build}/${configuration}/${architecture}"/>
+    <property name="build.deploy.gui" value="${build}/gui/${configuration}/${architecture}"/>
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.0/bin/x86"/>
@@ -76,7 +76,7 @@
     </target>
 
     <target name="_build" depends="dll">
-        <copy todir="${build.deploy}">
+        <copy todir="${build.deploy.gui}">
             <fileset dir=".">
                 <include name="cyberduck-document.ico"/>
             </fileset>
@@ -144,7 +144,7 @@
     <target name="package" depends="dll, build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
-        <property name="buildpath" value="${configuration}/${architecture}"/>
+        <property name="buildpath" value="gui/${configuration}/${architecture}"/>
         <property name="absbuild" location="${build}"/>
 
         <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
@@ -219,7 +219,7 @@
     </target>
 
     <target name="setup">
-        <property name="setup.basedir" location="${build.deploy}"/>
+        <property name="setup.basedir" location="${build.deploy.gui}"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
             <arg value="/DBASEDIR=${setup.basedir}"/>
             <arg value="/DPRODUCT_VERSION=${shortversion}"/>
