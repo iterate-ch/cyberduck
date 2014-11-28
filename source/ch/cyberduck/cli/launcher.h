@@ -17,22 +17,8 @@
  * dkocher@cyberduck.ch
  */
 
-#import "launcher.h"
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#include <dlfcn.h>
+#include <jni.h>
 
-int main(int argc, char *argv[]) {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    @try {
-        return launch(argc, argv);
-    } @catch (NSException *exception) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        [alert setAlertStyle:NSCriticalAlertStyle];
-        [alert setMessageText:[exception reason]];
-        [alert setInformativeText:@"The application failed to launch with a unrecoverable exception."];
-        [alert runModal];
-        [alert release];
-        return 1;
-    } @finally {
-        [pool drain];
-    }
-}
+int launch(int progargc, char *progargv[]);

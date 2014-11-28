@@ -18,19 +18,13 @@
  */
 
 #import "launcher.h"
-#import <Cocoa/Cocoa.h>
 
 int main(int argc, char *argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
         return launch(argc, argv);
     } @catch (NSException *exception) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        [alert setAlertStyle:NSCriticalAlertStyle];
-        [alert setMessageText:[exception reason]];
-        [alert setInformativeText:@"The application failed to launch with a unrecoverable exception."];
-        [alert runModal];
-        [alert release];
+        NSLog(@"The application failed to launch with a unrecoverable exception. %@", [exception reason]);
         return 1;
     } @finally {
         [pool drain];
