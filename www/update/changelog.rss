@@ -17,7 +17,7 @@
                        url="${ARCHIVE}"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
-            <sparkle:minimumSystemVersion>${MINIMUM_SYSTEM}</sparkle:minimumSystemVersion>
+            <sparkle:minimumSystemVersion>${MACOSX_DEPLOYMENT_TARGET}</sparkle:minimumSystemVersion>
         </item>
     </channel>
 </rss>

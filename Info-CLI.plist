@@ -34,7 +34,7 @@
 			<string>$APP_PACKAGE/Contents/Resources</string>
 		</dict>
         <key>LSMinimumSystemVersion</key>
-        <string>${MINIMUM_SYSTEM}</string>
+        <string>${MACOSX_DEPLOYMENT_TARGET}</string>
 		<key>NSHumanReadableCopyright</key>
 		<string>${COPYRIGHT}</string>
 	</dict>

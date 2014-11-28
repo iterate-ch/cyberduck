@@ -354,7 +354,7 @@
             </dict>
         </array>
         <key>LSMinimumSystemVersion</key>
-        <string>${MINIMUM_SYSTEM}</string>
+        <string>${MACOSX_DEPLOYMENT_TARGET}</string>
         <key>NSHighResolutionCapable</key>
         <true/>
         <key>NSHumanReadableCopyright</key>

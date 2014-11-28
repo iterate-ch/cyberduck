@@ -104,7 +104,7 @@
 
     <target name="_build">
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} MINIMUM_SYSTEM=${app.runtime.system.min} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.settings}"/>
         </exec>
@@ -147,7 +147,7 @@
 
     <target name="_cli">
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} MINIMUM_SYSTEM=${app.runtime.system.min} COPYRIGHT='${copyright}'"/>
+                  value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${svn.revision} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target cli ${build.settings}"/>
         </exec>
@@ -250,7 +250,7 @@
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
             <replacefilter token="${COPYRIGHT}" value="'${copyright}"/>
-            <replacefilter token="${MINIMUM_SYSTEM}" value="${app.runtime.system.min}"/>
+            <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
         </replace>
     </target>
 
