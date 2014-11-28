@@ -32,18 +32,6 @@
 
     <target name="_build"/>
 
-    <target name="upload">
-        <antcall target="_upload">
-            <param name="bundle.type" value=".deb"/>
-        </antcall>
-        <antcall target="_upload">
-            <param name="bundle.type" value="-1.i686.rpm"/>
-        </antcall>
-        <antcall target="_upload">
-            <param name="bundle.type" value="-1.x86_64.rpm"/>
-        </antcall>
-    </target>
-
     <target name="findbundle">
         <available
                 file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
@@ -116,23 +104,5 @@
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-    </target>
-
-    <target name="nightly" depends="cli">
-        <antcall target="upload">
-            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/nightly/"/>
-        </antcall>
-    </target>
-
-    <target name="beta" depends="cli">
-        <antcall target="upload">
-            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/beta/"/>
-        </antcall>
-    </target>
-
-    <target name="release" depends="cli">
-        <antcall target="upload">
-            <param name="uri" value="dkocher@update.cyberduck.io:./update.cyberduck.io/linux/"/>
-        </antcall>
     </target>
 </project>
