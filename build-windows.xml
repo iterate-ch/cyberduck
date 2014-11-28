@@ -93,7 +93,7 @@
         </msbuild>
     </target>
 
-    <target name="_cli">
+    <target name="_cli" depends="dll">
         <msbuild buildfile="source/ch/cyberduck/CLI-WiX-Bootstrapper.wixproj">
             <target name="Clean"/>
             <target name="Build"/>
