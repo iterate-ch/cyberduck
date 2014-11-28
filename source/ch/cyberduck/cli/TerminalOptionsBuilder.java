@@ -44,8 +44,14 @@ public final class TerminalOptionsBuilder {
                 .hasArg(true)
                 .isRequired(false)
                 .create('p'));
+        options.addOption(OptionBuilder.withArgName("private key file")
+                .withDescription("Selects a file from which the identity (private key) for public key authentication is read")
+                .withLongOpt(Params.identity.name())
+                .hasArg(true)
+                .isRequired(false)
+                .create('i'));
         options.addOption(OptionBuilder
-                .withDescription("Download file or folder. Denote a folder with a trailing '/'. If the local filename is not specified it is downloaded to the current working directory with the same name the file has on the remote server.")
+                .withDescription("Download file or folder. Denote a folder with a trailing '/'. If the local filename is not specified it is downloaded to the current working directory with the same name the file has on the remote server")
                 .withLongOpt(TerminalAction.download.name())
                 .hasArgs(1).hasOptionalArgs(1).withArgName("url> <[file]").withValueSeparator(' ')
                 .isRequired(false)
@@ -75,13 +81,13 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
-                .withDescription("List files in remote folder.")
+                .withDescription("List files in remote folder")
                 .withLongOpt(TerminalAction.list.name())
                 .hasArg(true).withArgName("url")
                 .isRequired(false)
                 .create("l"));
         options.addOption(OptionBuilder
-                .withDescription("Long list format with modification date and permission mask.")
+                .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())
                 .hasArg(false)
                 .isRequired(false)
@@ -118,6 +124,7 @@ public final class TerminalOptionsBuilder {
         preserve,
         verbose,
         username,
-        password
+        password,
+        identity
     }
 }

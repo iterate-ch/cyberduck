@@ -155,6 +155,9 @@ public class Terminal {
                 if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
                     host.getCredentials().setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
                 }
+                if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
+                    host.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.password.name())));
+                }
                 session = SessionFactory.create(host);
                 final Path remote = new PathParser(input).parse(uri);
                 switch(action) {
