@@ -65,11 +65,12 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     }
 
     public CertificateStoreX509KeyManager init() throws IOException {
+        String type = null;
         try {
             if(null == store) {
                 // Get the key manager factory for the default algorithm.
                 final Preferences preferences = Preferences.instance();
-                String type = preferences.getProperty("connection.ssl.keystore.type");
+                type = preferences.getProperty("connection.ssl.keystore.type");
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Load default store of type %s", type));
                 }
@@ -87,20 +88,27 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             // Load default key store
             store.load(null, null);
         }
-        catch(CertificateException e) {
-            throw new IOException(e);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
-        catch(KeyStoreException e) {
-            throw new IOException(e);
-        }
-        catch(IOException e) {
-            throw new IOException(e);
-        }
-        catch(NoSuchProviderException e) {
-            throw new IOException(e);
+        catch(Exception e) {
+            try{
+                log.error(String.format("Could not load default store of type %s", type), e);
+                if(log.isInfoEnabled()) {
+                    log.info("Load default store of default type");
+                }
+                store = KeyStore.getInstance(KeyStore.getDefaultType());
+                store.load(null, null);
+            }
+            catch(NoSuchAlgorithmException ex) {
+                throw new IOException(e);
+            }
+            catch(KeyStoreException ex) {
+                throw new IOException(e);
+            }
+            catch(IOException ex) {
+                throw new IOException(e);
+            }
+            catch(CertificateException ex) {
+                throw new IOException(e);
+            }
         }
         return this;
     }
