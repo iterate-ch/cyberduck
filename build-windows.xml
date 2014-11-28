@@ -123,70 +123,21 @@
         </ikvmc>
     </target>
 
-    <target name="upload">
-        <scp file="${setup.file}"
-             todir="${url.package}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/update/${app.name}-all-${updaterversion}.wyu"
-             todir="${url.package}/update/"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog -->
-        <scp file="${build}/update/changelog.wys"
-             todir="${url.changelog}"
-             trust="true"
-             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="release" depends="clean, package-release">
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/"/>
-        </antcall>
-    </target>
-
-    <target name="nightly" depends="clean, package-nightly">
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/nightly"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly"/>
-        </antcall>
-    </target>
-
-    <target name="beta" depends="clean, package-beta">
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/beta"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/beta"/>
-        </antcall>
-    </target>
-
-    <target name="package-release" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
+    <target name="release" depends="clean, version">
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
         </antcall>
     </target>
 
-    <target name="package-beta" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
+    <target name="nightly" depends="clean, version">
         <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
+            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
     </target>
 
-    <target name="package-nightly" depends="version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
+    <target name="beta" depends="clean, version">
         <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
+            <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
         </antcall>
     </target>
 
