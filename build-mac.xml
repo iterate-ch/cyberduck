@@ -239,6 +239,7 @@
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
+                <include name="changelog.html"/>
             </fileset>
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
