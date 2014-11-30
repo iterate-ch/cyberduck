@@ -122,7 +122,7 @@
         </ikvmc>
     </target>
 
-    <target name="release" depends="clean, version">
+    <target name="release" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
         <antcall target="package">
@@ -130,7 +130,7 @@
         </antcall>
     </target>
 
-    <target name="nightly" depends="clean, version">
+    <target name="nightly" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
@@ -138,7 +138,7 @@
         </antcall>
     </target>
 
-    <target name="beta" depends="clean, version">
+    <target name="beta" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
