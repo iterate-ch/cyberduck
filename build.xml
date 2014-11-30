@@ -288,8 +288,8 @@
                         <include name="**/*Test.class"/>
                     </fileset>
                 </batchtest>
-                <sysproperty key="java.library.path" value="${build.deploy}"/>
-                <sysproperty key="jna.library.path" value="${build.deploy}"/>
+                <sysproperty key="java.library.path" value="${build}"/>
+                <sysproperty key="jna.library.path" value="${build}"/>
                 <sysproperty key="s3.key" value="${s3.key}"/>
                 <sysproperty key="s3.secret" value="${s3.secret}"/>
                 <sysproperty key="rackspace.key" value="${rackspace.key}"/>
