@@ -131,8 +131,6 @@
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="runtime-excludes.properties"/>
         </copy>
-        <symlink link="${app.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib"
-                 overwrite="true"/>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
