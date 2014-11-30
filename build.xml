@@ -87,16 +87,16 @@
     </path>
 
     <target name="init">
-        <echo message="ant version:	  ${ant.version}"/>
-        <echo message="java version:  ${ant.java.version}"/>
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
-        <echo message="	  project home:		${home}"/>
-        <echo message="	  project build:	${build}"/>
-        <echo message="	  project source:	${source}"/>
+        <echo message="   Java Version: ${ant.java.version}"/>
+        <echo message="	  Project Home:		${home}"/>
+        <echo message="	  Project Build:	${build}"/>
+        <echo message="	  Project Source:	${source}"/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
         <echo message="Building ${app.name}..."/>
+
         <mkdir dir="${build}"/>
         <mkdir dir="${build.deploy}"/>
         <mkdir dir="${build.classes}"/>
