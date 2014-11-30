@@ -29,6 +29,7 @@
     <property name="cli.bundle" value="${build}/duck.bundle"/>
 
     <property name="bundle.contents" value="Contents"/>
+    <property name="bundle.home" value="${bundle.contents}/Home"/>
     <property name="bundle.macos" value="${bundle.contents}/MacOS"/>
     <property name="bundle.library" value="${bundle.contents}/Library"/>
     <property name="bundle.frameworks" value="${bundle.contents}/Frameworks"/>
@@ -43,8 +44,6 @@
     <property name="app.runtime.system.min" value="10.6"/>
 
     <property name="jvm.runtime.home" value="${lib}/1.7.0-u40-b30.jre"/>
-    <property name="jvm.runtime.bundle.home" value="${jvm.runtime.home}/Contents/Home"/>
-    <property name="jvm.runtime.bundle.lib" value="${jvm.runtime.home}/Contents/Home/lib"/>
 
     <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
@@ -123,6 +122,7 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <mkdir dir="${app.bundle}/${bundle.runtime}/${bundle.home}"/>
         <!-- Copy runtime -->
         <echo message="Copy runtime from ${jvm.runtime.home} to ${app.bundle}/${bundle.runtime}..."/>
         <copy todir="${app.bundle}/${bundle.runtime}" preservelastmodified="true">
@@ -164,6 +164,7 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <mkdir dir="${app.bundle}/${bundle.runtime}/${bundle.home}"/>
         <!-- Copy runtime -->
         <echo message="Copy runtime from ${jvm.runtime.home} to ${cli.bundle}/${bundle.runtime}..."/>
         <copy todir="${cli.bundle}/${bundle.runtime}" preservelastmodified="true">
