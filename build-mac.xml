@@ -72,8 +72,10 @@
     <property name="build.lipo.arch.remove" value=""/>
 
     <target name="spotlight">
+        <property name="build.settings"
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
+            <arg line="--verbose xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration Release ${build.settings}"/>
         </exec>
         <copy todir="${app.bundle}/${bundle.spotlight}">
             <fileset dir="${build.spotlight}">
@@ -101,7 +103,7 @@
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app ${build.settings}"/>
+            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
         </exec>
         <copy todir="${app.bundle}/${bundle.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
@@ -142,7 +144,7 @@
         <property name="build.settings"
                   value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${svn.revision} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
-            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target cli ${build.settings}"/>
+            <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target cli ${build.settings}"/>
         </exec>
         <copy todir="${cli.bundle}/${bundle.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
