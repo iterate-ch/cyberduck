@@ -44,34 +44,25 @@
 
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
 
-    <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-        <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
-    </taskdef>
     <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
         <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
     </taskdef>
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-        <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
-    </taskdef>
-    <target name="version" depends="revision">
-        <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
-        <propertyregex property="svn.revision.stripped"
-                       input="${svn.revision}"
-                       regexp="([\d]+).*"
-                       select="\1"/>
 
+    <target name="version" depends="revision">
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
+        </taskdef>
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
                        regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
                        select="\1.\3"/>
-
-        <property name="version"
-                  value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
-        <property name="shortversion"
-                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
+        <property name="version.full"
+                  value="${cyberduck.version.major}.${minor}.${svn.revision}"/>
+        <property name="version.short"
+                  value="${version} (${svn.revision})"/>
         <!-- pattern = "[revision] ([major].[minor])" -->
         <property name="updaterversion"
-                  value="${svn.revision.stripped} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
+                  value="${svn.revision} (${version)"/>
     </target>
 
     <target name="_build" depends="dll">
@@ -85,8 +76,8 @@
             <target name="Clean"/>
             <target name="Build"/>
 
-            <property name="Version" value="${version}"/>
-            <property name="ShortVersion" value="${shortversion}"/>
+            <property name="Version" value="${version.full}"/>
+            <property name="ShortVersion" value="${version.short}"/>
             <property name="Configuration" value="${configuration}"/>
             <property name="Platform" value="${architecture}"/>
         </msbuild>
@@ -97,19 +88,22 @@
             <target name="Clean"/>
             <target name="Build"/>
 
-            <property name="Version" value="${version}"/>
-            <property name="ShortVersion" value="${shortversion}"/>
+            <property name="Version" value="${version.full}"/>
+            <property name="ShortVersion" value="${version.short}"/>
             <property name="Configuration" value="${configuration}"/>
             <property name="Platform" value="${architecture}"/>
         </msbuild>
     </target>
 
     <target name="dll" depends="version, archive">
+        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+        </taskdef>
         <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}"
-               version="${version}" debug="false" verbose="true">
+               version="${version.full}" debug="false" verbose="true">
             <fileset file="${build}/config.jar"/>
             <fileset file="${build}/core.jar"/>
-			<fileset file="${build}/cli.jar"/>
+            <fileset file="${build}/cli.jar"/>
             <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
@@ -124,7 +118,7 @@
 
     <target name="release" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
         </antcall>
@@ -132,7 +126,7 @@
 
     <target name="nightly" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
@@ -140,7 +134,7 @@
 
     <target name="beta" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
         </antcall>
@@ -149,25 +143,25 @@
     <target name="package" depends="dll, build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
-        <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
-        <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
+        <copy file="${www.update}/version.xml" todir="${build.deploy}" overwrite="true"/>
+        <replace file="${build.deploy}/version.xml" summary="true" encoding="UTF-8">
             <replacefilter token="_VERSION_" value="${updaterversion}"/>
             <replacefilter token="_CHANGES_" value="${changes}"/>
             <replacefilter token="_BUILDPATH_" value="${build.deploy}"/>
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
+        <copy file="${changelog.wyp}" tofile="${build.deploy}/changelog.wyp" overwrite="true"/>
 
-        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
-            <arg value="${build}/changelog.wyp"/>
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build.deploy}">
+            <arg value="${build.deploy}/changelog.wyp"/>
             <arg value="/bwu"/>
             <arg value="/bu"/>
-            <arg value="-add=${build}/version.xml"/>
+            <arg value="-add=${build.deploy}/version.xml"/>
         </exec>
 
         <!-- overwrite generated wyUpdate.exe -->
-        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
+        <copy file="${www.update}/Updater.exe" todir="${build.deploy}/update" overwrite="true"/>
 
         <antcall target="setup"/>
     </target>
@@ -187,29 +181,28 @@
             <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${www.update}/Updater.exe"'/>
         </exec>
 
-        <copy file="${www.update}/updater.xml" todir="${build}" overwrite="true"/>
-        <replace file="${build}/updater.xml" summary="true" encoding="UTF-8">
+        <copy file="${www.update}/updater.xml" todir="${build.deploy}" overwrite="true"/>
+        <replace file="${build.deploy}/updater.xml" summary="true" encoding="UTF-8">
             <replacefilter token="_VERSION_" value="${updater.version}"/>
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${www.update}/updater.wyp" todir="${build}" overwrite="true"/>
-
-        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
+        <copy file="${www.update}/updater.wyp" todir="${build.deploy}" overwrite="true"/>
+        <copy file="${www.update}/Updater.exe" todir="${build.deploy}/update" overwrite="true"/>
 
         <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true">
-            <arg value="${build}/updater.wyp"/>
+            <arg value="${build.deploy}/updater.wyp"/>
             <arg value="/bu"/>
-            <arg value="-add=${build}/updater.xml"/>
+            <arg value="-add=${build.deploy}/updater.xml"/>
         </exec>
 
-        <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
+        <scp file="${build.deploy}/update/${app.name}Updater-all-${updater.version}.wyu"
              todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/update"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
         <!-- Changelog Release - version.cyberduck.io -->
-        <scp file="${build}/update/updater.wys"
+        <scp file="${build.deploy}/update/updater.wys"
              todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
              keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
@@ -218,15 +211,15 @@
     </target>
 
     <target name="setup">
-        <property name="setup.basedir" location="${build.deploy}"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
-            <arg value="/DBASEDIR=${setup.basedir}"/>
-            <arg value="/DPRODUCT_VERSION=${shortversion}"/>
+            <arg value="/DBASEDIR=${build.deploy}"/>
+            <arg value="/DPRODUCT_VERSION=${version.short}"/>
             <arg value="/DSETUPFILE=${setup.file}"/>
             <arg value="${setup}/cyberduck.nsi"/>
         </exec>
         <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
             <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
         </exec>
+        <checksum file="${setup.file}" algorithm="md5"/>
     </target>
 </project>
