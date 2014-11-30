@@ -413,86 +413,36 @@
         <checksum file="${directory}/${target}" algorithm="md5"/>
     </target>
 
-    <target name="upload" depends="revision">
-        <scp file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
-             todir="${url.package}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.deploy}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="${url.package}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog -->
-        <scp file="${build.deploy}/changelog.rss"
-             todir="${url.changelog}"
-             trust="true"
-             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${www.update}/changelog.html"
-             todir="${url.changelog}"
-             trust="true"
-             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="nightly" depends="clean">
+    <target name="nightly" depends="clean, revision">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-${svn.revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
-        </antcall>
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/nightly/"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/nightly/"/>
         </antcall>
     </target>
 
-    <target name="beta" depends="clean">
+    <target name="beta" depends="clean, revision">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-${svn.revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
-        </antcall>
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/beta/"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/beta/"/>
         </antcall>
     </target>
 
-    <target name="release" depends="clean">
+    <target name="release" depends="clean, revision">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.6"/>
             <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-${svn.revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
-        </antcall>
-        <scp file="${build.deploy}/${app.name}-${version}.zip"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.deploy}/${app.name}-${version}.zip.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <antcall target="upload">
-            <param name="url.package" value="dkocher@update.cyberduck.io:./update.cyberduck.io/"/>
-            <param name="url.changelog" value="dkocher@version.cyberduck.io:./version.cyberduck.io/"/>
         </antcall>
     </target>
 
