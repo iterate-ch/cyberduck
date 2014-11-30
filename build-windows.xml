@@ -124,18 +124,24 @@
     </target>
 
     <target name="release" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
         </antcall>
     </target>
 
     <target name="nightly" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
     </target>
 
     <target name="beta" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
         </antcall>
