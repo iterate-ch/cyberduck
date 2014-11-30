@@ -271,6 +271,7 @@
         </replace>
         <delete dir="${app.bundle}/${bundle.frameworks}/Sparkle.framework"/>
         <antcall target="codesign">
+            <param name="bundle" value="${app.bundle}"/>
             <param name="codesign.options" value="--force"/>
             <param name="codesign.arg"
                    value="--entitlements ${codesign.entitlements}"/>
@@ -435,7 +436,7 @@
         </antcall>
     </target>
 
-    <target name="mas" depends="clean">
+    <target name="mas">
         <antcall target="build">
             <param name="app.runtime.system.min" value="10.7.3"/>
         </antcall>
