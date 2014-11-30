@@ -34,7 +34,6 @@
     </condition>
 
     <property name="architecture" value="x86"/>
-    <property name="build.deploy.gui" value="${build}/gui/${configuration}/${architecture}"/>
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Windows Kits/8.0/bin/x86"/>
@@ -76,7 +75,7 @@
     </target>
 
     <target name="_build" depends="dll">
-        <copy todir="${build.deploy.gui}">
+        <copy todir="${build.deploy}">
             <fileset dir=".">
                 <include name="cyberduck-document.ico"/>
             </fileset>
@@ -150,24 +149,21 @@
     <target name="package" depends="dll, build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
-        <property name="buildpath" value="gui/${configuration}/${architecture}"/>
-        <property name="absbuild" location="${build}"/>
-
         <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
         <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
             <replacefilter token="_VERSION_" value="${updaterversion}"/>
             <replacefilter token="_CHANGES_" value="${changes}"/>
-            <replacefilter token="_BUILDPATH_" value="${buildpath}"/>
+            <replacefilter token="_BUILDPATH_" value="${build.deploy}"/>
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
         <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
 
-        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${absbuild}">
-            <arg value="${absbuild}/changelog.wyp"/>
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
+            <arg value="${build}/changelog.wyp"/>
             <arg value="/bwu"/>
             <arg value="/bu"/>
-            <arg value="-add=${absbuild}/version.xml"/>
+            <arg value="-add=${build}/version.xml"/>
         </exec>
 
         <!-- overwrite generated wyUpdate.exe -->
@@ -177,9 +173,6 @@
     </target>
 
     <target name="updater-release">
-
-        <property name="absbuild" location="${build}"/>
-
         <!-- Updater .NET4 build -->
         <msbuild buildfile="${wyupdate.home}/wyUpdate.NET4.csproj">
             <target name="Clean"/>
@@ -207,7 +200,7 @@
         <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true">
             <arg value="${build}/updater.wyp"/>
             <arg value="/bu"/>
-            <arg value="-add=${absbuild}/updater.xml"/>
+            <arg value="-add=${build}/updater.xml"/>
         </exec>
 
         <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
@@ -225,7 +218,7 @@
     </target>
 
     <target name="setup">
-        <property name="setup.basedir" location="${build.deploy.gui}"/>
+        <property name="setup.basedir" location="${build.deploy}"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
             <arg value="/DBASEDIR=${setup.basedir}"/>
             <arg value="/DPRODUCT_VERSION=${shortversion}"/>

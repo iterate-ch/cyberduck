@@ -25,9 +25,7 @@
 
     <import file="build.xml"/>
 
-    <property name="build.deploy" location="${build}/${configuration}"/>
-
-    <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
+    <property name="app.bundle" value="${build}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
     <property name="app.macos" location="${app.contents}/MacOS"/>
     <property name="app.executable" location="${app.macos}/${ant.project.name}"/>
@@ -42,7 +40,7 @@
     <property name="app.runtime.system.min" value="10.6"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
 
-    <property name="cli.bundle" value="${build.deploy}/duck.bundle"/>
+    <property name="cli.bundle" value="${build}/duck.bundle"/>
     <property name="cli.contents" value="${cli.bundle}/Contents"/>
     <property name="cli.macos" location="${cli.contents}/MacOS"/>
     <property name="cli.frameworks" value="${cli.contents}/Frameworks"/>
@@ -110,7 +108,7 @@
         </exec>
         <copy todir="${app.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
-            <fileset dir="${build.deploy}">
+            <fileset dir="${build}">
                 <include name="*.dylib"/>
             </fileset>
             <fileset dir="${lib}">
@@ -151,7 +149,7 @@
         </exec>
         <copy todir="${cli.frameworks}">
             <!-- Dynamic libraries built with xcodebuild -->
-            <fileset dir="${build.deploy}">
+            <fileset dir="${build}">
                 <include name="*.dylib"/>
             </fileset>
             <fileset dir="${lib}">
@@ -184,7 +182,7 @@
             <param name="directory" value="${cli.bundle}"/>
         </foreach>
         <antcall target="tar">
-            <param name="directory" value="${build.deploy}"/>
+            <param name="directory" value="${build}"/>
             <param name="source" value="duck.bundle"/>
             <param name="target" value="duck-${svn.revision}.tar.gz"/>
         </antcall>
@@ -214,12 +212,12 @@
         <antcall target="verify-signature"/>
         <antcall target="verify-spctl"/>
         <antcall target="tar">
-            <param name="directory" value="${build.deploy}"/>
+            <param name="directory" value="${build}"/>
             <param name="target" value="${app.name}-${svn.revision}.tar.gz"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <antcall target="zip">
-            <param name="directory" value="${build.deploy}"/>
+            <param name="directory" value="${build}"/>
             <param name="target" value="${app.name}-${version}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
@@ -397,18 +395,18 @@
     <target name="tar">
         <echo message="Creating tar.gz archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
-            <arg line="-czf ${target} ${source}"/>
+            <arg line="-czf ${build.deploy}/${target} ${source}"/>
         </exec>
         <echo message="Calculating MD5 sum..."/>
-        <checksum file="${directory}/${target}" algorithm="md5"/>
+        <checksum file="${build.deploy}/${target}" algorithm="md5"/>
     </target>
 
     <target name="zip">
         <echo message="Creating ZIP archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="ditto" spawn="false" failonerror="true">
-            <arg line="-c -k --sequesterRsrc --keepParent ${source} ${target}"/>
+            <arg line="-c -k --sequesterRsrc --keepParent ${source} ${build.deploy}/${target}"/>
         </exec>
-        <checksum file="${directory}/${target}" algorithm="md5"/>
+        <checksum file="${build.deploy}/${target}" algorithm="md5"/>
     </target>
 
     <target name="nightly" depends="clean, revision">
@@ -449,15 +447,5 @@
             <param name="app.runtime.system.min" value="10.7.3"/>
         </antcall>
         <antcall target="deploy-mas"/>
-        <scp file="${build.deploy}/${app.name}-${version}.pkg"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.deploy}/${app.name}-${version}.pkg.md5"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/mas"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
     </target>
 </project>

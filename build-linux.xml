@@ -44,9 +44,9 @@
             <classpath path="${java.home}/../lib/ant-javafx.jar"/>
         </taskdef>
 
-        <mkdir dir="${build}/${configuration}"/>
+        <mkdir dir="${build.deploy}"/>
         <fx:deploy nativeBundles="${cli.bundles}"
-                   outdir="${build}/${configuration}"
+                   outdir="${build.deploy}"
                    outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
                    offlineAllowed="true"
                    verbose="true">
@@ -76,7 +76,7 @@
                     <include name="*.dylib"/>
                     <include name="*.so"/>
                 </fx:fileset>
-                <fx:fileset dir="${build}/${configuration}" type="data">
+                <fx:fileset dir="${build.deploy}" type="data">
                     <include name="*.dylib"/>
                 </fx:fileset>
                 <fx:fileset dir="." type="icon">

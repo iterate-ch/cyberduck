@@ -33,10 +33,11 @@
     <property name="debug" value="on"/>
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
-    <property name="build" value="${home}/build"/>
+    <property name="build" location="${home}/build"/>
     <property name="build.compile.target" value="1.7"/>
-    <property name="configuration" value="Release"/>
-    <property name="build.bundles" value="${build}/${configuration}/bundles"/>
+    <property name="configuration" value="release"/>
+    <property name="build.deploy" location="${build}/${configuration}"/>
+    <property name="build.bundles" value="${build.deploy}/bundles"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/test-classes"/>
     <property name="build.unittests.reports" value="${build}/report"/>
@@ -97,6 +98,7 @@
         <echo message=""/>
         <echo message="Building ${app.name}..."/>
         <mkdir dir="${build}"/>
+        <mkdir dir="${build.deploy}"/>
         <mkdir dir="${build.classes}"/>
         <mkdir dir="${build.unittests}"/>
         <mkdir dir="${build.unittests.reports}"/>
@@ -266,7 +268,7 @@
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
             <classpath path="${lib.ext}/jacocoant.jar"/>
         </taskdef>
-        <copy todir="${build}/${configuration}">
+        <copy todir="${build.deploy}">
             <fileset dir="${lib}">
                 <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
@@ -286,8 +288,8 @@
                         <include name="**/*Test.class"/>
                     </fileset>
                 </batchtest>
-                <sysproperty key="java.library.path" value="${build}/${configuration}"/>
-                <sysproperty key="jna.library.path" value="${build}/${configuration}"/>
+                <sysproperty key="java.library.path" value="${build.deploy}"/>
+                <sysproperty key="jna.library.path" value="${build.deploy}"/>
                 <sysproperty key="s3.key" value="${s3.key}"/>
                 <sysproperty key="s3.secret" value="${s3.secret}"/>
                 <sysproperty key="rackspace.key" value="${rackspace.key}"/>
