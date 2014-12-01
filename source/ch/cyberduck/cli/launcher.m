@@ -145,7 +145,8 @@ int launch(int argc, char *argv[]) {
                                userInfo:nil] raise];
     }
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
-    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, NULL)) {
+    NSError *error;
+    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, &error)) {
         // Locate the JLI_Launch() function
         NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/jli/libjli.dylib"];
         void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
