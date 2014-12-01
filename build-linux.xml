@@ -92,7 +92,7 @@
                 </fx:fileset>
                 <fx:fileset type="license" file="LICENSE.txt"/>
             </fx:resources>
-            <fx:preferences install="false"/>
+            <fx:preferences install="true"/>
         </fx:deploy>
     </target>
 
