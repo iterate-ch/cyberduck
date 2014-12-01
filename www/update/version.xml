@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Versions>
     <AddVersion>
-        <Version>_VERSION_</Version>
-        <Changes><![CDATA[_CHANGES_]]></Changes>
+        <Version>${VERSION}</Version>
+        <Changes><![CDATA[${CHANGES}]]></Changes>
         <InheritPrevRegistry/>
         <Files dir="basedir">
-            <File source="_BUILDPATH_\Acknowledgments.rtf"/>
-            <File source="_BUILDPATH_\License.txt"/>
-            <File source="_BUILDPATH_\ActiveButtons.dll"/>
-            <File source="_BUILDPATH_\AutomaticUpdater.dll"/>
-            <File source="_BUILDPATH_\CustomOpenFileFolderDialog.dll"/>
-            <File source="_BUILDPATH_\Cyberduck.exe"/>
-            <File source="_BUILDPATH_\Cyberduck.exe.config"/>
-            <File source="_BUILDPATH_\ExceptionReporter.WinForms.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Beans.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Core.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Charsets.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Security.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Text.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.Util.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.API.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Bind.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Parse.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Transform.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.XPath.dll"/>
-            <File source="_BUILDPATH_\IKVM.OpenJDK.SwingAWT.dll"/>
-            <File source="_BUILDPATH_\IKVM.Runtime.dll"/>
-            <File source="_BUILDPATH_\IKVM.Runtime.JNI.dll"/>
-            <File source="_BUILDPATH_\Interop.Bonjour.dll"/>
-            <File source="_BUILDPATH_\ObjectListView.dll"/>
-            <File source="_BUILDPATH_\StructureMap.dll"/>
-            <File source="_BUILDPATH_\VistaBridgeLibrary.dll"/>
-            <File source="_BUILDPATH_\Windows7.DesktopIntegration.dll"/>
-            <File source="_BUILDPATH_\core.dll"/>
-            <File source="_BUILDPATH_\ikvm-native-win32-x86.dll"/>
-            <File source="_BUILDPATH_\jnidispatch.dll"/>
-            <File source="_BUILDPATH_\sunmscapi.dll"/>
-            <File source="_BUILDPATH_\cyberduck-document.ico"/>
-            <Folder source="_BUILDPATH_\profiles" />
-            <Folder source="_BUILDPATH_\bookmarks" />
+            <File source="${BUILDPATH}\Acknowledgments.rtf"/>
+            <File source="${BUILDPATH}\License.txt"/>
+            <File source="${BUILDPATH}\ActiveButtons.dll"/>
+            <File source="${BUILDPATH}\AutomaticUpdater.dll"/>
+            <File source="${BUILDPATH}\CustomOpenFileFolderDialog.dll"/>
+            <File source="${BUILDPATH}\Cyberduck.exe"/>
+            <File source="${BUILDPATH}\Cyberduck.exe.config"/>
+            <File source="${BUILDPATH}\ExceptionReporter.WinForms.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Beans.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Core.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Charsets.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Security.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Text.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.Util.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.XML.API.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.XML.Bind.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.XML.Parse.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.XML.Transform.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.XML.XPath.dll"/>
+            <File source="${BUILDPATH}\IKVM.OpenJDK.SwingAWT.dll"/>
+            <File source="${BUILDPATH}\IKVM.Runtime.dll"/>
+            <File source="${BUILDPATH}\IKVM.Runtime.JNI.dll"/>
+            <File source="${BUILDPATH}\Interop.Bonjour.dll"/>
+            <File source="${BUILDPATH}\ObjectListView.dll"/>
+            <File source="${BUILDPATH}\StructureMap.dll"/>
+            <File source="${BUILDPATH}\VistaBridgeLibrary.dll"/>
+            <File source="${BUILDPATH}\Windows7.DesktopIntegration.dll"/>
+            <File source="${BUILDPATH}\core.dll"/>
+            <File source="${BUILDPATH}\ikvm-native-win32-x86.dll"/>
+            <File source="${BUILDPATH}\jnidispatch.dll"/>
+            <File source="${BUILDPATH}\sunmscapi.dll"/>
+            <File source="${BUILDPATH}\cyberduck-document.ico"/>
+            <Folder source="${BUILDPATH}\profiles" />
+            <Folder source="${BUILDPATH}\bookmarks" />
         </Files>
     </AddVersion>
 </Versions>
