@@ -9,7 +9,7 @@
 !include "FileFunc.nsh"
 
 !define PRODUCT_NAME "Cyberduck"
-!define PRODUCT_WEB_SITE "http://cyberduck.ch"
+!define PRODUCT_WEB_SITE "https://cyberduck.io"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
@@ -214,7 +214,7 @@ Section "MainSection" SEC01
   File /nonfatal /r "${BASEDIR}\bookmarks"
   File /nonfatal /r "${BASEDIR}\profiles"
   File "${BASEDIR}\License.txt"
-  File "${BASEDIR}\cyberduck-document.ico"
+  File "${BASEDIR}\..\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
   File "${BASEDIR}\..\..\..\update\Updater.exe"
   File "${BASEDIR}\..\..\..\update\*.wyc"

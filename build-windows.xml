@@ -66,12 +66,6 @@
     </target>
 
     <target name="_build" depends="dll">
-        <copy todir="${build}">
-            <fileset dir=".">
-                <include name="cyberduck-document.ico"/>
-            </fileset>
-        </copy>
-
         <msbuild buildfile="source/ch/cyberduck/Cyberduck.csproj">
             <target name="Clean"/>
             <target name="Build"/>
@@ -212,7 +206,7 @@
 
     <target name="setup">
         <exec executable="${nsis.home}/makensis" failonerror="true">
-            <arg value="/DBASEDIR=${build.deploy}"/>
+            <arg value="/DBASEDIR=${build}"/>
             <arg value="/DPRODUCT_VERSION=${version.short}"/>
             <arg value="/DSETUPFILE=${setup.file}"/>
             <arg value="${setup}/cyberduck.nsi"/>
