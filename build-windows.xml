@@ -137,25 +137,25 @@
     <target name="package" depends="dll, build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
-        <copy file="${www.update}/version.xml" todir="${build.deploy}" overwrite="true"/>
-        <replace file="${build.deploy}/version.xml" summary="true" encoding="UTF-8">
+        <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
+        <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${updaterversion}"/>
             <replacefilter token="${CHANGES}" value="${changes}"/>
             <replacefilter token="${BUILDPATH}" value="${build}"/>
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${changelog.wyp}" tofile="${build.deploy}/changelog.wyp" overwrite="true"/>
+        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
 
-        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build.deploy}">
-            <arg value="${build.deploy}/changelog.wyp"/>
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
+            <arg value="${build}/changelog.wyp"/>
             <arg value="/bwu"/>
             <arg value="/bu"/>
-            <arg value="-add=${build.deploy}/version.xml"/>
+            <arg value="-add=${build}/version.xml"/>
         </exec>
 
         <!-- overwrite generated wyUpdate.exe -->
-        <copy file="${www.update}/Updater.exe" todir="${build.deploy}/update" overwrite="true"/>
+        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
         <antcall target="setup"/>
     </target>
