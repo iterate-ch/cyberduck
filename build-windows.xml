@@ -62,7 +62,7 @@
                   value="${version} (${svn.revision})"/>
         <!-- pattern = "[revision] ([major].[minor])" -->
         <property name="updaterversion"
-                  value="${svn.revision} (${version)"/>
+                  value="${svn.revision} (${version})"/>
     </target>
 
     <target name="_build" depends="dll">
