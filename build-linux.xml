@@ -33,12 +33,6 @@
 
     <target name="_build"/>
 
-    <target name="findbundle">
-        <available
-                file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
-                property="bundle.exists"/>
-    </target>
-
     <target name="_cli">
         <mkdir dir="${rpm.spec}"/>
         <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
@@ -94,23 +88,5 @@
             </fx:resources>
             <fx:preferences install="true"/>
         </fx:deploy>
-    </target>
-
-    <target name="_upload" depends="findbundle" if="bundle.exists">
-        <checksum
-                file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
-                algorithm="md5"/>
-        <scp file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}.md5"
-             todir="${uri}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
-             todir="${uri}"
-             trust="true"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
     </target>
 </project>
