@@ -158,7 +158,16 @@
         <!-- overwrite generated wyUpdate.exe -->
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
-        <antcall target="setup"/>
+        <exec executable="${nsis.home}/makensis" failonerror="true">
+            <arg value="/DBASEDIR=${build}"/>
+            <arg value="/DPRODUCT_VERSION=${version.short}"/>
+            <arg value="/DSETUPFILE=${setup.file}"/>
+            <arg value="${setup}/cyberduck.nsi"/>
+        </exec>
+        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
+            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
+        </exec>
+        <checksum file="${setup.file}" algorithm="md5"/>
     </target>
 
     <target name="updater-release">
@@ -202,19 +211,5 @@
              keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
              passphrase="">
         </scp>
-
-    </target>
-
-    <target name="setup">
-        <exec executable="${nsis.home}/makensis" failonerror="true">
-            <arg value="/DBASEDIR=${build}"/>
-            <arg value="/DPRODUCT_VERSION=${version.short}"/>
-            <arg value="/DSETUPFILE=${setup.file}"/>
-            <arg value="${setup}/cyberduck.nsi"/>
-        </exec>
-        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
-        </exec>
-        <checksum file="${setup.file}" algorithm="md5"/>
     </target>
 </project>
