@@ -83,7 +83,7 @@ open() {
 
 run() {
 	echo "Running app using `basename $language .lproj`...";
-	arch -arch $arch ./build/Release/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
+	arch -arch $arch ./build/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 extractstrings() {
