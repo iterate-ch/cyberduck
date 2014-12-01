@@ -44,7 +44,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
     public void testChooseClientAliasNotfound() throws Exception {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
-                new Principal[]{new BasicUserPrincipal("user")}, new Socket("localhost", 443)));
+                new Principal[]{new BasicUserPrincipal("user")}, new Socket("test.cyberduck.ch", 443)));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore() {
             @Override
             public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt) throws ConnectionCanceledException {
-                assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to localhost.", prompt);
+                assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.", prompt);
                 for(Principal issuer : issuers) {
                     assertEquals("CN=StartCom Class 2 Primary Intermediate Client CA", issuer.getName());
                 }
@@ -64,7 +64,7 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
         ).init();
         assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA")},
-                new Socket("localhost", 443)));
+                new Socket("test.cyberduck.ch", 443)));
         assertTrue(choose.get());
     }
 
