@@ -55,8 +55,6 @@
     <property name="copyright" value="Copyright (c) 2001-2015 David Kocher"/>
     <property name="version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 
-    <!-- Used for tests -->
-    <property name="jvm.runtime.home" value="${java.home}"/>
     <property name="sonar.host" value="sonar.cyberduck.io"/>
 
     <condition property="platform" value="mac">
@@ -272,6 +270,7 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
+        <echo message="Running tests with ${jvm.runtime.home}"/>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit jvm="${jvm.runtime.home}/bin/java" fork="yes" forkmode="once"
                    printsummary="on" filtertrace="on"
