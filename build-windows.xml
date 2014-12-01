@@ -134,7 +134,7 @@
         </antcall>
     </target>
 
-    <target name="package" depends="dll, build">
+    <target name="package" depends="build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
         <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
