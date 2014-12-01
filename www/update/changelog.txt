@@ -1,3 +1,8 @@
+4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
+- [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
+- [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
+- [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
+
 4.6 [https://trac.cyberduck.io/milestone/4.6]
 - [Feature] Customizable bookmark icon size (Windows) (#6444)
 - [Feature] Add support for buckets in region eu-central-1 (Frankfurt) (S3) (#8302)
@@ -13,26 +18,3 @@
 - [Bugfix] Remember last selected directory per bookmark in upload and save panel (#8242)
 - [Bugfix] Repeat failed networking tasks by default (#8237)
 - [Bugfix] Allow connecting to accounts with a multitude of containers (OpenStack Swift) (#8198)
-
-4.5.2 [https://trac.cyberduck.io/milestone/4.5.2]
-- [Feature] Network diagnose option in connection failure alert (Windows)
-- [Bugfix] Folder contents in directory placeholders not listed (OpenStack Swift) (#8094)
-- [Bugfix] Synchronize fails to add new local files (#8096)
-- [Bugfix] Wrong public key fingerprint displayed (SFTP) (#8173)
-- [Bugfix] Expanding a folder resets the scroll position (#7941) (Windows)
-
-4.5.1 [https://trac.cyberduck.io/milestone/4.5.1]
-- [Bugfix] Connection failure when sandboxing denies access to ~/.ssh/known_hosts (SFTP)
-
-4.5 [https://trac.cyberduck.io/milestone/4.5]
-- [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
-- [Feature] New SSH/SFTP protocol implementation
-- [Feature] TLS mutual (two-way) authentication with client certificate (WebDAV, FTP-TLS) (#5883)
-- [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
-- [Feature] GZIP Compression (SFTP) (#123)
-- [Feature] ECDSA public key authentication (SFTP) (#7938)
-- [Feature] Notifications in system tray (Windows) (#8007)
-- [Bugfix] Broken pipe with uploads (S3) (#7964, #7621)
-- [Bugfix] 404 error response when downloading folders (S3, OpenStack Swift) (#7971, #8064)
-- [Bugfix] Repeated prompt for private key password (SFTP) (#8009)
-- [Bugfix] Open in Putty (SFTP, Windows) (#8063)

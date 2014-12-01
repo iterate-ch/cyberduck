@@ -3,6 +3,11 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
+- [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
+- [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
+- [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
+
 4.6 [https://trac.cyberduck.io/milestone/4.6]
 - [Feature] Support PAC files for proxy configuration (Mac) (#2607)
 - [Feature] Customizable bookmark icon size (Windows) (#6444)
