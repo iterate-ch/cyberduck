@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
@@ -95,22 +96,26 @@ public class SwiftUrlProvider implements UrlProvider {
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
-                list.addAll(this.createTempUrl(region, file, this.getExpiry(60 * 60)));
+                // In one hour
+                list.addAll(this.sign(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
-                list.addAll(this.createTempUrl(region, file, this.getExpiry(Preferences.instance().getInteger("s3.url.expire.seconds"))));
-                // Week
-                list.addAll(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60)));
-                // Month
-                list.addAll(this.createTempUrl(region, file, this.getExpiry(7 * 24 * 60 * 60 * 4)));
+                list.addAll(this.sign(region, file, (int) TimeUnit.SECONDS.toSeconds(
+                        Preferences.instance().getInteger("s3.url.expire.seconds"))));
+                // 1 Week
+                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
+                // 1 Month
+                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(30)));
+                // 1 Year
+                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
         }
         return list;
     }
 
     /**
-     * @param expiry Milliseconds
+     * @param expiry Seconds
      */
-    protected DescriptiveUrlBag createTempUrl(final Region region, final Path file, final Long expiry) {
+    protected DescriptiveUrlBag sign(final Region region, final Path file, final int expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
         if(!accounts.containsKey(region)) {
