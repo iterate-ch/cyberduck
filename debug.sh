@@ -25,11 +25,11 @@ usage() {
 enable() {
 	# When enabled, you can connect to the running application using 
 	# -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
-	cp Info.plist.debug build/Release/Cyberduck.app/Contents/Info.plist;
+	cp Info.plist.debug build/Cyberduck.app/Contents/Info.plist;
 }
 
 disable() {
-	cp Info.plist build/Release/Cyberduck.app/Contents/Info.plist;
+	cp Info.plist build/Cyberduck.app/Contents/Info.plist;
 }
 
 while [ "$1" != "" ] # When there are arguments...
