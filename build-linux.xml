@@ -35,7 +35,7 @@
 
     <target name="findbundle">
         <available
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
+                file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
                 property="bundle.exists"/>
     </target>
 
@@ -55,7 +55,7 @@
         <mkdir dir="${build.deploy}"/>
         <fx:deploy nativeBundles="${cli.bundles}"
                    outdir="${build.deploy}"
-                   outfile="${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}"
+                   outfile="${app.name}-${version}"
                    offlineAllowed="true"
                    verbose="true">
             <fx:platform basedir="${java.home}">
@@ -66,7 +66,7 @@
                 <fx:jvmarg value="-Dfile.encoding=utf-8"/>
             </fx:platform>
             <fx:application
-                    name="duck" version="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}"
+                    name="duck" version="${version}.${svn.revision}"
                     mainClass="ch.cyberduck.cli.Terminal"/>
             <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
                      description="Cyberduck"
@@ -98,15 +98,15 @@
 
     <target name="_upload" depends="findbundle" if="bundle.exists">
         <checksum
-                file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
+                file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
                 algorithm="md5"/>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}.md5"
+        <scp file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}.md5"
              todir="${uri}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
              passphrase="">
         </scp>
-        <scp file="${build.bundles}/duck-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}${bundle.type}"
+        <scp file="${build.bundles}/duck-${version}.${svn.revision}${bundle.type}"
              todir="${uri}"
              trust="true"
              keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
