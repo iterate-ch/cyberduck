@@ -29,6 +29,7 @@
     <property name="cli.bundles" value="all"/>
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
+    <property name="rpm.spec" value="${build.bundles}/package/linux"/>
 
     <target name="_build"/>
 
@@ -39,9 +40,16 @@
     </target>
 
     <target name="_cli">
+        <mkdir dir="${rpm.spec}"/>
+        <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
+        <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
+            <replacefilter token="${VERSION}" value="${version}"/>
+        </replace>
+
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath path="${java.home}/../lib/ant-javafx.jar"/>
+            <classpath path="${build.bundles}"/>
         </taskdef>
 
         <mkdir dir="${build.deploy}"/>

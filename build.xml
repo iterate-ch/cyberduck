@@ -51,6 +51,7 @@
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
+    <property name="setup" value="${home}/setup"/>
     <property name="copyright" value="Copyright (c) 2001-2015 David Kocher"/>
     <property name="version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 
