@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.local.FinderLocal;
@@ -97,15 +98,15 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         key.delete();
     }
 
-    @Test
-    public void testAuthenticateECDSA() throws Exception {
+    @Test(expected = InteroperabilityException.class)
+    public void testUnknownFormat() throws Exception {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), "", false
         );
         final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
-        IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.ecdsa")), key.getOutputStream(false));
+        IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false));
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

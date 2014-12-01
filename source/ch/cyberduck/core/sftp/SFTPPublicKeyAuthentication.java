@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -66,6 +67,9 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
                         new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), true);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Reading private key %s with key format %s", identity, format));
+                }
                 if(format.equals(KeyFormat.OpenSSH)) {
                     provider = new OpenSSHKeyFile.Factory().create();
                 }
@@ -76,7 +80,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                     provider = new PuTTYKeyFile.Factory().create();
                 }
                 else {
-                    throw new IOException(String.format("Unknown key format for file %s", identity.getName()));
+                    throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
                 }
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
