@@ -31,9 +31,9 @@
     <property name="app.name" value="${ant.project.name}"/>
 
     <property name="debug" value="on"/>
-    <property name="home" value="."/>
+    <property name="home" location="."/>
     <property name="unittests" value="${home}/test"/>
-    <property name="build" location="${home}/build"/>
+    <property name="build" value="${home}/build"/>
     <property name="build.compile.target" value="1.7"/>
     <property name="configuration" value="release"/>
     <property name="build.deploy" location="${build}/${configuration}"/>
@@ -72,6 +72,7 @@
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.unittests}"/>
+        <pathelement location="${build}"/>
         <fileset dir="${build}">
             <include name="*.jar"/>
         </fileset>
@@ -106,17 +107,11 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
-    <target name="build" depends="archive, _build"/>
+    <target name="build" description="Build GUI application"
+            depends="archive, _build"/>
 
-    <target name="cli" depends="archive, _cli"/>
-
-    <target name="confirm">
-        <input message="Press key to continue..." validargs="y,n" addproperty="build.push"/>
-        <condition property="build.abort">
-            <equals arg1="n" arg2="${build.push}"/>
-        </condition>
-        <fail if="build.abort"/>
-    </target>
+    <target name="cli" description="Build CLI application"
+            depends="archive, _cli"/>
 
     <target name="timestamp">
         <tstamp>
@@ -154,7 +149,7 @@
         </javac>
     </target>
 
-    <target name="archive" depends="compile, manifest" description="Create .jar files of the compiled classes">
+    <target name="archive" depends="compile, manifest" description="Create archives">
         <jar jarfile="${build}/config.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
@@ -238,7 +233,7 @@
         <delete dir="${build}"/>
     </target>
 
-    <target name="manifest" depends="revision" description="Create a manifest used in the JAR files">
+    <target name="manifest" depends="revision" description="Create manifest file">
         <manifest file="${build}/MANIFEST.MF">
             <attribute name="Specification-Title" value="${app.name}"/>
             <attribute name="Specification-Version" value="${version}"/>
@@ -261,7 +256,7 @@
         </javac>
     </target>
 
-    <target name="test" depends="test-compile" description="Runs all test cases and generate report">
+    <target name="test" depends="test-compile" description="Runs all tests">
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
             <classpath path="${lib.ext}/junit-4.11.jar"/>
             <classpath path="${lib.ext}/hamcrest-core-1.3.jar"/>
@@ -269,7 +264,7 @@
         <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
             <classpath path="${lib.ext}/jacocoant.jar"/>
         </taskdef>
-        <copy todir="${build.deploy}">
+        <copy todir="${build}">
             <fileset dir="${lib}">
                 <!-- Include libjnidispatch.dylib -->
                 <include name="*.dylib"/>
@@ -331,7 +326,7 @@
         <!--<fail message="Test failure detected" if="test.failed"/>-->
     </target>
 
-    <target name="sonar" depends="test">
+    <target name="sonar" depends="test" description="Run Sonar">
         <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
             <classpath path="${lib.ext}/sonar-ant-task-2.1.jar"/>
         </taskdef>
