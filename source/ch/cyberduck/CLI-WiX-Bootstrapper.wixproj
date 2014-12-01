@@ -6,7 +6,7 @@
     <ProductVersion>3.9</ProductVersion>
     <ProjectGuid>ef87de0e-bc36-4d3c-8852-c8ad11d01f04</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>setup-cli</OutputName>
+    <OutputName>duck-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
     <SignOutput>true</SignOutput>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
