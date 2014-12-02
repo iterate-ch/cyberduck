@@ -30,12 +30,12 @@ import java.util.Collections;
 /**
  * @version $Id$
  */
-public class S3SignedUrlProvider {
-    private static final Logger log = Logger.getLogger(S3SignedUrlProvider.class);
+public class S3PresignedUrlProvider {
+    private static final Logger log = Logger.getLogger(S3PresignedUrlProvider.class);
 
     private Host endpoint;
 
-    public S3SignedUrlProvider(final Host endpoint) {
+    public S3PresignedUrlProvider(final Host endpoint) {
         this.endpoint = endpoint;
     }
 

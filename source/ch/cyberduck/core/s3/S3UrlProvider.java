@@ -140,7 +140,7 @@ public class S3UrlProvider implements UrlProvider {
             log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
-        return new DescriptiveUrl(URI.create(new S3SignedUrlProvider(session.getHost()).create(
+        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session.getHost()).create(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
                 containerService.getContainer(file).getName(), containerService.getKey(file),
                 expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure())), DescriptiveUrl.Type.signed,
