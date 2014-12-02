@@ -138,7 +138,7 @@ int launch(int argc, char *argv[]) {
 
     // Find the runtime bundle
     NSString *runtimePath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
-    CFBundleRef runtimeBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL URLWithString:runtimePath]);
+    CFBundleRef runtimeBundle = CFBundleCreate(NULL, (CFURLRef)[NSURL fileURLWithPath:runtimePath]);
     if (!runtimeBundle) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
                                  reason:NSLocalizedString(@"Error loading runtime bundle.", @UNSPECIFIED_ERROR)
