@@ -75,8 +75,16 @@ public class SyncTransfer extends Transfer {
     }
 
     private void init() {
-        upload = new UploadTransfer(host, roots);
+        upload = new UploadTransfer(host, roots).withCache(cache);
         download = new DownloadTransfer(host, roots).withCache(cache);
+    }
+
+    @Override
+    public Transfer withCache(final Cache cache) {
+        this.cache = cache;
+        upload.withCache(cache);
+        download.withCache(cache);
+        return this;
     }
 
     @Override

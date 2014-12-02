@@ -103,6 +103,12 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
+    public Transfer withCache(final Cache cache) {
+        this.cache = cache;
+        return this;
+    }
+
+    @Override
     public Type getType() {
         return Type.upload;
     }

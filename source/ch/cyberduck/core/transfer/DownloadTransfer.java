@@ -105,6 +105,7 @@ public class DownloadTransfer extends Transfer {
         this.symlinkResolver = new DownloadSymlinkResolver(roots);
     }
 
+    @Override
     public DownloadTransfer withCache(final Cache cache) {
         this.cache = cache;
         return this;

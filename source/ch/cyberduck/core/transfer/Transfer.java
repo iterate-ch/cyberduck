@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
@@ -161,6 +162,8 @@ public abstract class Transfer implements Serializable {
         this.roots = roots;
         this.bandwidth = bandwidth;
     }
+
+    public abstract Transfer withCache(final Cache cache);
 
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
