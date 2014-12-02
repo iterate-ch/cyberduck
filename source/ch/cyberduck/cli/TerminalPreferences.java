@@ -29,6 +29,7 @@ import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
+import ch.cyberduck.core.i18n.BundleLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
@@ -62,6 +63,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
         switch(Factory.Platform.getDefault()) {
             case mac:
+                defaults.put("factory.locale.class", BundleLocale.class.getName());
                 defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
                 defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
                 defaults.put("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());

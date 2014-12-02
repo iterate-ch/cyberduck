@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -86,6 +87,7 @@ public class Terminal {
         }
         this.input = input;
         this.cache = new Cache<Path>();
+        LocaleFactory.get().setDefault(Locale.getDefault().getLanguage());
     }
 
     /**

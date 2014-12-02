@@ -35,8 +35,6 @@ namespace Ch.Cyberduck.Core.I18n
         private readonly IDictionary<string, Dictionary<string, string>> _cache =
             new Dictionary<string, Dictionary<string, string>>();
 
-        private readonly string _language = Preferences.instance().getProperty("application.language");
-
         public string localize(string key, string table)
         {
             Dictionary<string, string> bundle;
@@ -62,10 +60,11 @@ namespace Ch.Cyberduck.Core.I18n
         private void ReadBundleIntoCache(string bundle)
         {
             Log.debug("Caching bundle " + bundle);
+            string language = Preferences.instance().getProperty("application.language");
             Assembly asm = Assembly.GetExecutingAssembly();
             // the dots apparently come from the relative path in the msbuild file
             Stream stream =
-                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
+                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", language,
                                                             bundle));
             if (null == stream)
             {
@@ -73,7 +72,7 @@ namespace Ch.Cyberduck.Core.I18n
                     asm.GetManifestResourceStream(
                         string.Format(
                             "Ch.Cyberduck..........lib.Sparkle.framework.Versions.A.Resources.{0}.lproj.Sparkle.strings",
-                            _language));
+                            language));
             }
             if (null != stream)
             {
@@ -98,6 +97,11 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 Log.error(String.Format("Bundle {0} not found", bundle));
             }
+        }
+
+        public override void setDefault(string language)
+        {
+            Preferences.instance().setProperty("application.language", language);
         }
     }
 }

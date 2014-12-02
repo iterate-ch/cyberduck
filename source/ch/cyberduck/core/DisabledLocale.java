@@ -29,4 +29,9 @@ public class DisabledLocale implements Locale {
     public String localize(final String key, final String table) {
         return key;
     }
+
+    @Override
+    public void setDefault(final String language) {
+        //
+    }
 }

@@ -23,5 +23,7 @@ package ch.cyberduck.core.i18n;
  */
 public interface Locale {
 
+    void setDefault(String language);
+
     String localize(String key, String table);
 }

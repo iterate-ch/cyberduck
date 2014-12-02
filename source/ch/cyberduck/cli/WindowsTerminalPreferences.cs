@@ -28,6 +28,7 @@ namespace Ch.Cyberduck.Cli
         protected override void setFactories()
         {
             base.setFactories();
+            defaults.put("factory.locale.class", typeof(Ch.Cyberduck.Core.I18n.DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);

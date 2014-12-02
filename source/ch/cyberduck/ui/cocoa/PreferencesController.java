@@ -19,7 +19,20 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.DefaultCharsetProvider;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -55,7 +68,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -2098,14 +2110,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void languagePopupClicked(NSPopUpButton sender) {
-        if(null == sender.selectedItem().representedObject()) {
-            // Revert to system default language
-            preferences.deleteProperty("AppleLanguages");
-        }
-        else {
-            preferences.setProperty("AppleLanguages",
-                    Collections.singletonList(sender.selectedItem().representedObject()));
-        }
+        LocaleFactory.get().setDefault(sender.selectedItem().representedObject());
     }
 
     @Outlet
