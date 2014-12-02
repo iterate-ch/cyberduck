@@ -57,8 +57,8 @@ public class SwiftAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
         try {
-            final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,
                         containerService.getContainer(file).getName());
@@ -67,7 +67,7 @@ public class SwiftAttributesFeature implements Attributes {
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
             }
-            else {
+            if(file.isFile()) {
                 final PathAttributes attributes = new PathAttributes();
                 if(file.isFile()) {
                     final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
@@ -89,6 +89,10 @@ public class SwiftAttributesFeature implements Attributes {
                 }
                 return attributes;
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return blank attributes for directory delimiter %s", file));
+            }
+            return new PathAttributes();
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);

@@ -59,13 +59,11 @@ public class S3AttributesFeature implements Attributes {
             return new PathAttributes();
         }
         else {
-            if(file.isFile() || file.isPlaceholder()) {
+            if(file.isFile()) {
                 return this.convert(this.details(file));
             }
-            else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Return blank attributes for directory delimiter %s", file));
-                }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return blank attributes for directory delimiter %s", file));
             }
             return new PathAttributes();
         }
