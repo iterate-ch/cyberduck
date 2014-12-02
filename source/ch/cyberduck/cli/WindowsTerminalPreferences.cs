@@ -29,6 +29,7 @@ namespace Ch.Cyberduck.Cli
         {
             base.setFactories();
             defaults.put("factory.locale.class", typeof(Ch.Cyberduck.Core.I18n.DictionaryLocale).AssemblyQualifiedName);
+            defaults.put("factory.supportdirectoryfinder.class", typeof(Ch.Cyberduck.Core.Preferences.RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);

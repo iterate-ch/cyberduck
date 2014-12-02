@@ -285,8 +285,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             //disable reminder for protocol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
-            defaults.put("application.support.path", RoamingApplicationDataPath);
-            defaults.put("application.receipt.path", RoamingApplicationDataPath);            
 
             defaults.put("update.check.last", "0");
 
@@ -349,6 +347,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             base.setFactories();
 
+            defaults.put("factory.supportdirectoryfinder.class", typeof(Ch.Cyberduck.Core.Preferences.RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof(Ch.Cyberduck.Core.Local.SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof(Ch.Cyberduck.Core.I18n.DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof(Ch.Cyberduck.Ui.Winforms.UserDefaultsDateFormatter).AssemblyQualifiedName);

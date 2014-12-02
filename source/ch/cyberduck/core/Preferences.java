@@ -24,6 +24,7 @@ import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -175,6 +176,10 @@ public abstract class Preferences {
      */
     protected void setDefaults() {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
+
+        final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
+        defaults.put("application.support.path", support);
+        defaults.put("application.receipt.path", support);
 
         /**
          * How many times the application was launched

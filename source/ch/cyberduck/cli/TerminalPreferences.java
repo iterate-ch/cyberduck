@@ -22,7 +22,6 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
@@ -39,6 +38,9 @@ import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
+import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
+import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
+import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.growl.NotificationCenter;
@@ -63,6 +65,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
         switch(Factory.Platform.getDefault()) {
             case mac:
+                defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
                 defaults.put("factory.locale.class", BundleLocale.class.getName());
                 defaults.put("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
                 defaults.put("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
@@ -86,6 +89,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.notification.class", TerminalNotification.class.getName());
                 break;
             case linux:
+                defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
                 defaults.put("factory.notification.class", TerminalNotification.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
@@ -107,33 +111,32 @@ public class TerminalPreferences extends MemoryPreferences {
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
-        final Local home = LocalFactory.get(this.getProperty("local.user.home"));
-        final Local settings = LocalFactory.get(home, ".duck");
-
-        defaults.put("application.support.path", settings.getAbsolute());
-        defaults.put("application.profiles.path", settings.getAbsolute());
-        defaults.put("application.receipt.path", settings.getAbsolute());
-        defaults.put("application.bookmarks.path", settings.getAbsolute());
-        defaults.put("local.normalize.prefix", String.valueOf(true));
+        defaults.put("application.name", "Cyberduck");
+        defaults.put("application.version", Version.getSpecification());
+        defaults.put("application.revision", Version.getImplementation());
 
         switch(Factory.Platform.getDefault()) {
             case mac:
                 defaults.put("connection.ssl.keystore.type", "KeychainStore");
-                defaults.put("connection.ssl.keystore.provider", "Apple");
+                defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+                final Local resources = new BundleApplicationResourcesFinder().find();
+                defaults.put("application.bookmarks.path", resources.getAbsolute() + "/Bookmarks");
+                defaults.put("application.profiles.path", resources.getAbsolute() + "/Profiles");
                 break;
             case windows:
                 defaults.put("connection.ssl.keystore.type", "Windows-MY");
                 defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+                defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
+                defaults.put("application.profiles.path", "profiles"); // relative to .exe
                 break;
             case linux:
-                break;
+            default:
+                final Local settings = new UserHomeSupportDirectoryFinder().find();
+                defaults.put("application.bookmarks.path", settings.getAbsolute());
+                defaults.put("application.profiles.path", settings.getAbsolute());
         }
-
-        final Local workdir = WorkingDirectoryFinderFactory.get().find();
-        defaults.put("queue.download.folder", workdir.getAbsolute());
-
-        defaults.put("s3.download.udt.threshold", String.valueOf(10L * 1024L * 1024L));
-        defaults.put("s3.upload.udt.threshold", String.valueOf(10L * 1024L * 1024L));
+        defaults.put("local.normalize.prefix", String.valueOf(true));
+        defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
     }
 
     @Override
@@ -143,5 +146,31 @@ public class TerminalPreferences extends MemoryPreferences {
             return super.getProperty(property);
         }
         return system;
+    }
+
+    private static final class Version {
+        /**
+         * @return The <code>Specification-Version</code> in the JAR manifest.
+         */
+        public static String getSpecification() {
+            Package pkg = Version.class.getPackage();
+            return (pkg == null) ? null : pkg.getSpecificationVersion();
+        }
+
+        /**
+         * @return The <code>Implementation-Version</code> in the JAR manifest.
+         */
+        public static String getImplementation() {
+            Package pkg = Version.class.getPackage();
+            return (pkg == null) ? null : pkg.getImplementationVersion();
+        }
+
+        /**
+         * A simple main method that prints the version and exits
+         */
+        public static void main(String[] args) {
+            System.out.println("Version: " + getSpecification());
+            System.out.println("Implementation: " + getImplementation());
+        }
     }
 }
