@@ -111,7 +111,6 @@ public class TerminalPreferences extends MemoryPreferences {
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
-        defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", Version.getSpecification());
         defaults.put("application.revision", Version.getImplementation());
 

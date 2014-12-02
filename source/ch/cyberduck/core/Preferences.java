@@ -225,6 +225,7 @@ public abstract class Preferences {
          */
         defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
 
+        defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
         defaults.put("application.receipt.path", support);
