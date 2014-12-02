@@ -83,7 +83,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private Session<?> session;
 
-    protected Cache<Path> cache;
+    private Cache<Path> cache;
 
     public SessionBackgroundAction(final Session<?> session,
                                    final Cache<Path> cache,
@@ -206,6 +206,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     protected void close(final Session session) throws BackgroundException {
         session.close();
+        cache.clear();
     }
 
     @Override

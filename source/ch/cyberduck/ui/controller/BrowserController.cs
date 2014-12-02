@@ -2973,7 +2973,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     TranscriptListener transcriptListener, Transfer transfer,
                                                     TransferOptions options)
                 : base(
-                    controller, controller._session, transferListener, progressListener, transcriptListener, transfer,
+                    controller, controller._session, controller._cache, transferListener, progressListener, transcriptListener, transfer,
                     options)
             {
                 _callback = callback;

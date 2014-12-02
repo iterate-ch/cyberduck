@@ -459,7 +459,7 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session.getHost(), downloads);
                 final TransferOptions options = new TransferOptions();
-                background(new TransferBackgroundAction(this, session, new TransferAdapter() {
+                background(new TransferBackgroundAction(this, session, cache, new TransferAdapter() {
                     @Override
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
@@ -2904,7 +2904,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferBackgroundAction(this, session, new TransferAdapter() {
+            this.background(new TransferBackgroundAction(this, session, cache, new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     message(status.getProgress());

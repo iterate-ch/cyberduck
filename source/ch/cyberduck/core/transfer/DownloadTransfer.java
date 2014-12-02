@@ -148,12 +148,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public synchronized void start() {
-        cache.clear();
-        super.start();
-    }
-
-    @Override
     public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
