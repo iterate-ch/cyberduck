@@ -60,16 +60,9 @@ public class Terminal {
         Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
     }
 
-    static {
-        PreferencesFactory.set(new TerminalPreferences());
-        ProtocolFactory.register();
-    }
+    private final Preferences preferences;
 
-    private final Preferences preferences = Preferences.instance();
-
-    private final ApplicationFinder finder = ApplicationFinderFactory.get();
-
-    private Cache<Path> cache = new Cache<Path>();
+    private Cache<Path> cache;
 
     private enum Exit {
         success,
@@ -81,8 +74,18 @@ public class Terminal {
     private Options options;
 
     public Terminal(final Options options, final CommandLine input) {
+        this(new TerminalPreferences(), options, input);
+    }
+
+    public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
+        PreferencesFactory.set(this.preferences = defaults);
+        ProtocolFactory.register();
         this.options = options;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Parsed options %s from input %s", options, input));
+        }
         this.input = input;
+        this.cache = new Cache<Path>();
     }
 
     /**
@@ -95,9 +98,6 @@ public class Terminal {
         try {
             final CommandLineParser parser = new PosixParser();
             final CommandLine input = parser.parse(options, args);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Parsed options %s", input));
-            }
             final Terminal terminal = new Terminal(options, input);
             switch(terminal.execute()) {
                 case success:
@@ -260,6 +260,7 @@ public class Terminal {
         final EditorFactory factory = EditorFactory.instance();
         final Editor editor;
         if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
+            final ApplicationFinder finder = ApplicationFinderFactory.get();
             editor = factory.create(controller, session,
                     finder.getDescription(input.getOptionValue(TerminalAction.edit.name())), remote);
         }

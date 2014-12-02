@@ -24,10 +24,7 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminal : Terminal
     {
-        public WindowsTerminal(Options options, CommandLine input) : base(options, input)
-        {
-            PreferencesFactory.set(new WindowsTerminalPreferences());
-        }
+        public WindowsTerminal(Options options, CommandLine input) : base(new WindowsTerminalPreferences(), options, input) {}
 
         private static void Main(string[] args)
         {
