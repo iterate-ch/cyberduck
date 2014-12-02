@@ -85,6 +85,10 @@
                     <include name="*.ico"/>
                 </fx:fileset>
                 <fx:fileset type="license" file="LICENSE.txt"/>
+                <fx:fileset dir="${home}/profiles" type="data">
+                    <include name="Rackspace US.cyberduckprofile"/>
+                </fx:fileset>
+                <fx:fileset dir="${home}/bookmarks" type="data"/>
             </fx:resources>
             <fx:preferences install="true"/>
         </fx:deploy>
