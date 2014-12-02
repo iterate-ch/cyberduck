@@ -73,6 +73,9 @@ public final class TerminalHelpPrinter {
         if(l.verify()) {
             footer.append(l.toString());
         }
+        else {
+            footer.append("Not registered. Purchase a donation key to support the development of this software.");
+        }
         formatter.printHelp("duck [options...]", header, options, footer.toString());
     }
 
