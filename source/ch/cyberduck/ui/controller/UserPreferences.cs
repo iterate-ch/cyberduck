@@ -33,7 +33,7 @@ using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class UserPreferences : WindowsPreferences
+    public class UserPreferences : Preferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).FullName);
         private SettingsDictionary _settings;
@@ -338,6 +338,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("local.user.home", HomeFolder);
             defaults.put("local.delimiter", "\\");
+            defaults.put("local.normalize.tilde", String.valueOf(false));
+
+            // SSL Keystore
+            defaults.put("connection.ssl.keystore.type", "Windows-MY");
+            defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
         }
 
         protected override void setFactories()
