@@ -27,6 +27,7 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullApplicationFinder;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
+import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
@@ -124,7 +125,7 @@ public class MemoryPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        final Local settings = LocalFactory.get(defaults.get("tmp.dir"));
+        final Local settings = new TemporarySupportDirectoryFinder().find();
 
         defaults.put("application.support.path", settings.getAbsolute());
         defaults.put("application.profiles.path", settings.getAbsolute());
