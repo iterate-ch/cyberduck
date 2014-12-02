@@ -22,6 +22,7 @@ import ch.cyberduck.core.PreferencesFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 
 import org.apache.log4j.Logger;
@@ -32,19 +33,15 @@ import org.apache.log4j.Logger;
 public final class MainApplication {
     private static Logger log = Logger.getLogger(MainApplication.class);
 
+    static {
+        Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
+    }
+
     private MainApplication() {
         //
     }
 
     public static void main(String... arguments) {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(final Thread t, final Throwable e) {
-                // Swallow the exception
-                log.error(String.format("Thread %s has thrown uncaught exception:%s",
-                        t.getName(), e.getMessage()), e);
-            }
-        });
         final ActionOperationBatcher autorelease = new AutoreleaseActionOperationBatcher();
         try {
             // This method also makes a connection to the window server and completes other initialization.
