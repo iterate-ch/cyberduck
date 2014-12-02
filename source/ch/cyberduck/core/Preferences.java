@@ -177,10 +177,6 @@ public abstract class Preferences {
     protected void setDefaults() {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
 
-        final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
-        defaults.put("application.support.path", support);
-        defaults.put("application.receipt.path", support);
-
         /**
          * How many times the application was launched
          */
@@ -228,6 +224,10 @@ public abstract class Preferences {
          * Prompt to resolve bookmark of file outside of sandbox with choose panel
          */
         defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
+
+        final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
+        defaults.put("application.support.path", support);
+        defaults.put("application.receipt.path", support);
 
         /**
          * Maximum number of directory listings to cache using a most recently used implementation
