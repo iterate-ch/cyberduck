@@ -85,7 +85,8 @@ public class S3UrlProvider implements UrlProvider {
                 list.add(this.sign(file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
             // Torrent
-            list.add(new DescriptiveUrl(URI.create(new S3SignedUrlProvider(session.getHost()).createTorrentUrl(containerService.getContainer(file).getName(), containerService.getKey(file))),
+            list.add(new DescriptiveUrl(URI.create(new S3TorrentUrlProvider(session.getHost()).create(
+                    containerService.getContainer(file).getName(), containerService.getKey(file))),
                     DescriptiveUrl.Type.torrent,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }

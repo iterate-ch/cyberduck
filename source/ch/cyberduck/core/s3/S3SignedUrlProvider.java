@@ -113,30 +113,4 @@ public class S3SignedUrlProvider {
                 + serviceEndpointVirtualPath
                 + "/" + uriPath;
     }
-
-    /**
-     * Generates a URL string that will return a Torrent file for an object in S3,
-     * which file can be downloaded and run in a BitTorrent client.
-     *
-     * @param bucketName the name of the bucket containing the object.
-     * @param objectKey  the name of the object.
-     * @return a URL to a Torrent file representing the object.
-     */
-    public String createTorrentUrl(String bucketName, String objectKey) {
-        String s3Endpoint = endpoint.getHostname();
-        String serviceEndpointVirtualPath = "";
-
-        String bucketNameInPath =
-                ServiceUtils.isBucketNameValidDNSName(bucketName)
-                        ? ""
-                        : RestUtils.encodeUrlString(bucketName) + "/";
-        String urlPath =
-                RestUtils.encodeUrlPath(serviceEndpointVirtualPath, "/")
-                        + "/" + bucketNameInPath
-                        + RestUtils.encodeUrlPath(objectKey, "/");
-        return "http://" + ServiceUtils.generateS3HostnameForBucket(
-                bucketName, false, s3Endpoint)
-                + urlPath
-                + "?torrent";
-    }
 }
