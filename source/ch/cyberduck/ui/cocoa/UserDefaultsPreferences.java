@@ -44,6 +44,7 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
+import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
@@ -53,7 +54,6 @@ import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
@@ -70,7 +70,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,43 +200,17 @@ public class UserDefaultsPreferences extends Preferences {
         super.setDefaults();
 
         defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
+
         final NSBundle bundle = NSBundle.mainBundle();
-        if(null != bundle) {
-            final NSObject bundleName = bundle.objectForInfoDictionaryKey("CFBundleName");
-            final String applicationName;
-            if(null != bundleName) {
-                applicationName = bundleName.toString();
-            }
-            else {
-                log.error("No CFBundleName property in main bundle info dictionary");
-                applicationName = "Cyberduck";
-            }
-            final NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
-                    FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
-                    FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
-                    true);
-            if(directories.count().intValue() == 0) {
-                log.error("Failed searching for application support directory");
-                defaults.put("application.support.path", LocalFactory.get("~/Library/Application Support", applicationName).getAbbreviatedPath());
-            }
-            else {
-                final String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Found application support directory in %s", directory));
-                }
-                defaults.put("application.support.path", LocalFactory.get(directory, applicationName).getAbbreviatedPath());
-            }
-            defaults.put("application.name", applicationName);
-            final NSObject bundleIdentifier = bundle.objectForInfoDictionaryKey("CFBundleIdentifier");
-            if(null != bundleIdentifier) {
-                defaults.put("application.identifier", bundleIdentifier.toString());
-            }
-            defaults.put("application.version",
-                    bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
-            defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
-            defaults.put("application.bookmarks.path", bundle.bundlePath() + "/Contents/Resources/Bookmarks");
-            defaults.put("application.profiles.path", bundle.bundlePath() + "/Contents/Resources/Profiles");
-        }
+        defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
+        defaults.put("application.support.path", new ApplicationSupportDirectoryFinder().find().getAbbreviatedPath());
+        defaults.put("application.identifier",
+                bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
+        defaults.put("application.version",
+                bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+        defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
+        defaults.put("application.bookmarks.path", bundle.resourcePath() + "/Bookmarks");
+        defaults.put("application.profiles.path", bundle.resourcePath() + "/Profiles");
 
         defaults.put("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         defaults.put("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
