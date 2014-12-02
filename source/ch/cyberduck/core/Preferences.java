@@ -82,11 +82,6 @@ public abstract class Preferences {
         synchronized(lock) {
             if(null == current) {
                 current = PreferencesFactory.get();
-                current.load();
-                current.setLogging();
-                current.setFactories();
-                current.setDefaults();
-                current.post();
             }
             return current;
         }
