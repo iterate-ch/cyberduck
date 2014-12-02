@@ -146,7 +146,16 @@ int launch(int argc, char *argv[]) {
     }
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
     NSError *error;
-    if (!CFBundleLoadExecutableAndReturnError(runtimeBundle, &error)) {
+    if (CFBundleLoadExecutableAndReturnError(runtimeBundle, &error)) {
+        // Locate the JLI_Launch() function
+        JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
+        if (jli_LaunchFxnPtr == NULL) {
+            [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+                                     reason:NSLocalizedString(@"Error getting launcher function.", @UNSPECIFIED_ERROR)
+                                   userInfo:nil] raise];
+        }
+    }
+    else {
         // Locate the JLI_Launch() function
         NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/jli/libjli.dylib"];
         void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
@@ -156,15 +165,6 @@ int launch(int argc, char *argv[]) {
         if(jli_LaunchFxnPtr == NULL) {
             [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
                                      reason:NSLocalizedString(@"Error loading runtime executable.", @UNSPECIFIED_ERROR)
-                                   userInfo:nil] raise];
-        }
-    }
-    else {
-        // Locate the JLI_Launch() function
-        JLI_Launch_t jli_LaunchFxnPtr = CFBundleGetFunctionPointerForName(runtimeBundle, CFSTR("JLI_Launch"));
-        if (jli_LaunchFxnPtr == NULL) {
-            [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
-                                     reason:NSLocalizedString(@"Error getting launcher function.", @UNSPECIFIED_ERROR)
                                    userInfo:nil] raise];
         }
     }
