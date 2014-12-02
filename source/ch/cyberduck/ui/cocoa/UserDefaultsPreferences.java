@@ -203,7 +203,6 @@ public class UserDefaultsPreferences extends Preferences {
 
         final NSBundle bundle = NSBundle.mainBundle();
         defaults.put("application.name", bundle.objectForInfoDictionaryKey("CFBundleName").toString());
-        defaults.put("application.support.path", new ApplicationSupportDirectoryFinder().find().getAbbreviatedPath());
         defaults.put("application.identifier",
                 bundle.objectForInfoDictionaryKey("CFBundleIdentifier").toString());
         defaults.put("application.version",
@@ -241,6 +240,7 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setFactories() {
         super.setFactories();
 
+        defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
         defaults.put("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         defaults.put("factory.local.class", FinderLocal.class.getName());
         defaults.put("factory.locale.class", BundleLocale.class.getName());
