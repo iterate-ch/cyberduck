@@ -40,7 +40,7 @@ public final class PreferencesFactory {
 
     public static synchronized Preferences get() {
         if(null == preferences) {
-            preferences = new MemoryPreferences();
+            set(new MemoryPreferences());
         }
         return preferences;
     }
