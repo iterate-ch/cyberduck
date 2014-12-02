@@ -124,13 +124,13 @@ public class MemoryPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        final String workdir = defaults.get("tmp.dir");
+        final Local settings = LocalFactory.get(defaults.get("tmp.dir"));
 
-        defaults.put("application.support.path", workdir);
-        defaults.put("application.profiles.path", workdir);
-        defaults.put("application.receipt.path", workdir);
-        defaults.put("application.bookmarks.path", workdir);
-        defaults.put("queue.download.folder", workdir);
+        defaults.put("application.support.path", settings.getAbsolute());
+        defaults.put("application.profiles.path", settings.getAbsolute());
+        defaults.put("application.receipt.path", settings.getAbsolute());
+        defaults.put("application.bookmarks.path", settings.getAbsolute());
+        defaults.put("queue.download.folder", settings.getAbsolute());
 
         defaults.put("application.name", "Cyberduck");
         defaults.put("application.version", Version.getSpecification());
