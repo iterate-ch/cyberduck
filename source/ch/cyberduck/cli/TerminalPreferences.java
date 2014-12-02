@@ -41,6 +41,12 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
+import ch.cyberduck.core.serializer.impl.HostPlistReader;
+import ch.cyberduck.core.serializer.impl.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.PlistSerializer;
+import ch.cyberduck.core.serializer.impl.PlistWriter;
+import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
+import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.growl.NotificationCenter;
@@ -121,6 +127,14 @@ public class TerminalPreferences extends MemoryPreferences {
                 final Local resources = new BundleApplicationResourcesFinder().find();
                 defaults.put("application.bookmarks.path", resources.getAbsolute() + "/Bookmarks");
                 defaults.put("application.profiles.path", resources.getAbsolute() + "/Profiles");
+                defaults.put("factory.serializer.class", PlistSerializer.class.getName());
+                defaults.put("factory.deserializer.class", PlistDeserializer.class.getName());
+                defaults.put("factory.reader.profile.class", ProfilePlistReader.class.getName());
+                defaults.put("factory.writer.profile.class", PlistWriter.class.getName());
+                defaults.put("factory.reader.transfer.class", TransferPlistReader.class.getName());
+                defaults.put("factory.writer.transfer.class", PlistWriter.class.getName());
+                defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
+                defaults.put("factory.writer.host.class", PlistWriter.class.getName());
                 break;
             case windows:
                 defaults.put("connection.ssl.keystore.type", "Windows-MY");
