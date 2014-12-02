@@ -270,9 +270,9 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
-        <echo message="Running tests with ${jvm.runtime.home}"/>
+        <echo message="Running tests with ${jvm.runtime.bin}/java"/>
         <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
-            <junit jvm="${jvm.runtime.home}/bin/java" fork="yes" forkmode="once"
+            <junit jvm="${jvm.runtime.bin}/java" fork="yes" forkmode="once"
                    printsummary="on" filtertrace="on"
                    haltonfailure="no" failureproperty="test.failed"
                    showoutput="yes"
