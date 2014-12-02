@@ -108,13 +108,14 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
                                     final TranscriptListener transcript,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferPrompt prompt, final TransferErrorCallback error) {
-        super(controller, session, Cache.<Path>empty(), progress);
+        super(controller, session,
+                new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size")), progress);
         final LoginCallback login = LoginCallbackFactory.get(controller);
         this.connection = new LoginConnectionService(login,
                 HostKeyCallbackFactory.get(controller, transfer.getHost().getProtocol()),
                 PasswordStoreFactory.get(), progress, transcript);
         this.meter = new TransferSpeedometer(transfer);
-        this.transfer = transfer;
+        this.transfer = transfer.withCache(cache);
         this.options = options;
         this.listener = listener;
         this.prompt = prompt;

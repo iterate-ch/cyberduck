@@ -83,7 +83,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private Session<?> session;
 
-    private Cache<Path> cache;
+    protected Cache<Path> cache;
 
     public SessionBackgroundAction(final Session<?> session,
                                    final Cache<Path> cache,
