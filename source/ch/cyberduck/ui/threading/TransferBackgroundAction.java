@@ -131,6 +131,11 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
     }
 
     @Override
+    protected void reset() {
+        transfer.start();
+    }
+
+    @Override
     protected boolean connect(final Session session) throws BackgroundException {
         final boolean opened = super.connect(session);
         if(transfer instanceof CopyTransfer) {
@@ -188,6 +193,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         super.finish();
 
         progressTimer.cancel(false);
+        transfer.stop();
         listener.stop(transfer);
         timerPool.shutdown();
     }
