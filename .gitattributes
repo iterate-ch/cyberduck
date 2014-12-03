@@ -2132,7 +2132,7 @@ pl.lproj/Support.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 profiles/Box.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text svneol=unset#application/octet-stream
-profiles/Dream[!!-~]Objects.cyberduckprofile -text svneol=unset#application/octet-stream
+profiles/DreamObjects.cyberduckprofile -text
 profiles/Dump[!!-~]Truck.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text svneol=unset#application/octet-stream
 profiles/Enter[!!-~]Cloud[!!-~]Suite.cyberduckprofile -text svneol=unset#application/octet-stream
