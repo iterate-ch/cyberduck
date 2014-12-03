@@ -57,6 +57,11 @@ namespace Ch.Cyberduck.Core.I18n
             return bundle.TryGetValue(key, out value) ? value : key;
         }
 
+        public void setDefault(string language)
+        {
+            Preferences.instance().setProperty("application.language", language);
+        }
+
         private void ReadBundleIntoCache(string bundle)
         {
             Log.debug("Caching bundle " + bundle);
@@ -97,11 +102,6 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 Log.error(String.Format("Bundle {0} not found", bundle));
             }
-        }
-
-        public override void setDefault(string language)
-        {
-            Preferences.instance().setProperty("application.language", language);
         }
     }
 }
