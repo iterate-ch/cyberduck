@@ -23,6 +23,7 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
@@ -110,7 +111,7 @@ public class Terminal {
         }
         catch(ParseException e) {
             final Console console = new Console();
-            console.printf(e.getMessage());
+            console.printf("%s\n", e.getMessage());
             System.exit(1);
         }
         catch(Throwable error) {
@@ -260,15 +261,23 @@ public class Terminal {
         // Edit
         final TerminalController controller = new TerminalController();
         final EditorFactory factory = EditorFactory.instance();
-        final Editor editor;
-        if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
-            final ApplicationFinder finder = ApplicationFinderFactory.get();
-            editor = factory.create(controller, session,
-                    finder.getDescription(input.getOptionValue(TerminalAction.edit.name())), remote);
+        final Application application;
+        final ApplicationFinder finder = ApplicationFinderFactory.get();
+        if(StringUtils.isNotBlank(input.getOptionValue(TerminalOptionsBuilder.Params.application.name()))) {
+            application = finder.getDescription(input.getOptionValue(TerminalOptionsBuilder.Params.application.name()));
+            if(!finder.isInstalled(application)) {
+                throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                        String.format("Application %s not found", input.getOptionValue(TerminalOptionsBuilder.Params.application.name())));
+            }
         }
         else {
-            editor = factory.create(controller, session, remote);
+            application = factory.getEditor(remote.getName());
         }
+        if(!finder.isInstalled(application)) {
+            throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                    String.format("No application found to edit %s", remote.getName()));
+        }
+        final Editor editor = factory.create(controller, session, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
         final AtomicBoolean failed = new AtomicBoolean();
         final TransferErrorCallback error = new TransferErrorCallback() {

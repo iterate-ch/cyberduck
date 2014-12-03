@@ -81,6 +81,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
+                .withDescription("External editor application")
+                .withLongOpt(Params.application.name())
+                .hasArgs(1).withArgName("path")
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
                 .withDescription("List files in remote folder")
                 .withLongOpt(TerminalAction.list.name())
                 .hasArg(true).withArgName("url")
@@ -125,6 +131,7 @@ public final class TerminalOptionsBuilder {
         verbose,
         username,
         password,
-        identity
+        identity,
+        application
     }
 }

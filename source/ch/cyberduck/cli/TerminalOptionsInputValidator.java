@@ -22,10 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationFinder;
-import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -36,19 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 public class TerminalOptionsInputValidator {
 
     protected static boolean validate(final CommandLine input) {
-        if(input.hasOption(TerminalAction.edit.name())) {
-            if(StringUtils.isNotBlank(input.getOptionValue(TerminalAction.edit.name()))) {
-                final ApplicationFinder finder = ApplicationFinderFactory.get();
-                final Application application = finder.getDescription(input.getOptionValue(TerminalAction.edit.name()));
-                if(!finder.isInstalled(application)) {
-                    final StringAppender appender = new StringAppender();
-                    appender.append(String.format("Failed to find application %s", application.getIdentifier()));
-                    System.err.println(appender.toString());
-                    return false;
-                }
-            }
-            return true;
-        }
         final TerminalAction action = TerminalActionFinder.get(input);
         if(null == action) {
             return false;
