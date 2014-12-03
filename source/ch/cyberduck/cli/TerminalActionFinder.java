@@ -25,23 +25,10 @@ import org.apache.commons.cli.CommandLine;
  */
 public class TerminalActionFinder {
     public static TerminalAction get(final CommandLine input) {
-        if(input.hasOption(TerminalAction.edit.name())) {
-            return TerminalAction.edit;
-        }
-        else if(input.hasOption(TerminalAction.list.name())) {
-            return TerminalAction.list;
-        }
-        else if(input.hasOption(TerminalAction.download.name())) {
-            return TerminalAction.download;
-        }
-        else if(input.hasOption(TerminalAction.upload.name())) {
-            return TerminalAction.upload;
-        }
-        else if(input.hasOption(TerminalAction.synchronize.name())) {
-            return TerminalAction.synchronize;
-        }
-        else if(input.hasOption(TerminalAction.copy.name())) {
-            return TerminalAction.copy;
+        for(TerminalAction action : TerminalAction.values()) {
+            if(input.hasOption(action.name())) {
+                return action;
+            }
         }
         return null;
     }
