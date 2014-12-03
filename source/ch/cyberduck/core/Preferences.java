@@ -198,6 +198,7 @@ public abstract class Preferences {
         defaults.put("website.help", "http://help.cyberduck.io/" + this.locale());
         defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
+        defaults.put("website.cli", "https://duck.sh/");
         defaults.put("website.qloudsonic", "https://qloudsonic.io/plans");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
