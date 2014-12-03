@@ -336,7 +336,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("local.user.home", HomeFolder);
             defaults.put("local.delimiter", "\\");
-            defaults.put("local.normalize.tilde", false.ToString()));
+            defaults.put("local.normalize.tilde", false.ToString());
 
             // SSL Keystore
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
