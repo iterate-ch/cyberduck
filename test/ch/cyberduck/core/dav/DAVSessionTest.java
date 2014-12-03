@@ -354,13 +354,6 @@ public class DAVSessionTest extends AbstractTestCase {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
-    public void testUnrecognizedName() throws Exception {
-        final DAVSession session = new DAVSession(new Host(new DAVSSLProtocol(), "sds-security.selfhost.eu", 8000));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
-
     @Test
     public void testLoginChangeUsername() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
