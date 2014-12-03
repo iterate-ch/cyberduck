@@ -56,12 +56,12 @@
                        regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
                        select="\1.\3"/>
         <property name="version.full"
-                  value="${cyberduck.version.major}.${minor}.${svn.revision}"/>
+                  value="${cyberduck.version.major}.${minor}.${revision}"/>
         <property name="version.short"
-                  value="${version} (${svn.revision})"/>
+                  value="${version} (${revision})"/>
         <!-- pattern = "[revision] ([major].[minor])" -->
         <property name="updaterversion"
-                  value="${svn.revision} (${version})"/>
+                  value="${revision} (${version})"/>
     </target>
 
     <target name="_build" depends="dll">
@@ -120,7 +120,7 @@
 
     <target name="nightly" depends="version">
         <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${svn.revision}.exe"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
@@ -128,7 +128,7 @@
 
     <target name="beta" depends="version">
         <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${svn.revision}.exe"/>
+                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
         </antcall>

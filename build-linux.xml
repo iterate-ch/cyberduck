@@ -47,7 +47,7 @@
                 <fx:jvmarg value="-Dfile.encoding=utf-8"/>
             </fx:platform>
             <fx:application
-                    name="duck" version="${version}.${svn.revision}"
+                    name="duck" version="${version}.${revision}"
                     mainClass="ch.cyberduck.cli.Terminal"/>
             <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
                      description="Cyberduck"

@@ -73,7 +73,7 @@
 
     <target name="spotlight">
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration Release ${build.settings}"/>
         </exec>
@@ -101,7 +101,7 @@
     <target name="_build" depends="spotlight">
         <echo message="Building ${app.bundle}"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${svn.revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
         </exec>
@@ -143,7 +143,7 @@
     <target name="_cli">
         <echo message="Building ${cli.bundle}"/>
         <property name="build.settings"
-                  value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${svn.revision} COPYRIGHT='${copyright}'"/>
+                  value="MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target cli ${build.settings}"/>
         </exec>
@@ -227,7 +227,7 @@
         </antcall>
         <antcall target="tar">
             <param name="directory" value="${build}"/>
-            <param name="target" value="${app.name}-${svn.revision}.tar.gz"/>
+            <param name="target" value="${app.name}-${revision}.tar.gz"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
         <antcall target="zip">
@@ -235,14 +235,14 @@
             <param name="target" value="${app.name}-${version}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
-        <checksum file="${build.deploy}/${app.name}-${svn.revision}.tar.gz"
+        <checksum file="${build.deploy}/${app.name}-${revision}.tar.gz"
                   algorithm="md5" property="md5sum"/>
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
-            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="MD5SUM=${md5sum}"/>
@@ -257,7 +257,7 @@
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}" value="${url.archive}"/>
             <replacefilter token="${CHANGELOG}" value="${url.changelog}"/>
-            <replacefilter token="${REVISION}" value="${svn.revision}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
             <replacefilter token="${COPYRIGHT}" value="'${copyright}"/>
@@ -411,7 +411,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-${svn.revision}.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-${revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
         </antcall>
     </target>
@@ -422,7 +422,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-${svn.revision}.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-${revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
         </antcall>
     </target>
@@ -433,7 +433,7 @@
             <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
         </antcall>
         <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-${svn.revision}.tar.gz"/>
+            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-${revision}.tar.gz"/>
             <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
         </antcall>
     </target>
