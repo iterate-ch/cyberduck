@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProtocolFactory;
@@ -30,7 +31,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class UriParserTest {
+public class UriParserTest extends AbstractTestCase {
 
     @Test
     public void testParse() throws Exception {
