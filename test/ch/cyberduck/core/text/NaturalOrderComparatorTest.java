@@ -1,5 +1,7 @@
 package ch.cyberduck.core.text;
 
+import ch.cyberduck.core.AbstractTestCase;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -7,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class NaturalOrderComparatorTest {
+public class NaturalOrderComparatorTest extends AbstractTestCase {
 
     @Test
     public void testCompare() throws Exception {

@@ -18,14 +18,16 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractTestCase;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DefaultMainActionTest {
+public class DefaultMainActionTest extends AbstractTestCase {
 
     @Test
     public void testLock() throws Exception {

@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
@@ -35,7 +36,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class DefaultWatchEditorTest {
+public class DefaultWatchEditorTest extends AbstractTestCase {
 
     @Test(expected = FileNotFoundException.class)
     public void testNotfound() throws Exception {
