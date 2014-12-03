@@ -97,16 +97,16 @@ public class SwiftUrlProvider implements UrlProvider {
                                 session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
                 // In one hour
-                list.addAll(this.sign(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
+                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.HOURS.toSeconds(1))));
                 // Default signed URL expiring in 24 hours.
-                list.addAll(this.sign(region, file, (int) TimeUnit.SECONDS.toSeconds(
-                        Preferences.instance().getInteger("s3.url.expire.seconds"))));
+                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.SECONDS.toSeconds(
+                        Preferences.instance().getInteger("s3.url.expire.seconds")))));
                 // 1 Week
-                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
+                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(7))));
                 // 1 Month
-                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(30)));
+                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(30))));
                 // 1 Year
-                list.addAll(this.sign(region, file, (int) TimeUnit.DAYS.toSeconds(365)));
+                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(365))));
             }
         }
         return list;
@@ -115,7 +115,7 @@ public class SwiftUrlProvider implements UrlProvider {
     /**
      * @param expiry Seconds
      */
-    protected DescriptiveUrlBag sign(final Region region, final Path file, final int expiry) {
+    protected DescriptiveUrlBag sign(final Region region, final Path file, final long expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
         if(!accounts.containsKey(region)) {
@@ -171,7 +171,7 @@ public class SwiftUrlProvider implements UrlProvider {
         }
     }
 
-    protected Long getExpiry(final int seconds) {
+    protected long getExpiry(final int seconds) {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         return expiry.getTimeInMillis();

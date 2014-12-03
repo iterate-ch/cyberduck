@@ -63,7 +63,7 @@ public class SwiftHpUrlProvider extends SwiftUrlProvider {
     }
 
     @Override
-    protected DescriptiveUrlBag sign(final Region region, final Path file, final int expiry) {
+    protected DescriptiveUrlBag sign(final Region region, final Path file, final long expiry) {
         final String path = region.getStorageUrl(
                 containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath();
         final Credentials credentials = session.getHost().getCredentials();
