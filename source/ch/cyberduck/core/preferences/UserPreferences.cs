@@ -30,6 +30,7 @@ using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Serializer.Impl;
 using Ch.Cyberduck.Properties;
 using Ch.Cyberduck.Ui.Growl;
+using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using ch.cyberduck.core;
