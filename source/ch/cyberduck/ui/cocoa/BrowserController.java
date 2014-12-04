@@ -1786,9 +1786,6 @@ public class BrowserController extends WindowController
         this.actionPopupButton = actionPopupButton;
         this.actionPopupButton.setPullsDown(true);
         this.actionPopupButton.setAutoenablesItems(true);
-        final NSInteger index = new NSInteger(0);
-        this.actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
-        this.actionPopupButton.itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
     }
 
     @Outlet
@@ -4063,6 +4060,9 @@ public class BrowserController extends WindowController
                 item.setLabel(LocaleFactory.localizedString("Action"));
                 item.setPaletteLabel(LocaleFactory.localizedString("Action"));
                 if(inserted || !Factory.Platform.osversion.matches("10\\.5.*")) {
+                    final NSInteger index = new NSInteger(0);
+                    actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
+                    actionPopupButton.itemAtIndex(index).setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
                     item.setView(actionPopupButton);
                     // Add a menu representation for text mode of toolbar
                     NSMenuItem toolMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString("Action"), null, StringUtils.EMPTY);
