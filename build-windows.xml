@@ -86,7 +86,7 @@
             <property name="Configuration" value="${configuration}"/>
             <property name="Platform" value="${architecture}"/>
         </msbuild>
-        <checksum file="duck-${version.full}.exe" algorithm="md5"/>
+        <checksum file="${build.deploy}/duck-${version.full}.exe" algorithm="md5"/>
     </target>
 
     <target name="dll" depends="version, archive">
