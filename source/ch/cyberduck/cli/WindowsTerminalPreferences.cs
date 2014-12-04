@@ -20,7 +20,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.PreferencesNS;
+using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Serializer.Impl;
 using ch.cyberduck.cli;
 
@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
-        protected override void setFactories()
+        public override void setFactories()
         {
             base.setFactories();
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
