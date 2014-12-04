@@ -26,9 +26,9 @@ namespace Ch.Cyberduck.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public global::Ch.Cyberduck.Ui.Controller.SettingsDictionary CdSettings {
+        public global::Ch.Cyberduck.Core.Preferences.SettingsDictionary CdSettings {
             get {
-                return ((global::Ch.Cyberduck.Ui.Controller.SettingsDictionary)(this["CdSettings"]));
+                return ((global::Ch.Cyberduck.Core.Preferences.SettingsDictionary)(this["CdSettings"]));
             }
             set {
                 this["CdSettings"] = value;

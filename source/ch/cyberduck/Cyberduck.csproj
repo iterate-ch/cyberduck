@@ -179,6 +179,7 @@
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
     <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\preferences\UserPreferences.cs" />
+    <Compile Include="core\preferences\SettingsDictionary.cs" />
     <Compile Include="core\SystemProxy.cs" />
     <Compile Include="core\serializer\impl\HostPlistReader.cs" />
     <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
@@ -437,7 +438,6 @@
     <Compile Include="ui\controller\Renderers.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ui\controller\SettingsDictionary.cs" />
     <Compile Include="core\TcpReachability.cs" />
     <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
     <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />

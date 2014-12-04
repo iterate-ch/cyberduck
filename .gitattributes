@@ -2585,6 +2585,7 @@ source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
 source/ch/cyberduck/core/openstack/SwiftSession.java -text
 source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
+source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
 source/ch/cyberduck/core/preferences/UserPreferences.cs -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/serializer/impl/HostPlistReader.cs -text
@@ -2682,7 +2683,6 @@ source/ch/cyberduck/ui/controller/PreferencesController.cs -text
 source/ch/cyberduck/ui/controller/ProgressController.cs -text
 source/ch/cyberduck/ui/controller/PromptLoginController.cs -text
 source/ch/cyberduck/ui/controller/Renderers.cs -text
-source/ch/cyberduck/ui/controller/SettingsDictionary.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptController.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptModel.cs -text
 source/ch/cyberduck/ui/controller/TransferController.cs -text
