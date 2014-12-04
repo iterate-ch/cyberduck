@@ -27,7 +27,6 @@ using Ch.Cyberduck.Core.Aquaticprime;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.PreferencesNS;
 using Ch.Cyberduck.Core.Serializer.Impl;
 using Ch.Cyberduck.Properties;
 using Ch.Cyberduck.Ui.Growl;
@@ -44,7 +43,7 @@ using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
-    public class UserPreferences : Preferences
+    public class UserPreferences : ch.cyberduck.core.preferences.Preferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).FullName);
         private SettingsDictionary _settings;

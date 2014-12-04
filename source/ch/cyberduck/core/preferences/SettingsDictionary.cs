@@ -20,7 +20,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.Preferences
 {
     [XmlRoot(ElementName = "settings")]
     public class SettingsDictionary : StringDictionary, IXmlSerializable
