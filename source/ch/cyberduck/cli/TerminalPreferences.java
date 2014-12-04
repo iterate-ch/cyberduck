@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.DisabledLocale;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.DisabledRendezvous;
 import ch.cyberduck.core.DisabledSleepPreventer;
@@ -61,6 +62,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.locale.class", DisabledLocale.class.getName());
         defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
+        defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
         defaults.put("factory.certificatestore.class", TerminalCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
@@ -81,6 +83,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
         defaults.put("factory.notification.class", TerminalNotification.class.getName());
         defaults.put("factory.applicationfinder.class", NullApplicationFinder.class.getName());
+
         switch(Factory.Platform.getDefault()) {
             case mac:
                 defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
