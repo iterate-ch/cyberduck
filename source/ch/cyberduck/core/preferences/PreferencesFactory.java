@@ -20,10 +20,13 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.MemoryPreferences;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public final class PreferencesFactory {
+    private static final Logger log = Logger.getLogger(Preferences.class);
 
     private PreferencesFactory() {
         //
@@ -42,6 +45,7 @@ public final class PreferencesFactory {
 
     public static synchronized Preferences get() {
         if(null == preferences) {
+            log.warn("No preferences registered");
             set(new MemoryPreferences());
         }
         return preferences;
