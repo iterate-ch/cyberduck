@@ -31,6 +31,7 @@ namespace Ch.Cyberduck.Cli
         protected override void setFactories()
         {
             base.setFactories();
+
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.supportdirectoryfinder.class",
                          typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);

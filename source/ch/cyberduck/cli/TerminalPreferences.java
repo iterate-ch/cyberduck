@@ -18,11 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DisabledLocale;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProxyFinder;
-import ch.cyberduck.core.DisabledRendezvous;
-import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
@@ -30,12 +25,18 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
-import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
-import ch.cyberduck.core.local.*;
+import ch.cyberduck.core.local.ExecApplicationLauncher;
+import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
+import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
+import ch.cyberduck.core.local.LaunchServicesQuarantineService;
+import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
+import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
@@ -47,7 +48,6 @@ import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
 /**
@@ -59,10 +59,6 @@ public class TerminalPreferences extends MemoryPreferences {
     protected void setFactories() {
         super.setFactories();
 
-        defaults.put("factory.locale.class", DisabledLocale.class.getName());
-        defaults.put("factory.local.class", Local.class.getName());
-        defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
-        defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
         defaults.put("factory.certificatestore.class", TerminalCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
@@ -70,19 +66,7 @@ public class TerminalPreferences extends MemoryPreferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
-        defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
-        defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
-        defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
-        defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
-        defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
-        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
-        defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
-        defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
-        defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
-        defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
-        defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
         defaults.put("factory.notification.class", TerminalNotification.class.getName());
-        defaults.put("factory.applicationfinder.class", NullApplicationFinder.class.getName());
 
         switch(Factory.Platform.getDefault()) {
             case mac:

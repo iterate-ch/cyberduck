@@ -19,14 +19,28 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.DefaultPathReference;
+import ch.cyberduck.core.DisabledLocale;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProxyFinder;
+import ch.cyberduck.core.DisabledRendezvous;
 import ch.cyberduck.core.DisabledSleepPreventer;
+import ch.cyberduck.core.DisabledTerminalService;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
+import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.DefaultLocalTrashFeature;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
+import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
+import ch.cyberduck.core.local.DisabledApplicationLauncher;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
+import ch.cyberduck.core.local.NullApplicationFinder;
+import ch.cyberduck.core.local.NullFileDescriptor;
+import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -1054,6 +1068,20 @@ public abstract class Preferences {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
         defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
+        defaults.put("factory.locale.class", DisabledLocale.class.getName());
+        defaults.put("factory.local.class", Local.class.getName());
+        defaults.put("factory.proxy.class", DisabledProxyFinder.class.getName());
+        defaults.put("factory.passwordstore.class", DisabledPasswordStore.class.getName());
+        defaults.put("factory.dateformatter.class", DefaultUserDateFormatter.class.getName());
+        defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
+        defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
+        defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
+        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
+        defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
+        defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
+        defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());
+        defaults.put("factory.applicationfinder.class", NullApplicationFinder.class.getName());
+        defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
     }
 
     /**
