@@ -35,6 +35,8 @@ import ch.cyberduck.core.importer.TransmitBookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -129,7 +131,7 @@ public class MainController extends BundleController implements NSApplication.De
     /// 0x2d2d2d2d
     public static final int keyAEResult = 757935405;
 
-    private final Preferences preferences = Preferences.instance();
+    private final Preferences preferences = PreferencesFactory.get();
 
     public MainController() {
         this.loadBundle();
