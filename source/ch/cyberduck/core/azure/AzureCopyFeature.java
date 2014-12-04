@@ -20,10 +20,10 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -59,7 +59,7 @@ public class AzureCopyFeature implements Copy {
                     .getBlockBlobReference(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
-            options.setStoreBlobContentMD5(Preferences.instance().getBoolean("azure.upload.md5"));
+            options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
             final String id = target.startCopyFromBlob(blob,
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, null);
             if(log.isDebugEnabled()) {

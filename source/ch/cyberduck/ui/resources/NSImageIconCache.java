@@ -21,8 +21,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
@@ -46,7 +46,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private final NSRect NSZeroRect = new NSRect(0, 0);
 
     private static final Local FOLDER_PATH
-            = LocalFactory.get(Preferences.instance().getProperty("application.support.path"));
+            = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"));
 
     /**
      * Cache limited to n entries
@@ -54,7 +54,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private Map<String, NSImage> cache;
 
     public NSImageIconCache() {
-        if(0 == Preferences.instance().getInteger("icon.cache.size")) {
+        if(0 == PreferencesFactory.get().getInteger("icon.cache.size")) {
             cache = new HashMap<String, NSImage>() {
                 @Override
                 public NSImage put(String key, NSImage value) {
@@ -63,7 +63,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             };
         }
         else {
-            cache = new LRUMap(Preferences.instance().getInteger("icon.cache.size")) {
+            cache = new LRUMap(PreferencesFactory.get().getInteger("icon.cache.size")) {
                 @Override
                 protected boolean removeLRU(LinkEntry entry) {
                     if(log.isDebugEnabled()) {

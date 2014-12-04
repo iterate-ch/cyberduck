@@ -26,7 +26,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ProxySocketFactory;
@@ -43,6 +42,8 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -71,7 +72,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private Timestamp timestamp;
 

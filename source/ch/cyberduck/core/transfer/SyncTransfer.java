@@ -24,13 +24,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.synchronization.CachingComparisonServiceFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
@@ -65,11 +65,11 @@ public class SyncTransfer extends Transfer {
     private TransferItem item;
 
     private Cache<Path> cache
-            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
+            = new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public SyncTransfer(final Host host, final TransferItem item) {
         super(host, Collections.singletonList(item),
-                new BandwidthThrottle(Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
         this.item = item;
     }

@@ -18,8 +18,9 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,7 +42,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
     private SFTPSession session;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public SFTPWriteFeature(final SFTPSession session) {
         super(session);

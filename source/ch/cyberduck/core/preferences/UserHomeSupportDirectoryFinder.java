@@ -20,14 +20,13 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
  */
 public class UserHomeSupportDirectoryFinder implements SupportDirectoryFinder {
 
-    private final Preferences preferences = Preferences.instance();
+    private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public Local find() {

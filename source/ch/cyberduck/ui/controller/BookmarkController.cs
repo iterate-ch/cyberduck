@@ -26,6 +26,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
@@ -33,6 +34,7 @@ using ch.cyberduck.ui.browser;
 using org.apache.log4j;
 using Object = java.lang.Object;
 using TimeZone = java.util.TimeZone;
+using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -66,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _ticklerFavicon = new Timer(OnFavicon, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
-            View.OptionsVisible = Preferences.instance().getBoolean("bookmark.toggle.options");
+            View.OptionsVisible = PreferencesFactory.get().getBoolean("bookmark.toggle.options");
 
             Init();
         }
@@ -97,7 +99,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _ticklerRechability.Change(Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
-            Preferences.instance().setProperty("bookmark.toggle.options", View.OptionsVisible);
+            PreferencesFactory.get().setProperty("bookmark.toggle.options", View.OptionsVisible);
             BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
             base.Invalidate();
         }
@@ -228,7 +230,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateFavicon()
         {
-            if (Preferences.instance().getBoolean("bookmark.favicon.download"))
+            if (PreferencesFactory.get().getBoolean("bookmark.favicon.download"))
             {
                 // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
                 _ticklerFavicon.Change(2000, Timeout.Infinite);
@@ -397,21 +399,21 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.AnonymousChecked)
             {
                 View.UsernameEnabled = false;
-                View.Username = Preferences.instance().getProperty("connection.login.anon.name");
+                View.Username = PreferencesFactory.get().getProperty("connection.login.anon.name");
             }
             else
             {
                 View.UsernameEnabled = true;
                 if (
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .getProperty("connection.login.name")
-                               .Equals(Preferences.instance().getProperty("connection.login.anon.name")))
+                               .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
                 {
                     View.Username = String.Empty;
                 }
                 else
                 {
-                    View.Username = Preferences.instance().getProperty("connection.login.name");
+                    View.Username = PreferencesFactory.get().getProperty("connection.login.name");
                 }
             }
             ItemChanged();
@@ -515,14 +517,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (Preferences.instance().getBoolean("ftp.timezone.auto"))
+                    if (PreferencesFactory.get().getBoolean("ftp.timezone.auto"))
                     {
                         View.SelectedTimezone = Auto;
                     }
                     else
                     {
                         View.SelectedTimezone =
-                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID();
+                            TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID();
                     }
                 }
             }

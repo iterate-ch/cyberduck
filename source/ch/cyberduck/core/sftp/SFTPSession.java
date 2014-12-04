@@ -35,6 +35,8 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -76,7 +78,7 @@ public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private SFTPEngine sftp;
 

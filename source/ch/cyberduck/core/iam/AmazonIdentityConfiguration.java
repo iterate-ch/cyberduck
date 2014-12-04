@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
@@ -32,6 +31,7 @@ import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +60,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final String prefix = "iam.";
 
     public AmazonIdentityConfiguration(final Host host) {
-        this(host, Preferences.instance().getInteger("connection.timeout.seconds") * 1000);
+        this(host, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
     }
 
     public AmazonIdentityConfiguration(final Host host, int timeout) {
@@ -122,7 +122,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
+                PreferencesFactory.get().deleteProperty(String.format("%s%s", prefix, username));
                 try {
                     final ListAccessKeysResult keys
                             = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
@@ -157,7 +157,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     @Override
     public Credentials getCredentials(final String username) {
         // Resolve access key id
-        final String key = Preferences.instance().getProperty(String.format("%s%s", prefix, username));
+        final String key = PreferencesFactory.get().getProperty(String.format("%s%s", prefix, username));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Lookup access key for user %s with %s", username, key));
         }
@@ -198,7 +198,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Map user %s to access key %s", String.format("%s%s", prefix, username), id));
                     }
-                    Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
+                    PreferencesFactory.get().setProperty(String.format("%s%s", prefix, username), id);
                     // Save secret
                     PasswordStoreFactory.get().addPassword(
                             host.getProtocol().getScheme(), host.getPort(), host.getHostname(),

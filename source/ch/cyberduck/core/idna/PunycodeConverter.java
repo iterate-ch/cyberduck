@@ -17,7 +17,7 @@ package ch.cyberduck.core.idna;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -35,7 +35,7 @@ public class PunycodeConverter {
      * @return IDN normalized hostname
      */
     public String convert(final String hostname) {
-        if(!Preferences.instance().getBoolean("connection.hostname.idn")) {
+        if(!PreferencesFactory.get().getBoolean("connection.hostname.idn")) {
             return StringUtils.strip(hostname);
         }
         if(StringUtils.isNotEmpty(hostname)) {

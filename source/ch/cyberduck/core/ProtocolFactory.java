@@ -27,6 +27,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
@@ -77,7 +78,7 @@ public final class ProtocolFactory {
         register(GOOGLESTORAGE_SSL);
         register(AZURE);
         // Order determines list in connection dropdown
-        final Local bundled = LocalFactory.get(Preferences.instance().getProperty("application.profiles.path"));
+        final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
         if(bundled.exists()) {
             try {
                 for(Local f : bundled.list().filter(new Filter<Local>() {
@@ -102,7 +103,7 @@ public final class ProtocolFactory {
             }
         }
         // Load thirdparty protocols
-        final Local library = LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Profiles");
+        final Local library = LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Profiles");
         if(library.exists()) {
             try {
                 for(Local profile : library.list().filter(new Filter<Local>() {
@@ -157,7 +158,7 @@ public final class ProtocolFactory {
             }
         }
         log.warn(String.format("Cannot find default protocol for port %d", port));
-        return forName(Preferences.instance().getProperty("connection.protocol.default"));
+        return forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
     }
 
     /**
@@ -199,7 +200,7 @@ public final class ProtocolFactory {
             }
         }
         log.error(String.format("Unknown scheme %s", scheme));
-        return forName(Preferences.instance().getProperty("connection.protocol.default"));
+        return forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
     }
 
     /**

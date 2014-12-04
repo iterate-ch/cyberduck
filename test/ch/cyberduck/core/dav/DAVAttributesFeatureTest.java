@@ -10,8 +10,8 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class DAVAttributesFeatureTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -42,7 +42,7 @@ public class DAVAttributesFeatureTest extends AbstractTestCase {
     @Test
     public void testFind() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

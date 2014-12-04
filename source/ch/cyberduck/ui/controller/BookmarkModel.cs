@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -91,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Host h = (Host) host;
             return
-                IconCache.Instance.GetProtocolImages(Preferences.instance().getInteger("bookmark.icon.size")).Images[
+                IconCache.Instance.GetProtocolImages(PreferencesFactory.get().getInteger("bookmark.icon.size")).Images[
                     h.getProtocol().getProvider()];
         }
 

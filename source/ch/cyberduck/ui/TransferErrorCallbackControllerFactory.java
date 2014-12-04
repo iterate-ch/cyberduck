@@ -19,7 +19,8 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -35,7 +36,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
     private static final Logger log = Logger.getLogger(TransferErrorCallbackControllerFactory.class);
 
     private static final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public TransferErrorCallback create(final Controller c) {
         final String clazz = preferences.getProperty("factory.transfererrorcallback.class");

@@ -26,9 +26,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,7 +79,7 @@ public class AzureObjectListService implements ListService {
                 options.setRetryPolicyFactory(new RetryNoRetry());
                 result = container.listBlobsSegmented(
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
-                        Preferences.instance().getInteger("azure.listing.chunksize"), token, options, null);
+                        PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, null);
                 for(ListBlobItem object : result.getResults()) {
                     if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;

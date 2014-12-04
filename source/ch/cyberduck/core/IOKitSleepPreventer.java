@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -38,7 +39,7 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     @Override
     public String lock() {
         synchronized(lock) {
-            return this.createAssertion(Preferences.instance().getProperty("application.name"));
+            return this.createAssertion(PreferencesFactory.get().getProperty("application.name"));
         }
     }
 

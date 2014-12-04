@@ -20,9 +20,7 @@ using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 
-// ReSharper disable CheckNamespace
-namespace Ch.Cyberduck.Core.PreferencesNS
-// ReSharper restore CheckNamespace
+namespace Ch.Cyberduck.Core.Preferences
 {
     public class RoamingSupportDirectoryFinder : SupportDirectoryFinder
     {

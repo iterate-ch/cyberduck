@@ -23,6 +23,7 @@ using Ch.Cyberduck.Core.Ssl;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.exception;
 using java.io;
 using java.security;
@@ -41,7 +42,7 @@ namespace Ch.Cyberduck.Core
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();
-            chain.ChainPolicy.RevocationMode = Preferences.instance()
+            chain.ChainPolicy.RevocationMode = PreferencesFactory.get()
                                                           .getBoolean("connection.ssl.x509.revocation.online")
                                                    ? X509RevocationMode.Online
                                                    : X509RevocationMode.Offline;
@@ -102,7 +103,7 @@ namespace Ch.Cyberduck.Core
                                     //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
                                     AddCertificate(serverCert, StoreName.Root);
                                 }
-                                Preferences.instance()
+                                PreferencesFactory.get()
                                            .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
                             }
                             return true;
@@ -193,19 +194,19 @@ namespace Ch.Cyberduck.Core
         {
             Host host = new Host(hostName);
             host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
+            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
         public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
         {
             Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
-            Preferences.instance().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
+            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
         }
 
         private string getPassword(Host host)
         {
-            string password = Preferences.instance().getProperty(new HostUrlProvider().get(host));
+            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().get(host));
             if (null == password)
             {
                 return null;
@@ -215,7 +216,7 @@ namespace Ch.Cyberduck.Core
 
         private bool CheckForException(string hostname, X509Certificate2 cert)
         {
-            string accCert = Preferences.instance().getProperty(hostname + ".certificate.accept");
+            string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
             if (Utils.IsNotBlank(accCert))
             {
                 return accCert.Equals(cert.SubjectName.Name);

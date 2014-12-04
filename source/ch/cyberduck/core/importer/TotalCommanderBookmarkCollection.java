@@ -21,9 +21,9 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.totalcommander.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.totalcommander.location"));
     }
 
     @Override
@@ -74,9 +74,9 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
                         if(current != null) {
                             this.add(current);
                         }
-                        current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                        current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
-                                Preferences.instance().getProperty("connection.login.anon.name"));
+                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         current.setProtocol(ProtocolFactory.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);
@@ -130,7 +130,7 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
 
     @Override
     public boolean add(final Host bookmark) {
-        if(!StringUtils.equals(bookmark.getHostname(), Preferences.instance().getProperty("connection.hostname.default"))) {
+        if(!StringUtils.equals(bookmark.getHostname(), PreferencesFactory.get().getProperty("connection.hostname.default"))) {
             return super.add(bookmark);
         }
         return false;

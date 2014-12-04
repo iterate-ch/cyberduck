@@ -25,6 +25,8 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -60,7 +62,7 @@ public abstract class Session<C> implements TranscriptListener {
     private DistributionConfiguration cloudfront;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public boolean alert() throws BackgroundException {
         if(host.getProtocol().isSecure()) {

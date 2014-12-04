@@ -22,7 +22,8 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +34,7 @@ public class UploadDirectoryFinder implements DirectoryFinder {
     private static final Logger log = Logger.getLogger(UploadDirectoryFinder.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     @Override
     public Local find(final Host bookmark) {

@@ -23,12 +23,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -190,7 +190,7 @@ public class S3VersioningFeature implements Versioning {
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions());
 
-        Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
+        PreferencesFactory.get().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;
     }
 }

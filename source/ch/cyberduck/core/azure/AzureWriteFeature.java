@@ -21,11 +21,12 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -57,7 +58,7 @@ public class AzureWriteFeature implements Write {
             = new AzurePathContainerService();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public AzureWriteFeature(final AzureSession session) {
         this.session = session;

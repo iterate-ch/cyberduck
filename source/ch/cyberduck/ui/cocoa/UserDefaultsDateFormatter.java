@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
@@ -32,7 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 public class UserDefaultsDateFormatter extends AbstractUserDateFormatter implements UserDateFormatter {
 
     private static final NSLocale locale = NSLocale.currentLocale();
-    //NSLocale.createWithLocaleIdentifier(NSLocale.canonicalLocaleIdentifierFromString(Preferences.instance().locale()));
+    //NSLocale.createWithLocaleIdentifier(NSLocale.canonicalLocaleIdentifierFromString(PreferencesFactory.get().locale()));
 
     private static NSLocale locale() {
         return locale;

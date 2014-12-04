@@ -19,9 +19,9 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -45,7 +45,7 @@ public class SFTPTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         if(file.isFile()) {
             try {
-                final Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                final Permission permission = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
                 final FileAttributes attr = new FileAttributes.Builder()
                         .withPermissions(Integer.parseInt(permission.getMode(), 8))
                         .build();

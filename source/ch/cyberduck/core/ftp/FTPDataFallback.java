@@ -24,12 +24,12 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +67,7 @@ public class FTPDataFallback {
         catch(ConnectionTimeoutException failure) {
             log.warn(String.format("Timeout opening data socket %s", failure.getMessage()));
             // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+            if(PreferencesFactory.get().getBoolean("ftp.connectmode.fallback")) {
                 try {
                     try {
                         session.getClient().completePendingCommand();
@@ -98,7 +98,7 @@ public class FTPDataFallback {
         catch(InteroperabilityException failure) {
             log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
             // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+            if(PreferencesFactory.get().getBoolean("ftp.connectmode.fallback")) {
                 try {
                     return this.fallback(action);
                 }
@@ -112,7 +112,7 @@ public class FTPDataFallback {
         catch(AccessDeniedException failure) {
             log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
             // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+            if(PreferencesFactory.get().getBoolean("ftp.connectmode.fallback")) {
                 try {
                     return this.fallback(action);
                 }

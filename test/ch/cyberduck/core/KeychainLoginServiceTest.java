@@ -5,6 +5,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class KeychainLoginServiceTest extends AbstractTestCase {
     @Test(expected = LoginCanceledException.class)
     public void testMessages() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);

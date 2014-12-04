@@ -19,7 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -58,7 +58,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             = new ArrayList<String>();
 
     static {
-        for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
+        for(String protocol : PreferencesFactory.get().getProperty("connection.ssl.protocols").split(",")) {
             ENABLED_SSL_PROTOCOLS.add(protocol.trim());
         }
     }

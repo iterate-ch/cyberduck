@@ -28,7 +28,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -154,7 +154,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(Column.modified.name())) {
             return NSAttributedString.attributedStringWithAttributes(
                     UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate(),
-                            Preferences.instance().getBoolean("browser.date.natural")),
+                            PreferencesFactory.get().getBoolean("browser.date.natural")),
                     TableCellAttributes.browserFontLeftAlignment()
             );
         }

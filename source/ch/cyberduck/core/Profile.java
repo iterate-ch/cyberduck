@@ -22,6 +22,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.openstack.SwiftLocationFeature;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
@@ -205,7 +206,7 @@ public final class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = LocalFactory.get(Preferences.instance().getProperty("tmp.dir"),
+        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"),
                 String.format("%s.ico", UUID.randomUUID().toString()));
         try {
             file.delete(true);

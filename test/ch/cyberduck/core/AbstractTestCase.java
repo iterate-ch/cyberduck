@@ -28,6 +28,7 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullApplicationFinder;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;

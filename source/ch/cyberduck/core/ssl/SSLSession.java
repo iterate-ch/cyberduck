@@ -19,9 +19,9 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.idna.PunycodeConverter;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -40,7 +40,7 @@ public abstract class SSLSession<C> extends Session<C> implements TrustManagerHo
 
     static {
         Security.insertProviderAt(new BouncyCastleProvider(),
-                Preferences.instance().getInteger("connection.ssl.provider.bouncycastle.position"));
+                PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position"));
     }
 
     protected X509TrustManager trust;

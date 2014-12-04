@@ -21,8 +21,9 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
@@ -47,7 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PanelSandboxBookmarkResolver extends ProxyController implements SandboxBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(PanelSandboxBookmarkResolver.class);
 
-    private final Preferences preferences = Preferences.instance();
+    private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public NSURL resolve(final Local file) throws AccessDeniedException {

@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.LocalTrashFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +41,7 @@ public class BookmarkCollection extends AbstractHostCollection {
      * Legacy default bookmark file
      */
     private static final BookmarkCollection DEFAULT_COLLECTION = new BookmarkCollection(
-            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
+            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Favorites.plist")
     );
 
     /**

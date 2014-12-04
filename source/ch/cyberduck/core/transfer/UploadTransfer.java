@@ -27,7 +27,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,6 +38,7 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -69,7 +69,7 @@ public class UploadTransfer extends Transfer {
     private Comparator<Local> comparator;
 
     private Cache cache
-            = new Cache(Preferences.instance().getInteger("transfer.cache.size"));
+            = new Cache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)));
@@ -83,7 +83,7 @@ public class UploadTransfer extends Transfer {
         this(host, roots, f, new Comparator<Local>() {
             @Override
             public int compare(Local o1, Local o2) {
-                final String pattern = Preferences.instance().getProperty("queue.upload.priority.regex");
+                final String pattern = PreferencesFactory.get().getProperty("queue.upload.priority.regex");
                 if(PathNormalizer.name(o1.getAbsolute()).matches(pattern)) {
                     return -1;
                 }
@@ -97,7 +97,7 @@ public class UploadTransfer extends Transfer {
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f, final Comparator<Local> comparator) {
         super(host, new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+                PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
     }
@@ -175,11 +175,11 @@ public class UploadTransfer extends Transfer {
             action = TransferAction.resume;
         }
         else if(reloadRequested) {
-            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.reload.action"));
+            action = TransferAction.forName(PreferencesFactory.get().getProperty("queue.upload.reload.action"));
         }
         else {
             // Use default
-            action = TransferAction.forName(Preferences.instance().getProperty("queue.upload.action"));
+            action = TransferAction.forName(PreferencesFactory.get().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {

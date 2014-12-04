@@ -23,13 +23,13 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -120,7 +120,7 @@ public class TransferBackgroundAction extends ControllerBackgroundAction<Boolean
         this.options = options;
         this.listener = listener;
         this.prompt = prompt;
-        if(Preferences.instance().getInteger("queue.session.pool.size") == 1) {
+        if(PreferencesFactory.get().getInteger("queue.session.pool.size") == 1) {
             this.worker = new SingleTransferWorker(session, transfer, options,
                     meter, prompt, error, this, progress, new DisabledStreamListener(), login);
         }

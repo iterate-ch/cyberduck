@@ -27,6 +27,7 @@ using java.security.cert;
 using java.util;
 using Console = System.Console;
 using Keychain = Ch.Cyberduck.Core.Keychain;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using List = java.util.List;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -70,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
             }
             //register exception
-            Preferences.instance()
+            PreferencesFactory.get()
                        .setProperty(hostName + ".certificate.accept", Keychain.ConvertCertificate(cert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }
@@ -159,7 +160,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Console.WriteLine("TEST");
             }
             //register exception
-            Preferences.instance()
+            PreferencesFactory.get()
                        .setProperty(hostName + ".certificate.accept", Keychain.ConvertCertificate(hostCert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }

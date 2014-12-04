@@ -20,11 +20,12 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultProviderHelpService implements ProviderHelpService {
 
@@ -45,7 +46,7 @@ public class DefaultProviderHelpService implements ProviderHelpService {
     }
 
     private void help(final String page) {
-        final StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         if(StringUtils.isNotBlank(page)) {
             site.append("/").append(page);
         }

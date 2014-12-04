@@ -18,10 +18,10 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3LoggingFeature;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
@@ -51,7 +51,7 @@ public class GoogleStorageLoggingFeature extends S3LoggingFeature implements Dis
             final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
                     StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
             if(configuration.isEnabled()) {
-                status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
+                status.setLogfilePrefix(PreferencesFactory.get().getProperty("google.logging.prefix"));
             }
             // Grant write for Google to logging target bucket
             final AccessControlList acl = session.getClient().getBucketAcl(container.getName());

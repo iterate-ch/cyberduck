@@ -17,6 +17,9 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -26,7 +29,7 @@ import java.net.Socket;
 public class DefaultSocketConfigurator implements SocketConfigurator {
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     @Override
     public void configure(final Socket socket) throws IOException {

@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -39,10 +39,10 @@ public final class TransferOptions {
      * Add quarantine flag to downloaded file
      */
     public boolean quarantine =
-            Preferences.instance().getBoolean("queue.download.quarantine");
+            PreferencesFactory.get().getBoolean("queue.download.quarantine");
 
     public boolean open =
-            Preferences.instance().getBoolean("queue.download.complete.open");
+            PreferencesFactory.get().getBoolean("queue.download.complete.open");
 
     public TransferOptions open(boolean e) {
         open = e;

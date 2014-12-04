@@ -24,6 +24,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
@@ -138,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != _instance)
             {
                 //Saving state of transfer window
-                Preferences.instance().setProperty("queue.window.open.default", _instance.Visible);
+                PreferencesFactory.get().setProperty("queue.window.open.default", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
                     DialogResult result = _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
@@ -173,13 +174,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.PositionSizeRestoredEvent += delegate
                 {
-                    View.TranscriptVisible = Preferences.instance().getBoolean("queue.transcript.open");
-                    View.TranscriptHeight = Preferences.instance().getInteger("queue.transcript.size.height");
+                    View.TranscriptVisible = PreferencesFactory.get().getBoolean("queue.transcript.open");
+                    View.TranscriptHeight = PreferencesFactory.get().getInteger("queue.transcript.size.height");
 
                     View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
                     View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
                 };
-            View.QueueSize = Preferences.instance().getInteger("queue.maxtransfers");
+            View.QueueSize = PreferencesFactory.get().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
             View.ResumeEvent += View_ResumeEvent;
@@ -228,13 +229,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TranscriptHeightChangedEvent()
         {
-            Preferences.instance().setProperty("queue.transcript.size.height", View.TranscriptHeight);
+            PreferencesFactory.get().setProperty("queue.transcript.size.height", View.TranscriptHeight);
         }
 
         private void View_ToggleTranscriptEvent()
         {
             View.TranscriptVisible = !View.TranscriptVisible;
-            Preferences.instance().setProperty("queue.transcript.open", View.TranscriptVisible);
+            PreferencesFactory.get().setProperty("queue.transcript.open", View.TranscriptVisible);
         }
 
         private bool View_ValidateShowEvent()
@@ -357,7 +358,7 @@ namespace Ch.Cyberduck.Ui.Controller
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
-                Preferences.instance()
+                PreferencesFactory.get()
                            .getProperty("queue.bandwidth.options")
                            .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
@@ -371,8 +372,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
-            QueueFactory.get().resize(Preferences.instance().getInteger("queue.maxtransfers"));
+            PreferencesFactory.get().setProperty("queue.maxtransfers", View.QueueSize);
+            QueueFactory.get().resize(PreferencesFactory.get().getInteger("queue.maxtransfers"));
         }
 
         private void View_BandwidthChangedEvent()
@@ -675,7 +676,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void init()
             {
                 base.init();
-                if (Preferences.instance().getBoolean("queue.window.open.transfer.start"))
+                if (PreferencesFactory.get().getBoolean("queue.window.open.transfer.start"))
                 {
                     _controller.View.Show();
                     _controller.View.BringToFront();
@@ -696,7 +697,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 base.cleanup();
                 if (_transfer.isComplete() && _transfer.isReset())
                 {
-                    if (Preferences.instance().getBoolean("queue.window.open.transfer.stop"))
+                    if (PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop"))
                     {
                         if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
                         {

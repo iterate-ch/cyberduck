@@ -27,10 +27,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -64,7 +64,7 @@ public class SwiftObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final int limit = Preferences.instance().getInteger("openstack.list.object.limit");
+            final int limit = PreferencesFactory.get().getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;
             do {

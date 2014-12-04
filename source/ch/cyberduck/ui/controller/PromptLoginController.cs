@@ -22,9 +22,11 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.ui;
 using org.apache.log4j;
+using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -57,13 +59,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                         String.Format("{0}|{1}", continueButton, disconnectButton), false,
                                         LocaleFactory.localizedString("Don't show again", "Credentials"),
                                         SysIcons.Question,
-                                        Preferences.instance().getProperty("website.help") + "/" +
+                                        PreferencesFactory.get().getProperty("website.help") + "/" +
                                         protocol.getScheme().name(), delegate(int option, Boolean verificationChecked)
                                             {
                                                 if (verificationChecked)
                                                 {
                                                     // Never show again.
-                                                    Preferences.instance().setProperty(preference, true);
+                                                    PreferencesFactory.get().setProperty(preference, true);
                                                 }
                                                 switch (option)
                                                 {
@@ -88,8 +90,8 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.Title = LocaleFactory.localizedString(title, "Credentials");
             _view.Message = LocaleFactory.localizedString(reason, "Credentials");
             _view.Username = credentials.getUsername();
-            _view.SavePasswordState = Preferences.instance().getBoolean("connection.login.useKeychain") &&
-                                      Preferences.instance().getBoolean("connection.login.addKeychain");
+            _view.SavePasswordState = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
+                                      PreferencesFactory.get().getBoolean("connection.login.addKeychain");
             _view.DiskIcon = IconCache.Instance.IconForName(_protocol.disk(), 64);
 
             Update();
@@ -134,12 +136,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_view.AnonymousState)
             {
-                _credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
-                _credentials.setPassword(Preferences.instance().getProperty("connection.login.anon.pass"));
+                _credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
+                _credentials.setPassword(PreferencesFactory.get().getProperty("connection.login.anon.pass"));
             }
             else
             {
-                _credentials.setUsername(Preferences.instance().getProperty("connection.login.name"));
+                _credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
                 _credentials.setPassword(null);
             }
             _view.Username = _credentials.getUsername();
@@ -149,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            Preferences.instance().setProperty("connection.login.addKeychain", _view.SavePasswordState);
+            PreferencesFactory.get().setProperty("connection.login.addKeychain", _view.SavePasswordState);
         }
 
         private void View_ChangedPasswordEvent()

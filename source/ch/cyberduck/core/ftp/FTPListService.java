@@ -27,10 +27,10 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
@@ -103,7 +103,7 @@ public class FTPListService implements ListService {
         this.session = session;
         this.parser = new FTPParserSelector().getParser(system, zone);
         this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
-        if(Preferences.instance().getBoolean("ftp.command.stat")) {
+        if(PreferencesFactory.get().getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
                 if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
                     // Workaround for #5572.
@@ -114,10 +114,10 @@ public class FTPListService implements ListService {
                 this.implementations.put(Command.stat, new FTPStatListService(session, parser));
             }
         }
-        if(Preferences.instance().getBoolean("ftp.command.mlsd")) {
+        if(PreferencesFactory.get().getBoolean("ftp.command.mlsd")) {
             this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
-        if(Preferences.instance().getBoolean("ftp.command.lista")) {
+        if(PreferencesFactory.get().getBoolean("ftp.command.lista")) {
             this.implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));
         }
     }

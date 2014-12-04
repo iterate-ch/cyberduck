@@ -29,7 +29,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -39,6 +38,8 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.FileDescriptorFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -80,7 +81,7 @@ public class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public PreferencesController() {
         this.loadBundle();

@@ -20,11 +20,11 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -213,7 +213,7 @@ public class FinderLocal extends Local {
 
     @Override
     public AttributedList<Local> list() throws AccessDeniedException {
-        if(Preferences.instance().getBoolean("local.list.native")) {
+        if(PreferencesFactory.get().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
             final ObjCObjectByReference error = new ObjCObjectByReference();
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), error);

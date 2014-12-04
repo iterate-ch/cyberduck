@@ -19,11 +19,11 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -74,8 +74,8 @@ public class SaveBackgroundAction extends Worker<Transfer> {
             @Override
             public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
                 return super.filter(session, action, listener).withOptions(new UploadFilterOptions()
-                        .withTemporary(Preferences.instance().getBoolean("editor.upload.temporary"))
-                        .withPermission(Preferences.instance().getBoolean("editor.upload.permissions.change")));
+                        .withTemporary(PreferencesFactory.get().getBoolean("editor.upload.temporary"))
+                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
             }
         };
         this.listener = listener;

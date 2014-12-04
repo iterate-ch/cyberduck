@@ -19,6 +19,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -33,10 +36,10 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
-            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
+            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Bookmarks")
     ) {
         private static final long serialVersionUID = 6302021296403107371L;
 

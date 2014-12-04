@@ -22,7 +22,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.LimitedListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;

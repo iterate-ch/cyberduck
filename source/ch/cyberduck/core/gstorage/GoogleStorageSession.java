@@ -28,7 +28,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,6 +44,8 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
@@ -86,7 +87,7 @@ public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public GoogleStorageSession(final Host h) {
         super(h);

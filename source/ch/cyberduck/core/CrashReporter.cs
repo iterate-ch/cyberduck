@@ -22,6 +22,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ExceptionReporting.Core;
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Core
             ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
             ExceptionReport report = reportGenerator.CreateExceptionReport();
 
-            string crashDir = Path.Combine(Preferences.instance().getProperty("application.support.path"),
+            string crashDir = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
                                            "CrashReporter");
             Directory.CreateDirectory(crashDir);
             using (StreamWriter outfile = new StreamWriter(Path.Combine(crashDir, DateTime.Now.Ticks + ".txt")))
@@ -64,7 +65,7 @@ namespace Ch.Cyberduck.Core
             DialogResult result = prompt.ShowCommandBox(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
                                                         LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
                                                         LocaleFactory.localizedString(
-                                                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", "Crash").Replace("%@", Preferences.instance().getProperty("application.name")),
+                                                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
                                                         String.Format("{0}|{1}",
                                                                       LocaleFactory.localizedString("Send", "Crash"),
                                                                       LocaleFactory.localizedString("Don't Send", "Crash")),
@@ -81,13 +82,13 @@ namespace Ch.Cyberduck.Core
         public void Post(string report)
         {
             Dictionary<string, object> postParameters = new Dictionary<string, object> {{"crashlog", report}};
-            string revision = Preferences.instance().getProperty("application.revision");
+            string revision = PreferencesFactory.get().getProperty("application.revision");
 
             //this might take some time as the WebRequest tries to detect the proxy settings first
             this.MultipartFormDataPost(
-                Preferences.instance().getProperty("website.crash") + String.Format("?revision={0}&os={1}",
+                PreferencesFactory.get().getProperty("website.crash") + String.Format("?revision={0}&os={1}",
                                                                                     revision, Environment.OSVersion),
-                String.Format("{0} ({1})", Preferences.instance().getProperty("application.name"), revision),
+                String.Format("{0} ({1})", PreferencesFactory.get().getProperty("application.name"), revision),
                 postParameters);
         }
 

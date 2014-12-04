@@ -19,9 +19,9 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public class SFTPDirectoryFeature implements Directory {
     public void mkdir(final Path file, final String region) throws BackgroundException {
         try {
             final FileAttributes attrs = new FileAttributes.Builder().withPermissions(
-                    Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getMode(), 8)
+                    Integer.parseInt(new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default")).getMode(), 8)
             ).build();
             session.sftp().makeDir(file.getAbsolute(), attrs);
         }

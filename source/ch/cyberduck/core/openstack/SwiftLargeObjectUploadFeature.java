@@ -25,7 +25,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -33,6 +32,7 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -82,7 +82,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
         this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new SwiftWriteFeature(session),
-                segmentSize, Math.min(Preferences.instance().getInteger("queue.maxtransfers"), Preferences.instance().getInteger("openstack.upload.largeobject.concurrency")));
+                segmentSize, Math.min(PreferencesFactory.get().getInteger("queue.maxtransfers"), PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency")));
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
@@ -215,7 +215,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(Preferences.instance().getBoolean("openstack.upload.md5")) {
+        if(PreferencesFactory.get().getBoolean("openstack.upload.md5")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }

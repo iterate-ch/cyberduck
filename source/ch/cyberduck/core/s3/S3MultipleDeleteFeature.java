@@ -22,12 +22,12 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipleDeleteResult;
@@ -131,7 +131,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
             else {
                 // Request contains a list of up to 1000 keys that you want to delete
-                for(List<ObjectKeyAndVersion> partition : new Partition<ObjectKeyAndVersion>(keys, Preferences.instance().getInteger("s3.delete.multiple.partition"))) {
+                for(List<ObjectKeyAndVersion> partition : new Partition<ObjectKeyAndVersion>(keys, PreferencesFactory.get().getInteger("s3.delete.multiple.partition"))) {
                     final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(container.getName(),
                             partition.toArray(new ObjectKeyAndVersion[partition.size()]),
                             // Only include errors in response

@@ -14,6 +14,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -41,7 +42,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test
     public void testConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -61,7 +62,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void test_unrecognized_name() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "webdav.opendrive.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         try {
@@ -77,7 +78,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testSsl() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         assertFalse(session.alert());
@@ -95,7 +96,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -112,7 +113,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testRedirect301() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-perm");
         final DAVSession session = new DAVSession(host);
@@ -124,7 +125,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testRedirect302() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-tmp");
         final DAVSession session = new DAVSession(host);
@@ -135,7 +136,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testRedirect303() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-other");
         final DAVSession session = new DAVSession(host);
@@ -148,7 +149,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = BackgroundException.class)
     public void testRedirectGone() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/redir-gone");
         final DAVSession session = new DAVSession(host);
@@ -189,7 +190,7 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test
     public void testListAnonymous() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dav/anon");
         final DAVSession session = new DAVSession(host);
@@ -200,10 +201,10 @@ public class DAVSessionTest extends AbstractTestCase {
 
     @Test
     public void testAlert() throws Exception {
-        Preferences.instance().setProperty("webdav.basic.preemptive", true);
+        PreferencesFactory.get().setProperty("webdav.basic.preemptive", true);
         assertTrue(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
         assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
-        Preferences.instance().setProperty("webdav.basic.preemptive", false);
+        PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
         assertFalse(new DAVSession(new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
         assertFalse(new DAVSession(new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials("u", "p"))).alert());
     }
@@ -236,7 +237,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/dav/digest");
         final DAVSession session = new DAVSession(host);
-        Preferences.instance().setProperty("webdav.basic.preemptive", false);
+        PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
             public void log(final boolean request, final String message) {
@@ -268,7 +269,7 @@ public class DAVSessionTest extends AbstractTestCase {
         ));
         host.setDefaultPath("/namespace");
         final DAVSession session = new DAVSession(host);
-        Preferences.instance().setProperty("webdav.basic.preemptive", true);
+        PreferencesFactory.get().setProperty("webdav.basic.preemptive", true);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         try {
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -357,8 +358,8 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test
     public void testLoginChangeUsername() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"),
-                Preferences.instance().getProperty("connection.login.anon.pass"))
+                PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -435,8 +436,8 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testConnectMutualTlsNoCertificate() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"),
-                Preferences.instance().getProperty("connection.login.anon.pass"))
+                PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),
@@ -467,8 +468,8 @@ public class DAVSessionTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testConnectMutualTls() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"),
-                Preferences.instance().getProperty("connection.login.anon.pass"))
+                PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"))
         );
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host, new KeychainX509TrustManager(new DisabledX509HostnameVerifier()),

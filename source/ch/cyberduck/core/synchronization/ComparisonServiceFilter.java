@@ -23,13 +23,13 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,7 +77,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                     return Comparison.equal;
                 }
                 final PathAttributes attributes = attribute.find(file);
-                if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
+                if(PreferencesFactory.get().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
                     if(StringUtils.isNotBlank(attributes.getChecksum())) {
                         progress.message(MessageFormat.format(
@@ -90,7 +90,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                         }
                     }
                 }
-                if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
+                if(PreferencesFactory.get().getBoolean("queue.sync.compare.size")) {
                     final Comparison comparison = size.compare(attributes, local.attributes());
                     if(!Comparison.notequal.equals(comparison)) {
                         // Decision is available

@@ -11,8 +11,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class DAVFindFeatureTest extends AbstractTestCase {
     @Test
     public void testFindAnonymous() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

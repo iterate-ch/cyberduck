@@ -20,9 +20,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,9 +55,9 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[")) {
-                        current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                        current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
-                                Preferences.instance().getProperty("connection.login.anon.name"));
+                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         current.setProtocol(ProtocolFactory.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);

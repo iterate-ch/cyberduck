@@ -17,6 +17,9 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -54,7 +57,7 @@ public final class HostParser {
                 begin += cut - begin + 3;
             }
         }
-        final Preferences preferences = Preferences.instance();
+        final Preferences preferences = PreferencesFactory.get();
         if(null == protocol) {
             protocol = ProtocolFactory.forName(
                     preferences.getProperty("connection.protocol.default"));

@@ -12,12 +12,12 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -58,7 +58,7 @@ public class S3MultipartUploadServiceTest extends AbstractTestCase {
         final TransferStatus status = new TransferStatus();
         status.setLength((long) random.getBytes().length);
         status.setMime("text/plain");
-        Preferences.instance().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
+        PreferencesFactory.get().setProperty("s3.storage.class", "REDUCED_REDUNDANCY");
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getCurrent(), 0L);

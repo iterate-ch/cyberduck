@@ -19,8 +19,9 @@ package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,7 +33,6 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
@@ -69,7 +69,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         try {
             if(null == store) {
                 // Get the key manager factory for the default algorithm.
-                final Preferences preferences = Preferences.instance();
+                final Preferences preferences = PreferencesFactory.get();
                 type = preferences.getProperty("connection.ssl.keystore.type");
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Load default store of type %s", type));

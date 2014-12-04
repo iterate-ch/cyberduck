@@ -21,10 +21,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -47,7 +47,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.transmit.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.transmit.location"));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         else {
             bookmark.getCredentials().setUsername(
-                    Preferences.instance().getProperty("connection.login.anon.name"));
+                    PreferencesFactory.get().getProperty("connection.login.anon.name"));
         }
         String path = favorite.path();
         if(StringUtils.isNotBlank(path)) {

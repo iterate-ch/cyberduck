@@ -19,7 +19,8 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ import org.apache.log4j.Logger;
 public class TildeExpander {
     private static final Logger log = Logger.getLogger(TildeExpander.class);
 
-    private Preferences preferences = Preferences.instance();
+    private Preferences preferences = PreferencesFactory.get();
 
     public String abbreviate(final String name) {
         if(StringUtils.startsWith(name, preferences.getProperty("local.user.home"))) {

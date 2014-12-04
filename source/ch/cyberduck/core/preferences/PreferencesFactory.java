@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.preferences;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.MemoryPreferences;
 
 /**
  * @version $Id$

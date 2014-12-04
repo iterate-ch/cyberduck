@@ -19,7 +19,7 @@ package ch.cyberduck.core.sparkle;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
@@ -40,7 +40,7 @@ public abstract class Updater extends NSObject {
     }
 
     public static String getFeed() {
-        return Preferences.instance().getDefault("SUFeedURL");
+        return PreferencesFactory.get().getDefault("SUFeedURL");
     }
 
     public abstract Updater init();

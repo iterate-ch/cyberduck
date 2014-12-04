@@ -24,7 +24,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -64,7 +64,7 @@ public class CopyTransferFilter implements TransferPathFilter {
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions(),
-                new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size")));
+                new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size")));
     }
 
     public CopyTransferFilter(final Session<?> source, final Session<?> destination,

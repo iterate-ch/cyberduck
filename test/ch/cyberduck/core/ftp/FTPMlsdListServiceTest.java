@@ -17,8 +17,22 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -46,7 +60,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
     @Test(expected = InteroperabilityException.class)
     public void testListNotSupportedSwitch() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
@@ -60,7 +74,7 @@ public class FTPMlsdListServiceTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
         final FTPSession session = new FTPSession(host);

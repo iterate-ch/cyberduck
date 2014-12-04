@@ -18,12 +18,12 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -74,7 +74,7 @@ public class S3LoggingFeature implements Logging {
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
                     StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
             if(configuration.isEnabled()) {
-                status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+                status.setLogfilePrefix(PreferencesFactory.get().getProperty("s3.logging.prefix"));
             }
             session.getClient().setBucketLoggingStatus(container.getName(), status, true);
         }

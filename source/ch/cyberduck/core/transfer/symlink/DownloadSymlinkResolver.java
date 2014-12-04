@@ -18,9 +18,9 @@ package ch.cyberduck.core.transfer.symlink;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.log4j.Logger;
@@ -49,7 +49,7 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
 
     @Override
     public boolean resolve(final Path file) {
-        if(Preferences.instance().getBoolean("path.symboliclink.resolve")) {
+        if(PreferencesFactory.get().getBoolean("path.symboliclink.resolve")) {
             // Follow links instead
             return false;
         }

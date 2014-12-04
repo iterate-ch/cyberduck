@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -51,7 +53,7 @@ public class Credentials {
      * Default credentials from Preferences
      */
     public Credentials() {
-        this(null, null, Preferences.instance().getBoolean("connection.login.useKeychain"));
+        this(null, null, PreferencesFactory.get().getBoolean("connection.login.useKeychain"));
     }
 
     /**
@@ -59,7 +61,7 @@ public class Credentials {
      * @param password Passphrase
      */
     public Credentials(final String user, final String password) {
-        this(user, password, Preferences.instance().getBoolean("connection.login.useKeychain"));
+        this(user, password, PreferencesFactory.get().getBoolean("connection.login.useKeychain"));
     }
 
     /**
@@ -95,7 +97,7 @@ public class Credentials {
     public String getPassword() {
         if(StringUtils.isEmpty(password)) {
             if(this.isAnonymousLogin()) {
-                return Preferences.instance().getProperty("connection.login.anon.pass");
+                return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
         }
         return password;
@@ -135,7 +137,7 @@ public class Credentials {
         if(StringUtils.isEmpty(u)) {
             return false;
         }
-        return Preferences.instance().getProperty("connection.login.anon.name").equals(u);
+        return PreferencesFactory.get().getProperty("connection.login.anon.name").equals(u);
     }
 
     /**

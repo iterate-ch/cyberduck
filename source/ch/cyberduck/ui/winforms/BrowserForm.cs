@@ -36,6 +36,7 @@ using TheCodeKing.ActiveButtons.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
@@ -189,7 +190,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             keyMainMenuItem.Enabled = false;
 
             //Terminal app menu entries
-            String command = Preferences.instance().getProperty("terminal.command.ssh");
+            String command = PreferencesFactory.get().getProperty("terminal.command.ssh");
             String file = StringUtils.capitalize(FilenameUtils.getBaseName(System.IO.Path.GetFileName(command)));
             openInTerminalMainMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
             openInTerminalToolStripMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
@@ -1022,7 +1023,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
             button.Click +=
-                delegate { BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")); };
+                delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
             menu.Items.Add(button);
         }
 
@@ -1278,7 +1279,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     openConnectionToolbarMenuItem.Checked = !openConnectionToolbarMenuItem.Checked;
                     openConnectionToolStripButton.Visible = !openConnectionToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .setProperty("browser.toolbar.openconnection", openConnectionToolStripButton.Visible);
                 };
             openConnectionToolStripMenuItem1.Click += h;
@@ -1294,7 +1295,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     quickConnectToolbarMenuItem.Checked = !quickConnectToolbarMenuItem.Checked;
                     quickConnectToolStripComboBox.Visible = !quickConnectToolStripComboBox.Visible;
                     UpdateSeparators();
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .setProperty("browser.toolbar.quickconnect", quickConnectToolStripComboBox.Visible);
                 };
             quickConnectToolStripMenuItem.Click += h;
@@ -1309,7 +1310,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     actionContextToolbarMenuItem.Checked = !actionContextToolbarMenuItem.Checked;
                     actionToolStripDropDownButton.Visible = !actionToolStripDropDownButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.action", actionToolStripDropDownButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.action", actionToolStripDropDownButton.Visible);
                 };
             actionToolStripMenuItem.Click += h;
             actionContextToolbarMenuItem.Click += h;
@@ -1324,7 +1325,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     infoToolbarMenuItem.Checked = !infoToolbarMenuItem.Checked;
                     infoToolStripButton.Visible = !infoToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.info", infoToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.info", infoToolStripButton.Visible);
                 };
             infoToolStripMenuItem1.Click += h;
             infoToolbarMenuItem.Click += h;
@@ -1338,7 +1339,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     refreshToolbarMenuItem.Checked = !refreshToolbarMenuItem.Checked;
                     refreshToolStripButton.Visible = !refreshToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.refresh", refreshToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.refresh", refreshToolStripButton.Visible);
                 };
             refreshToolStripMenuItem1.Click += h;
             refreshToolbarMenuItem.Click += h;
@@ -1353,7 +1354,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     editToolbarMenuItem.Checked = !editToolbarMenuItem.Checked;
                     editToolStripSplitButton.Visible = !editToolStripSplitButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.edit", editToolStripSplitButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.edit", editToolStripSplitButton.Visible);
                 };
             editToolStripMenuItem1.Click += h;
             editToolbarMenuItem.Click += h;
@@ -1367,7 +1368,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     openInWebBrowserToolbarMenuItem.Checked = !openInWebBrowserToolbarMenuItem.Checked;
                     openInBrowserToolStripButton.Visible = !openInBrowserToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .setProperty("browser.toolbar.openinbrowser", openInBrowserToolStripButton.Visible);
                 };
             openInWebBrowserToolStripMenuItem.Click += h;
@@ -1382,7 +1383,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     openInTerminalToolbarMenuItem.Checked = !openInTerminalToolbarMenuItem.Checked;
                     openInTerminalToolStripButton.Visible = !openInTerminalToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .setProperty("browser.toolbar.openinterminal", openInTerminalToolStripButton.Visible);
                 };
             openInTerminalToolStripMenuItem.Click += h;
@@ -1397,7 +1398,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     newFolderToolbarMenuItem.Checked = !newFolderToolbarMenuItem.Checked;
                     newFolderToolStripButton.Visible = !newFolderToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.newfolder", newFolderToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.newfolder", newFolderToolStripButton.Visible);
                 };
             newFolderToolStripMenuItem1.Click += h;
             newFolderToolbarMenuItem.Click += h;
@@ -1411,7 +1412,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     deleteToolbarMenuItem.Checked = !deleteToolbarMenuItem.Checked;
                     deleteToolStripButton.Visible = !deleteToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.delete", deleteToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.delete", deleteToolStripButton.Visible);
                 };
             deleteToolStripMenuItem1.Click += h;
             deleteToolbarMenuItem.Click += h;
@@ -1426,7 +1427,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     downloadToolbarMenuItem.Checked = !downloadToolbarMenuItem.Checked;
                     downloadToolStripButton.Visible = !downloadToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.download", downloadToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.download", downloadToolStripButton.Visible);
                 };
             downloadToolStripMenuItem1.Click += h;
             downloadToolbarMenuItem.Click += h;
@@ -1440,7 +1441,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     uploadToolbarMenuItem.Checked = !uploadToolbarMenuItem.Checked;
                     uploadToolStripButton.Visible = !uploadToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.upload", uploadToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.upload", uploadToolStripButton.Visible);
                 };
             uploadToolStripMenuItem1.Click += h;
             uploadToolbarMenuItem.Click += h;
@@ -1454,7 +1455,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     transfersToolbarMenuItem.Checked = !transfersToolbarMenuItem.Checked;
                     transfersToolStripButton.Visible = !transfersToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.transfers", transfersToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.transfers", transfersToolStripButton.Visible);
                 };
             transfersToolStripMenuItem1.Click += h;
             transfersToolbarMenuItem.Click += h;
@@ -1468,7 +1469,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     logToolbarMenuItem.Checked = !logToolbarMenuItem.Checked;
                     logToolStripButton.Visible = !logToolStripButton.Visible;
                     UpdateSeparators();
-                    Preferences.instance().setProperty("browser.toolbar.log", logToolStripButton.Visible);
+                    PreferencesFactory.get().setProperty("browser.toolbar.log", logToolStripButton.Visible);
                 };
             logToolStripMenuItem1.Click += h;
             logToolbarMenuItem.Click += h;
@@ -1478,27 +1479,27 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             bool b1 =
                 openConnectionToolStripButton.Visible =
-                Preferences.instance().getBoolean("browser.toolbar.openconnection");
+                PreferencesFactory.get().getBoolean("browser.toolbar.openconnection");
             bool b2 =
                 quickConnectToolStripComboBox.Visible =
-                Preferences.instance().getBoolean("browser.toolbar.quickconnect");
+                PreferencesFactory.get().getBoolean("browser.toolbar.quickconnect");
             bool b3 =
-                actionToolStripDropDownButton.Visible = Preferences.instance().getBoolean("browser.toolbar.action");
-            bool b4 = infoToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.info");
-            bool b5 = refreshToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.refresh");
-            bool b6 = editToolStripSplitButton.Visible = Preferences.instance().getBoolean("browser.toolbar.edit");
+                actionToolStripDropDownButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.action");
+            bool b4 = infoToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.info");
+            bool b5 = refreshToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.refresh");
+            bool b6 = editToolStripSplitButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.edit");
             bool b7 =
                 openInBrowserToolStripButton.Visible =
-                Preferences.instance().getBoolean("browser.toolbar.openinbrowser");
+                PreferencesFactory.get().getBoolean("browser.toolbar.openinbrowser");
             bool b8 =
                 openInTerminalToolStripButton.Visible =
-                Preferences.instance().getBoolean("browser.toolbar.openinterminal");
-            bool b9 = newFolderToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.newfolder");
-            bool b10 = deleteToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.delete");
-            bool b11 = downloadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.download");
-            bool b12 = uploadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.upload");
-            bool b13 = transfersToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.transfers");
-            bool b14 = logToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.log");
+                PreferencesFactory.get().getBoolean("browser.toolbar.openinterminal");
+            bool b9 = newFolderToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.newfolder");
+            bool b10 = deleteToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.delete");
+            bool b11 = downloadToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.download");
+            bool b12 = uploadToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.upload");
+            bool b13 = transfersToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.transfers");
+            bool b14 = logToolStripButton.Visible = PreferencesFactory.get().getBoolean("browser.toolbar.log");
 
             // update menu entries
             openConnectionToolStripMenuItem1.Checked = b1;
@@ -1594,7 +1595,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             l.DropSink = new HostDropSink(this);
             l.DragSource = new HostDragSource(this);
 
-            int size = Preferences.instance().getInteger("bookmark.icon.size");
+            int size = PreferencesFactory.get().getInteger("bookmark.icon.size");
             AbstractBookmarkRenderer previous = (AbstractBookmarkRenderer) descColumn.Renderer;
 
             AbstractBookmarkRenderer r;
@@ -1669,17 +1670,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                          ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                          (sender, args) =>
-                         BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help")),
+                         BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
                          (sender, args) =>
-                         BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")),
+                         BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                          (sender, args) =>
                          BrowserLauncherFactory.get()
-                                               .open(String.Format(Preferences.instance().getProperty("website.bug"),
-                                                                   Preferences.instance()
+                                               .open(String.Format(PreferencesFactory.get().getProperty("website.bug"),
+                                                                   PreferencesFactory.get()
                                                                               .getProperty("application.version"))),
                          () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
@@ -2310,7 +2311,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (e.KeyChar == (char) Keys.Enter)
             {
-                if (Preferences.instance().getBoolean("browser.enterkey.rename"))
+                if (PreferencesFactory.get().getBoolean("browser.enterkey.rename"))
                 {
                     if (ValidateRenameFile())
                     {
@@ -2607,9 +2608,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                     DropTargetHelper.DragOver(new Point(e.X, e.Y), e.Effect);
                 }
 
-                bool autoExpand = Preferences.instance().getBoolean("browser.view.autoexpand");
-                bool useDelay = Preferences.instance().getBoolean("browser.view.autoexpand.useDelay");
-                int delay = Convert.ToInt32(Preferences.instance().getFloat("browser.view.autoexpand.delay"));
+                bool autoExpand = PreferencesFactory.get().getBoolean("browser.view.autoexpand");
+                bool useDelay = PreferencesFactory.get().getBoolean("browser.view.autoexpand.useDelay");
+                int delay = Convert.ToInt32(PreferencesFactory.get().getFloat("browser.view.autoexpand.delay"));
 
                 if (autoExpand)
                 {

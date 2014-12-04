@@ -4,9 +4,9 @@ import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -50,7 +50,7 @@ public class ThirdpartyBookmarkCollectionTest extends AbstractTestCase {
         assertTrue(r.get());
         assertTrue(c.iterator().next().compareTo(new Host("h")) == 0);
         r.set(false);
-        Preferences.instance().setProperty(c.getConfiguration(), true);
+        PreferencesFactory.get().setProperty(c.getConfiguration(), true);
         c.load();
         assertFalse(r.get());
         // Modify bookmarks file

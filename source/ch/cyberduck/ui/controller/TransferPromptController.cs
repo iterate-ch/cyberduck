@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.shared;
 using ch.cyberduck.core.threading;
@@ -42,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly WindowController _parent;
 
         protected internal TransferAction Action =
-            TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
+            TransferAction.forName(PreferencesFactory.get().getProperty("queue.prompt.action.default"));
 
         protected TransferPromptModel TransferPromptModel;
 
@@ -84,7 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate wireAction = delegate
                 {
                     View.ToggleDetailsEvent += View_ToggleDetailsEvent;
-                    View.DetailsVisible = Preferences.instance().getBoolean("transfer.toggle.details");
+                    View.DetailsVisible = PreferencesFactory.get().getBoolean("transfer.toggle.details");
 
                     View.ChangedActionEvent += View_ChangedActionEvent;
                     View.ChangedSelectionEvent += View_ChangedSelectionEvent;
@@ -148,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleDetailsEvent()
         {
             View.DetailsVisible = !View.DetailsVisible;
-            Preferences.instance().setProperty("transfer.toggle.details", View.DetailsVisible);
+            PreferencesFactory.get().setProperty("transfer.toggle.details", View.DetailsVisible);
         }
 
         private void View_ChangedSelectionEvent()
@@ -218,7 +219,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return;
             }
-            Preferences.instance()
+            PreferencesFactory.get()
                        .setProperty(String.Format("queue.prompt.{0}.action.default", Transfer.getType().name()),
                                     selected.toString());
             Action = selected;
@@ -251,7 +252,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateActions(GetTransferActions());
             TransferAction defaultAction =
                 TransferAction.forName(
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .getProperty(String.Format("queue.prompt.{0}.action.default", Transfer.getType().name())));
             View.SelectedAction = defaultAction;
             Action = defaultAction;

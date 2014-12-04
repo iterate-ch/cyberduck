@@ -4,6 +4,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -23,7 +25,7 @@ public class ApplescriptTerminalService implements TerminalService {
             = ApplicationFinderFactory.get();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     @Override
     public void open(final Host host, final Path workdir) throws AccessDeniedException {

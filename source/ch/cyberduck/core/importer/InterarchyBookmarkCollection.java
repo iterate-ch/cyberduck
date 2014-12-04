@@ -22,7 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -46,7 +46,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.interarchy.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.interarchy.location"));
     }
 
     @Override

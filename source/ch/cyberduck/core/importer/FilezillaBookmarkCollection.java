@@ -22,10 +22,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.filezilla.location"));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
         @Override
         public void startElement(String name) {
             if(name.equals("Server")) {
-                current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
             }
         }
 
@@ -115,7 +115,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 0:
-                            current.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+                            current.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
                             break;
                     }
                 }

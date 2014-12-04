@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.core.preferences;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -24,7 +24,6 @@ import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RendezvousResponder;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
@@ -44,7 +43,6 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
-import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
@@ -54,6 +52,12 @@ import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
+import ch.cyberduck.ui.cocoa.AlertHostKeyController;
+import ch.cyberduck.ui.cocoa.DownloadPromptController;
+import ch.cyberduck.ui.cocoa.PromptLoginController;
+import ch.cyberduck.ui.cocoa.SyncPromptController;
+import ch.cyberduck.ui.cocoa.UploadPromptController;
+import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;

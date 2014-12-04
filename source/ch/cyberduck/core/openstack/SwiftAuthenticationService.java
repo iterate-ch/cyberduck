@@ -24,8 +24,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -55,7 +55,7 @@ public class SwiftAuthenticationService {
     private String version;
 
     public SwiftAuthenticationService() {
-        this(Preferences.instance().getProperty("openstack.authentication.context"));
+        this(PreferencesFactory.get().getProperty("openstack.authentication.context"));
     }
 
     public SwiftAuthenticationService(final String version) {

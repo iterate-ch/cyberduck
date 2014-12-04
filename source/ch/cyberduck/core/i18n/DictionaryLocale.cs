@@ -22,6 +22,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 
@@ -59,13 +60,13 @@ namespace Ch.Cyberduck.Core.I18n
 
         public void setDefault(string language)
         {
-            Preferences.instance().setProperty("application.language", language);
+            PreferencesFactory.get().setProperty("application.language", language);
         }
 
         private void ReadBundleIntoCache(string bundle)
         {
             Log.debug("Caching bundle " + bundle);
-            string language = Preferences.instance().getProperty("application.language");
+            string language = PreferencesFactory.get().getProperty("application.language");
             Assembly asm = Assembly.GetExecutingAssembly();
             // the dots apparently come from the relative path in the msbuild file
             Stream stream =

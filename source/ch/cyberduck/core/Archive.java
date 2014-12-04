@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -36,7 +39,7 @@ public abstract class Archive {
     private static final Logger log = Logger.getLogger(Archive.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public static final Archive TAR
             = new Archive("tar") {
@@ -110,7 +113,7 @@ public abstract class Archive {
      * @return The default archiver set in the Preferences
      */
     public static Archive getDefault() {
-        return Archive.forName(Preferences.instance().getProperty("archive.default"));
+        return Archive.forName(PreferencesFactory.get().getProperty("archive.default"));
     }
 
     /**

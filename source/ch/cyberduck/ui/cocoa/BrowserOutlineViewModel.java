@@ -23,7 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
@@ -122,7 +122,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                         // See ticket #60
                         return new NSInteger(0);
                     }
-                    if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                    if(!PreferencesFactory.get().getBoolean("browser.view.autoexpand")) {
                         log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem while dragging because browser.view.autoexpand == false");
                         // See tickets #98 and #633
                         return new NSInteger(0);

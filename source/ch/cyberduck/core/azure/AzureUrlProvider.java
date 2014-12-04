@@ -23,11 +23,11 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.net.URI;
@@ -65,7 +65,7 @@ public class AzureUrlProvider implements UrlProvider {
         if(file.isFile()) {
             list.add(this.createSignedUrl(file, 60 * 60));
             // Default signed URL expiring in 24 hours.
-            list.add(this.createSignedUrl(file, Preferences.instance().getInteger("s3.url.expire.seconds")));
+            list.add(this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds")));
             // Week
             list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
             // Month

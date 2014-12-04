@@ -28,8 +28,8 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public class DAVListServiceTest extends AbstractTestCase {
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
@@ -60,7 +60,7 @@ public class DAVListServiceTest extends AbstractTestCase {
     @Test
     public void testList() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));

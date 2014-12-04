@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -79,7 +79,7 @@ public class FolderController extends FileController {
             for(Location.Name region : regions) {
                 regionPopup.addItemWithTitle(region.toString());
                 regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
-                if(region.getIdentifier().equals(Preferences.instance().getProperty("s3.location"))) {
+                if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             }

@@ -22,9 +22,9 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +62,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      */
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.wsftp.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.wsftp.location"));
     }
 
     @Override
@@ -96,9 +96,9 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     if(line.startsWith("[")) {
                         this.add(current);
 
-                        current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                        current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
-                                Preferences.instance().getProperty("connection.login.anon.name"));
+                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         current.setProtocol(ProtocolFactory.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);
@@ -184,7 +184,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             return false;
         }
         if(bookmark.getHostname().equals(
-                Preferences.instance().getProperty("connection.hostname.default"))) {
+                PreferencesFactory.get().getProperty("connection.hostname.default"))) {
             return false;
         }
         return super.add(bookmark);

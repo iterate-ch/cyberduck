@@ -85,7 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool Singleton
         {
-            get { return Preferences.instance().getBoolean("browser.info.inspector"); }
+            get { return PreferencesFactory.get().getBoolean("browser.info.inspector"); }
         }
 
         public IList<Path> Files
@@ -365,11 +365,11 @@ namespace Ch.Cyberduck.Ui.Controller
             metadata.Add(LocaleFactory.localizedString("Cache-Control"),
                          () =>
                          AddMetadataItem("Cache-Control",
-                                         "public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds")));
+                                         "public,max-age=" + PreferencesFactory.get().getInteger("s3.cache.seconds")));
             metadata.Add(LocaleFactory.localizedString("Expires"), delegate
                 {
                     DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
-                    DateTime expires = DateTime.Now.AddSeconds(Preferences.instance().getInteger("s3.cache.seconds"));
+                    DateTime expires = DateTime.Now.AddSeconds(PreferencesFactory.get().getInteger("s3.cache.seconds"));
                     AddMetadataItem("Expires", expires.ToString("r", format)); // RFC1123 format
                 });
             metadata.Add("Pragma", () => AddMetadataItem("Pragma", String.Empty, true));
@@ -388,7 +388,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (_lifecycleTransitionPeriods == null)
             {
                 _lifecycleTransitionPeriods =
-                    Utils.ConvertFromJavaList(Preferences.instance().getList("s3.lifecycle.transition.options"),
+                    Utils.ConvertFromJavaList(PreferencesFactory.get().getList("s3.lifecycle.transition.options"),
                                               item =>
                                               new KeyValuePair<string, string>(
                                                   MessageFormat.format(
@@ -403,7 +403,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (_lifecycleDeletePeriods == null)
             {
                 _lifecycleDeletePeriods =
-                    Utils.ConvertFromJavaList(Preferences.instance().getList("s3.lifecycle.delete.options"),
+                    Utils.ConvertFromJavaList(PreferencesFactory.get().getList("s3.lifecycle.delete.options"),
                                               item =>
                                               new KeyValuePair<string, string>(
                                                   MessageFormat.format(
@@ -426,7 +426,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.ShowHelp += delegate(object sender, InfoHelpArgs args)
                 {
-                    StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                    StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
                     switch (args.Section)
                     {
                         case InfoHelpArgs.Context.General:
@@ -1591,7 +1591,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public static InfoController Create(BrowserController controller, IList<Path> files)
             {
-                if (Preferences.instance().getBoolean("browser.info.inspector"))
+                if (PreferencesFactory.get().getBoolean("browser.info.inspector"))
                 {
                     if (Open.ContainsKey(controller))
                     {
@@ -2292,7 +2292,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 AnalyticsProvider analytics = (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider));
                 if (_bucketAnalyticsCheckBox)
                 {
-                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
+                    String document = PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy");
                     iam.create(analytics.getName(), document, _infoController._prompt);
                 }
                 else
@@ -2399,7 +2399,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 AnalyticsProvider analytics = (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider));
                 if (_distributionAnalyticsCheckBox)
                 {
-                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy");
+                    String document = PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy");
                     iam.create(analytics.getName(), document, _infoController._prompt);
                 }
                 else

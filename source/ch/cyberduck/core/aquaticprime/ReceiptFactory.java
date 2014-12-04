@@ -21,8 +21,8 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ public class ReceiptFactory extends LicenseFactory {
     private static final int APPSTORE_VALIDATION_FAILURE = 173;
 
     public ReceiptFactory() {
-        super(LocalFactory.get(Preferences.instance().getProperty("application.receipt.path")),
+        super(LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path")),
                 new Filter<Local>() {
                     @Override
                     public boolean accept(final Local file) {
@@ -75,7 +75,7 @@ public class ReceiptFactory extends LicenseFactory {
             }
             // Copy to Application Support for users switching versions
             final Local support = LocalFactory.get(
-                    Preferences.instance().getProperty("application.support.path"));
+                    PreferencesFactory.get().getProperty("application.support.path"));
             try {
                 file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt", receipt.getName())));
             }

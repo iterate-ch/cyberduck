@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -178,14 +178,14 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
         //cache custom sorting preference
         this.sortAscending = sortAscending;
         //set default value
-        Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending);
+        PreferencesFactory.get().setProperty("browser.sort.ascending", this.sortAscending);
     }
 
     @Override
     public boolean isSortedAscending() {
         if(null == sortAscending) {
             //return default value
-            return Preferences.instance().getBoolean("browser.sort.ascending");
+            return PreferencesFactory.get().getBoolean("browser.sort.ascending");
         }
         return sortAscending;
     }

@@ -22,6 +22,7 @@ using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.growl;
 using Application = System.Windows.Forms.Application;
 
@@ -33,7 +34,7 @@ namespace Ch.Cyberduck.Ui.Growl
 
         public void notify(string title, string description)
         {
-            _icon.ShowBalloonTip(Preferences.instance().getInteger("notifications.timeout.milliseconds"), title,
+            _icon.ShowBalloonTip(PreferencesFactory.get().getInteger("notifications.timeout.milliseconds"), title,
                                  description, ToolTipIcon.Info);
         }
 
@@ -50,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Growl
                     Text = LocaleFactory.get().localize("Donate…", "Main")
                 };
             itemDonate.Click +=
-                delegate { BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate")); };
+                delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
             ToolStripMenuItem itemKey = new ToolStripMenuItem {Text = LicenseFactory.find().ToString(), Enabled = false};
             ToolStripMenuItem itemExit = new ToolStripMenuItem
                 {

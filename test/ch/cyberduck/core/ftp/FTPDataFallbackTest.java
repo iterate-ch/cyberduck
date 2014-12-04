@@ -27,8 +27,8 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class FTPDataFallbackTest extends AbstractTestCase {
     @Test
     public void testFallbackDataConnectionSocketTimeout() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
 

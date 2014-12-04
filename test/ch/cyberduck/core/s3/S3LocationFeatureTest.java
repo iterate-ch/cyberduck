@@ -26,7 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.Jets3tProperties;
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class S3LocationFeatureTest extends AbstractTestCase {
     @Test
     public void testForbidden() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());

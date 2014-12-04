@@ -20,11 +20,11 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -57,7 +57,7 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
         final TransferStatus status = super.prepare(file, local, parent);
         if(local.exists()) {
             do {
-                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
+                String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);

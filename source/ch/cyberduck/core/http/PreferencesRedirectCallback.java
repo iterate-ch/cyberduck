@@ -18,19 +18,19 @@ package ch.cyberduck.core.http;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PreferencesRedirectCallback implements RedirectCallback {
 
     @Override
     public boolean redirect(final String method) {
-        return Preferences.instance().getBoolean(String.format("webdav.redirect.%s.follow", StringUtils.upperCase(method, Locale.ROOT)));
+        return PreferencesFactory.get().getBoolean(String.format("webdav.redirect.%s.follow", StringUtils.upperCase(method, Locale.ROOT)));
     }
 }

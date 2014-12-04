@@ -26,8 +26,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -80,7 +80,7 @@ public class DownloadController extends AlertController {
             final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
                     EnumSet.of(detector.detect(host.getDefaultPath())));
             final Transfer transfer = new DownloadTransfer(host, file,
-                    LocalFactory.get(Preferences.instance().getProperty("queue.download.folder"), file.getName()));
+                    LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
             TransferControllerFactory.get().start(transfer);
         }
     }
@@ -100,7 +100,7 @@ public class DownloadController extends AlertController {
 
     @Override
     protected void help() {
-        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/download");
         BrowserLauncherFactory.get().open(site.toString());
     }

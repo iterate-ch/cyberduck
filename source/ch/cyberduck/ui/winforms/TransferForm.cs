@@ -27,6 +27,7 @@ using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.io;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -321,10 +322,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             menuItem.Click += delegate
                 {
                     button.Visible = !button.Visible;
-                    Preferences.instance().setProperty(property, button.Visible);
+                    PreferencesFactory.get().setProperty(property, button.Visible);
                 };
 
-            button.Visible = menuItem.Checked = Preferences.instance().getBoolean(property);
+            button.Visible = menuItem.Checked = PreferencesFactory.get().getBoolean(property);
         }
 
         private void ConfigureToolbar()

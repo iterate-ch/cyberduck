@@ -20,8 +20,8 @@ package ch.cyberduck.core.analytics;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -39,7 +39,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private String target;
 
     public QloudstatAnalyticsProvider() {
-        this(Preferences.instance().getProperty("analytics.provider.qloudstat.setup"));
+        this(PreferencesFactory.get().getProperty("analytics.provider.qloudstat.setup"));
     }
 
     public QloudstatAnalyticsProvider(final String target) {

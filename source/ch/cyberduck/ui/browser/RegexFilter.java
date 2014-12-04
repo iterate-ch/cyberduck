@@ -20,7 +20,7 @@ package ch.cyberduck.ui.browser;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.regex.Pattern;
 
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public class RegexFilter implements Filter<Path> {
 
     private Pattern pattern = Pattern.compile(
-            Preferences.instance().getProperty("browser.hidden.regex"));
+            PreferencesFactory.get().getProperty("browser.hidden.regex"));
 
     @Override
     public boolean accept(final Path file) {

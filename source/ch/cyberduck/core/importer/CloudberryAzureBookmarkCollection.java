@@ -20,7 +20,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -40,6 +40,6 @@ public class CloudberryAzureBookmarkCollection extends CloudberryBookmarkCollect
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.cloudberry.azure.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.cloudberry.azure.location"));
     }
 }

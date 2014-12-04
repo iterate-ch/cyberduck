@@ -27,9 +27,9 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
@@ -68,7 +68,7 @@ public class FTPUTIMETimestampFeatureTest extends AbstractTestCase {
     @Test
     public void testFeature() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));

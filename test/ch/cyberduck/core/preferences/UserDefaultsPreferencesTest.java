@@ -1,6 +1,6 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.preferences;
 
-import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
+import ch.cyberduck.core.AbstractTestCase;
 
 import org.junit.Test;
 

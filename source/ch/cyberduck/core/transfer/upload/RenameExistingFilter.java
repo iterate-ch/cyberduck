@@ -19,12 +19,12 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -73,7 +73,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
     private void rename(final Path file, final ProgressListener listener) throws BackgroundException {
         Path renamed = file;
         while(find.find(renamed)) {
-            final String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+            final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.upload.file.rename.format"),
                     FilenameUtils.getBaseName(file.getName()),
                     UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                     StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);

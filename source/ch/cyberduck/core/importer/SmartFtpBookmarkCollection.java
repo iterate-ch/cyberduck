@@ -22,12 +22,12 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -51,7 +51,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.smartftp.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.smartftp.location"));
     }
 
     @Override
@@ -88,9 +88,9 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
         @Override
         public void startElement(String name) {
             if(name.equals("FavoriteItem")) {
-                current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                 current.getCredentials().setUsername(
-                        Preferences.instance().getProperty("connection.login.anon.name"));
+                        PreferencesFactory.get().getProperty("connection.login.anon.name"));
             }
         }
 

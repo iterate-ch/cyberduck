@@ -23,13 +23,14 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -64,7 +65,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private Find finder;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public SwiftWriteFeature(final SwiftSession session) {
         this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));

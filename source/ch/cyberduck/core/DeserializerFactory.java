@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -31,7 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 public class DeserializerFactory<T> extends Factory<Deserializer> {
 
     private static final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     protected Deserializer create(final T dict) {
         final String clazz = preferences.getProperty("factory.deserializer.class");

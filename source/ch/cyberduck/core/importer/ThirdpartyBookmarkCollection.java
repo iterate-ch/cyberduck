@@ -24,12 +24,12 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,9 +73,9 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             catch(BackgroundException e) {
                 log.warn(String.format("Failure obtaining checksum for %s", file));
             }
-            if(Preferences.instance().getBoolean(this.getConfiguration())) {
+            if(PreferencesFactory.get().getBoolean(this.getConfiguration())) {
                 // Previously imported
-                final String previous = Preferences.instance().getProperty(String.format("%s.checksum", this.getConfiguration()));
+                final String previous = PreferencesFactory.get().getProperty(String.format("%s.checksum", this.getConfiguration()));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Saved previous checksum %s for bookmark %s", previous, file));
                 }
@@ -106,7 +106,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             // Save last checksum
             if(StringUtils.isNotBlank(current)) {
-                Preferences.instance().setProperty(String.format("%s.checksum", this.getConfiguration()), current);
+                PreferencesFactory.get().setProperty(String.format("%s.checksum", this.getConfiguration()), current);
             }
         }
         else {

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
@@ -46,7 +48,7 @@ public class Cache<T extends Referenceable> {
     }
 
     public Cache() {
-        this(Preferences.instance().getInteger("browser.cache.size"));
+        this(PreferencesFactory.get().getInteger("browser.cache.size"));
     }
 
     public Cache(int size) {

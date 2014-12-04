@@ -24,11 +24,12 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +59,7 @@ public class SwiftContainerListService implements RootListService {
     private SwiftSession session;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private boolean cdn;
 
@@ -68,8 +69,8 @@ public class SwiftContainerListService implements RootListService {
 
     public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region) {
         this(session, region,
-                Preferences.instance().getBoolean("openstack.cdn.preload"),
-                Preferences.instance().getBoolean("openstack.container.size.preload"));
+                PreferencesFactory.get().getBoolean("openstack.cdn.preload"),
+                PreferencesFactory.get().getBoolean("openstack.container.size.preload"));
     }
 
     public SwiftContainerListService(final SwiftSession session, final SwiftLocationFeature.SwiftRegion region,

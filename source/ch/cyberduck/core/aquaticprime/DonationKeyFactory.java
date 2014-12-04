@@ -21,8 +21,9 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -36,7 +37,7 @@ import java.util.List;
 public class DonationKeyFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
 
-    private Preferences preferences = Preferences.instance();
+    private Preferences preferences = PreferencesFactory.get();
 
     @Override
     protected License create() {

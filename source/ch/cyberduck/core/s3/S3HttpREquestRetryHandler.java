@@ -19,7 +19,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -46,7 +46,7 @@ public class S3HttpREquestRetryHandler extends DefaultHttpRequestRetryHandler {
     private final JetS3tRequestAuthorizer authorizer;
 
     public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer) {
-        this(authorizer, Preferences.instance().getInteger("connection.retry"));
+        this(authorizer, PreferencesFactory.get().getInteger("connection.retry"));
     }
 
     public S3HttpREquestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {

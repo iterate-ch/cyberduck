@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.local.TildeExpander;
 import ch.cyberduck.core.local.WorkdirPrefixer;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 
@@ -57,15 +58,15 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     private LocalAttributes attributes;
 
     public Local(final String parent, final String name) {
-        this(parent.endsWith(Preferences.instance().getProperty("local.delimiter")) ?
+        this(parent.endsWith(PreferencesFactory.get().getProperty("local.delimiter")) ?
                 String.format("%s%s", parent, name) :
-                String.format("%s%c%s", parent, CharUtils.toChar(Preferences.instance().getProperty("local.delimiter")), name));
+                String.format("%s%c%s", parent, CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter")), name));
     }
 
     public Local(final Local parent, final String name) {
         this(parent.isRoot() ?
                 String.format("%s%s", parent.getAbsolute(), name) :
-                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(Preferences.instance().getProperty("local.delimiter")), name));
+                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter")), name));
     }
 
     /**
@@ -74,13 +75,13 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     public Local(final String name) {
         path = name;
         attributes = new LocalAttributes(path);
-        if(Preferences.instance().getBoolean("local.normalize.unicode")) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(path);
         }
-        if(Preferences.instance().getBoolean("local.normalize.tilde")) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.tilde")) {
             path = new TildeExpander().expand(path);
         }
-        if(Preferences.instance().getBoolean("local.normalize.prefix")) {
+        if(PreferencesFactory.get().getBoolean("local.normalize.prefix")) {
             path = new WorkdirPrefixer().normalize(path);
         }
     }
@@ -163,7 +164,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     @Override
     public char getDelimiter() {
-        return CharUtils.toChar(Preferences.instance().getProperty("local.delimiter"));
+        return CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
     }
 
     public void mkdir() throws AccessDeniedException {

@@ -19,8 +19,9 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
@@ -37,7 +38,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
 
     private static final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public TransferPrompt create(final Controller c, final Transfer transfer, final Session session) {
         final String clazz = preferences.getProperty(

@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public final class InfoControllerFactory {
     }
 
     public static InfoController create(final BrowserController controller, final List<Path> files) {
-        if(Preferences.instance().getBoolean("browser.info.inspector")) {
+        if(PreferencesFactory.get().getBoolean("browser.info.inspector")) {
             if(open.containsKey(controller)) {
                 final InfoController c = open.get(controller);
                 c.setFiles(files);

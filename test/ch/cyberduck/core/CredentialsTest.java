@@ -3,6 +3,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class CredentialsTest extends AbstractTestCase {
         Credentials c = new DefaultCredentials();
         c.setIdentity(LocalFactory.get("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
-        final Local t = LocalFactory.get(Preferences.instance().getProperty("tmp.dir"), "id_rsa");
+        final Local t = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"), "id_rsa");
         LocalTouchFactory.get().touch(t);
         c.setIdentity(t);
         assertTrue(c.isPublicKeyAuthentication());
@@ -71,7 +72,7 @@ public class CredentialsTest extends AbstractTestCase {
     @Test
     public void testLoginWithoutUsername() {
         Credentials credentials = new Credentials(null,
-                Preferences.instance().getProperty("connection.login.anon.pass"));
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"));
         assertFalse(credentials.validate(new FTPProtocol(), new LoginOptions()));
     }
 
@@ -89,14 +90,14 @@ public class CredentialsTest extends AbstractTestCase {
 
     @Test
     public void testLoginAnonymous1() {
-        Credentials credentials = new Credentials(Preferences.instance().getProperty("connection.login.anon.name"),
-                Preferences.instance().getProperty("connection.login.anon.pass"));
+        Credentials credentials = new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"),
+                PreferencesFactory.get().getProperty("connection.login.anon.pass"));
         assertTrue(credentials.validate(new FTPProtocol(), new LoginOptions()));
     }
 
     @Test
     public void testLoginAnonymous2() {
-        Credentials credentials = new Credentials(Preferences.instance().getProperty("connection.login.anon.name"),
+        Credentials credentials = new Credentials(PreferencesFactory.get().getProperty("connection.login.anon.name"),
                 null);
         assertTrue(credentials.validate(new FTPProtocol(), new LoginOptions()));
     }

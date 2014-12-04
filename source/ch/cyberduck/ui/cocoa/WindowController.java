@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
@@ -338,7 +338,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.help"));
+        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help"));
     }
 
     protected void print(NSView view) {

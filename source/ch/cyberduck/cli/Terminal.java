@@ -27,6 +27,8 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;

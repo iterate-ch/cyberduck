@@ -23,7 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.File;
 import java.util.UUID;
@@ -42,7 +42,7 @@ public class TemporaryFileService {
      */
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.get(
-                new File(Preferences.instance().getProperty("tmp.dir"),
+                new File(PreferencesFactory.get().getProperty("tmp.dir"),
                         uid + String.valueOf(Path.DELIMITER) +
                                 this.shorten(file.getParent().getAbsolute()) + String.valueOf(Path.DELIMITER) + new DefaultPathReference(file).attributes()).getAbsolutePath());
         return LocalFactory.get(folder, String.format("%s", PathNormalizer.name(file.getAbsolute())));

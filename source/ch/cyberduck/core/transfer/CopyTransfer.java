@@ -17,7 +17,20 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
@@ -29,6 +42,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.copy.CopyTransferFilter;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
@@ -65,7 +79,7 @@ public class CopyTransfer extends Transfer {
      */
     public CopyTransfer(final Host host, final Host target, final Map<Path, Path> files) {
         this(host, target, new CopyRootPathsNormalizer().normalize(files),
-                new BandwidthThrottle(Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+                new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
     }
 
     private CopyTransfer(final Host host, final Host target,

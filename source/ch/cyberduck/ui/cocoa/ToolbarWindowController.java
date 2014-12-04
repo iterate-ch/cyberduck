@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSTabView;
 import ch.cyberduck.ui.cocoa.application.NSTabViewItem;
@@ -101,7 +101,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
 
         // Change selection to last selected item in preferences
-        this.setSelectedPanel(Preferences.instance().getInteger(String.format("%s.selected", this.getToolbarName())));
+        this.setSelectedPanel(PreferencesFactory.get().getInteger(String.format("%s.selected", this.getToolbarName())));
         this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
 
         super.awakeFromNib();
@@ -266,7 +266,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
         this.setTitle(this.getTitle(item));
         this.resize();
-        Preferences.instance().setProperty(String.format("%s.selected",
+        PreferencesFactory.get().setProperty(String.format("%s.selected",
                 this.getToolbarName()), view.indexOfTabViewItem(item));
     }
 

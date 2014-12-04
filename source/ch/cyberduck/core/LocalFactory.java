@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.Constructor;
@@ -29,7 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 public final class LocalFactory extends Factory<Local> {
 
     private static final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     @Override
     protected Local create() {

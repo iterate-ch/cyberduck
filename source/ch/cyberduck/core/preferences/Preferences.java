@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.preferences;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,13 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathReference;
+import ch.cyberduck.core.DisabledSleepPreventer;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.TemporaryFileService;
-import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -61,8 +64,6 @@ import java.util.logging.LogManager;
 public abstract class Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    private static Preferences current = null;
-
     protected Map<String, String> defaults
             = new HashMap<String, String>();
 
@@ -72,20 +73,6 @@ public abstract class Preferences {
     static {
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
-    }
-
-    private static final Object lock = new Object();
-
-    /**
-     * @return The singleton instance of me.
-     */
-    public static Preferences instance() {
-        synchronized(lock) {
-            if(null == current) {
-                current = PreferencesFactory.get();
-            }
-            return current;
-        }
     }
 
     /**
@@ -958,7 +945,7 @@ public abstract class Preferences {
             DOMConfigurator.configure(configuration);
         }
         final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+        root.setLevel(Level.toLevel(PreferencesFactory.get().getProperty("logging")));
     }
 
     /**

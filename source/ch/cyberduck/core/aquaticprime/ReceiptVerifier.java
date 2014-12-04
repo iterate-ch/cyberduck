@@ -19,7 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -148,7 +148,7 @@ public class ReceiptVerifier implements LicenseVerifier {
                 log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
                 return false;
             }
-            if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleShortVersionString"),
+            if(!StringUtils.equals(PreferencesFactory.get().getDefault("CFBundleShortVersionString"),
                     StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }

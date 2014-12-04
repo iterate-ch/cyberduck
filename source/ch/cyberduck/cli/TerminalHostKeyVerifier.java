@@ -20,10 +20,10 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 
 import java.security.PublicKey;
@@ -39,8 +39,8 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
     private final Console console = new Console();
 
     public TerminalHostKeyVerifier() {
-        super(LocalFactory.get(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
-                Preferences.instance().getProperty("ssh.knownhosts.bookmark")
+        super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
+                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
     }
 

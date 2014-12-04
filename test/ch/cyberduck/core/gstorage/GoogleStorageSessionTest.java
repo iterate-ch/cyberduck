@@ -9,7 +9,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -23,6 +22,7 @@ import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -95,7 +95,7 @@ public class GoogleStorageSessionTest extends AbstractTestCase {
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
                     // Mark as not expired
-                    Preferences.instance().setProperty("google.storage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
+                    PreferencesFactory.get().setProperty("google.storage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
                     return "a";
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {

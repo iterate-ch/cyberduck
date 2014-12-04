@@ -20,8 +20,8 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.collections.map.LRUMap;
@@ -37,7 +37,7 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
     private static final Logger log = Logger.getLogger(CachingComparisonServiceFilter.class);
 
     private Map<TransferItem, Comparison> cache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("transfer.cache.size")));
+            PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     private ComparisonServiceFilter delegate;
 

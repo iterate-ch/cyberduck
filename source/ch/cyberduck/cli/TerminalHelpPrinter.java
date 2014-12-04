@@ -18,12 +18,13 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -64,7 +65,7 @@ public final class TerminalHelpPrinter {
                 "remote file or folder such as ftps://user@example.net/resource.\n" + protocols.toString();
         final StringAppender footer = new StringAppender();
         footer.append("Cyberduck is libre software licenced under the GPL");
-        final Preferences preferences = Preferences.instance();
+        final Preferences preferences = PreferencesFactory.get();
         footer.append(String.format("For general help about using Cyberduck, please refer to %s and the wiki at %s",
                 preferences.getProperty("website.cli"), preferences.getProperty("website.help")));
         footer.append(String.format("For bug reports or feature requests open a ticket at %s",

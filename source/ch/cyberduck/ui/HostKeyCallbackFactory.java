@@ -23,9 +23,10 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
     private static final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {

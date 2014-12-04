@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.commons.io.FilenameUtils;
@@ -77,7 +78,7 @@ public final class PathNormalizer {
             return String.valueOf(Path.DELIMITER);
         }
         String normalized = path;
-        if(Preferences.instance().getBoolean("path.normalize")) {
+        if(PreferencesFactory.get().getBoolean("path.normalize")) {
             if(absolute) {
                 while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
                     normalized = Path.DELIMITER + normalized;
@@ -137,7 +138,7 @@ public final class PathNormalizer {
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
         }
-        if(Preferences.instance().getBoolean("path.normalize.unicode")) {
+        if(PreferencesFactory.get().getBoolean("path.normalize.unicode")) {
             return new NFCNormalizer().normalize(normalized);
         }
         // Return the normalized path that we have completed

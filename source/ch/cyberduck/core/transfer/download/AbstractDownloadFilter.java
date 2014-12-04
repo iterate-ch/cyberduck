@@ -24,7 +24,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
@@ -38,6 +37,8 @@ import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -60,7 +61,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             = ApplicationLauncherFactory.get();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private final IconService icon
             = IconServiceFactory.get();

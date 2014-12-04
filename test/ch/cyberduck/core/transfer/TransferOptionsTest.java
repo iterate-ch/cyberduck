@@ -1,7 +1,7 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -14,6 +14,6 @@ public class TransferOptionsTest extends AbstractTestCase {
 
     @Test
     public void testQuarantine() {
-        assertEquals(Preferences.instance().getBoolean("queue.download.quarantine"), new TransferOptions().quarantine);
+        assertEquals(PreferencesFactory.get().getBoolean("queue.download.quarantine"), new TransferOptions().quarantine);
     }
 }

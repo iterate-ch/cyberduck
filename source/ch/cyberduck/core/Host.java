@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -132,8 +133,8 @@ public class Host implements Serializable, Comparable<Host> {
      * @param hostname The hostname of the server
      */
     public Host(final String hostname) {
-        this(null == ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))
-                        ? ProtocolFactory.FTP : ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
+        this(null == ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"))
+                        ? ProtocolFactory.FTP : ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
                 hostname);
     }
 
@@ -336,7 +337,7 @@ public class Host implements Serializable, Comparable<Host> {
         };
 
         public int getMaxConnections() {
-            return Preferences.instance().getInteger("connection.host.max");
+            return PreferencesFactory.get().getInteger("connection.host.max");
         }
     }
 

@@ -25,7 +25,6 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.TransferCollection;
@@ -36,6 +35,8 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -95,7 +96,7 @@ public final class TransferController extends WindowController implements NSTool
     private RevealService reveal = RevealServiceFactory.get();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private TransferCollection collection = TransferCollection.defaultCollection();
 

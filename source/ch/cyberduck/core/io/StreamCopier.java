@@ -17,8 +17,8 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -42,13 +42,13 @@ public final class StreamCopier {
             = new DisabledStreamListener();
 
     private Integer buffer
-            = Preferences.instance().getInteger("connection.buffer");
+            = PreferencesFactory.get().getInteger("connection.buffer");
 
     /**
      * Buffer size
      */
     private Integer chunksize
-            = Preferences.instance().getInteger("connection.chunksize");
+            = PreferencesFactory.get().getInteger("connection.chunksize");
 
     private Long offset = 0L;
 

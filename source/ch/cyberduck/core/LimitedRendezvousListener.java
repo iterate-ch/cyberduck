@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.concurrent.TimedSemaphore;
 import org.apache.log4j.Logger;
 
@@ -40,7 +42,7 @@ public class LimitedRendezvousListener implements RendezvousListener {
 
     public LimitedRendezvousListener(final Set<RendezvousListener> listeners) {
         this(new TimedSemaphore(
-                1L, TimeUnit.MINUTES, Preferences.instance().getInteger("rendezvous.notification.limit")), listeners);
+                1L, TimeUnit.MINUTES, PreferencesFactory.get().getInteger("rendezvous.notification.limit")), listeners);
     }
 
     public LimitedRendezvousListener(final TimedSemaphore limit, final Set<RendezvousListener> listeners) {
@@ -57,7 +59,7 @@ public class LimitedRendezvousListener implements RendezvousListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("Service resolved with identifier %s with %s", identifier, host));
         }
-        if(Preferences.instance().getBoolean("rendezvous.loopback.suppress")) {
+        if(PreferencesFactory.get().getBoolean("rendezvous.loopback.suppress")) {
             try {
                 if(InetAddress.getByName(host.getHostname()).equals(InetAddress.getLocalHost())) {
                     if(log.isInfoEnabled()) {

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 /**
  * @version $Id$
  */
@@ -33,7 +35,7 @@ public abstract class Factory<T> {
      * @param clazz Implementation class name
      */
     protected Factory(final String clazz) {
-        this.clazz = Preferences.instance().getProperty(clazz);
+        this.clazz = PreferencesFactory.get().getProperty(clazz);
     }
 
     /**

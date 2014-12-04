@@ -18,10 +18,23 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.DefaultCharsetProvider;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -248,7 +261,7 @@ public class BookmarkController extends WindowController {
      *
      */
     private void updateFavicon() {
-        if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
+        if(PreferencesFactory.get().getBoolean("bookmark.favicon.download")) {
             this.background(new AbstractBackgroundAction<Void>() {
                 @Override
                 public Void run() throws BackgroundException {
@@ -419,7 +432,7 @@ public class BookmarkController extends WindowController {
         // Default download folder
         this.addDownloadPath(action, new DownloadDirectoryFinder().find(host));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.addDownloadPath(action, LocalFactory.get(Preferences.instance().getProperty("queue.download.folder")));
+        this.addDownloadPath(action, LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder")));
         // Shortcut to the Desktop
         this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
         // Shortcut to user home
@@ -519,7 +532,7 @@ public class BookmarkController extends WindowController {
 
     @Override
     protected void invalidate() {
-        Preferences.instance().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
+        PreferencesFactory.get().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
     }
@@ -533,7 +546,7 @@ public class BookmarkController extends WindowController {
     public void awakeFromNib() {
         this.cascade();
         this.init();
-        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("bookmark.toggle.options"));
+        this.setState(this.toggleOptionsButton, PreferencesFactory.get().getBoolean("bookmark.toggle.options"));
         this.reachable();
         this.updateFavicon();
 
@@ -674,15 +687,15 @@ public class BookmarkController extends WindowController {
     @Action
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
-            host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+            host.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
         }
         if(sender.state() == NSCell.NSOffState) {
-            if(Preferences.instance().getProperty("connection.login.name").equals(
-                    Preferences.instance().getProperty("connection.login.anon.name"))) {
+            if(PreferencesFactory.get().getProperty("connection.login.name").equals(
+                    PreferencesFactory.get().getProperty("connection.login.anon.name"))) {
                 host.getCredentials().setUsername(StringUtils.EMPTY);
             }
             else {
-                host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.name"));
+                host.getCredentials().setUsername(PreferencesFactory.get().getProperty("connection.login.name"));
             }
         }
         this.itemChanged();
@@ -755,12 +768,12 @@ public class BookmarkController extends WindowController {
                 this.timezonePopup.setTitle(UTC.getID());
             }
             else {
-                if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+                if(PreferencesFactory.get().getBoolean("ftp.timezone.auto")) {
                     this.timezonePopup.setTitle(AUTO);
                 }
                 else {
                     this.timezonePopup.setTitle(
-                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
+                            TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID()
                     );
                 }
             }

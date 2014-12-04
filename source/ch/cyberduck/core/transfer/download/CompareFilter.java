@@ -20,10 +20,10 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,7 +40,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     private ComparisonServiceFilter comparisonService;
 
     protected Cache<Path> cache
-            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
+            = new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final ProgressListener listener) {
         super(symlinkResolver, session, new DownloadFilterOptions());

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -61,7 +63,7 @@ public class MemoryPreferences extends Preferences {
     }
 
     @Override
-    protected void load() {
+    public void load() {
         store = new HashMap<String, String>();
     }
 

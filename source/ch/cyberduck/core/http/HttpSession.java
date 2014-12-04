@@ -20,7 +20,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
@@ -29,6 +28,8 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
@@ -79,7 +80,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
             = new DisabledX509HostnameVerifier();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private HttpClientBuilder builder;
 

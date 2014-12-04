@@ -18,13 +18,15 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 /**
  * @version $Id$
  */
 public class PreferencesUseragentProvider implements UseragentProvider {
 
-    private static final String ua = Preferences.instance().getProperty("application.name") + "/"
-            + Preferences.instance().getProperty("application.version")
+    private static final String ua = PreferencesFactory.get().getProperty("application.name") + "/"
+            + PreferencesFactory.get().getProperty("application.version")
             + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
             + " (" + System.getProperty("os.arch") + ")";
 

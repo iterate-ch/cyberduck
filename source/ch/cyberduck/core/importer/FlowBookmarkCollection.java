@@ -21,10 +21,10 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
@@ -48,7 +48,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.flow.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.flow.location"));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
         else {
             host.getCredentials().setUsername(
-                    Preferences.instance().getProperty("connection.login.anon.name"));
+                    PreferencesFactory.get().getProperty("connection.login.anon.name"));
         }
         final String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
         if(StringUtils.isNotBlank(mode)) {

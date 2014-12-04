@@ -12,6 +12,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
@@ -99,13 +100,13 @@ public class UploadTransferTest extends AbstractTestCase {
         final Path root = new Path("/t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host("t"), root, local);
         {
-            Preferences.instance().setProperty("queue.upload.priority.regex", ".*\\.html");
+            PreferencesFactory.get().setProperty("queue.upload.priority.regex", ".*\\.html");
             final List<TransferItem> list = t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(0).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(1).local);
         }
         {
-            Preferences.instance().deleteProperty("queue.upload.priority.regex");
+            PreferencesFactory.get().deleteProperty("queue.upload.priority.regex");
             final List<TransferItem> list = t.list(new NullSession(new Host("t")), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(1).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(0).local);

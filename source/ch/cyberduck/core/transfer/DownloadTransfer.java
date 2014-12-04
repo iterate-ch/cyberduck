@@ -28,7 +28,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.features.Symlink;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.IconUpdateSreamListener;
@@ -69,7 +69,7 @@ public class DownloadTransfer extends Transfer {
     private Comparator<Path> comparator;
 
     private Cache<Path> cache
-            = new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size"));
+            = new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private DownloadSymlinkResolver symlinkResolver;
 
@@ -85,7 +85,7 @@ public class DownloadTransfer extends Transfer {
         this(host, roots, f, new Comparator<Path>() {
             @Override
             public int compare(Path o1, Path o2) {
-                final String pattern = Preferences.instance().getProperty("queue.download.priority.regex");
+                final String pattern = PreferencesFactory.get().getProperty("queue.download.priority.regex");
                 if(PathNormalizer.name(o1.getAbsolute()).matches(pattern)) {
                     return -1;
                 }
@@ -99,7 +99,7 @@ public class DownloadTransfer extends Transfer {
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f, final Comparator<Path> comparator) {
         super(host, new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
+                PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
         this.filter = f;
         this.comparator = comparator;
         this.symlinkResolver = new DownloadSymlinkResolver(roots);
@@ -187,12 +187,12 @@ public class DownloadTransfer extends Transfer {
         }
         else if(reloadRequested) {
             action = TransferAction.forName(
-                    Preferences.instance().getProperty("queue.download.reload.action"));
+                    PreferencesFactory.get().getProperty("queue.download.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    Preferences.instance().getProperty("queue.download.action")
+                    PreferencesFactory.get().getProperty("queue.download.action")
             );
         }
         if(action.equals(TransferAction.callback)) {

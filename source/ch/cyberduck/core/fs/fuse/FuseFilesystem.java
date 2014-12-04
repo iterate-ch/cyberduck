@@ -149,7 +149,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         log.debug("unmount");
         filesystem.unmount();
 //        try {
-//            unmount.wait(Preferences.instance().getInteger("disk.unmount.timeout"));
+//            unmount.wait(PreferencesFactory.get().getInteger("disk.unmount.timeout"));
 //        }
 //        catch(InterruptedException e) {
 //            log.warn("Unmount failed:" + e.getMessage());

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -34,6 +33,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -91,8 +91,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private Long partsize;
 
     public S3MultipartUploadService(final S3Session session) {
-        this(session, Preferences.instance().getLong("s3.upload.multipart.size"),
-                Math.min(Preferences.instance().getInteger("queue.maxtransfers"), Preferences.instance().getInteger("s3.upload.multipart.concurrency")));
+        this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
+                Math.min(PreferencesFactory.get().getInteger("queue.maxtransfers"), PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency")));
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {

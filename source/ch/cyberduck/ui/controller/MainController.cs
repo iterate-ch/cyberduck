@@ -39,6 +39,7 @@ using Ch.Cyberduck.Ui.Winforms.Threading;
 using Microsoft.VisualBasic.ApplicationServices;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.serializer;
@@ -54,6 +55,7 @@ using Path = System.IO.Path;
 using SystemProxy = Ch.Cyberduck.Core.SystemProxy;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -74,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private readonly AbstractHostCollection _sessions =
             new FolderBookmarkCollection(
-                LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"));
 
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
@@ -107,7 +109,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ConfigureLogging();
 
             //make sure that a language change takes effect after a restart only
-            StartupLanguage = Preferences.instance().getProperty("application.language");
+            StartupLanguage = PreferencesFactory.get().getProperty("application.language");
         }
 
         /// <summary>
@@ -138,8 +140,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         Logger.warn("No Bonjour support available", se);
                     }
-                    Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
-                    Preferences.instance().save();
+                    PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
+                    PreferencesFactory.get().save();
                 };
         }
 
@@ -204,12 +206,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private static void ConfigureLogging()
         {
             // we do not save the log file in the roaming profile
-            var fileName = Path.Combine(Preferences.instance().getProperty("application.support.path"), "cyberduck.log");
+            var fileName = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"), "cyberduck.log");
 
             DOMConfigurator.configure(
                 Object.instancehelper_getClass(new DOMConfigurator())
                       .getClassLoader()
-                      .getResource(Preferences.instance().getProperty("logging.config")));
+                      .getResource(PreferencesFactory.get().getProperty("logging.config")));
             Logger root = Logger.getRootLogger();
             root.removeAllAppenders();
 
@@ -220,7 +222,7 @@ namespace Ch.Cyberduck.Ui.Controller
             root.addAppender(appender);
             root.setLevel(Debugger.IsAttached
                               ? Level.DEBUG
-                              : Level.toLevel(Preferences.instance().getProperty("logging")));
+                              : Level.toLevel(PreferencesFactory.get().getProperty("logging")));
         }
 
         /// <summary>
@@ -249,7 +251,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             f.copy(
                                 LocalFactory.get(
-                                    Preferences.instance().getProperty("application.support.path"), f.getName()));
+                                    PreferencesFactory.get().getProperty("application.support.path"), f.getName()));
                             if (DialogResult.OK ==
                                 _bc.InfoBox(license.ToString(),
                                             LocaleFactory.localizedString(
@@ -272,7 +274,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                LocaleFactory.localizedString(
                                                    "This donation key does not appear to be valid.", "License"), null,
                                                String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
-                                               false, Preferences.instance().getProperty("website.help") + "/faq",
+                                               false, PreferencesFactory.get().getProperty("website.help") + "/faq",
                                                delegate { }))
                             {
                                 ;
@@ -294,7 +296,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             // Register in application support
                             Local profiles =
                                 LocalFactory.get(
-                                    Preferences.instance().getProperty("application.support.path"), "Profiles");
+                                    PreferencesFactory.get().getProperty("application.support.path"), "Profiles");
                             profiles.mkdir();
                             f.copy(LocalFactory.get(profiles, f.getName()));
                         }
@@ -339,7 +341,7 @@ namespace Ch.Cyberduck.Ui.Controller
             HistoryCollection.defaultCollection().addListener(this);
             UpdateController.Instance.CheckForUpdatesIfNecessary();
 
-            if (Preferences.instance().getBoolean("browser.serialize"))
+            if (PreferencesFactory.get().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
                     {
@@ -369,9 +371,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     bookmarksSemaphore.Signal();
                 }, delegate
                     {
-                        if (Preferences.instance().getBoolean("browser.open.untitled"))
+                        if (PreferencesFactory.get().getBoolean("browser.open.untitled"))
                         {
-                            if (Preferences.instance().getProperty("browser.open.bookmark.default") != null)
+                            if (PreferencesFactory.get().getProperty("browser.open.bookmark.default") != null)
                             {
                                 _bc.Invoke(delegate
                                     {
@@ -390,7 +392,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }, delegate
                     {
-                        if (Preferences.instance().getBoolean("queue.window.open.default"))
+                        if (PreferencesFactory.get().getBoolean("queue.window.open.default"))
                         {
                             _bc.Invoke(delegate { TransferController.Instance.View.Show(); });
                         }
@@ -411,8 +413,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Thread thread = new Thread(start);
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-            if (Preferences.instance().getBoolean("defaulthandler.reminder") &&
-                Preferences.instance().getInteger("uses") > 0)
+            if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
+                PreferencesFactory.get().getInteger("uses") > 0)
             {
                 if (!URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForFtp() ||
                     !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
@@ -432,7 +434,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                              if (verificationChecked)
                                              {
                                                  // Never show again.
-                                                 Preferences.instance().setProperty("defaulthandler.reminder", false);
+                                                 PreferencesFactory.get().setProperty("defaulthandler.reminder", false);
                                              }
                                              switch (option)
                                              {
@@ -459,7 +461,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (c.isEmpty())
                         {
                             // Flag as imported
-                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                            PreferencesFactory.get().setProperty(c.getConfiguration(), true);
                         }
                     }
                     bookmarksSemaphore.Wait();
@@ -488,7 +490,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                          if (verificationChecked)
                                                          {
                                                              // Flag as imported
-                                                             Preferences.instance()
+                                                             PreferencesFactory.get()
                                                                         .setProperty(c1.getConfiguration(), true);
                                                          }
                                                          switch (option)
@@ -496,7 +498,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                              case 0:
                                                                  BookmarkCollection.defaultCollection().addAll(c1);
                                                                  // Flag as imported
-                                                                 Preferences.instance()
+                                                                 PreferencesFactory.get()
                                                                             .setProperty(c1.getConfiguration(), true);
                                                                  break;
                                                          }
@@ -514,7 +516,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         FolderBookmarkCollection defaults =
                             new FolderBookmarkCollection(
-                                LocalFactory.get(Preferences.instance()
+                                LocalFactory.get(PreferencesFactory.get()
                                                                     .getProperty("application.bookmarks.path")));
                         defaults.load();
                         foreach (Host bookmark in defaults)
@@ -575,7 +577,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="controller"></param>
         public static void OpenDefaultBookmark(BrowserController controller)
         {
-            String defaultBookmark = Preferences.instance().getProperty("browser.open.bookmark.default");
+            String defaultBookmark = PreferencesFactory.get().getProperty("browser.open.bookmark.default");
             if (null == defaultBookmark)
             {
                 return; //No default bookmark given
@@ -618,16 +620,16 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!l.verify())
             {
                 string appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                String lastversion = Preferences.instance().getProperty("donate.reminder");
+                String lastversion = PreferencesFactory.get().getProperty("donate.reminder");
                 if (appVersion.Equals(lastversion))
                 {
                     // Do not display if same version is installed
                     return true;
                 }
 
-                DateTime nextReminder = new DateTime(Preferences.instance().getLong("donate.reminder.date"));
+                DateTime nextReminder = new DateTime(PreferencesFactory.get().getLong("donate.reminder.date"));
                 // Display donationPrompt every n days
-                nextReminder.AddDays(Preferences.instance().getLong("donate.reminder.interval"));
+                nextReminder.AddDays(PreferencesFactory.get().getLong("donate.reminder.interval"));
                 Logger.debug("Next reminder: " + nextReminder);
                 // Display after upgrade
                 if (nextReminder.CompareTo(DateTime.Now) == 1)
@@ -664,7 +666,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Determine if there are any open connections
             foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
-                if (Preferences.instance().getBoolean("browser.serialize"))
+                if (PreferencesFactory.get().getBoolean("browser.serialize"))
                 {
                     if (controller.IsMounted())
                     {
@@ -686,7 +688,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (controller.IsConnected())
                 {
-                    if (Preferences.instance().getBoolean("browser.disconnect.confirm"))
+                    if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                     {
                         controller.CommandBox(LocaleFactory.localizedString("Quit"),
                                               LocaleFactory.localizedString(
@@ -700,7 +702,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       if (verificationChecked)
                                                       {
                                                           // Never show again.
-                                                          Preferences.instance()
+                                                          PreferencesFactory.get()
                                                                      .setProperty("browser.disconnect.confirm", false);
                                                       }
                                                       switch (option)
@@ -798,8 +800,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 try
                 {
-                    Windows7Taskbar.SetCurrentProcessAppId(Preferences.instance().getProperty("application.name"));
-                    _jumpListManager = new JumpListManager(Preferences.instance().getProperty("application.name"));
+                    Windows7Taskbar.SetCurrentProcessAppId(PreferencesFactory.get().getProperty("application.name"));
+                    _jumpListManager = new JumpListManager(PreferencesFactory.get().getProperty("application.name"));
                     _jumpListManager.UserRemovedItems += (o, e) => { };
                 }
                 catch (Exception exception)

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +49,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public boolean isEnabled() {
-        return Preferences.instance().getBoolean(String.format("connection.protocol.%s.enable", this.getIdentifier()));
+        return PreferencesFactory.get().getBoolean(String.format("connection.protocol.%s.enable", this.getIdentifier()));
     }
 
     @Override
@@ -123,7 +124,7 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public String getDefaultHostname() {
         // Blank by default
-        return Preferences.instance().getProperty("connection.hostname.default");
+        return PreferencesFactory.get().getProperty("connection.hostname.default");
     }
 
     /**

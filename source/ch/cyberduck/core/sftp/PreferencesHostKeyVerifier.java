@@ -19,9 +19,9 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
@@ -40,7 +40,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     @Override
     public boolean verify(final String hostname, final int port, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        final String lookup = Preferences.instance().getProperty(this.getFormat(hostname, key));
+        final String lookup = PreferencesFactory.get().getProperty(this.getFormat(hostname, key));
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
             return true;
         }
@@ -61,7 +61,7 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     @Override
     protected void allow(final String hostname, final PublicKey key, final boolean persist) {
         if(persist) {
-            Preferences.instance().setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
+            PreferencesFactory.get().setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
         }
     }
 }

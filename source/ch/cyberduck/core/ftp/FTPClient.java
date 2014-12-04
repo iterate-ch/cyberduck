@@ -19,7 +19,8 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPCmd;
@@ -64,7 +65,7 @@ public class FTPClient extends FTPSClient {
     private Map<String, Set<String>> features;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public FTPClient(final SSLSocketFactory f, final SSLContext c) {
         super(false, c);

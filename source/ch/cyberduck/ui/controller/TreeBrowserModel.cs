@@ -22,6 +22,7 @@ using System.Text;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
 using ch.cyberduck.ui.action;
@@ -105,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                             .getShortFormat(
                                                 UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(
                                                     modificationDate),
-                                                Preferences.instance().getBoolean("browser.date.natural"));
+                                                PreferencesFactory.get().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }

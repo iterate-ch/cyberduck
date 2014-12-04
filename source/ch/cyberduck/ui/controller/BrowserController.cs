@@ -30,6 +30,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
@@ -90,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View = view;
 
-            ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
+            ShowHiddenFiles = PreferencesFactory.get().getBoolean("browser.showHidden");
 
             _limitListener = new DialogLimitedListProgressListener(this);
             _browserModel = new TreeBrowserModel(this, _cache, _limitListener);
@@ -284,8 +285,8 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateEncodings();
             UpdateOpenIcon();
 
-            View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
-            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.transcript.open");
+            View.ToolbarVisible = PreferencesFactory.get().getBoolean("browser.toolbar");
+            View.LogDrawerVisible = PreferencesFactory.get().getBoolean("browser.transcript.open");
 
             View.GetEditorsForSelection += View_GetEditorsForSelection;
             View.GetBookmarks += View_GetBookmarks;
@@ -467,7 +468,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateOpenInTerminal()
         {
             return IsMounted() && Session is SFTPSession &&
-                   File.Exists(Preferences.instance().getProperty("terminal.command.ssh"));
+                   File.Exists(PreferencesFactory.get().getProperty("terminal.command.ssh"));
         }
 
         private void View_OpenInTerminal()
@@ -1102,7 +1103,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<string> list = new List<string>();
             list.AddRange(new DefaultCharsetProvider().availableCharsets());
             View.PopulateEncodings(list);
-            View.SelectedEncoding = Preferences.instance().getProperty("browser.charset.encoding");
+            View.SelectedEncoding = PreferencesFactory.get().getProperty("browser.charset.encoding");
         }
 
         private void View_EncodingChanged(object sender, EncodingChangedArgs e)
@@ -1180,9 +1181,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 bookmark =
                     new Host(
-                        ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
-                        Preferences.instance().getProperty("connection.hostname.default"),
-                        Preferences.instance().getInteger("connection.port.default"));
+                        ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                        PreferencesFactory.get().getProperty("connection.hostname.default"),
+                        PreferencesFactory.get().getInteger("connection.port.default"));
             }
             ToggleView(BrowserView.Bookmark);
             AddBookmark(bookmark);
@@ -1348,7 +1349,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             CallbackDelegate run = delegate
                 {
-                    if (Preferences.instance().getBoolean("browser.disconnect.bookmarks.show"))
+                    if (PreferencesFactory.get().getBoolean("browser.disconnect.bookmarks.show"))
                     {
                         ToggleView(BrowserView.Bookmark);
                     }
@@ -1404,7 +1405,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else if (selected.isFile() || View.SelectedPaths.Count > 1)
             {
-                if (Preferences.instance().getBoolean("browser.doubleclick.edit"))
+                if (PreferencesFactory.get().getBoolean("browser.doubleclick.edit"))
                 {
                     View_EditEvent(null);
                 }
@@ -1455,7 +1456,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleLogDrawer()
         {
             View.LogDrawerVisible = !View.LogDrawerVisible;
-            Preferences.instance().setProperty("browser.transcript.open", View.LogDrawerVisible);
+            PreferencesFactory.get().setProperty("browser.transcript.open", View.LogDrawerVisible);
         }
 
         private void View_ShowHiddenFiles()
@@ -1470,7 +1471,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleToolbar()
         {
             View.ToolbarVisible = !View.ToolbarVisible;
-            Preferences.instance().setProperty("browser.toolbar", View.ToolbarVisible);
+            PreferencesFactory.get().setProperty("browser.toolbar", View.ToolbarVisible);
         }
 
         private bool View_ValidatePaste()
@@ -2043,7 +2044,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<Path> selected = SelectedPaths;
             if (selected.Count > 0)
             {
-                if (Preferences.instance().getBoolean("browser.info.inspector"))
+                if (PreferencesFactory.get().getBoolean("browser.info.inspector"))
                 {
                     if (null == _inspector || _inspector.View.IsDisposed)
                     {
@@ -2114,7 +2115,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // update inspector content if available
             IList<Path> selectedPaths = SelectedPaths;
 
-            if (Preferences.instance().getBoolean("browser.info.inspector"))
+            if (PreferencesFactory.get().getBoolean("browser.info.inspector"))
             {
                 if (_inspector != null && _inspector.Visible)
                 {
@@ -2582,7 +2583,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsConnected() || isActivityRunning())
             {
-                if (Preferences.instance().getBoolean("browser.disconnect.confirm"))
+                if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                 {
                     DialogResult result = CommandBox(LocaleFactory.localizedString("Disconnect"),
                                                      String.Format(
@@ -2597,7 +2598,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                              if (verificationChecked)
                                                              {
                                                                  // Never show again.
-                                                                 Preferences.instance()
+                                                                 PreferencesFactory.get()
                                                                             .setProperty("browser.disconnect.confirm",
                                                                                          false);
                                                              }
@@ -2622,7 +2623,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _session = null;
                     _cache.clear();
-                    View.WindowTitle = Preferences.instance().getProperty("application.name");
+                    View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
                     disconnected();
                 };
 
@@ -2686,7 +2687,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="action"></param>
         private bool CheckMove(IDictionary<Path, Path> selected)
         {
-            if (Preferences.instance().getBoolean("browser.move.confirm"))
+            if (PreferencesFactory.get().getBoolean("browser.move.confirm"))
             {
                 StringBuilder alertText =
                     new StringBuilder(LocaleFactory.localizedString("Do you want to move the selected files?"));
@@ -2723,7 +2724,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                    if (verificationChecked)
                                    {
                                        // Never show again.
-                                       Preferences.instance().setProperty("browser.move.confirm", false);
+                                       PreferencesFactory.get().setProperty("browser.move.confirm", false);
                                    }
                                    if (option == 0)
                                    {

@@ -23,6 +23,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
@@ -30,6 +31,7 @@ using java.lang;
 using org.apache.log4j;
 using Object = System.Object;
 using String = System.String;
+using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -54,9 +56,9 @@ namespace Ch.Cyberduck.Ui.Controller
             _ticklerRechability = new Timer(OnReachability, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
-            View.OptionsVisible = Preferences.instance().getBoolean("connection.toggle.options");
+            View.OptionsVisible = PreferencesFactory.get().getBoolean("connection.toggle.options");
             View.ViewClosedEvent +=
-                delegate { Preferences.instance().setProperty("connection.toggle.options", View.OptionsVisible); };
+                delegate { PreferencesFactory.get().setProperty("connection.toggle.options", View.OptionsVisible); };
 
             Init();
         }
@@ -140,10 +142,10 @@ namespace Ch.Cyberduck.Ui.Controller
             InitConnectModes();
             InitEncodings();
 
-            View.Username = Preferences.instance().getProperty("connection.login.name");
+            View.Username = PreferencesFactory.get().getProperty("connection.login.name");
             View.PkLabel = LocaleFactory.localizedString("No private key selected");
-            View.SavePasswordChecked = Preferences.instance().getBoolean("connection.login.useKeychain") &&
-                                       Preferences.instance().getBoolean("connection.login.addKeychain");
+            View.SavePasswordChecked = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
+                                       PreferencesFactory.get().getBoolean("connection.login.addKeychain");
             View.AnonymousChecked = false;
             View.PkCheckboxState = false;
             View.SelectedEncoding = Default;
@@ -178,7 +180,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            Preferences.instance().setProperty("connection.login.addKeychain", View.SavePasswordChecked);
+            PreferencesFactory.get().setProperty("connection.login.addKeychain", View.SavePasswordChecked);
         }
 
         private void View_OpenUrl()
@@ -191,14 +193,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.AnonymousChecked)
             {
                 View.UsernameEnabled = false;
-                View.Username = Preferences.instance().getProperty("connection.login.anon.name");
+                View.Username = PreferencesFactory.get().getProperty("connection.login.anon.name");
                 View.PasswordEnabled = false;
                 View.Password = string.Empty;
             }
             else
             {
                 View.UsernameEnabled = true;
-                View.Username = Preferences.instance().getProperty("connection.login.name");
+                View.Username = PreferencesFactory.get().getProperty("connection.login.name");
                 View.PasswordEnabled = true;
             }
             UpdateUrlLabel();
@@ -273,7 +275,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (Preferences.instance().getBoolean("connection.login.useKeychain"))
+            if (PreferencesFactory.get().getBoolean("connection.login.useKeychain"))
             {
                 if (string.IsNullOrEmpty(View.Hostname))
                 {
@@ -433,7 +435,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.PopulateProtocols(protocols);
             View.SelectedProtocol =
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
         }
 
         private void InitConnectModes()

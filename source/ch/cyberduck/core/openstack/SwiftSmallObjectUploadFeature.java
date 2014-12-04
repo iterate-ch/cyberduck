@@ -19,11 +19,11 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.log4j.Logger;
@@ -66,7 +66,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(Preferences.instance().getBoolean("openstack.upload.md5")) {
+        if(PreferencesFactory.get().getBoolean("openstack.upload.md5")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }

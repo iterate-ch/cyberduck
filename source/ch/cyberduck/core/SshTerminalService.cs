@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core
@@ -33,14 +34,14 @@ namespace Ch.Cyberduck.Core
             TextWriter tw = new StreamWriter(tempFile);
             tw.WriteLine("cd {0} && exec $SHELL", workdir.getAbsolute());
             tw.Close();
-            String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
+            String ssh = String.Format(PreferencesFactory.get().getProperty("terminal.command.ssh.args"),
                                        identity
                                            ? "-i " + host.getCredentials().getIdentity().getAbsolute()
                                            : String.Empty, host.getCredentials().getUsername(), host.getHostname(),
                                        Convert.ToString(host.getPort()), tempFile);
             ApplicationLauncherFactory.get()
                                       .open(
-                                          new Application(Preferences.instance().getProperty("terminal.command.ssh"),
+                                          new Application(PreferencesFactory.get().getProperty("terminal.command.ssh"),
                                                           null), ssh);
         }
     }

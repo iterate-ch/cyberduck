@@ -26,11 +26,12 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -59,7 +60,7 @@ public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private WindowController parent;
 
@@ -83,12 +84,12 @@ public final class PromptLoginController implements LoginCallback {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-        final StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/").append(protocol.getScheme().name());
         int option = parent.alert(alert, site.toString());
         if(alert.suppressionButton().state() == NSCell.NSOnState) {
             // Never show again.
-            Preferences.instance().setProperty(preference, true);
+            PreferencesFactory.get().setProperty(preference, true);
         }
         switch(option) {
             case SheetCallback.CANCEL_OPTION:

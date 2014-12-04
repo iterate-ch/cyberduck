@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.jets3t.service.Jets3tProperties;
@@ -98,7 +99,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Ignore
     public void testListCnameAnonymous() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -116,7 +117,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testListBuckenameAnonymous() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
@@ -134,7 +135,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
     @Test
     public void testListDefaultPath() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setDefaultPath("/dist.springframework.org/release");
         final S3Session session = new S3Session(host);

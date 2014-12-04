@@ -19,8 +19,8 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class BackgroundActionPauser {
      * The delay to wait before execution of the action in seconds
      */
     private int delay
-            = Preferences.instance().getInteger("connection.retry.delay");
+            = PreferencesFactory.get().getInteger("connection.retry.delay");
 
     private final String pattern
             = LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");

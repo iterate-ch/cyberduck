@@ -26,6 +26,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 using wyDay.Controls;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -54,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
             newVersionAvailableLabel.Text =
                 LocaleFactory.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
-                                                                                               Preferences.instance().
+                                                                                               PreferencesFactory.get().
                                                                                                            getProperty(
                                                                                                                "application.name"));
             //force handle creation to make the updater work
@@ -91,8 +92,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void SetFeedUrl()
         {
-            String currentFeed = Preferences.instance().getProperty("update.feed");
-            String feedUrl = Preferences.instance().getProperty("update.feed." + currentFeed);
+            String currentFeed = PreferencesFactory.get().getProperty("update.feed");
+            String feedUrl = PreferencesFactory.get().getProperty("update.feed." + currentFeed);
             Log.debug("Setting feed URL to " + feedUrl);
             updater.wyUpdateCommandline = "-server=\"" + feedUrl + "\"";
         }
@@ -148,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     tableLayoutPanel.RowStyles[7].Height = 100;
 
                     string currentVersion =
-                        Preferences.instance().getProperty("application.version");
+                        PreferencesFactory.get().getProperty("application.version");
 
                     versionLabel.Text = LocaleFactory.localizedString(
                         "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",

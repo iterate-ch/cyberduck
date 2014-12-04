@@ -25,13 +25,13 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -79,7 +79,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
-        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
         a.call();
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
     }
 
     @Test
@@ -184,6 +184,6 @@ public class SessionBackgroundActionTest extends AbstractTestCase {
                 throw failure;
             }
         };
-        assertEquals(Preferences.instance().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
     }
 }

@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.application.NSMutableParagraphStyle;
 import ch.cyberduck.ui.cocoa.application.NSParagraphStyle;
@@ -64,7 +64,7 @@ public final class TableCellAttributes {
     }
 
     public static final NSDictionary BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+            NSArray.arrayWithObjects(NSFont.systemFontOfSize(PreferencesFactory.get().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName)
     );
 
@@ -73,7 +73,7 @@ public final class TableCellAttributes {
     }
 
     public static final NSDictionary BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(NSFont.systemFontOfSize(PreferencesFactory.get().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName)
     );
 

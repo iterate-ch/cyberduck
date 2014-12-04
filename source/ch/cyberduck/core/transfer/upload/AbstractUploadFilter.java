@@ -26,7 +26,6 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -39,6 +38,8 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -74,7 +75,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             = new MappingMimeTypeService();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {

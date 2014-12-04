@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using Application = ch.cyberduck.core.local.Application;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -1461,7 +1462,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DialogResult result = editorOpenFileDialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName.ToLower());
                     RepopulateEditorsEvent();
                 }

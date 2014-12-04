@@ -26,12 +26,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.growl.NotificationService;
 import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
@@ -139,7 +139,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      */
     protected int retry() {
         // The initial connection attempt does not count
-        return Preferences.instance().getInteger("connection.retry") - repeat;
+        return PreferencesFactory.get().getInteger("connection.retry") - repeat;
     }
 
     protected void reset() {

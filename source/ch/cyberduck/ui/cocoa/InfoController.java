@@ -46,6 +46,8 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.VersioningConfiguration;
 import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
@@ -109,7 +111,7 @@ public class InfoController extends ToolbarWindowController {
             = new PathContainerService();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private Path getSelected() {
         for(Path file : files) {

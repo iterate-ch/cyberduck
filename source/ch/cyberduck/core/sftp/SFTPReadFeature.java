@@ -18,9 +18,9 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -51,7 +51,7 @@ public class SFTPReadFeature implements Read {
             final RemoteFile handle = session.sftp().open(file.getAbsolute(),
                     EnumSet.of(OpenMode.READ));
             final int maxUnconfirmedReads
-                    = (int) (status.getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1;
+                    = (int) (status.getLength() / PreferencesFactory.get().getInteger("connection.chunksize")) + 1;
             if(status.isAppend()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Skipping %d bytes", status.getCurrent()));

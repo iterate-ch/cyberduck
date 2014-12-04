@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using org.apache.commons.io;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
@@ -59,13 +60,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly IconCache instance = new IconCache();
 
         private readonly TypedLRUCache<Bitmap> _bitmapCache =
-            new TypedLRUCache<Bitmap>(Preferences.instance().getInteger("icon.cache.size"));
+            new TypedLRUCache<Bitmap>(PreferencesFactory.get().getInteger("icon.cache.size"));
 
         /// <summary>
         /// Cache limited to n entries
         /// </summary>
         private readonly TypedLRUCache<Icon> _iconCache =
-            new TypedLRUCache<Icon>(Preferences.instance().getInteger("icon.cache.size"));
+            new TypedLRUCache<Icon>(PreferencesFactory.get().getInteger("icon.cache.size"));
 
         private readonly Dictionary<int, ImageList> _protocolImages = new Dictionary<int, ImageList>();
 

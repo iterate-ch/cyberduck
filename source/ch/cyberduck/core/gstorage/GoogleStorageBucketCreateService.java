@@ -19,9 +19,9 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 
@@ -47,7 +47,7 @@ public class GoogleStorageBucketCreateService {
             throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
         }
         AccessControlList acl;
-        if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+        if(PreferencesFactory.get().getProperty("s3.bucket.acl.default").equals("public-read")) {
             acl = GSAccessControlList.REST_CANNED_PUBLIC_READ;
         }
         else {

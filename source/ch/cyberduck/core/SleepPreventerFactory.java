@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 /**
  * @version $Id$
  */
@@ -28,7 +30,7 @@ public class SleepPreventerFactory extends Factory<SleepPreventer> {
     }
 
     public static SleepPreventer get() {
-        if(!Preferences.instance().getBoolean("queue.sleep.prevent")) {
+        if(!PreferencesFactory.get().getBoolean("queue.sleep.prevent")) {
             return new DisabledSleepPreventer();
         }
         return new SleepPreventerFactory().create();

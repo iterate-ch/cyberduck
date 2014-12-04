@@ -19,9 +19,9 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
@@ -54,7 +54,7 @@ public class S3DirectoryFeature implements Directory {
             if(containerService.isContainer(file)) {
                 final S3BucketCreateService service = new S3BucketCreateService(session);
                 if(StringUtils.isBlank(region)) {
-                    service.create(file, Preferences.instance().getProperty("s3.location"));
+                    service.create(file, PreferencesFactory.get().getProperty("s3.location"));
                 }
                 else {
                     service.create(file, region);

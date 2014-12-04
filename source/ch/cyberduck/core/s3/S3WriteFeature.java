@@ -20,13 +20,14 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -58,7 +59,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private Find finder;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     /**
      * Storage class

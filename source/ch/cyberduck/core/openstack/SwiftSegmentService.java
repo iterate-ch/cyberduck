@@ -20,10 +20,10 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -59,7 +59,7 @@ public class SwiftSegmentService {
     private String prefix;
 
     public SwiftSegmentService(final SwiftSession session) {
-        this(session, Preferences.instance().getProperty("openstack.upload.largeobject.segments.prefix"));
+        this(session, PreferencesFactory.get().getProperty("openstack.upload.largeobject.segments.prefix"));
     }
 
     public SwiftSegmentService(final SwiftSession session, final String prefix) {

@@ -22,6 +22,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -145,7 +146,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return;
             }
             string base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlString));
-            Preferences.instance().setProperty("ui." + Name + key, base64String);
+            PreferencesFactory.get().setProperty("ui." + Name + key, base64String);
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>The stored object, or the <paramref name="fallback"/> object if something went wrong.</returns>
         public T Get<T>(string key, T fallback)
         {
-            String val = Preferences.instance().getProperty("ui." + Name + key);
+            String val = PreferencesFactory.get().getProperty("ui." + Name + key);
             if (null == val)
             {
                 return fallback;

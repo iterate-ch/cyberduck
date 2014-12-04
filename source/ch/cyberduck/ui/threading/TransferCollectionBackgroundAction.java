@@ -19,13 +19,13 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Queue;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -56,7 +56,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
                                               final TranscriptListener transcriptListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, session, new Cache<Path>(Preferences.instance().getInteger("transfer.cache.size")),
+        super(controller, session, new Cache<Path>(PreferencesFactory.get().getInteger("transfer.cache.size")),
                 transferListener, progressListener, transcriptListener, transfer, options);
         this.transfer = transfer;
         this.session = session;
@@ -95,7 +95,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         }
         super.cleanup();
         final TransferCollection collection = TransferCollection.defaultCollection();
-        if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")
+        if(PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete")
                 && transfer.isReset() && transfer.isComplete()) {
             collection.remove(transfer);
         }

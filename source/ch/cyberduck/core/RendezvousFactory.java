@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 /**
  * @version $Id$
  */
@@ -32,7 +34,7 @@ public class RendezvousFactory extends Factory<Rendezvous> {
 
     public static synchronized Rendezvous instance() {
         if(null == rendezvous) {
-            if(Preferences.instance().getBoolean("rendezvous.enable")) {
+            if(PreferencesFactory.get().getBoolean("rendezvous.enable")) {
                 rendezvous = new RendezvousFactory().create();
             }
             else {

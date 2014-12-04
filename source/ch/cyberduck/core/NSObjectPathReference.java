@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
@@ -42,7 +43,7 @@ public class NSObjectPathReference implements PathReference<NSObject> {
     private int hashcode;
 
     private static Map<String, NSString> cache = Collections.synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("browser.model.cache.size")
+            PreferencesFactory.get().getInteger("browser.model.cache.size")
     ));
 
     public NSObjectPathReference(final Path file) {

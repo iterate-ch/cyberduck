@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -26,19 +26,19 @@ import ch.cyberduck.core.Preferences;
 public final class UploadFilterOptions {
 
     public boolean permissions
-            = Preferences.instance().getBoolean("queue.upload.permissions.change");
+            = PreferencesFactory.get().getBoolean("queue.upload.permissions.change");
 
     public boolean acl
-            = Preferences.instance().getBoolean("queue.upload.permissions.change");
+            = PreferencesFactory.get().getBoolean("queue.upload.permissions.change");
 
     public boolean timestamp
-            = Preferences.instance().getBoolean("queue.upload.timestamp.change");
+            = PreferencesFactory.get().getBoolean("queue.upload.timestamp.change");
 
     /**
      * Create temporary filename with an UUID and rename when upload is complete
      */
     public boolean temporary
-            = Preferences.instance().getBoolean("queue.upload.file.temporary");
+            = PreferencesFactory.get().getBoolean("queue.upload.file.temporary");
 
     public UploadFilterOptions() {
         // Defaults

@@ -38,6 +38,8 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -161,7 +163,7 @@ public class BrowserController extends WindowController
     private final QuickLook quicklook = QuickLookFactory.get();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     /**
      * Hide files beginning with '.'
@@ -171,7 +173,7 @@ public class BrowserController extends WindowController
     private Filter<Path> filenameFilter;
 
     {
-        if(Preferences.instance().getBoolean("browser.showHidden")) {
+        if(PreferencesFactory.get().getBoolean("browser.showHidden")) {
             this.filenameFilter = new NullPathFilter<Path>();
             this.showHiddenFiles = true;
         }

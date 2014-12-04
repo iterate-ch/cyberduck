@@ -23,7 +23,7 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,13 +58,13 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                 }
                 else {
                     // No custom public key authentication configuration
-                    if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
-                        final Local rsa = LocalFactory.get(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
+                    if(PreferencesFactory.get().getBoolean("ssh.authentication.publickey.default.enable")) {
+                        final Local rsa = LocalFactory.get(PreferencesFactory.get().getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
                             credentials.setIdentity(rsa);
                         }
                         else {
-                            final Local dsa = LocalFactory.get(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
+                            final Local dsa = LocalFactory.get(PreferencesFactory.get().getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
                                 credentials.setIdentity(dsa);
                             }

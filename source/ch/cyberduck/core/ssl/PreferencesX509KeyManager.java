@@ -19,17 +19,18 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.security.KeyStore;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PreferencesX509KeyManager extends KeychainX509KeyManager {
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public PreferencesX509KeyManager() {
         super();

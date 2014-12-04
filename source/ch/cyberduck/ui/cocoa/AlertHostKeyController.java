@@ -22,11 +22,11 @@ import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
@@ -49,8 +49,8 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private WindowController parent;
 
     public AlertHostKeyController(final WindowController c) {
-        this(c, LocalFactory.get(Preferences.instance().getProperty("ssh.knownhosts")).withBookmark(
-                Preferences.instance().getProperty("ssh.knownhosts.bookmark")
+        this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
+                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
     }
 

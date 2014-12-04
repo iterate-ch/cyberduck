@@ -6,6 +6,7 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
@@ -106,7 +107,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         };
         {
             Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
-            Preferences.instance().setProperty("queue.download.priority.regex", ".*\\.html");
+            PreferencesFactory.get().setProperty("queue.download.priority.regex", ".*\\.html");
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {
@@ -118,7 +119,7 @@ public class DownloadTransferTest extends AbstractTestCase {
         }
         {
             Transfer t = new DownloadTransfer(new Host("t"), root, new NullLocal("l"));
-            Preferences.instance().deleteProperty("queue.download.priority.regex");
+            PreferencesFactory.get().deleteProperty("queue.download.priority.regex");
             final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {

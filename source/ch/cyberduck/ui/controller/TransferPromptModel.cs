@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.action;
@@ -64,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Transfer = transfer;
             _action =
                 TransferAction.forName(
-                    Preferences.instance()
+                    PreferencesFactory.get()
                                .getProperty(String.Format("queue.prompt.{0}.action.default", transfer.getType().name())));
         }
 

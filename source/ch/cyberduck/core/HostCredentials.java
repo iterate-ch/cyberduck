@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 /**
  * @version $Id$
  */
@@ -25,7 +27,7 @@ public final class HostCredentials extends Credentials {
     private Host host;
 
     public HostCredentials(final Host host) {
-        super(Preferences.instance().getProperty("connection.login.name"), null);
+        super(PreferencesFactory.get().getProperty("connection.login.name"), null);
         this.host = host;
     }
 

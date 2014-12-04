@@ -23,13 +23,13 @@ import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -77,7 +77,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final TransferItemCallback callback, final LoginCallback login,
                                     final ProgressListener progressListener, final StreamListener streamListener) {
         this(connect, transfer, options, meter, prompt, error, callback, login, progressListener, streamListener,
-                Preferences.instance().getInteger("queue.session.pool.size"));
+                PreferencesFactory.get().getInteger("queue.session.pool.size"));
     }
 
     public ConcurrentTransferWorker(final ConnectionService connect,

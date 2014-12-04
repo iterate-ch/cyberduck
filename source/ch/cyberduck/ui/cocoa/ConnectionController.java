@@ -21,8 +21,20 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSComboBox;
+import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -44,7 +56,7 @@ public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     @Override
     protected void invalidate() {

@@ -18,7 +18,8 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;
@@ -45,7 +46,7 @@ public class BundleLocale implements Locale {
 
     @Override
     public void setDefault(final String language) {
-        final Preferences preferences = Preferences.instance();
+        final Preferences preferences = PreferencesFactory.get();
         if(null == language) {
             // Revert to system default language
             preferences.deleteProperty("AppleLanguages");

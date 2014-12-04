@@ -22,12 +22,13 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -64,7 +65,7 @@ public abstract class TransferPromptController extends SheetController
             = new TableColumnFactory();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             LocaleFactory.localizedString("Unknown"),

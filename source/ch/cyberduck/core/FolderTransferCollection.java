@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -40,7 +42,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private static final Logger log = Logger.getLogger(FolderTransferCollection.class);
 
     private static final FolderTransferCollection TRANSFER_COLLECTION = new FolderTransferCollection(
-            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Transfers"));
+            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Transfers"));
 
     /**
      * @return Singleton instance
@@ -63,7 +65,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private Local folder;
 

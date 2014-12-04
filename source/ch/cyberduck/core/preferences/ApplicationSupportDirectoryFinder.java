@@ -20,7 +20,6 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -34,7 +33,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(ApplicationSupportDirectoryFinder.class);
 
-    private final Preferences preferences = Preferences.instance();
+    private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public Local find() {

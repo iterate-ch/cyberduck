@@ -20,10 +20,10 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.growl.NotificationService;
 import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
@@ -61,7 +61,7 @@ public final class Queue {
     private int size;
 
     public Queue() {
-        this(Preferences.instance().getInteger("queue.maxtransfers"));
+        this(PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
     public Queue(final int size) {

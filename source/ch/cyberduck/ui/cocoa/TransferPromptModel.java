@@ -22,9 +22,9 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -97,7 +97,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         this.session = session;
         this.transfer = transfer;
         this.cache = cache;
-        this.action = TransferAction.forName(Preferences.instance().getProperty(
+        this.action = TransferAction.forName(PreferencesFactory.get().getProperty(
                 String.format("queue.prompt.%s.action.default", transfer.getType().name())));
     }
 

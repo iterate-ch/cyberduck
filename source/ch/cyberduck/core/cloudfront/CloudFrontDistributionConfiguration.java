@@ -18,7 +18,20 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.KeychainLoginService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -33,6 +46,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -246,7 +260,7 @@ public class CloudFrontDistributionConfiguration
                                 if(log.isDebugEnabled()) {
                                     log.debug(String.format("Set logging target for %s to %s", distribution, loggingTarget));
                                 }
-                                loggingStatus = new LoggingStatus(loggingTarget, Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                                loggingStatus = new LoggingStatus(loggingTarget, PreferencesFactory.get().getProperty("cloudfront.logging.prefix"));
                             }
                         }
                     }

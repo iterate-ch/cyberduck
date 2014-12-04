@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -124,10 +125,10 @@ public class HostTest extends AbstractTestCase {
 
     @Test
     public void testInvalidProtocol() {
-        Preferences.instance().setProperty("connection.protocol.default", "me");
+        PreferencesFactory.get().setProperty("connection.protocol.default", "me");
         final Host bookmark = new Host("h");
         assertEquals(ProtocolFactory.FTP, bookmark.getProtocol());
-        Preferences.instance().deleteProperty("connection.protocol.default");
+        PreferencesFactory.get().deleteProperty("connection.protocol.default");
     }
 
     @Test

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -25,7 +27,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 public class LimitedListProgressListener implements ListProgressListener {
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     /**
      * Limit for containers

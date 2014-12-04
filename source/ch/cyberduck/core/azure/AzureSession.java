@@ -28,7 +28,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,6 +45,8 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -90,7 +91,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             = new KeychainX509KeyManager();
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public AzureSession(final Host h) {
         super(h, trust, key);

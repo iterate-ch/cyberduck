@@ -19,6 +19,7 @@
 using System;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.sftp;
@@ -59,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Question,
-                        Preferences.instance().getProperty("website.help") + "/" + Scheme.sftp.name(),
+                        PreferencesFactory.get().getProperty("website.help") + "/" + Scheme.sftp.name(),
                         delegate(int option, bool verificationChecked)
                             {
                                 switch (option)
@@ -89,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                                       LocaleFactory.localizedString("Deny")), false,
                         LocaleFactory.localizedString("Always"), SysIcons.Warning,
-                        Preferences.instance().getProperty("website.help") + "/" + Scheme.sftp.name(),
+                        PreferencesFactory.get().getProperty("website.help") + "/" + Scheme.sftp.name(),
                         delegate(int option, bool verificationChecked)
                             {
                                 switch (option)

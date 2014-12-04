@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.apache.commons.net.DefaultSocketFactory;
@@ -66,7 +67,7 @@ public class ProxySocketFactory extends SocketFactory {
      * direct connection socket factory.
      */
     private SocketFactory factory(final String target) {
-        if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+        if(PreferencesFactory.get().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = proxyFinder.find(new Host(protocol, target));
             if(proxy.getType() == Proxy.Type.SOCKS) {
                 if(log.isInfoEnabled()) {

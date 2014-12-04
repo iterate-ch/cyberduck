@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.local;
 
@@ -41,22 +42,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Show()
         {
-            int uses = Preferences.instance().getInteger("uses");
+            int uses = PreferencesFactory.get().getInteger("uses");
             View.Title = LocaleFactory.localizedString("Please Donate", "Donate") + " (" + uses + ")";
             View.NeverShowDonation =
                 Assembly.GetExecutingAssembly().GetName().Version.ToString().Equals(
-                    Preferences.instance().getProperty("donate.reminder"));
+                    PreferencesFactory.get().getProperty("donate.reminder"));
             if (DialogResult.OK == View.ShowDialog())
             {
-                BrowserLauncherFactory.get().open(Preferences.instance().getProperty("website.donate"));
+                BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
             }
             if (View.NeverShowDonation)
             {
-                Preferences.instance().setProperty("donate.reminder",
+                PreferencesFactory.get().setProperty("donate.reminder",
                                                    Assembly.GetExecutingAssembly().GetName().Version.ToString());
             }
             // Remeber this reminder date
-            Preferences.instance().setProperty("donate.reminder.date", DateTime.Now.Ticks);
+            PreferencesFactory.get().setProperty("donate.reminder.date", DateTime.Now.Ticks);
         }
     }
 }

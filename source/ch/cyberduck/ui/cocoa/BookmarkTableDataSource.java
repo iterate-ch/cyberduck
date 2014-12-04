@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
@@ -250,7 +251,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         final Host host = this.getSource().get(row.intValue());
         if(identifier.equals(Column.icon.name())) {
             return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
-                    Preferences.instance().getInteger("bookmark.icon.size"));
+                    PreferencesFactory.get().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(Column.bookmark.name())) {
             final NSMutableDictionary dict = NSMutableDictionary.dictionary();

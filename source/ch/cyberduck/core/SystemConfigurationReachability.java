@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.library.Native;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -37,7 +38,7 @@ public final class SystemConfigurationReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host host) {
-        if(!Preferences.instance().getBoolean("connection.hostname.check")) {
+        if(!PreferencesFactory.get().getBoolean("connection.hostname.check")) {
             return true;
         }
         return this.isReachable(this.toURL(host));

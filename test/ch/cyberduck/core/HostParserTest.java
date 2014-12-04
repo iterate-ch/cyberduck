@@ -3,6 +3,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class HostParserTest extends AbstractTestCase {
     @Test
     public void testParseURLEmpty() {
         Host h = HostParser.parse("");
-        assertTrue(h.getHostname().equals(Preferences.instance().getProperty("connection.hostname.default")));
+        assertTrue(h.getHostname().equals(PreferencesFactory.get().getProperty("connection.hostname.default")));
     }
 
     @Test
@@ -153,7 +154,7 @@ public class HostParserTest extends AbstractTestCase {
         Host h = HostParser.parse(url);
         assertTrue(h.getHostname().equals("hostname"));
         assertTrue(h.getProtocol().equals(
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"))));
         assertNotNull(h.getCredentials().getUsername());
         assertTrue(h.getCredentials().getUsername().equals("user"));
         assertNull(h.getCredentials().getPassword());
@@ -166,7 +167,7 @@ public class HostParserTest extends AbstractTestCase {
         Host h = HostParser.parse(url);
         assertEquals("hostname", h.getHostname());
         assertTrue(h.getProtocol().equals(
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"))));
         assertNotNull(h.getCredentials().getUsername());
         assertTrue(h.getCredentials().getUsername().equals("user"));
         assertNull(h.getCredentials().getPassword());
@@ -178,7 +179,7 @@ public class HostParserTest extends AbstractTestCase {
         Host h = HostParser.parse(url);
         assertEquals("hostname", h.getHostname());
         assertTrue(h.getProtocol().equals(
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"))));
         assertNotNull(h.getCredentials().getUsername());
         assertTrue(h.getCredentials().getUsername().equals("user@name"));
         assertNull(h.getCredentials().getPassword());
@@ -190,7 +191,7 @@ public class HostParserTest extends AbstractTestCase {
         Host h = HostParser.parse(url);
         assertEquals("hostname", h.getHostname());
         assertTrue(h.getProtocol().equals(
-                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default"))));
         assertNotNull(h.getCredentials().getUsername());
         assertTrue(h.getCredentials().getUsername().equals("user@name"));
         assertTrue(h.getCredentials().getPassword().equals("password"));

@@ -22,6 +22,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
 using java.lang;
 using String = System.String;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -41,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _controller.Invoke(delegate
                 {
                     String provider = host.getProtocol().getProvider();
-                    string footer = String.Format("{0}/{1}", Preferences.instance().getProperty("website.help"),
+                    string footer = String.Format("{0}/{1}", PreferencesFactory.get().getProperty("website.help"),
                                                   provider);
                     string title = LocaleFactory.localizedString("Error");
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");

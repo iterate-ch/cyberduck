@@ -17,7 +17,7 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -29,7 +29,7 @@ public final class SizeFormatterFactory {
     }
 
     public static SizeFormatter get() {
-        return SizeFormatterFactory.get(Preferences.instance().getBoolean("browser.filesize.decimal"));
+        return SizeFormatterFactory.get(PreferencesFactory.get().getBoolean("browser.filesize.decimal"));
     }
 
     public static SizeFormatter get(final boolean decimal) {

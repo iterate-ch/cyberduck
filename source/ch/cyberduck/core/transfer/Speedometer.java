@@ -19,11 +19,11 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -59,7 +59,7 @@ public class Speedometer {
     }
 
     public Speedometer(final long timestamp) {
-        this(timestamp, Preferences.instance().getBoolean("browser.filesize.decimal"));
+        this(timestamp, PreferencesFactory.get().getBoolean("browser.filesize.decimal"));
         this.timestamp = timestamp;
     }
 

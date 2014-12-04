@@ -18,7 +18,7 @@ package ch.cyberduck.core.transfer.download;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * @version $Id$
@@ -26,14 +26,14 @@ import ch.cyberduck.core.Preferences;
 public final class DownloadFilterOptions {
 
     public boolean permissions
-            = Preferences.instance().getBoolean("queue.download.permissions.change");
+            = PreferencesFactory.get().getBoolean("queue.download.permissions.change");
 
     public boolean timestamp
-            = Preferences.instance().getBoolean("queue.download.timestamp.change");
+            = PreferencesFactory.get().getBoolean("queue.download.timestamp.change");
 
     public boolean wherefrom
-            = Preferences.instance().getBoolean("queue.download.wherefrom");
+            = PreferencesFactory.get().getBoolean("queue.download.wherefrom");
 
     public boolean icon
-            = Preferences.instance().getBoolean("queue.download.icon.update");
+            = PreferencesFactory.get().getBoolean("queue.download.icon.update");
 }

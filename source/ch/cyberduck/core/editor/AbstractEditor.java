@@ -21,7 +21,6 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -33,6 +32,7 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.ui.action.Worker;
@@ -95,7 +95,7 @@ public abstract class AbstractEditor implements Editor {
                           final ProgressListener listener) {
         this.applicationLauncher = launcher;
         this.application = application;
-        if(file.isSymbolicLink() && Preferences.instance().getBoolean("editor.upload.symboliclink.resolve")) {
+        if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
             this.remote = file.getSymlinkTarget();
         }
         else {

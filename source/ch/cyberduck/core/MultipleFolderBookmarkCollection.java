@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +45,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
     }
 
     private static final MultipleFolderBookmarkCollection DEFAULT_COLLECTION = new MultipleFolderBookmarkCollection(
-            LocalFactory.get(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
+            LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Bookmarks")
     );
 
     public static MultipleFolderBookmarkCollection defaultCollection() {

@@ -21,11 +21,12 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     private static final Logger log = Logger.getLogger(EditorFactory.class);
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private ApplicationFinder applicationFinder;
 
@@ -57,7 +58,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     public static synchronized EditorFactory instance() {
         if(null == factory) {
             try {
-                final String clazz = Preferences.instance().getProperty("factory.editorfactory.class");
+                final String clazz = PreferencesFactory.get().getProperty("factory.editorfactory.class");
                 if(null == clazz) {
                     throw new FactoryException();
                 }

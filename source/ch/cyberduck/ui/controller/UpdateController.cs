@@ -17,6 +17,7 @@
 // 
 using System;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -47,10 +48,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void CheckForUpdatesIfNecessary()
         {
-            if (Preferences.instance().getBoolean("update.check"))
+            if (PreferencesFactory.get().getBoolean("update.check"))
             {
-                DateTime lastCheck = new DateTime(Preferences.instance().getLong("update.check.last"));
-                long interval = Preferences.instance().getLong("update.check.interval");
+                DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
+                long interval = PreferencesFactory.get().getLong("update.check.interval");
 
                 // see if enough days have elapsed since last check.
                 TimeSpan span = DateTime.Now.Subtract(lastCheck);
@@ -68,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void ForceCheckForUpdates(bool background)
         {
             View.CheckForUpdates(background);
-            Preferences.instance().setProperty("update.check.last", DateTime.Now.Ticks);
+            PreferencesFactory.get().setProperty("update.check.last", DateTime.Now.Ticks);
         }
     }
 }

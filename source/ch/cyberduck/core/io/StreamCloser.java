@@ -18,8 +18,9 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -35,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class StreamCloser {
 
     private final Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     public void close(final InputStream in) throws ConnectionTimeoutException {
         final CountDownLatch signal = new CountDownLatch(1);

@@ -26,10 +26,10 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -96,7 +96,7 @@ public class S3ObjectListService implements ListService {
             final Path container = containerService.getContainer(directory);
             children.addAll(this.listObjects(container,
                     directory, prefix, String.valueOf(Path.DELIMITER), listener));
-            if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+            if(PreferencesFactory.get().getBoolean("s3.revisions.enable")) {
                 if(session.getFeature(Versioning.class) != null
                         && session.getFeature(Versioning.class).withCache(versioning).getConfiguration(container).isEnabled()) {
                     String priorLastKey = null;
@@ -104,7 +104,7 @@ public class S3ObjectListService implements ListService {
                     do {
                         final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                                 container.getName(), prefix, String.valueOf(Path.DELIMITER),
-                                Preferences.instance().getInteger("s3.listing.chunksize"),
+                                PreferencesFactory.get().getInteger("s3.listing.chunksize"),
                                 priorLastKey, priorLastVersionId, true);
                         children.addAll(this.listVersions(container, directory,
                                 Arrays.asList(chunk.getItems())));
@@ -137,7 +137,7 @@ public class S3ObjectListService implements ListService {
             // in lexicographic (alphabetical) order.
             final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                    Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
+                    PreferencesFactory.get().getInteger("s3.listing.chunksize"), priorLastKey);
 
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {

@@ -19,11 +19,11 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -46,12 +46,12 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
 
     public DAVUploadFeature(final DAVSession session) {
         super(new DAVWriteFeature(session));
-        this.checksum = Preferences.instance().getBoolean("webdav.upload.checksum");
+        this.checksum = PreferencesFactory.get().getBoolean("webdav.upload.checksum");
     }
 
     public DAVUploadFeature(final AbstractHttpWriteFeature<String> writer) {
         super(writer);
-        this.checksum = Preferences.instance().getBoolean("webdav.upload.checksum");
+        this.checksum = PreferencesFactory.get().getBoolean("webdav.upload.checksum");
     }
 
     public DAVUploadFeature(final AbstractHttpWriteFeature<String> writer, final boolean checksum) {

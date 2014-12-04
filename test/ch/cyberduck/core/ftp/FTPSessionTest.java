@@ -11,6 +11,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -37,7 +38,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test
     public void testConnectAnonymous() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
         assertEquals(Session.State.closed, session.getState());
@@ -60,7 +61,7 @@ public class FTPSessionTest extends AbstractTestCase {
     @Test(expected = LoginFailureException.class)
     public void testConnectTLSNotSupported() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "mirror.switch.ch", new Credentials(
-                Preferences.instance().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),

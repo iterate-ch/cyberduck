@@ -42,7 +42,7 @@ using Keychain = Ch.Cyberduck.Core.Keychain;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.Preferences
 {
     public class UserPreferences : Preferences
     {

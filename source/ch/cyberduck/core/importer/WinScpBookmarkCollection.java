@@ -21,9 +21,9 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(Preferences.instance().getProperty("bookmark.import.winscp.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.winscp.location"));
     }
 
     @Override
@@ -70,9 +70,9 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                 String line;
                 while((line = in.readLine()) != null) {
                     if(line.startsWith("[Sessions\\")) {
-                        current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                        current = new Host(PreferencesFactory.get().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
-                                Preferences.instance().getProperty("connection.login.anon.name"));
+                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
                         current.setProtocol(ProtocolFactory.SFTP);
                         Pattern pattern = Pattern.compile("\\[Session\\\\(.*)\\]");
                         Matcher matcher = pattern.matcher(line);

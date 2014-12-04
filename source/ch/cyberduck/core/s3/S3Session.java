@@ -29,7 +29,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
@@ -44,6 +43,8 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -88,7 +89,7 @@ public class S3Session extends HttpSession<S3Session.RequestEntityRestStorageSer
     private DistributionConfiguration cdn;
 
     private Preferences preferences
-            = Preferences.instance();
+            = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion;
 
