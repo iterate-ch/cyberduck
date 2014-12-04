@@ -18,7 +18,10 @@
 
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
+using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.PreferencesNS;
+using Ch.Cyberduck.Core.Serializer.Impl;
 using ch.cyberduck.cli;
 
 namespace Ch.Cyberduck.Cli
@@ -28,8 +31,9 @@ namespace Ch.Cyberduck.Cli
         protected override void setFactories()
         {
             base.setFactories();
-            defaults.put("factory.locale.class", typeof(Ch.Cyberduck.Core.I18n.DictionaryLocale).AssemblyQualifiedName);
-            defaults.put("factory.supportdirectoryfinder.class", typeof(Ch.Cyberduck.Core.Preferences.RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+            defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
+            defaults.put("factory.supportdirectoryfinder.class",
+                         typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);
@@ -39,14 +43,14 @@ namespace Ch.Cyberduck.Cli
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof (TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.serializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistSerializer).AssemblyQualifiedName);
-            defaults.put("factory.deserializer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistDeserializer).AssemblyQualifiedName);
-            defaults.put("factory.reader.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.ProfilePlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.profile.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
-            defaults.put("factory.reader.transfer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.TransferPlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.transfer.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
-            defaults.put("factory.reader.host.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.HostPlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.host.class", typeof(Ch.Cyberduck.Core.Serializer.Impl.PlistWriter).AssemblyQualifiedName);
+            defaults.put("factory.serializer.class", typeof (PlistSerializer).AssemblyQualifiedName);
+            defaults.put("factory.deserializer.class", typeof (PlistDeserializer).AssemblyQualifiedName);
+            defaults.put("factory.reader.profile.class", typeof (ProfilePlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.profile.class", typeof (PlistWriter).AssemblyQualifiedName);
+            defaults.put("factory.reader.transfer.class", typeof (TransferPlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.transfer.class", typeof (PlistWriter).AssemblyQualifiedName);
+            defaults.put("factory.reader.host.class", typeof (HostPlistReader).AssemblyQualifiedName);
+            defaults.put("factory.writer.host.class", typeof (PlistWriter).AssemblyQualifiedName);
         }
     }
 }
