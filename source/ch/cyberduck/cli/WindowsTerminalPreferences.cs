@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
-        public override void setFactories()
+        protected override void setFactories()
         {
             base.setFactories();
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);

@@ -55,7 +55,7 @@ import ch.cyberduck.ui.resources.NSImageIconCache;
 public class TerminalPreferences extends MemoryPreferences {
 
     @Override
-    public void setFactories() {
+    protected void setFactories() {
         super.setFactories();
 
         defaults.put("factory.locale.class", DisabledLocale.class.getName());
