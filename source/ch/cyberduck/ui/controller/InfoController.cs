@@ -26,6 +26,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.analytics;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cdn.features;
