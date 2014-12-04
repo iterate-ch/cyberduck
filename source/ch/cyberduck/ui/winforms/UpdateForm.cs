@@ -154,10 +154,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     versionLabel.Text = LocaleFactory.localizedString(
                         "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
                         "Sparkle")
-                                              .Replace("%1$@",
-                                                       Preferences.instance
-                                                           ().getProperty
-                                                           ("application.name"))
+                                              .Replace("%1$@", PreferencesFactory.get().getProperty("application.name"))
                                               .Replace("%2$@", newVersion).Replace("%3$@", currentVersion);
 
                     SetStatusChecking(false);
