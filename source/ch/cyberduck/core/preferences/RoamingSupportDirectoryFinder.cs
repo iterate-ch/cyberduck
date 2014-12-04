@@ -17,8 +17,12 @@
 // 
 
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
+using LocalFactory = ch.cyberduck.core.LocalFactory;
+using Local = ch.cyberduck.core.Local;
+using Path = System.IO.Path;
+using SupportDirectoryFinder = ch.cyberduck.core.preferences.SupportDirectoryFinder;
+using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
+using Environment = System.Environment;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -26,7 +30,8 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         public ch.cyberduck.core.Local find()
         {
-            return LocalFactory.get(UserPreferences.RoamingApplicationDataPath);
+            return LocalFactory.get(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                PreferencesFactory.get().getProperty("application.name")));
         }
     }
 }

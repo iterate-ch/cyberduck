@@ -50,30 +50,6 @@ namespace Ch.Cyberduck.Core.Preferences
         private SettingsDictionary _settings;
 
         /// <summary>
-        /// Roaming application data path
-        /// </summary>
-        public static string RoamingApplicationDataPath
-        {
-            get
-            {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                    instance().getProperty("application.name"));
-            }
-        }
-
-        /// <summary>
-        /// Local application data path
-        /// </summary>
-        private static string LocalApplicationDataPath
-        {
-            get
-            {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                    instance().getProperty("application.name"));
-            }
-        }
-
-        /// <summary>
         /// Try to get an OS version specific download path:
         /// - XP : Desktop
         /// - Vista or later : Downloads folder in the user home directory 
@@ -314,7 +290,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
             defaults.put("queue.dock.badge", true.ToString());
 
-            defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
+            defaults.put("ssh.knownhosts", Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
             defaults.put("browser.enterkey.rename", false.ToString());
             defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
