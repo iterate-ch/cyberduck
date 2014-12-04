@@ -1,7 +1,7 @@
 require "formula"
 
 class Duck < Formula
-  homepage "https://cyberduck.io/"
+  homepage "https://duck.sh/"
   # Reference to the CLI version of Cyberduck
   url "https://update.cyberduck.io/cli/duck-${REVISION}.tar.gz"
   version "${VERSION}.${REVISION}"
