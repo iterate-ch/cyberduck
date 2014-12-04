@@ -406,6 +406,33 @@ namespace Ch.Cyberduck.Core
             return false;
         }
 
+        public static string ExtractApplicationPath(string cmd)
+        {
+            if (!String.IsNullOrEmpty(cmd) && !cmd.Contains("rundll32.exe"))
+            {
+                String command = null;
+                if (cmd.StartsWith("\""))
+                {
+                    int i = cmd.IndexOf("\"", 1);
+                    if (i > 2)
+                        command = cmd.Substring(1, i - 1);
+                }
+                else
+                {
+                    int i = cmd.IndexOf(" ");
+                    if (i > 0)
+                        command = cmd.Substring(0, i);
+                }
+
+                if (File.Exists(command))
+                {
+                    return command;
+                }
+            }
+            return null;
+        }
+
+
         /// <summary>
         /// Extract open command
         /// </summary>
@@ -420,28 +447,7 @@ namespace Ch.Cyberduck.Core
                     if (null != editSk)
                     {
                         String cmd = (String) editSk.GetValue(String.Empty);
-                        //todo replcae with extract exe from command
-                        if (!String.IsNullOrEmpty(cmd))
-                        {
-                            String command = null;
-                            if (cmd.StartsWith("\""))
-                            {
-                                int i = cmd.IndexOf("\"", 1);
-                                if (i > 2)
-                                    command = cmd.Substring(1, i - 1);
-                            }
-                            else
-                            {
-                                int i = cmd.IndexOf(" ");
-                                if (i > 0)
-                                    command = cmd.Substring(0, i);
-                            }
-
-                            if (File.Exists(command))
-                            {
-                                return command;
-                            }
-                        }
+                        return ExtractApplicationPath(cmd);
                     }
                 }
             }

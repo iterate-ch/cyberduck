@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,11 +18,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Ch.Cyberduck.Core.Collections;
+using Ch.Cyberduck.Core.Local;
 using Microsoft.Win32;
 using ch.cyberduck.core.local;
 using java.util;
@@ -57,55 +59,14 @@ namespace Ch.Cyberduck.Core.Editor
             }
             if (!applicationNameCache.ContainsKey(application))
             {
-                if (Utils.IsVistaOrLater)
+                string path = WindowsApplicationLauncher.GetExecutableCommand(application);
+                if (File.Exists(path))
                 {
-                    using (
-                        RegistryKey muiCache =
-                            Registry.ClassesRoot.OpenSubKey(
-                                "Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache"))
-                    {
-                        if (null != muiCache)
-                        {
-                            foreach (string valueName in muiCache.GetValueNames())
-                            {
-                                if (valueName.Equals(application + ".FriendlyAppName",
-                                                     StringComparison.CurrentCultureIgnoreCase))
-                                {
-                                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                                                                                                   new Application(
-                                                                                                       application
-                                                                                                           .ToLower(),
-                                                                                                       (string)
-                                                                                                       muiCache.GetValue
-                                                                                                           (valueName))));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    using (
-                        RegistryKey muiCache =
-                            Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"))
-                    {
-                        if (null != muiCache)
-                        {
-                            foreach (string valueName in muiCache.GetValueNames())
-                            {
-                                if (valueName.Equals(application, StringComparison.CurrentCultureIgnoreCase))
-                                {
-                                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                                                                                                   new Application(
-                                                                                                       application
-                                                                                                           .ToLower(),
-                                                                                                       valueName)));
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);
+                    applicationNameCache.Add(new KeyValuePair<string, Application>(application,
+                                                                                   new Application(
+                                                                                       application.ToLower(),
+                                                                                       info.FileDescription)));
                 }
                 if (!applicationNameCache.ContainsKey(application))
                 {
