@@ -50,10 +50,17 @@ import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.resources.NSImageIconCache;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+
 /**
  * @version $Id$
  */
 public class TerminalPreferences extends MemoryPreferences {
+    private static final Logger log = Logger.getLogger(TerminalPreferences.class);
 
     @Override
     protected void setFactories() {
@@ -137,10 +144,16 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("application.profiles.path", "profiles"); // relative to .exe
                 break;
             case linux:
-            default:
                 final Local settings = new UserHomeSupportDirectoryFinder().find();
                 defaults.put("application.bookmarks.path", settings.getAbsolute());
                 defaults.put("application.profiles.path", settings.getAbsolute());
+                try {
+                    final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
+                    defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream())));
+                }
+                catch(IOException e) {
+                    log.warn("Failure determining user home with `echo ~`");
+                }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
