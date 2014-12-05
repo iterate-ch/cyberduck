@@ -42,10 +42,10 @@
         <mkdir dir="${build.deploy}"/>
 
         <path id="javafx.classpath">
-            <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
-            <pathelement path="${build.bundles}"/>
             <!-- includes our linuxrpmbuilder -->
             <pathelement path="${build.classes}"/>
+            <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
+            <pathelement path="${build.bundles}"/>
         </path>
         <javac fork="true"
                includeantruntime="false"
