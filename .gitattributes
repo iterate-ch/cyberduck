@@ -2807,8 +2807,8 @@ source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogNotificationArgs.cs -t
 source/ch/cyberduck/ui/winforms/taskdialog/VistaUnsafeNativeMethods.cs -text
 source/ch/cyberduck/ui/winforms/threading/DialogAlertCallback.cs -text
 source/ch/cyberduck/ui/winforms/threading/DialogTransferErrorCallback.cs -text
+source/com/oracle/tools/packager/linux/LinuxRpmBundler.java -text
 source/com/snoize/SNDisclosableView.m -text
-source/com/sun/javafx/tools/packager/bundlers/LinuxRPMBundler.java -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text
 source/de/zathras/UKSystemInfo.m -text

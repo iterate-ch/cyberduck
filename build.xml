@@ -155,7 +155,7 @@
                listfiles="on"
                extdirs=""
                destdir="${build.classes}">
-            <exclude name="com/sun/javafx/**"/>
+            <exclude name="com/oracle/tools/packager/linux/**"/>
             <classpath refid="build.classpath"/>
         </javac>
     </target>

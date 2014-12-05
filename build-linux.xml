@@ -33,12 +33,49 @@
 
     <target name="_build"/>
 
-    <target name="_fxdeploy">
+    <target name="_cli">
+        <mkdir dir="${rpm.spec}"/>
+        <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
+        <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
+            <replacefilter token="${VERSION}" value="${version}"/>
+        </replace>
+        <mkdir dir="${build.deploy}"/>
+
+        <path id="javafx.classpath">
+            <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
+            <pathelement path="${build.bundles}"/>
+        </path>
+        <javac fork="true"
+               includeantruntime="false"
+               debug="${debug}"
+               encoding="utf-8"
+               srcdir="${source}"
+               target="${build.compile.target}"
+               source="${build.compile.target}"
+               deprecation="on"
+               listfiles="on"
+               extdirs=""
+               destdir="${build.classes}">
+            <include name="com/oracle/tools/packager/linux/**"/>
+            <classpath refid="javafx.classpath"/>
+        </javac>
+
+        <path id="javafx.classpath">
+            <!-- includes our linuxrpmbuilder -->
+            <pathelement path="${build.classes}"/>
+            <path refid="javafx.classpath"/>
+        </path>
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant">
+            <classpath refid="javafx.classpath"/>
+        </taskdef>
         <fx:deploy nativeBundles="${cli.bundles}"
                    outdir="${build.deploy}"
                    outfile="${app.name}-${version}"
                    offlineAllowed="true"
                    verbose="true">
+            <fx:preferences shortcut="false" menu="false"
+                            install="true"/>
             <fx:platform basedir="${java.home}">
                 <fx:jvmarg value="-Djna.nounpack=true"/>
                 <fx:jvmarg value="-Djna.noclasspath=true"/>
@@ -75,55 +112,5 @@
             </fx:resources>
             <fx:preferences install="true"/>
         </fx:deploy>
-    </target>
-
-    <target name="_cli">
-        <mkdir dir="${rpm.spec}"/>
-        <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
-        <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
-            <replacefilter token="${VERSION}" value="${version}"/>
-        </replace>
-        <mkdir dir="${build.deploy}"/>
-
-        <path id="javafx.classpath">
-            <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
-            <pathelement path="${build.bundles}"/>
-        </path>
-        <javac fork="true"
-               includeantruntime="false"
-               debug="${debug}"
-               encoding="utf-8"
-               srcdir="${source}"
-               target="${build.compile.target}"
-               source="${build.compile.target}"
-               deprecation="on"
-               listfiles="on"
-               extdirs=""
-               destdir="${build.classes}">
-            <include name="com/sun/javafx/**"/>
-            <classpath refid="javafx.classpath"/>
-        </javac>
-
-        <if>
-            <equals arg1="${javafx.arch}" arg2="32bit"/>
-            <then>
-                <path id="javafx.classpath.32bit">
-                    <!-- includes our 32bit rpmbuilder -->
-                    <pathelement path="${build.classes}"/>
-                    <path refid="javafx.classpath"/>
-                </path>
-                <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
-                         uri="javafx:com.sun.javafx.tools.ant">
-                    <classpath refid="javafx.classpath.32bit"/>
-                </taskdef>
-            </then>
-            <else>
-                <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
-                         uri="javafx:com.sun.javafx.tools.ant">
-                    <classpath refid="javafx.classpath"/>
-                </taskdef>
-            </else>
-        </if>
-        <antcall target="_fxdeploy"/>
     </target>
 </project>
