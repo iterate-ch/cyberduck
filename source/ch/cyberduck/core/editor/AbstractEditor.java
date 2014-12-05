@@ -27,6 +27,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
@@ -81,19 +83,24 @@ public abstract class AbstractEditor implements Editor {
 
     private ApplicationLauncher applicationLauncher;
 
+    private ApplicationFinder applicationFinder;
+
     public AbstractEditor(final Application application,
                           final Session session,
                           final Path file,
                           final ProgressListener listener) {
-        this(ApplicationLauncherFactory.get(), application, session, file, listener);
+        this(ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
+                application, session, file, listener);
     }
 
     public AbstractEditor(final ApplicationLauncher launcher,
+                          final ApplicationFinder finder,
                           final Application application,
                           final Session session,
                           final Path file,
                           final ProgressListener listener) {
         this.applicationLauncher = launcher;
+        this.applicationFinder = finder;
         this.application = application;
         if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
             this.remote = file.getSymlinkTarget();
@@ -186,7 +193,7 @@ public abstract class AbstractEditor implements Editor {
      * @param quit Callback
      */
     protected void edit(final ApplicationQuitCallback quit) throws IOException {
-        if(null == application || null == application.getIdentifier()) {
+        if(!applicationFinder.isInstalled(application)) {
             log.warn(String.format("No editor application configured for %s", local));
             if(applicationLauncher.open(local)) {
                 this.watch(local);
