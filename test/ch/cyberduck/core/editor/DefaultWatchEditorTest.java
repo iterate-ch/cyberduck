@@ -23,10 +23,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
-import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
-import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
 
@@ -47,8 +46,6 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
                 //
             }
         }, new NullSession(new Host("h")),
-                new WorkspaceApplicationLauncher(),
-                new LaunchServicesApplicationFinder(),
                 null, new Path("/remote", EnumSet.of(Path.Type.file)));
         editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()));
     }
@@ -61,13 +58,11 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
                 //
             }
         }, new NullSession(new Host("h")),
-                new WorkspaceApplicationLauncher(),
-                new LaunchServicesApplicationFinder(),
-                null, new Path("/remote", EnumSet.of(Path.Type.file)));
+                Application.notfound, new Path("/remote", EnumSet.of(Path.Type.file)));
         editor.edit(new DisabledApplicationQuitCallback());
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(new AbstractController() {
             @Override
@@ -75,9 +70,7 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
                 //
             }
         }, new NullSession(new Host("h")),
-                new WorkspaceApplicationLauncher(),
-                new LaunchServicesApplicationFinder(),
-                null, new Path("/remote.txt", EnumSet.of(Path.Type.file)));
+                Application.notfound, new Path("/remote.txt", EnumSet.of(Path.Type.file)));
         new DefaultLocalTouchFeature().touch(editor.getLocal());
         editor.edit(new DisabledApplicationQuitCallback());
     }
