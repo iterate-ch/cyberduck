@@ -30,6 +30,7 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
+    <property name="build.compile.target.cli" value="8"/>
 
     <target name="_build"/>
 
@@ -50,8 +51,8 @@
                debug="${debug}"
                encoding="utf-8"
                srcdir="${source}"
-               target="${build.compile.target}"
-               source="${build.compile.target}"
+               target="${build.compile.target.cli}"
+               source="${build.compile.target.cli}"
                deprecation="on"
                listfiles="on"
                extdirs=""
