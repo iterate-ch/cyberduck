@@ -45,6 +45,8 @@
         <path id="javafx.classpath">
             <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
             <pathelement path="${build.bundles}"/>
+            <!-- includes our linuxrpmbuilder -->
+            <pathelement path="${build.classes}"/>
         </path>
         <javac fork="true"
                includeantruntime="false"
@@ -61,11 +63,6 @@
             <classpath refid="javafx.classpath"/>
         </javac>
 
-        <path id="javafx.classpath">
-            <!-- includes our linuxrpmbuilder -->
-            <pathelement path="${build.classes}"/>
-            <path refid="javafx.classpath"/>
-        </path>
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath refid="javafx.classpath"/>
