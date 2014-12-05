@@ -56,14 +56,6 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
 
     @Override
     public void chunk(final Path folder, final AttributedList<Path> list) throws ListCanceledException {
-        try {
-            super.chunk(folder, list);
-        }
-        catch(ListCanceledException e) {
-            if(!this.prompt(e)) {
-                throw e;
-            }
-        }
         for(int i = size; i < list.size(); i++) {
             final Path file = list.get(i);
             if(l) {
@@ -87,6 +79,14 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
             }
         }
         size += list.size() - size;
+        try {
+            super.chunk(folder, list);
+        }
+        catch(ListCanceledException e) {
+            if(!this.prompt(e)) {
+                throw e;
+            }
+        }
     }
 
     private boolean prompt(final ListCanceledException e) {
