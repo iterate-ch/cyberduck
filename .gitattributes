@@ -2530,6 +2530,7 @@ sl.lproj/Sftp.strings -text svneol=unset#text/utf-16
 sl.lproj/Status.strings -text svneol=unset#text/utf-16
 sl.lproj/Support.strings -text svneol=unset#text/utf-16
 sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
+source/Test.java -text
 source/ch/cyberduck/App.config -text
 source/ch/cyberduck/Bundle.wxs -text
 source/ch/cyberduck/CLI-WiX-Bootstrapper.wixproj -text
