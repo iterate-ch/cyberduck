@@ -30,12 +30,14 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="jvm.runtime.bundle.home" value="${java.home}"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
+    <property name="deb.control" value="${build.bundles}/package/linux/control"/>
 
     <target name="_build"/>
 
     <target name="_cli">
         <mkdir dir="${rpm.spec}"/>
         <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
+        <copy file="${setup}/duck.control" todir="${dev.control}"/>
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
         </replace>
