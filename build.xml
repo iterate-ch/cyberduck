@@ -34,7 +34,7 @@
     <property name="home" location="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
-    <property name="build.compile.target" value="1.7"/>
+    <property name="build.compile.target" value="${java.version}"/>
     <property name="configuration" value="release"/>
     <property name="build.deploy" location="${build}/${configuration}"/>
     <property name="build.bundles" value="${build.deploy}/bundles"/>
