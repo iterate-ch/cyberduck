@@ -108,7 +108,6 @@
                 </fx:fileset>
                 <fx:fileset dir="${home}/bookmarks" type="data"/>
             </fx:resources>
-            <fx:preferences install="true"/>
         </fx:deploy>
     </target>
 </project>
