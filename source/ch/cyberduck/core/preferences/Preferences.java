@@ -19,7 +19,10 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.DefaultPathReference;
+import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProxyFinder;
 import ch.cyberduck.core.DisabledRendezvous;
@@ -35,10 +38,10 @@ import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultLocalTrashFeature;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 import ch.cyberduck.core.local.DisabledApplicationBadgeLabeler;
+import ch.cyberduck.core.local.DisabledApplicationFinder;
 import ch.cyberduck.core.local.DisabledApplicationLauncher;
 import ch.cyberduck.core.local.DisabledIconService;
 import ch.cyberduck.core.local.DisabledQuarantineService;
-import ch.cyberduck.core.local.NullApplicationFinder;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.TemporaryFileService;
@@ -1055,6 +1058,9 @@ public abstract class Preferences {
     }
 
     protected void setFactories() {
+        defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
+        defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
+        defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
         defaults.put("factory.temporaryfiles.class", TemporaryFileService.class.getName());
         defaults.put("factory.touch.class", DefaultLocalTouchFeature.class.getName());
         defaults.put("factory.autorelease.class", DisabledActionOperationBatcher.class.getName());
@@ -1080,7 +1086,7 @@ public abstract class Preferences {
         defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
         defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
         defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());
-        defaults.put("factory.applicationfinder.class", NullApplicationFinder.class.getName());
+        defaults.put("factory.applicationfinder.class", DisabledApplicationFinder.class.getName());
         defaults.put("factory.applicationlauncher.class", DisabledApplicationLauncher.class.getName());
     }
 
