@@ -42,7 +42,9 @@ public class DisconnectWorker extends Worker<Void> {
     @Override
     public Void run() {
         try {
-            session.close();
+            if(session.isConnected()) {
+                session.close();
+            }
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure closing connection %s. %s", session, e.getMessage()));
