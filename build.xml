@@ -97,7 +97,7 @@
         <echo message="	  Project Source:	${source}"/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
-        <echo message="Building ${app.name}..."/>
+        <echo message="Building ${app.name} on ${os.name}/${os.arch}..."/>
 
         <mkdir dir="${build}"/>
         <mkdir dir="${build.deploy}"/>
