@@ -34,11 +34,13 @@ import ch.cyberduck.core.UrlProvider;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import ch.iterate.openstack.swift.model.AccountInfo;
@@ -79,11 +81,17 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
         container.attributes().setRegion("DFW");
         new SwiftTouchFeature(session).touch(file);
         final DescriptiveUrlBag list = provider.toUrl(file);
-        assertNotNull(list.find(DescriptiveUrl.Type.signed));
-        if(session.accounts.containsKey(new SwiftRegionService(session).lookup(container))) {
-            if(session.accounts.get(new SwiftRegionService(session).lookup(container)).getTempUrlKey() != null) {
-                assertNotEquals(DescriptiveUrl.EMPTY, list.find(DescriptiveUrl.Type.signed));
-            }
+        final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);
+        assertNotNull(signed);
+        assertNotEquals(DescriptiveUrl.EMPTY, signed);
+        assertFalse(list.filter(DescriptiveUrl.Type.signed).isEmpty());
+        final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        assertTrue(signed.getHelp().contains(
+                        String.format("Expires %d/%d/%d", calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.YEAR) - 2000))
+        );
+        for(DescriptiveUrl s : list.filter(DescriptiveUrl.Type.signed)) {
+            assertNotNull(s);
+            assertNotEquals(DescriptiveUrl.EMPTY, s);
         }
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new DisabledProgressListener());
         session.close();

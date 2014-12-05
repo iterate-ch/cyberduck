@@ -145,7 +145,7 @@ public class SwiftUrlProvider implements UrlProvider {
                     DescriptiveUrl.Type.signed,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                             + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                            UserDateFormatterFactory.get().getShortFormat(expiry))
+                            UserDateFormatterFactory.get().getShortFormat(expiry * 1000))
             ));
         }
         return list;
@@ -174,6 +174,6 @@ public class SwiftUrlProvider implements UrlProvider {
     protected long getExpiry(final int seconds) {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
-        return expiry.getTimeInMillis();
+        return expiry.getTimeInMillis() / 1000;
     }
 }

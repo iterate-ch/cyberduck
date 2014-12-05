@@ -141,23 +141,18 @@ public class SwiftSession extends HttpSession<Client> {
                 }
                 cancel.verify();
             }
-            threadFactory.newThread(new Runnable() {
-                @Override
-                public void run() {
-                    for(Region region : client.getRegions()) {
-                        try {
-                            final AccountInfo info = client.getAccountInfo(region);
-                            accounts.put(region, info);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                            }
-                        }
-                        catch(IOException e) {
-                            log.warn(String.format("Failure loading account info for region %s", region));
-                        }
+            for(Region region : client.getRegions()) {
+                try {
+                    final AccountInfo info = client.getAccountInfo(region);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Signing key is %s", info.getTempUrlKey()));
                     }
+                    accounts.put(region, info);
                 }
-            }).start();
+                catch(IOException e) {
+                    log.warn(String.format("Failure loading account info for region %s", region));
+                }
+            }
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map(e);
