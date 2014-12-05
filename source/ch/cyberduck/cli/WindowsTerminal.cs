@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
-            main(args);
+            open(args, new WindowsTerminalPreferences());
         }
     }
 }

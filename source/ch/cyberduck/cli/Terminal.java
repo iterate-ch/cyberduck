@@ -99,11 +99,15 @@ public class Terminal {
      * @param args Command line arguments
      */
     public static void main(final String... args) throws IOException {
+        open(args, new TerminalPreferences());
+    }
+
+    protected static void open(final String[] args, final Preferences defaults) {
         final Options options = TerminalOptionsBuilder.options();
         try {
             final CommandLineParser parser = new PosixParser();
             final CommandLine input = parser.parse(options, args);
-            final Terminal terminal = new Terminal(options, input);
+            final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
                 case success:
                     System.exit(0);
