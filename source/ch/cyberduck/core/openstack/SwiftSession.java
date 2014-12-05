@@ -51,7 +51,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +59,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -81,9 +79,6 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
-
-    private final ThreadFactory threadFactory
-            = new NamedThreadFactory("account");
 
     public SwiftSession(final Host h) {
         super(h);
@@ -231,5 +226,4 @@ public class SwiftSession extends HttpSession<Client> {
         }
         return super.getFeature(type);
     }
-
 }
