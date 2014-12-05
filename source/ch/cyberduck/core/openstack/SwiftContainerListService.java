@@ -30,7 +30,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -53,8 +52,8 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private final ThreadFactory threadFactory
-            = new NamedThreadFactory("cdn");
+    private final ThreadPool threadFactory
+            = new ThreadPool(5, "cdn");
 
     private SwiftSession session;
 
@@ -110,7 +109,7 @@ public class SwiftContainerListService implements RootListService {
                         if(cdn) {
                             final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
                             if(feature != null) {
-                                threadFactory.newThread(new Runnable() {
+                                threadFactory.execute(new Runnable() {
                                     @Override
                                     public void run() {
                                         for(Distribution.Method method : feature.getMethods(container)) {
@@ -125,11 +124,11 @@ public class SwiftContainerListService implements RootListService {
                                             }
                                         }
                                     }
-                                }).start();
+                                });
                             }
                         }
                         if(size) {
-                            threadFactory.newThread(new Runnable() {
+                            threadFactory.execute(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
@@ -140,7 +139,7 @@ public class SwiftContainerListService implements RootListService {
                                         log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
                                     }
                                 }
-                            }).start();
+                            });
                         }
                         containers.add(container);
                         marker = f.getName();
