@@ -655,7 +655,7 @@ public abstract class Preferences {
         defaults.put("openstack.authentication.context", "/v2.0/tokens");
         defaults.put("openstack.upload.metadata.md5", String.valueOf(false));
         defaults.put("openstack.metadata.default", StringUtils.EMPTY);
-        defaults.put("openstack.list.container.limit", String.valueOf(10));
+        defaults.put("openstack.list.container.limit", String.valueOf(100));
         defaults.put("openstack.list.object.limit", String.valueOf(10000));
         defaults.put("openstack.cdn.preload", String.valueOf(true));
         defaults.put("openstack.container.size.preload", String.valueOf(true));
