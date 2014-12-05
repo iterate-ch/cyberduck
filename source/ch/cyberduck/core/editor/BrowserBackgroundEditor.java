@@ -21,6 +21,8 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -47,7 +49,10 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
                                    final Application application,
                                    final Path path) {
 
-        this(controller, session, ApplicationLauncherFactory.get(), application, path);
+        this(controller, session,
+                ApplicationLauncherFactory.get(),
+                ApplicationFinderFactory.get(),
+                application, path);
     }
 
     /**
@@ -58,9 +63,10 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
     public BrowserBackgroundEditor(final Controller controller,
                                    final Session session,
                                    final ApplicationLauncher launcher,
+                                   final ApplicationFinder finder,
                                    final Application application,
                                    final Path path) {
-        super(launcher, application, session, path, controller);
+        super(launcher, finder, application, session, path, controller);
         this.controller = controller;
         this.session = session;
     }

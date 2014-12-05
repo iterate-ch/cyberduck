@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.ui.Controller;
@@ -50,9 +51,10 @@ public class DefaultWatchEditor extends BrowserBackgroundEditor {
     public DefaultWatchEditor(final Controller controller,
                               final Session session,
                               final ApplicationLauncher launcher,
+                              final ApplicationFinder finder,
                               final Application application,
                               final Path path) {
-        super(controller, session, launcher, application, path);
+        super(controller, session, launcher, finder, application, path);
     }
 
     public void watch(final Local local) throws IOException {
