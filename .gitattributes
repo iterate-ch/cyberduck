@@ -2571,7 +2571,6 @@ source/ch/cyberduck/core/aquaticprime/WindowsLicenseFactory.cs -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
-source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/editor/SystemEditorFactory.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditor.cs -text
 source/ch/cyberduck/core/editor/SystemWatchEditorFactory.cs -text
@@ -2581,6 +2580,7 @@ source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/local/DefaultBrowserLauncher.cs -text
 source/ch/cyberduck/core/local/ExplorerRevealService.cs -text
 source/ch/cyberduck/core/local/RecycleLocalTrashFeature.cs -text
+source/ch/cyberduck/core/local/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/local/SystemLocal.cs -text
 source/ch/cyberduck/core/local/TaskbarApplicationBadgeLabeler.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text

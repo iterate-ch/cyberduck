@@ -18,27 +18,30 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-import java.util.Collections;
+import ch.cyberduck.core.LocalFactory;
+
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class NullApplicationFinder implements ApplicationFinder {
-
+public class LocalApplicationFinder implements ApplicationFinder {
     @Override
     public List<Application> findAll(final String filename) {
-        return Collections.emptyList();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Application find(final String filename) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isInstalled(final Application application) {
-        return false;
+        if(Application.notfound.equals(application)) {
+            return false;
+        }
+        return LocalFactory.get(application.getIdentifier()).exists();
     }
 
     @Override

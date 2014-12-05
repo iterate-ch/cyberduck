@@ -131,15 +131,12 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      */
     public Application getEditor(final String filename) {
         final Application application = this.getDefaultEditor();
-        if(application == null) {
-            log.warn("Default editor is not installed");
-        }
         if(preferences.getBoolean("editor.alwaysUseDefault")) {
             return application;
         }
         // The default application set by launch services to open files of the given type
         final Application editor = applicationFinder.find(filename);
-        if(null == editor) {
+        if(!applicationFinder.isInstalled(editor)) {
             if(application == null) {
                 log.warn(String.format("No editor found for %s", filename));
             }

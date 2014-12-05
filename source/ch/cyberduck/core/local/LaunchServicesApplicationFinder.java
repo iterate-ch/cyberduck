@@ -99,7 +99,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             // Because of the different API used the default opening application may not be included
             // in the above list returned. Always add the default application anyway.
             final Application defaultApplication = this.find(filename);
-            if(null != defaultApplication) {
+            if(this.isInstalled(defaultApplication)) {
                 if(!applications.contains(defaultApplication)) {
                     applications.add(defaultApplication);
                 }
@@ -122,7 +122,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         final String extension = FilenameUtils.getExtension(filename);
         if(!defaultApplicationCache.containsKey(extension)) {
             if(StringUtils.isEmpty(extension)) {
-                return null;
+                return Application.notfound;
             }
             final String path = this.findForType(extension);
             if(StringUtils.isEmpty(path)) {
@@ -217,7 +217,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     @Override
     public boolean isInstalled(final Application application) {
         synchronized(NSWorkspace.class) {
-            if(null == application) {
+            if(Application.notfound.equals(application)) {
                 return false;
             }
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(

@@ -36,19 +36,21 @@ public interface ApplicationFinder {
      * Find application for file type.
      *
      * @param filename File name
-     * @return Absolute path to installed application
+     * @return Absolute path to installed application Application#notfound if not installed
+     * @see ch.cyberduck.core.local.Application#notfound
      */
     Application find(String filename);
 
     /**
      * @param application Application description
-     * @return True if path to the applicaiton is found
+     * @return True if path to the applicaiton is found. False if the application is not installed
      */
     boolean isInstalled(Application application);
 
     /**
      * @param application Identifier
-     * @return Application name
+     * @return Application description or Application#notfound if not installed
+     * @see ch.cyberduck.core.local.Application#notfound
      */
     Application getDescription(String application);
 }

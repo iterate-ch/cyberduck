@@ -25,6 +25,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Application {
 
+    public static final Application notfound
+            = new Application(null);
+
     private String identifier;
     private String name;
 

@@ -4152,7 +4152,7 @@ public class BrowserController extends WindowController
                 item.setPaletteLabel(LocaleFactory.localizedString("Open in Web Browser"));
                 item.setToolTip(LocaleFactory.localizedString("Open in Web Browser"));
                 final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
-                if(null == browser) {
+                if(Application.notfound.equals(browser)) {
                     item.setEnabled(false);
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed("notfound.tiff", 32));
                 }
@@ -4214,7 +4214,6 @@ public class BrowserController extends WindowController
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
                 final Application application
                         = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
-
                 item.setLabel(application.getName());
                 item.setPaletteLabel(application.getName());
                 item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(application, 32));

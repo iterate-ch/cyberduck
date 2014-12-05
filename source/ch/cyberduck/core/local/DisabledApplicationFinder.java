@@ -1,4 +1,4 @@
-package ch.cyberduck.core.urlhandler;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,33 +18,31 @@ package ch.cyberduck.core.urlhandler;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.local.Application;
-
 import java.util.Collections;
 import java.util.List;
 
 /**
-* @version $Id$
-*/
-public final class DisabledSchemeHandler implements SchemeHandler {
+ * @version $Id$
+ */
+public class DisabledApplicationFinder implements ApplicationFinder {
+
     @Override
-    public void setDefaultHandler(final List<Scheme> scheme, final Application application) {
-        //
+    public List<Application> findAll(final String filename) {
+        return Collections.emptyList();
     }
 
     @Override
-    public Application getDefaultHandler(final Scheme scheme) {
+    public Application find(final String filename) {
         return Application.notfound;
     }
 
     @Override
-    public boolean isDefaultHandler(final List<Scheme> scheme, final Application application) {
+    public boolean isInstalled(final Application application) {
         return false;
     }
 
     @Override
-    public List<Application> getAllHandlers(final Scheme scheme) {
-        return Collections.emptyList();
+    public Application getDescription(final String application) {
+        return new Application(application);
     }
 }

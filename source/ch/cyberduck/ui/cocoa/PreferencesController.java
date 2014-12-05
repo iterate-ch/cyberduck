@@ -1704,7 +1704,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
         final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
-        if(null == defaultHandler) {
+        if(Application.notfound.equals(defaultHandler)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
             return;

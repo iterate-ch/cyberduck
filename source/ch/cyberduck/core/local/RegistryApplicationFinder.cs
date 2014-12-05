@@ -31,7 +31,7 @@ using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Core.Editor
+namespace Ch.Cyberduck.Core.Local
 {
     public class RegistryApplicationFinder : ApplicationFinder
     {
@@ -53,10 +53,6 @@ namespace Ch.Cyberduck.Core.Editor
         //vormals GetApplicationNameForExe
         public Application getDescription(string application)
         {
-            if (application == null)
-            {
-                return null;
-            }
             if (!applicationNameCache.ContainsKey(application))
             {
                 string path = WindowsApplicationLauncher.GetExecutableCommand(application);
@@ -68,7 +64,7 @@ namespace Ch.Cyberduck.Core.Editor
                                                                                        application.ToLower(),
                                                                                        info.FileDescription)));
                 }
-                if (!applicationNameCache.ContainsKey(application))
+                else
                 {
                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
                                                                                    new Application(
@@ -86,7 +82,7 @@ namespace Ch.Cyberduck.Core.Editor
             string extension = Utils.GetSafeExtension(filename);
             if (Utils.IsBlank(extension))
             {
-                return null;
+                return Application.notfound;
             }
             Application app;
             Log.debug(string.Format("GetRegisteredDefaultApplication for filename {0}", filename));
@@ -196,9 +192,6 @@ namespace Ch.Cyberduck.Core.Editor
 
         public bool isInstalled(Application application)
         {
-            if(null == application) {
-                return false;
-            }
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
         }
 
