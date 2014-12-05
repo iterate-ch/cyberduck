@@ -33,6 +33,7 @@ using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
+using ApplicationFinder = ch.cyberduck.core.local.ApplicationFinder;
 using Collection = java.util.Collection;
 
 namespace Ch.Cyberduck.Core
@@ -261,8 +262,9 @@ namespace Ch.Cyberduck.Core
 
             foreach (string exe in progs.Distinct())
             {
-                Application application = ApplicationFinderFactory.get().getDescription(exe);
-                if (null != application)
+                ApplicationFinder finder = ApplicationFinderFactory.get();
+                Application application = finder.getDescription(exe);
+                if (finder.isInstalled(application))
                 {
                     map.Add(new KeyValuePair<string, string>(application.getName(), exe));
                 }

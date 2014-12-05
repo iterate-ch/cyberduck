@@ -173,7 +173,7 @@ namespace Ch.Cyberduck.Core.Local
                 foreach (string exe in progs.Distinct())
                 {
                     Application application = find(exe);
-                    if (null != application)
+                    if (isInstalled(application))
                     {
                         map.Add(application);
                     }

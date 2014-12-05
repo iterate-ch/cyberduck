@@ -66,5 +66,6 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
         assertTrue(f.isInstalled(new Application("com.apple.Preview", "Preview")));
         assertFalse(f.isInstalled(new Application("com.apple.Preview_", "Preview")));
         assertFalse(f.isInstalled(null));
+        assertFalse(f.isInstalled(Application.notfound));
     }
 }
