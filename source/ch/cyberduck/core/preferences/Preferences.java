@@ -53,6 +53,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.growl.DisabledNotificationService;
+import ch.cyberduck.ui.resources.DisabledIconCache;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -1067,6 +1068,7 @@ public abstract class Preferences {
         defaults.put("factory.pathreference.class", DefaultPathReference.class.getName());
         defaults.put("factory.schemehandler.class", DisabledSchemeHandler.class.getName());
         defaults.put("factory.iconservice.class", DisabledIconService.class.getName());
+        defaults.put("factory.iconcache.class", DisabledIconCache.class.getName());
         defaults.put("factory.notification.class", DisabledNotificationService.class.getName());
         defaults.put("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
         defaults.put("factory.quarantine.class", DisabledQuarantineService.class.getName());
