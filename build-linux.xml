@@ -85,7 +85,7 @@
                     mainClass="ch.cyberduck.cli.Terminal"/>
             <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
                      description="Cyberduck"
-                     vendor="cyberduck.io">
+                     vendor="cyberduck.io <feedback@cyberduck.io>">
                 <fx:icon href="${app.icon}"/>
             </fx:info>
             <fx:resources>
