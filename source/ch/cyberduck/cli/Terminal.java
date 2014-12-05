@@ -129,7 +129,7 @@ public class Terminal {
     protected Exit execute() {
         final Console console = new Console();
         if(input.hasOption(TerminalAction.help.name())) {
-            TerminalHelpPrinter.help(options);
+            TerminalHelpPrinter.print(options);
             return Exit.success;
         }
         if(input.hasOption(TerminalAction.version.name())) {
@@ -226,7 +226,7 @@ public class Terminal {
             return Exit.failure;
         }
         else {
-            TerminalHelpPrinter.help(options);
+            TerminalHelpPrinter.print(options);
             return Exit.failure;
         }
     }

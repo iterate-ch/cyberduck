@@ -30,7 +30,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.PrintWriter;
 import java.text.MessageFormat;
 
 /**
@@ -42,9 +41,9 @@ public final class TerminalHelpPrinter {
         //
     }
 
-    public static void help(final Options options) {
+    public static void print(final Options options) {
         final HelpFormatter formatter = new TerminalHelpFormatter();
-        formatter.setSyntaxPrefix("Usage: ");
+        formatter.setSyntaxPrefix("Usage:");
         formatter.setWidth(200);
         final StringBuilder protocols = new StringBuilder("\nSupported protocols").append(StringUtils.LF);
         for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
@@ -58,11 +57,12 @@ public final class TerminalHelpPrinter {
                     break;
                 default:
                     protocols.append("\tExample URL: ").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
+                    break;
             }
             protocols.append(StringUtils.LF);
         }
-        final String header = "\n\tURLs must be a fully qualified with a " +
-                "remote file or folder such as ftps://user@example.net/resource.\n" + protocols.toString();
+        final String header = "\n\tURLs must be a fully qualified. Paths can either denote" +
+                "a remote file (ftps://user@example.net/resource) or folder ftps://user@example.net/directory/) with a trailing slash.\n" + protocols.toString();
         final StringAppender footer = new StringAppender();
         footer.append("Cyberduck is libre software licenced under the GPL");
         final Preferences preferences = PreferencesFactory.get();
@@ -76,69 +76,9 @@ public final class TerminalHelpPrinter {
             footer.append(l.toString());
         }
         else {
-            footer.append("Not registered. Purchase a donation key to support the development of this software.");
+            footer.append("\n\nNot registered. Purchase a donation key to support the development of this software.");
         }
         formatter.printHelp("duck [options...]", header, options, footer.toString());
     }
 
-    private static final class TerminalHelpFormatter extends HelpFormatter {
-        @Override
-        public void printHelp(PrintWriter pw, int width, String cmdLineSyntax,
-                              String header, Options options, int leftPad,
-                              int descPad, String footer, boolean autoUsage) {
-            if(autoUsage) {
-                printUsage(pw, width, cmdLineSyntax, options);
-            }
-            else {
-                printUsage(pw, width, cmdLineSyntax);
-            }
-
-            if((header != null) && (header.length() > 0)) {
-                printWrapped(pw, width, header);
-            }
-
-            printOptions(pw, width, options, leftPad, descPad);
-
-            if((footer != null) && (footer.length() > 0)) {
-                printWrapped(pw, width, footer);
-            }
-        }
-
-        protected StringBuffer renderWrappedText(StringBuffer sb, int width,
-                                                 int nextLineTabStop, String text) {
-            int pos = findWrapPos(text, width, 0);
-
-            if(pos == -1) {
-                sb.append(rtrim(text));
-
-                return sb;
-            }
-            sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
-
-            if(nextLineTabStop >= width) {
-                // stops infinite loop happening
-                nextLineTabStop = 1;
-            }
-
-            // all following lines must be padded with nextLineTabStop space characters
-            final String padding = createPadding(nextLineTabStop);
-
-            while(true) {
-                text = padding + text.substring(pos);
-                pos = findWrapPos(text, width, 0);
-
-                if(pos == -1) {
-                    sb.append(text);
-
-                    return sb;
-                }
-
-                if((text.length() > width) && (pos == nextLineTabStop - 1)) {
-                    pos = width;
-                }
-
-                sb.append(rtrim(text.substring(0, pos))).append(getNewLine());
-            }
-        }
-    }
 }
