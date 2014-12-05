@@ -25,6 +25,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
@@ -45,7 +46,10 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-        }, new NullSession(new Host("h")), new WorkspaceApplicationLauncher(), null, new Path("/remote", EnumSet.of(Path.Type.file)));
+        }, new NullSession(new Host("h")),
+                new WorkspaceApplicationLauncher(),
+                new LaunchServicesApplicationFinder(),
+                null, new Path("/remote", EnumSet.of(Path.Type.file)));
         editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()));
     }
 
@@ -56,7 +60,10 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-        }, new NullSession(new Host("h")), new WorkspaceApplicationLauncher(), null, new Path("/remote", EnumSet.of(Path.Type.file)));
+        }, new NullSession(new Host("h")),
+                new WorkspaceApplicationLauncher(),
+                new LaunchServicesApplicationFinder(),
+                null, new Path("/remote", EnumSet.of(Path.Type.file)));
         editor.edit(new DisabledApplicationQuitCallback());
     }
 
@@ -67,7 +74,10 @@ public class DefaultWatchEditorTest extends AbstractTestCase {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-        }, new NullSession(new Host("h")), new WorkspaceApplicationLauncher(), null, new Path("/remote.txt", EnumSet.of(Path.Type.file)));
+        }, new NullSession(new Host("h")),
+                new WorkspaceApplicationLauncher(),
+                new LaunchServicesApplicationFinder(),
+                null, new Path("/remote.txt", EnumSet.of(Path.Type.file)));
         new DefaultLocalTouchFeature().touch(editor.getLocal());
         editor.edit(new DisabledApplicationQuitCallback());
     }
