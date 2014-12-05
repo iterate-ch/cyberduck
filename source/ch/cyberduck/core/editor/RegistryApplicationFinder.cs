@@ -196,6 +196,9 @@ namespace Ch.Cyberduck.Core.Editor
 
         public bool isInstalled(Application application)
         {
+            if(null == application) {
+                return false;
+            }
             return Utils.IsNotBlank(application.getIdentifier()) && File.Exists(application.getIdentifier());
         }
 
