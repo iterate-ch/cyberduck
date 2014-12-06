@@ -35,9 +35,8 @@
     <target name="_build"/>
 
     <target name="_cli">
-        <mkdir dir="${rpm.spec}"/>
         <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
-        <copy file="${setup}/duck.control" todir="${deb.control}"/>
+        <copy file="${setup}/duck.control" tofile="${deb.control}"/>
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
         </replace>
