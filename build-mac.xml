@@ -191,6 +191,24 @@
         <antcall target="verify-spctl">
             <param name="bundle" value="${cli.bundle}"/>
         </antcall>
+        <antcall target="tar">
+            <param name="directory" value="${build}"/>
+            <param name="source" value="duck.bundle"/>
+            <param name="target" value="duck-${svn.revision}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-${svn.revision}.tar.gz"
+                  algorithm="sha1" property="sha1"/>
+        <copy todir="${build.deploy}" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="duck.rb"/>
+            </fileset>
+        </copy>
+        <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
+            <include name="duck.rb"/>
+            <replacefilter token="${SHA1}" value="${sha1}"/>
+            <replacefilter token="${REVISION}" value="${svn.revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+        </replace>
     </target>
 
     <target name="deploy-sparkle" depends="timestamp, revision">
