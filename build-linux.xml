@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
- *
  *	$Revision$
  *	$Date$
  *
@@ -40,8 +38,6 @@
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
         </replace>
-        <mkdir dir="${build.deploy}"/>
-
         <path id="javafx.classpath">
             <!-- includes our linuxrpmbuilder -->
             <pathelement path="${build.classes}"/>
@@ -62,7 +58,13 @@
             <include name="com/oracle/tools/packager/linux/**"/>
             <classpath refid="javafx.classpath"/>
         </javac>
-
+        <copy todir="${build}">
+            <fileset dir="${lib}">
+                <!-- Include libjnidispatch.so -->
+                <include name="*.${os.arch}.so"/>
+            </fileset>
+            <mapper type="glob" from="*.${os.arch}.so" to="*.so"/>
+        </copy>
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath refid="javafx.classpath"/>
@@ -96,8 +98,8 @@
                 <fx:fileset dir="${lib}" type="jar">
                     <include name="*.jar"/>
                 </fx:fileset>
-                <fx:fileset dir="${lib}" type="data">
-                    <include name="*.${os.arch}.so"/>
+                <fx:fileset dir="${build}" type="data">
+                    <include name="*.so"/>
                 </fx:fileset>
                 <fx:fileset dir="." type="icon">
                     <include name="*.ico"/>
