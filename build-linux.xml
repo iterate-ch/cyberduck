@@ -98,7 +98,7 @@
                     <include name="*.jar"/>
                 </fx:fileset>
                 <fx:fileset dir="${lib}" type="data">
-                    <include name="*.${platform.arch}.so"/>
+                    <include name="*.${os.arch}.so"/>
                 </fx:fileset>
                 <fx:fileset dir="." type="icon">
                     <include name="*.ico"/>
