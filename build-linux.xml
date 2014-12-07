@@ -37,6 +37,7 @@
         <copy file="${setup}/duck.control" tofile="${deb.control}"/>
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
         </replace>
         <path id="javafx.classpath">
             <!-- includes our linuxrpmbuilder -->
