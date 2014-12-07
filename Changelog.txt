@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
 - [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
 - [Bugfix] Failure to read attributes downloading bucket (S3) (#8388)
+- [Bugfix] Wrong timestamp in temporary URL (OpenStack Swift) (#8384)
 
 4.6 [https://trac.cyberduck.io/milestone/4.6]
 - [Feature] Support PAC files for proxy configuration (Mac) (#2607)
