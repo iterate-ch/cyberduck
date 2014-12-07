@@ -2130,9 +2130,9 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSPopUpButton configureProxiesButton;
+    private NSButton configureProxiesButton;
 
-    public void setConfigureProxiesButton(NSPopUpButton b) {
+    public void setConfigureProxiesButton(NSButton b) {
         this.configureProxiesButton = b;
         this.configureProxiesButton.setTarget(this.id());
         this.configureProxiesButton.setAction(Foundation.selector("configureProxiesButtonClicked:"));
