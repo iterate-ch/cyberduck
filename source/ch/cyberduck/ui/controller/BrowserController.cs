@@ -2987,6 +2987,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _callback.complete(_transfer);
                 }
+                base.finish();
             }
         }
 
