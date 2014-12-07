@@ -11,7 +11,7 @@ Autoprov: 0
 Autoreq: 0
 
 #avoid ARCH subfolder
-%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%define _rpmfilename %%{NAME}-%%{VERSION}.%%{ARCH}.rpm
 
 #comment line below to enable effective jar compression
 #it could easily get your package size from 40 to 15Mb but 
