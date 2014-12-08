@@ -19,11 +19,13 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
@@ -38,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class FSEventWatchEditorTest extends AbstractTestCase {
 
     @Test
