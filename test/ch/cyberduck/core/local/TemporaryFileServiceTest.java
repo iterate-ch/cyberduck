@@ -18,7 +18,7 @@ public class TemporaryFileServiceTest extends AbstractTestCase {
     @Test
     public void testCreateFile() throws Exception {
         final String temp = System.getProperty("java.io.tmpdir");
-        assertEquals(temp + "/u/p/f",
+        assertEquals(PathNormalizer.normalize(temp + "/u/p/f"),
                 new TemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
