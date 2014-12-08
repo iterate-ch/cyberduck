@@ -137,9 +137,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         // The default application set by launch services to open files of the given type
         final Application editor = applicationFinder.find(filename);
         if(!applicationFinder.isInstalled(editor)) {
-            if(application == null) {
-                log.warn(String.format("No editor found for %s", filename));
-            }
+            log.warn(String.format("No editor found for %s", filename));
             // Use default editor if not applicable application found which handles this file type
             return application;
         }
