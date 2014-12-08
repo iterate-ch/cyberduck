@@ -3,7 +3,6 @@ package ch.cyberduck.core;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -33,23 +32,6 @@ public class CacheTest extends AbstractTestCase {
             }
         }, list);
         assertNotNull(cache.lookup(PathReferenceFactory.get(file)));
-    }
-
-    @Test
-    public void testIsHidden() throws Exception {
-        Cache<Path> cache = new Cache<Path>();
-        final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new AttributedList<Path>(
-                Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
-        list.filter(new Filter<Path>() {
-            @Override
-            public boolean accept(final Path file) {
-                return file.equals(new Path(parent, "a", EnumSet.of(Path.Type.file)));
-            }
-        });
-        cache.put(new NSObjectPathReference(parent), list);
-        assertFalse(cache.isHidden(new Path(parent, "a", EnumSet.of(Path.Type.file))));
-        assertTrue(cache.isHidden(new Path(parent, "b", EnumSet.of(Path.Type.file))));
     }
 
     @Test

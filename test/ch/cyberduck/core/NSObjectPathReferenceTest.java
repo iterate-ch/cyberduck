@@ -5,10 +5,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -40,5 +40,22 @@ public class NSObjectPathReferenceTest extends AbstractTestCase {
         Path one = new Path("a", EnumSet.of(Path.Type.file));
         Path second = new Path("a", EnumSet.of(Path.Type.file));
         assertEquals(new NSObjectPathReference(one), new NSObjectPathReference(second));
+    }
+
+    @Test
+    public void testCacheIsHidden() throws Exception {
+        Cache<Path> cache = new Cache<Path>();
+        final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> list = new AttributedList<Path>(
+                Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
+        list.filter(new Filter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.equals(new Path(parent, "a", EnumSet.of(Path.Type.file)));
+            }
+        });
+        cache.put(new NSObjectPathReference(parent), list);
+        assertFalse(cache.isHidden(new Path(parent, "a", EnumSet.of(Path.Type.file))));
+        assertTrue(cache.isHidden(new Path(parent, "b", EnumSet.of(Path.Type.file))));
     }
 }

@@ -1,8 +1,10 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
 import org.junit.Test;
@@ -15,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class WorkspaceIconServiceTest extends AbstractTestCase {
 
     @Test

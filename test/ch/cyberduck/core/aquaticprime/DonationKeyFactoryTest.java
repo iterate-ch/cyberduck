@@ -25,10 +25,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class DonationKeyFactoryTest extends AbstractTestCase {
 
     @Test
-    @Ignore
     public void testCreate() throws Exception {
         assertEquals(new Receipt(null, "c42c030b8670"), new DonationKeyFactory().create());
     }

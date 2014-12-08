@@ -1,8 +1,9 @@
 package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class ReceiptVerifierTest extends AbstractTestCase {
 
     @Test

@@ -19,14 +19,16 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
+@Depends(platform = Factory.Platform.Name.mac)
 public class ReceiptFactoryTest extends AbstractTestCase {
 
     @Test

@@ -131,4 +131,16 @@ public class FinderLocalTest extends AbstractTestCase {
         FinderLocal l = new FinderLocal("/var");
         assertNotNull(l.getSymlinkTarget());
     }
+
+    @Test
+    public void testSymbolicLink() throws Exception {
+        assertTrue(new FinderLocal("/tmp").isSymbolicLink());
+        assertFalse(new FinderLocal("/private/tmp").isSymbolicLink());
+        assertFalse(new FinderLocal("/t").isSymbolicLink());
+    }
+
+    @Test
+    public void testGetSymlinkTarget() throws Exception {
+        assertEquals(new FinderLocal("/private/tmp"), new Local("/tmp").getSymlinkTarget());
+    }
 }
