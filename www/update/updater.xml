@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Versions>
     <AddVersion>
-        <Version>_VERSION_</Version>
+        <Version>${VERSION}</Version>
         <Changes/>
         <InheritPrevRegistry/>
         <Files dir="basedir">
-            <File source="update\Updater.exe"/>
+            <File source="Updater.exe"/>
         </Files>
     </AddVersion>
 </Versions>
