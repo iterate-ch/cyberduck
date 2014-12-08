@@ -1,8 +1,8 @@
 package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.Keychain;
 
 import org.junit.Test;
 
@@ -20,17 +20,18 @@ import static com.ibm.icu.impl.Assert.fail;
  */
 public class CertificateStoreX509TrustManagerTest extends AbstractTestCase {
 
-    @Test
-    public void testCheckServerTrusted() throws Exception {
+    @Test(expected = CertificateException.class)
+    public void testCheckExpired() throws Exception {
         final CertificateStoreX509TrustManager m = new CertificateStoreX509TrustManager(new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
                 return "cyberduck.ch";
             }
-        }, new Keychain());
-        InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
+        }, new DefaultCertificateStore());
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
+        X509Certificate cert = (X509Certificate) cf.generateCertificate(
+                new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer")
+        );
         try {
             m.checkServerTrusted(new X509Certificate[]{cert}, "RSA");
         }
