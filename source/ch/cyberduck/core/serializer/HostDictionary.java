@@ -38,9 +38,18 @@ import java.util.TimeZone;
 public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
 
+    private DeserializerFactory deserializer;
+
+    public HostDictionary() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public HostDictionary(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
 
     public <T> Host deserialize(final T serialized) {
-        final Deserializer dict = DeserializerFactory.get(serialized);
+        final Deserializer dict = deserializer.create(serialized);
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {
             final Host bookmark = new Host(hostnameObj.toString());
@@ -88,7 +97,7 @@ public class HostDictionary {
             }
             Object keyObj = dict.objectForKey("Private Key File Dictionary");
             if(keyObj != null) {
-                bookmark.getCredentials().setIdentity(new LocalDictionary().deserialize(keyObj));
+                bookmark.getCredentials().setIdentity(new LocalDictionary(deserializer).deserialize(keyObj));
             }
             Object portObj = dict.stringForKey("Port");
             if(portObj != null) {
@@ -105,7 +114,7 @@ public class HostDictionary {
             }
             Object workdirObj = dict.objectForKey("Workdir Dictionary");
             if(workdirObj != null) {
-                bookmark.setWorkdir(new PathDictionary().deserialize(workdirObj));
+                bookmark.setWorkdir(new PathDictionary(deserializer).deserialize(workdirObj));
             }
             Object nicknameObj = dict.stringForKey("Nickname");
             if(nicknameObj != null) {
@@ -142,11 +151,11 @@ public class HostDictionary {
             }
             Object downloadObj = dict.objectForKey("Download Folder Dictionary");
             if(downloadObj != null) {
-                bookmark.setDownloadFolder(new LocalDictionary().deserialize(downloadObj));
+                bookmark.setDownloadFolder(new LocalDictionary(deserializer).deserialize(downloadObj));
             }
             Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
             if(uploadObj != null) {
-                bookmark.setUploadFolder(new LocalDictionary().deserialize(uploadObj));
+                bookmark.setUploadFolder(new LocalDictionary(deserializer).deserialize(uploadObj));
             }
             Object timezoneObj = dict.stringForKey("Timezone");
             if(timezoneObj != null) {

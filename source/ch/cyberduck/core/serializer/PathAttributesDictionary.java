@@ -28,8 +28,18 @@ import java.util.Collections;
  */
 public class PathAttributesDictionary {
 
+    private DeserializerFactory deserializer;
+
+    public PathAttributesDictionary() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public PathAttributesDictionary(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     public <T> PathAttributes deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.get(serialized);
+        final Deserializer dict = deserializer.create(serialized);
         final PathAttributes attributes = new PathAttributes();
         String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {

@@ -35,10 +35,22 @@ public class DeserializerFactory<T> extends Factory<Deserializer> {
     private static final Preferences preferences
             = PreferencesFactory.get();
 
-    protected Deserializer create(final T dict) {
-        final String clazz = preferences.getProperty("factory.deserializer.class");
+    private String clazz;
+
+    public DeserializerFactory() {
+        this.clazz = preferences.getProperty("factory.deserializer.class");
+    }
+
+    /**
+     * @param clazz Implementation class name
+     */
+    public DeserializerFactory(final String clazz) {
+        this.clazz = clazz;
+    }
+
+    public Deserializer create(final T dict) {
         if(null == clazz) {
-            throw new FactoryException();
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<Deserializer> name = (Class<Deserializer>) Class.forName(clazz);

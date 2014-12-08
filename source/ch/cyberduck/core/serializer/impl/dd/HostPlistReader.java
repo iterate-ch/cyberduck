@@ -1,8 +1,8 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core.serializer.impl.dd;
 
 /*
- * Copyright (c) 2009 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,21 @@ package ch.cyberduck.core.serializer.impl;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.serializer.TransferDictionary;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.serializer.HostDictionary;
+
+import com.dd.plist.NSDictionary;
 
 /**
  * @version $Id$
  */
-public class TransferPlistReader extends PlistReader<Transfer> {
+public class HostPlistReader extends PlistReader<Host> {
 
     @Override
-    public Transfer deserialize(final NSDictionary dict) {
-        return new TransferDictionary().deserialize(dict);
+    public Host deserialize(final NSDictionary dict) {
+        return new HostDictionary().deserialize(dict);
     }
 }

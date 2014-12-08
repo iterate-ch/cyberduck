@@ -1886,6 +1886,7 @@ lib/commons-lang3-3.3.2.jar -text svneol=unset#application/zip
 lib/commons-logging-1.1.3.jar -text svneol=unset#application/zip
 lib/commons-net-3.3-ftp.jar -text
 lib/commons-pool2-2.2.jar -text
+lib/dd-plist.jar -text
 lib/dns_sd.jar -text
 lib/ext/ant-contrib-1.0b3.jar -text
 lib/ext/ant-dotnet-1.1.jar -text svneol=unset#application/java-archive
@@ -2592,13 +2593,13 @@ source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
 source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
 source/ch/cyberduck/core/preferences/UserPreferences.cs -text
 source/ch/cyberduck/core/s3/S3Session.java -text
-source/ch/cyberduck/core/serializer/impl/HostPlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/PlistDeserializer.cs -text
-source/ch/cyberduck/core/serializer/impl/PlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/PlistSerializer.cs -text
-source/ch/cyberduck/core/serializer/impl/PlistWriter.cs -text
-source/ch/cyberduck/core/serializer/impl/ProfilePlistReader.cs -text
-source/ch/cyberduck/core/serializer/impl/TransferPlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/system/HostPlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/system/PlistDeserializer.cs -text
+source/ch/cyberduck/core/serializer/impl/system/PlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/system/PlistSerializer.cs -text
+source/ch/cyberduck/core/serializer/impl/system/PlistWriter.cs -text
+source/ch/cyberduck/core/serializer/impl/system/ProfilePlistReader.cs -text
+source/ch/cyberduck/core/serializer/impl/system/TransferPlistReader.cs -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/DefaultX509KeyManager.java -text

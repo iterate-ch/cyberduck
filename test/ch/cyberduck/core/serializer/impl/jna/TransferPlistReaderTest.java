@@ -1,4 +1,4 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core.serializer.impl.jna;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -19,6 +19,7 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -37,7 +38,8 @@ public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testDeserializeUpload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final TransferPlistReader reader = new TransferPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
+        final Transfer t = reader.read(
                 new Local("test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
@@ -49,7 +51,8 @@ public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test
     public void testDeserializeDownload() throws Exception {
-        final Transfer t = new TransferPlistReader().read(
+        final TransferPlistReader reader = new TransferPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
+        final Transfer t = reader.read(
                 new Local("test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);

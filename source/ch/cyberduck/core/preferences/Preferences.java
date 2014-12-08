@@ -45,6 +45,12 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.serializer.impl.dd.HostPlistReader;
+import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
+import ch.cyberduck.core.serializer.impl.dd.PlistWriter;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.serializer.impl.dd.TransferPlistReader;
 import ch.cyberduck.core.threading.DisabledActionOperationBatcher;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -1059,6 +1065,15 @@ public abstract class Preferences {
     }
 
     protected void setFactories() {
+        defaults.put("factory.serializer.class", PlistSerializer.class.getName());
+        defaults.put("factory.deserializer.class", PlistDeserializer.class.getName());
+        defaults.put("factory.reader.profile.class", ProfilePlistReader.class.getName());
+        defaults.put("factory.writer.profile.class", PlistWriter.class.getName());
+        defaults.put("factory.reader.transfer.class", TransferPlistReader.class.getName());
+        defaults.put("factory.writer.transfer.class", PlistWriter.class.getName());
+        defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
+        defaults.put("factory.writer.host.class", PlistWriter.class.getName());
+
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());

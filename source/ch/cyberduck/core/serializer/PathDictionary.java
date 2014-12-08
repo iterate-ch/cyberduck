@@ -30,8 +30,18 @@ import java.util.EnumSet;
  */
 public class PathDictionary {
 
+    private DeserializerFactory deserializer;
+
+    public PathDictionary() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public PathDictionary(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     public <T> Path deserialize(T serialized) {
-        final Deserializer dict = DeserializerFactory.get(serialized);
+        final Deserializer dict = deserializer.create(serialized);
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
@@ -42,9 +52,9 @@ public class PathDictionary {
         final Path path;
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            PathAttributes attributes = new PathAttributesDictionary().deserialize(attributesObj);
+            PathAttributes attributes = new PathAttributesDictionary(deserializer).deserialize(attributesObj);
             // Legacy
-            String legacyTypeObj = DeserializerFactory.get(attributesObj).stringForKey("Type");
+            String legacyTypeObj = deserializer.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
                 if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
                     type.add(AbstractPath.Type.file);
@@ -80,7 +90,7 @@ public class PathDictionary {
         }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
-            path.setSymlinkTarget(new PathDictionary().deserialize(symlinkObj));
+            path.setSymlinkTarget(new PathDictionary(deserializer).deserialize(symlinkObj));
         }
         return path;
     }

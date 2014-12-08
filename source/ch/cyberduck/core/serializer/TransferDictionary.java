@@ -44,14 +44,24 @@ import java.util.Map;
 public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
 
+    private DeserializerFactory deserializer;
+
+    public TransferDictionary() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public TransferDictionary(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     public <T> Transfer deserialize(final T serialized) {
-        final Deserializer dict = DeserializerFactory.get(serialized);
+        final Deserializer dict = deserializer.create(serialized);
         final Object hostObj = dict.objectForKey("Host");
         if(null == hostObj) {
             log.warn("Missing host in transfer");
             return null;
         }
-        final Host host = new HostDictionary().deserialize(hostObj);
+        final Host host = new HostDictionary(deserializer).deserialize(hostObj);
         if(null == host) {
             log.warn("Invalid host in transfer");
             return null;
@@ -60,7 +70,7 @@ public class TransferDictionary {
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         if(itemsObj != null) {
             for(T rootDict : itemsObj) {
-                final TransferItem item = new TransferItemDictionary().deserialize(rootDict);
+                final TransferItem item = new TransferItemDictionary(deserializer).deserialize(rootDict);
                 if(null == item) {
                     log.warn("Invalid item in transfer");
                     continue;
@@ -72,7 +82,7 @@ public class TransferDictionary {
         final List<T> rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
             for(T rootDict : rootsObj) {
-                final Path remote = new PathDictionary().deserialize(rootDict);
+                final Path remote = new PathDictionary(deserializer).deserialize(rootDict);
                 if(null == remote) {
                     log.warn("Invalid remote in transfer");
                     continue;
@@ -80,15 +90,15 @@ public class TransferDictionary {
                 final TransferItem item = new TransferItem(remote);
                 // Legacy
                 final String localObjDeprecated
-                        = DeserializerFactory.get(rootDict).stringForKey("Local");
+                        = deserializer.create(rootDict).stringForKey("Local");
                 if(localObjDeprecated != null) {
                     Local local = LocalFactory.get(localObjDeprecated);
                     item.setLocal(local);
                 }
                 final Object localObj
-                        = DeserializerFactory.get(rootDict).objectForKey("Local Dictionary");
+                        = deserializer.create(rootDict).objectForKey("Local Dictionary");
                 if(localObj != null) {
-                    Local local = new LocalDictionary().deserialize(localObj);
+                    Local local = new LocalDictionary(deserializer).deserialize(localObj);
                     if(null == local) {
                         log.warn("Invalid local in transfer item");
                         continue;
@@ -157,13 +167,13 @@ public class TransferDictionary {
                 if(roots.size() == destinations.size()) {
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(int i = 0; i < roots.size(); i++) {
-                        final Path target = new PathDictionary().deserialize(destinations.get(i));
+                        final Path target = new PathDictionary(deserializer).deserialize(destinations.get(i));
                         if(null == target) {
                             continue;
                         }
                         files.put(roots.get(i).remote, target);
                     }
-                    final Host target = new HostDictionary().deserialize(destinationObj);
+                    final Host target = new HostDictionary(deserializer).deserialize(destinationObj);
                     if(null == target) {
                         log.warn("Missing target host in copy transfer");
                         return null;

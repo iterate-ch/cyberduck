@@ -23,7 +23,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.impl.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;

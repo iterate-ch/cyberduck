@@ -32,8 +32,18 @@ import org.apache.log4j.Logger;
 public class ProfileDictionary {
     private static final Logger log = Logger.getLogger(ProfileDictionary.class);
 
+    private DeserializerFactory deserializer;
+
+    public ProfileDictionary() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public ProfileDictionary(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     public Profile deserialize(Object serialized) {
-        final Deserializer dict = DeserializerFactory.get(serialized);
+        final Deserializer dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
             final Protocol parent = ProtocolFactory.forName(protocol);

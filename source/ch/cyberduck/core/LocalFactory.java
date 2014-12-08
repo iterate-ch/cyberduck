@@ -42,7 +42,7 @@ public final class LocalFactory extends Factory<Local> {
     protected Local create(final String path) {
         final String clazz = preferences.getProperty("factory.local.class");
         if(null == clazz) {
-            throw new FactoryException();
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<Local> name = (Class<Local>) Class.forName(clazz);

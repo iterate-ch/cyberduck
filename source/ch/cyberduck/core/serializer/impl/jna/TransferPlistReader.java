@@ -1,7 +1,7 @@
-package ch.cyberduck.core.serializer;
+package ch.cyberduck.core.serializer.impl.jna;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * Copyright (c) 2009 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,29 +15,31 @@ package ch.cyberduck.core.serializer;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.serializer.TransferDictionary;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$
  */
-public class PermissionDictionary {
+public class TransferPlistReader extends PlistReader<Transfer> {
 
     private DeserializerFactory deserializer;
 
-    public PermissionDictionary() {
+    public TransferPlistReader() {
         this.deserializer = new DeserializerFactory();
     }
 
-    public PermissionDictionary(final DeserializerFactory deserializer) {
+    public TransferPlistReader(final DeserializerFactory deserializer) {
         this.deserializer = deserializer;
     }
 
-    public <T> Permission deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
-        return new Permission(dict.stringForKey("Mask"));
+    @Override
+    public Transfer deserialize(final NSDictionary dict) {
+        return new TransferDictionary(deserializer).deserialize(dict);
     }
 }

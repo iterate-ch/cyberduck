@@ -1,4 +1,4 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core.serializer.impl.jna;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -19,6 +19,7 @@ package ch.cyberduck.core.serializer.impl;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.serializer.ProfileDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -28,8 +29,18 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
  */
 public class ProfilePlistReader extends PlistReader<Profile> {
 
+    private DeserializerFactory deserializer;
+
+    public ProfilePlistReader() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public ProfilePlistReader(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     @Override
     public Profile deserialize(final NSDictionary dict) {
-        return new ProfileDictionary().deserialize(dict);
+        return new ProfileDictionary(deserializer).deserialize(dict);
     }
 }

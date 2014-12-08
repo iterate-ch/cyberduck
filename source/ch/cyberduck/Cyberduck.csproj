@@ -181,13 +181,6 @@
     <Compile Include="core\preferences\UserPreferences.cs" />
     <Compile Include="core\preferences\SettingsDictionary.cs" />
     <Compile Include="core\SystemProxy.cs" />
-    <Compile Include="core\serializer\impl\HostPlistReader.cs" />
-    <Compile Include="core\serializer\impl\PlistDeserializer.cs" />
-    <Compile Include="core\serializer\impl\PlistReader.cs" />
-    <Compile Include="core\serializer\impl\PlistSerializer.cs" />
-    <Compile Include="core\serializer\impl\PlistWriter.cs" />
-    <Compile Include="core\serializer\impl\ProfilePlistReader.cs" />
-    <Compile Include="core\serializer\impl\TransferPlistReader.cs" />
     <Compile Include="core\SshTerminalService.cs" />
     <Compile Include="core\ssl\HostnameVerifier.cs" />
     <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />

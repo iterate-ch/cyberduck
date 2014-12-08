@@ -1,4 +1,4 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core.serializer.impl.jna;
 
 /*
  * Copyright (c) 2009 David Kocher. All rights reserved.

@@ -21,7 +21,6 @@ using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
-using Ch.Cyberduck.Core.Serializer.Impl;
 using ch.cyberduck.cli;
 
 namespace Ch.Cyberduck.Cli
@@ -43,14 +42,6 @@ namespace Ch.Cyberduck.Cli
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof (TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
-            defaults.put("factory.serializer.class", typeof (PlistSerializer).AssemblyQualifiedName);
-            defaults.put("factory.deserializer.class", typeof (PlistDeserializer).AssemblyQualifiedName);
-            defaults.put("factory.reader.profile.class", typeof (ProfilePlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.profile.class", typeof (PlistWriter).AssemblyQualifiedName);
-            defaults.put("factory.reader.transfer.class", typeof (TransferPlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.transfer.class", typeof (PlistWriter).AssemblyQualifiedName);
-            defaults.put("factory.reader.host.class", typeof (HostPlistReader).AssemblyQualifiedName);
-            defaults.put("factory.writer.host.class", typeof (PlistWriter).AssemblyQualifiedName);
         }
     }
 }

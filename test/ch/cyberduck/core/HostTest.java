@@ -18,15 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.serializer.Serializer;
 
 import org.junit.Test;
-
-import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -34,27 +28,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class HostTest extends AbstractTestCase {
-
-    @Test
-    public void testDictionaryWorkdirRegion() {
-        final Host h = new Host(new DAVProtocol(), "h", 66);
-        final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
-        container.attributes().setRegion("r");
-        h.setWorkdir(container);
-        final Host deserialized = new HostDictionary().deserialize(h.serialize(SerializerFactory.get()));
-        assertEquals(h, deserialized);
-        assertEquals("r", deserialized.getWorkdir().attributes().getRegion());
-    }
-
-    @Test
-    public void testDeserialize() throws Exception {
-        final Serializer dict = SerializerFactory.get();
-        dict.setStringForKey("swift", "Protocol");
-        dict.setStringForKey("unknown provider", "Provider");
-        dict.setStringForKey("h", "Hostname");
-        final Host host = new HostDictionary().deserialize(dict.getSerialized());
-        assertEquals(new SwiftProtocol(), host.getProtocol());
-    }
 
     @Test
     public void testWebURL() {

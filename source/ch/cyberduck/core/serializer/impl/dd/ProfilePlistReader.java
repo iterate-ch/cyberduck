@@ -1,8 +1,8 @@
-package ch.cyberduck.core.serializer;
+package ch.cyberduck.core.serializer.impl.dd;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,21 @@ package ch.cyberduck.core.serializer;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.serializer.ProfileDictionary;
+
+import com.dd.plist.NSDictionary;
 
 /**
  * @version $Id$
  */
-public class PermissionDictionary {
+public class ProfilePlistReader extends PlistReader<Profile> {
 
-    private DeserializerFactory deserializer;
-
-    public PermissionDictionary() {
-        this.deserializer = new DeserializerFactory();
-    }
-
-    public PermissionDictionary(final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
-    }
-
-    public <T> Permission deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
-        return new Permission(dict.stringForKey("Mask"));
+    @Override
+    public Profile deserialize(final NSDictionary dict) {
+        return new ProfileDictionary().deserialize(dict);
     }
 }

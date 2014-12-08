@@ -24,7 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.impl.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import java.util.List;

@@ -21,12 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
-import ch.cyberduck.core.serializer.impl.HostPlistReader;
-import ch.cyberduck.core.serializer.impl.PlistDeserializer;
-import ch.cyberduck.core.serializer.impl.PlistSerializer;
-import ch.cyberduck.core.serializer.impl.PlistWriter;
-import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
-import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -128,15 +122,6 @@ public class AbstractTestCase {
             super.setFactories();
 
             defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
-
-            defaults.put("factory.serializer.class", PlistSerializer.class.getName());
-            defaults.put("factory.deserializer.class", PlistDeserializer.class.getName());
-            defaults.put("factory.reader.profile.class", ProfilePlistReader.class.getName());
-            defaults.put("factory.writer.profile.class", PlistWriter.class.getName());
-            defaults.put("factory.reader.transfer.class", TransferPlistReader.class.getName());
-            defaults.put("factory.writer.transfer.class", PlistWriter.class.getName());
-            defaults.put("factory.reader.host.class", HostPlistReader.class.getName());
-            defaults.put("factory.writer.host.class", PlistWriter.class.getName());
         }
 
         @Override

@@ -1,8 +1,8 @@
-package ch.cyberduck.core.serializer.impl;
+package ch.cyberduck.core.serializer.impl.dd;
 
 /*
- * Copyright (c) 2009 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2014 David Kocher. All rights reserved.
+ * http://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ package ch.cyberduck.core.serializer.impl;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
+ * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.Local;
@@ -23,10 +23,14 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
 import java.util.Collection;
+
+import com.dd.plist.NSArray;
+import com.dd.plist.NSDictionary;
 
 /**
  * @version $Id$
@@ -35,19 +39,29 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
 
     @Override
     public void write(final Collection<S> collection, final Local file) throws AccessDeniedException {
-        NSMutableArray list = NSMutableArray.array();
+        final NSArray list = new NSArray(collection.size());
+        int i = 0;
         for(S bookmark : collection) {
-            list.addObject(bookmark.<NSDictionary>serialize(SerializerFactory.get()));
+            list.setValue(i, bookmark.<NSDictionary>serialize(SerializerFactory.get()));
+            i++;
         }
-        if(!list.writeToFile(file.getAbsolute())) {
-            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+        final String content = list.toXMLPropertyList();
+        try {
+            IOUtils.write(content, file.getOutputStream(false));
+        }
+        catch(IOException e) {
+            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
         }
     }
 
     @Override
     public void write(final S item, final Local file) throws AccessDeniedException {
-        if(!item.<NSDictionary>serialize(SerializerFactory.get()).writeToFile(file.getAbsolute())) {
-            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()));
+        final String content = item.<NSDictionary>serialize(SerializerFactory.get()).toXMLPropertyList();
+        try {
+            IOUtils.write(content, file.getOutputStream(false));
+        }
+        catch(IOException e) {
+            throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
         }
     }
 }
