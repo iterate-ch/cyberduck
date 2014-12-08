@@ -41,7 +41,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
     public TransferErrorCallback create(final Controller c) {
         final String clazz = preferences.getProperty("factory.transfererrorcallback.class");
         if(null == clazz) {
-            throw new FactoryException();
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<TransferErrorCallback> name = (Class<TransferErrorCallback>) Class.forName(clazz);

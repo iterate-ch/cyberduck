@@ -47,7 +47,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
         if(Scheme.sftp.equals(protocol.getScheme())) {
             final String clazz = preferences.getProperty("factory.hostkeycallback.class");
             if(null == clazz) {
-                throw new FactoryException();
+                throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
             }
             try {
                 final Class<HostKeyCallback> name = (Class<HostKeyCallback>) Class.forName(clazz);

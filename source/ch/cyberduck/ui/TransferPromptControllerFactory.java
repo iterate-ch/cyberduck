@@ -44,7 +44,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
         final String clazz = preferences.getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
         if(null == clazz) {
-            throw new FactoryException();
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<TransferPrompt> name = (Class<TransferPrompt>) Class.forName(clazz);
