@@ -194,7 +194,7 @@ public class SFTPSessionTest extends AbstractTestCase {
 
     @Test(expected = LoginCanceledException.class)
     public void testUsernameChange() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("anonymous", null));
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", null));
         final Session session = new SFTPSession(host);
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
