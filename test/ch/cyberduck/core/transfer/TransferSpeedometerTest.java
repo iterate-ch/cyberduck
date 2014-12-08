@@ -20,8 +20,8 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public class TransferSpeedometerTest extends AbstractTestCase {
 
     @Test
     public void testReset() throws Exception {
-        final DownloadTransfer transfer = new DownloadTransfer(new Host("h"), new Path("/p", EnumSet.of(Path.Type.file)), new FinderLocal("/t"));
+        final DownloadTransfer transfer = new DownloadTransfer(new Host("h"), new Path("/p", EnumSet.of(Path.Type.file)), new Local("/t"));
         final TransferSpeedometer s = new TransferSpeedometer(transfer);
         transfer.addSize(8L);
         assertEquals(8L, s.getStatus().getSize(), 0L);

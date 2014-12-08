@@ -29,7 +29,7 @@ public class DefaultLocalTouchFeatureTest extends AbstractTestCase {
 
     @Test(expected = AccessDeniedException.class)
     public void testFailure() throws Exception {
-        FinderLocal l = new FinderLocal("/" + UUID.randomUUID().toString());
+        Local l = new Local("/" + UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
         try {
             f.touch(l);

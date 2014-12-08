@@ -19,7 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.Local;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,6 +42,6 @@ public class ReceiptFactoryTest extends AbstractTestCase {
 
     @Test
     public void testOpenDirectory() throws Exception {
-        assertEquals(1, new ReceiptFactory(new FinderLocal("/Applications/Cyberduck.app/Contents/_MASReceipt")).open().size());
+        assertEquals(1, new ReceiptFactory(new Local("/Applications/Cyberduck.app/Contents/_MASReceipt")).open().size());
     }
 }

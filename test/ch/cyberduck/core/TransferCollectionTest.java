@@ -1,12 +1,9 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 
 import org.junit.Test;
-
-import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +14,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testEmpty() throws Exception {
-        TransferCollection c = new TransferCollection(new FinderLocal("test/ch/cyberduck/core/transfer/TransferCollectionEmpty.plist")) {
+        TransferCollection c = new TransferCollection(new Local("test/ch/cyberduck/core/transfer/TransferCollectionEmpty.plist")) {
             @Override
             public void trash() {
                 //
@@ -31,7 +28,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoadCopyDeprecated() throws Exception {
-        TransferCollection c = new TransferCollection(new FinderLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist")) {
+        TransferCollection c = new TransferCollection(new Local("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist")) {
             @Override
             public void trash() {
                 //
@@ -45,7 +42,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoadCopyInvalidCopyTransfer() throws Exception {
-        TransferCollection c = new TransferCollection(new FinderLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatInvalid.plist")) {
+        TransferCollection c = new TransferCollection(new Local("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatInvalid.plist")) {
             @Override
             public void trash() {
                 //
@@ -59,7 +56,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testSaveDeprecated() throws Exception {
-        TransferCollection c = new TransferCollection(new FinderLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist")) {
+        TransferCollection c = new TransferCollection(new Local("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist")) {
             @Override
             public void trash() {
                 //
@@ -73,7 +70,7 @@ public class TransferCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoadCopyWithDestination() throws Exception {
-        TransferCollection c = new TransferCollection(new FinderLocal("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormat.plist")) {
+        TransferCollection c = new TransferCollection(new Local("test/ch/cyberduck/core/transfer/TransferCollectionCopyFormat.plist")) {
             @Override
             public void trash() {
                 //
