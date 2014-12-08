@@ -13,8 +13,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import static com.ibm.icu.impl.Assert.fail;
-
 /**
  * @version $Id$
  */
@@ -32,12 +30,7 @@ public class CertificateStoreX509TrustManagerTest extends AbstractTestCase {
         X509Certificate cert = (X509Certificate) cf.generateCertificate(
                 new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer")
         );
-        try {
-            m.checkServerTrusted(new X509Certificate[]{cert}, "RSA");
-        }
-        catch(CertificateException e) {
-            fail(e);
-        }
+        m.checkServerTrusted(new X509Certificate[]{cert}, "RSA");
     }
 
     @Test(expected = CertificateException.class)
