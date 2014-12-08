@@ -38,7 +38,7 @@ public class HostPlistReaderTest extends AbstractTestCase {
     public void testDeserializeDeprecatedProtocol() throws Exception {
         assertNull(new HostPlistReader().read(LocalFactory.get("test")));
         assertNull(new HostPlistReader().read(
-                LocalFactory.get("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")));
+                new Local("test/ch/cyberduck/core/serializer/impl/1c158c34-db8a-4c32-a732-abd9447bb27c.duck")));
     }
 
     @Test

@@ -10,6 +10,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -32,14 +33,14 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testDeserialize() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                LocalFactory.get("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")
+                new FinderLocal("test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile")
         );
         assertNull(profile);
     }
 
     @Test
     public void testAll() throws Exception {
-        for(Local l : new Local("profiles").list().filter(new Filter<Local>() {
+        for(Local l : new FinderLocal("profiles").list().filter(new Filter<Local>() {
             @Override
             public boolean accept(final Local file) {
                 return file.getName().endsWith(".cyberduckprofile");
@@ -68,10 +69,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testEquals() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                new Local("profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                new FinderLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(profile, reader.read(
-                new Local("profiles/Eucalyptus Walrus S3.cyberduckprofile")
+                new FinderLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         Assert.assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());
@@ -84,10 +85,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testEqualsDifferentScheme() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile https = reader.read(
-                LocalFactory.get("profiles/Openstack Swift (Swauth).cyberduckprofile")
+                new FinderLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
         );
         final Profile http = reader.read(
-                LocalFactory.get("profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
+                new FinderLocal("profiles/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
         assertNotEquals(https, http);
     }
@@ -96,10 +97,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testEqualsContexts() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile keystone = reader.read(
-                LocalFactory.get("profiles/Openstack Swift (Keystone).cyberduckprofile")
+                new FinderLocal("profiles/Openstack Swift (Keystone).cyberduckprofile")
         );
         final Profile swauth = reader.read(
-                LocalFactory.get("profiles/Openstack Swift (Swauth).cyberduckprofile")
+                new FinderLocal("profiles/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotEquals(keystone, swauth);
     }
@@ -108,10 +109,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testProviderProfileHPCloud() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile")
+                new FinderLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
         );
         assertEquals(profile, reader.read(
-                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile")
+                new FinderLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.swift, profile.getType());
         assertEquals(new SwiftProtocol(), profile.getProtocol());
@@ -136,10 +137,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testProviderProfileS3HTTP() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                LocalFactory.get("profiles/S3 (HTTP).cyberduckprofile")
+                new FinderLocal("profiles/S3 (HTTP).cyberduckprofile")
         );
         assertEquals(profile, reader.read(
-                LocalFactory.get("profiles/S3 (HTTP).cyberduckprofile")
+                new FinderLocal("profiles/S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());
@@ -160,10 +161,10 @@ public class ProfilePlistReaderTest extends AbstractTestCase {
     public void testProviderProfileS3HTTPS() throws Exception {
         final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Profile profile = reader.read(
-                LocalFactory.get("profiles/S3 (HTTPS).cyberduckprofile")
+                new FinderLocal("profiles/S3 (HTTPS).cyberduckprofile")
         );
         assertEquals(profile, reader.read(
-                LocalFactory.get("profiles/S3 (HTTPS).cyberduckprofile")
+                new FinderLocal("profiles/S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new S3Protocol(), profile.getProtocol());

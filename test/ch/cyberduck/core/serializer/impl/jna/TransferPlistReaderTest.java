@@ -21,8 +21,8 @@ package ch.cyberduck.core.serializer.impl.jna;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,7 +43,7 @@ public class TransferPlistReaderTest extends AbstractTestCase {
     public void testDeserializeUpload() throws Exception {
         final TransferPlistReader reader = new TransferPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Transfer t = reader.read(
-                new Local("test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
+                new FinderLocal("test/ch/cyberduck/core/serializer/impl/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
         assertEquals("identity.api.rackspacecloud.com", t.getHost().getHostname());
@@ -56,7 +56,7 @@ public class TransferPlistReaderTest extends AbstractTestCase {
     public void testDeserializeDownload() throws Exception {
         final TransferPlistReader reader = new TransferPlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
         final Transfer t = reader.read(
-                new Local("test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
+                new FinderLocal("test/ch/cyberduck/core/serializer/impl/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);
         assertEquals("s3.amazonaws.com", t.getHost().getHostname());
