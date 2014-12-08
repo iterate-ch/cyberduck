@@ -63,12 +63,36 @@ public final class LocalFactory extends Factory<Local> {
         }
     }
 
+    protected Local create(final Local parent, final String path) {
+        final String clazz = preferences.getProperty("factory.local.class");
+        if(null == clazz) {
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+        }
+        try {
+            final Class<Local> name = (Class<Local>) Class.forName(clazz);
+            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, parent.getClass(), path.getClass());
+            return constructor.newInstance(parent, path);
+        }
+        catch(InstantiationException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(ClassNotFoundException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+        catch(InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+    }
+
     public static Local get(final Local parent, final String name) {
-        return get(parent.isRoot() ? String.format("%s%s", parent.getAbsolute(), name) : String.format("%s/%s", parent.getAbsolute(), name));
+        return new LocalFactory().create(parent, name);
     }
 
     public static Local get(final String parent, final String name) {
-        return get(new LocalFactory().create(parent), name);
+        return new LocalFactory().create(new LocalFactory().create(parent), name);
     }
 
     public static Local get(final String path) {
