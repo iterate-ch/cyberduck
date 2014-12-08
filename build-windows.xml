@@ -182,31 +182,22 @@
             <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${www.update}/Updater.exe"'/>
         </exec>
 
-        <copy file="${www.update}/updater.xml" todir="${build.deploy}" overwrite="true"/>
-        <replace file="${build.deploy}/updater.xml" summary="true" encoding="UTF-8">
-            <replacefilter token="_VERSION_" value="${updater.version}"/>
-        </replace>
-
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${www.update}/updater.wyp" todir="${build.deploy}" overwrite="true"/>
-        <copy file="${www.update}/Updater.exe" todir="${build.deploy}/update" overwrite="true"/>
+        <copy todir="${build.deploy}">
+            <fileset dir="${www.update}">
+                <include name="updater.xml"/>
+                <include name="updater.wyp"/>
+                <include name="Updater.exe"/>
+            </fileset>
+        </copy>
+        <replace file="${build.deploy}/updater.xml" summary="true" encoding="UTF-8">
+            <replacefilter token="${VERSION}" value="${updater.version}"/>
+        </replace>
 
         <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true">
             <arg value="${build.deploy}/updater.wyp"/>
             <arg value="/bu"/>
             <arg value="-add=${build.deploy}/updater.xml"/>
         </exec>
-
-        <scp file="${build.deploy}/update/${app.name}Updater-all-${updater.version}.wyu"
-             todir="dkocher@update.cyberduck.io:./update.cyberduck.io/windows/update"
-             keyfile="${user.home}/.ssh/update.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog Release - version.cyberduck.io -->
-        <scp file="${build.deploy}/update/updater.wys"
-             todir="dkocher@version.cyberduck.io:./version.cyberduck.io/"
-             keyfile="${user.home}/.ssh/version.cyberduck.io-rsa"
-             passphrase="">
-        </scp>
     </target>
 </project>
