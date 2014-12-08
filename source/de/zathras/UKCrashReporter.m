@@ -74,7 +74,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 		// Get the log file, its last change date and last report date:
 		NSString*		appName = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleExecutable"];
 		NSString*		appRevision = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleVersion"];
-		NSString*		crashLogsFolder = [@"~/Library/Logs/CrashReporter/" stringByExpandingTildeInPath];
+		NSString*		crashLogsFolder = [@"~/Library/Logs/DiagnosticReports/" stringByExpandingTildeInPath];
 		NSString*		crashLogName = [appName stringByAppendingString: @".crash.log"];
 		NSString*		crashLogPath = nil;
 		if( !isTenFiveOrBetter )
