@@ -152,8 +152,8 @@ public abstract class Session<C> implements TranscriptListener {
         }
         state = State.closing;
         try {
-            this.logout();
             if(client != null) {
+                this.logout();
                 this.disconnect();
             }
         }
