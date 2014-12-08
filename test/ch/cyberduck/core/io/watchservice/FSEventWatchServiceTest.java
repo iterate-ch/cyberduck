@@ -18,11 +18,13 @@ package ch.cyberduck.core.io.watchservice;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,6 +44,7 @@ import java.util.concurrent.TimeoutException;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
+@Depends(platform = Factory.Platform.Name.mac)
 public class FSEventWatchServiceTest extends AbstractTestCase {
 
     @Test(expected = IOException.class)

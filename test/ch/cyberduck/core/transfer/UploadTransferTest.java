@@ -10,7 +10,6 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
@@ -249,7 +248,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final String name = UUID.randomUUID().toString();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), "transfer");
         LocalTouchFactory.get().touch(local);
-        LocalTouchFactory.get().touch(new FinderLocal(local, name));
+        LocalTouchFactory.get().touch(new Local(local, name));
         final Transfer transfer = new UploadTransfer(host, test, local);
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
