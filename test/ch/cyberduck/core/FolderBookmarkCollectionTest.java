@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 

@@ -1,8 +1,8 @@
 package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.junit.Test;

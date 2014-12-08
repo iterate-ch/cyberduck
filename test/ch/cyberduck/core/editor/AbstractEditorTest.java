@@ -21,10 +21,10 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.action.Worker;
 

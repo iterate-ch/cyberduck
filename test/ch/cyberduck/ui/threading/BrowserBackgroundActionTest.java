@@ -3,9 +3,9 @@ package ch.cyberduck.ui.threading;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
 

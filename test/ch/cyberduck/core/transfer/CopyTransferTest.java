@@ -23,13 +23,13 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 

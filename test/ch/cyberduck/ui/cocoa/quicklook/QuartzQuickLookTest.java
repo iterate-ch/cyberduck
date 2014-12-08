@@ -3,8 +3,8 @@ package ch.cyberduck.ui.cocoa.quicklook;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.test.Depends;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 

@@ -25,11 +25,11 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
+import ch.cyberduck.core.test.NullLocal;
+import ch.cyberduck.core.test.NullSession;
 
 import org.junit.Test;
 
@@ -128,13 +128,12 @@ public class SyncTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testChildrenDuplicate() throws Exception {
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir") + "t", "a");
+    public void testChildrenRemoteAndLocalExist() throws Exception {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {
                 final AttributedList<Local> list = new AttributedList<Local>();
-                list.add(local);
+                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "t", "a"));
                 return list;
             }
         };

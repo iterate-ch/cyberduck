@@ -23,10 +23,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 

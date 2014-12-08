@@ -7,6 +7,8 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
+import ch.cyberduck.core.test.NullLocal;
+import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;

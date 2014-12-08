@@ -4,13 +4,13 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.test.NullLocal;
+import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 

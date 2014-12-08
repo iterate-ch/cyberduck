@@ -20,8 +20,8 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.test.Depends;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 

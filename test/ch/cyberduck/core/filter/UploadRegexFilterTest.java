@@ -1,7 +1,7 @@
 package ch.cyberduck.core.filter;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 

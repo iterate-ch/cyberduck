@@ -3,8 +3,8 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.test.Depends;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;

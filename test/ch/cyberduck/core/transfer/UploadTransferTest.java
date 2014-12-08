@@ -13,6 +13,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
+import ch.cyberduck.core.test.NullLocal;
+import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;

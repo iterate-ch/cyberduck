@@ -1,5 +1,15 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.test;
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPClient;
 import ch.cyberduck.core.ftp.FTPSession;

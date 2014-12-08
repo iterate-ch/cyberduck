@@ -7,6 +7,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.test.NullLocal;
 
 import org.junit.Test;
 
