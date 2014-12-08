@@ -418,7 +418,7 @@ public class PreferencesController extends ToolbarWindowController {
                 String path = LocalFactory.get(filename).getAbsolute();
                 NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
-                    log.error("Loading bundle failed:" + path);
+                    log.error(String.format("Loading bundle %s failed", path));
                 }
                 else {
                     preferences.setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());

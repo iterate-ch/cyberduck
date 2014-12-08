@@ -131,7 +131,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             else {
                 final NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
-                    log.error("Loading bundle failed:" + path);
+                    log.error(String.format("Loading bundle %s failed", path));
                     defaultApplicationCache.put(extension, null);
                 }
                 else {
