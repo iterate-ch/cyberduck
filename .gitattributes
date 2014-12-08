@@ -1892,7 +1892,6 @@ lib/ext/ant-dotnet-1.1.jar -text svneol=unset#application/java-archive
 lib/ext/ant-ikvmc.0.5.jar -text
 lib/ext/hamcrest-core-1.3.jar -text svneol=unset#application/jar
 lib/ext/jacocoant.jar -text svneol=unset#application/zip
-lib/ext/jsch-0.1.51.jar -text svneol=unset#application/zip
 lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-2.2.jar -text
