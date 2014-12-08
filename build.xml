@@ -254,7 +254,8 @@
     </target>
 
     <target name="test-compile" depends="build">
-        <javac debug="${debug}"
+        <javac fork="true"
+               debug="${debug}"
                includeantruntime="false"
                encoding="utf-8"
                target="${build.compile.target}"
