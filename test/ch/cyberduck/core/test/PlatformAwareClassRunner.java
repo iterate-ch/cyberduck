@@ -43,7 +43,7 @@ public final class PlatformAwareClassRunner extends BlockJUnit4ClassRunner {
         if(depends == null) {
             super.runChild(method, notifier);
         }
-        if(p.equals(depends.platform())) {
+        else if(p.equals(depends.platform())) {
             super.runChild(method, notifier);
         }
         else {
