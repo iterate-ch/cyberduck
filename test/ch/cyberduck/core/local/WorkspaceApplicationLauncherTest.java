@@ -19,7 +19,9 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
@@ -29,6 +31,7 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class WorkspaceApplicationLauncherTest extends AbstractTestCase {
 
     @Test

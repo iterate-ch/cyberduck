@@ -20,8 +20,10 @@ package ch.cyberduck.core.serializer.impl.jna;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -34,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class TransferPlistReaderTest extends AbstractTestCase {
 
     @Test

@@ -2,9 +2,11 @@
 package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
@@ -15,6 +17,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class LaunchServicesSchemeHandlerTest extends AbstractTestCase {
 
     @Test

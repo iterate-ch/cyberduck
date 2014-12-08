@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.junit.Test;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertNotSame;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class NSObjectPathReferenceTest extends AbstractTestCase {
 
     @Test

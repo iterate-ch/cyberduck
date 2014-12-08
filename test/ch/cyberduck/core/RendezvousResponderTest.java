@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.test.Depends;
+
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -10,6 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class RendezvousResponderTest extends AbstractTestCase {
 
     @Test

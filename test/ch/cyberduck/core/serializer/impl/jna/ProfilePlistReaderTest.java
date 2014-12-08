@@ -2,6 +2,7 @@ package ch.cyberduck.core.serializer.impl.jna;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -12,6 +13,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class ProfilePlistReaderTest extends AbstractTestCase {
 
     @Test

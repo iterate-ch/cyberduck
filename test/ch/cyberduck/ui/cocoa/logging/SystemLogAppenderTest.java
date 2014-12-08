@@ -1,6 +1,8 @@
 package ch.cyberduck.ui.cocoa.logging;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.test.Depends;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -9,8 +11,9 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class SystemLogAppenderTest extends AbstractTestCase {
 
     @Test

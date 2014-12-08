@@ -1,10 +1,12 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
@@ -16,6 +18,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class FinderLocalTest extends AbstractTestCase {
 
     @Test

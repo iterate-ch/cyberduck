@@ -1,6 +1,8 @@
 package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.ui.cocoa.WindowController;
 
 import org.junit.Test;
@@ -8,8 +10,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class WindowMainActionTest extends AbstractTestCase {
 
     @Test

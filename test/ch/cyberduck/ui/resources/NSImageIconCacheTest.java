@@ -19,10 +19,12 @@ package ch.cyberduck.ui.resources;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
 import org.junit.Test;
@@ -34,6 +36,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class NSImageIconCacheTest extends AbstractTestCase {
 
     @Test

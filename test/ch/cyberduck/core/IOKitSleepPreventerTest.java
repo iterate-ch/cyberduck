@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.test.Depends;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -7,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class IOKitSleepPreventerTest extends AbstractTestCase {
 
     @Test

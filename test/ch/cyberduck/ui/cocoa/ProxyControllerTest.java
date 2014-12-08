@@ -1,7 +1,9 @@
 package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
@@ -19,6 +21,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class ProxyControllerTest extends AbstractTestCase {
 
     @Test

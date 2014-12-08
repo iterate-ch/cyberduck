@@ -1,9 +1,11 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class WorkspaceSymlinkFeatureTest extends AbstractTestCase {
 
     @Test

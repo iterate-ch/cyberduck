@@ -20,7 +20,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
+import ch.cyberduck.core.test.PlatformAwareClassRunner;
+import ch.cyberduck.core.test.TestPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +51,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @version $Id$
  */
+@RunWith(PlatformAwareClassRunner.class)
 public class AbstractTestCase {
 
     static {
@@ -92,7 +95,6 @@ public class AbstractTestCase {
         pool.operate();
     }
 
-
     protected <T> void repeat(final Callable<T> c, int repeat) throws InterruptedException, ExecutionException {
         final ExecutorService service = Executors.newCachedThreadPool();
         final BlockingQueue<Future<T>> queue = new LinkedBlockingQueue<Future<T>>();
@@ -113,28 +115,6 @@ public class AbstractTestCase {
         }
         for(int i = 0; i < repeat; i++) {
             queue.take().get();
-        }
-    }
-
-    private static class TestPreferences extends MemoryPreferences {
-        @Override
-        protected void setFactories() {
-            super.setFactories();
-
-            defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
-        }
-
-        @Override
-        protected void setDefaults() {
-            super.setDefaults();
-
-            final Local settings = new TemporarySupportDirectoryFinder().find();
-
-            defaults.put("application.support.path", settings.getAbsolute());
-            defaults.put("application.profiles.path", settings.getAbsolute());
-            defaults.put("application.receipt.path", settings.getAbsolute());
-            defaults.put("application.bookmarks.path", settings.getAbsolute());
-            defaults.put("queue.download.folder", settings.getAbsolute());
         }
     }
 }

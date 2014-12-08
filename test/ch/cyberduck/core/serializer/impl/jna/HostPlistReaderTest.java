@@ -2,11 +2,13 @@ package ch.cyberduck.core.serializer.impl.jna;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
 
@@ -15,6 +17,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class HostPlistReaderTest extends AbstractTestCase {
 
     @Test

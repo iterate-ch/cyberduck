@@ -2,17 +2,18 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
-
-import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class HyperlinkAttributedStringFactoryTest extends AbstractTestCase {
 
     @Test

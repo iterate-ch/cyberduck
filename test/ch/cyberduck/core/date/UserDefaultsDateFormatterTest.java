@@ -1,6 +1,8 @@
 package ch.cyberduck.core.date;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
 import org.junit.Test;
@@ -12,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @version $Id$
  */
+@Depends(platform = Factory.Platform.Name.mac)
 public class UserDefaultsDateFormatterTest extends AbstractTestCase {
 
     @Test

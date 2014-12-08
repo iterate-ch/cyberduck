@@ -1,4 +1,4 @@
-package ch.cyberduck.core.sparkle;
+package ch.cyberduck.core.test;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.
@@ -18,19 +18,15 @@ package ch.cyberduck.core.sparkle;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.test.Depends;
 
-import org.junit.Test;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import static org.junit.Assert.assertFalse;
-
-@Depends(platform = Factory.Platform.Name.mac)
-public class SandboxTest extends AbstractTestCase{
-
-    @Test
-    public void testIsSandboxed() throws Exception {
-        assertFalse(new Sandbox().isSandboxed());
-    }
+/**
+ * @version $Id$
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Depends {
+    Factory.Platform.Name platform();
 }
