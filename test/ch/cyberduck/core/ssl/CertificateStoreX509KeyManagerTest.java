@@ -27,10 +27,8 @@ import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
 import java.net.Socket;
-import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
@@ -93,18 +91,5 @@ public class CertificateStoreX509KeyManagerTest extends AbstractTestCase {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore()).init();
         assertNull(m.getClientAliases("RSA", new Principal[]{}));
         assertNull(m.getClientAliases("RSA", null));
-    }
-
-    @Test
-    public void testGetAliasesForIssuerDN() throws Exception {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
-                KeyStore.getInstance("KeychainStore", "Apple")).init();
-        final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-//                new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")
-//                new X500Principal("CN=Developer ID Certification Authority, OU=Apple Certification Authority, O=Apple Inc., C=US")
-                new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
-        });
-        assertNotNull(aliases);
-        assertFalse(Arrays.asList(aliases).isEmpty());
     }
 }
