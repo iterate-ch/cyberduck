@@ -136,6 +136,9 @@ namespace Ch.Cyberduck.Core.Local
                 }
             }
             defaultApplicationCache.TryGetValue(extension, out app);
+            if(null == app) {
+                return Application.notfound;
+            }
             return app;
         }
 
