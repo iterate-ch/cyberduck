@@ -22,7 +22,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultCredentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -41,7 +41,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
     public void testNoConfigure() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         Credentials credentials = new DefaultCredentials("user", " ");
         credentials.setIdentity(new NullLocal("t"));
         assertEquals("t", c.configure(new Host(new SFTPProtocol(), "t", credentials)).getIdentity().getName());
@@ -51,12 +51,12 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
     public void testConfigureKnownHost() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         final Host host = new Host("alias");
         final Credentials credentials = c.configure(host);
         assertSame(host.getCredentials(), credentials);
         assertNotNull(credentials.getIdentity());
-        assertEquals(LocalFactory.get("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
+        assertEquals(new Local("~/.ssh/version.cyberduck.ch-rsa"), credentials.getIdentity());
         assertEquals("root", credentials.getUsername());
     }
 
@@ -64,7 +64,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
     public void testConfigureDefaultKey() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         final Credentials credentials = c.configure(new Host("t"));
         // ssh.authentication.publickey.default.enable
         assertNull(credentials.getIdentity());
@@ -74,7 +74,7 @@ public class OpenSSHCredentialsConfiguratorTest extends AbstractTestCase {
     public void testNullHostname() throws Exception {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         assertNotNull(c.configure(new Host(ProtocolFactory.SFTP, null)));
     }
 }

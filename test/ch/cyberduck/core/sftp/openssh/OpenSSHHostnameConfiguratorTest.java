@@ -19,7 +19,7 @@ package ch.cyberduck.core.sftp.openssh;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
     public void testLookup() throws Exception {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         assertEquals("cyberduck.ch", c.getHostname("alias"));
     }
 
@@ -43,7 +43,7 @@ public class OpenSSHHostnameConfiguratorTest extends AbstractTestCase {
     public void testPort() throws Exception {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
-                        LocalFactory.get("test/ch/cyberduck/core/sftp", "openssh/config")));
+                        new Local("test/ch/cyberduck/core/sftp", "openssh/config")));
         assertEquals(555, c.getPort("portalias"));
         assertEquals(-1, c.getPort(null));
     }

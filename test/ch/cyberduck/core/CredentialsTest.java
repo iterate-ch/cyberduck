@@ -25,9 +25,9 @@ public class CredentialsTest extends AbstractTestCase {
     @Test
     public void testSetIdentity() throws Exception {
         Credentials c = new DefaultCredentials();
-        c.setIdentity(LocalFactory.get("~/.ssh/unknown.rsa"));
+        c.setIdentity(new Local("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
-        final Local t = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"), "id_rsa");
+        final Local t = new Local(PreferencesFactory.get().getProperty("tmp.dir"), "id_rsa");
         LocalTouchFactory.get().touch(t);
         c.setIdentity(t);
         assertTrue(c.isPublicKeyAuthentication());

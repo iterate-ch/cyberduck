@@ -4,7 +4,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
@@ -100,7 +100,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     public void testProfileHPCloud() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.get("profiles/HP Cloud Object Storage.cyberduckprofile"));
+                new Local("profiles/HP Cloud Object Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         try {
             s.getRequest(host, new DisabledLoginCallback());
@@ -121,7 +121,7 @@ public class SwiftAuthenticationServiceTest extends AbstractTestCase {
     public void testProfileLondon() throws Exception {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final Profile profile = ProfileReaderFactory.get().read(
-                LocalFactory.get("profiles/Rackspace UK.cyberduckprofile"));
+                new Local("profiles/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertEquals("/v2.0/tokens", profile.getContext());
         assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host, new DisabledLoginCallback()).iterator().next().getURI());
