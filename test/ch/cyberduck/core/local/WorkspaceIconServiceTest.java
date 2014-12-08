@@ -20,7 +20,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
     @Test
     public void testSetProgressNoFile() throws Exception {
         final WorkspaceIconService s = new WorkspaceIconService();
-        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
     }
@@ -28,7 +28,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
     @Test
     public void testSetProgress() throws Exception {
         final WorkspaceIconService s = new WorkspaceIconService();
-        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(file);
         assertTrue(s.update(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
@@ -38,7 +38,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
     @Test
     public void testRemove() throws Exception {
         final WorkspaceIconService s = new WorkspaceIconService();
-        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(s.remove(file));
         LocalTouchFactory.get().touch(file);

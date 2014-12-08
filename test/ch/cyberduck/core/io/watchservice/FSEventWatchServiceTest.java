@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.junit.Ignore;
@@ -48,7 +47,7 @@ public class FSEventWatchServiceTest extends AbstractTestCase {
     @Test(expected = IOException.class)
     public void testNotfound() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
-        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
+        final Local file = new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
         assertFalse(file.exists());
         watcher.register(file, new DisabledFileWatcherListener());
     }
@@ -68,7 +67,7 @@ public class FSEventWatchServiceTest extends AbstractTestCase {
     @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
-        final Local file = new FinderLocal(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
+        final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
         final CyclicBarrier update = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {

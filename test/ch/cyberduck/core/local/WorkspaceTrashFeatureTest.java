@@ -12,13 +12,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceTrashFeatureTest extends AbstractTestCase {
 
     @Test
     public void testTrash() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(l);
         assertTrue(l.exists());
         new WorkspaceTrashFeature().trash(l);
@@ -31,7 +31,7 @@ public class WorkspaceTrashFeatureTest extends AbstractTestCase {
         this.repeat(new Callable<Local>() {
             @Override
             public Local call() throws Exception {
-                Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+                Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
                 new DefaultLocalTouchFeature().touch(l);
                 assertTrue(l.exists());
                 f.trash(l);

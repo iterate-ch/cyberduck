@@ -17,18 +17,18 @@ package ch.cyberduck.core.importer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WsFtpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testParse() throws Exception {
-        new WsFtpBookmarkCollection().read(new FinderLocal(System.getProperty("java.io.tmpdir"), "f"));
+        new WsFtpBookmarkCollection().read(new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 }

@@ -200,7 +200,7 @@ public class NSImageIconCacheTest extends AbstractTestCase {
     @Test
     public void testIconForPath() throws Exception {
         final Local f
-                = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
+                = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);

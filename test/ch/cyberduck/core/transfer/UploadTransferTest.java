@@ -247,7 +247,7 @@ public class UploadTransferTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
-        final Local local = new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer");
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), "transfer");
         LocalTouchFactory.get().touch(local);
         LocalTouchFactory.get().touch(new FinderLocal(local, name));
         final Transfer transfer = new UploadTransfer(host, test, local);
@@ -262,7 +262,7 @@ public class UploadTransferTest extends AbstractTestCase {
             }
         }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), table);
-        worker.prepare(test, new FinderLocal(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
+        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 new OverwriteFilter(new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList()), session));
         assertEquals(new TransferStatus().exists(true), table.get(test));
         final TransferStatus expected = new TransferStatus();
@@ -279,7 +279,7 @@ public class UploadTransferTest extends AbstractTestCase {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
         final String name = "test";
-        final Local local = new FinderLocal(System.getProperty("java.io.tmpdir") + "/transfer", name);
+        final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer", name);
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
         final byte[] bytes = RandomStringUtils.random(1000).getBytes();
@@ -390,7 +390,7 @@ public class UploadTransferTest extends AbstractTestCase {
         final AtomicBoolean set = new AtomicBoolean();
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override

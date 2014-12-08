@@ -18,18 +18,18 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WinScpBookmarkCollectionTest extends AbstractTestCase {
 
     @Test(expected = AccessDeniedException.class)
     public void testParse() throws Exception {
-        new WinScpBookmarkCollection().parse(new FinderLocal(System.getProperty("java.io.tmpdir"), "f"));
+        new WinScpBookmarkCollection().parse(new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 }

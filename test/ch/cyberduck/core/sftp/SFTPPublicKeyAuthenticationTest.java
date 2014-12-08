@@ -7,12 +7,12 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +33,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), null, false
         );
-        final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key")), key.getOutputStream(false));
@@ -55,7 +55,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), "", false
         );
-        final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key.putty")), key.getOutputStream(false));
@@ -79,7 +79,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), "", false
         );
-        final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
         IOUtils.copy(new StringReader(properties.getProperty("sftp.key.openssh.rsa")), key.getOutputStream(false));
@@ -103,7 +103,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractTestCase {
         final Credentials credentials = new Credentials(
                 properties.getProperty("sftp.user"), "", false
         );
-        final FinderLocal key = new FinderLocal(System.getProperty("java.io.tmpdir"), "k");
+        final Local key = new Local(System.getProperty("java.io.tmpdir"), "k");
         credentials.setIdentity(key);
         LocalTouchFactory.get().touch(key);
         IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false));

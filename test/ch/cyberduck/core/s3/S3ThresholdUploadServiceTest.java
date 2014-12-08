@@ -10,12 +10,12 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -49,7 +49,7 @@ public class S3ThresholdUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();

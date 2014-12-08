@@ -20,10 +20,10 @@ public class WorkspaceSymlinkFeatureTest extends AbstractTestCase {
 
     @Test
     public void testSymlink() throws Exception {
-        final Local target = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local target = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(target);
-        final FinderLocal symlink = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local symlink = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(symlink.exists());
         new WorkspaceSymlinkFeature().symlink(symlink, target.getAbsolute());
@@ -35,9 +35,9 @@ public class WorkspaceSymlinkFeatureTest extends AbstractTestCase {
     @Ignore
     @Test(expected = NotfoundException.class)
     public void testSymlinkNoTarget() throws Exception {
-        final Local target = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local target = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
-        final FinderLocal symlink = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"),
+        final Local symlink = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());
         assertFalse(symlink.exists());
         new WorkspaceSymlinkFeature().symlink(symlink, target.getAbsolute());

@@ -2,9 +2,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 
@@ -17,7 +15,7 @@ public class FlashFxp4UserBookmarkCollectionTest extends AbstractTestCase {
 
     @Test(expected = AccessDeniedException.class)
     public void testParseNotFound() throws Exception {
-        new FlashFxp4UserBookmarkCollection().parse(new FinderLocal(System.getProperty("java.io.tmpdir"), "f"));
+        new FlashFxp4UserBookmarkCollection().parse(new Local(System.getProperty("java.io.tmpdir"), "f"));
     }
 
     @Test

@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.junit.Test;
@@ -16,8 +15,8 @@ public class FolderBookmarkCollectionTest extends AbstractTestCase {
 
     @Test
     public void testLoad() throws Exception {
-        final FinderLocal source = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final FinderLocal b = new FinderLocal(source, String.format("%s.duck", UUID.randomUUID().toString()));
+        final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local b = new Local(source, String.format("%s.duck", UUID.randomUUID().toString()));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
                 "<plist version=\"1.0\">\n" +

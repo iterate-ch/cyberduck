@@ -10,6 +10,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Scheme;
@@ -18,7 +19,6 @@ import ch.cyberduck.core.gstorage.GoogleStorageProtocol;
 import ch.cyberduck.core.gstorage.GoogleStorageSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -64,7 +64,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
@@ -99,7 +99,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final Path container = new Path("test.eu-central-1.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
@@ -141,7 +141,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(random, out);
@@ -171,7 +171,7 @@ public class S3SingleUploadServiceTest extends AbstractTestCase {
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final FinderLocal local = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final TransferStatus status = new TransferStatus();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
