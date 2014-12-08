@@ -193,8 +193,8 @@ public class SFTPSessionTest extends AbstractTestCase {
     }
 
     @Test(expected = LoginCanceledException.class)
-    public void testUsernameChange() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", null));
+    public void testUsernameChangeReconnect() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
         final Session session = new SFTPSession(host);
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -208,12 +208,12 @@ public class SFTPSessionTest extends AbstractTestCase {
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
-                    assertEquals("Change of username or service not allowed: (anonymous,ssh-connection) -> (u2,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
+                    assertEquals("Too many authentication failures for u2. Please contact your web hosting service provider for assistance.", reason);
                     throw new LoginCanceledException();
                 }
                 else {
                     assertEquals("Login failed", title);
-                    assertEquals("Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
+                    assertEquals("Too many authentication failures for u1. Please contact your web hosting service provider for assistance.", reason);
                     credentials.setUsername("u2");
                     change.set(true);
                 }

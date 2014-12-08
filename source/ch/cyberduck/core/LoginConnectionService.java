@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
@@ -157,6 +158,16 @@ public class LoginConnectionService implements ConnectionService {
         bookmark.setTimestamp(new Date());
 
         try {
+            this.login(session, cache);
+        }
+        catch(BackgroundException e) {
+            this.close(session, cache);
+            throw e;
+        }
+    }
+
+    private void login(final Session session, final Cache<Path> cache) throws BackgroundException {
+        try {
             login.login(session, cache, listener, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
@@ -166,9 +177,15 @@ public class LoginConnectionService implements ConnectionService {
                 }
             });
         }
-        catch(BackgroundException e) {
-            this.close(session, cache);
-            throw e;
+        catch(LoginFailureException e) {
+            if(session.isConnected()) {
+                // Next attempt with updated credentials
+                this.login(session, cache);
+            }
+            else {
+                // Reconnect and next attempt with updated credentials
+                this.connect(session, cache);
+            }
         }
     }
 
