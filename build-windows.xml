@@ -37,9 +37,7 @@
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
     <property name="app.icon" value="cyberduck-application.ico"/>
 
-    <property name="cli.bundles" value="all"/>
-
-    <property name="jvm.runtime.bundle.home" value="${java.home}"/>
+    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
 
     <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
         <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>

@@ -24,9 +24,10 @@
 
     <import file="build.xml"/>
 
+    <property name="jvm.runtime.bin" value="${java.home}/bin"/>
+
     <property name="cli.bundles" value="all"/>
     <property name="app.icon" value="cyberduck-application.png"/>
-    <property name="jvm.runtime.bundle.home" value="${java.home}"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
     <property name="deb.control" value="${build.bundles}/package/linux/control"/>
 
