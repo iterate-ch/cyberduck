@@ -71,7 +71,7 @@
 
     <target name="spotlight">
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration Release ${build.settings}"/>
         </exec>
