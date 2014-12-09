@@ -192,7 +192,7 @@ public class SFTPSessionTest extends AbstractTestCase {
         }
     }
 
-    @Test(expected = LoginCanceledException.class)
+    @Test
     public void testUsernameChangeReconnect() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
         final Session session = new SFTPSession(host);
@@ -208,13 +208,13 @@ public class SFTPSessionTest extends AbstractTestCase {
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
-                    assertEquals("Too many authentication failures for u2. Please contact your web hosting service provider for assistance.", reason);
-                    throw new LoginCanceledException();
+                    fail();
                 }
                 else {
                     assertEquals("Login failed", title);
                     assertEquals("Too many authentication failures for u1. Please contact your web hosting service provider for assistance.", reason);
-                    credentials.setUsername("u2");
+                    credentials.setUsername(properties.getProperty("sftp.user"));
+                    credentials.setPassword(properties.getProperty("sftp.password"));
                     change.set(true);
                 }
             }
