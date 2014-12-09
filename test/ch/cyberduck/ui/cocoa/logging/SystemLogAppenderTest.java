@@ -8,11 +8,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @version $Id$
  */
+@Ignore
 @Depends(platform = Factory.Platform.Name.mac)
 public class SystemLogAppenderTest extends AbstractTestCase {
 
