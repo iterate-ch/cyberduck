@@ -85,7 +85,7 @@
         <checksum file="${build.deploy}/duck-${version.full}.exe" algorithm="md5"/>
     </target>
 
-    <target name="dll" depends="version, archive">
+    <target name="dll" depends="archive, version">
         <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
             <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
         </taskdef>
@@ -106,30 +106,6 @@
         </ikvmc>
     </target>
 
-    <target name="release" depends="version">
-        <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.exe"/>
-        <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
-        </antcall>
-    </target>
-
-    <target name="nightly" depends="version">
-        <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
-        <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
-        </antcall>
-    </target>
-
-    <target name="beta" depends="version">
-        <property name="setup.file"
-                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
-        <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
-        </antcall>
-    </target>
-
     <target name="package" depends="build">
         <loadfile property="changes" srcFile="${www.update}/changelog.txt"/>
 
@@ -141,7 +117,7 @@
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
+        <copy file="${www.update}/${app.update.feed}/changelog.wyp" tofile="${build}/changelog.wyp" overwrite="true"/>
 
         <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true" dir="${build}">
             <arg value="${build}/changelog.wyp"/>
@@ -153,6 +129,8 @@
         <!-- overwrite generated wyUpdate.exe -->
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
+        <property name="setup.file"
+                  location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
             <arg value="/DBASEDIR=${build}"/>
             <arg value="/DPRODUCT_VERSION=${version.short}"/>

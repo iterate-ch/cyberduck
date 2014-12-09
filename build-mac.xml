@@ -70,8 +70,10 @@
     <property name="build.lipo.arch.remove" value=""/>
 
     <target name="spotlight">
+        <local name="build.settings"/>
         <property name="build.settings"
                   value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings}"/>
         <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration Release ${build.settings}"/>
         </exec>
@@ -98,8 +100,10 @@
 
     <target name="_build" depends="spotlight">
         <echo message="Building ${app.bundle}"/>
+        <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED=${sparkle.feed} COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${app.update.feed}/changelog.rss' COPYRIGHT='${copyright}'"/>
+        <echo message="Build settings ${build.settings} for feed ${app.update.feed}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="--verbose xcodebuild -project ${app.name}.xcodeproj -configuration Release -target app ${build.settings}"/>
         </exec>
@@ -211,10 +215,9 @@
         </replace>
     </target>
 
-    <target name="deploy-sparkle" depends="timestamp, revision">
+    <target name="package" depends="build">
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
-            <param name="codesign.options" value="--force"/>
             <!-- No sandboxing enabled -->
             <param name="codesign.arg"
                    value="--requirements ${codesign.requirement}"/>
@@ -253,8 +256,9 @@
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
-            <replacefilter token="${ARCHIVE}" value="${url.archive}"/>
-            <replacefilter token="${CHANGELOG}" value="${url.changelog}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/${app.update.feed}/${app.name}-${revision}.tar.gz"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${app.update.feed}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
@@ -263,7 +267,7 @@
         </replace>
     </target>
 
-    <target name="deploy-mas">
+    <target name="package.mas" depends="build">
         <replace dir="${app.bundle}/${bundle.contents}" summary="true" encoding="UTF-8">
             <include name="Info.plist"/>
             <!-- Disable Sparkle Keys -->
@@ -272,9 +276,7 @@
         <delete dir="${app.bundle}/${bundle.frameworks}/Sparkle.framework"/>
         <antcall target="codesign">
             <param name="bundle" value="${app.bundle}"/>
-            <param name="codesign.options" value="--force"/>
-            <param name="codesign.arg"
-                   value="--entitlements ${codesign.entitlements}"/>
+            <param name="codesign.arg" value="--entitlements ${codesign.entitlements}"/>
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher (G69SCX94XU)"/>
         </antcall>
         <echo message="Building ${build.deploy}/${app.name}-${version}.pkg"/>
@@ -401,45 +403,5 @@
             <arg line="-c -k --sequesterRsrc --keepParent ${source} ${build.deploy}/${target}"/>
         </exec>
         <checksum file="${build.deploy}/${target}" algorithm="md5"/>
-    </target>
-
-    <target name="nightly" depends="revision">
-        <antcall target="build">
-            <param name="app.runtime.system.min" value="10.6"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.io/nightly/changelog.rss"/>
-        </antcall>
-        <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/nightly/Cyberduck-${revision}.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.io/nightly/changelog.html"/>
-        </antcall>
-    </target>
-
-    <target name="beta" depends="revision">
-        <antcall target="build">
-            <param name="app.runtime.system.min" value="10.6"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.io/beta/changelog.rss"/>
-        </antcall>
-        <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/beta/Cyberduck-${revision}.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.io/beta/changelog.html"/>
-        </antcall>
-    </target>
-
-    <target name="release" depends="revision">
-        <antcall target="build">
-            <param name="app.runtime.system.min" value="10.6"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.io/changelog.rss"/>
-        </antcall>
-        <antcall target="deploy-sparkle">
-            <param name="url.archive" value="https://update.cyberduck.io/Cyberduck-${revision}.tar.gz"/>
-            <param name="url.changelog" value="https://version.cyberduck.io/changelog.html"/>
-        </antcall>
-    </target>
-
-    <target name="mas">
-        <antcall target="build">
-            <param name="app.runtime.system.min" value="10.7.3"/>
-        </antcall>
-        <antcall target="deploy-mas"/>
     </target>
 </project>

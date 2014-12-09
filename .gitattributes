@@ -3139,14 +3139,13 @@ uk.lproj/Support.strings -text svneol=unset#text/utf-16
 uk.lproj/Transfer.strings -text svneol=unset#text/utf-16
 www/crash/crash.py -text
 www/update/Updater.exe -text
-www/update/changelog-beta.wyp -text
-www/update/changelog-dev.wyp -text
-www/update/changelog-nightly.wyp -text
+www/update/beta/changelog.wyp -text
 www/update/changelog.html -text
 www/update/changelog.rss -text
 www/update/changelog.txt -text
 www/update/changelog.wyp -text
 www/update/duck.rb -text
+www/update/nightly/changelog.wyp -text
 www/update/update.pem -text
 www/update/updater.wyp -text
 www/update/updater.xml -text
