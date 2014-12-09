@@ -87,15 +87,6 @@
                 <include name="**/MacOS/*"/>
             </fileset>
         </chmod>
-        <apply executable="/usr/bin/codesign" failonerror="true"
-               type="both"
-               parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
-            <fileset dir="${app.bundle}/${bundle.spotlight}">
-                <include name="*.mdimporter"/>
-            </fileset>
-            <srcfile/>
-        </apply>
     </target>
 
     <target name="_build" depends="spotlight">
@@ -317,6 +308,15 @@
 
     <target name="codesign" depends="unlock-keychain, compile-codesign-requirement">
         <echo message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.spotlight}" erroronmissingdir="false">
+                <include name="*.mdimporter"/>
+            </fileset>
+            <srcfile/>
+        </apply>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
