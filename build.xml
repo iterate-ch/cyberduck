@@ -122,7 +122,7 @@
         </tstamp>
     </target>
 
-    <target name="revision">
+    <target name="revision" description="timestamp">
         <echo message="Calculating revision..."/>
         <exec dir="${home}" executable="svnversion" outputproperty="svn.revision" failonerror="true">
             <arg value="."/>
