@@ -29,6 +29,7 @@
     <property environment="env"/>
 
     <property name="app.name" value="${ant.project.name}"/>
+    <property name="app.update.feed" value=""/>
 
     <property name="debug" value="on"/>
     <property name="home" location="."/>
@@ -88,7 +89,7 @@
         </fileset>
     </path>
 
-    <target name="init">
+    <target name="init" depends="timestamp">
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message="   Java Version: ${ant.java.version}"/>
@@ -97,7 +98,7 @@
         <echo message="	  Project Source:	${source}"/>
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
-        <echo message="Building ${app.name} on ${os.name}/${os.arch}..."/>
+        <echo message="Building ${app.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
 
         <mkdir dir="${build}"/>
         <mkdir dir="${build.deploy}"/>
@@ -122,7 +123,7 @@
         </tstamp>
     </target>
 
-    <target name="revision" description="timestamp">
+    <target name="revision">
         <echo message="Calculating revision..."/>
         <exec dir="${home}" executable="svnversion" outputproperty="svn.revision" failonerror="true">
             <arg value="."/>
