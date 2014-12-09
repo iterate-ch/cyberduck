@@ -30,7 +30,6 @@ using Ch.Cyberduck.Core.Aquaticprime;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Serializer.Impl;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
