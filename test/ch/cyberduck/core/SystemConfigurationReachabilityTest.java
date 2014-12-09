@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.test.Depends;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @version $Id$
  */
+@Ignore
 @Depends(platform = Factory.Platform.Name.mac)
 public class SystemConfigurationReachabilityTest extends AbstractTestCase {
 
