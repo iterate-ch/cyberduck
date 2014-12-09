@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
-     xmlns:content="http://purl.org/rss/1.0/modules/content/"
      xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
         <title>Cyberduck Changelog</title>
@@ -16,7 +15,7 @@
                        sparkle:dsaSignature="${DSASIGNATURE}"
                        url="${ARCHIVE}"
                        type="application/octet-stream"/>
-            <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink>${CHANGELOG}</sparkle:releaseNotesLink>
             <sparkle:minimumSystemVersion>${MACOSX_DEPLOYMENT_TARGET}</sparkle:minimumSystemVersion>
         </item>
     </channel>
