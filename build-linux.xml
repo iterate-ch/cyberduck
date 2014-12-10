@@ -51,8 +51,6 @@
                debug="${debug}"
                encoding="utf-8"
                srcdir="${source}"
-               target="${build.compile.target}"
-               source="${build.compile.target}"
                deprecation="on"
                listfiles="on"
                extdirs=""
