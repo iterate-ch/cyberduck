@@ -41,22 +41,36 @@ public interface Protocol {
              */
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // Allow empty passwords
-                return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
+                if(options.user) {
+                    if(StringUtils.isBlank(credentials.getUsername())) {
+                        return false;
+                    }
+                }
+                if(options.password) {
+                    // Allow empty passwords
+                    return credentials.getPassword() != null;
+                }
+                return true;
             }
         },
         ssh {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                return StringUtils.isNotBlank(credentials.getUsername());
+                if(options.user) {
+                    return StringUtils.isNotBlank(credentials.getUsername());
+                }
+                return true;
             }
         },
         s3,
         googlestorage {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
-                // OAuth only requires the project token
-                return StringUtils.isNotBlank(credentials.getUsername());
+                if(options.user) {
+                    // OAuth only requires the project token
+                    return StringUtils.isNotBlank(credentials.getUsername());
+                }
+                return true;
             }
         },
         swift,
