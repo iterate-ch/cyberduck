@@ -133,7 +133,7 @@ public class SyncTransferTest extends AbstractTestCase {
             @Override
             public AttributedList<Local> list() {
                 final AttributedList<Local> list = new AttributedList<Local>();
-                list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "t", "a"));
+                list.add(new NullLocal(this, "a"));
                 return list;
             }
         };
