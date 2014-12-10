@@ -33,6 +33,6 @@ public interface LoginService {
      * @param listener   Authentication message callback
      * @param cancel     Cancel callback while authentication is in progress
      */
-    void login(Session session, Cache cache, ProgressListener listener, CancelCallback cancel)
+    void login(Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel)
             throws BackgroundException;
 }

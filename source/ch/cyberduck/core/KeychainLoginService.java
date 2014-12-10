@@ -44,7 +44,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void login(final Session session, final Cache cache, final ProgressListener listener,
+    public void login(final Session session, final Cache<Path> cache, final ProgressListener listener,
                       final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
 
