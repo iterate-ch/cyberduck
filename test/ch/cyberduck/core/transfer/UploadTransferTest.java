@@ -12,7 +12,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
@@ -41,21 +40,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class UploadTransferTest extends AbstractTestCase {
-
-    @Test
-    public void testSerialize() throws Exception {
-        final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        Transfer t = new UploadTransfer(new Host("t"), test,
-                new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
-        t.addSize(4L);
-        t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
-        assertNotSame(t, serialized);
-        assertEquals(t.getRoots(), serialized.getRoots());
-        assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
-    }
 
     @Test
     public void testChildrenEmpty() throws Exception {

@@ -26,8 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SerializerFactory;
-import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.test.NullLocal;
 import ch.cyberduck.core.test.NullSession;
 
@@ -44,20 +42,6 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class SyncTransferTest extends AbstractTestCase {
-
-    @Test
-    public void testSerialize() throws Exception {
-        Transfer t = new SyncTransfer(new Host("t"),
-                new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("/", "t")));
-        t.addSize(4L);
-        t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
-        assertNotSame(t, serialized);
-        assertEquals(t.getRoots(), serialized.getRoots());
-        assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
-    }
 
     @Test
     public void testAction() throws Exception {

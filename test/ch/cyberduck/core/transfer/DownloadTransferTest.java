@@ -35,21 +35,6 @@ import static org.junit.Assert.*;
 public class DownloadTransferTest extends AbstractTestCase {
 
     @Test
-    public void testSerialize() throws Exception {
-        final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        Transfer t = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
-        t.addSize(4L);
-        t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
-        assertNotSame(t, serialized);
-        assertEquals(t.getRoots(), serialized.getRoots());
-        assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
-        assertFalse(serialized.isComplete());
-    }
-
-    @Test
     public void testSerializeComplete() throws Exception {
         // Test transfer to complete with existing directory
         Transfer t = new DownloadTransfer(new Host("t"), new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
