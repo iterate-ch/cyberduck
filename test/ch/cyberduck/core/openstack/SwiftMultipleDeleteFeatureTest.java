@@ -61,7 +61,7 @@ public class SwiftMultipleDeleteFeatureTest extends AbstractTestCase {
         assertTrue(new SwiftFindFeature(session).find(test1));
         assertTrue(new SwiftFindFeature(session).find(test2));
         new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new DisabledProgressListener());
-        Thread.sleep(1000);
+        Thread.sleep(1000L);
         assertFalse(new SwiftFindFeature(session).find(test1));
         assertFalse(new SwiftFindFeature(session).find(test2));
         session.close();
