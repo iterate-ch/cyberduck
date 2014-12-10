@@ -1895,6 +1895,7 @@ lib/ext/hamcrest-core-1.3.jar -text svneol=unset#application/jar
 lib/ext/jacocoant.jar -text svneol=unset#application/zip
 lib/ext/junit-4.11.jar -text svneol=unset#application/jar
 lib/ext/nunit.framework.dll -text
+lib/ext/rpmbuilder.jar -text
 lib/ext/sonar-ant-task-2.2.jar -text
 lib/gson-2.2.4.jar -text svneol=unset#application/zip
 lib/httpclient-4.3.5.jar -text
@@ -2808,7 +2809,6 @@ source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogNotificationArgs.cs -t
 source/ch/cyberduck/ui/winforms/taskdialog/VistaUnsafeNativeMethods.cs -text
 source/ch/cyberduck/ui/winforms/threading/DialogAlertCallback.cs -text
 source/ch/cyberduck/ui/winforms/threading/DialogTransferErrorCallback.cs -text
-source/com/oracle/tools/packager/linux/LinuxRpmBundler.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text

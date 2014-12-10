@@ -41,23 +41,13 @@
             <replacefilter token="${REVISION}" value="${revision}"/>
         </replace>
         <path id="javafx.classpath">
-            <!-- includes our linuxrpmbuilder -->
-            <pathelement path="${build.classes}"/>
+            <fileset dir="${lib.ext}">
+                <!-- includes linuxrpmbuilder -->
+                <include name="rpmbuilder.jar"/>
+            </fileset>
             <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
             <pathelement path="${build.bundles}"/>
         </path>
-        <javac fork="true"
-               includeantruntime="false"
-               debug="${debug}"
-               encoding="utf-8"
-               srcdir="${source}"
-               deprecation="on"
-               listfiles="on"
-               extdirs=""
-               destdir="${build.classes}">
-            <include name="com/oracle/tools/packager/linux/**"/>
-            <classpath refid="javafx.classpath"/>
-        </javac>
         <copy todir="${build}">
             <fileset dir="${lib}">
                 <!-- Include libjnidispatch.so -->
