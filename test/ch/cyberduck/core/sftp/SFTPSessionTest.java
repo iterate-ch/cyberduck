@@ -220,12 +220,8 @@ public class SFTPSessionTest extends AbstractTestCase {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        try {
-            login.connect(session, Cache.<Path>empty());
-        }
-        catch(LoginCanceledException e) {
-            assertTrue(change.get());
-            throw e;
-        }
+        login.connect(session, Cache.<Path>empty());
+        assertTrue(change.get());
+        session.close();
     }
 }
