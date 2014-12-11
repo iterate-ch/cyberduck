@@ -42,8 +42,7 @@
         </replace>
         <path id="javafx.classpath">
             <!-- includes linuxrpmbuilder -->
-            <pathelement path="${lib.ext}/rpmbuilder.jar"/>
-            <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
+            <pathelement path="${lib.ext}/ant-javafx.jar"/>
             <pathelement path="${build.bundles}"/>
         </path>
         <copy todir="${build}">
