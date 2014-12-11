@@ -41,10 +41,8 @@
             <replacefilter token="${REVISION}" value="${revision}"/>
         </replace>
         <path id="javafx.classpath">
-            <fileset dir="${lib.ext}">
-                <!-- includes linuxrpmbuilder -->
-                <include name="rpmbuilder.jar"/>
-            </fileset>
+            <!-- includes linuxrpmbuilder -->
+            <pathelement path="${lib.ext}/rpmbuilder.jar"/>
             <pathelement path="${java.home}/../lib/ant-javafx.jar"/>
             <pathelement path="${build.bundles}"/>
         </path>
