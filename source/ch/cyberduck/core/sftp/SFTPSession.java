@@ -190,28 +190,30 @@ public class SFTPSession extends Session<SSHClient> {
         LoginFailureException lastFailure = null;
         for(SFTPAuthentication auth : methods) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt authentication with auth method %s", auth));
+                log.debug(String.format("Attempt authentication with credentials %s and authentication method %s", credentials, auth));
             }
+            cancel.verify();
             try {
                 if(!auth.authenticate(host, prompt, cancel)) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Login partial with authentication method %s", auth));
+                        log.debug(String.format("Login refused with credentials %s and authentication method %s", credentials, auth));
                     }
-                    cancel.verify();
                     continue;
                 }
             }
             catch(IllegalStateException e) {
-                log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
+                log.warn(String.format("Server disconnected with %s while trying authentication method %s",
+                        disconnectListener.getFailure(), auth));
                 throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
                         disconnectListener.getFailure());
             }
             catch(LoginFailureException e) {
                 log.warn(String.format("Login failed with credentials %s and authentication method %s", credentials, auth));
                 if(!client.isConnected()) {
+                    log.warn(String.format("Server disconnected after failed authentication attempt with method %s", auth));
+                    // No more connected. When changing the username the connection is closed by the server.
                     throw e;
                 }
-                cancel.verify();
                 lastFailure = e;
                 continue;
             }

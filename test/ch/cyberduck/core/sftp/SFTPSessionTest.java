@@ -208,7 +208,7 @@ public class SFTPSessionTest extends AbstractTestCase {
                                String title, String reason, LoginOptions options)
                     throws LoginCanceledException {
                 if(change.get()) {
-                    fail();
+                    assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
                 }
                 else {
                     assertEquals("Login failed", title);
