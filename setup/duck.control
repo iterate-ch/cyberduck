@@ -1,9 +1,10 @@
 Package: APPLICATION_PACKAGE
 Version: APPLICATION_VERSION
-Section: unknown
 Maintainer: cyberduck.io <feedback@cyberduck.io>
 Priority: optional
 Architecture: APPLICATION_ARCH
 Provides: APPLICATION_PACKAGE
 Description: APPLICATION_SUMMARY
 Installed-Size: APPLICATION_INSTALLED_SIZE
+Homepage: https://cyberduck.io
+License: GPL
