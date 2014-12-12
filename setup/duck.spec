@@ -35,9 +35,6 @@ cp -r %{_sourcedir}/duck %{buildroot}/opt
 /opt/duck
 
 %post
-%cp /opt/duck/duck.desktop /usr/share/applications/
-
-%preun
-rm -f /usr/share/applications/duck.desktop
+sudo ln -s /opt/duck/duck /usr/local/bin/duck
 
 %clean

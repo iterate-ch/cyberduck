@@ -2421,6 +2421,7 @@ setup/FileAssociation.nsh -text
 setup/banner.png -text
 setup/cyberduck.nsi -text
 setup/duck.control -text
+setup/duck.postinstall -text
 setup/duck.spec -text
 setup/header.bmp -text
 setup/uninstall.png -text svneol=unset#image/png

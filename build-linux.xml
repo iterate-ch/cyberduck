@@ -30,12 +30,14 @@
     <property name="app.icon" value="cyberduck-application.png"/>
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
     <property name="deb.control" value="${build.bundles}/package/linux/control"/>
+    <property name="deb.postinstall" value="${build.bundles}/package/linux/postinstall"/>
 
     <target name="_build"/>
 
     <target name="_cli">
         <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
         <copy file="${setup}/duck.control" tofile="${deb.control}"/>
+        <copy file="${setup}/duck.postinstall" tofile="${deb.postinstall}"/>
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
