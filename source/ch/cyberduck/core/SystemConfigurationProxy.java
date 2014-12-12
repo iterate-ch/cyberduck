@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @version $Id$
@@ -60,13 +61,19 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
             // Direct
             return Proxy.DIRECT;
         }
-        final URI proxy = URI.create(route);
+        final URI proxy;
         try {
-            return new Proxy(Proxy.Type.valueOf(StringUtils.upperCase(proxy.getScheme())),
-                    proxy.getHost(), proxy.getPort());
+            proxy = new URI(route);
+            try {
+                return new Proxy(Proxy.Type.valueOf(StringUtils.upperCase(proxy.getScheme())),
+                        proxy.getHost(), proxy.getPort());
+            }
+            catch(IllegalArgumentException e) {
+                log.warn(String.format("Unsupported scheme for proxy %s", proxy));
+            }
         }
-        catch(IllegalArgumentException e) {
-            log.warn(String.format("Unsupported scheme for proxy %s", proxy));
+        catch(URISyntaxException e) {
+            log.warn(String.format("Invalid proxy configuration %s", route));
         }
         return Proxy.DIRECT;
     }

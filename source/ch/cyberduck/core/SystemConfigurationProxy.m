@@ -26,8 +26,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePa
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
-
-	return (*env)->NewStringUTF(env, [[Proxy find:JNFJavaToNSString(env, target)] UTF8String]);
+    NSString *uri = [[Proxy find:JNFJavaToNSString(env, target)] UTF8String];
+    if(nil == uri) {
+        return NULL;
+    }
+	return (*env)->NewStringUTF(env, uri);
 }
 
 @implementation Proxy
@@ -100,19 +103,26 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
 
 + (NSString*)evaluate:(NSDictionary *) dict
 {
+    if(nil == dict) {
+        return nil;
+    }
     if(nil == [dict objectForKey:(NSString *)kCFProxyTypeKey]) {
         return nil;
     }
     if(nil == [dict objectForKey:(NSString *)kCFProxyHostNameKey]) {
         return nil;
     }
-    if(nil == [dict objectForKey:(NSString *)kCFProxyTypeKey]) {
+    if(nil == [dict objectForKey:(NSString *)kCFProxyPortNumberKey]) {
         return nil;
     }
-    return [NSString stringWithFormat:@"%@://%@:%@",
-           [[[dict objectForKey:(NSString *)kCFProxyTypeKey] componentsSeparatedByString:@"kCFProxyType"] objectAtIndex:0],
-           [dict objectForKey:(NSString *)kCFProxyHostNameKey],
-           [dict objectForKey:(NSString *)kCFProxyPortNumberKey]];
+    NSString *type = [dict objectForKey:(NSString *)kCFProxyTypeKey];
+    if([[type componentsSeparatedByString:@"kCFProxyType"] count] == 2) {
+        return [NSString stringWithFormat:@"%@://%@:%@",
+               [[type componentsSeparatedByString:@"kCFProxyType"] objectAtIndex:1],
+               [dict objectForKey:(NSString *)kCFProxyHostNameKey],
+               [dict objectForKey:(NSString *)kCFProxyPortNumberKey]];
+    }
+    return nil;
 }
 
 + (BOOL)usePassiveFTP
