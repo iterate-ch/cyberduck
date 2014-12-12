@@ -1,1 +1,1 @@
-sudo ln -s /opt/duck/duck /usr/local/bin/duck
+sudo ln -sf /opt/duck/duck /usr/local/bin/duck
