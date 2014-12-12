@@ -31,6 +31,7 @@
     <property name="rpm.spec" value="${build.bundles}/package/linux"/>
     <property name="deb.control" value="${build.bundles}/package/linux/control"/>
     <property name="deb.postinstall" value="${build.bundles}/package/linux/postinst"/>
+    <property name="deb.postrm" value="${build.bundles}/package/linux/postrm"/>
 
     <target name="_build"/>
 
@@ -38,6 +39,7 @@
         <copy file="${setup}/duck.spec" todir="${rpm.spec}"/>
         <copy file="${setup}/duck.control" tofile="${deb.control}"/>
         <copy file="${setup}/duck.postinstall" tofile="${deb.postinstall}"/>
+        <copy file="${setup}/duck.postrm" tofile="${deb.postrm}"/>
         <replace file="${rpm.spec}/duck.spec" summary="true" encoding="UTF-8">
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
