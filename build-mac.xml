@@ -203,6 +203,8 @@
             <replacefilter token="${SHA1}" value="${sha1}"/>
             <replacefilter token="${REVISION}" value="${svn.revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${svn.revision}.tar.gz"/>
         </replace>
     </target>
 
