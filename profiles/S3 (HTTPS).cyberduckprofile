@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>Custom S3</string>
+        <string>s3-https</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>
