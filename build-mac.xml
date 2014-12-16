@@ -255,7 +255,7 @@
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
-            <replacefilter token="${COPYRIGHT}" value="'${copyright}"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
             <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
         </replace>
     </target>
