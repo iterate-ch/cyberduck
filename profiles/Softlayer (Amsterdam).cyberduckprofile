@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>softlayer</string>
+        <string>softlayer-ams01</string>
         <key>Description</key>
         <string>Softlayer Object Storage (Amsterdam)</string>
         <key>Default Hostname</key>

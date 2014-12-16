@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>softlayer</string>
+        <string>softlayer-dal05</string>
         <key>Description</key>
         <string>Softlayer Object Storage (Dallas)</string>
         <key>Default Hostname</key>
