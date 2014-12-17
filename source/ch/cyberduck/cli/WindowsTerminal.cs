@@ -17,14 +17,16 @@
 // 
 
 using ch.cyberduck.cli;
-using ch.cyberduck.core;
 using org.apache.commons.cli;
 
 namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminal : Terminal
     {
-        public WindowsTerminal(Options options, CommandLine input) : base(new WindowsTerminalPreferences(), options, input) {}
+        public WindowsTerminal(Options options, CommandLine input)
+            : base(new WindowsTerminalPreferences(), options, input)
+        {
+        }
 
         private static void Main(string[] args)
         {
