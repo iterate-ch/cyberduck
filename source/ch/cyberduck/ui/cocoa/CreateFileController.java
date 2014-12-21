@@ -25,6 +25,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -45,7 +46,7 @@ public class CreateFileController extends FileController {
                 LocaleFactory.localizedString("Create new file", "File"),
                 LocaleFactory.localizedString("Enter the name for the new file:", "File"),
                 LocaleFactory.localizedString("Create", "File"),
-                EditorFactory.instance().getDefaultEditor() != null ? LocaleFactory.localizedString("Edit", "File") : null,
+                EditorFactory.instance().getDefaultEditor() != Application.notfound ? LocaleFactory.localizedString("Edit", "File") : null,
                 LocaleFactory.localizedString("Cancel", "File")
         ));
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
