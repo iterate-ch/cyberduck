@@ -88,7 +88,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
         final Application defaultEditor = this.getDefaultEditor();
-        if(null != defaultEditor) {
+        if(Application.notfound.equals(defaultEditor)) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
             }
@@ -159,7 +159,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
         final Application defaultEditor = this.getDefaultEditor();
-        if(null != defaultEditor) {
+        if(Application.notfound.equals(defaultEditor)) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
             }
