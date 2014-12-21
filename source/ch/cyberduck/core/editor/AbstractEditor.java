@@ -199,14 +199,16 @@ public abstract class AbstractEditor implements Editor {
                 this.watch(local);
             }
             else {
-                throw new IOException(String.format("Failed to open default application for %s", local));
+                throw new IOException(String.format("Failed to open default application for %s",
+                        local.getName()));
             }
         }
         else if(applicationLauncher.open(local, application, quit)) {
             this.watch(local);
         }
         else {
-            throw new IOException(String.format("Failed to open application %s for %s", application.getName(), local));
+            throw new IOException(String.format("Failed to open application %s for %s",
+                    application.getName(), local.getName()));
         }
     }
 
