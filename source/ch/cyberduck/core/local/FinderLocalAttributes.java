@@ -21,14 +21,14 @@ import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSDate;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSNumber;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
@@ -38,7 +38,7 @@ import org.rococoa.cocoa.foundation.NSError;
 /**
  * Extending attributes with <code>NSFileManager</code>.
  *
- * @see ch.cyberduck.ui.cocoa.foundation.NSFileManager
+ * @see ch.cyberduck.binding.foundation.NSFileManager
  */
 public class FinderLocalAttributes extends LocalAttributes {
     private static final Logger log = Logger.getLogger(FinderLocalAttributes.class);

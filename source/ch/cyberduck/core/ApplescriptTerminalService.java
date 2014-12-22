@@ -6,8 +6,8 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSAppleScript;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

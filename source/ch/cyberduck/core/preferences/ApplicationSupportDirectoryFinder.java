@@ -20,9 +20,9 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
+import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.NSArray;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;

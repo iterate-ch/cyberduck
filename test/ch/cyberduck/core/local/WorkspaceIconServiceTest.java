@@ -5,7 +5,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.binding.application.NSImage;
 
 import org.junit.Test;
 

@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenu;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 

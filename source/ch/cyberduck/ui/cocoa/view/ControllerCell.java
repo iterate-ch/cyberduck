@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa.view;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSView;
 
 import org.rococoa.ObjCClass;
 

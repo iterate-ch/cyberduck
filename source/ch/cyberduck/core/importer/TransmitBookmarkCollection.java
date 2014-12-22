@@ -25,12 +25,12 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSData;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSKeyedUnarchiver;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSKeyedUnarchiver;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

@@ -19,7 +19,7 @@ package ch.cyberduck.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSArray;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCObject;

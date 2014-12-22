@@ -20,7 +20,7 @@ package ch.cyberduck.core.i18n;
 
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;
 

@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.binding.application.NSTableColumn;
 
 import java.util.HashMap;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TableColumnFactory extends HashMap<String, NSTableColumn> {
     private static final long serialVersionUID = -1455753054446012489L;

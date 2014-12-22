@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa.view;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSTextFieldCell;
 
 import org.rococoa.ObjCClass;
 

@@ -20,10 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.SyncTransfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.ui.cocoa.application.NSOutlineView;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSText;
+import ch.cyberduck.binding.application.NSOutlineView;
+import ch.cyberduck.binding.application.NSTableColumn;
+import ch.cyberduck.binding.application.NSText;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Archive;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenuItem;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;

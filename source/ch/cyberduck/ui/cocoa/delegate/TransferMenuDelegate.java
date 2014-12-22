@@ -23,9 +23,9 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.rococoa.Foundation;

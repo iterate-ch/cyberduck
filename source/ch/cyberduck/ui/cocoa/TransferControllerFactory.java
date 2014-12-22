@@ -22,8 +22,8 @@ import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 

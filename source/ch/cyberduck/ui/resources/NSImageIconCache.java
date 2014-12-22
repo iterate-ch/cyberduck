@@ -23,9 +23,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSGraphics;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.binding.application.NSGraphics;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSWorkspace;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
@@ -164,7 +164,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      * @param height Requested size
      * @return Cached icon
      * @see NSImage#imageNamed(String)
-     * @see #convert(String, ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
+     * @see #convert(String, ch.cyberduck.binding.application.NSImage, Integer, Integer)
      */
     @Override
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {

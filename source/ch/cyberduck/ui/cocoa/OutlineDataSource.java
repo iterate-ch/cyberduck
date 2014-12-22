@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
-import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSOutlineView;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.binding.application.NSDraggingInfo;
+import ch.cyberduck.binding.application.NSDraggingSource;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSOutlineView;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSTableColumn;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;

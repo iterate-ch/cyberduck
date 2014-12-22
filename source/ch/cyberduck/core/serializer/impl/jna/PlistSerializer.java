@@ -21,9 +21,9 @@ package ch.cyberduck.core.serializer.impl.jna;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSMutableArray;
+import ch.cyberduck.binding.foundation.NSMutableDictionary;
 
 import java.util.List;
 

@@ -23,8 +23,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;

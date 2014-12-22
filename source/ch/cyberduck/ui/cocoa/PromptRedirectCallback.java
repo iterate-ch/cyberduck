@@ -21,12 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.binding.application.NSAlert;
 
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PromptRedirectCallback implements RedirectCallback {
     private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);

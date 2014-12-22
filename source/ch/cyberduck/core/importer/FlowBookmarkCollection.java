@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

@@ -19,9 +19,9 @@ package ch.cyberduck.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSData;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCObjectByReference;

@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSOutlineView;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSOutlineView;
+import ch.cyberduck.binding.application.NSTableColumn;
+import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.Rococoa;

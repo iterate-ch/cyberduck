@@ -19,14 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.binding.application.NSColor;
+import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang3.StringUtils;

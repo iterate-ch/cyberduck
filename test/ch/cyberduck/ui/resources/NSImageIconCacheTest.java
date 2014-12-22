@@ -25,7 +25,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.binding.application.NSImage;
 
 import org.junit.Test;
 

@@ -19,14 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSColor;
+import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 

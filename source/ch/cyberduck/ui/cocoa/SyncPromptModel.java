@@ -24,8 +24,8 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 /**

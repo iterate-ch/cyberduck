@@ -20,7 +20,7 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;

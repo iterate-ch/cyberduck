@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
-import ch.cyberduck.ui.cocoa.foundation.NSLocale;
+import ch.cyberduck.binding.foundation.NSDate;
+import ch.cyberduck.binding.foundation.NSDateFormatter;
+import ch.cyberduck.binding.foundation.NSLocale;
 
 /**
  * @version $Id$

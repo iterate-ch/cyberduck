@@ -20,9 +20,9 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.binding.foundation.NSNotification;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

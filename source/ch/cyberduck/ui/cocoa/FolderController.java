@@ -26,10 +26,10 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 

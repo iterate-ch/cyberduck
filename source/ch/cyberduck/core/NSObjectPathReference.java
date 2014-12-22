@@ -20,8 +20,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
 
 import org.apache.commons.collections.map.LRUMap;
 

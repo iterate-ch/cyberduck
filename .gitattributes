@@ -2544,6 +2544,9 @@ source/ch/cyberduck/Product.wxs -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/Windows[!!-~]Core.csproj -text
+source/ch/cyberduck/binding/application/NSDockTile.java -text
+source/ch/cyberduck/binding/foundation/NSCoder.java -text
+source/ch/cyberduck/binding/foundation/NSKeyedUnarchiver.java -text
 source/ch/cyberduck/cli/WindowsTerminal.cs -text
 source/ch/cyberduck/cli/WindowsTerminalPreferences.cs -text
 source/ch/cyberduck/core/AtomicBoolean.cs -text
@@ -2618,12 +2621,9 @@ source/ch/cyberduck/ui/StructureMapBootstrapper.cs -text
 source/ch/cyberduck/ui/cocoa/AbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/BundleController.java -text
 source/ch/cyberduck/ui/cocoa/TranscriptController.java -text
-source/ch/cyberduck/ui/cocoa/application/NSDockTile.java -text
 source/ch/cyberduck/ui/cocoa/delegate/CopyURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/OpenURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
-source/ch/cyberduck/ui/cocoa/foundation/NSCoder.java -text
-source/ch/cyberduck/ui/cocoa/foundation/NSKeyedUnarchiver.java -text
 source/ch/cyberduck/ui/cocoa/main.m -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text

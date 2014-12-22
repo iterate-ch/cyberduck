@@ -17,10 +17,10 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.binding.application.NSApplication;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class PreferencesControllerFactory {
 

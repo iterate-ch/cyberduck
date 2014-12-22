@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.logging;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;

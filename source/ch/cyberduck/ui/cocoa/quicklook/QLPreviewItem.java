@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  */
 
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.binding.foundation.NSURL;
 
 /**
  * @version $Id$

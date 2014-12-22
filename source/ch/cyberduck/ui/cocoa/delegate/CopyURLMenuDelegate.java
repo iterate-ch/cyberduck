@@ -23,10 +23,10 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSString;
 
 import org.apache.log4j.Logger;
 

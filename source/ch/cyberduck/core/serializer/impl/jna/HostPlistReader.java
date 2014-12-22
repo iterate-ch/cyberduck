@@ -21,7 +21,7 @@ package ch.cyberduck.core.serializer.impl.jna;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 /**
  * @version $Id$

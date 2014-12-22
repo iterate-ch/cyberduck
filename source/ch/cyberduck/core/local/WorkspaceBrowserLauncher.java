@@ -18,8 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSURL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

@@ -20,18 +20,18 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSTabView;
-import ch.cyberduck.ui.cocoa.application.NSTabViewItem;
-import ch.cyberduck.ui.cocoa.application.NSToolbar;
-import ch.cyberduck.ui.cocoa.application.NSToolbarItem;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSTabView;
+import ch.cyberduck.binding.application.NSTabViewItem;
+import ch.cyberduck.binding.application.NSToolbar;
+import ch.cyberduck.binding.application.NSToolbarItem;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;

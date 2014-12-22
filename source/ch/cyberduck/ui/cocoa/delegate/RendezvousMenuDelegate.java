@@ -24,9 +24,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.RendezvousCollection;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;

@@ -2,7 +2,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotification;
 
 import java.util.HashMap;
 import java.util.List;

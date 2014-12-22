@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSScreen;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.application.NSPanel;
+import ch.cyberduck.binding.application.NSScreen;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 import org.rococoa.ObjCClass;
 

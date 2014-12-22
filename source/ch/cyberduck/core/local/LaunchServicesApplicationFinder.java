@@ -20,10 +20,10 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.library.Native;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;

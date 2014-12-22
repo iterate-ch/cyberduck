@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.binding.application.NSPanel;
 
 /**
  * @version $Id$

@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSPanel;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSObject;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;

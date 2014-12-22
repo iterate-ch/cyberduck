@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSImage;
 
 import org.rococoa.cocoa.foundation.NSRect;
 

@@ -20,7 +20,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSFileManager;
 
 /**
  * @version $Id$

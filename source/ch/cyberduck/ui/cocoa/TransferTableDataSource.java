@@ -32,11 +32,11 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferFilter;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
-import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.binding.application.NSDraggingInfo;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSIndexSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

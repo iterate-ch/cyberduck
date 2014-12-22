@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.NSThread;
+import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSPanel;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
@@ -196,7 +196,7 @@ public abstract class SheetController extends WindowController implements SheetC
     /**
      * @return True if the class is a singleton and the object should
      *         not be invlidated upon the sheet is closed
-     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.ui.cocoa.application.NSWindow, int, org.rococoa.ID)
+     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.binding.application.NSWindow, int, org.rococoa.ID)
      */
     @Override
     public boolean isSingleton() {

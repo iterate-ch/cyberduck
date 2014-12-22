@@ -28,8 +28,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
 
 import org.apache.log4j.Logger;
 

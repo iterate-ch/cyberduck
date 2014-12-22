@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.binding.application.NSColor;
+import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
+import ch.cyberduck.binding.foundation.NSNumber;
+import ch.cyberduck.binding.foundation.NSRange;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;

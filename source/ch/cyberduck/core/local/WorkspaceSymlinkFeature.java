@@ -21,7 +21,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.features.Symlink;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSFileManager;
 
 import org.apache.log4j.Logger;
 

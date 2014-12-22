@@ -23,7 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.ui.cocoa.application.NSEvent;
+import ch.cyberduck.binding.application.NSEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.binding.application.NSApplication;
 
 import java.util.HashMap;
 import java.util.Map;

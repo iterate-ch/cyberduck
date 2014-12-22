@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.binding.foundation.NSURL;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;

@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenuItem;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

@@ -22,7 +22,7 @@ import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.PathTooltipService;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
 import ch.cyberduck.ui.comparator.FilenameComparator;

@@ -18,8 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSWorkspace;
 
 /**
  * @version $Id$

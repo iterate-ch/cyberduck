@@ -29,8 +29,8 @@ import ch.cyberduck.ui.cocoa.AlertController;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.TranscriptController;
 import ch.cyberduck.ui.cocoa.WindowController;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSView;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;

@@ -23,21 +23,21 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
-import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
-import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSPrintInfo;
+import ch.cyberduck.binding.application.NSPrintOperation;
+import ch.cyberduck.binding.application.NSPrintPanel;
+import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -111,7 +111,7 @@ public abstract class WindowController extends BundleController implements NSWin
      *
      * @return Always false
      * @see #invalidate()
-     * @see ch.cyberduck.ui.cocoa.application.NSWindow#setReleasedWhenClosed(boolean)
+     * @see ch.cyberduck.binding.application.NSWindow#setReleasedWhenClosed(boolean)
      */
     public boolean isSingleton() {
         return false;
@@ -161,7 +161,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
+     * @see ch.cyberduck.binding.application.NSWindow.Delegate
      */
     @Override
     public boolean windowShouldClose(final NSWindow sender) {

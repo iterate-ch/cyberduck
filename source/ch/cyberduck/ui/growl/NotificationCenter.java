@@ -20,8 +20,8 @@ package ch.cyberduck.ui.growl;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.notification.NotificationService;
-import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
+import ch.cyberduck.binding.foundation.NSUserNotification;
+import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 
 /**
  * @version $Id$

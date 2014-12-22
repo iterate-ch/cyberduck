@@ -23,8 +23,8 @@ import ch.cyberduck.core.LimitedListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSString;
 
 import org.junit.Test;
 

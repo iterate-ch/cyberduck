@@ -22,7 +22,7 @@ package ch.cyberduck.core.serializer.impl.jna;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.serializer.ProfileDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 /**
  * @version $Id$

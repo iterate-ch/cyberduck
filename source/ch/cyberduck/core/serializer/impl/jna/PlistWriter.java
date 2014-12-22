@@ -23,8 +23,8 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSMutableArray;
 
 import java.util.Collection;
 

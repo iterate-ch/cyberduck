@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSMutableParagraphStyle;
-import ch.cyberduck.ui.cocoa.application.NSParagraphStyle;
-import ch.cyberduck.ui.cocoa.application.NSText;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.application.NSMutableParagraphStyle;
+import ch.cyberduck.binding.application.NSParagraphStyle;
+import ch.cyberduck.binding.application.NSText;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSDictionary;
 
 /**
  * @version $Id$

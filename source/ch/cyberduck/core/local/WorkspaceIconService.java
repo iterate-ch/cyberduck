@@ -20,8 +20,8 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.rococoa.cocoa.foundation.NSUInteger;

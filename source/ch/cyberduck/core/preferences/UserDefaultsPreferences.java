@@ -58,14 +58,14 @@ import ch.cyberduck.ui.cocoa.PromptLoginController;
 import ch.cyberduck.ui.cocoa.SyncPromptController;
 import ch.cyberduck.ui.cocoa.UploadPromptController;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
-import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSLocale;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
+import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSLocale;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.growl.NotificationCenter;
 import ch.cyberduck.ui.resources.NSImageIconCache;
@@ -83,7 +83,7 @@ import java.util.List;
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
  *
  * @version $Id$
- * @see ch.cyberduck.ui.cocoa.foundation.NSUserDefaults
+ * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends Preferences {
     private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
