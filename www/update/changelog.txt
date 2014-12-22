@@ -1,3 +1,5 @@
+A command line interface (CLI) version is now available from https://duck.sh/ for Windows, Linux & Mac.
+
 4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
 - [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
 - [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
