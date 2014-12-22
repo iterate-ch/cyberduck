@@ -18,19 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.TransferPromptFilterWorker;
-import ch.cyberduck.core.worker.TransferPromptListWorker;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSOutlineView;
@@ -38,8 +25,21 @@ import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.TransferPromptFilterWorker;
+import ch.cyberduck.core.worker.TransferPromptListWorker;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;

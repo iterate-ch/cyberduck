@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSThread;
+import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.threading.MainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

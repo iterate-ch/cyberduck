@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,8 +18,6 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
 import ch.cyberduck.core.threading.MainAction;

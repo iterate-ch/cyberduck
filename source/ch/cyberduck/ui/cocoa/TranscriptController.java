@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSTextView;
@@ -27,7 +26,8 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSRange;
-import ch.cyberduck.ui.threading.ControllerMainAction;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.threading.ControllerMainAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;

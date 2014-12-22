@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,12 +19,6 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 

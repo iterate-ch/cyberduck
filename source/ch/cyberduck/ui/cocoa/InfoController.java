@@ -19,6 +19,14 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSIndexSet;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -49,6 +57,7 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.VersioningConfiguration;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CalculateSizeWorker;
 import ch.cyberduck.core.worker.ReadAclWorker;
 import ch.cyberduck.core.worker.ReadMetadataWorker;
@@ -57,19 +66,9 @@ import ch.cyberduck.core.worker.ReadSizeWorker;
 import ch.cyberduck.core.worker.WriteAclWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
-import ch.cyberduck.ui.LoginCallbackFactory;
-import ch.cyberduck.binding.application.*;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSIndexSet;
-import ch.cyberduck.binding.foundation.NSMutableAttributedString;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

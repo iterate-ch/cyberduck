@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -19,20 +19,24 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
+import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -45,11 +49,6 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.AbstractTransferWorker;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 import ch.cyberduck.core.worker.SingleTransferWorker;
-import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.HostKeyCallbackFactory;
-import ch.cyberduck.ui.LoginCallbackFactory;
-import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
-import ch.cyberduck.ui.TransferPromptControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

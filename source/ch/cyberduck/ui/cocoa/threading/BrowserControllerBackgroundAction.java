@@ -17,11 +17,11 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.threading.BrowserBackgroundAction;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class BrowserControllerBackgroundAction<T> extends BrowserBackgroundAction<T> {
 

@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -19,6 +19,7 @@ package ch.cyberduck.ui.threading;
 
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -26,8 +27,6 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.Controller;
 
 /**
  * @version $Id$

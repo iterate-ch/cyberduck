@@ -18,12 +18,12 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.ui.Controller;
 
 import java.util.ArrayList;
 import java.util.List;

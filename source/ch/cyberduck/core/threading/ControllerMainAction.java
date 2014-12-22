@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  *  Copyright (c) 2010 David Kocher. All rights reserved.
@@ -18,8 +18,7 @@ package ch.cyberduck.ui.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.Controller;
+import ch.cyberduck.core.Controller;
 
 /**
  * @version $Id$

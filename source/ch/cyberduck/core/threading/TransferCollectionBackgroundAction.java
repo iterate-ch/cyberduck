@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -18,6 +18,7 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -31,7 +32,6 @@ import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 

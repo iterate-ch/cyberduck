@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
@@ -25,10 +26,9 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 /**
  * @version $Id$

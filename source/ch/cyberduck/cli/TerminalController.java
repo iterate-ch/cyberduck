@@ -18,13 +18,13 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.AbstractController;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 

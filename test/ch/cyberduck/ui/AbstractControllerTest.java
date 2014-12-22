@@ -1,5 +1,6 @@
 package ch.cyberduck.ui;
 
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;

@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.test.Depends;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.AbstractController;
 
 import org.junit.Test;
 

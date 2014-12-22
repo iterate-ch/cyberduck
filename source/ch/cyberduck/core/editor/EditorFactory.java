@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 

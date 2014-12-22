@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,14 +18,13 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
-import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
 

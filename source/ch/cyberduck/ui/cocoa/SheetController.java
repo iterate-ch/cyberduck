@@ -24,7 +24,7 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSThread;
-import ch.cyberduck.ui.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

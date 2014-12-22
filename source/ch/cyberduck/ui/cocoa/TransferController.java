@@ -19,6 +19,12 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSIndexSet;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Factory;
@@ -41,6 +47,9 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.TransferBackgroundAction;
+import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.QueueFactory;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -52,19 +61,10 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
-import ch.cyberduck.binding.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSIndexSet;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.ControllerMainAction;
-import ch.cyberduck.ui.threading.TransferBackgroundAction;
-import ch.cyberduck.ui.threading.TransferCollectionBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

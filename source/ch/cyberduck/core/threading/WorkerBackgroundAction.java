@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -18,11 +18,11 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
 

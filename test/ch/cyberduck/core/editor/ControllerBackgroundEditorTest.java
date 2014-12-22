@@ -1,5 +1,6 @@
 package ch.cyberduck.core.editor;
 
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Host;
@@ -16,7 +17,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.AbstractController;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;

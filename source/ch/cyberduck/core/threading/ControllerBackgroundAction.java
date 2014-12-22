@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.threading;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -18,14 +18,13 @@ package ch.cyberduck.ui.threading;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.HostKeyCallbackFactory;
+import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.SessionBackgroundAction;
-import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.HostKeyCallbackFactory;
-import ch.cyberduck.ui.LoginCallbackFactory;
 
 /**
  * @version $Id$

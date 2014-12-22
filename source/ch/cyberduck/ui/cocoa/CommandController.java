@@ -18,13 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Command;
-import ch.cyberduck.core.local.Application;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
@@ -35,9 +28,16 @@ import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Command;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.threading.ControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
-import ch.cyberduck.ui.threading.ControllerBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;

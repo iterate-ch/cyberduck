@@ -18,10 +18,10 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.ui.Controller;
 
 import java.util.Collections;
 import java.util.List;
