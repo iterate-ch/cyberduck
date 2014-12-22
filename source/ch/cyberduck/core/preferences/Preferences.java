@@ -45,6 +45,7 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.serializer.impl.dd.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.dd.PlistSerializer;
@@ -58,7 +59,6 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.ui.browser.Column;
-import ch.cyberduck.ui.growl.DisabledNotificationService;
 import ch.cyberduck.ui.resources.DisabledIconCache;
 
 import org.apache.commons.lang3.StringUtils;

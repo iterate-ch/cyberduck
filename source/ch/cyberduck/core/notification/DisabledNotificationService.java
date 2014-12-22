@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.growl;
+package ch.cyberduck.core.notification;
 
 /*
  * Copyright (c) 2002-2014 David Kocher. All rights reserved.

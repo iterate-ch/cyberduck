@@ -18,7 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.ui.growl.NotificationService;
+import ch.cyberduck.core.notification.NotificationService;
 
 /**
  * @version $Id$

@@ -23,9 +23,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.local.ApplicationBadgeLabeler;
 import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.growl.NotificationService;
-import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

@@ -31,9 +31,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.growl.NotificationService;
-import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.log4j.Logger;
 

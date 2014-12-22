@@ -19,6 +19,7 @@ package ch.cyberduck.ui.growl;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 
 import org.junit.Test;
 

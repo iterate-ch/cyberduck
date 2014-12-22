@@ -19,6 +19,7 @@ package ch.cyberduck.ui.growl;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 

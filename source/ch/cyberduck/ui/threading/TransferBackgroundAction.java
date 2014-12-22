@@ -29,6 +29,8 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -48,8 +50,6 @@ import ch.cyberduck.ui.HostKeyCallbackFactory;
 import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.TransferPromptControllerFactory;
-import ch.cyberduck.ui.growl.NotificationService;
-import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

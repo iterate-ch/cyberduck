@@ -2590,6 +2590,7 @@ source/ch/cyberduck/core/local/TaskbarApplicationBadgeLabeler.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
+source/ch/cyberduck/core/notification/NotificationServiceFactory.java -text
 source/ch/cyberduck/core/openstack/SwiftSession.java -text
 source/ch/cyberduck/core/preferences/RoamingSupportDirectoryFinder.cs -text
 source/ch/cyberduck/core/preferences/SettingsDictionary.cs -text
@@ -2705,7 +2706,6 @@ source/ch/cyberduck/ui/controller/threading/BrowserControllerBackgroundAction.cs
 source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
-source/ch/cyberduck/ui/growl/NotificationServiceFactory.java -text
 source/ch/cyberduck/ui/growl/ToolstripNotificationService.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.cs -text

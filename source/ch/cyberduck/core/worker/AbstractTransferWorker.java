@@ -31,6 +31,8 @@ import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,8 +45,6 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.growl.NotificationService;
-import ch.cyberduck.ui.growl.NotificationServiceFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
