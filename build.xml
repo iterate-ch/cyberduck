@@ -191,6 +191,13 @@
                 <exclude name="ch/cyberduck/ui/cocoa/**/*.class"/>
             </fileset>
         </jar>
+        <jar jarfile="${build}/binding.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}/">
+                <include name="ch/cyberduck/binding/**/*.class"/>
+            </fileset>
+        </jar>
         <jar jarfile="${build}/cocoa.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
