@@ -176,6 +176,13 @@
                 <include name="ch/cyberduck/core/**/*.class"/>
             </fileset>
         </jar>
+        <jar jarfile="${build}/fs.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}">
+                <include name="ch/cyberduck/fs/**/*.class"/>
+            </fileset>
+        </jar>
         <jar jarfile="${build}/ui.jar"
              update="yes"
              manifest="${build}/MANIFEST.MF">
