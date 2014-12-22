@@ -276,7 +276,7 @@ public class Host implements Serializable, Comparable<Host> {
         }
         if(protocol.getType() == Protocol.Type.ftp) {
             if(connectMode != FTPConnectMode.unknown) {
-                dict.setStringForKey(this.getFTPConnectMode().name(), "FTP Connect Mode");
+                dict.setStringForKey(connectMode.name(), "FTP Connect Mode");
             }
         }
         if(transfer != TransferType.unknown) {
