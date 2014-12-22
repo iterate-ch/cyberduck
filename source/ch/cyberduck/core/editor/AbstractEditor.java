@@ -161,7 +161,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public void open(final ApplicationQuitCallback quit, final TransferErrorCallback error) {
-        final Worker<Transfer> worker = new EditBackgroundAction(this, session, error,
+        final Worker<Transfer> worker = new EditOpenWorker(this, session, error,
                 new ApplicationQuitCallback() {
                     @Override
                     public void callback() {
@@ -241,7 +241,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new SaveBackgroundAction(this, session, error, listener);
+            final Worker<Transfer> worker = new EditSaveWorker(this, session, error, listener);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", local));
             }

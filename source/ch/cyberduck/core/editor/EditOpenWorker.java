@@ -17,65 +17,63 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
+import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.action.Worker;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
  * @version $Id$
  */
-public class SaveBackgroundAction extends Worker<Transfer> {
-    private static final Logger log = Logger.getLogger(SaveBackgroundAction.class);
+public class EditOpenWorker extends Worker<Transfer> {
+    private static final Logger log = Logger.getLogger(EditOpenWorker.class);
 
     private AbstractEditor editor;
 
     private Session session;
 
-    private Transfer upload;
+    private Transfer download;
 
     private TransferErrorCallback callback;
 
+    private ApplicationQuitCallback quit;
+
     private ProgressListener listener;
 
-    public SaveBackgroundAction(final AbstractEditor editor, final Session session,
-                                final TransferErrorCallback callback, final ProgressListener listener) {
+    public EditOpenWorker(final AbstractEditor editor, final Session session,
+                          final TransferErrorCallback callback,
+                          final ApplicationQuitCallback quit,
+                          final ProgressListener listener) {
         this.editor = editor;
         this.session = session;
         this.callback = callback;
-        this.upload = new UploadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
+        this.quit = quit;
+        this.download = new DownloadTransfer(session.getHost(), editor.getRemote(), editor.getLocal()) {
             @Override
-            public TransferAction action(final Session<?> session,
-                                         final boolean resumeRequested, final boolean reloadRequested,
+            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt) throws BackgroundException {
-                return TransferAction.overwrite;
-            }
-
-            @Override
-            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, action, listener).withOptions(new UploadFilterOptions()
-                        .withTemporary(PreferencesFactory.get().getBoolean("editor.upload.temporary"))
-                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
+                return TransferAction.trash;
             }
         };
         this.listener = listener;
@@ -83,38 +81,40 @@ public class SaveBackgroundAction extends Worker<Transfer> {
 
     @Override
     public Transfer run() throws BackgroundException {
+        final Path file = editor.getRemote();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Run upload action for editor %s", editor));
+            log.debug(String.format("Run edit action for editor %s", file));
         }
+        // Delete any existing file which might be used by a watch editor already
+        final TransferOptions options = new TransferOptions();
+        options.quarantine = false;
+        options.open = false;
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
+                = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
+                new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
         worker.run();
-        if(!upload.isComplete()) {
-            log.warn(String.format("File size changed for %s", editor.getRemote()));
+        if(!download.isComplete()) {
+            log.warn(String.format("File size changed for %s", file));
         }
-        else {
-            // Update known remote file size
-            editor.getRemote().attributes().setSize(upload.getTransferred());
+        try {
+            editor.edit(quit);
         }
-        return upload;
-    }
-
-    @Override
-    public void cleanup(final Transfer upload) {
-        editor.setModified(false);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        return download;
     }
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
                 editor.getRemote().getName());
     }
 
     @Override
     public Transfer initialize() {
-        return upload;
+        return download;
     }
 
     @Override
@@ -125,7 +125,7 @@ public class SaveBackgroundAction extends Worker<Transfer> {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        SaveBackgroundAction that = (SaveBackgroundAction) o;
+        EditOpenWorker that = (EditOpenWorker) o;
         if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
             return false;
         }
