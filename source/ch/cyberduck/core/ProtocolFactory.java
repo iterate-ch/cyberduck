@@ -199,8 +199,8 @@ public final class ProtocolFactory {
                 }
             }
         }
-        log.error(String.format("Unknown scheme %s", scheme));
-        return forName(PreferencesFactory.get().getProperty("connection.protocol.default"));
+        log.warn(String.format("Unknown scheme %s", scheme));
+        return null;
     }
 
     /**
