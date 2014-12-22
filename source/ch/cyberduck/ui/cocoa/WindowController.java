@@ -66,7 +66,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         listeners.clear();
         if(window != null) {
             window.setDelegate(null);

@@ -39,7 +39,7 @@ public final class ConnectionControllerFactory {
             if(!open.containsKey(parent)) {
                 final ConnectionController c = new ConnectionController(parent) {
                     @Override
-                    protected void invalidate() {
+                    public void invalidate() {
                         open.remove(parent);
                         super.invalidate();
                     }

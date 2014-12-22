@@ -18,15 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.pasteboard.HostPasteboard;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.threading.ScheduledThreadPool;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;
@@ -42,6 +33,15 @@ import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.pasteboard.HostPasteboard;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
@@ -149,7 +149,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         timerPool.shutdown();
         source.removeListener(listener);
         super.invalidate();

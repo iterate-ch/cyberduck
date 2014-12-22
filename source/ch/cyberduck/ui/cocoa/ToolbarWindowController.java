@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSTabView;
 import ch.cyberduck.binding.application.NSTabViewItem;
@@ -32,6 +31,7 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
@@ -141,7 +141,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         toolbar.setDelegate(null);
         tabView.setDelegate(null);
         super.invalidate();

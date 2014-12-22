@@ -189,7 +189,7 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         sheetRegistry.remove(this);
         super.invalidate();
     }

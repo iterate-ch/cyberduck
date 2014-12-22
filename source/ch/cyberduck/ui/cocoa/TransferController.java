@@ -414,7 +414,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         toolbar.setDelegate(null);
         toolbarItems.clear();
         transferTableModel.invalidate();

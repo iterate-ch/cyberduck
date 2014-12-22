@@ -106,7 +106,7 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         folderCombobox.setDelegate(null);
         folderCombobox.setDataSource(null);
         super.invalidate();

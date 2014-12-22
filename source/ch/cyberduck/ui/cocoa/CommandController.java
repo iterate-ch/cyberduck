@@ -159,7 +159,7 @@ public class CommandController extends SheetController implements TranscriptList
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         responseField.layoutManager().setDelegate(null);
         super.invalidate();
     }

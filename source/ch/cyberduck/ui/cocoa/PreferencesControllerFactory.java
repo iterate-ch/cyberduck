@@ -35,7 +35,7 @@ public final class PreferencesControllerFactory {
             if(null == shared) {
                 shared = new PreferencesController() {
                     @Override
-                    protected void invalidate() {
+                    public void invalidate() {
                         shared = null;
                     }
                 };

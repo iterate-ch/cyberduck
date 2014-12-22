@@ -18,17 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.log4j.Logger;
@@ -61,7 +61,7 @@ public final class ActivityController extends WindowController {
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         registry.removeListener(backgroundActionListener);
         table.setDataSource(null);
         table.setDelegate(null);

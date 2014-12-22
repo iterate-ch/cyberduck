@@ -18,16 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.formatter.SizeFormatter;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferListener;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
@@ -38,13 +28,23 @@ import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatter;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferListener;
+import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +91,7 @@ public class ProgressController extends BundleController implements TransferList
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         filesPopup.menu().setDelegate(null);
         super.invalidate();
     }

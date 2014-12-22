@@ -17,8 +17,8 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.core.Host;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +40,7 @@ public final class BookmarkControllerFactory {
             if(!open.containsKey(host)) {
                 final BookmarkController c = new BookmarkController(host) {
                     @Override
-                    protected void invalidate() {
+                    public void invalidate() {
                         open.remove(host);
                         super.invalidate();
                     }

@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.binding.application.NSMenu;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -72,7 +72,7 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         this.collection.removeListener(this);
         super.invalidate();
     }

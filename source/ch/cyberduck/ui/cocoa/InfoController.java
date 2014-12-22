@@ -1540,7 +1540,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         this.controller.removeListener(browserWindowListener);
         super.invalidate();
     }

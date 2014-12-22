@@ -60,7 +60,7 @@ public class ConnectionController extends SheetController {
             = PreferencesFactory.get();
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         hostField.setDelegate(null);
         hostField.setDataSource(null);
         super.invalidate();

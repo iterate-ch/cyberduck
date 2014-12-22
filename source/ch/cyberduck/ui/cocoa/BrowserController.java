@@ -4323,7 +4323,7 @@ public class BrowserController extends WindowController
      * Overrriden to remove any listeners from the session
      */
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         if(quicklook.isAvailable()) {
             if(quicklook.isOpen()) {
                 quicklook.close();

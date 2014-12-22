@@ -18,6 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -37,13 +44,6 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
-import ch.cyberduck.binding.application.*;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSData;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -531,7 +531,7 @@ public class BookmarkController extends WindowController {
     };
 
     @Override
-    protected void invalidate() {
+    public void invalidate() {
         PreferencesFactory.get().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
