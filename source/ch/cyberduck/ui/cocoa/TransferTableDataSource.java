@@ -24,6 +24,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.pasteboard.PathPasteboard;
+import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.NullTransferFilter;
 import ch.cyberduck.core.transfer.Transfer;
@@ -35,8 +37,6 @@ import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.pasteboard.PathPasteboard;
-import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

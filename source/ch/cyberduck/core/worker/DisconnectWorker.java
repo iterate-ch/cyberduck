@@ -21,7 +21,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.ui.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 
 import org.apache.log4j.Logger;
 

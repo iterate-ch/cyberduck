@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.pasteboard;
+package ch.cyberduck.core.pasteboard;
 
 import ch.cyberduck.core.Session;
 

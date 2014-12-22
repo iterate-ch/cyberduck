@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.pasteboard;
+package ch.cyberduck.core.pasteboard;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.

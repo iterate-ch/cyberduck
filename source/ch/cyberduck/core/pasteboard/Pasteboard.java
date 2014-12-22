@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.pasteboard;
+package ch.cyberduck.core.pasteboard;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -19,28 +19,12 @@ package ch.cyberduck.ui.pasteboard;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Host;
-
 /**
  * @version $Id$
  */
-public final class HostPasteboard extends Collection<Host> implements Pasteboard<Host> {
-    private static final long serialVersionUID = 545497803218477371L;
+public interface Pasteboard<T> {
 
-    private static HostPasteboard instance;
+    boolean add(T item);
 
-    /**
-     * @return Singleton
-     */
-    public static HostPasteboard getPasteboard() {
-        if(null == instance) {
-            instance = new HostPasteboard();
-        }
-        return instance;
-    }
-
-    private HostPasteboard() {
-        //
-    }
+    void clear();
 }
