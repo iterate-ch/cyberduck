@@ -228,8 +228,8 @@ public class FTPSession extends SSLSession<FTPClient> {
                 try {
                     prompt.warn(host.getProtocol(),
                             MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                            MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
-                                    ProtocolFactory.FTP_TLS.getName()),
+                            MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
+                                    ProtocolFactory.FTP_TLS.getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
                             LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Change", "Credentials"),
                             String.format("connection.unsecure.%s", host.getHostname()));

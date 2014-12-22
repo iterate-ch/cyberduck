@@ -57,8 +57,9 @@ public class KeychainLoginService implements LoginService {
             // Warning if credentials are sent plaintext.
             controller.warn(bookmark.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
                             bookmark.getProtocol().getName()),
-                    MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                            bookmark.getCredentials().getPasswordPlaceholder()),
+                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                                    bookmark.getCredentials().getPasswordPlaceholder()),
+                            LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
                     LocaleFactory.localizedString("Continue", "Credentials"),
                     LocaleFactory.localizedString("Disconnect", "Credentials"),
                     String.format("connection.unsecure.%s", bookmark.getHostname()));
