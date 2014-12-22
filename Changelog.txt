@@ -3,6 +3,9 @@ http://cyberduck.io/
 
 Changelog. Last modified: $Date$
 
+4.6.2 [https://trac.cyberduck.io/milestone/4.6.2]
+- [Bugfix] Crash opening preferences when default editor is no longer installed (Mac) (#8402)
+
 4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
 - [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
 - [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
