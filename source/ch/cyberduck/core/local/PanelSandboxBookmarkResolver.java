@@ -18,6 +18,14 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -25,14 +33,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.SheetCallback;
-import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSData;
-import ch.cyberduck.binding.foundation.NSEnumerator;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSURL;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;

@@ -18,13 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.DEREncoder;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.ProxyController;
 
 import org.apache.log4j.Logger;
 

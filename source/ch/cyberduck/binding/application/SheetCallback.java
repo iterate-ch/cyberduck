@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding.application;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -17,8 +17,6 @@ package ch.cyberduck.ui.cocoa;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-import ch.cyberduck.binding.application.NSPanel;
 
 /**
  * @version $Id$

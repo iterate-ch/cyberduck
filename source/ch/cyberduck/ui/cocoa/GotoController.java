@@ -18,6 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSComboBox;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
@@ -25,11 +31,6 @@ import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSComboBox;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;

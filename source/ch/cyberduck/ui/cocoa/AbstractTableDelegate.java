@@ -18,14 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
 import org.rococoa.Rococoa;

@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
-import ch.cyberduck.binding.application.NSAlert;
 
 import org.apache.log4j.Logger;
 

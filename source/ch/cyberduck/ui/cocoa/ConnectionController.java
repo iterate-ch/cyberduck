@@ -18,12 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ftp.FTPConnectMode;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSColor;
@@ -41,6 +36,12 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;

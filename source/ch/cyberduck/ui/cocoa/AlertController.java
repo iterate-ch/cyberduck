@@ -19,13 +19,14 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.DefaultProviderHelpService;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;

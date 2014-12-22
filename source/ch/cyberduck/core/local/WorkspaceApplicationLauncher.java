@@ -18,11 +18,11 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.ProxyController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.Local;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

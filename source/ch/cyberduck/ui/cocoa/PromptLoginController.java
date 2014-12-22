@@ -18,6 +18,22 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSColor;
+import ch.cyberduck.binding.application.NSControl;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSImageView;
+import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.NSSecureTextField;
+import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Local;
@@ -32,21 +48,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSColor;
-import ch.cyberduck.binding.application.NSControl;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSImageView;
-import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;

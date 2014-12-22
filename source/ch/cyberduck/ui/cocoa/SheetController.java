@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.threading.ControllerMainAction;
 

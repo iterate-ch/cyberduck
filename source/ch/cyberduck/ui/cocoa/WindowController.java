@@ -18,11 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
@@ -34,10 +29,16 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.threading.PanelAlertCallback;
 
 import org.apache.commons.lang3.StringUtils;

@@ -18,6 +18,21 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSDraggingInfo;
+import ch.cyberduck.binding.application.NSDraggingSource;
+import ch.cyberduck.binding.application.NSEvent;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSMutableArray;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
@@ -46,20 +61,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
-import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.binding.application.NSDraggingInfo;
-import ch.cyberduck.binding.application.NSDraggingSource;
-import ch.cyberduck.binding.application.NSEvent;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSPasteboard;
-import ch.cyberduck.binding.application.NSTableView;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSFileManager;
-import ch.cyberduck.binding.foundation.NSMutableArray;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
-import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;

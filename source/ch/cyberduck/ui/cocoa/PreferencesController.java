@@ -19,6 +19,17 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.foundation.NSAppleScript;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -43,16 +54,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
-import ch.cyberduck.binding.application.*;
-import ch.cyberduck.binding.foundation.NSAppleScript;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSMutableAttributedString;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.resources.IconCacheFactory;

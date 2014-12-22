@@ -19,6 +19,8 @@ package ch.cyberduck.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -44,8 +46,6 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.fs.Filesystem;
 import ch.cyberduck.fs.FilesystemBackgroundAction;
-import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.binding.foundation.NSString;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;

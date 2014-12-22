@@ -17,13 +17,14 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSApplication;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 

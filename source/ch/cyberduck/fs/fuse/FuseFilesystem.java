@@ -19,6 +19,19 @@ package ch.cyberduck.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSDate;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSMutableArray;
+import ch.cyberduck.binding.foundation.NSMutableDictionary;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSNumber;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -41,19 +54,6 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.fs.Filesystem;
 import ch.cyberduck.fs.FilesystemBackgroundAction;
-import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.binding.foundation.NSDate;
-import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSFileManager;
-import ch.cyberduck.binding.foundation.NSMutableArray;
-import ch.cyberduck.binding.foundation.NSMutableDictionary;
-import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
-import ch.cyberduck.binding.foundation.NSNumber;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

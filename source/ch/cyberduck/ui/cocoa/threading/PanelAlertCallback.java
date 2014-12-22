@@ -17,6 +17,9 @@ package ch.cyberduck.ui.cocoa.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -26,11 +29,8 @@ import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.TranscriptController;
 import ch.cyberduck.ui.cocoa.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSView;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;

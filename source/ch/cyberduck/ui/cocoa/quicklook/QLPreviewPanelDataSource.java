@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.ProxyController;
+import ch.cyberduck.binding.ProxyController;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;

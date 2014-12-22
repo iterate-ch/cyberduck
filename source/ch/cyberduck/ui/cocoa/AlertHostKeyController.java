@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -28,8 +31,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 
 import org.apache.log4j.Logger;
 

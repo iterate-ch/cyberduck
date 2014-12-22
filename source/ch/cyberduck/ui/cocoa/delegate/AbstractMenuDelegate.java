@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.ProxyController;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;

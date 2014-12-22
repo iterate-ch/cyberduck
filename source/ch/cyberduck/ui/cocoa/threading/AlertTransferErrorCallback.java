@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.ui.cocoa.AlertController;
-import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
