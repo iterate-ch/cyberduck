@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  * @version $Id$
  */
-public class BrowserBackgroundEditorTest extends AbstractTestCase {
+public class ControllerBackgroundEditorTest extends AbstractTestCase {
 
     @Test
     public void testOpen() throws Exception {
@@ -70,7 +70,7 @@ public class BrowserBackgroundEditorTest extends AbstractTestCase {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final BrowserBackgroundEditor editor = new BrowserBackgroundEditor(new AbstractController() {
+        final ControllerBackgroundEditor editor = new ControllerBackgroundEditor(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 //

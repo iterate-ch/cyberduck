@@ -35,7 +35,7 @@ import java.io.IOException;
  *
  * @version $Id$
  */
-public class FSEventWatchEditor extends BrowserBackgroundEditor {
+public class FSEventWatchEditor extends ControllerBackgroundEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
     private FileWatcher monitor

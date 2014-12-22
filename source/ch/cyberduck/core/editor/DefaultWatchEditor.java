@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class DefaultWatchEditor extends BrowserBackgroundEditor {
+public class DefaultWatchEditor extends ControllerBackgroundEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
     private FileWatcher monitor

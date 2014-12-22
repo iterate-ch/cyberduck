@@ -33,7 +33,7 @@ import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 /**
  * @version $Id$
  */
-public abstract class BrowserBackgroundEditor extends AbstractEditor {
+public abstract class ControllerBackgroundEditor extends AbstractEditor {
 
     private Controller controller;
 
@@ -44,10 +44,10 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param application Editor
      * @param path        Remote file
      */
-    public BrowserBackgroundEditor(final Controller controller,
-                                   final Session session,
-                                   final Application application,
-                                   final Path path) {
+    public ControllerBackgroundEditor(final Controller controller,
+                                      final Session session,
+                                      final Application application,
+                                      final Path path) {
 
         this(controller, session,
                 ApplicationLauncherFactory.get(),
@@ -60,12 +60,12 @@ public abstract class BrowserBackgroundEditor extends AbstractEditor {
      * @param application Editor
      * @param path        Remote file
      */
-    public BrowserBackgroundEditor(final Controller controller,
-                                   final Session session,
-                                   final ApplicationLauncher launcher,
-                                   final ApplicationFinder finder,
-                                   final Application application,
-                                   final Path path) {
+    public ControllerBackgroundEditor(final Controller controller,
+                                      final Session session,
+                                      final ApplicationLauncher launcher,
+                                      final ApplicationFinder finder,
+                                      final Application application,
+                                      final Path path) {
         super(launcher, finder, application, session, path, controller);
         this.controller = controller;
         this.session = session;
