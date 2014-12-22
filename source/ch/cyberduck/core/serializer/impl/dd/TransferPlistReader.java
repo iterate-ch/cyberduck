@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.serializer.TransferDictionary;
 import ch.cyberduck.core.transfer.Transfer;
 
@@ -28,8 +29,18 @@ import com.dd.plist.NSDictionary;
  */
 public class TransferPlistReader extends PlistReader<Transfer> {
 
+    private DeserializerFactory deserializer;
+
+    public TransferPlistReader() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public TransferPlistReader(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     @Override
     public Transfer deserialize(final NSDictionary dict) {
-        return new TransferDictionary().deserialize(dict);
+        return new TransferDictionary(deserializer).deserialize(dict);
     }
 }

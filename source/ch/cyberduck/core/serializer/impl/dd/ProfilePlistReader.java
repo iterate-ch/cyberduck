@@ -18,6 +18,7 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.serializer.ProfileDictionary;
 
@@ -28,8 +29,18 @@ import com.dd.plist.NSDictionary;
  */
 public class ProfilePlistReader extends PlistReader<Profile> {
 
+    private DeserializerFactory deserializer;
+
+    public ProfilePlistReader() {
+        this.deserializer = new DeserializerFactory();
+    }
+
+    public ProfilePlistReader(final DeserializerFactory deserializer) {
+        this.deserializer = deserializer;
+    }
+
     @Override
     public Profile deserialize(final NSDictionary dict) {
-        return new ProfileDictionary().deserialize(dict);
+        return new ProfileDictionary(deserializer).deserialize(dict);
     }
 }
