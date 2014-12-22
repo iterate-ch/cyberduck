@@ -35,6 +35,7 @@ import ch.cyberduck.core.importer.TransmitBookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
@@ -77,7 +78,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.growl.NotificationServiceFactory;
 import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;

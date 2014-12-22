@@ -42,7 +42,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.ui.growl;
+using ch.cyberduck.core.notification;
 using java.security;
 using java.util;
 using org.apache.log4j;

@@ -23,7 +23,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.ui.growl;
+using ch.cyberduck.core.notification;
 using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
