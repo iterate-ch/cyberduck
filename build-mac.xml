@@ -206,6 +206,9 @@
             <replacefilter token="${ARCHIVE}"
                            value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${svn.revision}.tar.gz"/>
         </replace>
+        <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
+            <arg line="--root ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup} --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
+        </exec>
     </target>
 
     <target name="package" depends="build">

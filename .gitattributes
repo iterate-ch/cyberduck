@@ -2424,6 +2424,7 @@ setup/duck.postinstall -text
 setup/duck.postrm -text
 setup/duck.spec -text
 setup/header.bmp -text
+setup/postinstall -text
 setup/uninstall.png -text svneol=unset#image/png
 setup/verpatch.exe -text
 setup/welcome.bmp -text
