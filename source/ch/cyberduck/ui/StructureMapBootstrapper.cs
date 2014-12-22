@@ -21,7 +21,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui
 {
     public class StructureMapBootstrapper : IBootstrapper
     {

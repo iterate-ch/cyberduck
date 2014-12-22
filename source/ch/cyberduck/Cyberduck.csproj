@@ -72,7 +72,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\AutomaticUpdater.dll</HintPath>
     </Reference>
-    <Reference Include="core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="core, Version=4.6.1.16136, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\core.dll</HintPath>
     </Reference>
@@ -159,46 +159,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
-    <Compile Include="core\aquaticprime\LicenseImpl.cs" />
-    <Compile Include="core\aquaticprime\WindowsLicenseFactory.cs" />
-    <Compile Include="core\AtomicBoolean.cs" />
-    <Compile Include="core\CrashReporter.cs" />
-    <Compile Include="core\editor\SystemWatchEditorFactory.cs" />
-    <Compile Include="core\editor\SystemWatchEditor.cs" />
-    <Compile Include="core\i18n\DictionaryLocale.cs" />
-    <Compile Include="core\Keychain.cs" />
-    <Compile Include="core\local\RecycleLocalTrashFeature.cs" />
-    <Compile Include="core\local\DefaultBrowserLauncher.cs" />
-    <Compile Include="core\local\ExplorerRevealService.cs" />
-    <Compile Include="core\local\SystemLocal.cs" />
-    <Compile Include="core\local\TaskbarApplicationBadgeLabeler.cs" />
-    <Compile Include="core\local\Win32FileDescriptor.cs" />
-    <Compile Include="core\local\WindowsApplicationLauncher.cs" />
-    <Compile Include="core\local\RegistryApplicationFinder.cs" />
-    <Compile Include="core\local\WindowsTemporaryFileService.cs" />
-    <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
-    <Compile Include="core\preferences\UserPreferences.cs" />
-    <Compile Include="core\preferences\SettingsDictionary.cs" />
-    <Compile Include="core\SystemProxy.cs" />
-    <Compile Include="core\SshTerminalService.cs" />
-    <Compile Include="core\ssl\HostnameVerifier.cs" />
-    <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />
-    <Compile Include="core\collections\IndexedLinkedList.cs" />
-    <Compile Include="core\collections\LRUCache.cs" />
-    <Compile Include="core\Commands.cs" />
-    <Compile Include="core\DragDropLib.cs" />
-    <Compile Include="core\GlobalKeyboardHook.cs" />
-    <Compile Include="core\ListAdapter.cs" />
-    <Compile Include="core\NativeConstants.cs" />
-    <Compile Include="core\NativeListEnumerator.cs" />
-    <Compile Include="core\NativeMethods.cs" />
-    <Compile Include="core\OSVersion.cs" />
-    <Compile Include="core\Rendezvous.cs" />
-    <Compile Include="core\RFC2253.cs" />
-    <Compile Include="core\SerializableDictionary.cs" />
-    <Compile Include="core\Utils.cs" />
-    <Compile Include="core\VirtualFileDataObject.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="ui\controller\BaseController.cs" />
     <Compile Include="ui\controller\CommandController.cs" />
@@ -212,6 +172,7 @@
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
     <Compile Include="ui\growl\ToolstripNotificationService.cs" />
+    <Compile Include="ui\StructureMapBootstrapper.cs" />
     <Compile Include="ui\winforms\CommandForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -367,7 +328,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="properties\Settings.cs" />
-    <Compile Include="core\StructureMapBootstrapper.cs" />
     <Compile Include="ResourcesBundle.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -431,7 +391,6 @@
     <Compile Include="ui\controller\Renderers.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="core\TcpReachability.cs" />
     <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
     <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />
     <Compile Include="ui\controller\threading\WindowMainAction.cs" />
@@ -630,6 +589,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\trash.tiff" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Windows Core.csproj">
+      <Project>{ac161b73-0b4b-4a32-b0d7-205ac89d83a5}</Project>
+      <Name>Windows Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

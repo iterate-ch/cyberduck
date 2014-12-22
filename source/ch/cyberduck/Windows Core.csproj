@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AC161B73-0B4B-4A32-B0D7-205AC89D83A5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="core">
+      <HintPath>..\..\..\build\core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Charsets">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Charsets.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Jdbc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime.JNI">
+      <HintPath>..\..\..\lib\IKVM.Runtime.JNI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="core\aquaticprime\LicenseImpl.cs" />
+    <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
+    <Compile Include="core\aquaticprime\WindowsLicenseFactory.cs" />
+    <Compile Include="core\AtomicBoolean.cs" />
+    <Compile Include="core\collections\IndexedLinkedList.cs" />
+    <Compile Include="core\collections\LRUCache.cs" />
+    <Compile Include="core\Commands.cs" />
+    <Compile Include="core\CrashReporter.cs" />
+    <Compile Include="core\DragDropLib.cs" />
+    <Compile Include="core\editor\SystemEditorFactory.cs" />
+    <Compile Include="core\editor\SystemWatchEditor.cs" />
+    <Compile Include="core\editor\SystemWatchEditorFactory.cs" />
+    <Compile Include="core\GlobalKeyboardHook.cs" />
+    <Compile Include="core\i18n\DictionaryLocale.cs" />
+    <Compile Include="core\Keychain.cs" />
+    <Compile Include="core\ListAdapter.cs" />
+    <Compile Include="core\local\DefaultBrowserLauncher.cs" />
+    <Compile Include="core\local\ExplorerRevealService.cs" />
+    <Compile Include="core\local\RecycleLocalTrashFeature.cs" />
+    <Compile Include="core\local\RegistryApplicationFinder.cs" />
+    <Compile Include="core\local\SystemLocal.cs" />
+    <Compile Include="core\local\TaskbarApplicationBadgeLabeler.cs" />
+    <Compile Include="core\local\Win32FileDescriptor.cs" />
+    <Compile Include="core\local\WindowsApplicationLauncher.cs" />
+    <Compile Include="core\local\WindowsTemporaryFileService.cs" />
+    <Compile Include="core\NativeConstants.cs" />
+    <Compile Include="core\NativeListEnumerator.cs" />
+    <Compile Include="core\NativeMethods.cs" />
+    <Compile Include="core\OSVersion.cs" />
+    <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
+    <Compile Include="core\preferences\SettingsDictionary.cs" />
+    <Compile Include="core\preferences\UserPreferences.cs" />
+    <Compile Include="core\Rendezvous.cs" />
+    <Compile Include="core\RFC2253.cs" />
+    <Compile Include="core\SerializableDictionary.cs" />
+    <Compile Include="core\serializer\impl\system\HostPlistReader.cs" />
+    <Compile Include="core\serializer\impl\system\PlistDeserializer.cs" />
+    <Compile Include="core\serializer\impl\system\PlistReader.cs" />
+    <Compile Include="core\serializer\impl\system\PlistSerializer.cs" />
+    <Compile Include="core\serializer\impl\system\PlistWriter.cs" />
+    <Compile Include="core\serializer\impl\system\ProfilePlistReader.cs" />
+    <Compile Include="core\serializer\impl\system\TransferPlistReader.cs" />
+    <Compile Include="core\Shell32.cs" />
+    <Compile Include="core\SshTerminalService.cs" />
+    <Compile Include="core\ssl\HostnameVerifier.cs" />
+    <Compile Include="core\SystemProxy.cs" />
+    <Compile Include="core\TcpReachability.cs" />
+    <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="core\Utils.cs" />
+    <Compile Include="core\VirtualFileDataObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
