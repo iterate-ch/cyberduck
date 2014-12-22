@@ -12,7 +12,7 @@ import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
-import ch.cyberduck.ui.action.SingleTransferWorker;
+import ch.cyberduck.core.worker.SingleTransferWorker;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;

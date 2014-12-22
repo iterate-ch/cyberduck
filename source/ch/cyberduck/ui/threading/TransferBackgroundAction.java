@@ -40,14 +40,14 @@ import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.worker.AbstractTransferWorker;
+import ch.cyberduck.core.worker.ConcurrentTransferWorker;
+import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.HostKeyCallbackFactory;
 import ch.cyberduck.ui.LoginCallbackFactory;
 import ch.cyberduck.ui.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.ui.TransferPromptControllerFactory;
-import ch.cyberduck.ui.action.AbstractTransferWorker;
-import ch.cyberduck.ui.action.ConcurrentTransferWorker;
-import ch.cyberduck.ui.action.SingleTransferWorker;
 import ch.cyberduck.ui.growl.NotificationService;
 import ch.cyberduck.ui.growl.NotificationServiceFactory;
 

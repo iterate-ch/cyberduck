@@ -35,8 +35,8 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.ui.action.SingleTransferWorker;
-import ch.cyberduck.ui.action.Worker;
+import ch.cyberduck.core.worker.SingleTransferWorker;
+import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 

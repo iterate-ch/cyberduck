@@ -21,8 +21,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.worker.Worker;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.action.Worker;
 
 import org.apache.log4j.Logger;
 

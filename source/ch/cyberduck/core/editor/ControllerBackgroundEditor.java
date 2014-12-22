@@ -26,8 +26,8 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.worker.Worker;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.threading.WorkerBackgroundAction;
 
 /**

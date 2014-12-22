@@ -37,7 +37,7 @@ import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.ui.action.Worker;
+import ch.cyberduck.core.worker.Worker;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

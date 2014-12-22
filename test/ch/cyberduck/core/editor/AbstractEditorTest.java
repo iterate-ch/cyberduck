@@ -26,7 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.test.NullSession;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.ui.action.Worker;
+import ch.cyberduck.core.worker.Worker;
 
 import org.junit.Test;
 

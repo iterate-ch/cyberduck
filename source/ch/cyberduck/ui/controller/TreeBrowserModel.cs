@@ -25,7 +25,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
-using ch.cyberduck.ui.action;
+using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.threading;
 using java.util;
 

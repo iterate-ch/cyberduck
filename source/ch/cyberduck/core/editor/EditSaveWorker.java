@@ -35,8 +35,8 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
-import ch.cyberduck.ui.action.SingleTransferWorker;
-import ch.cyberduck.ui.action.Worker;
+import ch.cyberduck.core.worker.SingleTransferWorker;
+import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 

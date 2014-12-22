@@ -26,7 +26,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui.action;
+using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.threading;
 using java.util;
 using org.apache.log4j;
