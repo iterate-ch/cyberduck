@@ -209,6 +209,9 @@
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
             <arg line="--root ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup} --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
         </exec>
+        <exec executable="/usr/sbin/pkgutil" failonerror="true">
+            <arg line="--check-signature ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
+        </exec>
     </target>
 
     <target name="package" depends="build">
