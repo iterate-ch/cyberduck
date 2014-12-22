@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.application;
+package ch.cyberduck.binding.application;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
