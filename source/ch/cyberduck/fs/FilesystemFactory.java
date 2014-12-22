@@ -1,7 +1,8 @@
-package ch.cyberduck.core.fs;
+package ch.cyberduck.fs;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2011 David Kocher. All rights reserved.
+ *
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,23 +16,21 @@ package ch.cyberduck.core.fs;
  * GNU General Public License for more details.
  *
  * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
+ * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.FactoryException;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
+import ch.cyberduck.core.Factory;
 
 /**
  * @version $Id$
  */
-public class FilesystemFactoryTest extends AbstractTestCase {
+public class FilesystemFactory extends Factory<Filesystem> {
 
-    @Test(expected = FactoryException.class)
-    public void testGet() throws Exception {
-        assertNotNull(FilesystemFactory.get());
+    public FilesystemFactory() {
+        super("factory.filesystem.class");
+    }
+
+    public static Filesystem get() {
+        return new FilesystemFactory().create();
     }
 }

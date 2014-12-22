@@ -1,4 +1,4 @@
-package ch.cyberduck.core.fs.fuse;
+package ch.cyberduck.fs.fuse;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -27,7 +27,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSObject;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class GMUserFileSystem extends NSObject {
     public static final _class_ CLASS = Rococoa.createClass("GMUserFileSystem", _class_.class);

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.fs.fuse;
+package ch.cyberduck.fs.fuse;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -37,10 +37,10 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.fs.Filesystem;
-import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.fs.Filesystem;
+import ch.cyberduck.fs.FilesystemBackgroundAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.fs.kfs;
+package ch.cyberduck.fs.kfs;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.

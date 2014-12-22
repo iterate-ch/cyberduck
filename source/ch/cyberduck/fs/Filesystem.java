@@ -1,4 +1,4 @@
-package ch.cyberduck.core.fs.fuse;
+package ch.cyberduck.fs;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -19,20 +19,14 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.ObjCObject;
+import ch.cyberduck.core.Session;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface GMUserFileSystemLifecycle extends ObjCObject {
-// The GMUserFileSystem's delegate can implement any of the below protocols.
-// In most cases you can selectively choose which methods of a protocol to 
-// implement.
+public interface Filesystem {
 
-    /*! @abstract Called just before the mount of the file system occurs. */
-    void willMount();
+    void mount(Session session);
 
-    /*! @abstract Called just before an unmount of the file system will occur. */
-    void willUnmount();
-
+    void unmount();
 }
