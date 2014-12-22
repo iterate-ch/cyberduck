@@ -2416,18 +2416,18 @@ ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /sandbox.plist -text
 setup/Bonjour.msi -text
 setup/Bonjour64.msi -text
-setup/FileAssociation.nsh -text
 setup/banner.png -text
-setup/cyberduck.nsi -text
-setup/duck.control -text
-setup/duck.postinstall -text
-setup/duck.postrm -text
-setup/duck.spec -text
-setup/header.bmp -text
-setup/postinstall -text
+setup/deb/duck.control -text
+setup/deb/duck.postinstall -text
+setup/deb/duck.postrm -text
+setup/nsi/FileAssociation.nsh -text
+setup/nsi/cyberduck.nsi -text
+setup/nsi/header.bmp -text
+setup/nsi/welcome.bmp -text
+setup/pkg/postinstall -text
+setup/rpm/duck.spec -text
 setup/uninstall.png -text svneol=unset#image/png
 setup/verpatch.exe -text
-setup/welcome.bmp -text
 sk.lproj/Alert.strings -text svneol=unset#text/utf-16
 sk.lproj/Archive.strings -text svneol=unset#text/utf-16
 sk.lproj/Azure.strings -text svneol=unset#text/utf-16

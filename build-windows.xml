@@ -135,7 +135,7 @@
             <arg value="/DBASEDIR=${build}"/>
             <arg value="/DPRODUCT_VERSION=${version.short}"/>
             <arg value="/DSETUPFILE=${setup.file}"/>
-            <arg value="${setup}/cyberduck.nsi"/>
+            <arg value="${setup}/nsi/cyberduck.nsi"/>
         </exec>
         <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
             <arg line='sign /r "StartCom" /tr http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
