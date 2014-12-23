@@ -23,32 +23,40 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class BundleApplicationResourcesFinder implements ApplicationResourcesFinder {
+    private static final Logger log = Logger.getLogger(BundleApplicationResourcesFinder.class);
 
     @Override
     public Local find() {
         final NSBundle main = NSBundle.mainBundle();
-        final Local executable = LocalFactory.get(main.executablePath());
-        if(executable.isSymbolicLink()) {
-            final Local target;
+        if(null == main) {
+            log.warn("No main bundle found");
+            return new TemporarySupportDirectoryFinder().find();
+        }
+        Local executable = LocalFactory.get(main.executablePath());
+        if(!executable.isSymbolicLink()) {
+            return LocalFactory.get(main.resourcePath());
+        }
+        while(executable.isSymbolicLink()) {
             try {
-                target = LocalFactory.get(main.executablePath()).getSymlinkTarget();
+                executable = executable.getSymlinkTarget();
             }
             catch(NotfoundException e) {
                 return LocalFactory.get(main.resourcePath());
             }
-            Local folder = target.getParent();
-            NSBundle bundle;
-            do {
-                bundle = NSBundle.bundleWithPath(folder.getAbsolute());
-                folder = folder.getParent();
-            }
-            while(bundle.executablePath() == null);
-            return LocalFactory.get(bundle.resourcePath());
         }
-        return LocalFactory.get(main.resourcePath());
+        Local folder = executable.getParent();
+        NSBundle b;
+        do {
+            b = NSBundle.bundleWithPath(folder.getAbsolute());
+            folder = folder.getParent();
+        }
+        while(b.executablePath() == null);
+        return LocalFactory.get(b.resourcePath());
     }
 }
