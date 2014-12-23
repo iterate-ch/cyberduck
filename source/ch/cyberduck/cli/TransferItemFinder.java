@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
@@ -29,5 +30,5 @@ import java.util.Set;
  * @version $Id$
  */
 public interface TransferItemFinder {
-    Set<TransferItem> find(final CommandLine input, TerminalAction action, Path remote);
+    Set<TransferItem> find(final CommandLine input, TerminalAction action, Path remote) throws AccessDeniedException;
 }

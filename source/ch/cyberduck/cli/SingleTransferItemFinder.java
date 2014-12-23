@@ -32,6 +32,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class SingleTransferItemFinder implements TransferItemFinder {
+
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         final Local local;
