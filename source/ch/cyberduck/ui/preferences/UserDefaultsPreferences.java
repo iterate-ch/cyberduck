@@ -63,6 +63,7 @@ import ch.cyberduck.core.serializer.impl.jna.TransferPlistReader;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
+import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.AlertHostKeyController;
 import ch.cyberduck.ui.cocoa.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.PromptLoginController;
@@ -240,6 +241,31 @@ public class UserDefaultsPreferences extends Preferences {
         // SSL Keystore
         defaults.put("connection.ssl.keystore.type", "KeychainStore");
         defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+
+        defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
+        defaults.put(String.format("browser.column.%s", Column.filename.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.filename.name()), String.valueOf(250));
+        defaults.put(String.format("browser.column.%s", Column.kind.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.kind.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.extension.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.extension.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.size.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.size.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.modified.name()), String.valueOf(true));
+        defaults.put(String.format("browser.column.%s.width", Column.modified.name()), String.valueOf(150));
+        defaults.put(String.format("browser.column.%s", Column.owner.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.owner.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.group.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.group.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.permission.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.permission.name()), String.valueOf(100));
+        defaults.put(String.format("browser.column.%s", Column.region.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.region.name()), String.valueOf(80));
+        defaults.put(String.format("browser.column.%s", Column.version.name()), String.valueOf(false));
+        defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
+
+        defaults.put("browser.sort.column", Column.filename.name());
     }
 
     @Override
