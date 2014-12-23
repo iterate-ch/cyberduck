@@ -18,10 +18,11 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultPathKindDetector;
+import ch.cyberduck.core.DelimiterPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
 
 import org.apache.commons.cli.CommandLine;
@@ -34,8 +35,8 @@ import java.util.EnumSet;
  */
 public class PathParser {
 
-    private final DefaultPathKindDetector detector
-            = new DefaultPathKindDetector();
+    private final PathKindDetector detector
+            = new DelimiterPathKindDetector();
 
     private final CommandLine input;
 

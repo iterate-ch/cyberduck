@@ -48,6 +48,8 @@ public class PathParserTest extends AbstractTestCase {
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new PathParser(input).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
+                new PathParser(input).parse("ftps://u@test.cyberduck.ch/d/"));
+        assertEquals(new Path("/d", EnumSet.of(Path.Type.file)),
                 new PathParser(input).parse("ftps://u@test.cyberduck.ch/d"));
     }
 
