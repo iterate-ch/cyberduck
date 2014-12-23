@@ -79,7 +79,7 @@
                     name="duck" version="${version}.${revision}"
                     mainClass="ch.cyberduck.cli.Terminal"/>
             <fx:info title="${app.name}" license="GPL" copyright="${copyright}"
-                     description="Cyberduck"
+                     description="${app.name}"
                      vendor="cyberduck.io">
                 <fx:icon href="${app.icon}"/>
             </fx:info>
@@ -99,10 +99,9 @@
                     <include name="*.ico"/>
                 </fx:fileset>
                 <fx:fileset type="license" file="LICENSE.txt"/>
-                <fx:fileset dir="${home}/profiles" type="data">
-                    <include name="Rackspace US.cyberduckprofile"/>
+                <fx:fileset dir="${home}" type="data">
+                    <include name="profiles/Rackspace US.cyberduckprofile"/>
                 </fx:fileset>
-                <fx:fileset dir="${home}/bookmarks" type="data"/>
             </fx:resources>
         </fx:deploy>
     </target>
