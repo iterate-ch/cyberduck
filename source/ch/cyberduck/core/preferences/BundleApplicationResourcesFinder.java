@@ -18,17 +18,31 @@ package ch.cyberduck.core.preferences;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.core.exception.NotfoundException;
 
 /**
  * @version $Id$
  */
 public class BundleApplicationResourcesFinder implements ApplicationResourcesFinder {
+
     @Override
     public Local find() {
-        final NSBundle bundle = NSBundle.mainBundle();
-        return LocalFactory.get(bundle.resourcePath());
+        final NSBundle main = NSBundle.mainBundle();
+        final Local executable = LocalFactory.get(main.executablePath());
+        if(executable.isSymbolicLink()) {
+            final Local target;
+            try {
+                target = LocalFactory.get(main.executablePath()).getSymlinkTarget();
+            }
+            catch(NotfoundException e) {
+                return LocalFactory.get(main.resourcePath());
+            }
+            final NSBundle bundle = NSBundle.bundleWithPath(target.getAbsolute());
+            return LocalFactory.get(bundle.resourcePath());
+        }
+        return LocalFactory.get(main.resourcePath());
     }
 }
