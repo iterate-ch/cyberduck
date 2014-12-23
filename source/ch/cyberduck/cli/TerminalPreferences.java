@@ -95,6 +95,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.supportdirectoryfinder.class", UserHomeSupportDirectoryFinder.class.getName());
                 defaults.put("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
                 defaults.put("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+                // Disable
+                defaults.put("ssh.authentication.agent.enable", String.valueOf(false));
                 break;
         }
     }
