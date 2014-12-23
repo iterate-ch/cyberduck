@@ -40,7 +40,13 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             catch(NotfoundException e) {
                 return LocalFactory.get(main.resourcePath());
             }
-            final NSBundle bundle = NSBundle.bundleWithPath(target.getAbsolute());
+            Local folder = target.getParent();
+            NSBundle bundle;
+            do {
+                bundle = NSBundle.bundleWithPath(folder.getAbsolute());
+                folder = folder.getParent();
+            }
+            while(bundle.executablePath() == null);
             return LocalFactory.get(bundle.resourcePath());
         }
         return LocalFactory.get(main.resourcePath());
