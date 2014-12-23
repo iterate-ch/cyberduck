@@ -20,13 +20,8 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -34,7 +29,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class UriParserTest extends AbstractTestCase {
@@ -52,17 +46,10 @@ public class UriParserTest extends AbstractTestCase {
 
     @Test
     public void testProfile() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
-        final Profile profile = reader.read(
-                new Local("profiles/Rackspace US.cyberduckprofile")
-        );
-        assertNotNull(profile);
-        ProtocolFactory.register(profile);
-
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
-        assertTrue(new Host(profile, "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
+        assertTrue(new Host(ProtocolFactory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
                 .compareTo(new UriParser(input).parse("rackspace://u@cdn.cyberduck.ch/")) == 0);
 
     }

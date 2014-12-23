@@ -129,7 +129,7 @@ public final class ProtocolFactory {
         }
     }
 
-    public static void register(Protocol p) {
+    public static void register(final Protocol p) {
         protocols.remove(p);
         protocols.add(p);
     }

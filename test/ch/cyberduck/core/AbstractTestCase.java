@@ -20,6 +20,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.test.PlatformAwareClassRunner;
 import ch.cyberduck.core.test.TestPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
@@ -47,6 +49,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
@@ -82,6 +86,12 @@ public class AbstractTestCase {
         Locale.setDefault(Locale.ENGLISH);
         PreferencesFactory.set(new TestPreferences());
         ProtocolFactory.register();
+        final ProfilePlistReader reader = new ProfilePlistReader(new DeserializerFactory(PlistDeserializer.class.getName()));
+        final Profile profile = reader.read(
+                new Local("profiles/Rackspace US.cyberduckprofile")
+        );
+        assertNotNull(profile);
+        ProtocolFactory.register(profile);
     }
 
     @Before
