@@ -18,7 +18,20 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.StringAppender;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,6 +62,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
@@ -180,19 +194,8 @@ public class Terminal {
                     case download:
                     case upload:
                     case synchronize:
-                        final Local local;
-                        if(input.getOptionValues(action.name()).length == 2) {
-                            if(LocalFactory.get(input.getOptionValues(action.name())[1]).isDirectory()) {
-                                local = LocalFactory.get(input.getOptionValues(action.name())[1], remote.getName());
-                            }
-                            else {
-                                local = LocalFactory.get(input.getOptionValues(action.name())[1]);
-                            }
-                        }
-                        else {
-                            local = LocalFactory.get(remote.getName());
-                        }
-                        transfer = TerminalTransferFactory.create(action, host, new TransferItem(remote, local));
+                        transfer = TerminalTransferFactory.create(action, host,
+                                new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
                         break;
                     case copy:
                         transfer = new CopyTransfer(
