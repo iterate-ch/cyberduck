@@ -154,6 +154,7 @@
             <fileset dir="${build}">
                 <include name="config.jar"/>
                 <include name="core.jar"/>
+                <include name="binding.jar"/>
                 <include name="cli.jar"/>
             </fileset>
             <fileset dir="${lib}">
