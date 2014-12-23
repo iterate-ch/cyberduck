@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -41,7 +42,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote"});
 
-        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.download, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("remote")),
                 found.iterator().next());
@@ -53,7 +54,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote"});
 
-        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertTrue(found.isEmpty());
 
     }
@@ -61,14 +62,16 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
     @Test
     public void testFind() throws Exception {
         File.createTempFile("temp", ".duck");
-        File.createTempFile("temp", ".duck");
-        final File f = File.createTempFile("temp", ".false");
+        final File f = File.createTempFile("temp", ".duck");
+        File.createTempFile("temp", ".false");
 
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote", f.getParent() + "/*.duck"});
 
-        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
-        assertEquals(2, found.size());
+        assertTrue(found.contains(new TransferItem(
+                new Path(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.directory)), f.getName(), EnumSet.of(Path.Type.file)),
+                new Local(f.getAbsolutePath()))));
     }
 }
