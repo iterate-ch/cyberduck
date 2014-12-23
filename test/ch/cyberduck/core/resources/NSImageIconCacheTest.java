@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -18,6 +18,7 @@ package ch.cyberduck.ui.resources;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
@@ -25,7 +26,6 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.test.Depends;
-import ch.cyberduck.binding.application.NSImage;
 
 import org.junit.Test;
 

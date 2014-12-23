@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;

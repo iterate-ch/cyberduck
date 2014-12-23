@@ -19,12 +19,6 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
@@ -33,7 +27,13 @@ import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.ui.cocoa.Action;
+import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

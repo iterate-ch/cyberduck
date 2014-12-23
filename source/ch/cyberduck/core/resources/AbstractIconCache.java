@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Protocol;
 
 /**
  * @version $Id$

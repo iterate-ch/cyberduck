@@ -32,7 +32,7 @@ import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

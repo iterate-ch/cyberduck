@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.editor.EditorFactory;
-import ch.cyberduck.core.local.Application;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

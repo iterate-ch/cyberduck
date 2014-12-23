@@ -31,7 +31,7 @@ import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSInteger;

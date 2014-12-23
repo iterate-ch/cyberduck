@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,15 +17,15 @@ package ch.cyberduck.ui.resources;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSGraphics;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.binding.application.NSGraphics;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSWorkspace;
 
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;

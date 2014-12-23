@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.local.RevealService;
-import ch.cyberduck.core.local.RevealServiceFactory;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.RevealService;
+import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;

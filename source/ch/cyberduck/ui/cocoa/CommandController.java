@@ -35,9 +35,9 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.ControllerBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;

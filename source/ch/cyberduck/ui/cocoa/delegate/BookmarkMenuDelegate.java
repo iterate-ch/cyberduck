@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.MainController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

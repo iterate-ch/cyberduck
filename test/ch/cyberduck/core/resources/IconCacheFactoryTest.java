@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class IconCacheFactoryTest extends AbstractTestCase {
 

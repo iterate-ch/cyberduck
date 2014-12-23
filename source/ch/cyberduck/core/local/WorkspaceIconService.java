@@ -18,11 +18,11 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
-import ch.cyberduck.ui.resources.IconCacheFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 

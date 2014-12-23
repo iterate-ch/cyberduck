@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.ui.resources.IconCacheFactory;
 
 /**
  * @version $Id$

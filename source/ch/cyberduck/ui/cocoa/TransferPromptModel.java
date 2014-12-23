@@ -32,6 +32,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -39,7 +40,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.TransferPromptFilterWorker;
 import ch.cyberduck.core.worker.TransferPromptListWorker;
-import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;

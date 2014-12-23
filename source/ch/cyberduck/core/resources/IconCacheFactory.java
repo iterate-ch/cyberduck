@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.

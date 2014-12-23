@@ -18,6 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -25,13 +29,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.ui.cocoa.threading.BrowserControllerBackgroundAction;
-import ch.cyberduck.ui.resources.IconCacheFactory;
 
 import java.text.MessageFormat;
 import java.util.Collections;

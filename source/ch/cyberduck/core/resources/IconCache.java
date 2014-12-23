@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.resources;
+package ch.cyberduck.core.resources;
 
 /*
  * Copyright (c) 2002-2013 David Kocher. All rights reserved.
@@ -17,10 +17,10 @@ package ch.cyberduck.ui.resources;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.Local;
 
 /**
  * @version $Id$

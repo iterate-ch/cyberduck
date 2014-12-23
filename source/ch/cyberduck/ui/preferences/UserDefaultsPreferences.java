@@ -18,6 +18,14 @@ package ch.cyberduck.ui.preferences;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSLocale;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
@@ -45,6 +53,7 @@ import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.serializer.impl.jna.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.jna.PlistSerializer;
@@ -60,17 +69,8 @@ import ch.cyberduck.ui.cocoa.PromptLoginController;
 import ch.cyberduck.ui.cocoa.SyncPromptController;
 import ch.cyberduck.ui.cocoa.UploadPromptController;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
-import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.binding.foundation.NSEnumerator;
-import ch.cyberduck.binding.foundation.NSLocale;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
-import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.ui.cocoa.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.growl.NotificationCenter;
-import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
