@@ -1115,7 +1115,7 @@ public abstract class Preferences {
     /**
      * Overriding the default values with preferences from the last session.
      */
-    protected abstract void load();
+    public abstract void load();
 
     /**
      * @return The preferred locale of all localizations available

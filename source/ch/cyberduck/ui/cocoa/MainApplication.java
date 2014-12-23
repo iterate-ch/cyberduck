@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.preferences.UserDefaultsPreferences;
+import ch.cyberduck.ui.preferences.UserDefaultsPreferences;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;

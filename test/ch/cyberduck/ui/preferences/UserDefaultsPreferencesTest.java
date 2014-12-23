@@ -1,7 +1,8 @@
-package ch.cyberduck.core.preferences;
+package ch.cyberduck.ui.preferences;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;

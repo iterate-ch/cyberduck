@@ -1,4 +1,4 @@
-package ch.cyberduck.core.preferences;
+package ch.cyberduck.ui.preferences;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -43,6 +43,8 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.local.WorkspaceTrashFeature;
+import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.serializer.impl.jna.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.jna.PlistSerializer;
@@ -159,7 +161,7 @@ public class UserDefaultsPreferences extends Preferences {
      * Overwrite the default values with user props if any.
      */
     @Override
-    protected void load() {
+    public void load() {
         store = NSUserDefaults.standardUserDefaults();
     }
 
