@@ -215,7 +215,9 @@ public abstract class NSBundle extends NSObject {
      */
     public abstract NSArray pathsForResourcesOfType_inDirectory_forLocalization(String ext1, String subpath2, String localizationName3);
 
-    public abstract String localizedString(String key, String tableName);
+    public String localizedString(String key, String tableName) {
+        return localizedStringForKey_value_table(key, key, tableName);
+    }
 
     /**
      * Original signature : <code>String* localizedStringForKey(String*, String*, String*)</code><br>
