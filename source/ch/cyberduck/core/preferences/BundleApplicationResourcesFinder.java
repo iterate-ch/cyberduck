@@ -33,21 +33,29 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
 
     @Override
     public Local find() {
-        final NSBundle main = NSBundle.mainBundle();
-        if(null == main) {
+        final NSBundle b = this.bundle();
+        if(null == b) {
             log.warn("No main bundle found");
             return new TemporarySupportDirectoryFinder().find();
         }
+        return LocalFactory.get(b.resourcePath());
+    }
+
+    public NSBundle bundle() {
+        final NSBundle main = NSBundle.mainBundle();
+        if(null == main) {
+            return null;
+        }
         Local executable = LocalFactory.get(main.executablePath());
         if(!executable.isSymbolicLink()) {
-            return LocalFactory.get(main.resourcePath());
+            return main;
         }
         while(executable.isSymbolicLink()) {
             try {
                 executable = executable.getSymlinkTarget();
             }
             catch(NotfoundException e) {
-                return LocalFactory.get(main.resourcePath());
+                return main;
             }
         }
         Local folder = executable.getParent();
@@ -57,6 +65,6 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             folder = folder.getParent();
         }
         while(b.executablePath() == null);
-        return LocalFactory.get(b.resourcePath());
+        return b;
     }
 }

@@ -26,10 +26,6 @@ import org.rococoa.ObjCObjectByReference;
 public abstract class NSBundle extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSBundle", _Class.class);
 
-    public static String localizedString(String key, String tableName) {
-        return NSBundle.mainBundle().localizedStringForKey_value_table(key, key, tableName);
-    }
-
     private static NSBundle mainBundle = null;
 
     public static NSBundle mainBundle() {
@@ -218,6 +214,8 @@ public abstract class NSBundle extends NSObject {
      * <i>native declaration : :69</i>
      */
     public abstract NSArray pathsForResourcesOfType_inDirectory_forLocalization(String ext1, String subpath2, String localizationName3);
+
+    public abstract String localizedString(String key, String tableName);
 
     /**
      * Original signature : <code>String* localizedStringForKey(String*, String*, String*)</code><br>

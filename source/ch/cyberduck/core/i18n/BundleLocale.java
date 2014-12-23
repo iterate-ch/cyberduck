@@ -18,9 +18,10 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.binding.foundation.NSBundle;
 
 import org.apache.commons.collections.map.LRUMap;
 
@@ -32,6 +33,9 @@ import java.util.Map;
  */
 public class BundleLocale implements Locale {
 
+    private NSBundle bundle
+            = new BundleApplicationResourcesFinder().bundle();
+
     private static Map<String, String> cache
             = Collections.<String, String>synchronizedMap(new LRUMap(1000));
 
@@ -39,7 +43,7 @@ public class BundleLocale implements Locale {
     public String localize(final String key, final String table) {
         final String identifier = String.format("%s.%s", table, key);
         if(!cache.containsKey(identifier)) {
-            cache.put(identifier, NSBundle.localizedString(key, table));
+            cache.put(identifier, bundle.localizedString(key, table));
         }
         return cache.get(identifier);
     }
