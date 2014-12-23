@@ -22,6 +22,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
@@ -40,9 +41,9 @@ import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.preferences.ApplicationSupportDirectoryFinder;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.UserHomeSupportDirectoryFinder;
+import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.ui.resources.NSImageIconCache;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -116,23 +117,27 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("application.revision", Version.getImplementation());
 
         switch(Factory.Platform.getDefault()) {
-            case mac:
+            case mac: {
                 defaults.put("connection.ssl.keystore.type", "KeychainStore");
                 defaults.put("connection.ssl.keystore.provider", "Cyberduck");
+
                 final Local resources = new BundleApplicationResourcesFinder().find();
-                defaults.put("application.bookmarks.path", resources.getAbsolute() + "/Bookmarks");
-                defaults.put("application.profiles.path", resources.getAbsolute() + "/Profiles");
+                defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
+                defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
                 break;
-            case windows:
+            }
+            case windows: {
                 defaults.put("connection.ssl.keystore.type", "Windows-MY");
                 defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
+
                 defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
                 defaults.put("application.profiles.path", "profiles"); // relative to .exe
                 break;
-            case linux:
-                final Local settings = new UserHomeSupportDirectoryFinder().find();
-                defaults.put("application.bookmarks.path", settings.getAbsolute());
-                defaults.put("application.profiles.path", settings.getAbsolute());
+            }
+            case linux: {
+                final Local resources = LocalFactory.get("/opt/duck/app");
+                defaults.put("application.bookmarks.path", String.format("%s/bookmarks", resources.getAbsolute()));
+                defaults.put("application.profiles.path", String.format("%s/profiles", resources.getAbsolute()));
                 try {
                     final Process echo = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", "echo ~"});
                     defaults.put("local.user.home", StringUtils.strip(IOUtils.toString(echo.getInputStream())));
@@ -140,6 +145,7 @@ public class TerminalPreferences extends MemoryPreferences {
                 catch(IOException e) {
                     log.warn("Failure determining user home with `echo ~`");
                 }
+            }
         }
         defaults.put("local.normalize.prefix", String.valueOf(true));
         defaults.put("queue.download.folder", WorkingDirectoryFinderFactory.get().find().getAbsolute());
