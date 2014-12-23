@@ -27,24 +27,24 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
  */
 public class TerminalTransferFactory {
 
-    public static Transfer create(final TerminalAction type, final Host host, final TransferItem item) throws BackgroundException {
+    public static Transfer create(final TerminalAction type, final Host host, final List<TransferItem> items) throws BackgroundException {
         final Transfer transfer;
         switch(type) {
             case download:
-                transfer = new DownloadTransfer(host, Arrays.asList(item));
+                transfer = new DownloadTransfer(host, items);
                 break;
             case upload:
-                transfer = new UploadTransfer(host, Arrays.asList(item));
+                transfer = new UploadTransfer(host, items);
                 break;
             case synchronize:
-                transfer = new SyncTransfer(host, item);
+                transfer = new SyncTransfer(host, items.iterator().next());
                 break;
             default:
                 throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
