@@ -85,7 +85,9 @@
             </fx:info>
             <fx:resources>
                 <fx:fileset dir="${build}" type="jar">
-                    <include name="*.jar"/>
+                    <include name="config.jar"/>
+                    <include name="core.jar"/>
+                    <include name="cli.jar"/>
                 </fx:fileset>
                 <fx:fileset dir="${lib}" type="jar">
                     <include name="*.jar"/>

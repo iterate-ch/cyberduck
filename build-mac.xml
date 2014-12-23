@@ -152,7 +152,9 @@
         </copy>
         <copy todir="${cli.bundle}/${bundle.resources}">
             <fileset dir="${build}">
-                <include name="*.jar"/>
+                <include name="config.jar"/>
+                <include name="core.jar"/>
+                <include name="cli.jar"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
