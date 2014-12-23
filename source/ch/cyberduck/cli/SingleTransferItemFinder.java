@@ -44,6 +44,11 @@ public class SingleTransferItemFinder implements TransferItemFinder {
             }
         }
         else {
+            switch(action) {
+                case upload:
+                case synchronize:
+                    return Collections.emptySet();
+            }
             local = LocalFactory.get(remote.getName());
         }
         return Collections.singleton(new TransferItem(remote, local));
