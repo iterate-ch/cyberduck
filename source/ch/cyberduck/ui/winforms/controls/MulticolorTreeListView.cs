@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -37,9 +37,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         public delegate bool ActiveGetterTransferItemDelegate(TransferItem path);
 
         private const int IconSize = 16;
-
         private Color _activeForegroudColor = DefaultForeColor;
-
         private ActiveGetterPathDelegate _activeGetterPath = reference => true;
         private ActiveGetterTransferItemDelegate _activeGetterTransferItem = reference => true;
         private Color _inactiveForegroudColor = Color.Gray;
@@ -92,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 ToolStripMenuItem item1 = item;
                 MenuItem nItem = new MenuItem(LocaleFactory.localizedString(item.Text, "Localizable"),
-                                              delegate { item1.PerformClick(); }); //forward click event
+                    delegate { item1.PerformClick(); }); //forward click event
                 nItem.Checked = item.Checked;
                 cm.MenuItems.Add(nItem);
             }
@@ -103,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             e.Control.AutoSize = false;
             e.Control.Bounds = new Rectangle(e.Control.Bounds.X + IconSize, e.Control.Bounds.Y,
-                                             e.Control.Bounds.Width - IconSize, e.Control.Bounds.Height);
+                e.Control.Bounds.Width - IconSize, e.Control.Bounds.Height);
             if (e.Control is TextBox)
             {
                 //Only select filename part w/o extension (Explorer like behavior)

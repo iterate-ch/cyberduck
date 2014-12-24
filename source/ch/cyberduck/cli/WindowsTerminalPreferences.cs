@@ -16,12 +16,12 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.cli;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
-using ch.cyberduck.cli;
 
 namespace Ch.Cyberduck.Cli
 {
@@ -33,12 +33,12 @@ namespace Ch.Cyberduck.Cli
 
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.supportdirectoryfinder.class",
-                         typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+                typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
-            defaults.put("factory.passwordstore.class", typeof (Keychain).AssemblyQualifiedName);
+            defaults.put("factory.passwordstore.class", typeof (PasswordKeychain).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof (TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);

@@ -34,9 +34,10 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="core">
+    <Reference Include="core, Version=4.6.2.16195, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
@@ -111,9 +112,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Cyberduck.csproj">
-      <Project>{04afcfbb-97d5-44ea-b087-f0cfaeb51e30}</Project>
-      <Name>Cyberduck</Name>
+    <ProjectReference Include="Windows Core.csproj">
+      <Project>{ac161b73-0b4b-4a32-b0d7-205ac89d83a5}</Project>
+      <Name>Windows Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

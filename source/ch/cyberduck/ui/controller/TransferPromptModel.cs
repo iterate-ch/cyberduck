@@ -20,14 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
-using ch.cyberduck.ui.threading;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms;
 using java.util;
 using org.apache.log4j;
 
@@ -36,27 +36,22 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class TransferPromptModel
     {
         protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
-        protected readonly Transfer Transfer;
-
-        private readonly string UNKNOWN = LocaleFactory.localizedString("Unknown");
         private readonly Cache _cache = new Cache(int.MaxValue);
         private readonly TransferPromptController _controller;
-
         private readonly List<TransferItem> _roots = new List<TransferItem>();
-
         /**
          * Selection status map in the prompt
          */
         private readonly IDictionary<TransferItem, CheckState> _selected = new Dictionary<TransferItem, CheckState>();
         private readonly Session _session;
-
+        protected readonly Transfer Transfer;
+        private readonly string UNKNOWN = LocaleFactory.localizedString("Unknown");
+        private TransferAction _action;
+        protected IDictionary<TransferItem, TransferStatus> _status = new Dictionary<TransferItem, TransferStatus>();
         /**
           * Transfer status determined by filters
           */
         protected Bitmap AlertIcon = IconCache.Instance.IconForName("alert");
-        private TransferAction _action;
-        protected IDictionary<TransferItem, TransferStatus> _status = new Dictionary<TransferItem, TransferStatus>();
-
 
         protected TransferPromptModel(TransferPromptController controller, Session session, Transfer transfer)
         {
@@ -66,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _action =
                 TransferAction.forName(
                     PreferencesFactory.get()
-                               .getProperty(String.Format("queue.prompt.{0}.action.default", transfer.getType().name())));
+                        .getProperty(String.Format("queue.prompt.{0}.action.default", transfer.getType().name())));
         }
 
         public virtual void Add(TransferItem item)
@@ -94,7 +89,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else if (!_cache.isCached(directory.getReference()))
             {
                 _controller.Background(new TransferPromptListAction(this, _controller, _session, directory, Transfer,
-                                                                    _cache));
+                    _cache));
             }
             // Return list with filtered files included
             AttributedList list = _cache.get(null == directory ? null : directory.getReference());
@@ -218,9 +213,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private class FilterAction : WorkerBackgroundAction
         {
             public FilterAction(TransferPromptModel model, TransferPromptController controller, Session session,
-                                Transfer transfer, TransferAction action, Cache cache)
+                Transfer transfer, TransferAction action, Cache cache)
                 : base(
-                    controller, session, new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
+                    controller, session,
+                    new InnerTransferPromptFilterWorker(model, controller, session, transfer, action, cache))
             {
             }
 
@@ -230,8 +226,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptFilterWorker(TransferPromptModel model, TransferPromptController controller,
-                                                       Session session, Transfer transfer, TransferAction action,
-                                                       Cache cache)
+                    Session session, Transfer transfer, TransferAction action, Cache cache)
                     : base(session, transfer, action, cache, controller)
                 {
                     _model = model;
@@ -248,13 +243,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-
         private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
-                                            Session session, TransferItem directory, Transfer transfer, Cache cache)
+                Session session, TransferItem directory, Transfer transfer, Cache cache)
                 : base(
-                    controller, session, new InnerTransferPromptListWorker(model, controller, session, transfer, directory, cache))
+                    controller, session,
+                    new InnerTransferPromptListWorker(model, controller, session, transfer, directory, cache))
             {
             }
 
@@ -265,8 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly TransferPromptModel _model;
 
                 public InnerTransferPromptListWorker(TransferPromptModel model, TransferPromptController controller,
-                                                     Session session, Transfer transfer, TransferItem directory,
-                                                     Cache cache)
+                    Session session, Transfer transfer, TransferItem directory, Cache cache)
                     : base(session, transfer, directory.remote, directory.local, controller)
                 {
                     _model = model;

@@ -19,14 +19,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using ch.cyberduck.ui.threading;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller.background(new ListAction(_controller, directory, _cache, _listener));
             }
             list = _cache.get(directory.getReference())
-                         .filter(_controller.FilenameComparator, _controller.FilenameFilter);
+                .filter(_controller.FilenameComparator, _controller.FilenameFilter);
             for (int i = 0; i < list.size(); i++)
             {
                 yield return (Path) list.get(i);
@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (path.isVolume())
             {
                 return IconCache.Instance.VolumeIcon(_controller.Session.getHost().getProtocol(),
-                                                     IconCache.IconSize.Small);
+                    IconCache.IconSize.Small);
             }
             return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
         }
@@ -103,10 +103,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return
                     UserDateFormatterFactory.get()
-                                            .getShortFormat(
-                                                UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(
-                                                    modificationDate),
-                                                PreferencesFactory.get().getBoolean("browser.date.natural"));
+                        .getShortFormat(UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(modificationDate),
+                            PreferencesFactory.get().getBoolean("browser.date.natural"));
             }
             return _unknown;
         }
@@ -124,15 +122,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetOwner(Path path)
         {
             return Utils.IsBlank(path.attributes().getOwner())
-                       ? LocaleFactory.localizedString("Unknown")
-                       : path.attributes().getOwner();
+                ? LocaleFactory.localizedString("Unknown")
+                : path.attributes().getOwner();
         }
 
         public object GetGroup(Path path)
         {
             return Utils.IsBlank(path.attributes().getGroup())
-                       ? LocaleFactory.localizedString("Unknown")
-                       : path.attributes().getGroup();
+                ? LocaleFactory.localizedString("Unknown")
+                : path.attributes().getGroup();
         }
 
         public object GetPermission(Path path)
@@ -146,7 +144,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Map.Entry entry = (Map.Entry) iterator.next();
                     s.Append(String.Format("{0}{1}:{2}", s.Length == 0 ? "" : ", ",
-                                           ((Acl.User) entry.getKey()).getDisplayName(), entry.getValue()));
+                        ((Acl.User) entry.getKey()).getDisplayName(), entry.getValue()));
                 }
                 return s.ToString();
             }
@@ -162,24 +160,22 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetExtension(Path path)
         {
             return path.isFile()
-                       ? Utils.IsNotBlank(path.getExtension())
-                             ? path.getExtension()
-                             : LocaleFactory.localizedString("None")
-                       : LocaleFactory.localizedString("None");
+                ? Utils.IsNotBlank(path.getExtension()) ? path.getExtension() : LocaleFactory.localizedString("None")
+                : LocaleFactory.localizedString("None");
         }
 
         public object GetRegion(Path path)
         {
             return Utils.IsNotBlank(path.attributes().getRegion())
-                       ? path.attributes().getRegion()
-                       : LocaleFactory.localizedString("Unknown");
+                ? path.attributes().getRegion()
+                : LocaleFactory.localizedString("Unknown");
         }
 
         public object GetVersion(Path path)
         {
             return Utils.IsNotBlank(path.attributes().getVersionId())
-                       ? path.attributes().getVersionId()
-                       : LocaleFactory.localizedString("None");
+                ? path.attributes().getVersionId()
+                : LocaleFactory.localizedString("None");
         }
 
         public bool GetActive(Path path)
@@ -200,8 +196,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _directory;
 
                 public InnerListWorker(BrowserController controller, Path directory, Cache cache,
-                                       ListProgressListener listener)
-                    : base(controller.Session, cache, directory, listener)
+                    ListProgressListener listener) : base(controller.Session, cache, directory, listener)
                 {
                     _controller = controller;
                     _directory = directory;

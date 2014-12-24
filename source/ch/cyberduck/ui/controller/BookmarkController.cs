@@ -22,37 +22,33 @@ using System.Drawing;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.browser;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.log4j;
+using StructureMap;
 using Object = java.lang.Object;
 using TimeZone = java.util.TimeZone;
-using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class BookmarkController : WindowController<IBookmarkView>
     {
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
-
-        private static readonly string Auto = LocaleFactory.localizedString("Auto");
-        private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
-
         public const int SmallBookmarkSize = 16;
         public const int MediumBookmarkSize = 32;
         public const int LargeBookmarkSize = 64;
-
+        private static readonly string Auto = LocaleFactory.localizedString("Auto");
+        private static readonly string Default = LocaleFactory.localizedString("Default");
+        private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
-
         private readonly Host _host;
         private readonly Object _syncRootFavicon = new Object();
         private readonly Object _syncRootReachability = new Object();
@@ -406,8 +402,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.UsernameEnabled = true;
                 if (
                     PreferencesFactory.get()
-                               .getProperty("connection.login.name")
-                               .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
+                        .getProperty("connection.login.name")
+                        .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
                 {
                     View.Username = String.Empty;
                 }

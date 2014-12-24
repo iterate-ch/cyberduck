@@ -19,19 +19,19 @@
 using System.Collections.Generic;
 using System.Media;
 using System.Threading;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using org.apache.log4j;
+using StructureMap;
 using Object = System.Object;
 using String = System.String;
-using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -45,7 +45,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).FullName);
-
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerRechability;
 
@@ -113,10 +112,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 c = new ConnectionController();
                 Controllers.Add(parent, c);
                 parent.View.ViewClosedEvent += delegate
-                    {
-                        Controllers.Remove(parent);
-                        c.View.Close();
-                    };
+                {
+                    Controllers.Remove(parent);
+                    c.View.Close();
+                };
             }
             return c;
         }
@@ -291,8 +290,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 Protocol protocol = View.SelectedProtocol;
                 View.Password = PasswordStoreFactory.get()
-                                                    .getPassword(protocol.getScheme(), Integer.parseInt(View.Port),
-                                                                 View.Hostname, View.Username);
+                    .getPassword(protocol.getScheme(), Integer.parseInt(View.Port), View.Hostname, View.Username);
             }
         }
 
@@ -447,7 +445,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.PopulateConnectModes(modes);
         }
-
 
         private void View_ToggleOptions()
         {

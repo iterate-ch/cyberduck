@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,7 @@ namespace Ch.Cyberduck.Core
 {
     public class Rendezvous : AbstractRendezvous
     {
-        private readonly Dictionary<string, DNSSDService> _browsers
-            = new Dictionary<string, DNSSDService>();
+        private readonly Dictionary<string, DNSSDService> _browsers = new Dictionary<string, DNSSDService>();
 
         private DNSSDEventManager _eventManager;
         private DNSSDService _service;
@@ -82,34 +81,21 @@ namespace Ch.Cyberduck.Core
         // a BrowseData object and invoked the appropriate method
         // in the GUI thread so we can update the UI
         //
-        public void ServiceFound(DNSSDService service,
-                                 DNSSDFlags flags,
-                                 uint ifIndex,
-                                 String serviceName,
-                                 String regType,
-                                 String domain)
+        public void ServiceFound(DNSSDService service, DNSSDFlags flags, uint ifIndex, String serviceName,
+                                 String regType, String domain)
         {
             service.Resolve(flags, ifIndex, serviceName, regType, domain, _eventManager);
         }
 
-        public void ServiceLost(DNSSDService service,
-                                DNSSDFlags flags,
-                                uint ifIndex,
-                                String serviceName,
-                                String regType,
+        public void ServiceLost(DNSSDService service, DNSSDFlags flags, uint ifIndex, String serviceName, String regType,
                                 String domain)
         {
             string fullname = serviceName + "." + regType + domain;
             base.remove(fullname);
         }
 
-        public void ServiceResolved(DNSSDService service,
-                                    DNSSDFlags flags,
-                                    uint ifIndex,
-                                    String fullName,
-                                    String hostName,
-                                    ushort port,
-                                    TXTRecord txtRecord)
+        public void ServiceResolved(DNSSDService service, DNSSDFlags flags, uint ifIndex, String fullName,
+                                    String hostName, ushort port, TXTRecord txtRecord)
         {
             String user = null;
             String password = null;

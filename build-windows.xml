@@ -94,6 +94,7 @@
             <fileset file="${build}/config.jar"/>
             <fileset file="${build}/core.jar"/>
             <fileset file="${build}/cli.jar"/>
+            <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <exclude name="asm-*.jar"/>

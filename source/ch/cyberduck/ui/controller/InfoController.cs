@@ -22,11 +22,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Media;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller.Threading;
-using StructureMap;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.analytics;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cdn.features;
@@ -36,15 +32,18 @@ using ch.cyberduck.core.identity;
 using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
+using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using ch.cyberduck.ui;
-using ch.cyberduck.ui.threading;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.commons.lang3;
 using org.apache.log4j;
+using StructureMap;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -54,7 +53,6 @@ namespace Ch.Cyberduck.Ui.Controller
     public sealed class InfoController : WindowController<IInfoView>
     {
         private static readonly Logger Log = Logger.getLogger(typeof (InfoController).FullName);
-
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
@@ -74,12 +72,12 @@ namespace Ch.Cyberduck.Ui.Controller
             Files = files;
 
             _controller.View.ViewClosedEvent += delegate
+            {
+                if (!View.IsDisposed)
                 {
-                    if (!View.IsDisposed)
-                    {
-                        View.Close();
-                    }
-                };
+                    View.Close();
+                }
+            };
 
             View.ActiveTabChanged += View_ActiveTabChanged;
         }
@@ -295,28 +293,28 @@ namespace Ch.Cyberduck.Ui.Controller
             _metadata = new BindingList<CustomHeaderEntry>(metadata);
             View.MetadataDataSource = _metadata;
             _metadata.ListChanged += delegate(object sender, ListChangedEventArgs args)
+            {
+                switch (args.ListChangedType)
                 {
-                    switch (args.ListChangedType)
-                    {
-                        case ListChangedType.ItemDeleted:
+                    case ListChangedType.ItemDeleted:
+                        if (ToggleMetadataSettings(false))
+                        {
+                            Background(new WriteMetadataBackgroundAction(_controller, this));
+                        }
+                        break;
+
+                    case ListChangedType.ItemChanged:
+                        if (args.NewIndex < _metadata.Count && Utils.IsNotBlank(_metadata[args.NewIndex].Name) &&
+                            Utils.IsNotBlank(_metadata[args.NewIndex].Value))
+                        {
                             if (ToggleMetadataSettings(false))
                             {
                                 Background(new WriteMetadataBackgroundAction(_controller, this));
                             }
-                            break;
-
-                        case ListChangedType.ItemChanged:
-                            if (args.NewIndex < _metadata.Count && Utils.IsNotBlank(_metadata[args.NewIndex].Name) &&
-                                Utils.IsNotBlank(_metadata[args.NewIndex].Value))
-                            {
-                                if (ToggleMetadataSettings(false))
-                                {
-                                    Background(new WriteMetadataBackgroundAction(_controller, this));
-                                }
-                            }
-                            break;
-                    }
-                };
+                        }
+                        break;
+                }
+            };
         }
 
         private void AddAclEntry(Acl.User user, Acl.Role role)
@@ -361,23 +359,23 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IDictionary<string, SyncDelegate> metadata = new Dictionary<string, SyncDelegate>();
             metadata.Add(LocaleFactory.localizedString("Custom Header"),
-                         () => AddMetadataItem(LocaleFactory.localizedString("Unknown")));
+                () => AddMetadataItem(LocaleFactory.localizedString("Unknown")));
             metadata.Add("Content-Disposition", () => AddMetadataItem("Content-Disposition", "attachment", true));
             metadata.Add(LocaleFactory.localizedString("Cache-Control"),
-                         () =>
-                         AddMetadataItem("Cache-Control",
-                                         "public,max-age=" + PreferencesFactory.get().getInteger("s3.cache.seconds")));
+                () =>
+                    AddMetadataItem("Cache-Control",
+                        "public,max-age=" + PreferencesFactory.get().getInteger("s3.cache.seconds")));
             metadata.Add(LocaleFactory.localizedString("Expires"), delegate
-                {
-                    DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
-                    DateTime expires = DateTime.Now.AddSeconds(PreferencesFactory.get().getInteger("s3.cache.seconds"));
-                    AddMetadataItem("Expires", expires.ToString("r", format)); // RFC1123 format
-                });
+            {
+                DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
+                DateTime expires = DateTime.Now.AddSeconds(PreferencesFactory.get().getInteger("s3.cache.seconds"));
+                AddMetadataItem("Expires", expires.ToString("r", format)); // RFC1123 format
+            });
             metadata.Add("Pragma", () => AddMetadataItem("Pragma", String.Empty, true));
             metadata.Add("Content-Type", () => AddMetadataItem("Content-Type", String.Empty, true));
             metadata.Add("Content-Encoding", () => AddMetadataItem("Content-Encoding", String.Empty, true));
             metadata.Add("x-amz-website-redirect-location",
-                         () => AddMetadataItem("x-amz-website-redirect-location", String.Empty, true));
+                () => AddMetadataItem("x-amz-website-redirect-location", String.Empty, true));
 
             metadata.Add(LocaleFactory.localizedString("Remove"), RemoveMetadata);
 
@@ -390,11 +388,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _lifecycleTransitionPeriods =
                     Utils.ConvertFromJavaList(PreferencesFactory.get().getList("s3.lifecycle.transition.options"),
-                                              item =>
-                                              new KeyValuePair<string, string>(
-                                                  MessageFormat.format(
-                                                      LocaleFactory.localizedString("after {0} Days", "S3"),
-                                                      item.ToString()), item.ToString()));
+                        item =>
+                            new KeyValuePair<string, string>(
+                                MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"),
+                                    item.ToString()), item.ToString()));
             }
             View.PopulateLifecycleTransitionPeriod(_lifecycleTransitionPeriods);
         }
@@ -405,11 +402,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _lifecycleDeletePeriods =
                     Utils.ConvertFromJavaList(PreferencesFactory.get().getList("s3.lifecycle.delete.options"),
-                                              item =>
-                                              new KeyValuePair<string, string>(
-                                                  MessageFormat.format(
-                                                      LocaleFactory.localizedString("after {0} Days", "S3"),
-                                                      item.ToString()), item.ToString()));
+                        item =>
+                            new KeyValuePair<string, string>(
+                                MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"),
+                                    item.ToString()), item.ToString()));
             }
             View.PopulateLifecycleDeletePeriod(_lifecycleDeletePeriods);
         }
@@ -426,28 +422,28 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ConfigureHelp()
         {
             View.ShowHelp += delegate(object sender, InfoHelpArgs args)
+            {
+                StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
+                switch (args.Section)
                 {
-                    StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-                    switch (args.Section)
-                    {
-                        case InfoHelpArgs.Context.General:
-                            site.Append("/howto/info");
-                            break;
-                        case InfoHelpArgs.Context.Permissions:
-                            site.Append("/howto/info");
-                            break;
-                        case InfoHelpArgs.Context.Metdadata:
-                            site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
-                            break;
-                        case InfoHelpArgs.Context.Cdn:
-                            site.Append("/howto/cdn");
-                            break;
-                        case InfoHelpArgs.Context.S3:
-                            site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
-                            break;
-                    }
-                    BrowserLauncherFactory.get().open(site.ToString());
-                };
+                    case InfoHelpArgs.Context.General:
+                        site.Append("/howto/info");
+                        break;
+                    case InfoHelpArgs.Context.Permissions:
+                        site.Append("/howto/info");
+                        break;
+                    case InfoHelpArgs.Context.Metdadata:
+                        site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
+                        break;
+                    case InfoHelpArgs.Context.Cdn:
+                        site.Append("/howto/cdn");
+                        break;
+                    case InfoHelpArgs.Context.S3:
+                        site.Append("/").Append(_controller.Session.getHost().getProtocol().getProvider());
+                        break;
+                }
+                BrowserLauncherFactory.get().open(site.ToString());
+            };
         }
 
         /// <summary>
@@ -475,10 +471,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             DescriptiveUrl authenticated =
                                 ((UrlProvider) _controller.Session.getFeature(typeof (UrlProvider))).toUrl(file)
-                                                                                                    .find(
-                                                                                                        DescriptiveUrl
-                                                                                                            .Type
-                                                                                                            .authenticated);
+                                    .find(DescriptiveUrl.Type.authenticated);
                             if (!authenticated.equals(DescriptiveUrl.EMPTY))
                             {
                                 View.AclUrl = authenticated.getUrl();
@@ -519,28 +512,28 @@ namespace Ch.Cyberduck.Ui.Controller
             _acl = new BindingList<UserAndRoleEntry>(userAndRoleEntries);
             View.AclDataSource = _acl;
             _acl.ListChanged += delegate(object sender, ListChangedEventArgs args)
+            {
+                switch (args.ListChangedType)
                 {
-                    switch (args.ListChangedType)
-                    {
-                        case ListChangedType.ItemDeleted:
+                    case ListChangedType.ItemDeleted:
+                        if (ToggleAclSettings(false))
+                        {
+                            Background(new WriteAclBackgroundAction(_controller, this));
+                        }
+                        break;
+
+                    case ListChangedType.ItemChanged:
+                        if (Utils.IsNotBlank(_acl[args.NewIndex].getUser().getIdentifier()) &&
+                            Utils.IsNotBlank(_acl[args.NewIndex].getRole().getName()))
+                        {
                             if (ToggleAclSettings(false))
                             {
                                 Background(new WriteAclBackgroundAction(_controller, this));
                             }
-                            break;
-
-                        case ListChangedType.ItemChanged:
-                            if (Utils.IsNotBlank(_acl[args.NewIndex].getUser().getIdentifier()) &&
-                                Utils.IsNotBlank(_acl[args.NewIndex].getRole().getName()))
-                            {
-                                if (ToggleAclSettings(false))
-                                {
-                                    Background(new WriteAclBackgroundAction(_controller, this));
-                                }
-                            }
-                            break;
-                    }
-                };
+                        }
+                        break;
+                }
+            };
         }
 
         /// <summary>
@@ -665,10 +658,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionDeliveryMethodEnabled = stop && enable;
             View.DistributionLoggingCheckboxEnabled = stop && enable &&
                                                       cdn.getFeature(typeof (DistributionLogging),
-                                                                     View.DistributionDeliveryMethod) != null;
+                                                          View.DistributionDeliveryMethod) != null;
             View.DistributionLoggingPopupEnabled = stop && enable &&
                                                    cdn.getFeature(typeof (DistributionLogging),
-                                                                  View.DistributionDeliveryMethod) != null;
+                                                       View.DistributionDeliveryMethod) != null;
             View.DistributionCnameEnabled = stop && enable &&
                                             cdn.getFeature(typeof (Cname), View.DistributionDeliveryMethod) != null;
             View.DistributionInvalidateObjectsEnabled = stop && enable &&
@@ -1154,10 +1147,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
                 View.FileOwner = count > 1
-                                     ? _multipleFilesString
-                                     : Utils.IsBlank(file.attributes().getOwner())
-                                           ? LocaleFactory.localizedString("Unknown")
-                                           : file.attributes().getOwner();
+                    ? _multipleFilesString
+                    : Utils.IsBlank(file.attributes().getOwner())
+                        ? LocaleFactory.localizedString("Unknown")
+                        : file.attributes().getOwner();
                 ;
 
                 if (count > 1)
@@ -1215,7 +1208,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         string redundancy = (string) list.get(i);
                         classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"),
-                                                                     redundancy));
+                            redundancy));
                     }
                     View.PopulateStorageClass(classes);
                 }
@@ -1242,7 +1235,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             DescriptiveUrl signed =
                                 ((UrlProvider) session.getFeature(typeof (UrlProvider))).toUrl(file)
-                                                                                        .find(DescriptiveUrl.Type.signed);
+                                    .find(DescriptiveUrl.Type.signed);
                             if (!signed.equals(DescriptiveUrl.EMPTY))
                             {
                                 View.S3PublicUrl = signed.getUrl();
@@ -1252,8 +1245,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                             DescriptiveUrl torrent =
                                 ((UrlProvider) session.getFeature(typeof (UrlProvider))).toUrl(file)
-                                                                                        .find(
-                                                                                            DescriptiveUrl.Type.torrent);
+                                    .find(DescriptiveUrl.Type.torrent);
                             if (!torrent.equals(DescriptiveUrl.EMPTY))
                             {
                                 View.S3TorrentUrl = torrent.getUrl();
@@ -1354,20 +1346,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
             IList<KeyValuePair<string, Distribution.Method>> methods =
                 new List<KeyValuePair<string, Distribution.Method>>
-                    {
-                        new KeyValuePair<string, Distribution.Method>(LocaleFactory.localizedString("None"), null)
-                    };
+                {
+                    new KeyValuePair<string, Distribution.Method>(LocaleFactory.localizedString("None"), null)
+                };
             View.PopulateDistributionDeliveryMethod(methods);
             View.PopulateDefaultRoot(new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty)
-                });
+            {
+                new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty)
+            });
 
             Session session = _controller.Session;
             DistributionConfiguration cdn =
                 (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration));
             View.DistributionTitle = String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                                                   cdn.getName());
+                cdn.getName());
             methods = new List<KeyValuePair<string, Distribution.Method>>();
             Path container = containerService.getContainer(SelectedPath);
             List list = cdn.getMethods(container);
@@ -1463,7 +1455,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 DescriptiveUrl http =
                     ((UrlProvider) _controller.Session.getFeature(typeof (UrlProvider))).toUrl(SelectedPath)
-                                                                                        .find(DescriptiveUrl.Type.http);
+                        .find(DescriptiveUrl.Type.http);
                 if (!http.Equals(DescriptiveUrl.EMPTY))
                 {
                     View.WebUrl = http.getUrl();
@@ -1606,12 +1598,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 InfoController c = new InfoController(controller, files);
                 c.View.ViewClosedEvent += delegate
+                {
+                    lock (SyncRoot)
                     {
-                        lock (SyncRoot)
-                        {
-                            Open.Remove(controller);
-                        }
-                    };
+                        Open.Remove(controller);
+                    }
+                };
 
                 lock (SyncRoot)
                 {
@@ -1659,23 +1651,23 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Permission permission in permissions)
                     {
                         view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
-                                                          permission.getUser().implies(Permission.Action.read));
+                            permission.getUser().implies(Permission.Action.read));
                         view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
-                                                           permission.getUser().implies(Permission.Action.write));
+                            permission.getUser().implies(Permission.Action.write));
                         view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
-                                                             permission.getUser().implies(Permission.Action.execute));
+                            permission.getUser().implies(Permission.Action.execute));
                         view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
-                                                          permission.getGroup().implies(Permission.Action.read));
+                            permission.getGroup().implies(Permission.Action.read));
                         view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
-                                                           permission.getGroup().implies(Permission.Action.write));
+                            permission.getGroup().implies(Permission.Action.write));
                         view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
-                                                             permission.getGroup().implies(Permission.Action.execute));
+                            permission.getGroup().implies(Permission.Action.execute));
                         view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
-                                                          permission.getOther().implies(Permission.Action.read));
+                            permission.getOther().implies(Permission.Action.read));
                         view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
-                                                           permission.getOther().implies(Permission.Action.write));
+                            permission.getOther().implies(Permission.Action.write));
                         view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
-                                                             permission.getOther().implies(Permission.Action.execute));
+                            permission.getOther().implies(Permission.Action.execute));
 
                         overwrite = false;
                     }
@@ -1715,7 +1707,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly Path _container;
             private readonly IList<string> _containers = new List<string>();
-
             private readonly InfoController _infoController;
             private readonly Path _selected;
             private readonly IInfoView _view;
@@ -1746,7 +1737,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _logging = ((Logging) s.getFeature(typeof (Logging))).getConfiguration(_container);
                     AttributedList children = _infoController._controller.Session.list(_container.getParent(),
-                                                                                       new DisabledListProgressListener());
+                        new DisabledListProgressListener());
                     foreach (AbstractPath c in children)
                     {
                         _containers.Add(c.getName());
@@ -1832,7 +1823,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _infoController._lifecycleDeletePeriods.Add(
                                     new KeyValuePair<string, string>(
                                         MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"),
-                                                             _lifecycle.getExpiration().toString()),
+                                            _lifecycle.getExpiration().toString()),
                                         _lifecycle.getExpiration().toString()));
                                 _infoController.PopulateLifecycleDeletePeriod();
                                 _view.LifecycleDelete = _lifecycle.getExpiration().toString();
@@ -1847,7 +1838,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _infoController._lifecycleTransitionPeriods.Add(
                                     new KeyValuePair<string, string>(
                                         MessageFormat.format(LocaleFactory.localizedString("after {0} Days", "S3"),
-                                                             _lifecycle.getTransition().toString()),
+                                            _lifecycle.getTransition().toString()),
                                         _lifecycle.getTransition().toString()));
                                 _infoController.PopulateLifecycleTransitionPeriod();
                                 _view.LifecycleTransition = _lifecycle.getTransition().toString();
@@ -1882,7 +1873,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration));
                 Purge feature = (Purge) cdn.getFeature(typeof (Purge), _method);
                 feature.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath), _method,
-                                   Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
+                    Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
                 return true;
             }
 
@@ -1896,8 +1887,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                                     _infoController.containerService.getContainer(_infoController.SelectedPath)
-                                                    .getName());
+                    _infoController.containerService.getContainer(_infoController.SelectedPath).getName());
             }
         }
 
@@ -1928,9 +1918,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Lifecycle lifecycle = (Lifecycle) BrowserController.Session.getFeature(typeof (Lifecycle));
                 lifecycle.setConfiguration(_infoController.containerService.getContainer(_selected),
-                                           new LifecycleConfiguration(
-                                               _transitionEnabled ? Integer.valueOf(_transitionPeriod) : null,
-                                               _deleteEnabled ? Integer.valueOf(_deletePeriod) : null));
+                    new LifecycleConfiguration(_transitionEnabled ? Integer.valueOf(_transitionPeriod) : null,
+                        _deleteEnabled ? Integer.valueOf(_deletePeriod) : null));
                 return true;
             }
 
@@ -1948,7 +1937,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     browserController, browserController.Session,
                     new InnerReadAclWorker(browserController, infoController,
-                                           Utils.ConvertToJavaList(infoController._files)))
+                        Utils.ConvertToJavaList(infoController._files)))
             {
             }
 
@@ -1967,10 +1956,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (obj != null)
                     {
                         IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
-                            {
-                                Acl.UserAndRole entry = (Acl.UserAndRole) item;
-                                return new UserAndRoleEntry(entry.getUser(), entry.getRole());
-                            });
+                        {
+                            Acl.UserAndRole entry = (Acl.UserAndRole) item;
+                            return new UserAndRoleEntry(entry.getUser(), entry.getRole());
+                        });
                         _infoController.SetAcl(entries);
                     }
                     _infoController.ToggleAclSettings(true);
@@ -2023,7 +2012,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         (DistributionConfiguration) _session.getFeature(typeof (DistributionConfiguration));
                     _view.DistributionTitle =
                         String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                                      cdn.getName(_deliveryMethod));
+                            cdn.getName(_deliveryMethod));
                     //Path file = _infoController.SelectedPath;
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
@@ -2072,7 +2061,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             _view.DistributionAnalyticsSetupUrl =
                                 analyticsFeature.getSetup(cdn.getHostname(), _distribution.getMethod().getScheme(),
-                                                          container.getName(), credentials).getUrl();
+                                    container.getName(), credentials).getUrl();
                         }
                     }
                     DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
@@ -2127,9 +2116,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (cdn.getFeature(typeof (Index), _view.DistributionDeliveryMethod) != null)
                     {
                         List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
-                            {
-                                noneEntry
-                            };
+                        {
+                            noneEntry
+                        };
                         foreach (Path next in Utils.ConvertFromJavaList<Path>(_rootDocuments))
                         {
                             if (next.isFile())
@@ -2170,7 +2159,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -2180,7 +2169,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     controller, controller.Session,
                     new InnerReadMetadataWorker(controller, infoController,
-                                                Utils.ConvertToJavaList(infoController._files)))
+                        Utils.ConvertToJavaList(infoController._files)))
             {
             }
 
@@ -2189,8 +2178,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerReadMetadataWorker(BrowserController browserController, InfoController infoController,
-                                               List files)
-                    : base((Headers) browserController.Session.getFeature(typeof (Headers)), files)
+                    List files) : base((Headers) browserController.Session.getFeature(typeof (Headers)), files)
                 {
                     _infoController = infoController;
                 }
@@ -2280,7 +2268,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly InfoController _infoController;
 
             public SetBucketAnalyticsUrlBackgroundAction(BrowserController browserController,
-                                                         InfoController infoController) : base(browserController)
+                InfoController infoController) : base(browserController)
             {
                 _infoController = infoController;
                 _bucketAnalyticsCheckBox = _infoController.View.BucketAnalyticsCheckbox;
@@ -2343,7 +2331,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -2354,7 +2342,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly InfoController _infoController;
 
             public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController,
-                                                             InfoController infoController) : base(browserController)
+                InfoController infoController) : base(browserController)
             {
                 _infoController = infoController;
                 _bucketMfa = _infoController.View.BucketMfa;
@@ -2387,7 +2375,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly InfoController _infoController;
 
             public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
-                                                               InfoController infoController) : base(browserController)
+                InfoController infoController) : base(browserController)
             {
                 _infoController = infoController;
                 _distributionAnalyticsCheckBox = _infoController.View.DistributionAnalyticsCheckbox;
@@ -2441,9 +2429,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (next.isFile())
                     {
                         feature.setEncryption(next,
-                                              _infoController.View.Encryption
-                                                  ? (string) feature.getAlgorithms().iterator().next()
-                                                  : null);
+                            _infoController.View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null);
                     }
                 }
                 return true;
@@ -2459,7 +2445,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -2495,7 +2481,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -2542,7 +2528,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     browserController, browserController.Session,
                     new InnerWriteAclWorker(browserController, infoController,
-                                            Utils.ConvertToJavaList(infoController._files), GetAcl(infoController)))
+                        Utils.ConvertToJavaList(infoController._files), GetAcl(infoController)))
             {
             }
 
@@ -2563,7 +2549,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteAclWorker(BrowserController controller, InfoController infoController, List files,
-                                           Acl acl)
+                    Acl acl)
                     : base(
                         controller.Session, (AclPermission) controller.Session.getFeature(typeof (AclPermission)), files,
                         acl, true, controller)
@@ -2592,7 +2578,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly IInfoView _view;
 
             public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController,
-                                                     IList<Path> files) : base(browserController)
+                IList<Path> files) : base(browserController)
             {
                 _files = files;
                 _infoController = infoController;
@@ -2631,7 +2617,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_files)));
+                    toString(Utils.ConvertToJavaList(_files)));
             }
         }
 
@@ -2641,7 +2627,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     controller, controller.Session,
                     new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                                                 infoController.ConvertMetadataToMap()))
+                        infoController.ConvertMetadataToMap()))
             {
             }
 
@@ -2651,7 +2637,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
                     : base(
-                        (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata, infoController._controller)
+                        (Headers) infoController._controller.Session.getFeature(typeof (Headers)), files, metadata,
+                        infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2666,11 +2653,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private class WritePermissionBackgroundAction : WorkerBackgroundAction
         {
             public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController,
-                                                   Permission permission, bool recursive)
+                Permission permission, bool recursive)
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                                                   permission, recursive))
+                        permission, recursive))
             {
             }
 
@@ -2679,7 +2666,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                                                  bool recursive)
+                    bool recursive)
                     : base(
                         infoController._controller.Session,
                         (UnixPermission) infoController._controller.Session.getFeature(typeof (UnixPermission)), files,

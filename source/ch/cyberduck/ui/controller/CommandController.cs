@@ -16,11 +16,11 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Core;
-using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
-using ch.cyberduck.ui.threading;
+using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Core;
+using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -65,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Session _session;
 
             public CommandControllerBackgroundAction(CommandController controller, Session session, Cache cache,
-                                                     string command) : base(controller, session, cache)
+                string command) : base(controller, session, cache)
             {
                 _controller = controller;
                 _session = session;

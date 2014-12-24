@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,11 +17,10 @@
 // 
 
 using System;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller.Threading;
+using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui;
-using ch.cyberduck.ui.threading;
+using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core;
 using java.lang;
 using org.apache.log4j;
 using Exception = System.Exception;
@@ -145,7 +144,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly AsyncController.AsyncDelegate _cleanup;
 
         public AsyncDelegateBackgroundAction(AsyncController.AsyncDelegate background,
-                                             AsyncController.AsyncDelegate cleanup)
+            AsyncController.AsyncDelegate cleanup)
         {
             _background = background;
             _cleanup = cleanup;

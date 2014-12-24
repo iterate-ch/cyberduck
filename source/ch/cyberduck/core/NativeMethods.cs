@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 namespace Ch.Cyberduck.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct APPBARDATA
+    public struct APPBARDATA
     {
         public uint cbSize;
         public IntPtr hWnd;
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Core
         ScreenBottom = 3, // ABE_BOTTOM
     }
 
-    internal enum AppBarMessage : uint
+    public enum AppBarMessage : uint
     {
         ABM_NEW = 0x00,
         ABM_REMOVE = 0x01,
@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Core
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT
+    public struct RECT
     {
         public int left;
         public int top;
@@ -124,27 +124,17 @@ namespace Ch.Cyberduck.Core
 
         public static implicit operator RECT(Rectangle r)
         {
-            return new RECT(
-                r.Left,
-                r.Top,
-                r.Right,
-                r.Bottom
-                );
+            return new RECT(r.Left, r.Top, r.Right, r.Bottom);
         }
 
         public static explicit operator Rectangle(RECT r)
         {
-            return new Rectangle(
-                r.left,
-                r.top,
-                r.right - r.left,
-                r.bottom - r.top
-                );
+            return new Rectangle(r.left, r.top, r.right - r.left, r.bottom - r.top);
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct POINT
+    public struct POINT
     {
         public int X;
         public int Y;
@@ -166,7 +156,7 @@ namespace Ch.Cyberduck.Core
         }
     }
 
-    internal static class NativeMethods
+    public static class NativeMethods
     {
         [DllImport("shell32.dll", CallingConvention = CallingConvention.StdCall)]
         public static extern uint SHAppBarMessage(AppBarMessage dwMessage, ref APPBARDATA pData);

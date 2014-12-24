@@ -20,24 +20,22 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller.Threading;
-using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui.threading;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using org.apache.log4j;
+using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class TransferController : WindowController<ITransferView>, TranscriptListener, CollectionListener
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferController).FullName);
-
         private static readonly object SyncRoot = new Object();
         private static volatile TransferController _instance;
 
@@ -85,30 +83,30 @@ namespace Ch.Cyberduck.Ui.Controller
         public void collectionItemAdded(object obj)
         {
             Invoke(delegate
-                {
-                    Transfer transfer = obj as Transfer;
-                    ProgressController progressController = new ProgressController(transfer);
-                    _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
-                    IProgressView progressView = progressController.View;
-                    View.AddTransfer(progressView);
-                    View.SelectTransfer(progressView);
-                });
+            {
+                Transfer transfer = obj as Transfer;
+                ProgressController progressController = new ProgressController(transfer);
+                _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
+                IProgressView progressView = progressController.View;
+                View.AddTransfer(progressView);
+                View.SelectTransfer(progressView);
+            });
         }
 
         public void collectionItemRemoved(object obj)
         {
             Invoke(delegate
+            {
+                Transfer transfer = obj as Transfer;
+                if (null != transfer)
                 {
-                    Transfer transfer = obj as Transfer;
-                    if (null != transfer)
+                    ProgressController progressController;
+                    if (_transferMap.TryGetValue(transfer, out progressController))
                     {
-                        ProgressController progressController;
-                        if (_transferMap.TryGetValue(transfer, out progressController))
-                        {
-                            View.RemoveTransfer(progressController.View);
-                        }
+                        View.RemoveTransfer(progressController.View);
                     }
-                });
+                }
+            });
         }
 
         public void collectionItemChanged(object obj)
@@ -143,12 +141,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
                     DialogResult result = _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
-                                                                LocaleFactory.localizedString(
-                                                                    "There are files currently being transferred. Quit anyway?"),
-                                                                null,
-                                                                String.Format("{0}",
-                                                                              LocaleFactory.localizedString("Exit")),
-                                                                true //Cancel
+                        LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"), null,
+                        String.Format("{0}", LocaleFactory.localizedString("Exit")), true //Cancel
                         );
                     if (DialogResult.OK == result)
                     {
@@ -173,13 +167,13 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateBandwithList();
 
             View.PositionSizeRestoredEvent += delegate
-                {
-                    View.TranscriptVisible = PreferencesFactory.get().getBoolean("queue.transcript.open");
-                    View.TranscriptHeight = PreferencesFactory.get().getInteger("queue.transcript.size.height");
+            {
+                View.TranscriptVisible = PreferencesFactory.get().getBoolean("queue.transcript.open");
+                View.TranscriptHeight = PreferencesFactory.get().getInteger("queue.transcript.size.height");
 
-                    View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
-                    View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
-                };
+                View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
+                View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
+            };
             View.QueueSize = PreferencesFactory.get().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
@@ -241,46 +235,46 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateShowEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
+            {
+                if (transfer.getLocal() != null)
                 {
-                    if (transfer.getLocal() != null)
+                    for (int i = 0; i < transfer.getRoots().size(); i++)
                     {
-                        for (int i = 0; i < transfer.getRoots().size(); i++)
+                        TransferItem t = (TransferItem) transfer.getRoots().get(i);
+                        if (t.local.exists())
                         {
-                            TransferItem t = (TransferItem) transfer.getRoots().get(i);
-                            if (t.local.exists())
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                     }
-                    return false;
-                });
+                }
+                return false;
+            });
         }
 
         private bool View_ValidateOpenEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
+            {
+                if (transfer.getLocal() != null)
                 {
-                    if (transfer.getLocal() != null)
+                    if (!transfer.isComplete())
                     {
-                        if (!transfer.isComplete())
+                        return false;
+                    }
+                    if (!transfer.isRunning())
+                    {
+                        for (int i = 0; i < transfer.getRoots().size(); i++)
                         {
-                            return false;
-                        }
-                        if (!transfer.isRunning())
-                        {
-                            for (int i = 0; i < transfer.getRoots().size(); i++)
+                            TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                            if (item.local.exists())
                             {
-                                TransferItem item = (TransferItem) transfer.getRoots().get(i);
-                                if (item.local.exists())
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
                     }
-                    return false;
-                });
+                }
+                return false;
+            });
         }
 
         private bool View_ValidateCleanEvent()
@@ -343,29 +337,27 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateResumeEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
+            {
+                if (transfer.isRunning())
                 {
-                    if (transfer.isRunning())
-                    {
-                        return false;
-                    }
-                    return !transfer.isComplete();
-                });
+                    return false;
+                }
+                return !transfer.isComplete();
+            });
         }
 
         private void PopulateBandwithList()
         {
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
-                                                     LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
+                LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
                 PreferencesFactory.get()
-                           .getProperty("queue.bandwidth.options")
-                           .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+                    .getProperty("queue.bandwidth.options")
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.get(true)
-                                                                              .format(Convert.ToInt32(option.Trim())) +
-                                                          "/s")));
+                    (SizeFormatterFactory.get(true).format(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateBandwidthList(list);
         }
@@ -450,12 +442,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (transfer.getLocal() != null)
                     {
                         View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().local.getAbsolute(),
-                                                                           IconCache.IconSize.Large);
+                            IconCache.IconSize.Large);
                     }
                     else
                     {
                         View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot().remote,
-                                                                       IconCache.IconSize.Large);
+                            IconCache.IconSize.Large);
                     }
                 }
                 else
@@ -663,7 +655,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
-                                            TransferCallback callback)
+                TransferCallback callback)
                 : base(
                     controller, SessionFactory.create(transfer.getHost()), controller.GetController(transfer),
                     controller.GetController(transfer), controller.GetController(transfer), transfer, options)

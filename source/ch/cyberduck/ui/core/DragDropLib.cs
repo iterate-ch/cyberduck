@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Core;
 using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 
 /*
@@ -37,7 +37,7 @@ using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
  * http://blogs.msdn.com/b/adamroot/archive/2008/02/19/shell-style-drag-and-drop-in-net-part-3.aspx?PageIndex=3
  */
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     [ComImport]
     [Guid("4657278A-411B-11d2-839A-00C04FD918D0")]
@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Core
 
 #region DragDropLibCore\IDragSourceHelper.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     [ComVisible(true)]
     [ComImport]
@@ -58,13 +58,10 @@ namespace Ch.Cyberduck.Core
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IDragSourceHelper
     {
-        void InitializeFromBitmap(
-            [In, MarshalAs(UnmanagedType.Struct)] ref ShDragImage dragImage,
+        void InitializeFromBitmap([In, MarshalAs(UnmanagedType.Struct)] ref ShDragImage dragImage,
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject);
 
-        void InitializeFromWindow(
-            [In] IntPtr hwnd,
-            [In] ref Win32Point pt,
+        void InitializeFromWindow([In] IntPtr hwnd, [In] ref Win32Point pt,
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject);
     }
 
@@ -74,17 +71,13 @@ namespace Ch.Cyberduck.Core
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IDragSourceHelper2
     {
-        void InitializeFromBitmap(
-            [In, MarshalAs(UnmanagedType.Struct)] ref ShDragImage dragImage,
+        void InitializeFromBitmap([In, MarshalAs(UnmanagedType.Struct)] ref ShDragImage dragImage,
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject);
 
-        void InitializeFromWindow(
-            [In] IntPtr hwnd,
-            [In] ref Win32Point pt,
+        void InitializeFromWindow([In] IntPtr hwnd, [In] ref Win32Point pt,
             [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject);
 
-        void SetFlags(
-            [In] int dwFlags);
+        void SetFlags([In] int dwFlags);
     }
 }
 
@@ -92,7 +85,7 @@ namespace Ch.Cyberduck.Core
 
 #region DragDropLibCore\IDropTargetHelper.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     [ComVisible(true)]
     [ComImport]
@@ -100,25 +93,17 @@ namespace Ch.Cyberduck.Core
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IDropTargetHelper
     {
-        void DragEnter(
-            [In] IntPtr hwndTarget,
-            [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject,
-            [In] ref Win32Point pt,
-            [In] DragDropEffects effect);
+        void DragEnter([In] IntPtr hwndTarget, [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject,
+            [In] ref Win32Point pt, [In] DragDropEffects effect);
 
         void DragLeave();
 
-        void DragOver(
-            [In] ref Win32Point pt,
+        void DragOver([In] ref Win32Point pt, [In] DragDropEffects effect);
+
+        void Drop([In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject, [In] ref Win32Point pt,
             [In] DragDropEffects effect);
 
-        void Drop(
-            [In, MarshalAs(UnmanagedType.Interface)] IDataObject dataObject,
-            [In] ref Win32Point pt,
-            [In] DragDropEffects effect);
-
-        void Show(
-            [In] bool show);
+        void Show([In] bool show);
     }
 }
 
@@ -126,7 +111,7 @@ namespace Ch.Cyberduck.Core
 
 #region DragDropLibCore\NativeStructures.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Win32Point
@@ -174,13 +159,8 @@ namespace System.Runtime.InteropServices.ComTypes
         private const string DropDescriptionFormat = "DropDescription";
 
         private const TYMED TYMED_ANY =
-            TYMED.TYMED_ENHMF
-            | TYMED.TYMED_FILE
-            | TYMED.TYMED_GDI
-            | TYMED.TYMED_HGLOBAL
-            | TYMED.TYMED_ISTORAGE
-            | TYMED.TYMED_ISTREAM
-            | TYMED.TYMED_MFPICT;
+            TYMED.TYMED_ENHMF | TYMED.TYMED_FILE | TYMED.TYMED_GDI | TYMED.TYMED_HGLOBAL | TYMED.TYMED_ISTORAGE |
+            TYMED.TYMED_ISTREAM | TYMED.TYMED_MFPICT;
 
         private static readonly Guid ManagedDataStamp = new Guid("D98D9FD6-FA46-4716-A769-F3451DFBE4B4");
 
@@ -226,7 +206,7 @@ namespace System.Runtime.InteropServices.ComTypes
             catch
             {
                 // If we failed, we need to free the HGLOBAL memory
-                Marshal.FreeHGlobal(pDD);               
+                Marshal.FreeHGlobal(pDD);
             }
         }
 
@@ -500,7 +480,7 @@ namespace System.Runtime.InteropServices.ComTypes
 
 #region DragDropLibCore\DataObject.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     /// <summary>
     /// Implements the COM version of IDataObject including SetData.
@@ -532,10 +512,8 @@ namespace Ch.Cyberduck.Core
         private const int OLE_E_ADVISENOTSUPPORTED = unchecked((int) 0x80040003);
         private readonly IDictionary<int, AdviseEntry> connections;
         private readonly IList<KeyValuePair<FORMATETC, STGMEDIUM>> storage;
-
         // Keeps a progressive unique connection id
         private int nextConnectionId = 1;
-
         // List of advisory connections
 
         /// <summary>
@@ -705,9 +683,8 @@ namespace Ch.Cyberduck.Core
             // If the format exists in our storage, remove it prior to resetting it
             foreach (KeyValuePair<FORMATETC, STGMEDIUM> pair in storage)
             {
-                if ((pair.Key.tymed & formatIn.tymed) > 0
-                    && pair.Key.dwAspect == formatIn.dwAspect
-                    && pair.Key.cfFormat == formatIn.cfFormat)
+                if ((pair.Key.tymed & formatIn.tymed) > 0 && pair.Key.dwAspect == formatIn.dwAspect &&
+                    pair.Key.cfFormat == formatIn.cfFormat)
                 {
                     STGMEDIUM releaseMedium = pair.Value;
                     ReleaseStgMedium(ref releaseMedium);
@@ -881,9 +858,8 @@ namespace Ch.Cyberduck.Core
         /// at least one TYMED.</remarks>
         private bool IsFormatCompatible(ref FORMATETC format1, ref FORMATETC format2)
         {
-            return ((format1.tymed & format2.tymed) > 0
-                    && format1.dwAspect == format2.dwAspect
-                    && format1.cfFormat == format2.cfFormat);
+            return ((format1.tymed & format2.tymed) > 0 && format1.dwAspect == format2.dwAspect &&
+                    format1.cfFormat == format2.cfFormat);
         }
 
         private class AdviseEntry
@@ -1167,7 +1143,7 @@ namespace System.Windows.Forms
         /// with "Temp", but "Temp" will be rendered slightly different from "Move to ".
         /// </remarks>
         public static void SetDropDescription(this IDataObject dataObject, DropImageType type, string format,
-                                              string insert)
+            string insert)
         {
             if (format != null && format.Length > 259)
                 throw new ArgumentException("Format string exceeds the maximum allowed length of 259.", "format");
@@ -1256,15 +1232,11 @@ namespace System.Windows.Forms
                 return TYMED.TYMED_GDI;
             if (IsFormatEqual(format, DataFormats.EnhancedMetafile))
                 return TYMED.TYMED_ENHMF;
-            if (data is Stream
-                || IsFormatEqual(format, DataFormats.Html)
-                || IsFormatEqual(format, DataFormats.Text) || IsFormatEqual(format, DataFormats.Rtf)
-                || IsFormatEqual(format, DataFormats.OemText)
-                || IsFormatEqual(format, DataFormats.UnicodeText) || IsFormatEqual(format, "ApplicationTrust")
-                || IsFormatEqual(format, DataFormats.FileDrop)
-                || IsFormatEqual(format, "FileName")
-                || IsFormatEqual(format, "FileNameW")
-                || IsFormatEqual(format, "FileGroupDescriptorW"))
+            if (data is Stream || IsFormatEqual(format, DataFormats.Html) || IsFormatEqual(format, DataFormats.Text) ||
+                IsFormatEqual(format, DataFormats.Rtf) || IsFormatEqual(format, DataFormats.OemText) ||
+                IsFormatEqual(format, DataFormats.UnicodeText) || IsFormatEqual(format, "ApplicationTrust") ||
+                IsFormatEqual(format, DataFormats.FileDrop) || IsFormatEqual(format, "FileName") ||
+                IsFormatEqual(format, "FileNameW") || IsFormatEqual(format, "FileGroupDescriptorW"))
                 return TYMED.TYMED_HGLOBAL;
             if (IsFormatEqual(format, DataFormats.Dib) && data is Image)
                 return TYMED.TYMED_NULL;
@@ -1272,8 +1244,8 @@ namespace System.Windows.Forms
                 return TYMED.TYMED_HGLOBAL;
             if (IsFormatEqual(format, DataFormats.EnhancedMetafile) || data is Metafile)
                 return TYMED.TYMED_NULL;
-            if (IsFormatEqual(format, DataFormats.Serializable) || (data is ISerializable)
-                || ((data != null) && data.GetType().IsSerializable))
+            if (IsFormatEqual(format, DataFormats.Serializable) || (data is ISerializable) ||
+                ((data != null) && data.GetType().IsSerializable))
                 return TYMED.TYMED_HGLOBAL;
 
             return TYMED.TYMED_NULL;
@@ -1319,7 +1291,7 @@ namespace System.Windows.Forms
 
 #region SwfDragDropLib\SwfDragDropLibExtensions.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     public static class SwfDragDropLibExtensions
     {
@@ -1390,7 +1362,7 @@ namespace System.Windows.Forms
         /// DragLeave method will not leak memory.
         /// </remarks>
         public static void DragEnter(Control control, IDataObject data, Point cursorOffset, DragDropEffects effect,
-                                     string descriptionMessage, string descriptionInsert)
+            string descriptionMessage, string descriptionInsert)
         {
             data.SetDropDescription((DropImageType) effect, descriptionMessage, descriptionInsert);
             DragEnter(control, data, cursorOffset, effect);
@@ -1483,7 +1455,7 @@ namespace System.Windows.Forms
 
 #region SwfDragDropLib\SwfDropTargetHelperExtensions.cs
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     using ComIDataObject = IDataObject;
 
@@ -1499,7 +1471,7 @@ namespace Ch.Cyberduck.Core
         /// <param name="cursorOffset">The current cursor's offset relative to the window.</param>
         /// <param name="effect">The accepted drag drop effect.</param>
         public static void DragEnter(this IDropTargetHelper dropHelper, Control control,
-                                     System.Windows.Forms.IDataObject data, Point cursorOffset, DragDropEffects effect)
+            System.Windows.Forms.IDataObject data, Point cursorOffset, DragDropEffects effect)
         {
             IntPtr controlHandle = IntPtr.Zero;
             if (control != null)
@@ -1530,7 +1502,7 @@ namespace Ch.Cyberduck.Core
         /// <param name="cursorOffset">The current cursor's offset relative to the window.</param>
         /// <param name="effect">The accepted drag drop effect.</param>
         public static void Drop(this IDropTargetHelper dropHelper, System.Windows.Forms.IDataObject data,
-                                Point cursorOffset, DragDropEffects effect)
+            Point cursorOffset, DragDropEffects effect)
         {
             Win32Point pt = cursorOffset.ToWin32Point();
             dropHelper.Drop((ComIDataObject) data, ref pt, effect);
@@ -1551,7 +1523,6 @@ namespace System.Windows.Forms
     {
         // CFSTR_DROPDESCRIPTION
         private const string DropDescriptionFormat = "DropDescription";
-
         // The drag image manager sets this flag to indicate if the current
         // drop target supports drag images.
         private const string IsShowingLayeredFormat = "IsShowingLayered";
@@ -1578,7 +1549,7 @@ namespace System.Windows.Forms
         /// <returns>A new instance of System.Windows.Forms.IDataObject.</returns>
         public static IDataObject CreateDataObject()
         {
-            return new DataObject(new Ch.Cyberduck.Core.DataObject());
+            return new DataObject(new Ch.Cyberduck.Ui.Core.DataObject());
         }
 
         /// <summary>
@@ -1633,9 +1604,8 @@ namespace System.Windows.Forms
 
             // We need to listen for drop description changes. If a drop target
             // changes the drop description, we shouldn't provide a default one.
-            entry.adviseConnection =
-                ((Runtime.InteropServices.ComTypes.IDataObject) data).Advise(new AdviseSink(data), DropDescriptionFormat,
-                                                                             0);
+            entry.adviseConnection = ((Runtime.InteropServices.ComTypes.IDataObject) data).Advise(new AdviseSink(data),
+                DropDescriptionFormat, 0);
 
             // Hook up the default drag source event handlers
             control.GiveFeedback += DefaultGiveFeedbackHandler;
@@ -1711,7 +1681,7 @@ namespace System.Windows.Forms
         /// <param name="data">The associated data.</param>
         /// <returns>The accepted drop effects from the completed operation.</returns>
         public static DragDropEffects DoDragDrop(Control control, Point cursorOffset, DragDropEffects allowedEffects,
-                                                 params KeyValuePair<string, object>[] data)
+            params KeyValuePair<string, object>[] data)
         {
             IDataObject dataObject = RegisterDefaultDragSource(control, cursorOffset);
             return DoDragDropInternal(control, dataObject, allowedEffects, data);
@@ -1727,8 +1697,7 @@ namespace System.Windows.Forms
         /// <param name="data">The associated data.</param>
         /// <returns>The accepted drop effects from the completed operation.</returns>
         public static DragDropEffects DoDragDrop(Control control, Bitmap dragImage, Point cursorOffset,
-                                                 DragDropEffects allowedEffects,
-                                                 params KeyValuePair<string, object>[] data)
+            DragDropEffects allowedEffects, params KeyValuePair<string, object>[] data)
         {
             IDataObject dataObject = RegisterDefaultDragSource(control, dragImage, cursorOffset);
             return DoDragDropInternal(control, dataObject, allowedEffects, data);
@@ -1736,8 +1705,7 @@ namespace System.Windows.Forms
 
         ///yla ext
         public static DragDropEffects DoDragDrop(Control control, Bitmap dragImage, Point cursorOffset,
-                                                 DragDropEffects allowedEffects,
-                                                 Runtime.InteropServices.ComTypes.IDataObject data)
+            DragDropEffects allowedEffects, Runtime.InteropServices.ComTypes.IDataObject data)
         {
             AllowDropDescription(true);
 
@@ -1763,8 +1731,7 @@ namespace System.Windows.Forms
         /// <param name="data">The associated data.</param>
         /// <returns>The accepted drop effects from the completed operation.</returns>
         private static DragDropEffects DoDragDropInternal(Control control, IDataObject dataObject,
-                                                          DragDropEffects allowedEffects,
-                                                          KeyValuePair<string, object>[] data)
+            DragDropEffects allowedEffects, KeyValuePair<string, object>[] data)
         {
             // Set the data onto the data object.
             if (data != null)
@@ -1992,8 +1959,7 @@ namespace System.Windows.Forms
         /// DropImageType is not DropImageType.Invalid.</returns>
         private static bool IsDropDescriptionValid(IDataObject dataObject)
         {
-            object data =
-                ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
+            object data = ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
             if (data is DropDescription)
                 return (DropImageType) ((DropDescription) data).type != DropImageType.Invalid;
             return false;
@@ -2085,8 +2051,7 @@ namespace System.Windows.Forms
         /// <returns>The current drop image type.</returns>
         private static DropImageType GetDropImageType(IDataObject dataObject)
         {
-            object data =
-                ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
+            object data = ((Runtime.InteropServices.ComTypes.IDataObject) dataObject).GetDropDescription();
             if (data is DropDescription)
                 return (DropImageType) ((DropDescription) data).type;
             return DropImageType.Invalid;
@@ -2118,8 +2083,7 @@ namespace System.Windows.Forms
             {
                 // We listen to DropDescription changes, so that we can unset the IsDefault
                 // drop description flag.
-                object odd =
-                    ((Runtime.InteropServices.ComTypes.IDataObject) data).GetDropDescription();
+                object odd = ((Runtime.InteropServices.ComTypes.IDataObject) data).GetDropDescription();
                 if (odd != null)
                     SetDropDescriptionIsDefault(data, false);
             }

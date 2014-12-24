@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,31 +18,26 @@
 
 using System.Collections;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public interface IBookmarkManagerView : IView
     {
         Host SelectedBookmark { get; }
-
         ImageGetterDelegate BookmarkImageGetter { set; }
-
         AspectGetterDelegate BookmarkNicknameGetter { set; }
         AspectGetterDelegate BookmarkHostnameGetter { set; }
         AspectGetterDelegate BookmarkUrlGetter { set; }
         AspectGetterDelegate BookmarkNotesGetter { set; }
-
         ImageGetterDelegate BookmarkStatusImageGetter { set; }
-
         void SetBookmarkModel(IEnumerable hosts, Host selected);
         void RefreshBookmark(Host host);
         void AddBookmark(Host host);
         void RemoveBookmark(Host host);
         void EnsureBookmarkVisible(Host host);
         void SelectBookmark(Host host);
-
         event VoidHandler NewBookmark;
         event ValidateCommand ValidateNewBookmark;
         event VoidHandler EditBookmark;

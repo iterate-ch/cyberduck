@@ -18,64 +18,64 @@
 
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Ui.Controller;
 using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Ui.Growl
 {
-    public class ToolstripNotificationService : ch.cyberduck.ui.growl.NotificationService
+    public class ToolstripNotificationService : NotificationService
     {
         private readonly NotifyIcon _icon = new NotifyIcon();
 
         public void notify(string title, string description)
         {
             _icon.ShowBalloonTip(PreferencesFactory.get().getInteger("notifications.timeout.milliseconds"), title,
-                                 description, ToolTipIcon.Info);
+                description, ToolTipIcon.Info);
         }
 
         public void setup()
         {
             ContextMenuStrip rightMenu = new ContextMenuStrip();
             ToolStripMenuItem itemUpdate = new ToolStripMenuItem
-                {
-                    Text = LocaleFactory.get().localize("Check for Update…", "Main")
-                };
+            {
+                Text = LocaleFactory.get().localize("Check for Update…", "Main")
+            };
             itemUpdate.Click += delegate { UpdateController.Instance.ForceCheckForUpdates(false); };
             ToolStripMenuItem itemDonate = new ToolStripMenuItem
-                {
-                    Text = LocaleFactory.get().localize("Donate…", "Main")
-                };
+            {
+                Text = LocaleFactory.get().localize("Donate…", "Main")
+            };
             itemDonate.Click +=
                 delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
             ToolStripMenuItem itemKey = new ToolStripMenuItem {Text = LicenseFactory.find().ToString(), Enabled = false};
             ToolStripMenuItem itemExit = new ToolStripMenuItem
-                {
-                    Text = LocaleFactory.get().localize("Exit", "Localizable")
-                };
+            {
+                Text = LocaleFactory.get().localize("Exit", "Localizable")
+            };
             itemExit.Click += delegate { MainController.Exit(); };
             rightMenu.Items.AddRange(new ToolStripItem[]
-                {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
+            {itemUpdate, new ToolStripSeparator(), itemDonate, itemKey, new ToolStripSeparator(), itemExit});
 
             _icon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             _icon.Visible = true;
             _icon.ContextMenuStrip = rightMenu;
 
             _icon.MouseClick += delegate(object sender, MouseEventArgs args)
+            {
+                if (args.Button == MouseButtons.Left)
                 {
-                    if (args.Button == MouseButtons.Left)
+                    foreach (BrowserController browser in MainController.Browsers)
                     {
-                        foreach (BrowserController browser in MainController.Browsers)
-                        {
-                            browser.View.Activate();
-                            browser.View.BringToFront();
-                        }
+                        browser.View.Activate();
+                        browser.View.BringToFront();
                     }
-                };
+                }
+            };
         }
 
         public void unregister()

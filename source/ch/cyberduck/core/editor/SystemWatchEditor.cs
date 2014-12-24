@@ -18,23 +18,21 @@
 
 using System;
 using System.IO;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.transfer;
 using org.apache.log4j;
-using IOException = java.io.IOException;
 using Path = ch.cyberduck.core.Path;
-using DisabledTransferErrorCallback = ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 
 namespace Ch.Cyberduck.Core.Editor
 {
-    public class SystemWatchEditor : BrowserBackgroundEditor
+    public class SystemWatchEditor : ControllerBackgroundEditor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public SystemWatchEditor(BrowserController controller, Session session, Application application, Path path)
+        public SystemWatchEditor(Controller controller, Session session, Application application, Path path)
             : base(controller, session, application, path)
         {
         }

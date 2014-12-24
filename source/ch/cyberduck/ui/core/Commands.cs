@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,12 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     /// <summary>
     /// Group of commands which belongs to a view.
@@ -39,10 +40,8 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public void Add(ToolStripItem[] toolStripItems,
-                        MenuItem[] menuItems,
-                        EventHandler clickDelegate,
-                        ValidateCommand validateDelegate)
+        public void Add(ToolStripItem[] toolStripItems, MenuItem[] menuItems, EventHandler clickDelegate,
+            ValidateCommand validateDelegate)
         {
             _commands.Add(new Command(toolStripItems, menuItems, clickDelegate, validateDelegate));
         }
@@ -56,24 +55,18 @@ namespace Ch.Cyberduck.Core
         }
          */
 
-        public void Add(Control control,
-                        EventHandler clickDelegate,
-                        ValidateCommand validateDelegate)
+        public void Add(Control control, EventHandler clickDelegate, ValidateCommand validateDelegate)
         {
             _commands.Add(new Command(null, null, new[] {control}, clickDelegate, validateDelegate));
         }
 
-        public void Add(Control control,
-                        ValidateCommand validateDelegate)
+        public void Add(Control control, ValidateCommand validateDelegate)
         {
             _commands.Add(new Command(null, null, new[] {control}, delegate { }, validateDelegate));
         }
 
-        public void Add(ToolStripItem[] items,
-                        Control[] controls,
-                        MenuItem[] menuItems,
-                        EventHandler clickDelegate,
-                        ValidateCommand validateDelegate)
+        public void Add(ToolStripItem[] items, Control[] controls, MenuItem[] menuItems, EventHandler clickDelegate,
+            ValidateCommand validateDelegate)
         {
             _commands.Add(new Command(items, menuItems, controls, clickDelegate, validateDelegate));
         }
@@ -90,11 +83,8 @@ namespace Ch.Cyberduck.Core
             private readonly ToolStripItem[] _toolStripItems;
             private readonly ValidateCommand _validateCommandDelegate;
 
-            public Command(ToolStripItem[] toolStripItems,
-                           MenuItem[] menuItems,
-                           Control[] controls,
-                           EventHandler clickDelegate,
-                           ValidateCommand validateDelegate)
+            public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, Control[] controls,
+                EventHandler clickDelegate, ValidateCommand validateDelegate)
             {
                 _toolStripItems = toolStripItems;
                 _menuItems = menuItems;
@@ -122,10 +112,8 @@ namespace Ch.Cyberduck.Core
                 }
             }
 
-            public Command(ToolStripItem[] toolStripItems,
-                           MenuItem[] menuItems,
-                           EventHandler clickDelegate,
-                           ValidateCommand validateDelegate)
+            public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, EventHandler clickDelegate,
+                ValidateCommand validateDelegate)
                 : this(toolStripItems, menuItems, null, clickDelegate, validateDelegate)
             {
             }

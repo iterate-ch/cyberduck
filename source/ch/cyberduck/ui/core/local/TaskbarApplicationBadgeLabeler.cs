@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,16 +19,16 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Ui.Controller;
 
-namespace Ch.Cyberduck.Core.Local
+namespace Ch.Cyberduck.Ui.Core.Local
 {
     public sealed class TaskbarApplicationBadgeLabeler : ApplicationBadgeLabeler
     {
         public void badge(string text)
         {
-            if (Utils.IsBlank(text))
+            if (Cyberduck.Core.Utils.IsBlank(text))
             {
                 TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
             }

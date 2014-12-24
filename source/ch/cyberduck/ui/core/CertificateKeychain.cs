@@ -19,12 +19,11 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core.Ssl;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.exception;
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Ssl;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.io;
 using java.security;
 using java.security.cert;
@@ -32,20 +31,20 @@ using java.util;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
-    public class Keychain : HostPasswordStore, CertificateStore
+    public class CertificateKeychain : CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof (CertificateKeychain).FullName);
 
         public bool isTrusted(String hostName, List certs)
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();
-            chain.ChainPolicy.RevocationMode = PreferencesFactory.get()
-                                                          .getBoolean("connection.ssl.x509.revocation.online")
-                                                   ? X509RevocationMode.Online
-                                                   : X509RevocationMode.Offline;
+            chain.ChainPolicy.RevocationMode =
+                PreferencesFactory.get().getBoolean("connection.ssl.x509.revocation.online")
+                    ? X509RevocationMode.Online
+                    : X509RevocationMode.Offline;
             chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 0, 0, 10); // set timeout to 10 seconds
             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
 
@@ -66,7 +65,7 @@ namespace Ch.Cyberduck.Core
             bool certError = null != errorFromChainStatus;
             bool hostnameMismatch = hostName != null &&
                                     !HostnameVerifier.CheckServerIdentity(certs.iterator().next() as X509Certificate,
-                                                                          serverCert, hostName);
+                                        serverCert, hostName);
 
             // check if host name matches
             if (null == errorFromChainStatus && hostnameMismatch)
@@ -84,14 +83,12 @@ namespace Ch.Cyberduck.Core
                     TaskDialog d = new TaskDialog();
                     DialogResult r =
                         d.ShowCommandBox(LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                                         LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                                         errorFromChainStatus, null, null,
-                                         LocaleFactory.localizedString("Always Trust", "Keychain"),
-                                         String.Format("{0}|{1}|{2}",
-                                                       LocaleFactory.localizedString("Continue", "Credentials"),
-                                                       LocaleFactory.localizedString("Disconnect"),
-                                                       LocaleFactory.localizedString("Show Certificate", "Keychain")),
-                                         false, SysIcons.Warning, SysIcons.Information);
+                            LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                            errorFromChainStatus, null, null, LocaleFactory.localizedString("Always Trust", "Keychain"),
+                            String.Format("{0}|{1}|{2}", LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Disconnect"),
+                                LocaleFactory.localizedString("Show Certificate", "Keychain")), false, SysIcons.Warning,
+                            SysIcons.Information);
                     if (r == DialogResult.OK)
                     {
                         if (d.CommandButtonResult == 0)
@@ -104,7 +101,7 @@ namespace Ch.Cyberduck.Core
                                     AddCertificate(serverCert, StoreName.Root);
                                 }
                                 PreferencesFactory.get()
-                                           .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                    .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
                             }
                             return true;
                         }
@@ -145,9 +142,9 @@ namespace Ch.Cyberduck.Core
                     // JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emmits it as an OID, which makes it not match
                     // this is not the best way to fix the issue, but I can't find anyway to get an X500Principal to not emit EMAILADDRESS as an OID
                     string rfc1779 = issuer.toString()
-                                           .Replace("EMAILADDRESS=", "E=")
-                                           .Replace("ST=", "S=")
-                                           .Replace("SP=", "S=");
+                        .Replace("EMAILADDRESS=", "E=")
+                        .Replace("ST=", "S=")
+                        .Replace("SP=", "S=");
                     Log.debug("Query certificate store for issuer name " + rfc1779);
 
                     X509Certificate2Collection certificates =
@@ -159,11 +156,7 @@ namespace Ch.Cyberduck.Core
                     }
                 }
                 X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
-                                                                                              LocaleFactory
-                                                                                                  .localizedString(
-                                                                                                      "Choose"), prompt,
-                                                                                              X509SelectionFlag
-                                                                                                  .SingleSelection);
+                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
                 foreach (X509Certificate2 c in selected)
                 {
                     return ConvertCertificate(c);
@@ -176,67 +169,15 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public override string getPassword(Scheme scheme, int port, String hostName, String user)
+        public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
         {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
+            return new X509Certificate2(certificate.getEncoded());
         }
 
-        public override string getPassword(String hostName, String user)
+        public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
         {
-            Host host = new Host(hostName);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
-        }
-
-        public override void addPassword(String hostName, String user, String password)
-        {
-            Host host = new Host(hostName);
-            host.getCredentials().setUsername(user);
-            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
-        }
-
-        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
-        {
-            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
-            host.getCredentials().setUsername(user);
-            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
-        }
-
-        private string getPassword(Host host)
-        {
-            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().get(host));
-            if (null == password)
-            {
-                return null;
-            }
-            return DataProtector.Decrypt(password);
-        }
-
-        private bool CheckForException(string hostname, X509Certificate2 cert)
-        {
-            string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
-            if (Utils.IsNotBlank(accCert))
-            {
-                return accCert.Equals(cert.SubjectName.Name);
-            }
-            return false;
-        }
-
-        private void AddCertificate(X509Certificate2 cert, StoreName storeName)
-        {
-            Log.debug("Add certificate:" + cert.SubjectName.Name);
-            X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
-            try
-            {
-                store.Open(OpenFlags.ReadWrite);
-                store.Add(cert);
-            }
-            finally
-            {
-                store.Close();
-            }
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         private string GetErrorFromChainStatus(X509Chain chain, string hostName)
@@ -281,15 +222,29 @@ namespace Ch.Cyberduck.Core
             return error;
         }
 
-        public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
+        private bool CheckForException(string hostname, X509Certificate2 cert)
         {
-            return new X509Certificate2(certificate.getEncoded());
+            string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
+            if (Cyberduck.Core.Utils.IsNotBlank(accCert))
+            {
+                return accCert.Equals(cert.SubjectName.Name);
+            }
+            return false;
         }
 
-        public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
+        private void AddCertificate(X509Certificate2 cert, StoreName storeName)
         {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+            Log.debug("Add certificate:" + cert.SubjectName.Name);
+            X509Store store = new X509Store(storeName, StoreLocation.CurrentUser);
+            try
+            {
+                store.Open(OpenFlags.ReadWrite);
+                store.Add(cert);
+            }
+            finally
+            {
+                store.Close();
+            }
         }
     }
 }

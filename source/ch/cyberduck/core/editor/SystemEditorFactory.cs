@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,22 +19,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Ch.Cyberduck.Ui.Controller;
-using Microsoft.Win32;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using java.util;
+using Microsoft.Win32;
 using org.apache.log4j;
-using Controller = ch.cyberduck.ui.Controller;
 using Path = ch.cyberduck.core.Path;
-using EditorFactory = ch.cyberduck.core.EditorFactory;
 
 namespace Ch.Cyberduck.Core.Editor
 {
     public class SystemEditorFactory : EditorFactory
     {
         private static readonly Logger Log = Logger.getLogger(typeof (SystemEditorFactory).Name);
-
         private readonly IList<Application> _registeredEditors = new List<Application>();
 
         public SystemEditorFactory()
@@ -50,9 +47,10 @@ namespace Ch.Cyberduck.Core.Editor
             return Utils.ConvertToJavaList(_registeredEditors);
         }
 
-        public override ch.cyberduck.core.editor.Editor create(Controller c, Session s, Application application, Path path)
+        public override ch.cyberduck.core.editor.Editor create(Controller c, Session s, Application application,
+            Path path)
         {
-            return new FileSystemWatchEditor((BrowserController) c, s, application, path);
+            return new SystemWatchEditor(c, s, application, path);
         }
 
         protected override object create()
@@ -62,8 +60,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         private class Dreamweaver : Application
         {
-            public Dreamweaver()
-                : base(Identifier(), "Dreamweaver")
+            public Dreamweaver() : base(Identifier(), "Dreamweaver")
             {
             }
 
@@ -105,8 +102,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         public class Notepad : Application
         {
-            public Notepad()
-                : base(Identifier(), "Notepad")
+            public Notepad() : base(Identifier(), "Notepad")
             {
             }
 
@@ -124,8 +120,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         private class NotepadPlusPlus : Application
         {
-            public NotepadPlusPlus()
-                : base(Identifier(), "Notepad++")
+            public NotepadPlusPlus() : base(Identifier(), "Notepad++")
             {
             }
 
@@ -158,8 +153,7 @@ namespace Ch.Cyberduck.Core.Editor
 
         private class TextPad : Application
         {
-            public TextPad()
-                : base(Identifier(), "TextPad")
+            public TextPad() : base(Identifier(), "TextPad")
             {
             }
 

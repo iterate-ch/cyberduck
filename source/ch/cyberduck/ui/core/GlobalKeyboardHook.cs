@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     /// <summary>
     /// Helper class for global (system-wide) keyboard hooks.
@@ -38,12 +39,10 @@ namespace Ch.Cyberduck.Core
         private const byte VK_SHIFT = 0x10;
         private const int WH_KEYBOARD = 2;
         private const int WH_KEYBOARD_LL = 13;
-
         private const int WM_KEYDOWN = 0x100;
         private const int WM_KEYUP = 0x101;
         private const int WM_SYSKEYDOWN = 0x104;
         private const int WM_SYSKEYUP = 0x105;
-
         // const byte LLKHF_ALTDOWN = 0x20; // not used
 
         /// <summary>
@@ -103,11 +102,7 @@ namespace Ch.Cyberduck.Core
                 m_hookproc = new HookProc(HookCallbackProcedure);
 
                 IntPtr hInstance = GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName);
-                m_iHandleToHook = SetWindowsHookEx(
-                    WH_KEYBOARD_LL,
-                    m_hookproc,
-                    hInstance,
-                    0);
+                m_iHandleToHook = SetWindowsHookEx(WH_KEYBOARD_LL, m_hookproc, hInstance, 0);
 
                 if (m_iHandleToHook != 0)
                 {
@@ -179,10 +174,11 @@ namespace Ch.Cyberduck.Core
                 bool bCapslock = (GetKeyState(VK_CAPITAL) != 0);
 
                 // Create KeyEventArgs 
-                KeyEventArgs kea = new KeyEventArgs((Keys) (khs.vkCode |
-                                                            (bControl ? (int) Keys.Control : 0) |
-                                                            (bShift ? (int) Keys.Shift : 0) |
-                                                            (bAlt ? (int) Keys.Alt : 0)));
+                KeyEventArgs kea =
+                    new KeyEventArgs(
+                        (Keys)
+                            (khs.vkCode | (bControl ? (int) Keys.Control : 0) | (bShift ? (int) Keys.Shift : 0) |
+                             (bAlt ? (int) Keys.Alt : 0)));
 
                 // Raise KeyDown/KeyUp events
                 if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
@@ -240,7 +236,7 @@ namespace Ch.Cyberduck.Core
 
         [DllImport("user32.dll")]
         private static extern int ToAscii(int uVirtKey, int uScanCode, byte[] lpbKeyState, byte[] lpwTransKey,
-                                          int fuState);
+            int fuState);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);

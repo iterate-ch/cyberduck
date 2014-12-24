@@ -18,7 +18,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -30,16 +30,13 @@ namespace Ch.Cyberduck.Ui.Controller
         float Bandwidth { set; get; }
         bool BandwidthEnabled { set; }
         int QueueSize { set; get; }
-
         bool TranscriptVisible { get; set; }
         int TranscriptHeight { get; set; }
         IList<IProgressView> SelectedTransfers { get; }
-
         void SelectTransfer(IProgressView view);
         void AddTransfer(IProgressView view);
         void RemoveTransfer(IProgressView view);
         void AddTranscriptEntry(bool request, string entry);
-
         event VoidHandler ResumeEvent;
         event ValidateCommand ValidateResumeEvent;
         event VoidHandler ReloadEvent;
@@ -60,7 +57,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler SelectionChangedEvent;
         event VoidHandler BandwidthChangedEvent;
         event VoidHandler QueueSizeChangedEvent;
-
         void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
         void TaskbarOverlayIcon(Icon icon, string text);
         void UpdateOverallProgressState(long progress, long maximum);

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,11 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Core.Urlhandler
+namespace Ch.Cyberduck.Ui.Core.Urlhandler
 {
     public class URLSchemeHandlerConfiguration
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
-
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
 
         private URLSchemeHandlerConfiguration()
@@ -45,7 +44,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         private void RegisterCyberduckUrlHandler(RegistryKey registry)
         {
             CreateCustomUrlHandler(registry, "CyberduckURL", "Cyberduck URL", Application.ExecutablePath,
-                                   Application.ExecutablePath + ",0");
+                Application.ExecutablePath + ",0");
         }
 
         /// <summary>
@@ -76,8 +75,9 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// <returns></returns>
         public bool IsDefaultApplicationForFtp()
         {
-            RegistryKey ftpUserChoice = Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\ftp\UserChoice");
+            RegistryKey ftpUserChoice =
+                Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\ftp\UserChoice");
             return (null != ftpUserChoice && "CyberduckURL".Equals(ftpUserChoice.GetValue("Progid")));
         }
 
@@ -116,11 +116,11 @@ namespace Ch.Cyberduck.Core.Urlhandler
         public void RegisterSftpProtocol(RegistryKey registry)
         {
             CreateCustomUrlHandler(registry, "sftp", "sftp protocol", Application.ExecutablePath,
-                                   Application.ExecutablePath + ",0");
+                Application.ExecutablePath + ",0");
         }
 
         private void CreateCustomUrlHandler(RegistryKey registry, string association, string description,
-                                            string applicationPath, string icon)
+            string applicationPath, string icon)
         {
             RegistryKey r32 = null;
             RegistryKey r64 = null;

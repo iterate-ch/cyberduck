@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,19 +23,19 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class BaseForm : Form, IView
     {
-        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).FullName);
-        protected Commands Commands = new Commands();
         private Font _defaultFontBold;
         private bool _releaseWhenClose = true;
+        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).FullName);
+        protected Commands Commands = new Commands();
 
         public BaseForm()
         {
@@ -52,54 +52,54 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // not checking if there are any subscribers might result in 'Object reference not set to an instance...'
             Shown += delegate
-                {
-                    VoidHandler shownEvent = ViewShownEvent;
-                    if (null != shownEvent) ViewShownEvent();
-                };
+            {
+                VoidHandler shownEvent = ViewShownEvent;
+                if (null != shownEvent) ViewShownEvent();
+            };
 
             FormClosed += delegate
-                {
-                    VoidHandler closedEvent = ViewClosedEvent;
-                    if (null != closedEvent) ViewClosedEvent();
-                };
+            {
+                VoidHandler closedEvent = ViewClosedEvent;
+                if (null != closedEvent) ViewClosedEvent();
+            };
 
             Load += delegate
+            {
+                if (!DesignMode)
                 {
-                    if (!DesignMode)
-                    {
-                        LocalizeTexts();
-                        EventHandler localizationCompleted = LocalizationCompleted;
-                        if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
-                    }
-                };
+                    LocalizeTexts();
+                    EventHandler localizationCompleted = LocalizationCompleted;
+                    if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
+                }
+            };
 
             ValuesLoaded += delegate
+            {
+                if (PositionSizeRestoredEvent != null)
                 {
-                    if (PositionSizeRestoredEvent != null)
-                    {
-                        PositionSizeRestoredEvent();
-                    }
-                };
+                    PositionSizeRestoredEvent();
+                }
+            };
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
+            {
+                if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                 {
-                    if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
-                    {
-                        //Log.debug("Cancel close event");
-                        args.Cancel = true;
-                        Hide();
-                        return;
-                    }
-                    FormClosingEventHandler closingEvent = ViewClosingEvent;
-                    if (null != closingEvent) ViewClosingEvent(sender, args);
-                };
+                    //Log.debug("Cancel close event");
+                    args.Cancel = true;
+                    Hide();
+                    return;
+                }
+                FormClosingEventHandler closingEvent = ViewClosingEvent;
+                if (null != closingEvent) ViewClosingEvent(sender, args);
+            };
 
             Disposed += delegate
-                {
-                    Application.Idle -= OnApplicationIdle;
-                    VoidHandler disposedEvent = ViewDisposedEvent;
-                    if (null != disposedEvent) ViewDisposedEvent();
-                };
+            {
+                Application.Idle -= OnApplicationIdle;
+                VoidHandler disposedEvent = ViewDisposedEvent;
+                if (null != disposedEvent) ViewDisposedEvent();
+            };
 
             Application.Idle += OnApplicationIdle;
 
@@ -150,18 +150,17 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
-                                       string verificationText, DialogResponseHandler handler)
+            string verificationText, DialogResponseHandler handler)
         {
             return Utils.MessageBox(this, title, message, content, expandedInfo, help, verificationText, handler);
         }
 
         public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-                                       string help, string verificationText, string commandButtons,
-                                       bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
-                                       DialogResponseHandler handler)
+            string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
+            SysIcons footerIcon, DialogResponseHandler handler)
         {
             return Utils.CommandBox(this, title, mainInstruction, content, expandedInfo, help, verificationText,
-                                    commandButtons, showCancelButton, mainIcon, footerIcon, handler);
+                commandButtons, showCancelButton, mainIcon, footerIcon, handler);
         }
 
         public event VoidHandler PositionSizeRestoredEvent;
@@ -278,7 +277,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
-                                       SysIcons icons)
+            SysIcons icons)
         {
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
@@ -305,8 +304,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // Set state
             WindowState = Enum.IsDefined(typeof (FormWindowState), PersistenceHandler.WindowState)
-                              ? (FormWindowState) PersistenceHandler.WindowState
-                              : FormWindowState.Normal;
+                ? (FormWindowState) PersistenceHandler.WindowState
+                : FormWindowState.Normal;
 
             // Notify that values are loaded and ready for getting.
             var handler = ValuesLoaded;

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 // yves@cyberduck.ch
 // 
 
-using ch.cyberduck.ui.threading;
+using ch.cyberduck.core.threading;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {

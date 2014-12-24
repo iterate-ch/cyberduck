@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Security.Cryptography;
 using System.Text;
 using org.apache.log4j;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core
 {
     public class DataProtector
     {
@@ -46,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 byte[] decrypted = ProtectedData.Unprotect(Convert.FromBase64String(base64), null,
-                                                           DataProtectionScope.CurrentUser);
+                    DataProtectionScope.CurrentUser);
                 return Encoding.UTF8.GetString(decrypted);
             }
             catch (CryptographicException e)

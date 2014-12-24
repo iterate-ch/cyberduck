@@ -72,7 +72,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\AutomaticUpdater.dll</HintPath>
     </Reference>
-    <Reference Include="core, Version=4.6.1.16136, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="core, Version=4.6.2.16195, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\build\core.dll</HintPath>
     </Reference>
@@ -171,6 +171,16 @@
     <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\BrowserControllerBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
+    <Compile Include="ui\core\CertificateKeychain.cs" />
+    <Compile Include="ui\core\Commands.cs" />
+    <Compile Include="ui\core\CrashReporter.cs" />
+    <Compile Include="ui\core\DragDropLib.cs" />
+    <Compile Include="ui\core\GlobalKeyboardHook.cs" />
+    <Compile Include="ui\core\local\TaskbarApplicationBadgeLabeler.cs" />
+    <Compile Include="ui\core\preferences\UserPreferences.cs" />
+    <Compile Include="ui\core\urlhandler\URLSchemeHandlerConfiguration.cs" />
+    <Compile Include="ui\core\Utils.cs" />
+    <Compile Include="ui\core\VirtualFileDataObject.cs" />
     <Compile Include="ui\growl\ToolstripNotificationService.cs" />
     <Compile Include="ui\StructureMapBootstrapper.cs" />
     <Compile Include="ui\winforms\CommandForm.cs">
@@ -341,7 +351,6 @@
     <Compile Include="ui\controller\ConnectionController.cs" />
     <Compile Include="ui\controller\Controller.cs" />
     <Compile Include="ui\controller\CreateFileController.cs" />
-    <Compile Include="ui\controller\DataProtector.cs" />
     <Compile Include="ui\controller\DonationController.cs" />
     <Compile Include="ui\controller\DownloadPromptController.cs" />
     <Compile Include="ui\controller\DownloadPromptModel.cs" />
@@ -596,6 +605,7 @@
       <Name>Windows Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->

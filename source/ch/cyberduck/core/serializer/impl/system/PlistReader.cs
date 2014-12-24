@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,14 +19,13 @@
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.serializer.impl;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Serializer.Impl
 {
     public abstract class PlistReader<T> : Reader where T : Serializable
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (PlistReader).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (PlistReader<>).Name);
 
         public Collection readCollection(ch.cyberduck.core.Local file)
         {

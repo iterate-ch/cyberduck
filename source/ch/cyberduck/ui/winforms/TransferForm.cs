@@ -20,21 +20,21 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
-using ch.cyberduck.core;
 using ch.cyberduck.core.io;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class TransferForm : BaseForm, ITransferView
     {
         private static readonly Font FixedFont = new Font("Courier New", 8, FontStyle.Regular);
-
         private static readonly int MaxHeight = 800;
         private static readonly int MaxWidth = 800;
         private static readonly int MinHeight = 250;
@@ -66,17 +66,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             dummyColumn.Width = 0;
             transferColumn.FillsFreeSpace = true;
             transferListView.ItemSelectionChanged += delegate(object sender, ListViewItemSelectionChangedEventArgs e)
+            {
+                TransferControl uc = ((TransferControl) transferListView.GetEmbeddedControl(1, e.ItemIndex));
+                if (null != uc)
                 {
-                    TransferControl uc = ((TransferControl) transferListView.GetEmbeddedControl(1, e.ItemIndex));
-                    if (null != uc)
+                    uc.Selected = e.IsSelected;
+                    if (e.IsSelected && uc.FocusRemoveAllowed)
                     {
-                        uc.Selected = e.IsSelected;
-                        if (e.IsSelected && uc.FocusRemoveAllowed)
-                        {
-                            transferListView.Select();
-                        }
+                        transferListView.Select();
                     }
-                };
+                }
+            };
             transferListView.ItemSelectionChanged += (sender, e) => SelectionChangedEvent();
             transferListView.ItemsChanged +=
                 delegate { transferListView.GridLines = transferListView.GetItemCount() > 0; };
@@ -269,17 +269,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                 ToolStripMenuItem item = new ToolStripMenuItem(throttle.Value);
                 item.Tag = throttle.Key;
                 item.Click += delegate(object sender, EventArgs args)
+                {
+                    foreach (ToolStripItem i in bandwidthMenuStrip.Items)
                     {
-                        foreach (ToolStripItem i in bandwidthMenuStrip.Items)
+                        if (i is ToolStripMenuItem)
                         {
-                            if (i is ToolStripMenuItem)
-                            {
-                                ((ToolStripMenuItem) i).Checked = false;
-                            }
-                            ((ToolStripMenuItem) sender).Checked = true;
+                            ((ToolStripMenuItem) i).Checked = false;
                         }
-                        BandwidthChangedEvent();
-                    };
+                        ((ToolStripMenuItem) sender).Checked = true;
+                    }
+                    BandwidthChangedEvent();
+                };
 
                 bandwidthMenuStrip.Items.Add(item);
 
@@ -320,10 +320,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             menuItem.CheckOnClick = true;
             menuItem.Click += delegate
-                {
-                    button.Visible = !button.Visible;
-                    PreferencesFactory.get().setProperty(property, button.Visible);
-                };
+            {
+                button.Visible = !button.Visible;
+                PreferencesFactory.get().setProperty(property, button.Visible);
+            };
 
             button.Visible = menuItem.Checked = PreferencesFactory.get().getBoolean(property);
         }
@@ -341,23 +341,23 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureToolbarMenu(showToolStripMenuItem, showToolStripButton, "transfer.toolbar.show");
 
             Commands.Add(new ToolStripItem[] {resumeToolStripButton}, null, (sender, args) => ResumeEvent(),
-                         () => ValidateResumeEvent());
+                () => ValidateResumeEvent());
             Commands.Add(new ToolStripItem[] {reloadToolStripButton}, null, (sender, args) => ReloadEvent(),
-                         () => ValidateReloadEvent());
+                () => ValidateReloadEvent());
             Commands.Add(new ToolStripItem[] {stopToolStripButton}, null, (sender, args) => StopEvent(),
-                         () => ValidateStopEvent());
+                () => ValidateStopEvent());
             Commands.Add(new ToolStripItem[] {removeToolStripButton}, null, (sender, args) => RemoveEvent(),
-                         () => ValidateRemoveEvent());
+                () => ValidateRemoveEvent());
             Commands.Add(new ToolStripItem[] {cleanUptoolStripButton}, null, (sender, args) => CleanEvent(),
-                         () => ValidateCleanEvent());
+                () => ValidateCleanEvent());
             Commands.Add(new ToolStripItem[] {logToolStripButton}, null, (sender, args) => ToggleTranscriptEvent(),
-                         () => true);
+                () => true);
             Commands.Add(new ToolStripItem[] {trashToolStripButton}, null, (sender, args) => TrashEvent(),
-                         () => ValidateShowEvent());
+                () => ValidateShowEvent());
             Commands.Add(new ToolStripItem[] {openToolStripButton}, null, (sender, args) => OpenEvent(),
-                         () => ValidateOpenEvent());
+                () => ValidateOpenEvent());
             Commands.Add(new ToolStripItem[] {showToolStripButton}, null, (sender, args) => ShowEvent(),
-                         () => ValidateShowEvent());
+                () => ValidateShowEvent());
         }
 
         private void queueSizeUpDown_ValueChanged(object sender, EventArgs e)
@@ -381,7 +381,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void bandwithSplitButton_Click(object sender, EventArgs e)
         {
             bandwithSplitButton.SplitMenuStrip.Show(bandwithSplitButton, new Point(0, bandwithSplitButton.Height),
-                                                    ToolStripDropDownDirection.BelowRight);
+                ToolStripDropDownDirection.BelowRight);
         }
 
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)

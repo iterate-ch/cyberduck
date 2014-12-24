@@ -23,17 +23,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using Microsoft.Win32;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.util;
+using Microsoft.Win32;
 using org.apache.commons.io;
 using org.apache.log4j;
-using Application = ch.cyberduck.core.local.Application;
-using ApplicationFinder = ch.cyberduck.core.local.ApplicationFinder;
 using Collection = java.util.Collection;
 
 namespace Ch.Cyberduck.Core
@@ -45,34 +40,33 @@ namespace Ch.Cyberduck.Core
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
-            {
-                "Big5",
-                "Big5-HKSCS",
-                "EUC-JP",
-                "EUC-KR",
-                "GB18030",
-                "GB2312",
-                "GBK",
-                "ISO-2022-CN",
-                "ISO-2022-JP",
-                "ISO-2022-JP-2",
-                "ISO-2022-KR",
-                "ISO-8859-3",
-                "ISO-8859-6",
-                "ISO-8859-8",
-                "JIS_X0201",
-                "JIS_X0212-1990",
-                "Shift_JIS",
-                "TIS-620",
-                "windows-1255",
-                "windows-1256",
-                "windows-1258",
-                "windows-31j"
-            };
+        {
+            "Big5",
+            "Big5-HKSCS",
+            "EUC-JP",
+            "EUC-KR",
+            "GB18030",
+            "GB2312",
+            "GBK",
+            "ISO-2022-CN",
+            "ISO-2022-JP",
+            "ISO-2022-JP-2",
+            "ISO-2022-KR",
+            "ISO-8859-3",
+            "ISO-8859-6",
+            "ISO-8859-8",
+            "JIS_X0201",
+            "JIS_X0212-1990",
+            "Shift_JIS",
+            "TIS-620",
+            "windows-1255",
+            "windows-1256",
+            "windows-1258",
+            "windows-31j"
+        };
 
         public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
-
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
 
         public static bool IsBlank(string value)
@@ -125,7 +119,7 @@ namespace Ch.Cyberduck.Core
             int retNum;
 
             bool isNum = int.TryParse(Convert.ToString(expression), NumberStyles.Any, NumberFormatInfo.InvariantInfo,
-                                      out retNum);
+                out retNum);
             return isNum;
         }
 
@@ -275,7 +269,9 @@ namespace Ch.Cyberduck.Core
             }
             map.Sort(
                 delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
-                    { return pair1.Key.CompareTo(pair2.Key); });
+                {
+                    return pair1.Key.CompareTo(pair2.Key);
+                });
 
             return map;
         }
@@ -434,7 +430,6 @@ namespace Ch.Cyberduck.Core
             return null;
         }
 
-
         /// <summary>
         /// Extract open command
         /// </summary>
@@ -521,67 +516,6 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return null;
-        }
-
-        public static DialogResult CommandBox(IWin32Window owner, string title, string mainInstruction, string content,
-                                              string expandedInfo, string help, string verificationText,
-                                              string commandButtons, bool showCancelButton, SysIcons mainIcon,
-                                              SysIcons footerIcon, DialogResponseHandler handler)
-        {
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
-            DialogResult result = dialog.ShowCommandBox(owner, title, mainInstruction, content, expandedInfo,
-                                                        FormatHelp(help), verificationText, commandButtons,
-                                                        showCancelButton, mainIcon, footerIcon);
-            handler(dialog.CommandButtonResult, dialog.VerificationChecked);
-            return result;
-        }
-
-        public static DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-                                              string help, string verificationText, string commandButtons,
-                                              bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
-                                              DialogResponseHandler handler)
-        {
-            return CommandBox(null, title, mainInstruction, content, expandedInfo, help, verificationText,
-                              commandButtons, showCancelButton, mainIcon, footerIcon, handler);
-        }
-
-        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-                                              bool showCancelButton, string verificationText, SysIcons mainIcon,
-                                              DialogResponseHandler handler)
-        {
-            return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
-                              handler);
-        }
-
-        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-                                              bool showCancelButton, string verificationText, SysIcons mainIcon,
-                                              string help, DialogResponseHandler handler)
-        {
-            return CommandBox(title, message, detail, null, help, verificationText, commandButtons, showCancelButton,
-                              mainIcon, SysIcons.Information, handler);
-        }
-
-        public static DialogResult MessageBox(IWin32Window owner, string title, string message, string content,
-                                              string expandedInfo, string help, string verificationText,
-                                              DialogResponseHandler handler)
-        {
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
-            DialogResult result = dialog.MessageBox(owner, title, message, content, expandedInfo, FormatHelp(help),
-                                                    verificationText, TaskDialogButtons.OK, SysIcons.Information,
-                                                    SysIcons.Information);
-            handler(-1, dialog.VerificationChecked);
-            return result;
-        }
-
-        private static string FormatHelp(string help)
-        {
-            if (String.IsNullOrEmpty(help))
-            {
-                return null;
-            }
-            return "<A HREF=\"" + help + "\">" + LocaleFactory.localizedString("Help", "Main") + "</A>";
         }
     }
 }

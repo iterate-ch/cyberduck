@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -25,36 +25,27 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Aquaticprime;
-using Ch.Cyberduck.Core.Editor;
-using Ch.Cyberduck.Core.I18n;
-using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Urlhandler;
-using Ch.Cyberduck.Ui.Growl;
-using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using Ch.Cyberduck.Ui.Winforms.Threading;
-using Microsoft.VisualBasic.ApplicationServices;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
-using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.importer;
-using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.notification;
+using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.serializer;
+using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Core.Urlhandler;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.security;
 using java.util;
+using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using org.apache.log4j.xml;
 using sun.security.mscapi;
 using ArrayList = System.Collections.ArrayList;
 using Object = java.lang.Object;
 using Path = System.IO.Path;
-using SystemProxy = Ch.Cyberduck.Core.SystemProxy;
-using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
-using UserPreferences = Ch.Cyberduck.Core.Preferences.UserPreferences;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -130,18 +121,18 @@ namespace Ch.Cyberduck.Ui.Controller
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
+            {
+                try
                 {
-                    try
-                    {
-                        RendezvousFactory.instance().quit();
-                    }
-                    catch (SystemException se)
-                    {
-                        Logger.warn("No Bonjour support available", se);
-                    }
-                    PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
-                    PreferencesFactory.get().save();
-                };
+                    RendezvousFactory.instance().quit();
+                }
+                catch (SystemException se)
+                {
+                    Logger.warn("No Bonjour support available", se);
+                }
+                PreferencesFactory.get().setProperty("uses", PreferencesFactory.get().getInteger("uses") + 1);
+                PreferencesFactory.get().save();
+            };
         }
 
         internal static MainController Application
@@ -205,23 +196,24 @@ namespace Ch.Cyberduck.Ui.Controller
         private static void ConfigureLogging()
         {
             // we do not save the log file in the roaming profile
-            var fileName = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"), "cyberduck.log");
+            var fileName = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
+                "cyberduck.log");
 
             DOMConfigurator.configure(
                 Object.instancehelper_getClass(new DOMConfigurator())
-                      .getClassLoader()
-                      .getResource(PreferencesFactory.get().getProperty("logging.config")));
+                    .getClassLoader()
+                    .getResource(PreferencesFactory.get().getProperty("logging.config")));
             Logger root = Logger.getRootLogger();
             root.removeAllAppenders();
 
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
-                                                                   fileName, true);
+                fileName, true);
             appender.setMaxFileSize("1MB");
             appender.setMaxBackupIndex(0);
             root.addAppender(appender);
             root.setLevel(Debugger.IsAttached
-                              ? Level.DEBUG
-                              : Level.toLevel(PreferencesFactory.get().getProperty("logging")));
+                ? Level.DEBUG
+                : Level.toLevel(PreferencesFactory.get().getProperty("logging")));
         }
 
         /// <summary>
@@ -248,19 +240,18 @@ namespace Ch.Cyberduck.Ui.Controller
                         License license = LicenseFactory.get(f);
                         if (license.verify())
                         {
-                            f.copy(
-                                LocalFactory.get(
-                                    PreferencesFactory.get().getProperty("application.support.path"), f.getName()));
+                            f.copy(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+                                f.getName()));
                             if (DialogResult.OK ==
                                 _bc.InfoBox(license.ToString(),
-                                            LocaleFactory.localizedString(
-                                                "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
-                                                "License"),
-                                            LocaleFactory.localizedString(
-                                                "Your donation key has been copied to the Application Support folder.",
-                                                "License"),
-                                            String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
-                                            null, false))
+                                    LocaleFactory.localizedString(
+                                        "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
+                                        "License"),
+                                    LocaleFactory.localizedString(
+                                        "Your donation key has been copied to the Application Support folder.",
+                                        "License"),
+                                    String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null,
+                                    false))
                             {
                                 ;
                             }
@@ -269,12 +260,11 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             if (DialogResult.OK ==
                                 _bc.WarningBox(LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                               LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                               LocaleFactory.localizedString(
-                                                   "This donation key does not appear to be valid.", "License"), null,
-                                               String.Format("{0}", LocaleFactory.localizedString("Continue", "License")),
-                                               false, PreferencesFactory.get().getProperty("website.help") + "/faq",
-                                               delegate { }))
+                                    LocaleFactory.localizedString("Not a valid donation key", "License"),
+                                    LocaleFactory.localizedString("This donation key does not appear to be valid.",
+                                        "License"), null,
+                                    String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
+                                    PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { }))
                             {
                                 ;
                             }
@@ -294,8 +284,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             NewBrowser().AddBookmark(host);
                             // Register in application support
                             Local profiles =
-                                LocalFactory.get(
-                                    PreferencesFactory.get().getProperty("application.support.path"), "Profiles");
+                                LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"),
+                                    "Profiles");
                             profiles.mkdir();
                             f.copy(LocalFactory.get(profiles, f.getName()));
                         }
@@ -343,18 +333,18 @@ namespace Ch.Cyberduck.Ui.Controller
             if (PreferencesFactory.get().getBoolean("browser.serialize"))
             {
                 _controller.Background(delegate { _sessions.load(); }, delegate
+                {
+                    foreach (Host host in _sessions)
                     {
-                        foreach (Host host in _sessions)
+                        Host h = host;
+                        _bc.Invoke(delegate
                         {
-                            Host h = host;
-                            _bc.Invoke(delegate
-                                {
-                                    BrowserController bc = NewBrowser();
-                                    bc.Mount(h);
-                                });
-                        }
-                        _sessions.clear();
-                    });
+                            BrowserController bc = NewBrowser();
+                            bc.Mount(h);
+                        });
+                    }
+                    _sessions.clear();
+                });
             }
             NotificationServiceFactory.get().setup();
 
@@ -364,51 +354,51 @@ namespace Ch.Cyberduck.Ui.Controller
 
             // Load all bookmarks in background
             _controller.Background(delegate
+            {
+                BookmarkCollection c = BookmarkCollection.defaultCollection();
+                c.load();
+                bookmarksSemaphore.Signal();
+            }, delegate
+            {
+                if (PreferencesFactory.get().getBoolean("browser.open.untitled"))
                 {
-                    BookmarkCollection c = BookmarkCollection.defaultCollection();
-                    c.load();
-                    bookmarksSemaphore.Signal();
-                }, delegate
+                    if (PreferencesFactory.get().getProperty("browser.open.bookmark.default") != null)
                     {
-                        if (PreferencesFactory.get().getBoolean("browser.open.untitled"))
+                        _bc.Invoke(delegate
                         {
-                            if (PreferencesFactory.get().getProperty("browser.open.bookmark.default") != null)
-                            {
-                                _bc.Invoke(delegate
-                                    {
-                                        BrowserController bc = NewBrowser();
-                                        OpenDefaultBookmark(bc);
-                                    });
-                            }
-                        }
-                    });
+                            BrowserController bc = NewBrowser();
+                            OpenDefaultBookmark(bc);
+                        });
+                    }
+                }
+            });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
             _controller.Background(delegate
+            {
+                lock (TransferCollection.defaultCollection())
                 {
-                    lock (TransferCollection.defaultCollection())
-                    {
-                        TransferCollection.defaultCollection().load();
-                    }
-                }, delegate
-                    {
-                        if (PreferencesFactory.get().getBoolean("queue.window.open.default"))
-                        {
-                            _bc.Invoke(delegate { TransferController.Instance.View.Show(); });
-                        }
-                    });
+                    TransferCollection.defaultCollection().load();
+                }
+            }, delegate
+            {
+                if (PreferencesFactory.get().getBoolean("queue.window.open.default"))
+                {
+                    _bc.Invoke(delegate { TransferController.Instance.View.Show(); });
+                }
+            });
 
             // Bonjour initialization
             ThreadStart start = delegate
+            {
+                try
                 {
-                    try
-                    {
-                        RendezvousFactory.instance().init();
-                    }
-                    catch (COMException)
-                    {
-                        Logger.warn("No Bonjour support available");
-                    }
-                };
+                    RendezvousFactory.instance().init();
+                }
+                catch (COMException)
+                {
+                    Logger.warn("No Bonjour support available");
+                }
+            };
             Thread thread = new Thread(start);
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
@@ -419,136 +409,130 @@ namespace Ch.Cyberduck.Ui.Controller
                     !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
                 {
                     Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
-                                     LocaleFactory.localizedString(
-                                         "Set Cyberduck as default application for FTP and SFTP locations?",
-                                         "Configuration"),
-                                     LocaleFactory.localizedString(
-                                         "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
-                                         "Configuration"),
-                                     String.Format("{0}|{1}", LocaleFactory.localizedString("Change", "Configuration"),
-                                                   LocaleFactory.localizedString("Cancel", "Configuration")), false,
-                                     LocaleFactory.localizedString("Don't ask again", "Configuration"),
-                                     SysIcons.Question, delegate(int option, bool verificationChecked)
-                                         {
-                                             if (verificationChecked)
-                                             {
-                                                 // Never show again.
-                                                 PreferencesFactory.get().setProperty("defaulthandler.reminder", false);
-                                             }
-                                             switch (option)
-                                             {
-                                                 case 0:
-                                                     URLSchemeHandlerConfiguration.Instance.RegisterFtpProtocol();
-                                                     URLSchemeHandlerConfiguration.Instance.RegisterSftpProtocol();
-                                                     break;
-                                             }
-                                         });
+                        LocaleFactory.localizedString(
+                            "Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
+                        LocaleFactory.localizedString(
+                            "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
+                            "Configuration"),
+                        String.Format("{0}|{1}", LocaleFactory.localizedString("Change", "Configuration"),
+                            LocaleFactory.localizedString("Cancel", "Configuration")), false,
+                        LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                        delegate(int option, bool verificationChecked)
+                        {
+                            if (verificationChecked)
+                            {
+                                // Never show again.
+                                PreferencesFactory.get().setProperty("defaulthandler.reminder", false);
+                            }
+                            switch (option)
+                            {
+                                case 0:
+                                    URLSchemeHandlerConfiguration.Instance.RegisterFtpProtocol();
+                                    URLSchemeHandlerConfiguration.Instance.RegisterSftpProtocol();
+                                    break;
+                            }
+                        });
                 }
             }
             // Import thirdparty bookmarks.
             IList<ThirdpartyBookmarkCollection> thirdpartyBookmarks = GetThirdpartyBookmarks();
             _controller.Background(delegate
+            {
+                foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                 {
-                    foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
+                    if (!c.isInstalled())
                     {
-                        if (!c.isInstalled())
-                        {
-                            Logger.info("No application installed for " + c.getBundleIdentifier());
-                            continue;
-                        }
-                        c.load();
-                        if (c.isEmpty())
-                        {
-                            // Flag as imported
-                            PreferencesFactory.get().setProperty(c.getConfiguration(), true);
-                        }
+                        Logger.info("No application installed for " + c.getBundleIdentifier());
+                        continue;
                     }
-                    bookmarksSemaphore.Wait();
-                }, delegate
-                    {
-                        foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
-                        {
-                            BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
-                            c.filter(bookmarks);
-                            if (!c.isEmpty())
-                            {
-                                ThirdpartyBookmarkCollection c1 = c;
-                                Utils.CommandBox(LocaleFactory.localizedString("Import", "Configuration"),
-                                                 String.Format(
-                                                     LocaleFactory.localizedString("Import {0} Bookmarks",
-                                                                                   "Configuration"), c.getName()),
-                                                 String.Format(
-                                                     LocaleFactory.localizedString(
-                                                         "{0} bookmarks found. Do you want to add these to your bookmarks?",
-                                                         "Configuration"), c.size()),
-                                                 String.Format("{0}",
-                                                               LocaleFactory.localizedString("Import", "Configuration")),
-                                                 true, LocaleFactory.localizedString("Don't ask again", "Configuration"),
-                                                 SysIcons.Question, delegate(int option, bool verificationChecked)
-                                                     {
-                                                         if (verificationChecked)
-                                                         {
-                                                             // Flag as imported
-                                                             PreferencesFactory.get()
-                                                                        .setProperty(c1.getConfiguration(), true);
-                                                         }
-                                                         switch (option)
-                                                         {
-                                                             case 0:
-                                                                 BookmarkCollection.defaultCollection().addAll(c1);
-                                                                 // Flag as imported
-                                                                 PreferencesFactory.get()
-                                                                            .setProperty(c1.getConfiguration(), true);
-                                                                 break;
-                                                         }
-                                                     });
-                            }
-                        }
-                        thirdpartySemaphore.Signal();
-                    });
-            _controller.Background(delegate
-                {
-                    bookmarksSemaphore.Wait();
-                    thirdpartySemaphore.Wait();
-                    BookmarkCollection c = BookmarkCollection.defaultCollection();
+                    c.load();
                     if (c.isEmpty())
                     {
-                        FolderBookmarkCollection defaults =
-                            new FolderBookmarkCollection(
-                                LocalFactory.get(PreferencesFactory.get()
-                                                                    .getProperty("application.bookmarks.path")));
-                        defaults.load();
-                        foreach (Host bookmark in defaults)
-                        {
-                            if (Logger.isDebugEnabled())
-                            {
-                                Logger.debug("Adding default bookmark:" + bookmark);
-                            }
-                            c.add(bookmark);
-                        }
+                        // Flag as imported
+                        PreferencesFactory.get().setProperty(c.getConfiguration(), true);
                     }
-                }, delegate { });
+                }
+                bookmarksSemaphore.Wait();
+            }, delegate
+            {
+                foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
+                {
+                    BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
+                    c.filter(bookmarks);
+                    if (!c.isEmpty())
+                    {
+                        ThirdpartyBookmarkCollection c1 = c;
+                        Utils.CommandBox(LocaleFactory.localizedString("Import", "Configuration"),
+                            String.Format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"),
+                                c.getName()),
+                            String.Format(
+                                LocaleFactory.localizedString(
+                                    "{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"),
+                                c.size()),
+                            String.Format("{0}", LocaleFactory.localizedString("Import", "Configuration")), true,
+                            LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Question,
+                            delegate(int option, bool verificationChecked)
+                            {
+                                if (verificationChecked)
+                                {
+                                    // Flag as imported
+                                    PreferencesFactory.get().setProperty(c1.getConfiguration(), true);
+                                }
+                                switch (option)
+                                {
+                                    case 0:
+                                        BookmarkCollection.defaultCollection().addAll(c1);
+                                        // Flag as imported
+                                        PreferencesFactory.get().setProperty(c1.getConfiguration(), true);
+                                        break;
+                                }
+                            });
+                    }
+                }
+                thirdpartySemaphore.Signal();
+            });
+            _controller.Background(delegate
+            {
+                bookmarksSemaphore.Wait();
+                thirdpartySemaphore.Wait();
+                BookmarkCollection c = BookmarkCollection.defaultCollection();
+                if (c.isEmpty())
+                {
+                    FolderBookmarkCollection defaults =
+                        new FolderBookmarkCollection(
+                            LocalFactory.get(PreferencesFactory.get().getProperty("application.bookmarks.path")));
+                    defaults.load();
+                    foreach (Host bookmark in defaults)
+                    {
+                        if (Logger.isDebugEnabled())
+                        {
+                            Logger.debug("Adding default bookmark:" + bookmark);
+                        }
+                        c.add(bookmark);
+                    }
+                }
+            }, delegate { });
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
         {
             return new List<ThirdpartyBookmarkCollection>
-                {
-                    new FilezillaBookmarkCollection(),
-                    new WinScpBookmarkCollection(),
-                    new SmartFtpBookmarkCollection(),
-                    new TotalCommanderBookmarkCollection(),
-                    new FlashFxp4UserBookmarkCollection(),
-                    new FlashFxp4CommonBookmarkCollection(),
-                    new FlashFxp3BookmarkCollection(),
-                    new WsFtpBookmarkCollection(),
-                    new FireFtpBookmarkCollection(),
-                    new CrossFtpBookmarkCollection(),
-                    new CloudberryS3BookmarkCollection(),
-                    new CloudberryGoogleBookmarkCollection(),
-                    new CloudberryAzureBookmarkCollection(),
-                    new S3BrowserBookmarkCollection()
-                };
+            {
+                new FilezillaBookmarkCollection(),
+                new WinScpBookmarkCollection(),
+                new SmartFtpBookmarkCollection(),
+                new TotalCommanderBookmarkCollection(),
+                new FlashFxp4UserBookmarkCollection(),
+                new FlashFxp4CommonBookmarkCollection(),
+                new FlashFxp3BookmarkCollection(),
+                new WsFtpBookmarkCollection(),
+                new FireFtpBookmarkCollection(),
+                new CrossFtpBookmarkCollection(),
+                new CloudberryS3BookmarkCollection(),
+                new CloudberryGoogleBookmarkCollection(),
+                new CloudberryAzureBookmarkCollection(),
+                new S3BrowserBookmarkCollection()
+            };
         }
 
         /// <summary>
@@ -690,41 +674,40 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                     {
                         controller.CommandBox(LocaleFactory.localizedString("Quit"),
-                                              LocaleFactory.localizedString(
-                                                  "You are connected to at least one remote site. Do you want to review open browsers?"),
-                                              null,
-                                              String.Format("{0}|{1}", LocaleFactory.localizedString("Review…"),
-                                                            LocaleFactory.localizedString("Quit Anyway")), true,
-                                              LocaleFactory.localizedString("Don't ask again", "Configuration"),
-                                              SysIcons.Warning, delegate(int option, bool verificationChecked)
-                                                  {
-                                                      if (verificationChecked)
-                                                      {
-                                                          // Never show again.
-                                                          PreferencesFactory.get()
-                                                                     .setProperty("browser.disconnect.confirm", false);
-                                                      }
-                                                      switch (option)
-                                                      {
-                                                          case -1: // Cancel
-                                                              // Quit has been interrupted. Delete any saved sessions so far.
-                                                              Application._sessions.clear();
-                                                              return;
-                                                          case 0: // Review
-                                                              if (BrowserController.ApplicationShouldTerminate())
-                                                              {
-                                                                  break;
-                                                              }
-                                                              return;
-                                                          case 1: // Quit
-                                                              foreach (BrowserController c in
-                                                                  new List<BrowserController>(Browsers))
-                                                              {
-                                                                  c.View.Dispose();
-                                                              }
-                                                              break;
-                                                      }
-                                                  });
+                            LocaleFactory.localizedString(
+                                "You are connected to at least one remote site. Do you want to review open browsers?"),
+                            null,
+                            String.Format("{0}|{1}", LocaleFactory.localizedString("Review…"),
+                                LocaleFactory.localizedString("Quit Anyway")), true,
+                            LocaleFactory.localizedString("Don't ask again", "Configuration"), SysIcons.Warning,
+                            delegate(int option, bool verificationChecked)
+                            {
+                                if (verificationChecked)
+                                {
+                                    // Never show again.
+                                    PreferencesFactory.get().setProperty("browser.disconnect.confirm", false);
+                                }
+                                switch (option)
+                                {
+                                    case -1: // Cancel
+                                        // Quit has been interrupted. Delete any saved sessions so far.
+                                        Application._sessions.clear();
+                                        return;
+                                    case 0: // Review
+                                        if (BrowserController.ApplicationShouldTerminate())
+                                        {
+                                            break;
+                                        }
+                                        return;
+                                    case 1: // Quit
+                                        foreach (BrowserController c in
+                                            new List<BrowserController>(Browsers))
+                                        {
+                                            c.View.Dispose();
+                                        }
+                                        break;
+                                }
+                            });
                     }
                     else
                     {
@@ -755,35 +738,35 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             BrowserController controller = new BrowserController();
             controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
+            {
+                if (args.Cancel)
                 {
-                    if (args.Cancel)
-                    {
-                        return;
-                    }
-                    if (1 == Browsers.Count)
-                    {
-                        // last browser is about to close, check if we can terminate
-                        args.Cancel = !ApplicationShouldTerminate();
-                    }
-                };
+                    return;
+                }
+                if (1 == Browsers.Count)
+                {
+                    // last browser is about to close, check if we can terminate
+                    args.Cancel = !ApplicationShouldTerminate();
+                }
+            };
             controller.View.ViewDisposedEvent += delegate
+            {
+                Browsers.Remove(controller);
+                if (0 == Browsers.Count)
                 {
-                    Browsers.Remove(controller);
-                    if (0 == Browsers.Count)
+                    // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
+                    FormCollection forms = _application.OpenForms;
+                    for (int i = forms.Count - 1; i >= 0; i--)
                     {
-                        // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
-                        FormCollection forms = _application.OpenForms;
-                        for (int i = forms.Count - 1; i >= 0; i--)
-                        {
-                            forms[i].Dispose();
-                        }
-                        Exit();
+                        forms[i].Dispose();
                     }
-                    else
-                    {
-                        _application.MainForm = Browsers[0].View as Form;
-                    }
-                };
+                    Exit();
+                }
+                else
+                {
+                    _application.MainForm = Browsers[0].View as Form;
+                }
+            };
             if (show)
             {
                 controller.View.Show();
@@ -795,7 +778,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitJumpList()
         {
-            if (Utils.IsWin7OrLater)
+            if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
                 try
                 {
@@ -817,7 +800,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RefreshJumpList()
         {
-            if (Utils.IsWin7OrLater)
+            if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
                 try
                 {
@@ -827,13 +810,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         Host host = (Host) iterator.next();
                         _jumpListManager.AddCustomDestination(new ShellLink
-                            {
-                                Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
-                                Title = BookmarkNameProvider.toString(host, true),
-                                Category = LocaleFactory.localizedString("History"),
-                                IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
-                                IconIndex = 0
-                            });
+                        {
+                            Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
+                            Title = BookmarkNameProvider.toString(host, true),
+                            Category = LocaleFactory.localizedString("History"),
+                            IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
+                            IconIndex = 0
+                        });
                     }
                     _jumpListManager.Refresh();
                 }

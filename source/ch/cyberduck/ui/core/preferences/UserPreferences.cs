@@ -22,26 +22,28 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using ch.cyberduck.core;
+using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Aquaticprime;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Properties;
-using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core.Local;
+using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using ch.cyberduck.core;
-using ch.cyberduck.core.local;
 using java.util;
 using org.apache.log4j;
 using Application = System.Windows.Forms.Application;
-using Keychain = Ch.Cyberduck.Core.Keychain;
+using Keychain = Ch.Cyberduck.Core.PasswordKeychain;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 
-namespace Ch.Cyberduck.Core.Preferences
+namespace Ch.Cyberduck.Ui.Core.Preferences
 {
     public class UserPreferences : ch.cyberduck.core.preferences.Preferences
     {
@@ -80,8 +82,8 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 return (Environment.OSVersion.Platform == PlatformID.Unix ||
                         Environment.OSVersion.Platform == PlatformID.MacOSX)
-                           ? Environment.GetEnvironmentVariable("HOME")
-                           : Environment.GetEnvironmentVariable("USERPROFILE");
+                    ? Environment.GetEnvironmentVariable("HOME")
+                    : Environment.GetEnvironmentVariable("USERPROFILE");
             }
         }
 
@@ -160,18 +162,18 @@ namespace Ch.Cyberduck.Core.Preferences
                 distinctNames.Remove("zh_CN");
                 distinctNames.Remove("zh_TW");
             }
-            return Utils.ConvertToJavaList(distinctNames);
+            return Cyberduck.Core.Utils.ConvertToJavaList(distinctNames);
         }
 
         private bool HasEastAsianFontSupport()
         {
-            if (Utils.IsVistaOrLater)
+            if (Cyberduck.Core.Utils.IsVistaOrLater)
             {
                 return true;
             }
             return
                 Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID,
-                                                              NativeConstants.LCID_INSTALLED));
+                    NativeConstants.LCID_INSTALLED));
         }
 
         public object GetSpecialObject(string property)
@@ -197,7 +199,7 @@ namespace Ch.Cyberduck.Core.Preferences
             return locales;
         }
 
-        protected override void load()
+        public override void load()
         {
             Log.debug("Loading preferences");
             // upgrade settings for a new version
@@ -234,45 +236,44 @@ namespace Ch.Cyberduck.Core.Preferences
 
             // Importers
             defaults.put("bookmark.import.winscp.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "WinSCP",
-                                      "winscp.ini"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "WinSCP", "winscp.ini"));
             defaults.put("bookmark.import.filezilla.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
-                                      "sitemanager.xml"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileZilla",
+                    "sitemanager.xml"));
             defaults.put("bookmark.import.smartftp.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartFTP",
-                                      "Client 2.0", "Favorites"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SmartFTP",
+                    "Client 2.0", "Favorites"));
             defaults.put("bookmark.import.totalcommander.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GHISLER",
-                                      "wcx_ftp.ini"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GHISLER",
+                    "wcx_ftp.ini"));
             defaults.put("bookmark.import.flashfxp3.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP",
-                                      "3", "Sites.dat"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "3",
+                    "Sites.dat"));
             defaults.put("bookmark.import.flashfxp4.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP",
-                                      "4", "Sites.dat"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlashFXP", "4",
+                    "Sites.dat"));
             defaults.put("bookmark.import.flashfxp4.common.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                                      "FlashFXP", "4", "Sites.dat"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "FlashFXP", "4",
+                    "Sites.dat"));
             defaults.put("bookmark.import.wsftp.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ipswitch",
-                                      "WS_FTP", "Sites"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP",
+                    "Sites"));
             defaults.put("bookmark.import.fireftp.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla",
-                                      "Firefox", "Profiles"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mozilla", "Firefox",
+                    "Profiles"));
             defaults.put("bookmark.import.s3browser.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "S3Browser",
-                                      "settings.ini"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "S3Browser",
+                    "settings.ini"));
             defaults.put("bookmark.import.crossftp.location", Path.Combine(HomeFolder, ".crossftp", "sites.xml"));
             defaults.put("bookmark.import.cloudberry.s3.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                      "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
             defaults.put("bookmark.import.cloudberry.google.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                      "CloudBerry Explorer for Google Storage", "settings.list"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "CloudBerry Explorer for Google Storage", "settings.list"));
             defaults.put("bookmark.import.cloudberry.azure.location",
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                      "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
 
             defaults.put("logging.config", "log4j-windows.xml");
 
@@ -289,7 +290,8 @@ namespace Ch.Cyberduck.Core.Preferences
 
             defaults.put("queue.dock.badge", true.ToString());
 
-            defaults.put("ssh.knownhosts", Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
+            defaults.put("ssh.knownhosts",
+                Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
             defaults.put("browser.enterkey.rename", false.ToString());
             defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
@@ -343,22 +345,22 @@ namespace Ch.Cyberduck.Core.Preferences
             base.setFactories();
 
             defaults.put("factory.supportdirectoryfinder.class",
-                         typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
+                typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.dateformatter.class", typeof (UserDefaultsDateFormatter).AssemblyQualifiedName);
             defaults.put("factory.passwordstore.class", typeof (Keychain).AssemblyQualifiedName);
-            defaults.put("factory.certificatestore.class", typeof (Keychain).AssemblyQualifiedName);
+            defaults.put("factory.certificatestore.class", typeof (CertificateKeychain).AssemblyQualifiedName);
             defaults.put("factory.hostkeycallback.class", typeof (HostKeyController).AssemblyQualifiedName);
             defaults.put("factory.logincallback.class", typeof (PromptLoginController).AssemblyQualifiedName);
             defaults.put("factory.transfererrorcallback.class",
-                         typeof (DialogTransferErrorCallback).AssemblyQualifiedName);
+                typeof (DialogTransferErrorCallback).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.download.class",
-                         typeof (DownloadPromptController).AssemblyQualifiedName);
+                typeof (DownloadPromptController).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.upload.class",
-                         typeof (UploadPromptController).AssemblyQualifiedName);
+                typeof (UploadPromptController).AssemblyQualifiedName);
             defaults.put("factory.transferpromptcallback.sync.class",
-                         typeof (SyncPromptController).AssemblyQualifiedName);
+                typeof (SyncPromptController).AssemblyQualifiedName);
             defaults.put("factory.proxy.class", typeof (SystemProxy).AssemblyQualifiedName);
             defaults.put("factory.reachability.class", typeof (TcpReachability).AssemblyQualifiedName);
             defaults.put("factory.rendezvous.class", typeof (Rendezvous).AssemblyQualifiedName);
@@ -374,7 +376,7 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
             defaults.put("factory.licensefactory.class", typeof (WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.notification.class", typeof (ToolstripNotificationService).AssemblyQualifiedName);
-            if (Utils.IsWin7OrLater)
+            if (Cyberduck.Core.Utils.IsWin7OrLater)
             {
                 defaults.put("factory.badgelabeler.class", typeof (TaskbarApplicationBadgeLabeler).AssemblyQualifiedName);
             }

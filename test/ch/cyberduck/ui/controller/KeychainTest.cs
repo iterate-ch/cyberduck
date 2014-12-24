@@ -1,5 +1,5 @@
-﻿﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,16 +18,14 @@
 
 using System;
 using System.Text;
-using Ch.Cyberduck.Core.I18n;
-using Ch.Cyberduck.Core.Local;
-using NUnit.Framework;
 using ch.cyberduck.core;
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Ui.Core;
 using java.io;
 using java.security.cert;
 using java.util;
+using NUnit.Framework;
 using Console = System.Console;
-using Keychain = Ch.Cyberduck.Core.Keychain;
-using PreferencesFactory = ch.cyberduck.core.preferences.PreferencesFactory;
 using List = java.util.List;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -72,7 +70,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             //register exception
             PreferencesFactory.get()
-                       .setProperty(hostName + ".certificate.accept", Keychain.ConvertCertificate(cert).SubjectName.Name);
+                .setProperty(hostName + ".certificate.accept",
+                    CertificateKeychain.ConvertCertificate(cert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }
 
@@ -142,13 +141,13 @@ namespace Ch.Cyberduck.Ui.Controller
             X509Certificate hostCert = (X509Certificate) certFactory.generateCertificate(his);
             InputStream cais = new ByteArrayInputStream(Encoding.ASCII.GetBytes(ca));
             X509Certificate caCert = (X509Certificate) certFactory.generateCertificate(cais);
-                        
-            
+
+
             const string hostName = "www.google.ch";
             List certs = new ArrayList();
             certs.add(hostCert);
             certs.add(caCert);
-            
+
             try
             {
                 //no exception registered yet
@@ -161,7 +160,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             //register exception
             PreferencesFactory.get()
-                       .setProperty(hostName + ".certificate.accept", Keychain.ConvertCertificate(hostCert).SubjectName.Name);
+                .setProperty(hostName + ".certificate.accept",
+                    CertificateKeychain.ConvertCertificate(hostCert).SubjectName.Name);
             Assert.IsTrue(CertificateStoreFactory.get().isTrusted(hostName, certs));
         }
     }

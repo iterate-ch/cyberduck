@@ -20,9 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -38,15 +38,12 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         BrowserView CurrentView { set; get; }
         ObjectListView Browser { get; }
-
         string WindowTitle { set; }
         string StatusLabel { set; }
-
         IList<Path> SelectedPaths { get; set; }
         List<Host> SelectedBookmarks { get; }
         int NumberOfFiles { get; }
         int NumberOfBookmarks { get; }
-
         string QuickConnectValue { get; }
         bool HistoryBackEnabled { set; }
         bool HistoryForwardEnabled { set; }
@@ -55,35 +52,28 @@ namespace Ch.Cyberduck.Ui.Controller
         Bitmap EditIcon { set; }
         Bitmap OpenIcon { set; }
         string SelectedEncoding { set; }
-
         bool SecureConnection { set; }
         bool SecureConnectionVisible { set; }
         bool CertBasedConnection { set; }
-
         bool ActivityRunning { set; }
         bool ShowActivityEnabled { set; }
         bool ComboboxPathEnabled { set; }
         bool HiddenFilesVisible { set; }
         bool LogDrawerVisible { get; set; }
-
         Filter FilenameFilter { set; }
         string SearchString { set; get; }
         bool SearchEnabled { set; }
-
         IList<Path> VisiblePaths { get; }
         bool ToolbarVisible { set; get; }
         int TopItemIndex { set; get; }
-
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
         TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
-
         TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
         TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
         AspectToStringConverterDelegate ModelModifiedAsStringGetter { set; }
-
         TypedColumn<Path>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelGroupGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
@@ -91,10 +81,8 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<Path>.TypedAspectGetterDelegate ModelExtensionGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelRegionGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter { set; }
-
         MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter { set; }
         event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
-
         // mainly used to detect a change of displayed items to update the status label
         event VoidHandler ItemsChanged;
         event ValidateCommand ValidatePathsCombobox; //path history combobox
@@ -102,9 +90,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void StopActivityAnimation();
         void UpdateBookmarks();
         event ValidateCommand ValidateSearchField;
-
         event SetComparatorHandler SetComparator;
-
         void StartRenaming(Path path);
         void PopulateQuickConnect(List<string> nicknames);
         void PopulatePaths(List<string> paths);
@@ -114,9 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
         String DownloadToDialog(string description, Local initialDirectory, string selectedPath);
         String[] UploadDialog(Local initialDirectory);
         String SynchronizeDialog(string description, Local initialDirectory, string selectedPath);
-
         event ValidateCommand ContextMenuEnabled;
-
         // Menu - File
         event EventHandler<NewBrowserEventArgs> NewBrowser;
         event ValidateCommand ValidateNewBrowser;
@@ -166,7 +150,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ExpandArchive;
         event ValidateCommand ValidateExpandArchive;
         event VoidHandler Exit;
-
         event VoidHandler Cut;
         event ValidateCommand ValidateCut;
         event VoidHandler Copy;
@@ -175,13 +158,11 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidatePaste;
         event ValidateCommand ValidateSelectAll;
         event VoidHandler ShowPreferences;
-
         event VoidHandler ToggleToolbar;
         event VoidHandler ShowHiddenFiles;
         event EventHandler<EncodingChangedArgs> EncodingChanged;
         event ValidateCommand ValidateTextEncoding;
         event VoidHandler ToggleLogDrawer;
-
         event VoidHandler RefreshBrowser;
         event ValidateCommand ValidateRefresh;
         event VoidHandler GotoFolder;
@@ -203,47 +184,38 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateStop;
         event VoidHandler Disconnect;
         event ValidateCommand ValidateDisconnect;
-
         event VoidHandler ToggleBookmarks;
         event VoidHandler SortBookmarksByNickname;
         event VoidHandler SortBookmarksByHostname;
         event VoidHandler SortBookmarksByProtocol;
         event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         event ValidateCommand ValidateConnectBookmark;
-
         event VoidHandler SearchFieldChanged;
         event VoidHandler QuickConnect;
-
         event VoidHandler BrowserDoubleClicked;
-
         event VoidHandler BrowserSelectionChanged;
         event VoidHandler PathSelectionChanged;
         event EditWithHandler EditEvent;
-
         event VoidHandler ShowTransfers;
         event VoidHandler ShowCertificate;
-
         event DropHandler BrowserCanDrop;
         event ModelDropHandler BrowserModelCanDrop;
         event DropHandler BrowserDropped;
         event ModelDropHandler BrowserModelDropped;
         event DragHandler BrowserDrag;
         event EndDragHandler BrowserEndDrag;
-
         event DropHandler HostCanDrop;
         event ModelDropHandler HostModelCanDrop;
         event DropHandler HostDropped;
         event ModelDropHandler HostModelDropped;
         event DragHandler HostDrag;
         event EndDragHandler HostEndDrag;
-
         void BeginBrowserUpdate();
         void EndBrowserUpdate();
         void SetBrowserModel(IEnumerable<Path> model);
         void RefreshBrowserObject(Path path);
         void RefreshBrowserObjects(List<Path> list);
         void BrowserActiveStateChanged();
-
         void AddTranscriptEntry(bool request, string entry);
         void ClearTranscript();
         void FocusBrowser();

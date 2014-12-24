@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core</RootNamespace>
-    <AssemblyName>Core</AssemblyName>
+    <AssemblyName>cyberduck.windows.core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -72,14 +72,27 @@
     <Reference Include="IKVM.Runtime.JNI">
       <HintPath>..\..\..\lib\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Bonjour">
+      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
@@ -88,22 +101,18 @@
     <Compile Include="core\AtomicBoolean.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\collections\LRUCache.cs" />
-    <Compile Include="core\Commands.cs" />
-    <Compile Include="core\CrashReporter.cs" />
-    <Compile Include="core\DragDropLib.cs" />
+    <Compile Include="core\DataProtector.cs" />
     <Compile Include="core\editor\SystemEditorFactory.cs" />
     <Compile Include="core\editor\SystemWatchEditor.cs" />
     <Compile Include="core\editor\SystemWatchEditorFactory.cs" />
-    <Compile Include="core\GlobalKeyboardHook.cs" />
     <Compile Include="core\i18n\DictionaryLocale.cs" />
-    <Compile Include="core\Keychain.cs" />
+    <Compile Include="core\PasswordKeychain.cs" />
     <Compile Include="core\ListAdapter.cs" />
     <Compile Include="core\local\DefaultBrowserLauncher.cs" />
     <Compile Include="core\local\ExplorerRevealService.cs" />
     <Compile Include="core\local\RecycleLocalTrashFeature.cs" />
     <Compile Include="core\local\RegistryApplicationFinder.cs" />
     <Compile Include="core\local\SystemLocal.cs" />
-    <Compile Include="core\local\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\local\WindowsTemporaryFileService.cs" />
@@ -113,7 +122,6 @@
     <Compile Include="core\OSVersion.cs" />
     <Compile Include="core\preferences\RoamingSupportDirectoryFinder.cs" />
     <Compile Include="core\preferences\SettingsDictionary.cs" />
-    <Compile Include="core\preferences\UserPreferences.cs" />
     <Compile Include="core\Rendezvous.cs" />
     <Compile Include="core\RFC2253.cs" />
     <Compile Include="core\SerializableDictionary.cs" />
@@ -129,10 +137,11 @@
     <Compile Include="core\ssl\HostnameVerifier.cs" />
     <Compile Include="core\SystemProxy.cs" />
     <Compile Include="core\TcpReachability.cs" />
-    <Compile Include="core\urlhandler\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\Utils.cs" />
-    <Compile Include="core\VirtualFileDataObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="core\urlhandler\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

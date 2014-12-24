@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -25,7 +26,7 @@ using System.Windows.Forms;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 using IDataObject = System.Runtime.InteropServices.ComTypes.IDataObject;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     /// <summary>
     /// Class implementing drag/drop and clipboard support for virtual files.
@@ -271,7 +272,7 @@ namespace Ch.Cyberduck.Core
                 }
                 if (
                     NativeMethods.SUCCEEDED(NativeMethods.SHCreateStdEnumFmtEtc((uint) (_dataObjects.Count), l.ToArray(),
-                                                                                out enumerator)))
+                        out enumerator)))
                 {
                     return enumerator;
                 }
@@ -312,10 +313,8 @@ namespace Ch.Cyberduck.Core
                 DataObject dataObject = null;
                 foreach (DataObject d in _dataObjects)
                 {
-                    if ((d.FORMATETC.cfFormat == formatCopy.cfFormat) &&
-                        (d.FORMATETC.dwAspect == formatCopy.dwAspect) &&
-                        (0 != (d.FORMATETC.tymed & formatCopy.tymed) &&
-                         (d.FORMATETC.lindex == formatCopy.lindex)))
+                    if ((d.FORMATETC.cfFormat == formatCopy.cfFormat) && (d.FORMATETC.dwAspect == formatCopy.dwAspect) &&
+                        (0 != (d.FORMATETC.tymed & formatCopy.tymed) && (d.FORMATETC.lindex == formatCopy.lindex)))
                     {
                         dataObject = d;
                         break;
@@ -372,7 +371,6 @@ namespace Ch.Cyberduck.Core
             throw new NotImplementedException();
         }
 
-
         /// <summary>
         /// Determines whether the data object is capable of rendering the data described in the FORMATETC structure.
         /// </summary>
@@ -383,8 +381,7 @@ namespace Ch.Cyberduck.Core
             var formatCopy = format;
             // Cannot use ref or out parameter inside an anonymous method, lambda expression, or query expression
 
-            var formatMatches = Where(_dataObjects, o => o.FORMATETC.cfFormat ==
-                                                         formatCopy.cfFormat);
+            var formatMatches = Where(_dataObjects, o => o.FORMATETC.cfFormat == formatCopy.cfFormat);
             // check if it's empty
             if (!formatMatches.GetEnumerator().MoveNext())
             {
@@ -416,8 +413,7 @@ namespace Ch.Cyberduck.Core
         void IDataObject.SetData(ref FORMATETC formatIn, ref STGMEDIUM medium, bool release)
         {
             var handled = false;
-            if ((formatIn.dwAspect == DVASPECT.DVASPECT_CONTENT) &&
-                (formatIn.tymed == TYMED.TYMED_HGLOBAL) &&
+            if ((formatIn.dwAspect == DVASPECT.DVASPECT_CONTENT) && (formatIn.tymed == TYMED.TYMED_HGLOBAL) &&
                 (medium.tymed == formatIn.tymed))
             {
                 // Supported format; capture the data
@@ -490,21 +486,21 @@ namespace Ch.Cyberduck.Core
         {
             DataObject o = new DataObject();
             o.DataDelegate = delegate
-                                 {
-                                     var dataArray = ToArray(data);
-                                     var ptr = Marshal.AllocHGlobal(dataArray.Length);
-                                     Marshal.Copy(dataArray, 0, ptr, dataArray.Length);
-                                     return new Tuple<IntPtr, int>(ptr, NativeMethods.S_OK);
-                                 };
+            {
+                var dataArray = ToArray(data);
+                var ptr = Marshal.AllocHGlobal(dataArray.Length);
+                Marshal.Copy(dataArray, 0, ptr, dataArray.Length);
+                return new Tuple<IntPtr, int>(ptr, NativeMethods.S_OK);
+            };
             o.FORMATETC = new FORMATETC
-                              {
-                                  cfFormat = dataFormat,
-                                  ptd = IntPtr.Zero,
-                                  dwAspect = DVASPECT.DVASPECT_CONTENT,
-                                  lindex = -1,
-                                  tymed = TYMED.TYMED_HGLOBAL
-                              };
-            
+            {
+                cfFormat = dataFormat,
+                ptd = IntPtr.Zero,
+                dwAspect = DVASPECT.DVASPECT_CONTENT,
+                lindex = -1,
+                tymed = TYMED.TYMED_HGLOBAL
+            };
+
             _dataObjects.Add(o);
         }
 
@@ -520,36 +516,36 @@ namespace Ch.Cyberduck.Core
         /// </remarks>
         public void SetData(short dataFormat, int index, Action<Stream> streamData)
         {
-            _dataObjects.Add(
-                new DataObject
+            _dataObjects.Add(new DataObject
+            {
+                FORMATETC =
+                    new FORMATETC
                     {
-                        FORMATETC = new FORMATETC
-                                        {
-                                            cfFormat = dataFormat,
-                                            ptd = IntPtr.Zero,
-                                            dwAspect = DVASPECT.DVASPECT_CONTENT,
-                                            lindex = index,
-                                            tymed = TYMED.TYMED_ISTREAM
-                                        },
-                        DataDelegate = () =>
-                                           {
-                                               // Create IStream for data
-                                               var ptr = IntPtr.Zero;
-                                               var iStream = NativeMethods.CreateStreamOnHGlobal(IntPtr.Zero, true);
-                                               if (streamData != null)
-                                               {
-                                                   // Wrap in a .NET-friendly Stream and call provided code to fill it
-                                                   using (var stream = new IStreamWrapper(iStream))
-                                                   {
-                                                       streamData(stream);
-                                                   }
-                                               }
-                                               // Return an IntPtr for the IStream
-                                               ptr = Marshal.GetComInterfaceForObject(iStream, typeof (IStream));
-                                               Marshal.ReleaseComObject(iStream);
-                                               return new Tuple<IntPtr, int>(ptr, NativeMethods.S_OK);
-                                           },
-                    });
+                        cfFormat = dataFormat,
+                        ptd = IntPtr.Zero,
+                        dwAspect = DVASPECT.DVASPECT_CONTENT,
+                        lindex = index,
+                        tymed = TYMED.TYMED_ISTREAM
+                    },
+                DataDelegate = () =>
+                {
+                    // Create IStream for data
+                    var ptr = IntPtr.Zero;
+                    var iStream = NativeMethods.CreateStreamOnHGlobal(IntPtr.Zero, true);
+                    if (streamData != null)
+                    {
+                        // Wrap in a .NET-friendly Stream and call provided code to fill it
+                        using (var stream = new IStreamWrapper(iStream))
+                        {
+                            streamData(stream);
+                        }
+                    }
+                    // Return an IntPtr for the IStream
+                    ptr = Marshal.GetComInterfaceForObject(iStream, typeof (IStream));
+                    Marshal.ReleaseComObject(iStream);
+                    return new Tuple<IntPtr, int>(ptr, NativeMethods.S_OK);
+                },
+            });
         }
 
         /// <summary>
@@ -562,26 +558,22 @@ namespace Ch.Cyberduck.Core
             var bytes = new List<byte>();
             // Add FILEGROUPDESCRIPTOR header
             int c = ToArray(fileDescriptors).Length;
-            bytes.AddRange(
-                StructureBytes(new NativeMethods.FILEGROUPDESCRIPTOR {cItems = (uint) (c)}));
+            bytes.AddRange(StructureBytes(new NativeMethods.FILEGROUPDESCRIPTOR {cItems = (uint) (c)}));
             // Add n FILEDESCRIPTORs
             foreach (var fileDescriptor in fileDescriptors)
             {
                 // Set required fields
-                var FILEDESCRIPTOR = new NativeMethods.FILEDESCRIPTOR
-                                         {
-                                             cFileName = fileDescriptor.Name,
-                                         };
+                var FILEDESCRIPTOR = new NativeMethods.FILEDESCRIPTOR {cFileName = fileDescriptor.Name,};
                 // Set optional timestamp
                 if (fileDescriptor.ChangeTimeUtc.HasValue)
                 {
                     FILEDESCRIPTOR.dwFlags |= NativeMethods.FD_CREATETIME | NativeMethods.FD_WRITESTIME;
                     var changeTime = fileDescriptor.ChangeTimeUtc.Value.ToLocalTime().ToFileTime();
                     var changeTimeFileTime = new FILETIME
-                                                 {
-                                                     dwLowDateTime = (int) (changeTime & 0xffffffff),
-                                                     dwHighDateTime = (int) (changeTime >> 32),
-                                                 };
+                    {
+                        dwLowDateTime = (int) (changeTime & 0xffffffff),
+                        dwHighDateTime = (int) (changeTime >> 32),
+                    };
                     FILEDESCRIPTOR.ftLastWriteTime = changeTimeFileTime;
                     FILEDESCRIPTOR.ftCreationTime = changeTimeFileTime;
                 }
@@ -617,11 +609,11 @@ namespace Ch.Cyberduck.Core
         private DragDropEffects? GetDropEffect(short format)
         {
             // Get the most recent setting
-            var o = ToArray(Where(_dataObjects,
-                                  d =>
-                                  (format == d.FORMATETC.cfFormat) &&
-                                  (DVASPECT.DVASPECT_CONTENT == d.FORMATETC.dwAspect) &&
-                                  (TYMED.TYMED_HGLOBAL == d.FORMATETC.tymed)));
+            var o =
+                ToArray(Where(_dataObjects,
+                    d =>
+                        (format == d.FORMATETC.cfFormat) && (DVASPECT.DVASPECT_CONTENT == d.FORMATETC.dwAspect) &&
+                        (TYMED.TYMED_HGLOBAL == d.FORMATETC.tymed)));
             var dataObject = o.Length == 0 ? null : o[o.Length - 1];
 
             if (null != dataObject)
@@ -694,8 +686,7 @@ namespace Ch.Cyberduck.Core
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "dragSource",
             Justification = "Parameter is present so the signature matches that of System.Windows.DragDrop.DoDragDrop.")
         ]
-        public static DragDropEffects DoDragDrop(IDataObject dataObject,
-                                                 DragDropEffects allowedEffects)
+        public static DragDropEffects DoDragDrop(IDataObject dataObject, DragDropEffects allowedEffects)
         {
             int[] finalEffect = new int[1];
             try
@@ -729,25 +720,17 @@ namespace Ch.Cyberduck.Core
             /// </summary>
             public delegate Tuple<IntPtr, int> Data();
 
-            private Data dataDelegate;
-
             /// <summary>
             /// FORMATETC structure for the data.
             /// </summary>
             public FORMATETC FORMATETC { get; set; }
 
-            public Data DataDelegate
-            {
-                get { return dataDelegate; }
-                set { dataDelegate = value; }
-            }
+            public Data DataDelegate { get; set; }
 
             public Tuple<IntPtr, int> GetData()
             {
-                return dataDelegate();
+                return DataDelegate();
             }
-
-            //public Func<Tuple<IntPtr, int>> GetData { get; set; }
         }
 
         /// <summary>
@@ -976,16 +959,16 @@ namespace Ch.Cyberduck.Core
                 Justification = "Win32 API.")]
             [DllImport("shell32.dll")]
             public static extern int SHCreateStdEnumFmtEtc(uint cfmt, FORMATETC[] afmt,
-                                                           out IEnumFORMATETC ppenumFormatEtc);
+                out IEnumFORMATETC ppenumFormatEtc);
 
             [return: MarshalAs(UnmanagedType.Interface)]
             [DllImport("ole32.dll", PreserveSig = false)]
             public static extern IStream CreateStreamOnHGlobal(IntPtr hGlobal,
-                                                               [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease);
+                [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease);
 
             [DllImport("ole32.dll", CharSet = CharSet.Auto, ExactSpelling = true, PreserveSig = false)]
             public static extern void DoDragDrop(IDataObject dataObject, IDropSource dropSource, int allowedEffects,
-                                                 int[] finalEffect);
+                int[] finalEffect);
 
             [DllImport("kernel32.dll")]
             public static extern IntPtr GlobalLock(IntPtr hMem);

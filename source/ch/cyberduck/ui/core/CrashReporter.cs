@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,12 +24,11 @@ using System.Text;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ExceptionReporting.Core;
 using Path = System.IO.Path;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Core
 {
     internal class CrashReporter
     {
@@ -55,21 +55,21 @@ namespace Ch.Cyberduck.Core
             ExceptionReport report = reportGenerator.CreateExceptionReport();
 
             string crashDir = Path.Combine(PreferencesFactory.get().getProperty("application.support.path"),
-                                           "CrashReporter");
+                "CrashReporter");
             Directory.CreateDirectory(crashDir);
             using (StreamWriter outfile = new StreamWriter(Path.Combine(crashDir, DateTime.Now.Ticks + ".txt")))
             {
                 outfile.Write(report.ToString());
             }
             TaskDialog prompt = new TaskDialog();
-            DialogResult result = prompt.ShowCommandBox(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                                                        LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                                                        LocaleFactory.localizedString(
-                                                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
-                                                        String.Format("{0}|{1}",
-                                                                      LocaleFactory.localizedString("Send", "Crash"),
-                                                                      LocaleFactory.localizedString("Don't Send", "Crash")),
-                                                        false, SysIcons.Error);
+            DialogResult result =
+                prompt.ShowCommandBox(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                    LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
+                    LocaleFactory.localizedString(
+                        "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
+                        "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
+                    String.Format("{0}|{1}", LocaleFactory.localizedString("Send", "Crash"),
+                        LocaleFactory.localizedString("Don't Send", "Crash")), false, SysIcons.Error);
             if (DialogResult.OK == result)
             {
                 if (0 == prompt.CommandButtonResult)
@@ -86,8 +86,8 @@ namespace Ch.Cyberduck.Core
 
             //this might take some time as the WebRequest tries to detect the proxy settings first
             this.MultipartFormDataPost(
-                PreferencesFactory.get().getProperty("website.crash") + String.Format("?revision={0}&os={1}",
-                                                                                    revision, Environment.OSVersion),
+                PreferencesFactory.get().getProperty("website.crash") +
+                String.Format("?revision={0}&os={1}", revision, Environment.OSVersion),
                 String.Format("{0} ({1})", PreferencesFactory.get().getProperty("application.name"), revision),
                 postParameters);
         }
@@ -98,7 +98,7 @@ namespace Ch.Cyberduck.Core
         /// passed as a name/value pair.
         /// </summary>
         private HttpWebResponse MultipartFormDataPost(string postUrl, string userAgent,
-                                                      Dictionary<string, object> postParameters)
+            Dictionary<string, object> postParameters)
         {
             string formDataBoundary = "-----------------------------0xKhTmLbOuNdArY";
             string contentType = "multipart/form-data; boundary=" + formDataBoundary;
@@ -163,7 +163,7 @@ namespace Ch.Cyberduck.Core
                 {
                     string postData =
                         string.Format("--{0}\r\nContent-Disposition: form-data; name=\"{1}\"\r\n\r\n{2}\r\n", boundary,
-                                      param.Key, param.Value);
+                            param.Key, param.Value);
                     formDataStream.Write(Encoding.UTF8.GetBytes(postData), 0, postData.Length);
                 }
             }
