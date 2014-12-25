@@ -32,8 +32,6 @@ namespace Ch.Cyberduck.Core.Local
         protected const int ErrorFileNotFound = 2;
         private static readonly Logger Log = Logger.getLogger(typeof (SystemLocal).FullName);
 
-        private LocalAttributes _info;
-
         public SystemLocal(string parent, string name)
             : base(parent, name) {}
 
