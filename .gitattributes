@@ -2957,7 +2957,6 @@ test/ch/cyberduck/core/transfer/TransferCollectionCopyFormat.plist -text
 test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatDeprecated.plist -text
 test/ch/cyberduck/core/transfer/TransferCollectionCopyFormatInvalid.plist -text
 test/ch/cyberduck/core/transfer/TransferCollectionEmpty.plist -text
-test/ch/cyberduck/runner/AllTestsRunner.java -text
 test/ch/cyberduck/ui/controller/KeychainTest.cs -text
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
 th.lproj/Alert.strings -text svneol=unset#text/utf-16
