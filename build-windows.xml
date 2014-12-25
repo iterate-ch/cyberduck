@@ -129,6 +129,12 @@
         <!-- overwrite generated wyUpdate.exe -->
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
+        <copy todir="${build}">
+            <fileset dir="${home}">
+                <include name="*.ico"/>
+            </fileset>
+        </copy>
+
         <property name="setup.file"
                   location="${build.deploy}/${app.name}-Installer-${version}.${revision}.exe"/>
         <exec executable="${nsis.home}/makensis" failonerror="true">
