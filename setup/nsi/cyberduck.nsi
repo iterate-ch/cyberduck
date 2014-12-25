@@ -21,8 +21,8 @@ RequestExecutionLevel admin
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "..\cyberduck-application.ico"
-;!define MUI_UNICON "..\cyberduck-application.ico"
+!define MUI_ICON "${BASEDIR}\cyberduck-application.ico"
+;!define MUI_UNICON "${BASEDIR}\cyberduck-application.ico"
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "welcome.bmp"
@@ -214,7 +214,7 @@ Section "MainSection" SEC01
   File /nonfatal /r "${BASEDIR}\bookmarks"
   File /nonfatal /r "${BASEDIR}\profiles"
   File "${BASEDIR}\License.txt"
-  File "${BASEDIR}\..\cyberduck-document.ico"
+  File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
   File "${BASEDIR}\update\Updater.exe"
   File "${BASEDIR}\update\*.wyc"
