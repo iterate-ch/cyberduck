@@ -212,6 +212,7 @@
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
             <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
         </exec>
+        <checksum file="${build.deploy}/duck-${version}.${svn.revision}.pkg" algorithm="md5" />
         <exec executable="/usr/sbin/pkgutil" failonerror="true">
             <arg line="--check-signature ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
         </exec>
@@ -285,8 +286,7 @@
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
             <arg line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${version}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/${app.name}-${version}.pkg"
-                  algorithm="md5"/>
+        <checksum file="${build.deploy}/${app.name}-${version}.pkg" algorithm="md5"/>
     </target>
 
     <target name="lipo">
