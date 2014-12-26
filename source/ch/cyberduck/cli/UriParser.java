@@ -41,7 +41,6 @@ public class UriParser {
             case s3:
             case googlestorage:
             case swift:
-            case azure:
                 if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())) {
                     host.setHostname(host.getProtocol().getDefaultHostname());
                 }

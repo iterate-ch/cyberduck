@@ -50,7 +50,6 @@ public class PathParser {
             case s3:
             case googlestorage:
             case swift:
-            case azure:
                 if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
                     return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
                 }
