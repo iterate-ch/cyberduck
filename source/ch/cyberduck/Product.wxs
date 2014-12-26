@@ -38,7 +38,7 @@
       </Component>
       <Component Id="IKVM" Guid="1D130759-2B25-414F-A594-C1B987D8407F">
         <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.JNI.dll" />
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Core.dll" />
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Beans.dll" />
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" />
