@@ -33,7 +33,7 @@
       <Component Id="core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
         <File Source="$(var.CLI.TargetDir)/core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="core" Guid="152B9D4C-28E9-43C3-87C3-F0E7222ACD89">
+      <Component Id="windows-core" Guid="152B9D4C-28E9-43C3-87C3-F0E7222ACD89">
         <File Source="$(var.CLI.TargetDir)/cyberduck.windows.core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="IKVM" Guid="1D130759-2B25-414F-A594-C1B987D8407F">
