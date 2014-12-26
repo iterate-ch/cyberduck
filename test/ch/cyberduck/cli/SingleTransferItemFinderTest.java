@@ -40,9 +40,9 @@ public class SingleTransferItemFinderTest extends AbstractTestCase{
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote"});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
-        assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("remote")),
+        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("remote")),
                 found.iterator().next());
 
     }
@@ -52,9 +52,9 @@ public class SingleTransferItemFinderTest extends AbstractTestCase{
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "rackspace://cdn.cyberduck.ch/remote", "/tmp/f"});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
-        assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("/tmp/f")),
+        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("/tmp/f")),
                 found.iterator().next());
 
     }
@@ -64,7 +64,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase{
         final CommandLineParser parser = new BasicParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "rackspace://cdn.cyberduck.ch/remote"});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.file)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertTrue(found.isEmpty());
 
     }

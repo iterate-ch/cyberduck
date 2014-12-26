@@ -53,7 +53,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Download file or folder. Denote a folder with a trailing '/'. If the local filename is not specified it is downloaded to the current working directory with the same name the file has on the remote server")
                 .withLongOpt(TerminalAction.download.name())
-                .hasArgs(1).hasOptionalArgs(1).withArgName("url> <[file]").withValueSeparator(' ')
+                .hasArgs(2).withArgName("url> <[file]").withValueSeparator(' ')
                 .isRequired(false)
                 .create('d'));
         options.addOption(OptionBuilder
