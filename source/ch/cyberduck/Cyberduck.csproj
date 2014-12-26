@@ -597,9 +597,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\trash.tiff" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Windows Core.csproj">
       <Project>{ac161b73-0b4b-4a32-b0d7-205ac89d83a5}</Project>
       <Name>Windows Core</Name>
