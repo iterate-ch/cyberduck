@@ -31,7 +31,7 @@ import ch.cyberduck.core.DisabledTerminalService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
+import ch.cyberduck.core.aquaticprime.DisabledLicenseFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -1075,7 +1075,7 @@ public abstract class Preferences {
         defaults.put("factory.rendezvous.class", DisabledRendezvous.class.getName());
         defaults.put("factory.trash.class", DefaultLocalTrashFeature.class.getName());
         defaults.put("factory.symlink.class", NullLocalSymlinkFeature.class.getName());
-        defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
+        defaults.put("factory.licensefactory.class", DisabledLicenseFactory.class.getName());
         defaults.put("factory.badgelabeler.class", DisabledApplicationBadgeLabeler.class.getName());
         defaults.put("factory.filedescriptor.class", NullFileDescriptor.class.getName());
         defaults.put("factory.terminalservice.class", DisabledTerminalService.class.getName());

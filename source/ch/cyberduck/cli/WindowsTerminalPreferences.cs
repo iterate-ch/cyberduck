@@ -31,6 +31,7 @@ namespace Ch.Cyberduck.Cli
         {
             base.setFactories();
 
+            defaults.put("factory.licensefactory.class", typeof (WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);
             defaults.put("factory.supportdirectoryfinder.class",
                 typeof (RoamingSupportDirectoryFinder).AssemblyQualifiedName);

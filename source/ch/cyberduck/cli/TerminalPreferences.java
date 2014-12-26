@@ -26,6 +26,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.MemoryPreferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleLocale;
@@ -126,6 +127,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 final Local resources = new BundleApplicationResourcesFinder().find();
                 defaults.put("application.bookmarks.path", String.format("%s/Bookmarks", resources.getAbsolute()));
                 defaults.put("application.profiles.path", String.format("%s/Profiles", resources.getAbsolute()));
+
+                defaults.put("factory.licensefactory.class", DonationKeyFactory.class.getName());
                 break;
             }
             case windows: {
