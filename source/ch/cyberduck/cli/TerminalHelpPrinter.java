@@ -20,7 +20,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -45,40 +44,44 @@ public final class TerminalHelpPrinter {
         final HelpFormatter formatter = new TerminalHelpFormatter();
         formatter.setSyntaxPrefix("Usage:");
         formatter.setWidth(200);
-        final StringBuilder protocols = new StringBuilder("\nSupported protocols").append(StringUtils.LF);
+        final StringBuilder protocols = new StringBuilder(StringUtils.LF);
+        protocols.append("Supported protocols");
+        protocols.append(StringUtils.LF);
         for(Protocol p : ProtocolFactory.getEnabledProtocols()) {
-            protocols.append(p.getProvider()).append("\t").append(p.getDescription()).append(StringUtils.LF);
+            protocols.append(p.getProvider()).append("\t").append(p.getDescription());
+            protocols.append(StringUtils.LF);
             switch(p.getType()) {
                 case s3:
                 case googlestorage:
                 case swift:
                 case azure:
-                    protocols.append("\tExample URL: ").append(String.format("%s://<container>/<key>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.getProvider()));
                     break;
                 default:
-                    protocols.append("\tExample URL: ").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.getProvider()));
                     break;
             }
             protocols.append(StringUtils.LF);
         }
-        final String header = "\n\tURLs must be a fully qualified. Paths can either denote" +
-                "a remote file (ftps://user@example.net/resource) or folder ftps://user@example.net/directory/) with a trailing slash.\n" + protocols.toString();
-        final StringAppender footer = new StringAppender();
-        footer.append("Cyberduck is libre software licenced under the GPL");
+        final StringBuilder header = new StringBuilder(StringUtils.LF);
+        header.append("\t");
+        header.append("URLs must be a fully qualified. Paths can either denote "
+                + "a remote file (ftps://user@example.net/resource) or folder ftps://user@example.net/directory/) "
+                + "with a trailing slash.");
+        header.append(protocols.toString());
+        final StringBuilder footer = new StringBuilder(StringUtils.LF);
         final Preferences preferences = PreferencesFactory.get();
-        footer.append(String.format("For general help about using Cyberduck, please refer to %s and the wiki at %s",
-                preferences.getProperty("website.cli"), preferences.getProperty("website.help")));
-        footer.append(String.format("For bug reports or feature requests open a ticket at %s",
-                MessageFormat.format(preferences.getProperty("website.bug"),
-                        preferences.getProperty("application.version"))));
+        footer.append(String.format("Cyberduck is libre software licenced under the GPL. For general help about using Cyberduck, please refer to %s and the wiki at %s. For bug reports or feature requests open a ticket at %s.",
+                preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
         final License l = LicenseFactory.find();
+        footer.append(StringUtils.LF);
         if(l.verify()) {
             footer.append(l.toString());
         }
         else {
-            footer.append("\n\nNot registered. Purchase a donation key to support the development of this software.");
+            footer.append("Not registered. Purchase a donation key to support the development of this software.");
         }
-        formatter.printHelp("duck [options...]", header, options, footer.toString());
+        formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
     }
 
 }
