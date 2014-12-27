@@ -11,7 +11,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -32,10 +31,5 @@ public class QuartzQuickLookTest extends AbstractTestCase {
     @Test
     public void testIsAvailable() throws Exception {
         assertTrue(new QuartzQuickLook().isAvailable());
-    }
-
-    @Test
-    public void testOpen() throws Exception {
-        assertFalse(new QuartzQuickLook().isOpen());
     }
 }
