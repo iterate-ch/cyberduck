@@ -31,18 +31,18 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class TerminalOptionsInputValidator {
 
-    protected static boolean validate(final CommandLine input) {
+    private Console console = new Console();
+
+    public boolean validate(final CommandLine input) {
         final TerminalAction action = TerminalActionFinder.get(input);
         if(null == action) {
+            console.printf("%s\n", "Missing argument");
             return false;
         }
         // Validate arguments
         switch(action) {
             case list:
             case download:
-                if(StringUtils.isBlank(input.getOptionValue(action.name()))) {
-                    return false;
-                }
                 if(!validate(input.getOptionValue(action.name()))) {
                     return false;
                 }
@@ -50,9 +50,6 @@ public class TerminalOptionsInputValidator {
             case upload:
             case copy:
             case synchronize:
-                if(StringUtils.isBlank(input.getOptionValue(action.name()))) {
-                    return false;
-                }
                 if(!validate(input.getOptionValue(action.name()))) {
                     return false;
                 }
@@ -64,18 +61,21 @@ public class TerminalOptionsInputValidator {
     /**
      * Validate URI
      */
-    private static boolean validate(final String uri) {
+    private boolean validate(final String uri) {
         if(uri.indexOf("://", 0) != -1) {
             final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
+                console.printf("Missing protocol in URI %s\n", uri);
                 return false;
             }
         }
         final Host host = HostParser.parse(uri);
         if(StringUtils.isBlank(host.getHostname())) {
+            console.printf("Missing hostname in URI %s\n", uri);
             return false;
         }
         if(StringUtils.isBlank(host.getDefaultPath())) {
+            console.printf("Missing path in URI %s\n", uri);
             return false;
         }
         return true;

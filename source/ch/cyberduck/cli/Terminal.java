@@ -18,20 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.StringAppender;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -132,6 +119,7 @@ public class Terminal {
         catch(ParseException e) {
             final Console console = new Console();
             console.printf("%s\n", e.getMessage());
+            console.printf("Try '%s' for more options.\n", "duck --help");
             System.exit(1);
         }
         catch(Throwable error) {
@@ -153,85 +141,84 @@ public class Terminal {
                     preferences.getProperty("application.revision"));
             return Exit.success;
         }
-        if(TerminalOptionsInputValidator.validate(input)) {
-            this.configure(input);
-
-            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(final Thread t, final Throwable e) {
-                    new TerminalProgressListener().message(
-                            String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
-                    System.exit(1);
-                }
-            });
-            Session session = null;
-            try {
-                final TerminalAction action = TerminalActionFinder.get(input);
-                if(null == action) {
-                    return Exit.failure;
-                }
-                final String uri = input.getOptionValue(action.name());
-                final Host host = new UriParser(input).parse(uri);
-                if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
-                    host.getCredentials().setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
-                }
-                if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
-                    host.getCredentials().setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
-                }
-                if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
-                    host.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
-                }
-                session = SessionFactory.create(host);
-                final Path remote = new PathParser(input).parse(uri);
-                switch(action) {
-                    case edit:
-                        return this.edit(session, remote);
-                    case list:
-                        return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
-                }
-                final Transfer transfer;
-                switch(action) {
-                    case download:
-                    case upload:
-                    case synchronize:
-                        transfer = TerminalTransferFactory.create(action, host,
-                                new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
-                        break;
-                    case copy:
-                        transfer = new CopyTransfer(
-                                host,
-                                new UriParser(input).parse(input.getOptionValues(action.name())[1]),
-                                Collections.singletonMap(
-                                        new PathParser(input).parse(uri),
-                                        new PathParser(input).parse(input.getOptionValues(action.name())[1]))
-                        );
-                        // Connect
-                        this.connect(((CopyTransfer) transfer).getDestination());
-                        break;
-                    default:
-                        throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
-                                String.format("Unknown transfer type %s", action.name()));
-                }
-                return this.transfer(transfer, session);
-            }
-            catch(ConnectionCanceledException e) {
-                return Exit.success;
-            }
-            catch(BackgroundException e) {
-                final StringAppender b = new StringAppender();
-                b.append(e.getMessage());
-                b.append(e.getDetail());
-                console.printf("%s\n", b.toString());
-            }
-            finally {
-                this.disconnect(session);
-            }
+        if(!new TerminalOptionsInputValidator().validate(input)) {
+            console.printf("Try '%s' for more options.\n", "duck --help");
             return Exit.failure;
         }
-        else {
-            TerminalHelpPrinter.print(options);
-            return Exit.failure;
+        this.configure(input);
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                new TerminalProgressListener().message(
+                        String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
+                System.exit(1);
+            }
+        });
+        Session session = null;
+        try {
+            final TerminalAction action = TerminalActionFinder.get(input);
+            if(null == action) {
+                return Exit.failure;
+            }
+            final String uri = input.getOptionValue(action.name());
+            final Host host = new UriParser(input).parse(uri);
+            if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
+                final Credentials credentials = host.getCredentials();
+                credentials.setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
+            }
+            if(input.hasOption(TerminalOptionsBuilder.Params.password.name())) {
+                final Credentials credentials = host.getCredentials();
+                credentials.setPassword(input.getOptionValue(TerminalOptionsBuilder.Params.password.name()));
+            }
+            if(input.hasOption(TerminalOptionsBuilder.Params.identity.name())) {
+                host.getCredentials().setIdentity(LocalFactory.get(input.getOptionValue(TerminalOptionsBuilder.Params.identity.name())));
+            }
+            session = SessionFactory.create(host);
+            final Path remote = new PathParser(input).parse(uri);
+            switch(action) {
+                case edit:
+                    return this.edit(session, remote);
+                case list:
+                    return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+            }
+            final Transfer transfer;
+            switch(action) {
+                case download:
+                case upload:
+                case synchronize:
+                    transfer = TerminalTransferFactory.create(action, host,
+                            new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
+                    break;
+                case copy:
+                    transfer = new CopyTransfer(
+                            host,
+                            new UriParser(input).parse(input.getOptionValues(action.name())[1]),
+                            Collections.singletonMap(
+                                    new PathParser(input).parse(uri),
+                                    new PathParser(input).parse(input.getOptionValues(action.name())[1]))
+                    );
+                    // Connect
+                    this.connect(((CopyTransfer) transfer).getDestination());
+                    break;
+                default:
+                    throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
+                            String.format("Unknown transfer type %s", action.name()));
+            }
+            return this.transfer(transfer, session);
         }
+        catch(ConnectionCanceledException e) {
+            return Exit.success;
+        }
+        catch(BackgroundException e) {
+            final StringAppender b = new StringAppender();
+            b.append(e.getMessage());
+            b.append(e.getDetail());
+            console.printf("%s\n", b.toString());
+        }
+        finally {
+            this.disconnect(session);
+        }
+        return Exit.failure;
     }
 
     protected void configure(final CommandLine input) {
