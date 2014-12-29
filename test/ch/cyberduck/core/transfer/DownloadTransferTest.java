@@ -1,6 +1,8 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -133,6 +135,26 @@ public class DownloadTransferTest extends AbstractTestCase {
                 return true;
             }
         }, new DisabledListProgressListener()).isEmpty());
+    }
+
+    @Test
+    public void testPrepareDownloadHttp() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        service.connect(session, Cache.<Path>empty());
+        final Path test = new Path("/Cyberduck-4.6.zip", EnumSet.of(Path.Type.file));
+        final Transfer transfer = new DownloadTransfer(new Host("t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
+        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback());
+        worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir")), new TransferStatus().exists(true),
+                new OverwriteFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
+                        session)
+        );
     }
 
     @Test
