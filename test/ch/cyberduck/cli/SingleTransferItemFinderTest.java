@@ -33,7 +33,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class SingleTransferItemFinderTest extends AbstractTestCase{
+public class SingleTransferItemFinderTest extends AbstractTestCase {
 
     @Test
     public void testNoLocalInOptionsDownload() throws Exception {
@@ -66,6 +66,16 @@ public class SingleTransferItemFinderTest extends AbstractTestCase{
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertTrue(found.isEmpty());
+    }
 
+    @Test
+    public void testDeferUploadNameFromLocal() throws Exception {
+        final CommandLineParser parser = new BasicParser();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", "/tmp/f"});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get("/tmp/f")),
+                found.iterator().next());
     }
 }

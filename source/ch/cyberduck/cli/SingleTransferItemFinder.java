@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -51,6 +52,9 @@ public class SingleTransferItemFinder implements TransferItemFinder {
                     return Collections.emptySet();
             }
             local = LocalFactory.get(remote.getName());
+        }
+        if(remote.isDirectory()) {
+            return Collections.singleton(new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.file)), local));
         }
         return Collections.singleton(new TransferItem(remote, local));
     }
