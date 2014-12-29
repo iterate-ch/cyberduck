@@ -60,22 +60,22 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
             final Path file = list.get(i);
             if(l) {
                 if(file.isSymbolicLink()) {
-                    console.printf(String.format("l%s\t%s\t%s -> %s\n",
+                    console.printf("l%s\t%s\t%s -> %s\n",
                             file.attributes().getPermission().getSymbol(),
                             formatter.getMediumFormat(
                                     file.attributes().getModificationDate()),
-                            file.getName(), file.getSymlinkTarget().getAbsolute()));
+                            file.getName(), file.getSymlinkTarget().getAbsolute());
                 }
                 else {
-                    console.printf(String.format("%s%s\t%s\t%s\n", file.isDirectory() ? 'd' : '-',
+                    console.printf("%s%s\t%s\t%s\n", file.isDirectory() ? "d" : "-",
                             file.attributes().getPermission().getSymbol(),
                             formatter.getMediumFormat(
                                     file.attributes().getModificationDate()),
-                            file.getName()));
+                            file.getName());
                 }
             }
             else {
-                console.printf(String.format("%s\n", file.getName()));
+                console.printf("%s\n", file.getName());
             }
         }
         size += list.size() - size;

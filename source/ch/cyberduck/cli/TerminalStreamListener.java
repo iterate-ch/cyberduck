@@ -57,7 +57,7 @@ public class TerminalStreamListener implements StreamListener {
         for(; i < width; i++) {
             console.printf(StringUtils.SPACE);
         }
-        console.printf(String.format("] %s", progress.getProgress()));
+        console.printf("] %s", progress.getProgress());
     }
 
     @Override
