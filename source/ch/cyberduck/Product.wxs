@@ -20,8 +20,9 @@
                          Name="PATH"
                          Permanent="no"
                          System="yes"
-                         Value="[INSTALLFOLDER]" />
+                         Value="[INSTALLFOLDER]" />          
           </Component>
+         <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
       </Directory>
     </Directory>
@@ -30,33 +31,86 @@
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
         <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
+        <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="acknowledgments" Guid="95A3AF7B-D782-47C5-9AEE-398DEE02D222">
+        <File Source="$(var.CLI.TargetDir)/Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
         <File Source="$(var.CLI.TargetDir)/core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="windows.core" Guid="152B9D4C-28E9-43C3-87C3-F0E7222ACD89">
+      <Component Id="windows.core" Guid="678E99DD-6943-495D-8742-ECE21846365D">
         <File Source="$(var.CLI.TargetDir)/cyberduck.windows.core.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="IKVM" Guid="1D130759-2B25-414F-A594-C1B987D8407F">
+      <Component Id="ikvm.runtime" Guid="CBF03DF9-ADB2-4B77-BA28-E5C5BC0D10BE">
         <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.JNI.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Core.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Beans.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Jdbc.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Security.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Text.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Util.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.API.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" />
-        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" />
+      </Component>
+      <Component Id="ikvm.runtime.jni" Guid="FF7FDFAA-9930-48F6-9AEF-96B5182263AA">
+        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.core" Guid="5F3B0202-28BE-4942-BEF0-C929B5D248AB">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.beans" Guid="860C9858-A36C-4AF7-9583-A2AA8F9884DF">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.charsets" Guid="700C1DBC-EADB-4FF0-B315-3119F1066219">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.jdbc" Guid="BA4C5CF6-588A-4036-AE61-2D54A97F106C">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.security" Guid="1B1BE55B-387C-4559-8A23-C6CB24CA7BDB">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.swingawt" Guid="7BC8B02E-D6A9-4FBD-83D6-01F60B916CF1">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.text" Guid="5ED02B77-D4DA-460C-B94E-38694B253DE5">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.util" Guid="846EF773-9449-4A87-9D93-5E82DE274BF4">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.xml.api" Guid="F8C5B769-FABF-4D33-B005-EB6BBF8591B8">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.xml.bind" Guid="5CF8B0D1-AAE1-4EC2-BF2A-C7F20D18D3CF">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.xml.parse" Guid="630403AD-B691-4215-9D06-5729CFDF1506">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.xml.transform" Guid="A41849C5-E22A-40C3-B62B-8FC8B7F5C4F9">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.xml.xpath" Guid="BC007679-0E64-4D96-94AA-A88CE7302E32">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.naming" Guid="F99DD3CA-1E4E-4F17-9F94-52A3E93BDAD5">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
+        <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x86.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
+        <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+        <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="profiles" Directory="PROFILES">
+      <Component Id="rackspace" Guid="23B4C8D9-0E58-43D9-A8CE-85A069E6FDC8">
+        <File Source="$(var.CLI.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 
     <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="profiles" />
       <ComponentRef Id="setEnviroment" />
     </Feature>
   </Product>

@@ -121,6 +121,25 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+    <CallTarget Targets="AssemblyInfo" />
+    <ItemGroup>
+      <AdditionalResources Include="..\..\..\Acknowledgments.rtf" />
+      <AdditionalResources Include="..\..\..\en.lproj\License.txt" />
+    </ItemGroup>
+    <ItemGroup>
+      <DefaultProfiles Include="..\..\..\profiles\Rackspace US.cyberduckprofile" />
+    </ItemGroup>
+    <ItemGroup>
+      <JNASupport Include="..\..\..\lib\ikvm-native-win32-x86.dll" />
+      <JNASupport Include="..\..\..\lib\jnidispatch.dll" />
+    </ItemGroup>
+    <ItemGroup>
+      <SunMSCAPI Include="..\..\..\lib\sunmscapi.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="@(DefaultProfiles)" DestinationFolder="$(OutputPath)\profiles" />
+    <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

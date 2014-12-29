@@ -1760,6 +1760,7 @@ lib/IKVM.OpenJDK.Beans.dll -text
 lib/IKVM.OpenJDK.Charsets.dll -text
 lib/IKVM.OpenJDK.Core.dll -text
 lib/IKVM.OpenJDK.Jdbc.dll -text
+lib/IKVM.OpenJDK.Naming.dll -text
 lib/IKVM.OpenJDK.Security.dll -text
 lib/IKVM.OpenJDK.SwingAWT.dll -text
 lib/IKVM.OpenJDK.Text.dll -text
