@@ -45,6 +45,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -524,7 +525,7 @@ public class ConnectionController extends SheetController {
 
     /**
      * Updating the password field with the actual password if any
-     * is avaialble for this hostname
+     * is available for this hostname
      */
     public void readPasswordFromKeychain() {
         if(preferences.getBoolean("connection.login.useKeychain")) {
@@ -539,7 +540,7 @@ public class ConnectionController extends SheetController {
             }
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             this.updateField(this.passField, PasswordStoreFactory.get().getPassword(protocol.getScheme(),
-                    portField.intValue(),
+                    NumberUtils.toInt(portField.stringValue(), -1),
                     hostField.stringValue(), usernameField.stringValue()));
         }
     }
@@ -553,7 +554,7 @@ public class ConnectionController extends SheetController {
                     protocol.getScheme(),
                     usernameField.stringValue(),
                     hostField.stringValue(),
-                    portField.intValue(),
+                    NumberUtils.toInt(portField.stringValue(), -1),
                     PathNormalizer.normalize(pathField.stringValue()));
             urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         }
@@ -583,10 +584,10 @@ public class ConnectionController extends SheetController {
         if(returncode == DEFAULT_OPTION) {
             this.window().endEditingFor(null);
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            Host host = new Host(
+            final Host host = new Host(
                     protocol,
                     hostField.stringValue(),
-                    portField.intValue(),
+                    NumberUtils.toInt(portField.stringValue(), -1),
                     pathField.stringValue());
             if(protocol.getType() == Protocol.Type.ftp) {
                 host.setFTPConnectMode(FTPConnectMode.valueOf(connectmodePopup.selectedItem().representedObject()));
