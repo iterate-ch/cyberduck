@@ -25,8 +25,10 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
 
 import org.apache.commons.net.ftp.FTPCmd;
 
@@ -39,6 +41,9 @@ import java.util.List;
 public class FTPAttributesFeature implements Attributes {
 
     private FTPSession session;
+
+    private Cache<Path> cache
+            = Cache.empty();
 
     public FTPAttributesFeature(FTPSession session) {
         this.session = session;
@@ -66,6 +71,9 @@ public class FTPAttributesFeature implements Attributes {
             }
             throw new NotfoundException(file.getAbsolute());
         }
+        catch(InteroperabilityException e) {
+            return new DefaultAttributesFeature(session).withCache(cache).find(file);
+        }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
@@ -73,6 +81,7 @@ public class FTPAttributesFeature implements Attributes {
 
     @Override
     public Attributes withCache(Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
