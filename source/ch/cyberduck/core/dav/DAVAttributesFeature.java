@@ -50,7 +50,8 @@ public class DAVAttributesFeature implements Attributes {
 
     private DAVSession session;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache
+            = Cache.empty();
 
     private RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
