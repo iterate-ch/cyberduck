@@ -40,6 +40,8 @@ public class DAVAttributesFeature implements Attributes {
 
     private DAVSession session;
 
+    private Cache<Path> cache;
+
     public DAVAttributesFeature(DAVSession session) {
         this.session = session;
     }
@@ -70,7 +72,7 @@ public class DAVAttributesFeature implements Attributes {
                 throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(InteroperabilityException i) {
-                return new DefaultAttributesFeature(session).find(file);
+                return new DefaultAttributesFeature(session).withCache(cache).find(file);
             }
         }
         catch(IOException e) {
@@ -80,6 +82,7 @@ public class DAVAttributesFeature implements Attributes {
 
     @Override
     public Attributes withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
