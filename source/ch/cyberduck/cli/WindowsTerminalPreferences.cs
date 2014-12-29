@@ -16,21 +16,31 @@
 // yves@cyberduck.ch
 // 
 
+using System.IO;
+using System.Reflection;
 using ch.cyberduck.cli;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Aquaticprime;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
-using Ch.Cyberduck.Core.Aquaticprime;
 
 namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
+        private static string ApplicationPath
+        {
+            get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); }
+        }
+
         protected override void setFactories()
         {
             base.setFactories();
+
+            defaults.put("application.bookmarks.path", Path.Combine(ApplicationPath, "bookmarks"));
+            defaults.put("application.profiles.path", Path.Combine(ApplicationPath, "profiles"));
 
             defaults.put("factory.licensefactory.class", typeof (WindowsLicenseFactory).AssemblyQualifiedName);
             defaults.put("factory.locale.class", typeof (DictionaryLocale).AssemblyQualifiedName);

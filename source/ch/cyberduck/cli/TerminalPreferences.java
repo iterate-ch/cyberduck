@@ -137,8 +137,6 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("connection.ssl.keystore.type", "Windows-MY");
                 defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
-                defaults.put("application.bookmarks.path", "bookmarks"); // relative to .exe
-                defaults.put("application.profiles.path", "profiles"); // relative to .exe
                 break;
             }
             case linux: {
