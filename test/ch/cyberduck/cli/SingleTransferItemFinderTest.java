@@ -19,6 +19,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -29,6 +30,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.junit.Test;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -42,9 +44,8 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
 
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
-        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("remote")),
+        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get(System.getProperty("user.dir") + "/remote")),
                 found.iterator().next());
-
     }
 
     @Test
@@ -77,5 +78,42 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get("/tmp/f")),
                 found.iterator().next());
+    }
+
+    @Test
+    public void testUploadDirectory() throws Exception {
+        final CommandLineParser parser = new BasicParser();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", "/tmp"});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        final Iterator<TransferItem> iter = found.iterator();
+        final Local temp = LocalFactory.get("/tmp");
+        assertEquals(EnumSet.of(Path.Type.directory, Path.Type.symboliclink), temp.getType());
+        assertEquals(new TransferItem(new Path("/remote/tmp", EnumSet.of(Path.Type.directory)), temp), iter.next());
+    }
+
+    @Test
+    public void testDownloadFileToDirectoryTarget() throws Exception {
+        final CommandLineParser parser = new BasicParser();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "ftps://test.cyberduck.ch/remote/f", "/tmp"});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote/f", EnumSet.of(Path.Type.file)));
+        assertFalse(found.isEmpty());
+        final Iterator<TransferItem> iter = found.iterator();
+        assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get("/tmp/f")),
+                iter.next());
+    }
+
+    @Test
+    public void testDownloadDirectoryTarget() throws Exception {
+        final CommandLineParser parser = new BasicParser();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "ftps://test.cyberduck.ch/remote/", "/tmp"});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        final Iterator<TransferItem> iter = found.iterator();
+        assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)), LocalFactory.get("/tmp/remote")),
+                iter.next());
     }
 }

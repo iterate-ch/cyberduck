@@ -44,7 +44,7 @@ public class GlobTransferItemFinderTest extends AbstractTestCase {
 
         final Set<TransferItem> found = new GlobTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
-        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get("remote")),
+        assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get(System.getProperty("user.dir") + "/remote")),
                 found.iterator().next());
 
     }

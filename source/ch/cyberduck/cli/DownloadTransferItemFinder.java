@@ -21,7 +21,6 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.WorkdirPrefixer;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
@@ -32,32 +31,25 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class SingleTransferItemFinder implements TransferItemFinder {
-
-    private WorkdirPrefixer prefixer
-            = new WorkdirPrefixer();
+public class DownloadTransferItemFinder implements TransferItemFinder {
 
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
-        final Local local;
-        if(input.getOptionValues(action.name()).length == 2) {
-            switch(action) {
-                case download:
-                    return new DownloadTransferItemFinder().find(input, action, remote);
-                case upload:
-                    return new UploadTransferItemFinder().find(input, action, remote);
+        final Local local = LocalFactory.get(input.getOptionValues(action.name())[1]);
+        if(remote.isDirectory()) {
+            // Remote path resolves to directory
+            if(local.exists()) {
+                return Collections.singleton(new TransferItem(remote, LocalFactory.get(local, remote.getName())));
             }
+            return Collections.singleton(new TransferItem(remote, local));
         }
-        else {
-            switch(action) {
-                case upload:
-                case synchronize:
-                    return Collections.emptySet();
-            }
+        // Remote path resolves to file
+        if(local.isDirectory()) {
+            // Append remote filename to local target
+            return Collections.singleton(new TransferItem(remote, LocalFactory.get(local, remote.getName())));
         }
-        // Relative to current working directory using prefix finder.
-        return Collections.singleton(
-                new TransferItem(remote, LocalFactory.get(prefixer.normalize(remote.getName())))
-        );
+        // Keep from input
+        return Collections.singleton(new TransferItem(remote, local));
     }
 }
+

@@ -44,6 +44,7 @@ public class GlobTransferItemFinder implements TransferItemFinder {
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) throws AccessDeniedException {
         if(input.getOptionValues(action.name()).length == 2) {
             final String path = input.getOptionValues(action.name())[1];
+            // This only applies to a shell where the glob is not already expanded into multiple arguments
             if(StringUtils.containsAny(path, '*', '?')) {
                 final Local directory = LocalFactory.get(path).getParent();
                 if(directory.isDirectory()) {
