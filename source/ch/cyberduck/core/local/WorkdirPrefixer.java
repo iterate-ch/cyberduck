@@ -28,6 +28,9 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class WorkdirPrefixer {
 
+    private final WorkingDirectoryFinder finder
+            = WorkingDirectoryFinderFactory.get();
+
     private Local workdir;
 
     public WorkdirPrefixer() {
@@ -45,7 +48,7 @@ public class WorkdirPrefixer {
     public String normalize(final String name) {
         if(!this.isAbsolute(name)) {
             if(null == workdir) {
-                return String.format("%s%s%s", WorkingDirectoryFinderFactory.get().find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
+                return String.format("%s%s%s", finder.find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
             }
             return String.format("%s%s%s", workdir.getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
         }
