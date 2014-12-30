@@ -30,6 +30,7 @@ import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -50,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /**
  * @version $Id$
@@ -94,6 +96,13 @@ public class ConnectionController extends SheetController {
         // Reset password input
         passField.setStringValue(StringUtils.EMPTY);
         super.beginSheet();
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setContentMinSize(window.frame().size);
+        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        super.setWindow(window);
     }
 
     @Outlet

@@ -1336,6 +1336,7 @@ public class InfoController extends ToolbarWindowController {
     @Override
     public void setWindow(final NSWindow window) {
         window.setShowsResizeIndicator(true);
+        window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
     }

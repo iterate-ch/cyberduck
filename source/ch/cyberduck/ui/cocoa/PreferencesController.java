@@ -263,6 +263,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
         window.setFrameAutosaveName("Preferences");
+        window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(800, window.frame().size.height.doubleValue()));
         super.setWindow(window);
     }

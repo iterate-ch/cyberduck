@@ -99,7 +99,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
-        this.window.setReleasedWhenClosed(!this.isSingleton());
+        window.setReleasedWhenClosed(!this.isSingleton());
         window.setDelegate(this.id());
     }
 
