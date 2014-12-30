@@ -89,7 +89,7 @@ public class SingleTransferItemFinderTest extends AbstractTestCase {
         assertFalse(found.isEmpty());
         final Iterator<TransferItem> iter = found.iterator();
         final Local temp = LocalFactory.get("/tmp");
-        assertEquals(EnumSet.of(Path.Type.directory, Path.Type.symboliclink), temp.getType());
+        assertTrue(temp.getType().contains(Path.Type.directory));
         assertEquals(new TransferItem(new Path("/remote/tmp", EnumSet.of(Path.Type.directory)), temp), iter.next());
     }
 
