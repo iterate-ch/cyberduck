@@ -27,14 +27,15 @@ public class KeychainTest extends AbstractTestCase {
         assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));
     }
 
-
     @Test
+    @Ignore
     public void testTrustedEmptyCertificates() throws Exception {
         final CertificateStore k = new Keychain();
         assertFalse(k.isTrusted("cyberduck.ch", Collections.<X509Certificate>emptyList()));
     }
 
     @Test
+    @Ignore
     public void testTrusted() throws Exception {
         final CertificateStore k = new Keychain();
         InputStream inStream = new FileInputStream("test/ch/cyberduck/core/ssl/OXxlRDVcWqdPEvFm.cer");
