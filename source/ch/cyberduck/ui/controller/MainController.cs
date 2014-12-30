@@ -491,27 +491,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 thirdpartySemaphore.Signal();
             });
-            _controller.Background(delegate
-            {
-                bookmarksSemaphore.Wait();
-                thirdpartySemaphore.Wait();
-                BookmarkCollection c = BookmarkCollection.defaultCollection();
-                if (c.isEmpty())
-                {
-                    FolderBookmarkCollection defaults =
-                        new FolderBookmarkCollection(
-                            LocalFactory.get(PreferencesFactory.get().getProperty("application.bookmarks.path")));
-                    defaults.load();
-                    foreach (Host bookmark in defaults)
-                    {
-                        if (Logger.isDebugEnabled())
-                        {
-                            Logger.debug("Adding default bookmark:" + bookmark);
-                        }
-                        c.add(bookmark);
-                    }
-                }
-            }, delegate { });
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()

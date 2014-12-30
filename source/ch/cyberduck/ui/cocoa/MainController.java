@@ -1165,46 +1165,6 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
-        // Add default bookmarks if empty user collection
-        this.background(new AbstractBackgroundAction<Void>() {
-            @Override
-            public Void run() throws BackgroundException {
-                // Wait until bookmarks are loaded
-                try {
-                    bookmarksSemaphore.await();
-                    thirdpartySemaphore.await();
-                }
-                catch(InterruptedException e) {
-                    log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-                }
-                final BookmarkCollection c = BookmarkCollection.defaultCollection();
-                if(c.isEmpty()) {
-                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.get(
-                            preferences.getProperty("application.bookmarks.path")
-                    )) {
-                        private static final long serialVersionUID = -6110285052565190698L;
-
-                        @Override
-                        protected void rename(Local next, Host bookmark) {
-                            // Bookmarks in application bundle should not attempt to be renamed to UUID
-                        }
-                    };
-                    defaults.load();
-                    for(Host bookmark : defaults) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Adding default bookmark %s", bookmark));
-                        }
-                        c.add(bookmark);
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public String getActivity() {
-                return "Loading Default Bookmarks";
-            }
-        });
     }
 
     /**
