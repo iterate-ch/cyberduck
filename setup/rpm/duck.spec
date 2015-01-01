@@ -1,6 +1,6 @@
 Summary: Cyberduck
 Name: duck
-Version: ${VERSION}
+Version: ${VERSION}.${REVISION}
 Release: 1
 License: GPL
 Vendor: cyberduck.io
