@@ -19,8 +19,7 @@ class Duck < Formula
 
   def caveats;
     <<-EOS.undent
-    For more information refer to
-      https://trac.cyberduck.io/wiki/help/en/howto/cli
+    For more information refer to https://duck.sh/
     EOS
   end
 end
