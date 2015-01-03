@@ -60,21 +60,22 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
             // If the type is kCFProxyTypeAutoConfigurationURL, it has an entry for kCFProxyAutoConfigurationURLKey
             NSString *pacLocation = [proxyConfiguration objectForKey:(NSString *)kCFProxyAutoConfigurationURLKey];
             if(!pacLocation) {
-                CFRelease(proxyConfiguration);
-                continue;
-            }
-            // Obtain from URL for automatic proxy configuration
-            NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:NULL];
-            if(!pacScript) {
-                CFRelease(proxyConfiguration);
+                CFRelease(proxyConfigurations);
                 continue;
             }
             CFErrorRef error = NULL;
+            // Obtain from URL for automatic proxy configuration
+            NSString *pacScript = [NSString stringWithContentsOfURL:[NSURL URLWithString:pacLocation] encoding:NSUTF8StringEncoding error:&error];
+            if(error) {
+                CFRelease(error);
+                CFRelease(proxyConfigurations);
+                continue;
+            }
             // Executes a proxy auto configuration script to determine the best proxy to use to retrieve a specified URL
             NSArray *pacProxies = (NSArray*)CFNetworkCopyProxiesForAutoConfigurationScript((CFStringRef)pacScript, (CFURLRef)[NSURL URLWithString:targetURL], &error);
             if(error) {
                 CFRelease(error);
-                CFRelease(proxyConfiguration);
+                CFRelease(proxyConfigurations);
                 continue;
             }
             NSEnumerator *enumerator = [pacProxies objectEnumerator];
@@ -83,17 +84,17 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_findNa
             while (nil != (dict = [enumerator nextObject])) {
                 proxyUrl = [Proxy evaluate:dict];
                 if(nil != proxyUrl) {
-                    // Break on first match
+                    // Break on first match. The array is ordered optimally for requesting the URL specified.
                     break;
                 }
             }
-            CFRelease(proxyConfiguration);
+            CFRelease(proxyConfigurations);
             CFRelease(pacProxies);
             return proxyUrl;
         }
         else {
             NSString *proxyUrl = [Proxy evaluate:proxyConfiguration];
-            CFRelease(proxyConfiguration);
+            CFRelease(proxyConfigurations);
             return proxyUrl;
         }
     }
