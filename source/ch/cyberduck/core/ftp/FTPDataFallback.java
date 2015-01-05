@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -95,21 +96,7 @@ public class FTPDataFallback {
             }
             throw failure;
         }
-        catch(InteroperabilityException failure) {
-            log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
-            // Fallback handling
-            if(PreferencesFactory.get().getBoolean("ftp.connectmode.fallback")) {
-                try {
-                    return this.fallback(action);
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Connect mode fallback failed with %s", e.getMessage()));
-                    // Throw original error message
-                }
-            }
-            throw failure;
-        }
-        catch(AccessDeniedException failure) {
+        catch(InteroperabilityException | NotfoundException | AccessDeniedException failure) {
             log.warn(String.format("Server denied data socket operation with %s", failure.getMessage()));
             // Fallback handling
             if(PreferencesFactory.get().getBoolean("ftp.connectmode.fallback")) {
