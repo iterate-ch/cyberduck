@@ -116,6 +116,7 @@ public final class ActivityController extends WindowController {
 
     @Override
     public void setWindow(NSWindow window) {
+        window.setContentMinSize(window.frame().size);
         window.setTitle(LocaleFactory.localizedString("Activity"));
         super.setWindow(window);
     }

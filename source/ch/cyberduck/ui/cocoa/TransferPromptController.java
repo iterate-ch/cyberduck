@@ -106,6 +106,12 @@ public abstract class TransferPromptController extends SheetController
         return "Prompt";
     }
 
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setContentMinSize(window.frame().size);
+        super.setWindow(window);
+    }
+
     @Outlet
     private NSButton toggleDetailsButton;
 

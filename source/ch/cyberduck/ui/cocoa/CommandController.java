@@ -25,6 +25,7 @@ import ch.cyberduck.binding.application.NSLayoutManager;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
@@ -55,6 +56,12 @@ public class CommandController extends SheetController implements TranscriptList
     private NSProgressIndicator progress;
     @Outlet
     private NSImageView image;
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setContentMinSize(window.frame().size);
+        super.setWindow(window);
+    }
 
     public void setInputField(NSTextField inputField) {
         this.inputField = inputField;

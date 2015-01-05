@@ -170,6 +170,7 @@ public final class TransferController extends WindowController implements NSTool
 
     @Override
     public void setWindow(NSWindow window) {
+        window.setContentMinSize(new NSSize(400d, 150d));
         window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
         super.setWindow(window);
