@@ -76,6 +76,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractTestCase {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
+        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new DisabledProgressListener());
         assertFalse(new S3FindFeature(session).find(test));

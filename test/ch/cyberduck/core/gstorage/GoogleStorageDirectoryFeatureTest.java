@@ -94,6 +94,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new GoogleStorageDirectoryFeature(session).mkdir(test, null);
+        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());

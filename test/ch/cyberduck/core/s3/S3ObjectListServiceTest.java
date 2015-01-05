@@ -180,6 +180,7 @@ public class S3ObjectListServiceTest extends AbstractTestCase {
         container.attributes().setRegion("us-east-1");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(placeholder);
+        placeholder.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new DisabledProgressListener());
