@@ -27,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
-import java.util.EnumSet;
-
 /**
  * @version $Id$
  */
@@ -61,10 +59,8 @@ public class S3DirectoryFeature implements Directory {
                 }
             }
             else {
-                // Set type to placeholder
-                file.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 // Add placeholder object
-                final StorageObject object = new StorageObject(containerService.getKey(file));
+                final StorageObject object = new StorageObject(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
                 object.setBucketName(containerService.getContainer(file).getName());
                 object.setContentLength(0);
                 object.setContentType("application/x-directory");
