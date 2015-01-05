@@ -20,10 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
 
             openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format",
-                                                                 "Credentials");
+                "Credentials");
 
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -117,8 +117,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             comboBoxConnectMode.DataSource = null;
             comboBoxConnectMode.DataSource = modes;
-            comboBoxConnectMode.ValueMember = "Key";
-            comboBoxConnectMode.DisplayMember = "Value";
+            comboBoxConnectMode.DisplayMember = "Key";
+            comboBoxConnectMode.ValueMember = "Value";
         }
 
         public void PopulateEncodings(List<string> encodings)
