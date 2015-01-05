@@ -82,7 +82,7 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
         }
         if(status == FTPReply.FILE_UNAVAILABLE) {
             // Requested action not taken. File unavailable (e.g., file not found, no access)
-            return new NotfoundException(buffer.toString(), e);
+            return new AccessDeniedException(buffer.toString(), e);
         }
         if(status == FTPReply.UNAVAILABLE_RESOURCE) {
             return new NotfoundException(buffer.toString(), e);
