@@ -83,6 +83,7 @@ public class S3DirectoryFeatureTest extends AbstractTestCase {
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session).mkdir(test, null);
         assertTrue(b.get());
+        test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new DisabledProgressListener());
