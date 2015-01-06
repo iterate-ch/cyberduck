@@ -178,6 +178,9 @@
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
             <param name="directory" value="${cli.bundle}"/>
         </foreach>
+    </target>
+
+    <target name="package.cli" depends="cli">
         <antcall target="codesign">
             <param name="bundle" value="${cli.bundle}"/>
             <param name="codesign.options" value="--force"/>
