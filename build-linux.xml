@@ -60,7 +60,7 @@
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath refid="javafx.classpath"/>
         </taskdef>
-        <echo>Create native bundles, classpath: ${toString:javafx.classpath}</echo>
+        <echo message="Create native bundles with classpath ${toString:javafx.classpath}"/>
         <fx:deploy nativeBundles="${cli.bundles}"
                    outdir="${build.deploy}"
                    outfile="${app.name}-${version}"
