@@ -10,7 +10,7 @@ class Duck < Formula
 
   def install
     system "ant", "-Drevision=${REVISION}", "cli"
-    libexec.install Dir['build/duck.bundle/*']
+    libexec.install Dir["build/duck.bundle/*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 

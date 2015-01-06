@@ -6,7 +6,7 @@ class Duck < Formula
 
   def install
     # Because compiling would need a JDK and xcodebuild we just use the pre-compiled binary.
-    libexec.install Dir['*']
+    libexec.install Dir["*"]
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 
