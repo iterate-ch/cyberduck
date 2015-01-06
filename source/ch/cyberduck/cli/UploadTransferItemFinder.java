@@ -49,18 +49,17 @@ public class UploadTransferItemFinder implements TransferItemFinder {
         if(local.isDirectory()) {
             // Local path resolves to folder
             if(remote.isDirectory()) {
-                // Append local path mame to remote target
-                return new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.directory)), local);
+                // Keep from input
+                return new TransferItem(remote, local);
             }
-            // Keep from input
-            return new TransferItem(remote, local);
+            return new TransferItem(new Path(remote.getAbsolute(), EnumSet.of(Path.Type.directory)), local);
         }
         // Local path resolves to file
         if(remote.isDirectory()) {
             // Append local name to remote target
             return new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.file)), local);
         }
-        // Keep from input
+        // Keep from input for file transfer
         return new TransferItem(remote, local);
     }
 }
