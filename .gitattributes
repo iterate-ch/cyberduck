@@ -2416,6 +2416,8 @@ ru.lproj/Support.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /sandbox.plist -text
 setup/banner.png -text
+setup/brew/duck-binary.rb -text
+setup/brew/duck-source.rb -text
 setup/deb/duck.control -text
 setup/deb/duck.postinstall -text
 setup/deb/duck.postrm -text
@@ -3150,8 +3152,6 @@ www/update/changelog.html -text
 www/update/changelog.rss -text
 www/update/changelog.txt -text
 www/update/changelog.wyp -text
-www/update/duck-binary.rb -text
-www/update/duck-source.rb -text
 www/update/nightly/changelog.wyp -text
 www/update/update.pem -text
 www/update/updater.wyp -text
