@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,8 +49,6 @@ public class S3BucketListService implements RootListService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3LocationFeature locationFeature;
-
     private S3LocationFeature.S3Region region;
 
     public S3BucketListService(final S3Session session) {
@@ -59,7 +58,6 @@ public class S3BucketListService implements RootListService {
     public S3BucketListService(final S3Session session, final S3LocationFeature.S3Region region) {
         this.session = session;
         this.region = region;
-        this.locationFeature = new S3LocationFeature(session);
     }
 
     @Override
@@ -110,7 +108,7 @@ public class S3BucketListService implements RootListService {
                         if(region.getIdentifier() != null) {
                             final String location;
                             if(!b.isLocationKnown()) {
-                                location = locationFeature.getLocation(bucket).getIdentifier();
+                                location = session.getFeature(Location.class).getLocation(bucket).getIdentifier();
                             }
                             else {
                                 location = b.getLocation();
