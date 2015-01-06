@@ -43,7 +43,11 @@ public class TerminalTransferPrompt implements TransferPrompt {
     }
 
     @Override
-    public TransferAction prompt(final TransferItem file) {
+    public TransferAction prompt(final TransferItem item) {
+        if(item.remote.isDirectory()) {
+            // Skip creating existing directories by default and continue with files
+            return TransferAction.skip;
+        }
         final StringBuilder actions = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer));
         options.add(TransferAction.cancel);
@@ -54,13 +58,13 @@ public class TerminalTransferPrompt implements TransferPrompt {
         switch(transfer.getType()) {
             case download:
                 input = console.readLine("The local file %s already exists. Choose what action to take:\n%s\nAction %s: ",
-                        file.local.getName(), actions, Arrays.toString(options.toArray()));
+                        item.local.getName(), actions, Arrays.toString(options.toArray()));
                 break;
             case upload:
             case move:
             case copy:
                 input = console.readLine("The remote file %s already exists. Choose what action to take:\n%s\nAction %s: ",
-                        file.remote.getName(), actions, Arrays.toString(options.toArray()));
+                        item.remote.getName(), actions, Arrays.toString(options.toArray()));
                 break;
             case sync:
                 input = console.readLine("Choose what action to take:\n%s\nAction %s: ",
@@ -71,7 +75,7 @@ public class TerminalTransferPrompt implements TransferPrompt {
         }
         final TransferAction action = TransferAction.forName(input);
         if(null == action) {
-            return this.prompt(file);
+            return this.prompt(item);
         }
         return action;
     }
