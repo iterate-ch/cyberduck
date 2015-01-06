@@ -39,7 +39,7 @@ public class WorkdirPrefixer {
     private Local workdir;
 
     public WorkdirPrefixer() {
-        this.workdir = finder.find();
+        this.workdir = null;
     }
 
     public WorkdirPrefixer(final Local workdir) {
@@ -52,12 +52,21 @@ public class WorkdirPrefixer {
 
     public String normalize(final String name) {
         if(StringUtils.equals(name, ".")) {
+            if(null == workdir) {
+                return finder.find().getAbsolute();
+            }
             return workdir.getAbsolute();
         }
         if(StringUtils.equals(name, "..")) {
+            if(null == workdir) {
+                return finder.find().getParent().getAbsolute();
+            }
             return workdir.getParent().getAbsolute();
         }
         if(!this.isAbsolute(name)) {
+            if(null == workdir) {
+                return String.format("%s%s%s", finder.find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
+            }
             return String.format("%s%s%s", workdir.getAbsolute(), preferences.getProperty("local.delimiter"), name);
         }
         return name;
