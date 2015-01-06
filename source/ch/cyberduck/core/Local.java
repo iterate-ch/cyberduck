@@ -74,7 +74,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      */
     public Local(final String name) {
         path = name;
-        attributes = new LocalAttributes(path);
         if(PreferencesFactory.get().getBoolean("local.normalize.unicode")) {
             path = new NFCNormalizer().normalize(path);
         }
@@ -84,6 +83,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         if(PreferencesFactory.get().getBoolean("local.normalize.prefix")) {
             path = new WorkdirPrefixer().normalize(path);
         }
+        attributes = new LocalAttributes(path);
     }
 
     @Override
