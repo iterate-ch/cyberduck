@@ -2,7 +2,6 @@ require "formula"
 
 class Duck < Formula
   homepage "https://duck.sh/"
-  # Reference to the CLI version of Cyberduck
   url "${ARCHIVE}"
   version "${VERSION}.${REVISION}"
   sha1 "${SHA1}"
@@ -15,11 +14,5 @@ class Duck < Formula
 
   test do
     system "#{bin}/duck", "-version"
-  end
-
-  def caveats;
-    <<-EOS.undent
-    For more information refer to https://duck.sh/
-    EOS
   end
 end
