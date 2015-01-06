@@ -9,7 +9,7 @@ class Duck < Formula
   depends_on "openssl" => :recommended
 
   def install
-    system "ant", "-lib", "lib/ext", "-Drevision=${REVISION}", "cli"
+    system "ant", "-Drevision=${REVISION}", "cli"
     libexec.install Dir['build/duck.bundle/*']
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
