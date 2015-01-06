@@ -30,7 +30,7 @@ public interface Location {
 
     Set<Name> getLocations();
 
-    Name getLocation(Path container) throws BackgroundException;
+    Name getLocation(Path file) throws BackgroundException;
 
     public static abstract class Name {
         private String identifier;

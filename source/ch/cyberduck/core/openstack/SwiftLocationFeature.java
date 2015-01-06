@@ -76,8 +76,8 @@ public class SwiftLocationFeature implements Location {
     }
 
     @Override
-    public Name getLocation(final Path container) throws BackgroundException {
-        return new SwiftRegion(containerService.getContainer(container).attributes().getRegion());
+    public Name getLocation(final Path file) throws BackgroundException {
+        return new SwiftRegion(containerService.getContainer(file).attributes().getRegion());
     }
 
     public static final class SwiftRegion extends Name {
