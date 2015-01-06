@@ -167,7 +167,8 @@
         <copy todir="${cli.bundle}/${bundle.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}" excludesfile="runtime-excludes.properties"/>
         </copy>
-        <symlink link="${cli.bundle}/${bundle.runtime}/Contents/MacOS/libjli.dylib" resource="../Home/lib/jli/libjli.dylib"
+        <symlink link="${cli.bundle}/${bundle.runtime}/Contents/MacOS/libjli.dylib"
+                 resource="../Home/lib/jli/libjli.dylib"
                  overwrite="true"/>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
@@ -199,12 +200,12 @@
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
                   algorithm="sha1" property="sha1"/>
         <copy todir="${build.deploy}" overwrite="true">
-            <fileset dir="${setup}">
-                <include name="duck-*.rb"/>
+            <fileset dir="${setup}/brew">
+                <include name="*.rb"/>
             </fileset>
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
-            <include name="duck-*.rb"/>
+            <include name="*.rb"/>
             <replacefilter token="${SHA1}" value="${sha1}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>

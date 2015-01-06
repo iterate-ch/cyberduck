@@ -1,5 +1,3 @@
-require "formula"
-
 class Duck < Formula
   homepage "https://duck.sh/"
   url "${ARCHIVE}"

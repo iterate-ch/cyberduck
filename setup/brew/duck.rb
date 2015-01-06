@@ -1,9 +1,6 @@
-require "formula"
-
 class Duck < Formula
   homepage "https://duck.sh/"
   url "${SOURCE}"
-  sha1 "${SHA1}"
   head "https://svn.cyberduck.io/trunk/"
 
   depends_on :java => :build

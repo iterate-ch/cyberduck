@@ -2417,7 +2417,7 @@ ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /sandbox.plist -text
 setup/banner.png -text
 setup/brew/duck-binary.rb -text
-setup/brew/duck-source.rb -text
+setup/brew/duck.rb -text
 setup/deb/duck.control -text
 setup/deb/duck.postinstall -text
 setup/deb/duck.postrm -text
