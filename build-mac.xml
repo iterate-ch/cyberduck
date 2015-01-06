@@ -194,29 +194,31 @@
         <antcall target="tar">
             <param name="directory" value="${build}"/>
             <param name="source" value="duck.bundle"/>
-            <param name="target" value="duck-${version}.${svn.revision}.tar.gz"/>
+            <param name="target" value="duck-${version}.${revision}.tar.gz"/>
         </antcall>
-        <checksum file="${build.deploy}/duck-${version}.${svn.revision}.tar.gz"
+        <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
                   algorithm="sha1" property="sha1"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${www.update}">
-                <include name="duck.rb"/>
+                <include name="duck-*.rb"/>
             </fileset>
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
-            <include name="duck.rb"/>
+            <include name="duck-*.rb"/>
             <replacefilter token="${SHA1}" value="${sha1}"/>
-            <replacefilter token="${REVISION}" value="${svn.revision}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${svn.revision}.tar.gz"/>
+                           value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${revision}.tar.gz"/>
+            <replacefilter token="${SOURCE}"
+                           value="https://update.cyberduck.io/src/cyberduck-src-${version}.${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
-            <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
+            <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
-        <checksum file="${build.deploy}/duck-${version}.${svn.revision}.pkg" algorithm="md5" />
+        <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5"/>
         <exec executable="/usr/sbin/pkgutil" failonerror="true">
-            <arg line="--check-signature ${build.deploy}/duck-${version}.${svn.revision}.pkg"/>
+            <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
     </target>
 

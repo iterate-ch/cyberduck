@@ -232,7 +232,7 @@
                 <attribute name="Specification-Title" value="${app.name}"/>
                 <attribute name="Specification-Version" value="${version}"/>
                 <attribute name="Specification-Vendor" value="${copyright}"/>
-                <attribute name="Implementation-Version" value="${svn.revision}"/>
+                <attribute name="Implementation-Version" value="${revision}"/>
                 <attribute name="Main-Class" value="ch.cyberduck.cli.Terminal"/>
                 <attribute name="Class-Path" value="${manifest.lib.classpath} ${manifest.build.classpath}"/>
             </manifest>
@@ -263,7 +263,7 @@
             <attribute name="Specification-Title" value="${app.name}"/>
             <attribute name="Specification-Version" value="${version}"/>
             <attribute name="Specification-Vendor" value="${copyright}"/>
-            <attribute name="Implementation-Version" value="${svn.revision}"/>
+            <attribute name="Implementation-Version" value="${revision}"/>
         </manifest>
     </target>
 
@@ -359,7 +359,7 @@
         </taskdef>
         <property name="sonar.projectName" value="${app.name}"/>
         <property name="sonar.projectKey" value="ch.cyberduck:cyberduck-${platform}"/>
-        <property name="sonar.projectVersion" value="${svn.revision}"/>
+        <property name="sonar.projectVersion" value="${revision}"/>
         <property name="sonar.projectBaseDir" value="${home}"/>
         <property name="sonar.sources" value="${source}"/>
         <property name="sonar.tests" value="${unittests}"/>
