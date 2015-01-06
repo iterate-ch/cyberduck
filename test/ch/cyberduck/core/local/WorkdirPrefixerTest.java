@@ -32,4 +32,9 @@ public class WorkdirPrefixerTest extends AbstractTestCase {
         assertEquals(System.getProperty("user.dir") + "/n", new WorkdirPrefixer().normalize("n"));
         assertEquals("/tmp/n", new WorkdirPrefixer(new Local("/tmp")).normalize("n"));
     }
+
+    @Test
+    public void testCurrentDir() throws Exception {
+        assertEquals(System.getProperty("user.dir"), new WorkdirPrefixer().normalize("."));
+    }
 }

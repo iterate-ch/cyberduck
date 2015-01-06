@@ -19,9 +19,11 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @version $Id$
@@ -31,10 +33,13 @@ public class WorkdirPrefixer {
     private final WorkingDirectoryFinder finder
             = WorkingDirectoryFinderFactory.get();
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private Local workdir;
 
     public WorkdirPrefixer() {
-        this.workdir = null;
+        this.workdir = finder.find();
     }
 
     public WorkdirPrefixer(final Local workdir) {
@@ -46,11 +51,14 @@ public class WorkdirPrefixer {
     }
 
     public String normalize(final String name) {
+        if(StringUtils.equals(name, ".")) {
+            return workdir.getAbsolute();
+        }
+        if(StringUtils.equals(name, "..")) {
+            return workdir.getParent().getAbsolute();
+        }
         if(!this.isAbsolute(name)) {
-            if(null == workdir) {
-                return String.format("%s%s%s", finder.find().getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
-            }
-            return String.format("%s%s%s", workdir.getAbsolute(), PreferencesFactory.get().getProperty("local.delimiter"), name);
+            return String.format("%s%s%s", workdir.getAbsolute(), preferences.getProperty("local.delimiter"), name);
         }
         return name;
     }
