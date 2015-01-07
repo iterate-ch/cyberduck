@@ -2416,8 +2416,8 @@ ru.lproj/Support.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /sandbox.plist -text
 setup/banner.png -text
-setup/brew/duck-binary.rb -text
-setup/brew/duck.rb -text
+setup/brew/duck.binary.rb -text
+setup/brew/duck.source.rb -text
 setup/chocolatey/duck.nuspec -text
 setup/chocolatey/tools/chocolateyInstall.ps1 -text
 setup/deb/duck.control -text
