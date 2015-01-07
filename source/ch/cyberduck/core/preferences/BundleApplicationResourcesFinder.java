@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 public class BundleApplicationResourcesFinder implements ApplicationResourcesFinder {
     private static final Logger log = Logger.getLogger(BundleApplicationResourcesFinder.class);
 
+    private NSBundle cached;
+
     @Override
     public Local find() {
         final NSBundle b = this.bundle();
@@ -44,12 +46,21 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
     }
 
     public NSBundle bundle() {
+        if(cached != null) {
+            return cached;
+        }
+        if(log.isInfoEnabled()) {
+            log.info("Loading application bundle resources");
+        }
         final NSBundle main = NSBundle.mainBundle();
         if(null == main) {
-            return null;
+            cached = null;
         }
-        final Local executable = LocalFactory.get(main.executablePath());
-        return bundle(main, executable);
+        else {
+            final Local executable = LocalFactory.get(main.executablePath());
+            cached = this.bundle(main, executable);
+        }
+        return cached;
     }
 
     protected NSBundle bundle(final NSBundle main, Local executable) {
