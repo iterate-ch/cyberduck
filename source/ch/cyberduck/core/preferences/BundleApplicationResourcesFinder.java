@@ -68,6 +68,10 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
         NSBundle b;
         do {
             b = NSBundle.bundleWithPath(folder.getAbsolute());
+            if(null == b) {
+                log.error(String.format("Loading bundle %s failed", folder));
+                break;
+            }
             if(StringUtils.equals(String.valueOf(Path.DELIMITER), b.bundlePath())) {
                 break;
             }
