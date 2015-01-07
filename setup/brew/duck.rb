@@ -20,5 +20,8 @@ class Duck < Formula
 
   test do
     system "#{bin}/duck", "-version"
+    filename = (testpath/"test")
+    system "#{bin}/duck", "--download", stable.url, filename
+    filename.verify_checksum stable.checksum
   end
 end
