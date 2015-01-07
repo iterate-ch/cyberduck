@@ -48,7 +48,11 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
         if(null == main) {
             return null;
         }
-        Local executable = LocalFactory.get(main.executablePath());
+        final Local executable = LocalFactory.get(main.executablePath());
+        return bundle(main, executable);
+    }
+
+    protected NSBundle bundle(final NSBundle main, Local executable) {
         if(!executable.isSymbolicLink()) {
             return main;
         }
