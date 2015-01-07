@@ -38,6 +38,10 @@
     <property name="app.icon" value="cyberduck-application.ico"/>
 
     <property name="jvm.runtime.bin" value="${java.home}/bin"/>
+    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+
+    <property name="chocolatey.source" value="${setup}/chocolatey"/>
+    <property name="chocolatey.target" value="${build.bundles}/package/chocolatey/duck"/>
 
     <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
         <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
@@ -83,6 +87,18 @@
             <property name="Platform" value="${architecture}"/>
         </msbuild>
         <checksum file="${build.deploy}/duck-${version.full}.exe" algorithm="md5"/>
+
+        <!-- make chocolate, mmmhhhh! -->
+        <copy todir="${chocolatey.target}">
+            <fileset dir="${chocolatey.source}">
+                <include name="*/**"/>
+            </fileset>
+            <filterset>
+                <filter token="${VERSION}" value="${version}"/>
+                <filter token="${REVISION}" value="${revision}"/>
+            </filterset>
+        </copy>
+        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 
     <target name="dll" depends="archive, version">
