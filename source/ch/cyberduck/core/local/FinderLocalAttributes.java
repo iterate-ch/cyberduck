@@ -62,6 +62,9 @@ public class FinderLocalAttributes extends LocalAttributes {
                 local.getAbsolute(), error);
         if(null == dict) {
             final NSError f = error.getValueAs(NSError.class);
+            if(null == f) {
+                throw new AccessDeniedException(local.getAbsolute());
+            }
             throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return dict;
@@ -127,6 +130,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
+                if(null == f) {
+                    throw new AccessDeniedException(local.getAbsolute());
+                }
                 throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
         }
@@ -149,6 +155,9 @@ public class FinderLocalAttributes extends LocalAttributes {
             );
             if(!success) {
                 final NSError f = error.getValueAs(NSError.class);
+                if(null == f) {
+                    throw new AccessDeniedException(local.getAbsolute());
+                }
                 throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
         }

@@ -70,6 +70,9 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
         if(null == resolved) {
             final NSError f = error.getValueAs(NSError.class);
             log.error(String.format("Error resolving bookmark for %s to URL %s", file, f));
+            if(null == f) {
+                throw new AccessDeniedException(file.getAbsolute());
+            }
             throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return resolved;
@@ -122,6 +125,9 @@ public class PanelSandboxBookmarkResolver extends ProxyController implements San
             if(null == data) {
                 final NSError f = error.getValueAs(NSError.class);
                 log.warn(String.format("Failure getting bookmark data for file %s %s", file, f));
+                if(null == f) {
+                    throw new AccessDeniedException(file.getAbsolute());
+                }
                 throw new AccessDeniedException(String.format("%s", f.localizedDescription()));
             }
             final String encoded = data.base64EncodedString();
