@@ -21,7 +21,7 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.test.Depends;
 
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class BundleApplicationResourcesFinderTest extends AbstractTestCase {
 
     @Test
     public void testSymbolicLink() throws Exception {
-        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new Local("/usr/bin/java"));
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new FinderLocal("/usr/bin/java"));
         assertNotNull(bundle);
         assertEquals(NSBundle.bundleWithPath("/System/Library/Frameworks/JavaVM.framework/Versions/A"), bundle);
     }
