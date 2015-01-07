@@ -88,13 +88,14 @@
         </msbuild>
         <checksum file="${build.deploy}/duck-${version.full}.exe" algorithm="md5"/>
 
-        <!-- make chocolate, mmmhhhh! -->
         <copy todir="${chocolatey.target}">
             <fileset dir="${chocolatey.source}">
                 <include name="*/**"/>
             </fileset>
         </copy>
-        <replace file="${chocolatey.target}/duck.nuspec" summary="true" encoding="UTF-8">
+        <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
+            <include name="*.nuspec"/>
+            <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
         </replace>

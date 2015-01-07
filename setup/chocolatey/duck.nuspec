@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Do not remove this test for UTF-8: if ??? doesn?t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
     <id>duck</id>
     <title>duck</title>
     <version>${VERSION}.${REVISION}</version>
-    <authors>David V. Kocher, Yves Langisch</authors>
+    <authors>David Kocher, Yves Langisch</authors>
     <owners>cyberduck.io</owners>
     <summary>Cyberduck for the command line interface (CLI)</summary>
     <description>The universal file transfer tool duck which runs in your shell on Linux and OS X or your Windows command line prompt. Edit files on remote servers, download, upload and copy between servers with FTP, SFTP or WebDAV plus support for cloud storage Amazon S3 OpenStack Swift deployments.</description>
@@ -15,11 +13,7 @@
     <copyright>Copyright (c) 2002 – 2014 David V. Kocher. Copyright (c) 2011 – 2014 Yves Langisch</copyright>
     <licenseUrl>http://creativecommons.org/licenses/GPL/2.0/</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <!-- Important note about https://cdn.rawgit.com: Files are cached permanently after the first request. Use commit URLs when updating the icon. -->
     <iconUrl>https://cdn.cyberduck.io/img/cyberduck-icon-384.png</iconUrl>
-    <!--<dependencies>
-      <dependency id="" version="" />
-    </dependencies>-->
     <releaseNotes></releaseNotes>
   </metadata>
   <files>
