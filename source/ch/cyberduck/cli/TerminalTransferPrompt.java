@@ -44,10 +44,6 @@ public class TerminalTransferPrompt implements TransferPrompt {
 
     @Override
     public TransferAction prompt(final TransferItem item) {
-        if(item.remote.isDirectory()) {
-            // Skip creating existing directories by default and continue with files
-            return TransferAction.overwrite;
-        }
         final StringBuilder actions = new StringBuilder().append(StringUtils.LF);
         final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer));
         options.add(TransferAction.cancel);
