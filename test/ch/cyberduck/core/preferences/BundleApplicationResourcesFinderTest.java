@@ -21,6 +21,8 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.test.Depends;
 
@@ -42,5 +44,17 @@ public class BundleApplicationResourcesFinderTest extends AbstractTestCase {
         final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new FinderLocal("/usr/bin/java"));
         assertNotNull(bundle);
         assertEquals(NSBundle.bundleWithPath("/System/Library/Frameworks/JavaVM.framework/Versions/A"), bundle);
+    }
+
+    @Test
+    public void testAccessDenied() throws Exception {
+        final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new FinderLocal("/usr/bin/java") {
+            @Override
+            public Local getSymlinkTarget() throws NotfoundException {
+                throw new NotfoundException("f");
+            }
+        });
+        assertNotNull(bundle);
+        assertEquals(NSBundle.bundleWithPath("."), bundle);
     }
 }
