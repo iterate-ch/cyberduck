@@ -140,10 +140,15 @@ public class S3UrlProvider implements UrlProvider {
             log.warn("No secret found in keychain required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
+        String region = null;
+        if(session.isConnected()) {
+            region = session.getClient().getRegionEndpointCache()
+                    .getRegionForBucketName(containerService.getContainer(file).getName());
+        }
         return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session.getHost()).create(
                 new AWSCredentials(session.getHost().getCredentials().getUsername(), secret), "GET",
-                containerService.getContainer(file).getName(), containerService.getKey(file),
-                expiry.getTimeInMillis() / 1000, false, session.getHost().getProtocol().isSecure())), DescriptiveUrl.Type.signed,
+                containerService.getContainer(file).getName(), region, containerService.getKey(file),
+                expiry.getTimeInMillis() / 1000, false)), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))

@@ -20,12 +20,19 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
+import org.jets3t.service.utils.SignatureUtils;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @version $Id$
@@ -56,14 +63,19 @@ public class S3PresignedUrlProvider {
      *                                  <b>Note:</b> This time is specified in seconds since the epoch, not milliseconds.
      * @param isVirtualHost             if this parameter is true, the bucket name is treated as a virtual host name. To use
      *                                  this option, the bucket name must be a valid DNS name that is an alias to an S3 bucket.
-     * @param isHttps                   if true, the signed URL will use the HTTPS protocol. If false, the signed URL will
-     *                                  use the HTTP protocol.
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
     public String create(final ProviderCredentials credentials,
-                         final String method, final String bucket, final String key,
+                         final String method, final String bucket, final String region, final String key,
                          final long secondsSinceEpoch,
-                         final boolean isVirtualHost, final boolean isHttps) {
+                         final boolean isVirtualHost) {
+        final String requestSignatureVersion;
+        if(StringUtils.isNotBlank(region)) {
+            requestSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256.toString();
+        }
+        else {
+            requestSignatureVersion = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.toString();
+        }
         String s3Endpoint = endpoint.getHostname();
         String uriPath;
 
@@ -90,27 +102,94 @@ public class S3PresignedUrlProvider {
             uriPath = bucket + (key != null ? "/" + RestUtils.encodeUrlPath(key, "/") : "");
         }
         uriPath += "?";
-        uriPath += "AWSAccessKeyId=" + credentials.getAccessKey();
-        uriPath += "&Expires=" + secondsSinceEpoch;
-
-        String serviceEndpointVirtualPath = "";
-
-        String canonicalString = RestUtils.makeServiceCanonicalString(method,
-                serviceEndpointVirtualPath + "/" + virtualBucketPath + uriPath,
-                Collections.<String, Object>emptyMap(), String.valueOf(secondsSinceEpoch),
-                "x-amz-", Collections.<String>emptyList());
-        if(log.isDebugEnabled()) {
-            log.debug("Signing canonical string:\n" + canonicalString);
-        }
-
-        String signedCanonical = ServiceUtils.signWithHmacSha1(credentials.getSecretKey(),
-                canonicalString);
-        String encodedCanonical = RestUtils.encodeUrlString(signedCanonical);
-        uriPath += "&Signature=" + encodedCanonical;
-
-        return endpoint.getProtocol().getScheme() + "://" + hostname
+        final String serviceEndpointVirtualPath = "";
+        String uriPrefix = endpoint.getProtocol().getScheme() + "://" + hostname
                 + (endpoint.getPort() != endpoint.getProtocol().getScheme().getPort() ? ":" + endpoint.getPort() : "")
-                + serviceEndpointVirtualPath
-                + "/" + uriPath;
+                + serviceEndpointVirtualPath;
+        if("AWS4-HMAC-SHA256".equalsIgnoreCase(requestSignatureVersion)) {
+            Date now = new Date();
+            String service = "s3";
+            String accessKey = credentials.getAccessKey();
+            String secretKey = credentials.getSecretKey();
+            String timestampISO8601 =
+                    SignatureUtils.formatAwsFlavouredISO8601Date(now);
+            String datestampISO8601 = timestampISO8601.substring(0, 8); // TODO
+
+            // Convert seconds since epoch expiry time format into
+            // seconds-unti-expiry form used by version 4.
+            long secondsUntilExpiry = secondsSinceEpoch - (now.getTime() / 1000);
+            Map<String, String> headersToSignMap = new TreeMap<String, String>();
+            // Signed headers must always include "host"
+            headersToSignMap.put("host", hostname);
+
+            String credential =
+                    accessKey + "/" + datestampISO8601 + "/" + region + "/" + service + "/aws4_request";
+
+            String signedHeaders = ServiceUtils.join(
+                    headersToSignMap.keySet().toArray(), ";");
+
+            uriPath += "X-Amz-Algorithm=" + requestSignatureVersion
+                    + "&X-Amz-Credential=" + credential
+                    + "&X-Amz-Date=" + timestampISO8601
+                    + "&X-Amz-Expires=" + secondsUntilExpiry
+                    + "&X-Amz-SignedHeaders=" + signedHeaders;
+
+            // Canonical request string
+            String canonicalRequestString;
+            try {
+                // Adjust hostname for specific regions
+                URI uriWithCorrectedHostname =
+                        SignatureUtils.awsV4CorrectHostnameForRegion(
+                                new URI(uriPrefix), region);
+                headersToSignMap.put("host", uriWithCorrectedHostname.getHost());
+                uriPrefix = uriWithCorrectedHostname.toString();
+
+                // Set payload SHA256 hash, which is a place-holder value by
+                // default but takes on an object's content SHA256 value if this
+                // is known and set in the headers.
+                String payloadSha256Hash = "UNSIGNED-PAYLOAD";
+                if(headersToSignMap.containsKey("x-amz-content-sha256")) {
+                    payloadSha256Hash = headersToSignMap.get("x-amz-content-sha256");
+                }
+
+                canonicalRequestString =
+                        SignatureUtils.awsV4BuildCanonicalRequestString(
+                                new URI(uriPrefix + "/" + uriPath),
+                                method, headersToSignMap, payloadSha256Hash);
+            }
+            catch(URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            String stringToSign = SignatureUtils.awsV4BuildStringToSign(
+                    requestSignatureVersion, canonicalRequestString,
+                    timestampISO8601, region);
+            byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
+                    secretKey, timestampISO8601, region);
+            String signature = ServiceUtils.toHex(ServiceUtils.hmacSHA256(
+                    signingKey, ServiceUtils.stringToBytes(stringToSign)));
+
+            uriPath += "&X-Amz-Signature=" + signature;
+        }
+        else if("AWS2".equalsIgnoreCase(requestSignatureVersion)) {
+            uriPath += "AWSAccessKeyId=" + credentials.getAccessKey();
+            uriPath += "&Expires=" + secondsSinceEpoch;
+
+            String canonicalString = RestUtils.makeServiceCanonicalString(method,
+                    serviceEndpointVirtualPath + "/" + virtualBucketPath + uriPath,
+                    Collections.<String, Object>emptyMap(), String.valueOf(secondsSinceEpoch),
+                    "x-amz-", Collections.<String>emptyList());
+            if(log.isDebugEnabled()) {
+                log.debug("Signing canonical string:\n" + canonicalString);
+            }
+
+            String signedCanonical = ServiceUtils.signWithHmacSha1(credentials.getSecretKey(),
+                    canonicalString);
+            String encodedCanonical = RestUtils.encodeUrlString(signedCanonical);
+            uriPath += "&Signature=" + encodedCanonical;
+        }
+        else {
+            return null;
+        }
+        return uriPrefix + "/" + uriPath;
     }
 }
