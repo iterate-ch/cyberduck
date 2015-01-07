@@ -93,11 +93,11 @@
             <fileset dir="${chocolatey.source}">
                 <include name="*/**"/>
             </fileset>
-            <filterset>
-                <filter token="${VERSION}" value="${version}"/>
-                <filter token="${REVISION}" value="${revision}"/>
-            </filterset>
         </copy>
+        <replace file="${chocolatey.target}/duck.nuspec" summary="true" encoding="UTF-8">
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+        </replace>
         <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 
