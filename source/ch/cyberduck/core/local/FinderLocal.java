@@ -18,6 +18,11 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSEnumerator;
+import ch.cyberduck.binding.foundation.NSFileManager;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -26,12 +31,8 @@ import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSEnumerator;
-import ch.cyberduck.binding.foundation.NSFileManager;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSURL;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -258,6 +259,11 @@ public class FinderLocal extends Local {
             final NSError f = error.getValueAs(NSError.class);
             throw new NotfoundException(String.format("%s", f.localizedDescription()));
         }
+        if(FilenameUtils.getPrefixLength(destination) != 0) {
+            // Absolute path
+            return new FinderLocal(destination);
+        }
+        // Relative path
         return new FinderLocal(this.getParent(), destination);
     }
 

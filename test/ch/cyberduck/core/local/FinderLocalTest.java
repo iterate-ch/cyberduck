@@ -141,6 +141,12 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testGetSymlinkTarget() throws Exception {
-        assertEquals(new FinderLocal("/private/tmp"), new Local("/tmp").getSymlinkTarget());
+        assertEquals(new FinderLocal("/private/tmp"), new FinderLocal("/tmp").getSymlinkTarget());
+    }
+
+    @Test
+    public void testGetSymlinkTargetAbsolute() throws Exception {
+        assertEquals(new FinderLocal("/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java"),
+                new FinderLocal("/usr/bin/java").getSymlinkTarget());
     }
 }
