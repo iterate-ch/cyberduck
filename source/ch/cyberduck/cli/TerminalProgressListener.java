@@ -32,6 +32,7 @@ public class TerminalProgressListener implements ProgressListener {
     public void message(final String message) {
         final StringAppender appender = new StringAppender('…');
         appender.append(message);
-        console.printf("%s\n", appender.toString());
+        // Clear the line and append message. Used instead of \r because the line width may vary
+        console.printf("\r\033[2K%s", appender.toString());
     }
 }

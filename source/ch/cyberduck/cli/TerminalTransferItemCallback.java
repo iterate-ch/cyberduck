@@ -30,6 +30,6 @@ public class TerminalTransferItemCallback extends DisabledTransferItemCallback {
 
     @Override
     public void complete(final TransferItem item) {
-        console.printf("\n");
+        //
     }
 }
