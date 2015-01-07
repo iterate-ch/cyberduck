@@ -41,7 +41,7 @@
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
     <property name="chocolatey.source" value="${setup}/chocolatey"/>
-    <property name="chocolatey.target" value="${deploy}"/>
+    <property name="chocolatey.target" value="${build.deploy}"/>
 
     <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
         <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
