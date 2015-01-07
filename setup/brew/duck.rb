@@ -3,6 +3,7 @@ class Duck < Formula
   url "${SOURCE}"
   version "${VERSION}.${REVISION}"
   head "https://svn.cyberduck.io/trunk/"
+  sha1 "${SOURCE.SHA1}"
 
   depends_on :java => :build
   depends_on :xcode => :build

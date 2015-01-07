@@ -2,7 +2,7 @@ class Duck < Formula
   homepage "https://duck.sh/"
   url "${ARCHIVE}"
   version "${VERSION}.${REVISION}"
-  sha1 "${SHA1}"
+  sha1 "${ARCHIVE.SHA1}"
 
   def install
     # Because compiling would need a JDK and xcodebuild we just use the pre-compiled binary.

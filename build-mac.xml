@@ -198,7 +198,9 @@
             <param name="target" value="duck-${version}.${revision}.tar.gz"/>
         </antcall>
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
-                  algorithm="sha1" property="sha1"/>
+                  algorithm="sha1" property="archive.sha1"/>
+        <checksum file="${build.deploy}/cyberduck-src-${revision}.tar.gz"
+                  algorithm="sha1" property="source.sha1"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${setup}/brew">
                 <include name="*.rb"/>
@@ -206,11 +208,12 @@
         </copy>
         <replace dir="${build.deploy}" summary="true" encoding="UTF-8">
             <include name="*.rb"/>
-            <replacefilter token="${SHA1}" value="${sha1}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${ARCHIVE.SHA1}" value="${archive.sha1}"/>
             <replacefilter token="${ARCHIVE}"
                            value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${revision}.tar.gz"/>
+            <replacefilter token="${SOURCE.SHA1}" value="${source.sha1}"/>
             <replacefilter token="${SOURCE}"
                            value="https://update.cyberduck.io/src/cyberduck-src-${revision}.tar.gz"/>
         </replace>
