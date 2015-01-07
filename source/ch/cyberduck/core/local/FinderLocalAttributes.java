@@ -17,10 +17,6 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSDate;
@@ -29,6 +25,10 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
@@ -50,9 +50,6 @@ public class FinderLocalAttributes extends LocalAttributes {
         this.local = local;
     }
 
-    /**
-     * @return Null if no such file.
-     */
     private NSDictionary getNativeAttributes() throws AccessDeniedException, NotfoundException {
         if((!local.exists())) {
             throw new NotfoundException(local.getAbsolute());
@@ -70,10 +67,6 @@ public class FinderLocalAttributes extends LocalAttributes {
         return dict;
     }
 
-    /**
-     * @param name File manager attribute name
-     * @return Null if no such file or attribute.
-     */
     private NSObject getNativeAttribute(final String name) throws AccessDeniedException, NotfoundException {
         final NSDictionary dict = this.getNativeAttributes();
         // Returns an entry’s value given its key, or null if no value is associated with key.
