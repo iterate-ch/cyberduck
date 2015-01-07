@@ -212,10 +212,10 @@
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${ARCHIVE.SHA1}" value="${archive.sha1}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/cli/${app.update.feed}/duck-${version}.${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/duck-${version}.${revision}.tar.gz"/>
             <replacefilter token="${SOURCE.SHA1}" value="${source.sha1}"/>
             <replacefilter token="${SOURCE}"
-                           value="https://update.cyberduck.io/src/cyberduck-src-${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/cyberduck-src-${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
             <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
