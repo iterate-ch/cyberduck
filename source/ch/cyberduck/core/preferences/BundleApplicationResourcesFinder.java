@@ -21,8 +21,10 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -62,6 +64,9 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
         NSBundle b;
         do {
             b = NSBundle.bundleWithPath(folder.getAbsolute());
+            if(StringUtils.equals(String.valueOf(Path.DELIMITER), b.bundlePath())) {
+                break;
+            }
             folder = folder.getParent();
         }
         while(b.executablePath() == null);
