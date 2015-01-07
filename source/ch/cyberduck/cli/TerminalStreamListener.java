@@ -49,7 +49,7 @@ public class TerminalStreamListener implements StreamListener {
         final TransferProgress progress = meter.getStatus();
         final BigDecimal fraction = new BigDecimal(progress.getTransferred())
                 .divide(new BigDecimal(progress.getSize()), 1, RoundingMode.DOWN);
-        console.printf("\r[");
+        console.printf("\r\033[2K[");
         int i = 0;
         for(; i <= (int) (fraction.doubleValue() * width); i++) {
             console.printf("\u25AE");
