@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -46,14 +47,14 @@ public interface Location {
         public abstract String toString();
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if(this == o) {
                 return true;
             }
-            if(o == null || getClass() != o.getClass()) {
+            if(!(o instanceof Name)) {
                 return false;
             }
-            Name name = (Name) o;
+            final Name name = (Name) o;
             if(identifier != null ? !identifier.equals(name.identifier) : name.identifier != null) {
                 return false;
             }
@@ -65,4 +66,11 @@ public interface Location {
             return identifier != null ? identifier.hashCode() : 0;
         }
     }
+
+    public static final Name unknown = new Name(null) {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Unknown");
+        }
+    };
 }

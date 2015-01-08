@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -77,7 +78,16 @@ public class SwiftLocationFeature implements Location {
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
-        return new SwiftRegion(containerService.getContainer(file).attributes().getRegion());
+        final Path container = containerService.getContainer(file);
+        if(Location.unknown.equals(new SwiftRegion(container.attributes().getRegion()))) {
+            for(Path c : new SwiftContainerListService(session, new SwiftRegion(session.getHost().getRegion()))
+                    .list(new DisabledListProgressListener())) {
+                if(c.getName().equals(container.getName())) {
+                    return new SwiftRegion(c.attributes().getRegion());
+                }
+            }
+        }
+        return new SwiftRegion(container.attributes().getRegion());
     }
 
     public static final class SwiftRegion extends Name {

@@ -118,7 +118,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final String checksum = session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                    final String checksum = session.getClient().storeObject(
+                            new SwiftRegionService(session).lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             entity, metadata, null);
                     final StorageObject stored = new StorageObject(containerService.getKey(file));

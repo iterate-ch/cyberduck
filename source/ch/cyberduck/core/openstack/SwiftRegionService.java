@@ -18,8 +18,10 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,15 +36,22 @@ public class SwiftRegionService {
 
     private SwiftSession session;
 
+    private PathContainerService containerService
+            = new SwiftPathContainerService();
+
     public SwiftRegionService(final SwiftSession session) {
         this.session = session;
     }
 
     public Region lookup(final Path file) throws BackgroundException {
-        return this.lookup(file.attributes().getRegion());
+        final Path container = containerService.getContainer(file);
+        if(Location.unknown.equals(new SwiftLocationFeature.SwiftRegion(container.attributes().getRegion()))) {
+            return this.lookup(new SwiftLocationFeature(session).getLocation(container));
+        }
+        return this.lookup(new SwiftLocationFeature.SwiftRegion(file.attributes().getRegion()));
     }
 
-    public Region lookup(final String location) throws BackgroundException {
+    public Region lookup(final Location.Name location) throws BackgroundException {
         if(null == session.getClient()) {
             log.warn("Cannot determine region if not connected");
             return null;
@@ -51,7 +60,7 @@ public class SwiftRegionService {
             if(StringUtils.isBlank(region.getRegionId())) {
                 continue;
             }
-            if(region.getRegionId().equals(location)) {
+            if(region.getRegionId().equals(location.getIdentifier())) {
                 return region;
             }
         }

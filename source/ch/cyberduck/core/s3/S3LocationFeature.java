@@ -95,7 +95,7 @@ public class S3LocationFeature implements Location {
         }
     }
 
-    public static class S3Region extends Name {
+    public static final class S3Region extends Name {
 
         public S3Region(final String identifier) {
             super(identifier);

@@ -57,7 +57,8 @@ public class SwiftDirectoryFeature implements Directory {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level
-                session.getClient().createContainer(regionService.lookup(region), file.getName());
+                session.getClient().createContainer(regionService.lookup(
+                        new SwiftLocationFeature.SwiftRegion(region)), file.getName());
             }
             else {
                 // Create virtual directory.

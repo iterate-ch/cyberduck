@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.junit.Assert.*;
 public class SwiftRegionServiceTest extends AbstractTestCase {
 
     @Test
-    public void testLookup() throws Exception {
+    public void testLookupDefault() throws Exception {
         final SwiftSession session = new SwiftSession(
                 new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                         new Credentials(
@@ -34,8 +35,7 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Region lookup = new SwiftRegionService(session).lookup((String) null);
+        final Region lookup = new SwiftRegionService(session).lookup(Location.unknown);
         assertTrue(lookup.isDefault());
         assertEquals("DFW", lookup.getRegionId());
         assertNotNull(lookup.getCDNManagementUrl());
@@ -55,7 +55,7 @@ public class SwiftRegionServiceTest extends AbstractTestCase {
         final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Region lookup = new SwiftRegionService(session).lookup((String) null);
+        final Region lookup = new SwiftRegionService(session).lookup(Location.unknown);
         assertEquals("region-a.geo-1", lookup.getRegionId());
         assertNotNull(lookup.getStorageUrl());
         assertNotNull(lookup.getCDNManagementUrl());
