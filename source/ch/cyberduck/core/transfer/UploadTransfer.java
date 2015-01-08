@@ -240,9 +240,9 @@ public class UploadTransfer extends Transfer {
             }, status, callback);
         }
         else if(file.isDirectory()) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                    file.getName()));
             if(!status.isExists()) {
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+                        file.getName()));
                 session.getFeature(Directory.class).mkdir(file);
                 status.setComplete();
             }
