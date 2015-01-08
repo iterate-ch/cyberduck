@@ -46,13 +46,15 @@ public class SwiftRegionService {
     public Region lookup(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         if(Location.unknown.equals(new SwiftLocationFeature.SwiftRegion(container.attributes().getRegion()))) {
-            return this.lookup(new SwiftLocationFeature(session).getLocation(container));
+            if(session.isConnected()) {
+                return this.lookup(new SwiftLocationFeature(session).getLocation(container));
+            }
         }
         return this.lookup(new SwiftLocationFeature.SwiftRegion(file.attributes().getRegion()));
     }
 
     public Region lookup(final Location.Name location) throws InteroperabilityException {
-        if(null == session.getClient()) {
+        if(!session.isConnected()) {
             log.warn("Cannot determine region if not connected");
             return null;
         }

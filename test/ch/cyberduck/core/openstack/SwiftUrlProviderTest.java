@@ -68,6 +68,17 @@ public class SwiftUrlProviderTest extends AbstractTestCase {
     }
 
     @Test
+    public void testDisconnected() throws Exception {
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
+        ));
+        final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        assertEquals(DescriptiveUrl.EMPTY, provider.toUrl(file).find(DescriptiveUrl.Type.signed));
+    }
+
+    @Test
     public void testSigned() throws Exception {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(properties.getProperty("rackspace.key"), properties.getProperty("rackspace.secret"))
