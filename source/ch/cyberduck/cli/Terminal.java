@@ -149,8 +149,7 @@ public class Terminal {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(final Thread t, final Throwable e) {
-                new TerminalProgressListener().message(
-                        String.format("Uncaught failure with error message %s. Quitting application…", e.getMessage()));
+                console.printf("Uncaught failure with error message %s. Quitting application…", e.getMessage());
                 System.exit(1);
             }
         });
@@ -236,7 +235,8 @@ public class Terminal {
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
                 new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
-                new TerminalProgressListener(), new TerminalStreamListener(meter), new TerminalLoginCallback());
+                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(),
+                new TerminalStreamListener(meter), new TerminalLoginCallback());
         if(worker.run()) {
             return Exit.success;
         }
@@ -313,7 +313,7 @@ public class Terminal {
                 ? new TerminalTranscriptListener() : new DisabledTranscriptListener();
         final ConnectionService connect = new LoginConnectionService(
                 new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
-                new TerminalProgressListener(), transcript);
+                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(), transcript);
         connect.connect(session, cache);
     }
 

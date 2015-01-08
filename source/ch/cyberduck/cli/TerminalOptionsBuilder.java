@@ -111,6 +111,12 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('v'));
         options.addOption(OptionBuilder
+                .withDescription("Suppress progress messages")
+                .withLongOpt(Params.quiet.name())
+                .hasArg(false)
+                .isRequired(false)
+                .create('q'));
+        options.addOption(OptionBuilder
                 .withDescription("Show version number and quit")
                 .withLongOpt(TerminalAction.version.name())
                 .hasArg(false)
@@ -129,6 +135,7 @@ public final class TerminalOptionsBuilder {
         longlist,
         preserve,
         verbose,
+        quiet,
         username,
         password,
         identity,
