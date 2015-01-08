@@ -199,7 +199,7 @@
         </antcall>
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
                   algorithm="sha1" property="archive.sha1"/>
-        <checksum file="${build.deploy}/cyberduck-src-${revision}.tar.gz"
+        <checksum file="${build.deploy}/duck-src-${revision}.tar.gz"
                   algorithm="sha1" property="source.sha1"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${setup}/brew">
@@ -215,7 +215,7 @@
                            value="https://dist.duck.sh/duck-${version}.${revision}.tar.gz"/>
             <replacefilter token="${SOURCE.SHA1}" value="${source.sha1}"/>
             <replacefilter token="${SOURCE}"
-                           value="https://dist.duck.sh/cyberduck-src-${revision}.tar.gz"/>
+                           value="https://dist.duck.sh/duck-src-${revision}.tar.gz"/>
         </replace>
         <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
             <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
