@@ -314,9 +314,7 @@ public class Terminal {
         final ConnectionService connect = new LoginConnectionService(
                 new TerminalLoginCallback(), new TerminalHostKeyVerifier(), PasswordStoreFactory.get(),
                 new TerminalProgressListener(), transcript);
-        if(!connect.check(session, cache)) {
-            throw new ConnectionCanceledException();
-        }
+        connect.connect(session, cache);
     }
 
     protected void disconnect(final Session session) {
