@@ -119,7 +119,7 @@ public class SwiftMultipleDeleteFeature implements Delete {
                             file.getName()));
                     // Finally delete bucket itself
                     try {
-                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                        session.getClient().deleteContainer(new SwiftRegionService(session).lookup(file),
                                 containerService.getContainer(file).getName());
                     }
                     catch(GenericException e) {

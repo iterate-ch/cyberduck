@@ -62,7 +62,7 @@ public class SwiftDirectoryFeature implements Directory {
             }
             else {
                 // Create virtual directory.
-                session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+                session.getClient().storeObject(new SwiftRegionService(session).lookup(file),
                         containerService.getContainer(file).getName(),
                         new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
                         Collections.<String, String>emptyMap());

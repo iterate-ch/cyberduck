@@ -50,7 +50,7 @@ public class SwiftTouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            session.getClient().storeObject(new SwiftRegionService(session).lookup(containerService.getContainer(file)),
+            session.getClient().storeObject(new SwiftRegionService(session).lookup(file),
                     containerService.getContainer(file).getName(),
                     new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
                     Collections.<String, String>emptyMap());

@@ -57,7 +57,7 @@ public class SwiftAttributesFeature implements Attributes {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        final Region region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
+        final Region region = new SwiftRegionService(session).lookup(file);
         try {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,

@@ -72,7 +72,7 @@ public class SwiftDeleteFeature implements Delete {
                 if(file.isFile()) {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     final List<Path> segments = segmentService.list(file);
-                    session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
+                    session.getClient().deleteObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(!segments.isEmpty()) {
                         // Clean up any old segments
@@ -81,12 +81,12 @@ public class SwiftDeleteFeature implements Delete {
                 }
                 else if(file.isDirectory()) {
                     if(containerService.isContainer(file)) {
-                        session.getClient().deleteContainer(regionService.lookup(containerService.getContainer(file)),
+                        session.getClient().deleteContainer(regionService.lookup(file),
                                 containerService.getContainer(file).getName());
                     }
                     else {
                         try {
-                            session.getClient().deleteObject(regionService.lookup(containerService.getContainer(file)),
+                            session.getClient().deleteObject(regionService.lookup(file),
                                     containerService.getContainer(file).getName(), containerService.getKey(file));
                         }
                         catch(GenericException e) {

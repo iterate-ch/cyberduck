@@ -81,7 +81,7 @@ public class SwiftUrlProvider implements UrlProvider {
         if(file.isFile()) {
             Region region = null;
             try {
-                region = new SwiftRegionService(session).lookup(containerService.getContainer(file));
+                region = new SwiftRegionService(session).lookup(file);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure looking up region for %s %s", file, e.getMessage()));
