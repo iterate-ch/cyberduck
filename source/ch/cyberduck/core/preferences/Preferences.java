@@ -939,7 +939,7 @@ public abstract class Preferences {
             DOMConfigurator.configure(configuration);
         }
         final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(PreferencesFactory.get().getProperty("logging")));
+        root.setLevel(Level.toLevel(this.getProperty("logging")));
     }
 
     /**
@@ -1087,6 +1087,7 @@ public abstract class Preferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), DisabledTransferPrompt.class.getName());
         }
+        defaults.put("factory.supportdirectoryfinder.class", TemporarySupportDirectoryFinder.class.getName());
         defaults.put("factory.workingdirectory.class", DefaultWorkingDirectoryFinder.class.getName());
         defaults.put("factory.locale.class", DisabledLocale.class.getName());
         defaults.put("factory.local.class", Local.class.getName());
