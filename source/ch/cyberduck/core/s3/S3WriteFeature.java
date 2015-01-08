@@ -68,7 +68,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             = preferences.getProperty("s3.storage.class");
 
     /**
-     * Encrytion algorithm
+     * Encryption algorithm
      */
     private String encryption
             = preferences.getProperty("s3.encryption.algorithm");
