@@ -77,6 +77,9 @@ public class AzureUrlProvider implements UrlProvider {
     private DescriptiveUrl createSignedUrl(final Path file, int seconds) {
         final CloudBlockBlob blob;
         try {
+            if(!session.isConnected()) {
+                return DescriptiveUrl.EMPTY;
+            }
             blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
         }
