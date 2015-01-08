@@ -20,6 +20,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
@@ -82,7 +83,13 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     }
 
     private boolean callback(final String hostname, final String message) {
-        final String input = console.readLine("%s. (y/n): ", message);
+        final String input;
+        try {
+            input = console.readLine("%s. (y/n): ", message);
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
         switch(input) {
             case "y":
                 return true;

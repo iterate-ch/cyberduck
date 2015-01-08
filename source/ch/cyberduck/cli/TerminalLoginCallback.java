@@ -58,22 +58,27 @@ public class TerminalLoginCallback implements LoginCallback {
                        final LoginOptions options) throws LoginCanceledException {
         credentials.setSaved(false);
         console.printf("%s\n", reason);
-        if(StringUtils.isBlank(credentials.getUsername())) {
-            final String user = console.readLine("%s: ", protocol.getUsernamePlaceholder());
-            credentials.setUsername(user);
-        }
-        else {
-            final String user = console.readLine("%s (%s): ", protocol.getUsernamePlaceholder(), credentials.getUsername());
-            if(StringUtils.isNotBlank(user)) {
+        try {
+            if(StringUtils.isBlank(credentials.getUsername())) {
+                final String user = console.readLine("%s: ", protocol.getUsernamePlaceholder());
                 credentials.setUsername(user);
             }
+            else {
+                final String user = console.readLine("%s (%s): ", protocol.getUsernamePlaceholder(), credentials.getUsername());
+                if(StringUtils.isNotBlank(user)) {
+                    credentials.setUsername(user);
+                }
+            }
+            console.printf("Login as %s\n", credentials.getUsername());
+            final char[] password = console.readPassword("%s: ", protocol.getPasswordPlaceholder());
+            credentials.setPassword(String.valueOf(password));
+            Arrays.fill(password, ' ');
+            if(!credentials.validate(protocol, options)) {
+                this.prompt(protocol, credentials, title, reason, options);
+            }
         }
-        console.printf("Login as %s\n", credentials.getUsername());
-        final char[] password = console.readPassword("%s: ", protocol.getPasswordPlaceholder());
-        credentials.setPassword(String.valueOf(password));
-        Arrays.fill(password, ' ');
-        if(!credentials.validate(protocol, options)) {
-            this.prompt(protocol, credentials, title, reason, options);
+        catch(ConnectionCanceledException e) {
+            throw new LoginCanceledException(e);
         }
     }
 

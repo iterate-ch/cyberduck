@@ -18,6 +18,8 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,7 +34,7 @@ public class Console {
 
     private final java.io.Console console = System.console();
 
-    public String readLine(String format, Object... args) {
+    public String readLine(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
             return console.readLine(format, args);
         }
@@ -42,11 +44,11 @@ public class Console {
             return reader.readLine();
         }
         catch(IOException e) {
-            return null;
+            throw new ConnectionCanceledException(e);
         }
     }
 
-    public char[] readPassword(String format, Object... args) {
+    public char[] readPassword(String format, Object... args) throws ConnectionCanceledException {
         if(console != null) {
             return console.readPassword(format, args);
         }

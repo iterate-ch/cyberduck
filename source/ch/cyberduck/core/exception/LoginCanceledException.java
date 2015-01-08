@@ -29,4 +29,8 @@ public class LoginCanceledException extends ConnectionCanceledException {
     public LoginCanceledException() {
         super();
     }
+
+    public LoginCanceledException(final Throwable cause) {
+        super(cause);
+    }
 }

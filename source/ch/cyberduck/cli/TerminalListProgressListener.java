@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 import java.text.MessageFormat;
@@ -90,9 +91,15 @@ public class TerminalListProgressListener extends LimitedListProgressListener {
     }
 
     private boolean prompt(final ListCanceledException e) {
-        final String input = console.readLine("%s %s? (y/n): ",
-                MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
-                LocaleFactory.localizedString("Continue", "Credentials"));
+        final String input;
+        try {
+            input = console.readLine("%s %s? (y/n): ",
+                    MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()),
+                    LocaleFactory.localizedString("Continue", "Credentials"));
+        }
+        catch(ConnectionCanceledException e1) {
+            return false;
+        }
         switch(input) {
             case "y":
                 return true;
