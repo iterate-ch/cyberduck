@@ -4,8 +4,8 @@ class Duck < Formula
   homepage "https://duck.sh/"
   url "${SOURCE}"
   version "${VERSION}.${REVISION}"
-  head "https://svn.cyberduck.io/trunk/"
   sha1 "${SOURCE.SHA1}"
+  head "https://svn.cyberduck.io/trunk/"
 
   depends_on :java => ["1.7", :build]
   depends_on :xcode => :build
