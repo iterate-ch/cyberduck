@@ -31,10 +31,13 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -235,8 +238,20 @@ public class Terminal {
         this.connect(session);
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
+        final TransferPrompt prompt;
+        if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
+            prompt = new DisabledTransferPrompt() {
+                @Override
+                public TransferAction prompt(final TransferItem file) {
+                    return TransferAction.forName(input.getOptionValue(TerminalOptionsBuilder.Params.existing.name()));
+                }
+            };
+        }
+        else {
+            prompt = new TerminalTransferPrompt(transfer.getType());
+        }
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
-                new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
+                prompt, new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(),
                 new TerminalStreamListener(meter), new TerminalLoginCallback());
         if(worker.run()) {

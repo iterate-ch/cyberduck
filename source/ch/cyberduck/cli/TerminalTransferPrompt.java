@@ -37,23 +37,23 @@ public class TerminalTransferPrompt implements TransferPrompt {
 
     private Console console = new Console();
 
-    private Transfer transfer;
+    private Transfer.Type transfer;
 
-    public TerminalTransferPrompt(final Transfer transfer) {
+    public TerminalTransferPrompt(final Transfer.Type transfer) {
         this.transfer = transfer;
     }
 
     @Override
     public TransferAction prompt(final TransferItem item) {
         final StringBuilder actions = new StringBuilder().append(StringUtils.LF);
-        final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer.getType()));
+        final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer));
         options.add(TransferAction.cancel);
         for(TransferAction a : options) {
             actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
         }
         final String input;
         try {
-            switch(transfer.getType()) {
+            switch(transfer) {
                 case download:
                     input = console.readLine("The local file %s already exists. Choose what action to take:\n%s\nAction %s: ",
                             item.local.getName(), actions, Arrays.toString(options.toArray()));

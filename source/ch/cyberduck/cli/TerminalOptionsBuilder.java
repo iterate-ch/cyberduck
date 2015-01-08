@@ -18,8 +18,15 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -104,6 +111,18 @@ public final class TerminalOptionsBuilder {
                 .hasArg(false)
                 .isRequired(false)
                 .create('P'));
+        final StringBuilder b = new StringBuilder().append(StringUtils.LF);
+        final Set<TransferAction> actions = new HashSet<TransferAction>(TransferAction.forTransfer(Transfer.Type.download));
+        actions.add(TransferAction.cancel);
+        for(TransferAction a : actions) {
+            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
+        }
+        options.addOption(OptionBuilder
+                .withDescription(String.format("Transfer action for existing files%s", b.toString()))
+                .withLongOpt(Params.existing.name())
+                .hasArg(true).withArgName("action")
+                .isRequired(false)
+                .create('e'));
         options.addOption(OptionBuilder
                 .withDescription("Print transcript")
                 .withLongOpt(Params.verbose.name())
@@ -134,6 +153,7 @@ public final class TerminalOptionsBuilder {
     public enum Params {
         longlist,
         preserve,
+        existing,
         verbose,
         quiet,
         username,
