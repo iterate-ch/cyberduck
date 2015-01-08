@@ -13,7 +13,7 @@ class Duck < Formula
   end
 
   test do
-    unless "Cyberduck ${VERSION} (${REVISION})\n".eql? %x[#{bin}/duck -version]
+    unless "Cyberduck ${VERSION} (${REVISION})\n".eql? %x(#{bin}/duck -version)
       raise "Version mismatch"
     end
     filename = (testpath/"test")
