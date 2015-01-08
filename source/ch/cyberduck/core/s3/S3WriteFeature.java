@@ -41,7 +41,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -76,8 +76,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Default metadata for new files
      */
-    private List<String> metadata
-            = preferences.getList("s3.metadata.default");
+    private Map<String, String> metadata
+            = preferences.getMap("s3.metadata.default");
 
     public S3WriteFeature(final S3Session session) {
         this(session, new S3MultipartService(session), new DefaultFindFeature(session));
@@ -88,6 +88,21 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         this.session = session;
         this.multipartService = multipartService;
         this.finder = finder;
+    }
+
+    public S3WriteFeature withStorage(final String storage) {
+        this.storage = storage;
+        return this;
+    }
+
+    public S3WriteFeature withEncryption(final String encryption) {
+        this.encryption = encryption;
+        return this;
+    }
+
+    public S3WriteFeature withMetadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
     }
 
     @Override
@@ -143,43 +158,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(StringUtils.isNotBlank(encryption)) {
             object.setServerSideEncryptionAlgorithm(encryption);
         }
-        for(String m : metadata) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String name = m.substring(0, split);
-            if(StringUtils.isBlank(name)) {
-                log.warn(String.format("Missing key in header %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in header %s", m));
-                continue;
-            }
-            object.addMetadata(name, value);
+        for(Map.Entry<String, String> m : metadata.entrySet()) {
+            object.addMetadata(m.getKey(), m.getValue());
         }
         return object;
-    }
-
-    public S3WriteFeature withStorage(final String storage) {
-        this.storage = storage;
-        return this;
-    }
-
-    public S3WriteFeature withEncryption(final String encryption) {
-        this.encryption = encryption;
-        return this;
-    }
-
-    public S3WriteFeature withMetadata(final List<String> metadata) {
-        this.metadata = metadata;
-        return this;
     }
 
     /**

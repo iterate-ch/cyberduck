@@ -114,7 +114,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public abstract void setProperty(String property, String v);
+    public abstract void setProperty(final String property, String v);
 
     /**
      * Update the given property with a list value
@@ -122,14 +122,14 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param values   The new or updated value
      */
-    public abstract void setProperty(String property, List<String> values);
+    public abstract void setProperty(final String property, List<String> values);
 
     /**
      * Remove a user customized property from the preferences.
      *
      * @param property Property name
      */
-    public abstract void deleteProperty(String property);
+    public abstract void deleteProperty(final String property);
 
     /**
      * Internally always saved as a string.
@@ -137,7 +137,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public void setProperty(String property, boolean v) {
+    public void setProperty(final String property, final boolean v) {
         this.setProperty(property, v ? String.valueOf(true) : String.valueOf(false));
     }
 
@@ -147,7 +147,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public void setProperty(String property, int v) {
+    public void setProperty(final String property, final int v) {
         this.setProperty(property, String.valueOf(v));
     }
 
@@ -157,7 +157,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public void setProperty(String property, float v) {
+    public void setProperty(final String property, final float v) {
         this.setProperty(property, String.valueOf(v));
     }
 
@@ -167,7 +167,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public void setProperty(String property, long v) {
+    public void setProperty(final String property, final long v) {
         this.setProperty(property, String.valueOf(v));
     }
 
@@ -177,7 +177,7 @@ public abstract class Preferences {
      * @param property The name of the property to create or update
      * @param v        The new or updated value
      */
-    public void setProperty(String property, double v) {
+    public void setProperty(final String property, final double v) {
         this.setProperty(property, String.valueOf(v));
     }
 
@@ -600,12 +600,6 @@ public abstract class Preferences {
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
 
         /**
-         * qloudsonic.io
-         */
-        defaults.put("s3.download.udt.threshold", String.valueOf(100L * 1024L * 1024L));
-        defaults.put("s3.upload.udt.threshold", String.valueOf(100L * 1024L * 1024L));
-
-        /**
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
@@ -954,7 +948,7 @@ public abstract class Preferences {
      * @param property The property to query.
      * @return A default value if any or null if not found.
      */
-    public String getDefault(String property) {
+    public String getDefault(final String property) {
         String value = defaults.get(property);
         if(null == value) {
             log.warn(String.format("No property with key '%s'", property));
@@ -966,8 +960,35 @@ public abstract class Preferences {
      * @param property The property to query.
      * @return The configured values determined by a whitespace separator.
      */
-    public List<String> getList(String property) {
+    public List<String> getList(final String property) {
         return Arrays.asList(this.getProperty(property).split("(?<!\\\\)\\p{javaWhitespace}+"));
+    }
+
+    public Map<String, String> getMap(final String property) {
+        final List<String> list = this.getList(property);
+        final Map<String, String> table = new HashMap<String, String>();
+        for(String m : list) {
+            if(StringUtils.isBlank(m)) {
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn(String.format("Invalid header %s", m));
+                continue;
+            }
+            int split = m.indexOf('=');
+            String key = m.substring(0, split);
+            if(StringUtils.isBlank(key)) {
+                log.warn(String.format("Missing key in %s", m));
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn(String.format("Missing value in %s", m));
+                continue;
+            }
+            table.put(key, value);
+        }
+        return table;
     }
 
     /**
@@ -978,7 +999,7 @@ public abstract class Preferences {
      */
     public abstract String getProperty(String property);
 
-    public int getInteger(String property) {
+    public int getInteger(final String property) {
         final String v = this.getProperty(property);
         if(null == v) {
             return -1;
@@ -991,7 +1012,7 @@ public abstract class Preferences {
         }
     }
 
-    public float getFloat(String property) {
+    public float getFloat(final String property) {
         final String v = this.getProperty(property);
         if(null == v) {
             return -1;
@@ -999,7 +1020,7 @@ public abstract class Preferences {
         return Float.parseFloat(v);
     }
 
-    public long getLong(String property) {
+    public long getLong(final String property) {
         final String v = this.getProperty(property);
         if(null == v) {
             return -1;
@@ -1012,7 +1033,7 @@ public abstract class Preferences {
         }
     }
 
-    public double getDouble(String property) {
+    public double getDouble(final String property) {
         final String v = this.getProperty(property);
         if(null == v) {
             return -1;
@@ -1020,7 +1041,7 @@ public abstract class Preferences {
         return Double.parseDouble(v);
     }
 
-    public boolean getBoolean(String property) {
+    public boolean getBoolean(final String property) {
         final String v = this.getProperty(property);
         if(null == v) {
             return false;
@@ -1118,7 +1139,7 @@ public abstract class Preferences {
      * @param locale ISO Language identifier
      * @return Human readable language name in the target language
      */
-    public String getDisplayName(String locale) {
+    public String getDisplayName(final String locale) {
         java.util.Locale l;
         if(StringUtils.contains(locale, "_")) {
             l = new java.util.Locale(locale.split("_")[0], locale.split("_")[1]);

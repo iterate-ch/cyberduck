@@ -30,7 +30,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
@@ -60,9 +59,17 @@ public class AzureWriteFeature implements Write {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private Map<String, String> metadata
+            = preferences.getMap("azure.metadata.default");
+
     public AzureWriteFeature(final AzureSession session) {
         this.session = session;
         this.finder = new DefaultFindFeature(session);
+    }
+
+    public AzureWriteFeature withMetadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
     }
 
     @Override
@@ -84,29 +91,6 @@ public class AzureWriteFeature implements Write {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
             blob.getProperties().setContentType(status.getMime());
-            // Default metadata for new files
-            final Map<String, String> metadata = new HashMap<String, String>();
-            for(String m : preferences.getList("azure.metadata.default")) {
-                if(StringUtils.isBlank(m)) {
-                    continue;
-                }
-                if(!m.contains("=")) {
-                    log.warn(String.format("Invalid header %s", m));
-                    continue;
-                }
-                int split = m.indexOf('=');
-                String key = m.substring(0, split);
-                if(StringUtils.isBlank(key)) {
-                    log.warn(String.format("Missing key in %s", m));
-                    continue;
-                }
-                String value = m.substring(split + 1);
-                if(StringUtils.isEmpty(value)) {
-                    log.warn(String.format("Missing value in %s", m));
-                    continue;
-                }
-                metadata.put(key, value);
-            }
             blob.setMetadata(new HashMap<String, String>(metadata));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());

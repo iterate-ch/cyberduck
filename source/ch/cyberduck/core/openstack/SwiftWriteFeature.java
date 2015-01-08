@@ -34,13 +34,11 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +65,9 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private Preferences preferences
             = PreferencesFactory.get();
 
+    private Map<String, String> metadata
+            = preferences.getMap("openstack.metadata.default");
+
     public SwiftWriteFeature(final SwiftSession session) {
         this(session, new SwiftObjectListService(session), new SwiftSegmentService(session), new DefaultFindFeature(session));
     }
@@ -85,31 +86,13 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         this.finder = finder;
     }
 
+    public SwiftWriteFeature withMetadata(final Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
     @Override
     public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final Map<String, String> metadata = new HashMap<String, String>();
-        // Default metadata for new files
-        for(String m : preferences.getList("openstack.metadata.default")) {
-            if(StringUtils.isBlank(m)) {
-                continue;
-            }
-            if(!m.contains("=")) {
-                log.warn(String.format("Invalid header %s", m));
-                continue;
-            }
-            int split = m.indexOf('=');
-            String key = m.substring(0, split);
-            if(StringUtils.isBlank(key)) {
-                log.warn(String.format("Missing key in %s", m));
-                continue;
-            }
-            String value = m.substring(split + 1);
-            if(StringUtils.isEmpty(value)) {
-                log.warn(String.format("Missing value in %s", m));
-                continue;
-            }
-            metadata.put(key, value);
-        }
         // Submit store run to background thread
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             /**
