@@ -237,8 +237,10 @@ public class Terminal {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
                 new TerminalTransferPrompt(transfer), new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
                 new TerminalProgressListener(), new TerminalStreamListener(meter), new TerminalLoginCallback());
-        worker.run();
-        return Exit.success;
+        if(worker.run()) {
+            return Exit.success;
+        }
+        return Exit.failure;
     }
 
     protected Exit list(final Session session, final Path remote, final boolean verbose) throws BackgroundException {
