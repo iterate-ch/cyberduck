@@ -51,7 +51,7 @@ public class SwiftRegionService {
         return this.lookup(new SwiftLocationFeature.SwiftRegion(file.attributes().getRegion()));
     }
 
-    public Region lookup(final Location.Name location) throws BackgroundException {
+    public Region lookup(final Location.Name location) throws InteroperabilityException {
         if(null == session.getClient()) {
             log.warn("Cannot determine region if not connected");
             return null;
