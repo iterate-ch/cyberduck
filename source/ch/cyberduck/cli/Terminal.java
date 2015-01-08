@@ -23,6 +23,7 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
@@ -253,7 +254,7 @@ public class Terminal {
         final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions().reload(true), meter,
                 prompt, new TerminalTransferErrorCallback(), new TerminalTransferItemCallback(),
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledListProgressListener() : new TerminalProgressListener(),
-                new TerminalStreamListener(meter), new TerminalLoginCallback());
+                input.hasOption(TerminalOptionsBuilder.Params.quiet.name()) ? new DisabledStreamListener() : new TerminalStreamListener(meter), new TerminalLoginCallback());
         if(worker.run()) {
             return Exit.success;
         }
