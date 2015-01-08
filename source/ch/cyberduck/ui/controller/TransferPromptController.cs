@@ -261,7 +261,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual IDictionary<TransferAction, string> GetTransferActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            foreach (TransferAction action in Utils.ConvertFromJavaList<TransferAction>(TransferAction.forTransfer(Transfer)))
+            foreach (TransferAction action in Utils.ConvertFromJavaList<TransferAction>(TransferAction.forTransfer(Transfer.getType())))
             {
                 actions.Add(action, action.getTitle());
             }
