@@ -232,6 +232,9 @@ public class Terminal {
         preferences.setProperty("queue.upload.timestamp.change", preserve);
         preferences.setProperty("queue.download.permissions.change", preserve);
         preferences.setProperty("queue.download.timestamp.change", preserve);
+        if(!input.hasOption(TerminalOptionsBuilder.Params.quiet.name())) {
+            preferences.setProperty("factory.notification.class", TerminalNotification.class.getName());
+        }
     }
 
     protected Exit transfer(final Transfer transfer, final Session session) throws BackgroundException {

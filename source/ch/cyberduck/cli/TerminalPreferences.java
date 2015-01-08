@@ -70,8 +70,6 @@ public class TerminalPreferences extends MemoryPreferences {
         for(Transfer.Type t : Transfer.Type.values()) {
             defaults.put(String.format("factory.transferpromptcallback.%s.class", t.name()), TerminalTransferPrompt.class.getName());
         }
-        defaults.put("factory.notification.class", TerminalNotification.class.getName());
-
         switch(Factory.Platform.getDefault()) {
             case mac:
                 defaults.put("factory.supportdirectoryfinder.class", ApplicationSupportDirectoryFinder.class.getName());
