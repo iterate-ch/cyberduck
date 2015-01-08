@@ -181,7 +181,7 @@
         </foreach>
     </target>
 
-    <target name="tarball" depends="init">
+    <target name="tarball" depends="revision">
         <antcall target="tar">
             <param name="directory" value="${home}"/>
             <param name="source" value="."/>
