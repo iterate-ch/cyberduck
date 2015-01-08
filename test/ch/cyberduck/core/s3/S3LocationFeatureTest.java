@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.jets3t.service.Jets3tProperties;
@@ -111,5 +112,10 @@ public class S3LocationFeatureTest extends AbstractTestCase {
                 new Path("cyberduck-frankfurt", EnumSet.of(Path.Type.directory))
         ));
         session.close();
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        assertEquals(Location.unknown, new S3LocationFeature.S3Region(null));
     }
 }
