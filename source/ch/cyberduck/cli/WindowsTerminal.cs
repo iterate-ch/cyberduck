@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.cli;
+using ch.cyberduck.core.preferences;
 using org.apache.commons.cli;
 
 namespace Ch.Cyberduck.Cli
@@ -30,7 +31,9 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
-            open(args, new WindowsTerminalPreferences());
+            Preferences defaults = new WindowsTerminalPreferences();
+            PreferencesFactory.set(defaults)
+            open(args, defaults);
         }
     }
 }

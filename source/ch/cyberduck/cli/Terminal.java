@@ -83,7 +83,7 @@ public class Terminal {
     }
 
     public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
-        PreferencesFactory.set(this.preferences = defaults);
+        this.preferences = defaults;
         ProtocolFactory.register();
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -100,7 +100,9 @@ public class Terminal {
      * @param args Command line arguments
      */
     public static void main(final String... args) throws IOException {
-        open(args, new TerminalPreferences());
+        final TerminalPreferences defaults = new TerminalPreferences();
+        PreferencesFactory.set(defaults);
+        open(args, defaults);
     }
 
     protected static void open(final String[] args, final Preferences defaults) {
