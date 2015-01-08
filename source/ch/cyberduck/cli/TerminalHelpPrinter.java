@@ -65,7 +65,7 @@ public final class TerminalHelpPrinter {
         }
         final StringBuilder header = new StringBuilder(StringUtils.LF);
         header.append("\t");
-        header.append("URLs must be a fully qualified. Paths can either denote "
+        header.append("URLs must be fully qualified. Paths can either denote "
                 + "a remote file (ftps://user@example.net/resource) or folder ftps://user@example.net/directory/) "
                 + "with a trailing slash.");
         header.append(protocols.toString());

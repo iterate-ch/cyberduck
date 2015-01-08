@@ -51,13 +51,13 @@ public final class TerminalOptionsBuilder {
                 .isRequired(false)
                 .create('i'));
         options.addOption(OptionBuilder
-                .withDescription("Download file or folder. Denote a folder with a trailing '/'. If the local filename is not specified it is downloaded to the current working directory with the same name the file has on the remote server")
+                .withDescription("Download file or folder. Denote a folder with a trailing '/'")
                 .withLongOpt(TerminalAction.download.name())
                 .hasArgs(2).withArgName("url> <[file]").withValueSeparator(' ')
                 .isRequired(false)
                 .create('d'));
         options.addOption(OptionBuilder
-                .withDescription("Upload file or folder recursively.")
+                .withDescription("Upload file or folder recursively")
                 .withLongOpt(TerminalAction.upload.name())
                 .hasArgs(2).withArgName("url> <file").withValueSeparator(' ')
                 .isRequired(false)
