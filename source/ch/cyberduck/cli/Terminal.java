@@ -251,6 +251,14 @@ public class Terminal {
                 }
             };
         }
+        else if(input.hasOption(TerminalOptionsBuilder.Params.quiet.name())) {
+            prompt = new DisabledTransferPrompt() {
+                @Override
+                public TransferAction prompt(final TransferItem file) {
+                    return TransferAction.comparison;
+                }
+            };
+        }
         else {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
