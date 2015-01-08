@@ -39,8 +39,8 @@ public abstract class TransferAction {
         return registry.get(name);
     }
 
-    public static List<TransferAction> forTransfer(final Transfer t) {
-        switch(t.getType()) {
+    public static List<TransferAction> forTransfer(final Transfer.Type t) {
+        switch(t) {
             case sync:
                 return Arrays.asList(TransferAction.download,
                         TransferAction.upload,

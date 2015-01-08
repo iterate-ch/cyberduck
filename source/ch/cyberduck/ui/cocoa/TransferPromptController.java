@@ -443,7 +443,7 @@ public abstract class TransferPromptController extends SheetController
         final TransferAction defaultAction
                 = TransferAction.forName(preferences.getProperty(String.format("queue.prompt.%s.action.default", transfer.getType().name())));
 
-        for(TransferAction action : TransferAction.forTransfer(transfer)) {
+        for(TransferAction action : TransferAction.forTransfer(transfer.getType())) {
             this.actionPopup.addItemWithTitle(action.getTitle());
             this.actionPopup.lastItem().setRepresentedObject(action.name());
             if(action.equals(defaultAction)) {

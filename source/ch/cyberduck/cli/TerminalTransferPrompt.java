@@ -46,7 +46,7 @@ public class TerminalTransferPrompt implements TransferPrompt {
     @Override
     public TransferAction prompt(final TransferItem item) {
         final StringBuilder actions = new StringBuilder().append(StringUtils.LF);
-        final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer));
+        final Set<TransferAction> options = new HashSet<TransferAction>(TransferAction.forTransfer(transfer.getType()));
         options.add(TransferAction.cancel);
         for(TransferAction a : options) {
             actions.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
