@@ -181,7 +181,17 @@
         </foreach>
     </target>
 
-    <target name="package.cli" depends="cli">
+    <target name="tarball" depends="init">
+        <antcall target="tar">
+            <param name="directory" value="${home}"/>
+            <param name="source" value="."/>
+            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
+        </antcall>
+        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
+                  algorithm="sha1" property="source.sha1"/>
+    </target>
+
+    <target name="package.cli" depends="tarball,cli">
         <antcall target="codesign">
             <param name="bundle" value="${cli.bundle}"/>
             <param name="codesign.options" value="--force"/>
@@ -199,8 +209,6 @@
         </antcall>
         <checksum file="${build.deploy}/duck-${version}.${revision}.tar.gz"
                   algorithm="sha1" property="archive.sha1"/>
-        <checksum file="${build.deploy}/duck-src-${version}.${revision}.tar.gz"
-                  algorithm="sha1" property="source.sha1"/>
         <copy todir="${build.deploy}" overwrite="true">
             <fileset dir="${setup}/brew">
                 <include name="*.rb"/>
@@ -410,7 +418,7 @@
     <target name="tar">
         <echo message="Creating tar.gz archive from ${directory}/${source}"/>
         <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
-            <arg line="-czf ${build.deploy}/${target} ${source}"/>
+            <arg line="--exclude .svn --exclude build -czf ${build.deploy}/${target} ${source}"/>
         </exec>
         <echo message="Calculating MD5 sum..."/>
         <checksum file="${build.deploy}/${target}" algorithm="md5"/>
