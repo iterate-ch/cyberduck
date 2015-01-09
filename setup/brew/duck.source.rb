@@ -4,7 +4,7 @@ class Duck < Formula
   sha1 "${SOURCE.SHA1}"
   head "https://svn.cyberduck.io/trunk/"
 
-  depends_on :java => ["1.7", :build]
+  depends_on :java => [:build, "1.7"]
   depends_on :xcode => :build
   depends_on "ant" => :build
   depends_on "openssl"
