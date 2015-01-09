@@ -42,6 +42,12 @@ public abstract class NSView extends NSResponder {
     public static final int NSViewHeightSizable = 16;
     public static final int NSViewMaxYMargin = 32;
 
+    public static final int NSViewLayerContentsRedrawNever = 0;
+    public static final int NSViewLayerContentsRedrawOnSetNeedsDisplay = 1;
+    public static final int NSViewLayerContentsRedrawDuringViewResize = 2;
+    public static final int NSViewLayerContentsRedrawBeforeViewResize = 3;
+    public static final int NSViewLayerContentsRedrawCrossfade = 4;
+
     public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSView* focusView()</code><br>
@@ -704,6 +710,10 @@ public abstract class NSView extends NSResponder {
      */
     public abstract com.sun.jna.Pointer layer();
 
+    public abstract void setLayerContentsRedrawPolicy(int policy);
+
+    public abstract int layerContentsRedrawPolicy();
+
     /**
      * Original signature : <code>void setAlphaValue(CGFloat)</code><br>
      * <i>native declaration : :276</i>
@@ -812,7 +822,7 @@ public abstract class NSView extends NSResponder {
      * Original signature : <code>NSScrollView* enclosingScrollView()</code><br>
      * <i>native declaration : :308</i>
      */
-    public abstract com.sun.jna.Pointer enclosingScrollView();
+    public abstract NSView enclosingScrollView();
 
     /**
      * Original signature : <code>NSMenu* menuForEvent(NSEvent*)</code><br>
