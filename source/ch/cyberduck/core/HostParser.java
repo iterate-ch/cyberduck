@@ -105,7 +105,7 @@ public final class HostParser {
         }
         String path = null;
         int port = protocol.getDefaultPort();
-        if(input.indexOf(':', begin) != -1) {
+        if(input.indexOf(':', begin) != -1 && input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin)) {
             cut = input.indexOf(':', begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length() + 1;

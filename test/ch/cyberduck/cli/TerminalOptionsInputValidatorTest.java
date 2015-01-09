@@ -23,11 +23,19 @@ import ch.cyberduck.core.AbstractTestCase;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TerminalOptionsInputValidatorTest extends AbstractTestCase {
 
     @Test
     public void testValidate() throws Exception {
-        assertFalse(new TerminalOptionsInputValidator().validate("rackspace://cdn.duck.sh/%%~nc"));
+        final String uri = "rackspace://cdn.duck.sh/%%~nc";
+        assertFalse(new TerminalOptionsInputValidator().validate(uri));
+    }
+
+    @Test
+    public void testColonInPath() throws Exception {
+        final String uri = "rackspace://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg";
+        assertTrue(new TerminalOptionsInputValidator().validate(uri));
     }
 }
