@@ -18,9 +18,6 @@ class Duck < Formula
   end
 
   test do
-    unless "Cyberduck ${VERSION} (${REVISION})\n".eql? %x(#{bin}/duck -version)
-      fail "Version mismatch"
-    end
     filename = (testpath/"test")
     system "#{bin}/duck", "--download", stable.url, filename
     filename.verify_checksum stable.checksum
