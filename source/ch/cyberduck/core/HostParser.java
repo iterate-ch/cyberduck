@@ -120,6 +120,9 @@ public final class HostParser {
                     catch(UnsupportedEncodingException e) {
                         log.error(e.getMessage(), e);
                     }
+                    catch(IllegalArgumentException e) {
+                        log.error(e.getMessage(), e);
+                    }
                 }
                 else {
                     portString = input.substring(begin, input.length());
@@ -138,6 +141,9 @@ public final class HostParser {
                 path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
             }
             catch(UnsupportedEncodingException e) {
+                log.error(e.getMessage(), e);
+            }
+            catch(IllegalArgumentException e) {
                 log.error(e.getMessage(), e);
             }
         }
