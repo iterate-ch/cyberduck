@@ -1,9 +1,6 @@
-require "formula"
-
 class Duck < Formula
   homepage "https://duck.sh/"
   url "${SOURCE}"
-  version "${VERSION}.${REVISION}"
   sha1 "${SOURCE.SHA1}"
   head "https://svn.cyberduck.io/trunk/"
 
