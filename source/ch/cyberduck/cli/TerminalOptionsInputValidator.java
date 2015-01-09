@@ -61,7 +61,7 @@ public class TerminalOptionsInputValidator {
     /**
      * Validate URI
      */
-    private boolean validate(final String uri) {
+    protected boolean validate(final String uri) {
         if(uri.indexOf("://", 0) != -1) {
             final Protocol protocol = ProtocolFactory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
